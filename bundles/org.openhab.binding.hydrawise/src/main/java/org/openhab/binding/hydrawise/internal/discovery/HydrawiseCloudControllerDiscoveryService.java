@@ -14,21 +14,21 @@ package org.openhab.binding.hydrawise.internal.discovery;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants;
 import org.openhab.binding.hydrawise.internal.HydrawiseControllerListener;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.Controller;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.Customer;
 import org.openhab.binding.hydrawise.internal.handler.HydrawiseAccountHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  *
@@ -37,21 +37,19 @@ import org.osgi.service.component.annotations.Component;
  */
 
 @NonNullByDefault
-@Component(service = ThingHandlerService.class)
-public class HydrawiseCloudControllerDiscoveryService extends AbstractDiscoveryService
-        implements HydrawiseControllerListener, ThingHandlerService {
+@Component(scope = ServiceScope.PROTOTYPE, service = ThingHandlerService.class)
+public class HydrawiseCloudControllerDiscoveryService
+        extends AbstractThingHandlerDiscoveryService<HydrawiseAccountHandler> implements HydrawiseControllerListener {
 
     private static final int TIMEOUT = 5;
-    @Nullable
-    HydrawiseAccountHandler handler;
 
     public HydrawiseCloudControllerDiscoveryService() {
-        super(Set.of(HydrawiseBindingConstants.THING_TYPE_CONTROLLER), TIMEOUT, true);
+        super(HydrawiseAccountHandler.class, Set.of(HydrawiseBindingConstants.THING_TYPE_CONTROLLER), TIMEOUT, true);
     }
 
     @Override
     protected void startScan() {
-        HydrawiseAccountHandler localHandler = this.handler;
+        HydrawiseAccountHandler localHandler = thingHandler;
         if (localHandler != null) {
             Customer data = localHandler.lastData();
             if (data != null) {
@@ -62,7 +60,7 @@ public class HydrawiseCloudControllerDiscoveryService extends AbstractDiscoveryS
 
     @Override
     public void deactivate() {
-        HydrawiseAccountHandler localHandler = this.handler;
+        HydrawiseAccountHandler localHandler = thingHandler;
         if (localHandler != null) {
             removeOlderResults(new Date().getTime(), localHandler.getThing().getUID());
         }
@@ -71,7 +69,7 @@ public class HydrawiseCloudControllerDiscoveryService extends AbstractDiscoveryS
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        HydrawiseAccountHandler localHandler = this.handler;
+        HydrawiseAccountHandler localHandler = thingHandler;
         if (localHandler != null) {
             removeOlderResults(getTimestampOfLastScan(), localHandler.getThing().getUID());
         }
@@ -83,18 +81,12 @@ public class HydrawiseCloudControllerDiscoveryService extends AbstractDiscoveryS
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        this.handler = (HydrawiseAccountHandler) handler;
-        this.handler.addControllerListeners(this);
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
+    public void initialize() {
+        Objects.requireNonNull(thingHandler).addControllerListeners(this);
     }
 
     private void addDiscoveryResults(Controller controller) {
-        HydrawiseAccountHandler localHandler = this.handler;
+        HydrawiseAccountHandler localHandler = thingHandler;
         if (localHandler != null) {
             String label = String.format("Hydrawise Controller %s", controller.name);
             int id = controller.id;
