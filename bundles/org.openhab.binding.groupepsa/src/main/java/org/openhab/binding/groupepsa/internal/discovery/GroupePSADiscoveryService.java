@@ -25,14 +25,13 @@ import org.openhab.binding.groupepsa.internal.GroupePSABindingConstants;
 import org.openhab.binding.groupepsa.internal.bridge.GroupePSABridgeHandler;
 import org.openhab.binding.groupepsa.internal.rest.api.dto.Vehicle;
 import org.openhab.binding.groupepsa.internal.rest.exceptions.GroupePSACommunicationException;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,38 +41,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Arjan Mels - Initial contribution
  */
-@Component(service = ThingHandlerService.class)
+@Component(scope = ServiceScope.PROTOTYPE, service = GroupePSADiscoveryService.class)
 @NonNullByDefault
-public class GroupePSADiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class GroupePSADiscoveryService extends AbstractThingHandlerDiscoveryService<GroupePSABridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(GroupePSADiscoveryService.class);
 
-    private @Nullable GroupePSABridgeHandler bridgeHandler;
-
     public GroupePSADiscoveryService() {
-        super(Set.of(THING_TYPE_VEHICLE), 10, false);
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof GroupePSABridgeHandler bridgeHandler) {
-            this.bridgeHandler = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(GroupePSABridgeHandler.class, Set.of(THING_TYPE_VEHICLE), 10, false);
     }
 
     @Override
     protected void startScan() {
         try {
-            GroupePSABridgeHandler localBridgeHandler = bridgeHandler;
+            GroupePSABridgeHandler localBridgeHandler = thingHandler;
             if (localBridgeHandler == null) {
                 return;
             }
