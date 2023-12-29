@@ -16,6 +16,7 @@ import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindin
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -26,11 +27,12 @@ import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcEnergyMeter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +42,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial Contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = NikoHomeControlDiscoveryService.class)
 @NonNullByDefault
-public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class NikoHomeControlDiscoveryService
+        extends AbstractThingHandlerDiscoveryService<NikoHomeControlBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscoveryService.class);
 
@@ -53,10 +57,9 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService im
     private static final int REFRESH_INTERVAL_S = 60;
 
     private @Nullable ThingUID bridgeUID;
-    private @Nullable NikoHomeControlBridgeHandler handler;
 
     public NikoHomeControlDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_S, true);
+        super(NikoHomeControlBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, TIMEOUT_S, true);
         logger.debug("device discovery service started");
     }
 
@@ -75,7 +78,7 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService im
      * Discovers devices connected to a Niko Home Control controller
      */
     public void discoverDevices() {
-        NikoHomeControlBridgeHandler bridgeHandler = handler;
+        NikoHomeControlBridgeHandler bridgeHandler = thingHandler;
         if (bridgeHandler == null) {
             return;
         }
@@ -200,15 +203,8 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService im
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof NikoHomeControlBridgeHandler homeControlBridgeHandler) {
-            this.handler = homeControlBridgeHandler;
-            bridgeUID = handler.getThing().getUID();
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
+    public void setThingHandler(ThingHandler thingHandler) {
+        super.setThingHandler(thingHandler);
+        bridgeUID = Objects.requireNonNull(thingHandler).getThing().getUID();
     }
 }
