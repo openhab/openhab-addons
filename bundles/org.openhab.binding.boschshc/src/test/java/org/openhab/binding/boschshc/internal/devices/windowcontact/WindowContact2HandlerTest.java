@@ -18,9 +18,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -61,8 +62,7 @@ class WindowContact2HandlerTest extends WindowContactHandlerTest {
         JsonElement jsonObject = JsonParser.parseString(json);
         getFixture().processUpdate("Bypass", jsonObject);
         verify(getCallback()).stateUpdated(
-                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_BYPASS_STATE),
-                new StringType("BYPASS_INACTIVE"));
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_BYPASS_STATE), OnOffType.OFF);
 
         json = """
                 {
@@ -79,8 +79,24 @@ class WindowContact2HandlerTest extends WindowContactHandlerTest {
         jsonObject = JsonParser.parseString(json);
         getFixture().processUpdate("Bypass", jsonObject);
         verify(getCallback()).stateUpdated(
-                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_BYPASS_STATE),
-                new StringType("BYPASS_ACTIVE"));
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_BYPASS_STATE), OnOffType.ON);
+
+        json = """
+                {
+                  "@type": "bypassState",
+                  "state": "UNKNOWN",
+                  "configuration": {
+                    "enabled": false,
+                    "timeout": 5,
+                    "infinite": false
+                  }
+                }
+                """;
+
+        jsonObject = JsonParser.parseString(json);
+        getFixture().processUpdate("Bypass", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_BYPASS_STATE), UnDefType.UNDEF);
     }
 
     @Test
@@ -95,7 +111,7 @@ class WindowContact2HandlerTest extends WindowContactHandlerTest {
 
         getFixture().processUpdate("CommunicationQuality", jsonObject);
         verify(getCallback()).stateUpdated(
-                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_COMMUNICATION_QUALITY),
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SIGNAL_STRENGTH),
                 new DecimalType(0));
 
         json = """
@@ -108,7 +124,7 @@ class WindowContact2HandlerTest extends WindowContactHandlerTest {
 
         getFixture().processUpdate("CommunicationQuality", jsonObject);
         verify(getCallback()).stateUpdated(
-                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_COMMUNICATION_QUALITY),
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SIGNAL_STRENGTH),
                 new DecimalType(4));
     }
 }

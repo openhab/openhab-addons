@@ -595,13 +595,13 @@
 	</channel-type>
 	
 	<channel-type id="bypass-state">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Bypass State</label>
-		<description>Indicates whether the device is bypassed.</description>
+		<description>Indicates whether the device is currently bypassed.</description>
 		<state readOnly="true">
 			<options>
-				<option value="BYPASS_INACTIVE">Bypass is not active</option>
-				<option value="BYPASS_ACTIVE">Bypass is active</option>
+				<option value="BYPASS_INACTIVE">Device is currently not bypassed</option>
+				<option value="BYPASS_ACTIVE">Device is currently bypassed</option>
 				<option value="UNKNOWN">Bypass state cannot be determined</option>
 			</options>
 		</state>

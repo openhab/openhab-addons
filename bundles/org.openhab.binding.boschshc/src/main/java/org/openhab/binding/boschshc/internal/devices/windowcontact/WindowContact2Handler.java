@@ -13,7 +13,7 @@
 package org.openhab.binding.boschshc.internal.devices.windowcontact;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_BYPASS_STATE;
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_COMMUNICATION_QUALITY;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_SIGNAL_STRENGTH;
 
 import java.util.List;
 
@@ -23,7 +23,6 @@ import org.openhab.binding.boschshc.internal.services.bypass.BypassService;
 import org.openhab.binding.boschshc.internal.services.bypass.dto.BypassServiceState;
 import org.openhab.binding.boschshc.internal.services.communicationquality.CommunicationQualityService;
 import org.openhab.binding.boschshc.internal.services.communicationquality.dto.CommunicationQualityServiceState;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -44,15 +43,15 @@ public class WindowContact2Handler extends WindowContactHandler {
         super.initializeServices();
 
         this.createService(BypassService::new, this::updateChannels, List.of(CHANNEL_BYPASS_STATE), true);
-        this.createService(CommunicationQualityService::new, this::updateChannels,
-                List.of(CHANNEL_COMMUNICATION_QUALITY), true);
+        this.createService(CommunicationQualityService::new, this::updateChannels, List.of(CHANNEL_SIGNAL_STRENGTH),
+                true);
     }
 
     private void updateChannels(BypassServiceState bypassServiceState) {
-        updateState(CHANNEL_BYPASS_STATE, new StringType(bypassServiceState.state.toString()));
+        updateState(CHANNEL_BYPASS_STATE, bypassServiceState.state.toOnOffTypeOrUndef());
     }
 
     private void updateChannels(CommunicationQualityServiceState communicationQualityServiceState) {
-        updateState(CHANNEL_COMMUNICATION_QUALITY, communicationQualityServiceState.quality.toSystemSignalStrength());
+        updateState(CHANNEL_SIGNAL_STRENGTH, communicationQualityServiceState.quality.toSystemSignalStrength());
     }
 }

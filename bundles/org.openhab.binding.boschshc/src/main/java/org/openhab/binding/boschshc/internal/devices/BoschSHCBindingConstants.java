@@ -90,7 +90,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_SILENT_MODE = "silent-mode";
     public static final String CHANNEL_ILLUMINANCE = "illuminance";
     public static final String CHANNEL_BYPASS_STATE = "bypass-state";
-    public static final String CHANNEL_COMMUNICATION_QUALITY = "communication-quality";
+    public static final String CHANNEL_SIGNAL_STRENGTH = "signal-strength";
 
     public static final String CHANNEL_USER_DEFINED_STATE = "user-state";
 
