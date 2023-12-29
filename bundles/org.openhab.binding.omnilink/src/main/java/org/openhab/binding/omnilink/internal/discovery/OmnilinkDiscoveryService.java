@@ -28,13 +28,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.omnilink.internal.SystemType;
 import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.binding.omnilink.internal.handler.OmnilinkBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,12 +56,11 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
  * @author Craig Hamilton - Initial contribution
  * @author Ethan Dye - openHAB3 rewrite
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = OmnilinkDiscoveryService.class)
 @NonNullByDefault
-public class OmnilinkDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class OmnilinkDiscoveryService extends AbstractThingHandlerDiscoveryService<OmnilinkBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(OmnilinkDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 30;
-    private @Nullable OmnilinkBridgeHandler bridgeHandler;
     private Optional<SystemType> systemType = Optional.empty();
     private @Nullable List<AreaProperties> areas;
 
@@ -70,32 +68,12 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
      * Creates an OmnilinkDiscoveryService.
      */
     public OmnilinkDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, false);
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof OmnilinkBridgeHandler omnilinkBridgeHandler) {
-            bridgeHandler = omnilinkBridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void activate() {
-    }
-
-    @Override
-    public void deactivate() {
+        super(OmnilinkBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, false);
     }
 
     @Override
     protected synchronized void startScan() {
-        final OmnilinkBridgeHandler handler = bridgeHandler;
+        final OmnilinkBridgeHandler handler = thingHandler;
         if (handler != null) {
             logger.debug("Starting scan");
             try {
@@ -137,7 +115,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
      * Discovers OmniLink buttons
      */
     private void discoverButtons() {
-        final OmnilinkBridgeHandler handler = bridgeHandler;
+        final OmnilinkBridgeHandler handler = thingHandler;
         if (handler != null) {
             final ThingUID bridgeUID = handler.getThing().getUID();
             final List<AreaProperties> areas = this.areas;
@@ -175,7 +153,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
      * Discovers OmniLink locks
      */
     private void discoverLocks() {
-        final OmnilinkBridgeHandler handler = bridgeHandler;
+        final OmnilinkBridgeHandler handler = thingHandler;
         if (handler != null) {
             final ThingUID bridgeUID = handler.getThing().getUID();
 
@@ -203,7 +181,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
      * Discovers OmniLink audio zones
      */
     private void discoverAudioZones() {
-        final OmnilinkBridgeHandler handler = bridgeHandler;
+        final OmnilinkBridgeHandler handler = thingHandler;
         if (handler != null) {
             final ThingUID bridgeUID = handler.getThing().getUID();
 
@@ -231,7 +209,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
      * Discovers OmniLink audio sources
      */
     private void discoverAudioSources() {
-        final OmnilinkBridgeHandler handler = bridgeHandler;
+        final OmnilinkBridgeHandler handler = thingHandler;
         if (handler != null) {
             final ThingUID bridgeUID = handler.getThing().getUID();
 
@@ -259,7 +237,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
      * Discovers OmniLink temperature sensors
      */
     private void discoverTempSensors() {
-        final OmnilinkBridgeHandler handler = bridgeHandler;
+        final OmnilinkBridgeHandler handler = thingHandler;
         if (handler != null) {
             final ThingUID bridgeUID = handler.getThing().getUID();
             final List<AreaProperties> areas = this.areas;
@@ -300,7 +278,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
      * Discovers OmniLink humidity sensors
      */
     private void discoverHumiditySensors() {
-        final OmnilinkBridgeHandler handler = bridgeHandler;
+        final OmnilinkBridgeHandler handler = thingHandler;
         if (handler != null) {
             final ThingUID bridgeUID = handler.getThing().getUID();
             final List<AreaProperties> areas = this.areas;
@@ -340,7 +318,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
      * Discovers OmniLink thermostats
      */
     private void discoverThermostats() {
-        final OmnilinkBridgeHandler handler = bridgeHandler;
+        final OmnilinkBridgeHandler handler = thingHandler;
         if (handler != null) {
             final ThingUID bridgeUID = handler.getThing().getUID();
             final List<AreaProperties> areas = this.areas;
@@ -378,7 +356,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
      * Discovers OmniLink areas
      */
     private @Nullable List<AreaProperties> discoverAreas() {
-        final OmnilinkBridgeHandler handler = bridgeHandler;
+        final OmnilinkBridgeHandler handler = thingHandler;
         if (handler != null) {
             final ThingUID bridgeUID = handler.getThing().getUID();
             List<AreaProperties> areas = new LinkedList<>();
@@ -436,7 +414,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
      * Discovers OmniLink supported units
      */
     private void discoverUnits() {
-        final OmnilinkBridgeHandler handler = bridgeHandler;
+        final OmnilinkBridgeHandler handler = thingHandler;
         if (handler != null) {
             final ThingUID bridgeUID = handler.getThing().getUID();
             final List<AreaProperties> areas = this.areas;
@@ -501,7 +479,7 @@ public class OmnilinkDiscoveryService extends AbstractDiscoveryService
      * Generates zone items
      */
     private void discoverZones() {
-        final OmnilinkBridgeHandler handler = bridgeHandler;
+        final OmnilinkBridgeHandler handler = thingHandler;
         if (handler != null) {
             final ThingUID bridgeUID = handler.getThing().getUID();
             final List<AreaProperties> areas = this.areas;
