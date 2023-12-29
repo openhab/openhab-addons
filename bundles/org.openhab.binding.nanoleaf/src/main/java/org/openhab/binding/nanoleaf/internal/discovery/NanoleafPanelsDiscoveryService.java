@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,13 +30,13 @@ import org.openhab.binding.nanoleaf.internal.model.ControllerInfo;
 import org.openhab.binding.nanoleaf.internal.model.Layout;
 import org.openhab.binding.nanoleaf.internal.model.PanelLayout;
 import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,31 +47,28 @@ import org.slf4j.LoggerFactory;
  * @author Martin Raepple - Initial contribution
  * @author Kai Kreuzer - Made it a ThingHandlerService
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = NanoleafPanelsDiscoveryService.class)
 @NonNullByDefault
-public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
-        implements NanoleafControllerListener, ThingHandlerService {
+public class NanoleafPanelsDiscoveryService extends AbstractThingHandlerDiscoveryService<NanoleafControllerHandler>
+        implements NanoleafControllerListener {
 
     private static final int SEARCH_TIMEOUT_SECONDS = 60;
 
     private final Logger logger = LoggerFactory.getLogger(NanoleafPanelsDiscoveryService.class);
-    private @Nullable NanoleafControllerHandler bridgeHandler;
     private @Nullable ControllerInfo controllerInfo;
 
     /**
      * Constructs a new {@link NanoleafPanelsDiscoveryService}.
      */
     public NanoleafPanelsDiscoveryService() {
-        super(NanoleafHandlerFactory.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIMEOUT_SECONDS, false);
+        super(NanoleafControllerHandler.class, NanoleafHandlerFactory.SUPPORTED_THING_TYPES_UIDS,
+                SEARCH_TIMEOUT_SECONDS, false);
     }
 
     @Override
-    public void deactivate() {
-        NanoleafControllerHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler != null) {
-            Boolean result = localBridgeHandler.unregisterControllerListener(this);
-            logger.debug("unregistration of controller was {}", result ? "successful" : "unsuccessful");
-        }
-        super.deactivate();
+    public void dispose() {
+        boolean result = Objects.requireNonNull(thingHandler).unregisterControllerListener(this);
+        logger.debug("unregistration of controller was {}", result ? "successful" : "unsuccessful");
     }
 
     @Override
@@ -92,7 +90,7 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
 
     private void createResultsFromControllerInfo() {
         ThingUID bridgeUID;
-        BridgeHandler localBridgeHandler = bridgeHandler;
+        BridgeHandler localBridgeHandler = thingHandler;
         if (localBridgeHandler != null) {
             bridgeUID = localBridgeHandler.getThing().getUID();
         } else {
@@ -137,15 +135,7 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        this.bridgeHandler = (NanoleafControllerHandler) handler;
-        NanoleafControllerHandler localBridgeHandler = (NanoleafControllerHandler) handler;
-
-        localBridgeHandler.registerControllerListener(this);
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+    public void initialize() {
+        Objects.requireNonNull(thingHandler).registerControllerListener(this);
     }
 }
