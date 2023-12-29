@@ -85,17 +85,23 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        Map<String, String> properties = getThing().getProperties();
+        updateStatus(ThingStatus.OFFLINE);
 
-        deviceID = properties.get("deviceId");
+        scheduler.execute(() -> {
+            Map<String, String> properties = getThing().getProperties();
 
-        logger.debug("Start creating device - device id: {}", deviceID);
+            deviceID = properties.get("deviceId");
 
-        updateChannels();
+            logger.debug("Start creating device - device id: {}", deviceID);
 
-        updateStatus(ThingStatus.ONLINE);
+            updateChannels();
 
-        logger.debug("Device created - device id: {}", deviceID);
+            updateStatus(ThingStatus.ONLINE);
+
+            logger.debug("Device created - device id: {}", deviceID);
+        });
+
+        updateStatus(ThingStatus.INITIALIZING);
     }
 
     @Override
