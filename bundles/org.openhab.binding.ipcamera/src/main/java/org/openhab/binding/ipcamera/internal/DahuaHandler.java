@@ -48,7 +48,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
 
     public DahuaHandler(IpCameraHandler handler, int nvrChannel) {
         ipCameraHandler = handler;
-        // Most of the API is the channel index -1 but some of it is not like streams and snapshot URLS.
+        // Most of the API is the NVR channel -1, but some of it is not, like streams and snapshot URLS.
         nvrChannelAdjusted = nvrChannel - 1;
         boundaryPattern = Pattern.compile("^-- ?myboundary$", Pattern.MULTILINE);
     }
@@ -313,15 +313,29 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_WHITE_LED:
                 if (DecimalType.ZERO.equals(command) || OnOffType.OFF.equals(command)) {
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2["
-                            + nvrChannelAdjusted + "][0][1].Mode=Off");
+                    // IR to auto and white light off, then set white light to come on for motion
+                    ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.ON);
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[" + nvrChannelAdjusted
+                                    + "][0][1].Mode=Off&Lighting_V2[" + nvrChannelAdjusted + "][0][0].Mode=Auto");
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmLighting[" + nvrChannelAdjusted
+                                    + "][0].Enable=true&Alarm[2].EventHandler.LightingLink.LightDuration=300");
                 } else if (OnOffType.ON.equals(command)) {
+                    // Disable white light for motion, then white led on.
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmLighting[" + nvrChannelAdjusted
+                                    + "][0].Enable=false&Alarm[2].EventHandler.LightingLink.LightDuration=0");
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2["
                             + nvrChannelAdjusted + "][0][1].Mode=Manual");
-                } else {
+                } else if (command instanceof PercentType percentCommand) {
+                    // Disable white light for motion, then white led on.
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmLighting[" + nvrChannelAdjusted
+                                    + "][0].Enable=false&Alarm[2].EventHandler.LightingLink.LightDuration=0");
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2["
                             + nvrChannelAdjusted + "][0][1].Mode=Manual&Lighting_V2[" + nvrChannelAdjusted
-                            + "][0][1].PercentOfMaxBrightness=" + command.toString());
+                            + "][0][1].NearLight[0].Light=" + command.toString());
                 }
                 return;
             case CHANNEL_AUTO_WHITE_LED:

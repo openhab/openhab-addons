@@ -82,9 +82,6 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel="
                                 + ipCameraHandler.cameraConfig.getNvrChannel() + "&rs=openHAB"
                                 + ipCameraHandler.reolinkAuth;
-                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAbility" + ipCameraHandler.reolinkAuth,
-                                "[{ \"cmd\":\"GetAbility\", \"param\":{ \"User\":{ \"userName\":\""
-                                        + ipCameraHandler.cameraConfig.getUser() + "\" }}}]");
                     } else {
                         ipCameraHandler.logger.info("Your Reolink camera gave a bad login response:{}", content);
                     }
@@ -106,9 +103,51 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                             removeChannels.add(channel);
                         }
                     }
-                    if (content.contains("\"floodLight\": { \"permit\": 0")) {
-                        ipCameraHandler.logger.debug("Camera has no Flood light support.");
-                        channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_LED);
+                    if (content.contains("\"supportAiDogCat\" : { \"permit\" : 0")) {
+                        ipCameraHandler.logger.debug("Camera has no AiDogCat support.");
+                        channel = ipCameraHandler.getThing().getChannel(CHANNEL_ANIMAL_ALARM);
+                        if (channel != null) {
+                            removeChannels.add(channel);
+                        }
+                    }
+                    if (content.contains("\"supportAiPeople\" : { \"permit\" : 0")) {
+                        ipCameraHandler.logger.debug("Camera has no AiPeople support.");
+                        channel = ipCameraHandler.getThing().getChannel(CHANNEL_HUMAN_ALARM);
+                        if (channel != null) {
+                            removeChannels.add(channel);
+                        }
+                    }
+                    if (content.contains("\"supportAiVehicle\" : { \"permit\" : 0")) {
+                        ipCameraHandler.logger.debug("Camera has no AiVehicle support.");
+                        channel = ipCameraHandler.getThing().getChannel(CHANNEL_CAR_ALARM);
+                        if (channel != null) {
+                            removeChannels.add(channel);
+                        }
+                    }
+                    if (content.contains("\"supportEmailEnable\" : { \"permit\" : 0")) {
+                        ipCameraHandler.logger.debug("Camera has no EmailEnable support.");
+                        channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_EMAIL);
+                        if (channel != null) {
+                            removeChannels.add(channel);
+                        }
+                    }
+                    if (content.contains("\"push\" : { \"permit\" : 0")) {
+                        ipCameraHandler.logger.debug("Camera has no Push support.");
+                        channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_PUSH);
+                        if (channel != null) {
+                            removeChannels.add(channel);
+                        }
+                    }
+                    if (content.contains("\"supportAudioAlarm\" : { \"permit\" : 0")) {
+                        ipCameraHandler.logger.debug("Camera has no AudioAlarm support.");
+                        channel = ipCameraHandler.getThing().getChannel(CHANNEL_THRESHOLD_AUDIO_ALARM);
+                        if (channel != null) {
+                            removeChannels.add(channel);
+                        }
+                    }
+                    if (content.contains("\"supportAiFace\" : { \"permit\" : 0")) {
+                        ipCameraHandler.logger.debug("Camera has no AiFace support.");
+                        channel = ipCameraHandler.getThing().getChannel(CHANNEL_FACE_DETECTED);
                         if (channel != null) {
                             removeChannels.add(channel);
                         }
@@ -216,7 +255,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                             "[{ \"cmd\":\"GetEmailV20\"}]");
                     break;
                 case CHANNEL_ENABLE_PUSH:
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetPush" + ipCameraHandler.reolinkAuth,
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetPushV20" + ipCameraHandler.reolinkAuth,
                             "[{ \"cmd\":\"GetPush\"}]");
                     break;
             }
@@ -294,13 +333,11 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 break;
             case CHANNEL_ENABLE_PUSH:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetPush" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\":\"SetPushV20\",\"param\":{\"Push\" : {\"channel\" : "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"enable\" : 1}}}]");
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetPushV20" + ipCameraHandler.reolinkAuth,
+                            "[{\"cmd\":\"SetPushV20\",\"param\":{\"Push\":{\"enable\":1}}}]");
                 } else {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetPush" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\":\"SetPushV20\",\"param\":{\"Push\" : {\"channel\" : "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"enable\" : 0}}}]");
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetPushV20" + ipCameraHandler.reolinkAuth,
+                            "[{\"cmd\":\"SetPushV20\",\"param\":{\"Push\":{\"enable\":0}}}]");
                 }
                 break;
             case CHANNEL_ENABLE_LED:

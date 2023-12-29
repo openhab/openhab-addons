@@ -1731,12 +1731,14 @@ public class IpCameraHandler extends BaseThingHandler {
                                 + "/instar&-as_ssl=0&-as_mode=1&-as_activequery=1&-as_auth=0&-as_query1=0&-as_query2=0&-as_query3=0&-as_query4=0&-as_query5=0");
                 break;
             case REOLINK_THING:
+                reolinkAuth = "&user=" + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword();
+                // As soon as the authenticationJob gets a valid reply the binding may switch to use Tokens
                 if (cameraConfig.useToken) {
                     authenticationJob = threadPool.scheduleWithFixedDelay(this::getReolinkToken, 0, 45,
                             TimeUnit.MINUTES);
-                } else {
-                    reolinkAuth = "&user=" + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword();
                 }
+                sendHttpPOST("/api.cgi?cmd=GetAbility" + reolinkAuth,
+                        "[{\"cmd\":\"GetAbility\",\"param\":{\"User\":{\"userName\":\"admin\"}}}]");
                 if (snapshotUri.isEmpty()) {
                     if (cameraConfig.getNvrChannel() < 1) {
                         snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=0&rs=openHAB" + reolinkAuth;
