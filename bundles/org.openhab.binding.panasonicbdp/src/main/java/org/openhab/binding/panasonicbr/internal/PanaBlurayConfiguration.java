@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.panasonicbr.internal;
+package org.openhab.binding.panasonicbdp.internal;
 
-import static org.openhab.binding.panasonicbr.internal.PanaBlurayBindingConstants.*;
+import static org.openhab.binding.panasonicbdp.internal.PanaBlurayBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

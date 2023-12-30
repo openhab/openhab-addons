@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.panasonicbr.internal;
+package org.openhab.binding.panasonicbdp.internal;
 
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class PanaBlurayBindingConstants {
-    public static final String BINDING_ID = "panasonicbr";
+    public static final String BINDING_ID = "panasonicbdp";
     public static final String PROPERTY_UUID = "uuid";
     public static final String PROPERTY_HOST_NAME = "hostName";
 

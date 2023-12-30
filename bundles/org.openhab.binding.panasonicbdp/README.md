@@ -75,38 +75,38 @@ The following channels are available:
 
 ## Full Example
 
-panasonicbr.things:
+panasonicbdp.things:
 
 ```java
-panasonicbr:bd_player:mybdplayer "My Blu-ray player" [ hostName="192.168.10.1", refresh=5 ]
-panasonicbr:uhd_player:myuhdplayer "My UHD Blu-ray player" [ hostName="192.168.10.1", refresh=5, playerKey="ABCDEF1234567890abcdef0123456789" ]
+panasonicbdp:bd_player:mybdplayer "My Blu-ray player" [ hostName="192.168.10.1", refresh=5 ]
+panasonicbdp:uhd_player:myuhdplayer "My UHD Blu-ray player" [ hostName="192.168.10.1", refresh=5, playerKey="ABCDEF1234567890abcdef0123456789" ]
 ```
 
-panasonicbr.items:
+panasonicbdp.items:
 
 ```java
 // BD Player
-Switch Player_Power            "Power"                     { channel="panasonicbr:bd_player:mybdplayer:power" }
-String Player_Button           "Send Command"              { channel="panasonicbr:bd_player:mybdplayer:button", autoupdate="false" }
-Player Player_Control          "Control"                   { channel="panasonicbr:bd_player:mybdplayer:control" }
-String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbr:bd_player:mybdplayer:playerStatus" }
-Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbr:bd_player:mybdplayer:timeElapsed" }
-Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="panasonicbr:bd_player:mybdplayer:timeTotal" }
-Number Player_ChapterCurrent   "Current Chapter: [%d]"     { channel="panasonicbr:bd_player:mybdplayer:chapterCurrent" }
-Number Player_ChapterTotal     "Total Chapters: [%d]"      { channel="panasonicbr:bd_player:mybdplayer:chapterTotal" }
+Switch Player_Power            "Power"                     { channel="panasonicbdp:bd_player:mybdplayer:power" }
+String Player_Button           "Send Command"              { channel="panasonicbdp:bd_player:mybdplayer:button", autoupdate="false" }
+Player Player_Control          "Control"                   { channel="panasonicbdp:bd_player:mybdplayer:control" }
+String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:bd_player:mybdplayer:playerStatus" }
+Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:bd_player:mybdplayer:timeElapsed" }
+Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="panasonicbdp:bd_player:mybdplayer:timeTotal" }
+Number Player_ChapterCurrent   "Current Chapter: [%d]"     { channel="panasonicbdp:bd_player:mybdplayer:chapterCurrent" }
+Number Player_ChapterTotal     "Total Chapters: [%d]"      { channel="panasonicbdp:bd_player:mybdplayer:chapterTotal" }
 
 // UHD Player
-Switch Player_Power            "Power"                     { channel="panasonicbr:uhd_player:myuhdplayer:power" }
-String Player_Button           "Send Command"              { channel="panasonicbr:uhd_player:myuhdplayer:button", autoupdate="false" }
-Player Player_Control          "Control"                   { channel="panasonicbr:uhd_player:myuhdplayer:control" }
-String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbr:uhd_player:myuhdplayer:playerStatus" }
-Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbr:uhd_player:myuhdplayer:timeElapsed" }
+Switch Player_Power            "Power"                     { channel="panasonicbdp:uhd_player:myuhdplayer:power" }
+String Player_Button           "Send Command"              { channel="panasonicbdp:uhd_player:myuhdplayer:button", autoupdate="false" }
+Player Player_Control          "Control"                   { channel="panasonicbdp:uhd_player:myuhdplayer:control" }
+String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:uhd_player:myuhdplayer:playerStatus" }
+Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:uhd_player:myuhdplayer:timeElapsed" }
 ```
 
-panasonicbr.sitemap:
+panasonicbdp.sitemap:
 
 ```perl
-sitemap panasonicbr label="Panasonic Blu-ray" {
+sitemap panasonicbdp label="Panasonic Blu-ray" {
     Frame label="Blu-ray Player" {
         Switch item=Player_Power
         Selection item=Player_Button

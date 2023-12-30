@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.panasonicbr.internal.handler;
+package org.openhab.binding.panasonicbdp.internal.handler;
 
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
-import static org.openhab.binding.panasonicbr.internal.PanaBlurayBindingConstants.*;
+import static org.openhab.binding.panasonicbdp.internal.PanaBlurayBindingConstants.*;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -31,7 +31,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
-import org.openhab.binding.panasonicbr.internal.PanaBlurayConfiguration;
+import org.openhab.binding.panasonicbdp.internal.PanaBlurayConfiguration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DecimalType;

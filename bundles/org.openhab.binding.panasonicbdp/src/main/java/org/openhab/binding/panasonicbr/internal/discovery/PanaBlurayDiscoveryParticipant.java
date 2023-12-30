@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.panasonicbr.internal.discovery;
+package org.openhab.binding.panasonicbdp.internal.discovery;
 
-import static org.openhab.binding.panasonicbr.internal.PanaBlurayBindingConstants.*;
+import static org.openhab.binding.panasonicbdp.internal.PanaBlurayBindingConstants.*;
 
 import java.net.URL;
 import java.util.HashMap;

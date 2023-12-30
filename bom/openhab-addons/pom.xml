@@ -1308,7 +1308,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.panasonicbr</artifactId>
+      <artifactId>org.openhab.binding.panasonicbdp</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

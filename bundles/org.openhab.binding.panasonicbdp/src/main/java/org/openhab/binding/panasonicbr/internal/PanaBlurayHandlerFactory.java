@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.panasonicbr.internal;
+package org.openhab.binding.panasonicbdp.internal;
 
-import static org.openhab.binding.panasonicbr.internal.PanaBlurayBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.panasonicbdp.internal.PanaBlurayBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.panasonicbr.internal.handler.PanaBlurayHandler;
+import org.openhab.binding.panasonicbdp.internal.handler.PanaBlurayHandler;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Michael Lobstein - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.panasonicbr")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.panasonicbdp")
 public class PanaBlurayHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
