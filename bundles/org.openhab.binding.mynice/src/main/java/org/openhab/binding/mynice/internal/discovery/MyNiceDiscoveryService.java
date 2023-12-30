@@ -15,7 +15,6 @@ package org.openhab.binding.mynice.internal.discovery;
 import static org.openhab.binding.mynice.internal.MyNiceBindingConstants.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,8 +45,6 @@ public class MyNiceDiscoveryService extends AbstractThingHandlerDiscoveryService
     private static final int SEARCH_TIME = 5;
     private final Logger logger = LoggerFactory.getLogger(MyNiceDiscoveryService.class);
 
-    private Optional<It4WifiHandler> bridgeHandler = Optional.empty();
-
     /**
      * Creates a MyNiceDiscoveryService with background discovery disabled.
      */
@@ -57,40 +54,39 @@ public class MyNiceDiscoveryService extends AbstractThingHandlerDiscoveryService
 
     @Override
     public void initialize() {
-        bridgeHandler = Optional.ofNullable(thingHandler);
-        bridgeHandler.ifPresent(h -> h.registerDataListener(this));
+        thingHandler.registerDataListener(this);
+        super.initialize();
     }
 
     @Override
     public void dispose() {
-        bridgeHandler.ifPresent(h -> h.unregisterDataListener(this));
+        super.dispose();
+        thingHandler.unregisterDataListener(this);
     }
 
     @Override
     public void onDataFetched(List<Device> devices) {
-        bridgeHandler.ifPresent(handler -> {
-            ThingUID bridgeUID = handler.getThing().getUID();
-            devices.stream().filter(device -> device.type != null).forEach(device -> {
-                ThingUID thingUID = switch (device.type) {
-                    case SWING -> new ThingUID(THING_TYPE_SWING, bridgeUID, device.id);
-                    case SLIDING -> new ThingUID(THING_TYPE_SLIDING, bridgeUID, device.id);
-                    default -> null;
-                };
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        devices.stream().filter(device -> device.type != null).forEach(device -> {
+            ThingUID thingUID = switch (device.type) {
+                case SWING -> new ThingUID(THING_TYPE_SWING, bridgeUID, device.id);
+                case SLIDING -> new ThingUID(THING_TYPE_SLIDING, bridgeUID, device.id);
+                default -> null;
+            };
 
-                if (thingUID != null) {
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                            .withLabel(String.format("%s %s", device.manuf, device.prod))
-                            .withRepresentationProperty(DEVICE_ID).withProperty(DEVICE_ID, device.id).build();
-                    thingDiscovered(discoveryResult);
-                } else {
-                    logger.info("`{}` type of device is not yet supported", device.type);
-                }
-            });
+            if (thingUID != null) {
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                        .withLabel(String.format("%s %s", device.manuf, device.prod))
+                        .withRepresentationProperty(DEVICE_ID).withProperty(DEVICE_ID, device.id).build();
+                thingDiscovered(discoveryResult);
+            } else {
+                logger.info("`{}` type of device is not yet supported", device.type);
+            }
         });
     }
 
     @Override
     protected void startScan() {
-        bridgeHandler.ifPresent(h -> h.sendCommand(CommandType.INFO));
+        thingHandler.sendCommand(CommandType.INFO);
     }
 }
