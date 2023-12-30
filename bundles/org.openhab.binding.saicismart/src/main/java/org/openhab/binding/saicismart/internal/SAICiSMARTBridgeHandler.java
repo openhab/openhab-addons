@@ -210,7 +210,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
         Message<IASN1PreparedElement> alarmSwitchResponseMessage = alarmSwitchResMessageCoder
                 .decodeResponse(alarmSwitchResponse);
 
-        logger.debug("Got message: {}",
+        logger.trace("Got message: {}",
                 new GsonBuilder().setPrettyPrinting().create().toJson(alarmSwitchResponseMessage));
 
         if (alarmSwitchResponseMessage.getBody().getErrorMessage() != null) {
