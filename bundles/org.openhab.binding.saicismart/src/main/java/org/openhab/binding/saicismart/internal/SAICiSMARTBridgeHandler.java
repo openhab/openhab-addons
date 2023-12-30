@@ -164,7 +164,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     Message<MessageListResp> messageListResponseMessage = new MessageCoder<>(MessageListResp.class)
                             .decodeResponse(messageListResponse);
 
-                    logger.debug("Got message: {}",
+                    logger.trace("Got message: {}",
                             new GsonBuilder().setPrettyPrinting().create().toJson(messageListResponseMessage));
 
                     if (messageListResponseMessage.getApplicationData() != null
