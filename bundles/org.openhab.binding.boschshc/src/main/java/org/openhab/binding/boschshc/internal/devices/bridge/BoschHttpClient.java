@@ -38,6 +38,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
+import org.openhab.binding.boschshc.internal.services.userstate.dto.UserStateServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,6 +131,15 @@ public class BoschHttpClient extends HttpClient {
      */
     public String getServiceStateUrl(String serviceName, String deviceId) {
         return this.getBoschSmartHomeUrl(String.format("devices/%s/services/%s/state", deviceId, serviceName));
+    }
+
+    public <T extends BoschSHCServiceState> String getServiceStateUrl(String serviceName, String deviceId,
+            Class<T> serviceClass) {
+        if (serviceClass.isAssignableFrom(UserStateServiceState.class)) {
+            return this.getBoschSmartHomeUrl(String.format("userdefinedstates/%s/state", deviceId));
+        } else {
+            return getServiceStateUrl(serviceName, deviceId);
+        }
     }
 
     /**
@@ -291,8 +302,13 @@ public class BoschHttpClient extends HttpClient {
                 .timeout(10, TimeUnit.SECONDS); // Set default timeout
 
         if (content != null) {
-            String body = GsonUtils.DEFAULT_GSON_INSTANCE.toJson(content);
-            logger.trace("create request for {} and content {}", url, content);
+            final String body;
+            if (content.getClass().isAssignableFrom(UserStateServiceState.class)) {
+                body = ((UserStateServiceState) content).getStateAsString();
+            } else {
+                body = GsonUtils.DEFAULT_GSON_INSTANCE.toJson(content);
+            }
+            logger.trace("create request for {} and content {}", url, body);
             request = request.content(new StringContentProvider(body));
         } else {
             logger.trace("create request for {}", url);
