@@ -42,7 +42,6 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -75,18 +74,15 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     @Override
     public void startScan() {
-        final DeconzBridgeHandler handler = this.thingHandler;
-        if (handler != null) {
-            handler.getBridgeFullState().thenAccept(fullState -> {
-                stopScan();
-                fullState.ifPresent(state -> {
-                    state.sensors.forEach(this::addSensor);
-                    state.lights.forEach(this::addLight);
-                    state.groups.forEach(this::addGroup);
-                });
-
+        thingHandler.getBridgeFullState().thenAccept(fullState -> {
+            stopScan();
+            fullState.ifPresent(state -> {
+                state.sensors.forEach(this::addSensor);
+                state.lights.forEach(this::addLight);
+                state.groups.forEach(this::addGroup);
             });
-        }
+
+        });
     }
 
     @Override
@@ -294,13 +290,14 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        super.setThingHandler(handler);
-        bridgeUID = handler.getThing().getUID();
+    public void initialize() {
+        bridgeUID = thingHandler.getThing().getUID();
+        super.initialize();
     }
 
     @Override
     public void dispose() {
+        super.dispose();
         removeOlderResults(new Date().getTime());
     }
 }
