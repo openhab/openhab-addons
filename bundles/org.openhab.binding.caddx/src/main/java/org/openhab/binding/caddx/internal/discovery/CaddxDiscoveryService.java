@@ -13,7 +13,6 @@
 package org.openhab.binding.caddx.internal.discovery;
 
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
@@ -132,7 +131,8 @@ public class CaddxDiscoveryService extends AbstractThingHandlerDiscoveryService<
      */
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).registerDiscoveryService(this);
+        thingHandler.registerDiscoveryService(this);
+        super.initialize();
     }
 
     /**
@@ -140,6 +140,7 @@ public class CaddxDiscoveryService extends AbstractThingHandlerDiscoveryService<
      */
     @Override
     public void dispose() {
-        Objects.requireNonNull(thingHandler).unregisterDiscoveryService();
+        super.dispose();
+        thingHandler.unregisterDiscoveryService();
     }
 }
