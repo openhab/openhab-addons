@@ -19,7 +19,6 @@ import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.asuswrt.internal.structures.AsuswrtClientInfo;
@@ -33,7 +32,6 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -60,10 +58,10 @@ public class AsuswrtDiscoveryService extends AbstractThingHandlerDiscoveryServic
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        super.setThingHandler(handler);
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
-        uid = handler.getThing().getUID().getAsString();
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        uid = thingHandler.getThing().getUID().getAsString();
+        super.initialize();
     }
 
     /*
@@ -76,17 +74,14 @@ public class AsuswrtDiscoveryService extends AbstractThingHandlerDiscoveryServic
     @Override
     public void startScan() {
         logger.trace("{} starting scan", uid);
-        AsuswrtRouter router = thingHandler;
-        if (router != null) {
-            /* query Data */
-            router.queryDeviceData(false);
-            /* discover interfaces */
-            AsuswrtInterfaceList ifList = router.getInterfaces();
-            handleInterfaceScan(ifList);
-            /* discover clients */
-            AsuswrtClientList clientList = router.getClients();
-            handleClientScan(clientList);
-        }
+        /* query Data */
+        thingHandler.queryDeviceData(false);
+        /* discover interfaces */
+        AsuswrtInterfaceList ifList = thingHandler.getInterfaces();
+        handleInterfaceScan(ifList);
+        /* discover clients */
+        AsuswrtClientList clientList = thingHandler.getClients();
+        handleClientScan(clientList);
     }
 
     @Override
@@ -147,18 +142,12 @@ public class AsuswrtDiscoveryService extends AbstractThingHandlerDiscoveryServic
         properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
 
         logger.debug("{} thing discovered: '{}", uid, label);
-        AsuswrtRouter router = thingHandler;
-        if (router != null) {
-            ThingUID bridgeUID = router.getUID();
-            ThingUID thingUID = new ThingUID(THING_TYPE_INTERFACE, bridgeUID, ifName);
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(NETWORK_REPRESENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
-                    .build();
-        } else {
-            ThingUID thingUID = new ThingUID(BINDING_ID, ifName);
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(NETWORK_REPRESENTATION_PROPERTY).withLabel(label).build();
-        }
+
+        ThingUID bridgeUID = thingHandler.getUID();
+        ThingUID thingUID = new ThingUID(THING_TYPE_INTERFACE, bridgeUID, ifName);
+        return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                .withRepresentationProperty(NETWORK_REPRESENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
+                .build();
     }
 
     /**
@@ -188,18 +177,10 @@ public class AsuswrtDiscoveryService extends AbstractThingHandlerDiscoveryServic
         properties.put(CHANNEL_CLIENT_NICKNAME, nickName);
 
         logger.debug("{} thing discovered: '{}", uid, label);
-        AsuswrtRouter router = thingHandler;
-        if (router != null) {
-            ThingUID bridgeUID = router.getUID();
-            ThingUID thingUID = new ThingUID(THING_TYPE_CLIENT, bridgeUID, unformatedMac);
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(CLIENT_REPRESENTATION_PROPERTY).withTTL(DISCOVERY_AUTOREMOVE_S)
-                    .withBridge(bridgeUID).withLabel(label).build();
-        } else {
-            ThingUID thingUID = new ThingUID(BINDING_ID, unformatedMac);
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(CLIENT_REPRESENTATION_PROPERTY).withTTL(DISCOVERY_AUTOREMOVE_S)
-                    .withLabel(label).build();
-        }
+        ThingUID bridgeUID = thingHandler.getUID();
+        ThingUID thingUID = new ThingUID(THING_TYPE_CLIENT, bridgeUID, unformatedMac);
+        return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                .withRepresentationProperty(CLIENT_REPRESENTATION_PROPERTY).withTTL(DISCOVERY_AUTOREMOVE_S)
+                .withBridge(bridgeUID).withLabel(label).build();
     }
 }
