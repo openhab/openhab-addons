@@ -52,18 +52,13 @@ public class JellyfinClientDiscoveryService extends AbstractThingHandlerDiscover
 
     @Override
     protected void startScan() {
-        var bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            logger.warn("missing bridge aborting");
+        if (!thingHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.warn("Server handler {} is not online.", thingHandler.getThing().getLabel());
             return;
         }
-        if (!bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            logger.warn("Server handler {} is not online.", bridgeHandler.getThing().getLabel());
-            return;
-        }
-        logger.debug("Searching devices for server {}", bridgeHandler.getThing().getLabel());
+        logger.debug("Searching devices for server {}", thingHandler.getThing().getLabel());
         try {
-            bridgeHandler.getControllableSessions().forEach(this::discoverDevice);
+            thingHandler.getControllableSessions().forEach(this::discoverDevice);
         } catch (SyncCallback.SyncCallbackError syncCallbackError) {
             logger.error("Unexpected error: {}", syncCallbackError.getMessage());
         } catch (InvalidStatusException e) {
@@ -79,13 +74,8 @@ public class JellyfinClientDiscoveryService extends AbstractThingHandlerDiscover
             logger.warn("missing device id aborting");
             return;
         }
-        var bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            logger.warn("missing bridge aborting");
-            return;
-        }
         logger.debug("Client discovered: [{}] {}", id, info.getDeviceName());
-        var bridgeUID = bridgeHandler.getThing().getUID();
+        var bridgeUID = thingHandler.getThing().getUID();
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, id);
         var appVersion = info.getApplicationVersion();
