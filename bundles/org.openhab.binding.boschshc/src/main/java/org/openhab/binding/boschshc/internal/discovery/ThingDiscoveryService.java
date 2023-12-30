@@ -104,31 +104,22 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
     @Override
     public void initialize() {
         logger.trace("initialize");
-        final BridgeHandler handler = thingHandler;
-        if (handler != null) {
-            handler.registerDiscoveryListener(this);
-        }
+        thingHandler.registerDiscoveryListener(this);
+        super.initialize();
     }
 
     @Override
     public void dispose() {
+        super.dispose();
         logger.trace("dispose");
-        final BridgeHandler handler = thingHandler;
-        if (handler != null) {
-            removeOlderResults(new Date().getTime(), handler.getThing().getUID());
-            handler.unregisterDiscoveryListener();
-        }
+        removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
+        thingHandler.unregisterDiscoveryListener();
 
         super.deactivate();
     }
 
     @Override
     protected void startScan() {
-        if (thingHandler == null) {
-            logger.debug("The shcBridgeHandler is empty, no manual scan is currently possible");
-            return;
-        }
-
         try {
             doScan();
         } catch (InterruptedException e) {
@@ -139,12 +130,9 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     @Override
     protected synchronized void stopScan() {
-        logger.debug("Stop manual scan on bridge {}", thingHandler != null ? thingHandler.getThing().getUID() : "?");
+        logger.debug("Stop manual scan on bridge {}", thingHandler.getThing().getUID());
         super.stopScan();
-        final BridgeHandler handler = thingHandler;
-        if (handler != null) {
-            removeOlderResults(getTimestampOfLastScan(), handler.getThing().getUID());
-        }
+        removeOlderResults(getTimestampOfLastScan(), thingHandler.getThing().getUID());
     }
 
     public void doScan() throws InterruptedException {
@@ -221,8 +209,6 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     protected void addDevice(Device device, String roomName) {
         // see startScan for the runtime null check of shcBridgeHandler
-        assert thingHandler != null;
-
         logger.trace("Discovering device {}", device.name);
         logger.trace("- details: id {}, roomId {}, deviceModel {}", device.id, device.roomId, device.deviceModel);
 
@@ -239,9 +225,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
         DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withProperty("id", device.id).withLabel(getNiceName(device.name, roomName));
-        if (null != thingHandler) {
-            discoveryResult.withBridge(thingHandler.getThing().getUID());
-        }
+        discoveryResult.withBridge(thingHandler.getThing().getUID());
         if (!roomName.isEmpty()) {
             discoveryResult.withProperty("Location", roomName);
         }
