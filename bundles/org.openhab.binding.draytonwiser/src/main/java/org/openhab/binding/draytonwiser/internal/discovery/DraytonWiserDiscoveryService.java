@@ -34,7 +34,6 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -60,11 +59,8 @@ public class DraytonWiserDiscoveryService extends AbstractThingHandlerDiscoveryS
 
     @Override
     protected void startScan() {
-        final HeatHubHandler handler = thingHandler;
-        if (handler != null) {
-            removeOlderResults(getTimestampOfLastScan());
-            handler.setDiscoveryService(this);
-        }
+        removeOlderResults(getTimestampOfLastScan());
+        thingHandler.setDiscoveryService(this);
     }
 
     @Override
@@ -182,17 +178,13 @@ public class DraytonWiserDiscoveryService extends AbstractThingHandlerDiscoveryS
 
     @Override
     public synchronized void stopScan() {
-        final HeatHubHandler handler = thingHandler;
-
-        if (handler != null) {
-            handler.unsetDiscoveryService();
-        }
+        thingHandler.unsetDiscoveryService();
         super.stopScan();
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        super.setThingHandler(handler);
-        bridgeUID = handler.getThing().getUID();
+    public void initialize() {
+        bridgeUID = thingHandler.getThing().getUID();
+        super.initialize();
     }
 }
