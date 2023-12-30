@@ -189,6 +189,10 @@ public class GrowattCloud implements AutoCloseable {
             request.content(new FormContentProvider(fields), FORM_CONTENT);
         }
 
+        if (logger.isTraceEnabled()) {
+            logger.trace("{} {} {} params={} fields={}", method, endPoint, request.getVersion(), params, fields);
+        }
+
         ContentResponse response;
         try {
             response = request.send();
@@ -197,16 +201,20 @@ public class GrowattCloud implements AutoCloseable {
         }
 
         int status = response.getStatus();
+        String content = response.getContentAsString();
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("HTTP {} {} content:{}", status, HttpStatus.getMessage(status), content);
+        }
+
         if (status != HttpStatus.OK_200) {
             throw new GrowattApiException(String.format("HTTP %d %s", status, HttpStatus.getMessage(status)));
         }
 
-        String content = response.getContentAsString();
         if (content == null || content.isBlank()) {
             throw new GrowattApiException("HTTP response content is " + (content == null ? "null" : "blank"));
         }
 
-        logger.trace("doHttpRequestInner() response:{}", content);
         try {
             JsonElement jsonObject = JsonParser.parseString(content).getAsJsonObject();
             if (jsonObject instanceof JsonObject jsonElement) {

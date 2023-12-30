@@ -351,7 +351,7 @@ public class GrowattTest {
 
         Map<String, QuantityType<?>> channelStates = grottValues.getChannelStates();
         assertNotNull(channelStates);
-        assertEquals(63, channelStates.size());
+        assertEquals(64, channelStates.size());
 
         assertEquals(QuantityType.valueOf(-36.5, Units.WATT), channelStates.get("inverter-power"));
         assertEquals(QuantityType.valueOf(11, Units.PERCENT), channelStates.get("battery-soc"));

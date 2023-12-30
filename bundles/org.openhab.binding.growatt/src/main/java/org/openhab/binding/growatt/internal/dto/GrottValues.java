@@ -84,8 +84,8 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "op_va", alternate = { "AC_InVA" }) Integer inverter_va;
 
     // battery discharge / charge power
-    public @Nullable @SerializedName(value = "p1charge1", alternate = { "acchr_watt", "BatWatt" }) Integer charge_power;
-    public @Nullable @SerializedName(value = "pdischarge1", alternate = { "ACDischarWatt", "BatDischarWatt" }) Integer discharge_power;
+    public @Nullable @SerializedName(value = "p1charge1", alternate = { "acchr_watt", "BatWatt", "bdc1_pchr" }) Integer charge_power;
+    public @Nullable @SerializedName(value = "pdischarge1", alternate = { "ACDischarWatt", "BatDischarWatt", "bdc1_pdischr" }) Integer discharge_power;
 
     // miscellaneous battery
     public @Nullable @SerializedName(value = "ACCharCurr") Integer charge_current;
@@ -109,7 +109,7 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "plocaloads") Integer load_power_s;
     public @Nullable @SerializedName(value = "plocaloadt") Integer load_power_t;
 
-    // solar AC grid energy
+    // inverter AC energy
     public @Nullable @SerializedName(value = "eactoday", alternate = { "pvenergytoday" }) Integer inverter_energy_today;
     public @Nullable @SerializedName(value = "eactotal", alternate = { "pvenergytotal" }) Integer inverter_energy_total;
 
@@ -163,9 +163,9 @@ public class GrottValues {
 
     // battery data
     public @Nullable @SerializedName(value = "batterytype") Integer battery_type;
-    public @Nullable @SerializedName(value = "batttemp", alternate = { "bms_batterytemp" }) Integer battery_temperature;
+    public @Nullable @SerializedName(value = "batttemp", alternate = { "bdc1_tempa" }) Integer battery_temperature;
     public @Nullable @SerializedName(value = "vbat", alternate = { "uwBatVolt_DSP", "bat_Volt", "bms_batteryvolt" }) Integer battery_voltage;
-    public @Nullable @SerializedName(value = "bat_dsp", alternate = { "bms_status" }) Integer battery_display;
+    public @Nullable @SerializedName(value = "bat_dsp") Integer battery_display;
     public @Nullable @SerializedName(value = "SOC", alternate = { "batterySOC", "bms_soc" }) Integer battery_soc;
 
     // fault codes
