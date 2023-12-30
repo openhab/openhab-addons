@@ -16,7 +16,7 @@
 
   <properties>
     <bnd.importpackage>
-      !javax.annotation.*;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*,!com.influxdb.utils.*
+      !javax.annotation.*;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*
     </bnd.importpackage>
     <okhttp3.version>3.14.9</okhttp3.version>
     <retrofit.version>2.7.2</retrofit.version>
