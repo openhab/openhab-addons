@@ -135,7 +135,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                 } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException
                         | NoSuchAlgorithmException | IOException e) {
                     updateStatus(ThingStatus.OFFLINE);
-                    logger.error("Could not login to SAIC iSMART account", e);
+                    logger.warn("Could not login to SAIC iSMART account", e);
                 }
             } else {
                 MessageCoder<MessageListReq> messageListReqMessageCoder = new MessageCoder<>(MessageListReq.class);
