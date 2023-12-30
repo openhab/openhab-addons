@@ -221,7 +221,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                     .decodeResponse(enableACResponseMessage);
         }
 
-        logger.debug("Got A/C message: {}", new GsonBuilder().setPrettyPrinting().create().toJson(enableACResponse));
+        logger.trace("Got A/C message: {}", new GsonBuilder().setPrettyPrinting().create().toJson(enableACResponse));
     }
 
     public void notifyCarActivity(ZonedDateTime now, boolean force) {
