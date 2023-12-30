@@ -44,11 +44,12 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The thing has a few configuration parameters:
 
-| Parameter | Description                                                                                           |
-|-----------|-------------------------------------------------------------------------------------------------------|
-| hostName  | The host name or IP address of the player. Mandatory.                                                 |
-| refresh   | Overrides the refresh interval of the player status. Optional, the default and minimum is 5 seconds.  |
-| playerKey | For UHD models, to enable authentication of control commands, a key for the player must be specified. |
+
+| Name      | Type    | Description                                                                                           | Default | Required |
+|-----------|---------|-------------------------------------------------------------------------------------------------------|---------|----------|
+| hostName  | text    | The host name or IP address of the player.                                                            | N/A     | yes      |
+| refresh   | integer | Overrides the refresh interval of the player status. Minimum interval is 5 seconds.                   | 5       | no       |
+| playerKey | text    | For UHD models, to enable authentication of control commands, a key for the player must be specified. | N/A     | no       |
 
 Some notes:
 
@@ -62,16 +63,16 @@ Some notes:
 
 The following channels are available:
 
-| Channel ID     | Item Type   | Description                                                                                      |
-|----------------|-------------|--------------------------------------------------------------------------------------------------|
-| power          | Switch      | Turn the power for the player on or off.                                                         |
-| button         | String      | Sends a command to the player. (WriteOnly) See lists of available commands in Appendix A below.  |
-| control        | Player      | Control Playback e.g. Play/Pause/Next/Previous/FForward/Rewind                                   |
-| playerStatus   | String      | The player status i.e.: Power Off, Tray Open, Stopped, Playback, Pause Playback, etc. (ReadOnly) |
-| timeElapsed    | Number:Time | The total number of seconds of playback time elapsed. (ReadOnly)                                 |
-| timeTotal      | Number:Time | The total length of the current playing title in seconds. (ReadOnly) Not on UHD models.          |
-| chapterCurrent | Number      | The current chapter number. (ReadOnly) Not on UHD models.                                        |
-| chapterTotal   | Number      | The total number of chapters in the current title. (ReadOnly) Not on UHD models.                 |
+| Channel ID     | Item Type   | Read/Write | Description                                                                           |
+|----------------|-------------|------------|---------------------------------------------------------------------------------------|
+| power          | Switch      | RW         | Turn the power for the player ON or OFF.                                              |
+| button         | String      | W          | Sends a command to the player. See lists of available commands in Appendix A below.   |
+| control        | Player      | RW         | Control Playback e.g. Play/Pause/Next/Previous/FForward/Rewind.                       |
+| playerStatus   | String      | R          | The player status i.e.: Power Off, Tray Open, Stopped, Playback, Pause Playback, etc. |
+| timeElapsed    | Number:Time | R          | The total number of seconds of playback time elapsed.                                 |
+| timeTotal      | Number:Time | R          | The total length of the current playing title in seconds. Not on UHD models.          |
+| chapterCurrent | Number      | R          | The current chapter number. Not on UHD models.                                        |
+| chapterTotal   | Number      | R          | The total number of chapters in the current title. Not on UHD models.                 |
 
 ## Full Example
 
