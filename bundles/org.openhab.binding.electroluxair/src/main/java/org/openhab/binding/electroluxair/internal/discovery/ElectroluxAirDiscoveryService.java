@@ -14,10 +14,7 @@ package org.openhab.binding.electroluxair.internal.discovery;
 
 import static org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants.*;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.electroluxair.internal.ElectroluxAirConfiguration;
 import org.openhab.binding.electroluxair.internal.handler.ElectroluxAirBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
@@ -42,28 +39,16 @@ public class ElectroluxAirDiscoveryService extends AbstractThingHandlerDiscovery
     }
 
     @Override
-    public void activate(@Nullable Map<String, Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
     protected void startScan() {
-        ElectroluxAirBridgeHandler bridgeHandler = this.thingHandler;
-        if (bridgeHandler != null) {
-            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            bridgeHandler.getElectroluxAirThings().entrySet().stream().forEach(thing -> {
-                thingDiscovered(DiscoveryResultBuilder
-                        .create(new ThingUID(THING_TYPE_ELECTROLUX_PURE_A9, bridgeUID, thing.getKey()))
-                        .withLabel("Electrolux Pure A9").withBridge(bridgeUID)
-                        .withProperty(ElectroluxAirConfiguration.DEVICE_ID_LABEL, thing.getKey())
-                        .withRepresentationProperty(ElectroluxAirConfiguration.DEVICE_ID_LABEL).build());
-            });
-        }
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        thingHandler.getElectroluxAirThings().entrySet().stream().forEach(thing -> {
+            thingDiscovered(DiscoveryResultBuilder
+                    .create(new ThingUID(THING_TYPE_ELECTROLUX_PURE_A9, bridgeUID, thing.getKey()))
+                    .withLabel("Electrolux Pure A9").withBridge(bridgeUID)
+                    .withProperty(ElectroluxAirConfiguration.DEVICE_ID_LABEL, thing.getKey())
+                    .withRepresentationProperty(ElectroluxAirConfiguration.DEVICE_ID_LABEL).build());
+        });
+
         stopScan();
     }
 }
