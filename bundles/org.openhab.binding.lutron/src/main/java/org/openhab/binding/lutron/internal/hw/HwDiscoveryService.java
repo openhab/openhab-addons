@@ -14,7 +14,6 @@ package org.openhab.binding.lutron.internal.hw;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -46,15 +45,12 @@ public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<@No
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
     protected void startScan() {
-        HwSerialBridgeHandler handler = thingHandler;
-        if (handler == null) {
-            return;
-        }
         scheduler.submit(() -> {
             if (isScanning.compareAndSet(false, true)) {
                 try {
@@ -62,7 +58,7 @@ public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<@No
                     for (int m = 1; m <= 8; m++) { // Modules
                         for (int o = 1; o <= 4; o++) { // Outputs
                             String address = String.format("[01:01:00:%02d:%02d]", m, o);
-                            handler.sendCommand("RDL, " + address);
+                            thingHandler.sendCommand("RDL, " + address);
                             Thread.sleep(5);
                         }
                     }
@@ -79,13 +75,12 @@ public class HwDiscoveryService extends AbstractThingHandlerDiscoveryService<@No
      * Called by the bridge when it receives a status update for a dimmer that is not registered.
      */
     public void declareUnknownDimmer(String address) {
-        HwSerialBridgeHandler handler = thingHandler;
-        if (address == null || handler == null) {
+        if (address == null) {
             logger.info("Discovered HomeWorks dimmer with no address or thing handler");
             return;
         }
         String addressUid = address.replaceAll("[\\[\\]]", "").replace(":", "-");
-        ThingUID bridgeUID = handler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingUID uid = new ThingUID(HwConstants.THING_TYPE_HWDIMMER, bridgeUID, addressUid);
 
         Map<String, Object> props = new HashMap<>();

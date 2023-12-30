@@ -17,7 +17,6 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,16 +58,14 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
     protected void startScan() {
-        LeapBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null) {
-            logger.debug("Active discovery scan started");
-            bridgeHandler.queryDiscoveryData();
-        }
+        logger.debug("Active discovery scan started");
+        thingHandler.queryDiscoveryData();
     }
 
     public void processDeviceDefinitions(List<Device> deviceList) {
@@ -190,12 +187,11 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
 
     private void notifyDiscovery(ThingTypeUID thingTypeUID, @Nullable Integer integrationId, String label,
             @Nullable String propName, @Nullable Object propValue) {
-        LeapBridgeHandler bridgeHandler = thingHandler;
-        if (integrationId == null || bridgeHandler == null) {
+        if (integrationId == null) {
             logger.debug("Discovered {} with no integration ID or thinghandler", label);
             return;
         }
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, integrationId.toString());
 
         Map<String, Object> properties = new HashMap<>();
@@ -213,10 +209,5 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
 
     private void notifyDiscovery(ThingTypeUID thingTypeUID, Integer integrationId, String label) {
         notifyDiscovery(thingTypeUID, integrationId, label, null, null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
     }
 }
