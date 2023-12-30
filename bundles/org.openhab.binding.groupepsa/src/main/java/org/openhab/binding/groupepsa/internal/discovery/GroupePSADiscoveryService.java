@@ -53,17 +53,13 @@ public class GroupePSADiscoveryService extends AbstractThingHandlerDiscoveryServ
     @Override
     protected void startScan() {
         try {
-            GroupePSABridgeHandler localBridgeHandler = thingHandler;
-            if (localBridgeHandler == null) {
-                return;
-            }
-            List<Vehicle> vehicles = localBridgeHandler.getVehicles();
+            List<Vehicle> vehicles = thingHandler.getVehicles();
             if (vehicles == null || vehicles.isEmpty()) {
                 logger.warn("No vehicles found");
                 return;
             }
             for (Vehicle vehicle : vehicles) {
-                ThingUID bridgeUID = localBridgeHandler.getThing().getUID();
+                ThingUID bridgeUID = thingHandler.getThing().getUID();
                 ThingTypeUID thingTypeUID = THING_TYPE_VEHICLE;
                 String id = vehicle.getId();
                 if (id != null) {
