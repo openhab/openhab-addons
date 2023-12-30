@@ -59,14 +59,10 @@ public class FoobotAccountDiscoveryService extends AbstractThingHandlerDiscovery
     }
 
     private void retrieveFoobots() {
-        FoobotAccountHandler handler = thingHandler;
-        if (handler == null) {
-            return;
-        }
         try {
-            final List<FoobotDeviceHandler> footbotHandlers = handler.getFootbotHandlers();
+            final List<FoobotDeviceHandler> footbotHandlers = thingHandler.getFootbotHandlers();
 
-            handler.getDeviceList().stream()
+            thingHandler.getDeviceList().stream()
                     .filter(d -> !footbotHandlers.stream().anyMatch(h -> h.getUuid().equals(d.getUuid())))
                     .forEach(this::addThing);
         } catch (final FoobotApiException e) {
