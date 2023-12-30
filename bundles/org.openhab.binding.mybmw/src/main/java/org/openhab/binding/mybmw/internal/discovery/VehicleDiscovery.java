@@ -54,9 +54,8 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
 
     private static final int DISCOVERY_TIMEOUT = 10;
 
-    private Optional<MyBMWBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<MyBMWProxy> myBMWProxy = Optional.empty();
-    private Optional<ThingUID> bridgeUid = Optional.empty();
+    private @NonNullByDefault({}) ThingUID bridgeUid;
 
     public VehicleDiscovery() {
         super(MyBMWBridgeHandler.class, MyBMWConstants.SUPPORTED_THING_SET, DISCOVERY_TIMEOUT, false);
@@ -64,9 +63,9 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
 
     @Override
     public void initialize() {
-        bridgeHandler = Optional.ofNullable(thingHandler);
-        bridgeHandler.get().setVehicleDiscovery(this);
-        bridgeUid = Optional.of(bridgeHandler.get().getThing().getUID());
+        thingHandler.setVehicleDiscovery(this);
+        bridgeUid = thingHandler.getThing().getUID();
+        super.initialize();
     }
 
     @Override
@@ -78,7 +77,7 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
     public void discoverVehicles() {
         logger.trace("VehicleDiscovery.discoverVehicles");
 
-        myBMWProxy = bridgeHandler.get().getMyBmwProxy();
+        myBMWProxy = thingHandler.getMyBmwProxy();
 
         try {
             Optional<List<@NonNull Vehicle>> vehicleList = myBMWProxy.map(prox -> {
@@ -89,11 +88,11 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
                 }
             });
             vehicleList.ifPresentOrElse(vehicles -> {
-                bridgeHandler.ifPresent(bridge -> bridge.vehicleDiscoverySuccess());
+                thingHandler.vehicleDiscoverySuccess();
                 processVehicles(vehicles);
-            }, () -> bridgeHandler.ifPresent(bridge -> bridge.vehicleDiscoveryError()));
+            }, () -> thingHandler.vehicleDiscoveryError());
         } catch (IllegalStateException ex) {
-            bridgeHandler.ifPresent(bridge -> bridge.vehicleDiscoveryError());
+            thingHandler.vehicleDiscoveryError();
         }
     }
 
@@ -116,13 +115,13 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
                     .toString();
             MyBMWConstants.SUPPORTED_THING_SET.forEach(entry -> {
                 if (entry.getId().equals(vehicleType)) {
-                    ThingUID uid = new ThingUID(entry, vehicle.getVehicleBase().getVin(), bridgeUid.get().getId());
+                    ThingUID uid = new ThingUID(entry, vehicle.getVehicleBase().getVin(), bridgeUid.getId());
 
                     Map<String, String> properties = generateProperties(vehicle);
 
                     boolean thingFound = false;
                     // Update Properties for already created Things
-                    List<Thing> vehicleThings = bridgeHandler.get().getThing().getThings();
+                    List<Thing> vehicleThings = thingHandler.getThing().getThings();
                     for (Thing vehicleThing : vehicleThings) {
                         Configuration configuration = vehicleThing.getConfiguration();
 
@@ -146,7 +145,7 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
                                 Integer.toString(MyBMWConstants.DEFAULT_REFRESH_INTERVAL_MINUTES));
 
                         String vehicleLabel = vehicleAttributes.getBrand() + " " + vehicleAttributes.getModel();
-                        thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid.get())
+                        thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid)
                                 .withRepresentationProperty(MyBMWConstants.VIN).withLabel(vehicleLabel)
                                 .withProperties(convertedProperties).build());
                     }
