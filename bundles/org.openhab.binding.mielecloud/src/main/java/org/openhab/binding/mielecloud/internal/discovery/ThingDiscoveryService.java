@@ -15,7 +15,7 @@ package org.openhab.binding.mielecloud.internal.discovery;
 import static org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants.*;
 import static org.openhab.binding.mielecloud.internal.handler.MieleHandlerFactory.SUPPORTED_THING_TYPES;
 
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,6 +26,7 @@ import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -72,12 +73,12 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     @Override
     public void activate() {
-        startBackgroundDiscovery();
+        super.activate(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, true));
     }
 
     @Override
-    public void deactivate() {
-        stopBackgroundDiscovery();
+    public void dispose() {
+        super.dispose();
         removeOlderResults(System.currentTimeMillis(), getBridgeUid());
     }
 
@@ -98,16 +99,11 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
     }
 
     private void createDiscoveryResult(DeviceState deviceState, ThingTypeUID thingTypeUid) {
-        MieleBridgeHandler bridgeHandler = this.thingHandler;
-        if (bridgeHandler == null) {
-            return;
-        }
-
-        ThingUID thingUid = new ThingUID(thingTypeUid, bridgeHandler.getThing().getUID(),
+        ThingUID thingUid = new ThingUID(thingTypeUid, thingHandler.getThing().getUID(),
                 deviceState.getDeviceIdentifier());
 
         DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(thingUid)
-                .withBridge(bridgeHandler.getThing().getUID()).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
+                .withBridge(thingHandler.getThing().getUID()).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                 .withLabel(getLabel(deviceState));
 
         ThingInformationExtractor.extractProperties(thingTypeUid, deviceState).entrySet()
@@ -198,6 +194,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 }
