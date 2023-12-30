@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -86,7 +85,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
      * @param timeZoneProvider
      * @param thing
      */
-    public SAICiSMARTHandler(HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider, Thing thing) {
+    public SAICiSMARTHandler(TimeZoneProvider timeZoneProvider, Thing thing) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
         lastAlarmMessage = ZonedDateTime.now(getTimeZone());
