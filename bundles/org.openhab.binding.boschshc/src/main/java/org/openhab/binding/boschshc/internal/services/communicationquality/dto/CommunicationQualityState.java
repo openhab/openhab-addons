@@ -26,7 +26,8 @@ public enum CommunicationQualityState {
     MEDIUM,
     NORMAL,
     GOOD,
-    UNKNOWN;
+    UNKNOWN,
+    FETCHING;
 
     /**
      * Converts this Bosch-specific communication quality state into a numeric state
@@ -45,7 +46,7 @@ public enum CommunicationQualityState {
             case GOOD:
                 return new DecimalType(4);
             default:
-                // includes UNKNOWN
+                // includes UNKNOWN and FETCHING
                 return new DecimalType(0);
         }
     }

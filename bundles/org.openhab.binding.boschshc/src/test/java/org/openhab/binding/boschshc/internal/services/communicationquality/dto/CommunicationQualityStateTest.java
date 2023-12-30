@@ -28,6 +28,7 @@ class CommunicationQualityStateTest {
     @Test
     void testToSystemSignalStrength() {
         assertEquals(new DecimalType(0), CommunicationQualityState.UNKNOWN.toSystemSignalStrength());
+        assertEquals(new DecimalType(0), CommunicationQualityState.FETCHING.toSystemSignalStrength());
         assertEquals(new DecimalType(1), CommunicationQualityState.BAD.toSystemSignalStrength());
         assertEquals(new DecimalType(2), CommunicationQualityState.MEDIUM.toSystemSignalStrength());
         assertEquals(new DecimalType(3), CommunicationQualityState.NORMAL.toSystemSignalStrength());
