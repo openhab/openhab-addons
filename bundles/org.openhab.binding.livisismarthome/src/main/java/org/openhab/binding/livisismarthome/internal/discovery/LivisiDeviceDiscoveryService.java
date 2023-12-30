@@ -64,6 +64,7 @@ public class LivisiDeviceDiscoveryService extends AbstractThingHandlerDiscoveryS
      */
     @Override
     public void dispose() {
+        super.dispose();
         removeOlderResults(new Date().getTime());
     }
 
@@ -75,11 +76,8 @@ public class LivisiDeviceDiscoveryService extends AbstractThingHandlerDiscoveryS
     @Override
     protected void startScan() {
         logger.debug("SCAN for new LIVISI SmartHome devices started...");
-        final LivisiBridgeHandler bridgeHandlerNonNullable = thingHandler;
-        if (bridgeHandlerNonNullable != null) {
-            for (final DeviceDTO d : bridgeHandlerNonNullable.loadDevices()) {
-                onDeviceAdded(d);
-            }
+        for (final DeviceDTO d : thingHandler.loadDevices()) {
+            onDeviceAdded(d);
         }
     }
 
@@ -90,37 +88,34 @@ public class LivisiDeviceDiscoveryService extends AbstractThingHandlerDiscoveryS
     }
 
     public void onDeviceAdded(DeviceDTO device) {
-        final LivisiBridgeHandler bridgeHandlerNonNullable = thingHandler;
-        if (bridgeHandlerNonNullable != null) {
-            final ThingUID bridgeUID = bridgeHandlerNonNullable.getThing().getUID();
-            final Optional<ThingUID> thingUID = getThingUID(bridgeUID, device);
-            final Optional<ThingTypeUID> thingTypeUID = getThingTypeUID(device);
+        final ThingUID bridgeUID = thingHandler.getThing().getUID();
+        final Optional<ThingUID> thingUID = getThingUID(bridgeUID, device);
+        final Optional<ThingTypeUID> thingTypeUID = getThingTypeUID(device);
 
-            if (thingUID.isPresent() && thingTypeUID.isPresent()) {
-                String name = device.getConfig().getName();
-                if (name.isEmpty()) {
-                    name = device.getSerialNumber();
-                }
-
-                final Map<String, Object> properties = new HashMap<>();
-                properties.put(PROPERTY_ID, device.getId());
-
-                final String label;
-                if (device.hasLocation()) {
-                    label = device.getType() + ": " + name + " (" + device.getLocation().getName() + ")";
-                } else {
-                    label = device.getType() + ": " + name;
-                }
-
-                final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID.get())
-                        .withThingType(thingTypeUID.get()).withProperties(properties).withBridge(bridgeUID)
-                        .withRepresentationProperty(PROPERTY_ID).withLabel(label).build();
-
-                thingDiscovered(discoveryResult);
-            } else {
-                logger.debug("Discovered unsupported device of type '{}' and name '{}' with id {}", device.getType(),
-                        device.getConfig().getName(), device.getId());
+        if (thingUID.isPresent() && thingTypeUID.isPresent()) {
+            String name = device.getConfig().getName();
+            if (name.isEmpty()) {
+                name = device.getSerialNumber();
             }
+
+            final Map<String, Object> properties = new HashMap<>();
+            properties.put(PROPERTY_ID, device.getId());
+
+            final String label;
+            if (device.hasLocation()) {
+                label = device.getType() + ": " + name + " (" + device.getLocation().getName() + ")";
+            } else {
+                label = device.getType() + ": " + name;
+            }
+
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID.get())
+                    .withThingType(thingTypeUID.get()).withProperties(properties).withBridge(bridgeUID)
+                    .withRepresentationProperty(PROPERTY_ID).withLabel(label).build();
+
+            thingDiscovered(discoveryResult);
+        } else {
+            logger.debug("Discovered unsupported device of type '{}' and name '{}' with id {}", device.getType(),
+                    device.getConfig().getName(), device.getId());
         }
     }
 
