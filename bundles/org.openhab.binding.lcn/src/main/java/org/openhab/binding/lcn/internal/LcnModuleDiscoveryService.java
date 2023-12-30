@@ -80,6 +80,7 @@ public class LcnModuleDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
     @Override
     public void dispose() {
+        super.dispose();
         stopScan();
     }
 
@@ -87,32 +88,26 @@ public class LcnModuleDiscoveryService extends AbstractThingHandlerDiscoveryServ
     @SuppressWarnings("PMD.CompareObjectsWithEquals")
     protected void startScan() {
         synchronized (this) {
-            PckGatewayHandler localBridgeHandler = thingHandler;
-            if (localBridgeHandler == null) {
-                logger.warn("Bridge handler not set");
-                return;
-            }
-
             ScheduledFuture<?> localBuilderTask = builderTask;
-            if (localBridgeHandler.getConnection() == null && localBuilderTask != null) {
+            if (thingHandler.getConnection() == null && localBuilderTask != null) {
                 localBuilderTask.cancel(true);
             }
 
-            localBridgeHandler.registerPckListener(data -> {
+            thingHandler.registerPckListener(data -> {
                 Matcher matcher;
 
                 if ((matcher = LcnModuleMetaAckSubHandler.PATTERN_POS.matcher(data)).matches()
                         || (matcher = LcnModuleMetaFirmwareSubHandler.PATTERN.matcher(data)).matches()
                         || (matcher = NAME_PATTERN.matcher(data)).matches()) {
                     synchronized (LcnModuleDiscoveryService.this) {
-                        Connection connection = localBridgeHandler.getConnection();
+                        Connection connection = thingHandler.getConnection();
 
                         if (connection == null) {
                             return;
                         }
 
                         LcnAddrMod addr = new LcnAddrMod(
-                                localBridgeHandler.toLogicalSegmentId(Integer.parseInt(matcher.group("segId"))),
+                                thingHandler.toLogicalSegmentId(Integer.parseInt(matcher.group("segId"))),
                                 Integer.parseInt(matcher.group("modId")));
 
                         if (matcher.pattern() == LcnModuleMetaAckSubHandler.PATTERN_POS) {
@@ -133,7 +128,7 @@ public class LcnModuleDiscoveryService extends AbstractThingHandlerDiscoveryServ
                         } else if (matcher.pattern() == LcnModuleMetaFirmwareSubHandler.PATTERN) {
                             // Received a firmware version info frame
 
-                            ThingUID bridgeUid = localBridgeHandler.getThing().getUID();
+                            ThingUID bridgeUid = thingHandler.getThing().getUID();
                             String serialNumber = matcher.group("sn");
 
                             String thingID = String.format("S%03dM%03d", addr.getSegmentId(), addr.getModuleId());
@@ -195,7 +190,7 @@ public class LcnModuleDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 }
             }, 500, 500, TimeUnit.MILLISECONDS);
 
-            localBridgeHandler.sendModuleDiscoveryCommand();
+            thingHandler.sendModuleDiscoveryCommand();
         }
     }
 
@@ -206,22 +201,19 @@ public class LcnModuleDiscoveryService extends AbstractThingHandlerDiscoveryServ
             localQueueProcessor.cancel(true);
         }
         queueProcessor = scheduler.scheduleWithFixedDelay(() -> {
-            PckGatewayHandler localBridgeHandler = thingHandler;
-            if (localBridgeHandler != null) {
-                LcnAddrMod serial = serialNumberRequestQueue.poll();
-                if (serial != null) {
-                    localBridgeHandler.sendSerialNumberRequest(serial);
-                }
+            LcnAddrMod serial = serialNumberRequestQueue.poll();
+            if (serial != null) {
+                thingHandler.sendSerialNumberRequest(serial);
+            }
 
-                LcnAddrMod name = moduleNameRequestQueue.poll();
-                if (name != null) {
-                    localBridgeHandler.sendModuleNameRequest(name);
-                }
+            LcnAddrMod name = moduleNameRequestQueue.poll();
+            if (name != null) {
+                thingHandler.sendModuleNameRequest(name);
+            }
 
-                // stop scan when all LCN modules have been requested
-                if (serial == null && name == null) {
-                    scheduler.schedule(this::stopScan, ACK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-                }
+            // stop scan when all LCN modules have been requested
+            if (serial == null && name == null) {
+                scheduler.schedule(this::stopScan, ACK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             }
         }, ACK_TIMEOUT_MS, ACK_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
@@ -236,10 +228,7 @@ public class LcnModuleDiscoveryService extends AbstractThingHandlerDiscoveryServ
         if (localQueueProcessor != null) {
             localQueueProcessor.cancel(true);
         }
-        PckGatewayHandler localBridgeHandler = thingHandler;
-        if (localBridgeHandler != null) {
-            localBridgeHandler.removeAllPckListeners();
-        }
+        thingHandler.removeAllPckListeners();
         successfullyDiscovered.clear();
         moduleNames.clear();
 
