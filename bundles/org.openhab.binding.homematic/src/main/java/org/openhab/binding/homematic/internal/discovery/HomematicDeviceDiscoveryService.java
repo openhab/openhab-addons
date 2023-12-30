@@ -14,7 +14,6 @@ package org.openhab.binding.homematic.internal.discovery;
 
 import static org.openhab.binding.homematic.internal.HomematicBindingConstants.BINDING_ID;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -58,7 +57,8 @@ public class HomematicDeviceDiscoveryService
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
@@ -74,15 +74,9 @@ public class HomematicDeviceDiscoveryService
      */
     private void enableInstallMode() {
         try {
-            HomematicBridgeHandler bridgeHandler = thingHandler;
-            if (bridgeHandler == null) {
-                return;
-            }
-            HomematicGateway gateway = bridgeHandler.getGateway();
-            ThingStatus bridgeStatus = null;
-
-            Thing bridge = bridgeHandler.getThing();
-            bridgeStatus = bridge.getStatus();
+            HomematicGateway gateway = thingHandler.getGateway();
+            Thing bridge = thingHandler.getThing();
+            ThingStatus bridgeStatus = bridge.getStatus();
 
             if (ThingStatus.ONLINE == bridgeStatus) {
                 gateway.setInstallMode(true, getInstallModeDuration());
@@ -103,11 +97,7 @@ public class HomematicDeviceDiscoveryService
     }
 
     private int getInstallModeDuration() {
-        HomematicBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null) {
-            return bridgeHandler.getThing().getConfiguration().as(HomematicConfig.class).getInstallModeDuration();
-        }
-        return HomematicConfig.DEFAULT_INSTALL_MODE_DURATION;
+        return thingHandler.getThing().getConfiguration().as(HomematicConfig.class).getInstallModeDuration();
     }
 
     @Override
@@ -118,26 +108,19 @@ public class HomematicDeviceDiscoveryService
     @Override
     public synchronized void stopScan() {
         logger.debug("Stopping Homematic discovery scan");
-        HomematicBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null && bridgeHandler.getGateway() != null) {
-            disableInstallMode();
-            bridgeHandler.getGateway().cancelLoadAllDeviceMetadata();
-        }
+        disableInstallMode();
+        thingHandler.getGateway().cancelLoadAllDeviceMetadata();
         waitForScanFinishing();
         super.stopScan();
     }
 
     private void disableInstallMode() {
-        HomematicBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            return;
-        }
         try {
             synchronized (installModeSync) {
                 if (isInInstallMode) {
                     isInInstallMode = false;
                     installModeSync.notify();
-                    bridgeHandler.getGateway().setInstallMode(false, 0);
+                    thingHandler.getGateway().setInstallMode(false, 0);
                 }
             }
 
@@ -190,21 +173,17 @@ public class HomematicDeviceDiscoveryService
      * Starts a thread which loads all Homematic devices connected to the gateway.
      */
     public void loadDevices() {
-        HomematicBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            return;
-        }
-        if (loadDevicesFuture == null && bridgeHandler.getGateway() != null) {
+        if (loadDevicesFuture == null && thingHandler.getGateway() != null) {
             loadDevicesFuture = scheduler.submit(() -> {
                 try {
-                    final HomematicGateway gateway = bridgeHandler.getGateway();
+                    final HomematicGateway gateway = thingHandler.getGateway();
                     gateway.loadAllDeviceMetadata();
-                    bridgeHandler.getTypeGenerator().validateFirmwares();
+                    thingHandler.getTypeGenerator().validateFirmwares();
                 } catch (Throwable ex) {
                     logger.error("{}", ex.getMessage(), ex);
                 } finally {
                     loadDevicesFuture = null;
-                    bridgeHandler.setOfflineStatus();
+                    thingHandler.setOfflineStatus();
                     removeOlderResults(getTimestampOfLastScan());
                 }
             });
@@ -217,11 +196,7 @@ public class HomematicDeviceDiscoveryService
      * Removes the Homematic device.
      */
     public void deviceRemoved(HmDevice device) {
-        HomematicBridgeHandler bridgeHandler = thingHandler;
-        if (thingHandler == null) {
-            return;
-        }
-        ThingUID thingUID = UidUtils.generateThingUID(device, bridgeHandler.getThing());
+        ThingUID thingUID = UidUtils.generateThingUID(device, thingHandler.getThing());
         thingRemoved(thingUID);
     }
 
@@ -229,16 +204,11 @@ public class HomematicDeviceDiscoveryService
      * Generates the DiscoveryResult from a Homematic device.
      */
     public void deviceDiscovered(HmDevice device) {
-        HomematicBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            return;
-        }
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingTypeUID typeUid = UidUtils.generateThingTypeUID(device);
         ThingUID thingUID = new ThingUID(typeUid, bridgeUID, device.getAddress());
         String label = device.getName() != null ? device.getName() : device.getAddress();
-        long timeToLive = bridgeHandler.getThing().getConfiguration().as(HomematicConfig.class)
-                .getDiscoveryTimeToLive();
+        long timeToLive = thingHandler.getThing().getConfiguration().as(HomematicConfig.class).getDiscoveryTimeToLive();
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
                 .withProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getAddress())
