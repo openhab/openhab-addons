@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = EnphaseDevicesDiscoveryService.class)
 @NonNullByDefault
 public class EnphaseDevicesDiscoveryService extends AbstractThingHandlerDiscoveryService<EnvoyBridgeHandler> {
-
     private static final int TIMEOUT_SECONDS = 20;
 
     private final Logger logger = LoggerFactory.getLogger(EnphaseDevicesDiscoveryService.class);
@@ -57,23 +56,16 @@ public class EnphaseDevicesDiscoveryService extends AbstractThingHandlerDiscover
     }
 
     @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
     protected void startScan() {
         removeOlderResults(getTimestampOfLastScan());
-        final EnvoyBridgeHandler envoyHandler = this.thingHandler;
-
-        if (envoyHandler == null || !envoyHandler.isOnline()) {
-            logger.debug("Envoy handler not available or online: {}", envoyHandler);
+        if (!thingHandler.isOnline()) {
+            logger.debug("Envoy handler not available or online: {}", thingHandler);
             return;
         }
-        final ThingUID uid = envoyHandler.getThing().getUID();
+        final ThingUID uid = thingHandler.getThing().getUID();
 
-        scanForInverterThings(envoyHandler, uid);
-        scanForDeviceThings(envoyHandler, uid);
+        scanForInverterThings(thingHandler, uid);
+        scanForDeviceThings(thingHandler, uid);
     }
 
     private void scanForInverterThings(final EnvoyBridgeHandler envoyHandler, final ThingUID bridgeID) {
