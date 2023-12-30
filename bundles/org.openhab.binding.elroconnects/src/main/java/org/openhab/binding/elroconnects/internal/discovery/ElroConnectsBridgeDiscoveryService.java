@@ -17,7 +17,6 @@ import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConst
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -68,14 +67,10 @@ public class ElroConnectsBridgeDiscoveryService
 
     private void discoverConnectors() {
         logger.debug("Starting hub discovery scan");
-        ElroConnectsAccountHandler account = thingHandler;
-        if (account == null) {
-            return;
-        }
 
-        ThingUID bridgeUID = account.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
 
-        Map<String, ElroConnectsConnector> connectors = account.getDevices();
+        Map<String, ElroConnectsConnector> connectors = thingHandler.getDevices();
         if (connectors == null) {
             return;
         }
@@ -135,13 +130,14 @@ public class ElroConnectsBridgeDiscoveryService
     }
 
     @Override
-    public void deactivate() {
+    public void dispose() {
+        super.dispose();
         removeOlderResults(Instant.now().toEpochMilli());
-        super.deactivate();
     }
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 }

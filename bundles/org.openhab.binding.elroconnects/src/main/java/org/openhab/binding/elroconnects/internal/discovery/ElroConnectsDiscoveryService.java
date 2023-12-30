@@ -16,7 +16,6 @@ import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConst
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -63,28 +62,24 @@ public class ElroConnectsDiscoveryService extends AbstractThingHandlerDiscoveryS
 
     private void discoverDevices() {
         logger.debug("Starting device discovery scan");
-        ElroConnectsBridgeHandler bridge = thingHandler;
-        if (bridge != null) {
-            Map<Integer, ElroConnectsDevice> devices = bridge.getDevices();
-            ThingUID bridgeUID = bridge.getThing().getUID();
-            devices.entrySet().forEach(e -> {
-                String deviceId = e.getKey().toString();
-                String deviceName = e.getValue().getDeviceName();
-                String deviceType = e.getValue().getDeviceType();
-                if (!deviceType.isEmpty()) {
-                    ElroDeviceType type = TYPE_MAP.get(deviceType);
-                    if (type != null) {
-                        ThingTypeUID thingTypeUID = THING_TYPE_MAP.get(type);
-                        if (thingTypeUID != null) {
-                            thingDiscovered(DiscoveryResultBuilder
-                                    .create(new ThingUID(thingTypeUID, bridgeUID, deviceId)).withLabel(deviceName)
-                                    .withBridge(bridgeUID).withProperty(CONFIG_DEVICE_ID, deviceId)
-                                    .withRepresentationProperty(CONFIG_DEVICE_ID).build());
-                        }
+        Map<Integer, ElroConnectsDevice> devices = thingHandler.getDevices();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        devices.entrySet().forEach(e -> {
+            String deviceId = e.getKey().toString();
+            String deviceName = e.getValue().getDeviceName();
+            String deviceType = e.getValue().getDeviceType();
+            if (!deviceType.isEmpty()) {
+                ElroDeviceType type = TYPE_MAP.get(deviceType);
+                if (type != null) {
+                    ThingTypeUID thingTypeUID = THING_TYPE_MAP.get(type);
+                    if (thingTypeUID != null) {
+                        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(thingTypeUID, bridgeUID, deviceId))
+                                .withLabel(deviceName).withBridge(bridgeUID).withProperty(CONFIG_DEVICE_ID, deviceId)
+                                .withRepresentationProperty(CONFIG_DEVICE_ID).build());
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
@@ -114,13 +109,14 @@ public class ElroConnectsDiscoveryService extends AbstractThingHandlerDiscoveryS
     }
 
     @Override
-    public void deactivate() {
+    public void dispose() {
+        super.dispose();
         removeOlderResults(Instant.now().toEpochMilli());
-        super.deactivate();
     }
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 }
