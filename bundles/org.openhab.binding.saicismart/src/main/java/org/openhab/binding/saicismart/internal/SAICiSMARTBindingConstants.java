@@ -26,6 +26,11 @@ public class SAICiSMARTBindingConstants {
 
     private static final String BINDING_ID = "saicismart";
 
+    /**
+     * Interval in seconds between polls of API.
+     */
+    public static final int REFRESH_INTERVAL = 10;
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
