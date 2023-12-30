@@ -27,5 +27,4 @@ public class SAICiSMARTVehicleConfiguration {
 
     @Nullable
     public String abrpUserToken;
-
 }

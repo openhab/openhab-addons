@@ -77,7 +77,7 @@ Once an account has been configured it can be scanned for vehicles.
 
 # Example
 
-demo.Things:
+demo.things:
 
 ```java
 Bridge saicismart:account:myaccount "My iSMART Account" [ username="MyEmail@domian.com", password="MyPassword" ] {

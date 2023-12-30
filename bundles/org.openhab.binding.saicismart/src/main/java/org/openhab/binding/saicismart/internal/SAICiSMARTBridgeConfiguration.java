@@ -24,5 +24,4 @@ public class SAICiSMARTBridgeConfiguration {
 
     public String username = "";
     public String password = "";
-
 }
