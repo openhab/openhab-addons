@@ -48,40 +48,27 @@ public class EchonetDiscoveryService extends AbstractThingHandlerDiscoveryServic
 
     @Override
     protected void startScan() {
-        final EchonetLiteBridgeHandler bridgeHandler = this.thingHandler;
-        logger.debug("startScan: {}", bridgeHandler);
-        if (null != bridgeHandler) {
-            bridgeHandler.startDiscovery(this);
-        }
+        logger.debug("startScan: {}", thingHandler);
+        thingHandler.startDiscovery(this);
     }
 
     @Override
     protected synchronized void stopScan() {
-        final EchonetLiteBridgeHandler bridgeHandler = this.thingHandler;
-        logger.debug("stopScan: {}", bridgeHandler);
-        if (null != bridgeHandler) {
-            bridgeHandler.stopDiscovery();
-        }
+        logger.debug("stopScan: {}", thingHandler);
+        thingHandler.stopDiscovery();
     }
 
     @Override
     public void onDeviceFound(String identifier, InstanceKey instanceKey) {
-        final EchonetLiteBridgeHandler bridgeHandler = this.thingHandler;
-
-        if (null == bridgeHandler) {
-            return;
-        }
-
         final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(THING_TYPE_ECHONET_DEVICE, bridgeHandler.getThing().getUID(), identifier))
+                .create(new ThingUID(THING_TYPE_ECHONET_DEVICE, thingHandler.getThing().getUID(), identifier))
                 .withProperty(PROPERTY_NAME_INSTANCE_KEY, instanceKey.representationProperty())
                 .withProperty(PROPERTY_NAME_HOSTNAME, instanceKey.address.getAddress().getHostAddress())
                 .withProperty(PROPERTY_NAME_PORT, instanceKey.address.getPort())
                 .withProperty(PROPERTY_NAME_GROUP_CODE, instanceKey.klass.groupCode())
                 .withProperty(PROPERTY_NAME_CLASS_CODE, instanceKey.klass.classCode())
-                .withProperty(PROPERTY_NAME_INSTANCE, instanceKey.instance)
-                .withBridge(bridgeHandler.getThing().getUID()).withRepresentationProperty(PROPERTY_NAME_INSTANCE_KEY)
-                .build();
+                .withProperty(PROPERTY_NAME_INSTANCE, instanceKey.instance).withBridge(thingHandler.getThing().getUID())
+                .withRepresentationProperty(PROPERTY_NAME_INSTANCE_KEY).build();
         thingDiscovered(discoveryResult);
     }
 }
