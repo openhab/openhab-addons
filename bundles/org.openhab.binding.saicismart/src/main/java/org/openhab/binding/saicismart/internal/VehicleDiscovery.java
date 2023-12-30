@@ -51,7 +51,8 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
             ThingUID thingUID = new ThingUID(type, handler.getThing().getUID(), vinInfo.getVin());
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                     .withLabel(new String(vinInfo.getBrandName()) + " " + new String(vinInfo.getModelName()))
-                    .withBridge(handler.getThing().getUID()).withProperty("vin", vinInfo.getVin()).build();
+                    .withBridge(handler.getThing().getUID()).withProperty("vin", vinInfo.getVin())
+                    .withRepresentationProperty("vin").build();
             thingDiscovered(discoveryResult);
         }
     }
