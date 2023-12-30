@@ -602,7 +602,6 @@
 			<options>
 				<option value="OFF">Device is currently not bypassed</option>
 				<option value="ON">Device is currently bypassed</option>
-				<option value="UNDEF">Bypass state cannot be determined</option>
 			</options>
 		</state>
 	</channel-type>
