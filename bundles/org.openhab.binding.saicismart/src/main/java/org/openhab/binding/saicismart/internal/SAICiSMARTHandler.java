@@ -107,7 +107,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                 try {
                     sendACCommand((byte) 0, (byte) 0);
                 } catch (URISyntaxException | ExecutionException | TimeoutException | InterruptedException e) {
-                    logger.error("A/C Off Command failed", e);
+                    logger.warn("A/C Off Command failed", e);
                 }
             }).start();
         } else if (channelUID.getId().equals(CHANNEL_LAST_ACTIVITY) && command instanceof DateTimeType) {
