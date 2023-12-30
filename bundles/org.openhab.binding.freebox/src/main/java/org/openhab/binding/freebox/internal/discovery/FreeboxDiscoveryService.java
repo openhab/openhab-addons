@@ -77,46 +77,39 @@ public class FreeboxDiscoveryService extends AbstractThingHandlerDiscoveryServic
     }
 
     @Override
-    public void activate() {
-        super.activate(null);
-        FreeboxHandler handler = thingHandler;
-        if (handler != null) {
-            Configuration config = handler.getThing().getConfiguration();
-            Object property = config.get(FreeboxServerConfiguration.DISCOVER_PHONE);
-            discoverPhone = property != null ? ((Boolean) property).booleanValue() : true;
-            property = config.get(FreeboxServerConfiguration.DISCOVER_NET_DEVICE);
-            discoverNetDevice = property != null ? ((Boolean) property).booleanValue() : true;
-            property = config.get(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE);
-            discoverNetInterface = property != null ? ((Boolean) property).booleanValue() : true;
-            property = config.get(FreeboxServerConfiguration.DISCOVER_AIRPLAY_RECEIVER);
-            discoverAirPlayReceiver = property != null ? ((Boolean) property).booleanValue() : true;
-            logger.debug("Freebox discovery - discoverPhone : {}", discoverPhone);
-            logger.debug("Freebox discovery - discoverNetDevice : {}", discoverNetDevice);
-            logger.debug("Freebox discovery - discoverNetInterface : {}", discoverNetInterface);
-            logger.debug("Freebox discovery - discoverAirPlayReceiver : {}", discoverAirPlayReceiver);
+    public void initialize() {
+        Configuration config = thingHandler.getThing().getConfiguration();
+        Object property = config.get(FreeboxServerConfiguration.DISCOVER_PHONE);
+        discoverPhone = property != null ? ((Boolean) property).booleanValue() : true;
+        property = config.get(FreeboxServerConfiguration.DISCOVER_NET_DEVICE);
+        discoverNetDevice = property != null ? ((Boolean) property).booleanValue() : true;
+        property = config.get(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE);
+        discoverNetInterface = property != null ? ((Boolean) property).booleanValue() : true;
+        property = config.get(FreeboxServerConfiguration.DISCOVER_AIRPLAY_RECEIVER);
+        discoverAirPlayReceiver = property != null ? ((Boolean) property).booleanValue() : true;
+        logger.debug("Freebox discovery - discoverPhone : {}", discoverPhone);
+        logger.debug("Freebox discovery - discoverNetDevice : {}", discoverNetDevice);
+        logger.debug("Freebox discovery - discoverNetInterface : {}", discoverNetInterface);
+        logger.debug("Freebox discovery - discoverAirPlayReceiver : {}", discoverAirPlayReceiver);
 
-            handler.registerDataListener(this);
-        }
+        thingHandler.registerDataListener(this);
+        super.initialize();
     }
 
     @Override
-    public void deactivate() {
-        FreeboxHandler handler = thingHandler;
-        if (handler != null) {
-            handler.unregisterDataListener(this);
-        }
-        super.deactivate();
+    public void dispose() {
+        super.dispose();
+        thingHandler.unregisterDataListener(this);
     }
 
     @Override
     protected void startScan() {
         logger.debug("Starting Freebox discovery scan");
-        FreeboxHandler handler = thingHandler;
-        if (handler != null && handler.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
-                List<FreeboxLanHost> lanHosts = handler.getApiManager().getLanHosts();
-                List<FreeboxAirMediaReceiver> airPlayDevices = handler.getApiManager().getAirMediaReceivers();
-                onDataFetched(handler.getThing().getUID(), lanHosts, airPlayDevices);
+                List<FreeboxLanHost> lanHosts = thingHandler.getApiManager().getLanHosts();
+                List<FreeboxAirMediaReceiver> airPlayDevices = thingHandler.getApiManager().getAirMediaReceivers();
+                onDataFetched(thingHandler.getThing().getUID(), lanHosts, airPlayDevices);
             } catch (FreeboxException e) {
                 logger.warn("Error while requesting data for things discovery", e);
             }
