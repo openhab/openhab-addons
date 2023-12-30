@@ -15,7 +15,6 @@ package org.openhab.binding.bondhome.internal.discovery;
 import static org.openhab.binding.bondhome.internal.BondHomeBindingConstants.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +28,6 @@ import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -54,10 +52,10 @@ public class BondDiscoveryService extends AbstractThingHandlerDiscoveryService<B
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        super.setThingHandler(handler);
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
-        api = Objects.requireNonNull(thingHandler).getBridgeAPI();
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        api = thingHandler.getBridgeAPI();
+        super.initialize();
     }
 
     @Override
