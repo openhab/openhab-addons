@@ -293,7 +293,6 @@ class LongPollingTest {
     @Test
     void startLongPolling_receiveUserDefinedState()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        // when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request subscribeRequest = mock(Request.class);
