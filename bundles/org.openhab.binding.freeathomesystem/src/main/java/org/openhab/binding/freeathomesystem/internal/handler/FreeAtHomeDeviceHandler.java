@@ -85,7 +85,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
             Map<String, String> properties = getThing().getProperties();
@@ -101,7 +101,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
             logger.debug("Device created - device id: {}", deviceID);
         });
 
-        updateStatus(ThingStatus.INITIALIZING);
     }
 
     @Override
@@ -287,7 +286,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         }
 
         if (freeAtHomeBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bride is not valid!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not valid!");
             return;
         }
 

@@ -88,7 +88,7 @@ There are several settings for a bridge:
 
 | Parameter                | Description                             |
 |--------------------------|-----------------------------------------|
-| **ipaddress** (required) | Network address of the free@home SysAP  |
+| **ipAddress** (required) | Network address of the free@home SysAP  |
 | **username** (required)  | Valid user name for the free@home SysAP |
 | **password** (required)  | Password of the user                    |
 
@@ -99,7 +99,7 @@ Things are all discovered automatically and visible on the openHAB dashboard aft
 In order to manually configure a Thing:
 
 ```java
-Bridge freeathomesystem:bridge:mysysap [ ipaddress="...", username="...", password="..." ]
+Bridge freeathomesystem:bridge:mysysap [ ipAddress="...", username="...", password="..." ]
 {
     Thing free-at-home-device    ABB700997F0A
 }
