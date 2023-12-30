@@ -118,7 +118,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     Message<MP_UserLoggingInResp> loginResponseMessage = new MessageCoder<>(MP_UserLoggingInResp.class)
                             .decodeResponse(loginResponse);
 
-                    logger.debug("Got message: {}",
+                    logger.trace("Got message: {}",
                             new GsonBuilder().setPrettyPrinting().create().toJson(loginResponseMessage));
 
                     uid = loginResponseMessage.getBody().getUid();
