@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -70,16 +71,26 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SAICiSMARTHandler.class);
 
+    private final TimeZoneProvider timeZoneProvider;
+
     @Nullable
     SAICiSMARTVehicleConfiguration config;
     private @Nullable Future<?> pollingJob;
-    private ZonedDateTime lastAlarmMessage = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.systemDefault());
+    private ZonedDateTime lastAlarmMessage;
+    private ZonedDateTime lastCarActivity;
 
-    // if the binding is initialized, treat the car as active to get some first data
-    private ZonedDateTime lastCarActivity = ZonedDateTime.now();
-
-    public SAICiSMARTHandler(HttpClientFactory httpClientFactory, Thing thing) {
+    /**
+     * If the binding is initialized, treat the car as active (lastCarActivity = now) to get some first data.
+     * 
+     * @param httpClientFactory
+     * @param timeZoneProvider
+     * @param thing
+     */
+    public SAICiSMARTHandler(HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider, Thing thing) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
+        lastAlarmMessage = ZonedDateTime.now(getTimeZone());
+        lastCarActivity = ZonedDateTime.now(getTimeZone());
     }
 
     @Override
@@ -88,7 +99,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
             // reset channel to off
             updateState(CHANNEL_FORCE_REFRESH, OnOffType.from(false));
             // update internal activity date, to query the car for about a minute
-            notifyCarActivity(ZonedDateTime.now().minus(9, ChronoUnit.MINUTES), true);
+            notifyCarActivity(ZonedDateTime.now(getTimeZone()).minus(9, ChronoUnit.MINUTES), true);
         } else if (channelUID.getId().equals(CHANNEL_SWITCH_AC) && command == OnOffType.ON) {
             // reset channel to off
             updateState(CHANNEL_SWITCH_AC, OnOffType.ON);
@@ -252,7 +263,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
     public void handleMessage(Message message) {
         ZonedDateTime time = ZonedDateTime.ofInstant(Instant.ofEpochSecond(message.getMessageTime().getSeconds()),
-                ZoneId.systemDefault());
+                getTimeZone());
 
         if (time.isAfter(lastAlarmMessage)) {
             lastAlarmMessage = time;
@@ -262,5 +273,9 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         }
 
         notifyCarActivity(time, false);
+    }
+
+    public ZoneId getTimeZone() {
+        return timeZoneProvider.getTimeZone();
     }
 }

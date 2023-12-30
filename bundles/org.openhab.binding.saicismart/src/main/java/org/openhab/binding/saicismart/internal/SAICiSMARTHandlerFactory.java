@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -40,11 +41,14 @@ import org.osgi.service.component.annotations.Reference;
 public class SAICiSMARTHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_VEHICLE);
+    private final TimeZoneProvider timeZoneProvider;
     private HttpClientFactory httpClientFactory;
 
     @Activate
-    public SAICiSMARTHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+    public SAICiSMARTHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClientFactory = httpClientFactory;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -59,7 +63,7 @@ public class SAICiSMARTHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             return new SAICiSMARTBridgeHandler((Bridge) thing, httpClientFactory);
         } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
-            return new SAICiSMARTHandler(httpClientFactory, thing);
+            return new SAICiSMARTHandler(httpClientFactory, timeZoneProvider, thing);
         }
 
         return null;

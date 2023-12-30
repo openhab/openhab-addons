@@ -100,7 +100,7 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
         saiCiSMARTHandler.updateState(CHANNEL_POWER, new QuantityType<>(power.intValue(), Units.WATT));
 
         saiCiSMARTHandler.updateState(SAICiSMARTBindingConstants.CHANNEL_LAST_CHARGE_STATE_UPDATE,
-                new DateTimeType(ZonedDateTime.now()));
+                new DateTimeType(ZonedDateTime.now(saiCiSMARTHandler.getTimeZone())));
 
         saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
         return chargingStatusResponseMessage.getApplicationData();

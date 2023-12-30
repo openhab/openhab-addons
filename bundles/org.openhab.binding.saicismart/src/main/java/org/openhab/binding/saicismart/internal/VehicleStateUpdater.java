@@ -24,7 +24,6 @@ import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants
 
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -226,15 +225,14 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
 
         saiCiSMARTHandler
                 .updateState(SAICiSMARTBindingConstants.CHANNEL_LAST_POSITION_UPDATE,
-                        new DateTimeType(
-                                ZonedDateTime.ofInstant(
-                                        Instant.ofEpochSecond(chargingStatusResponseMessage.getApplicationData()
-                                                .getGpsPosition().getTimestamp4Short().getSeconds()),
-                                        ZoneId.systemDefault())));
+                        new DateTimeType(ZonedDateTime.ofInstant(
+                                Instant.ofEpochSecond(chargingStatusResponseMessage.getApplicationData()
+                                        .getGpsPosition().getTimestamp4Short().getSeconds()),
+                                saiCiSMARTHandler.getTimeZone())));
 
         if (isCharging || acActive || engineRunning) {
             // update activity date
-            saiCiSMARTHandler.notifyCarActivity(ZonedDateTime.now(), true);
+            saiCiSMARTHandler.notifyCarActivity(ZonedDateTime.now(saiCiSMARTHandler.getTimeZone()), true);
         }
 
         saiCiSMARTHandler.updateStatus(ThingStatus.ONLINE);
