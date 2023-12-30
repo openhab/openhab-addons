@@ -106,7 +106,7 @@ public class MappingJsonReader extends JsonReaderDelegate {
         ABBREVIATIONS.put("fx_val_tpl", "effect_value_template");
         ABBREVIATIONS.put("exp_aft", "expire_after");
         ABBREVIATIONS.put("fan_mode_cmd_t", "fan_mode_command_topic");
-        ABBREVIATIONS.put("fan_mode_cmd_tpl", "fna_mode_command_template");
+        ABBREVIATIONS.put("fan_mode_cmd_tpl", "fan_mode_command_template");
         ABBREVIATIONS.put("fan_mode_stat_t", "fan_mode_state_topic");
         ABBREVIATIONS.put("fan_mode_stat_tpl", "fan_mode_state_template");
         ABBREVIATIONS.put("frc_upd", "force_update");
