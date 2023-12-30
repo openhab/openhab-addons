@@ -30,7 +30,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.saicismart.internal.asn1.Util;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -77,7 +76,6 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
                 .initializeMessage(saiCiSMARTHandler.getBridgeHandler().getUid(),
                         saiCiSMARTHandler.getBridgeHandler().getToken(), saiCiSMARTHandler.config.vin, "511", 25857, 1,
                         otaRvmVehicleStatusReq);
-        Util.fillReserved(chargingStatusMessage.getReserved());
 
         String chargingStatusRequestMessage = otaRvmVehicleStatusRequstMessageCoder
                 .encodeRequest(chargingStatusMessage);
@@ -102,8 +100,6 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
 
             chargingStatusMessage.getBody().setUid(saiCiSMARTHandler.getBridgeHandler().getUid());
             chargingStatusMessage.getBody().setToken(saiCiSMARTHandler.getBridgeHandler().getToken());
-
-            Util.fillReserved(chargingStatusMessage.getReserved());
 
             chargingStatusRequestMessage = otaRvmVehicleStatusRequstMessageCoder.encodeRequest(chargingStatusMessage);
 

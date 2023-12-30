@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.saicismart.internal.asn1.Util;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -204,7 +203,6 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                 }
                 throw new TimeoutException(new String(enableACResponse.getBody().getErrorMessage()));
             }
-            Util.fillReserved(enableACRequest.getReserved());
 
             if (enableACResponse.getBody().getResult() == 0) {
                 // we get an eventId back...

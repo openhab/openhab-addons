@@ -22,7 +22,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.bn.coders.IASN1PreparedElement;
-import org.openhab.binding.saicismart.internal.asn1.Util;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -80,8 +79,6 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
 
             chargingStatusMessage.getBody().setUid(saiCiSMARTHandler.getBridgeHandler().getUid());
             chargingStatusMessage.getBody().setToken(saiCiSMARTHandler.getBridgeHandler().getToken());
-
-            Util.fillReserved(chargingStatusMessage.getReserved());
 
             chargingStatusRequestMessage = chargingStatusRequestmessageCoder.encodeRequest(chargingStatusMessage);
 
