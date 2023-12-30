@@ -84,13 +84,10 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
     @Override
     protected void startBackgroundDiscovery() {
         stopBackgroundDiscovery();
-        FreeboxOsHandler handler = thingHandler;
-        if (handler != null) {
-            int interval = handler.getConfiguration().discoveryInterval;
-            if (interval > 0) {
-                backgroundFuture = Optional
-                        .of(scheduler.scheduleWithFixedDelay(this::startScan, 1, interval, TimeUnit.MINUTES));
-            }
+        int interval = thingHandler.getConfiguration().discoveryInterval;
+        if (interval > 0) {
+            backgroundFuture = Optional
+                    .of(scheduler.scheduleWithFixedDelay(this::startScan, 1, interval, TimeUnit.MINUTES));
         }
     }
 
@@ -103,23 +100,22 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
     @Override
     protected void startScan() {
         logger.debug("Starting Freebox discovery scan");
-        FreeboxOsHandler handler = thingHandler;
-        if (handler != null && handler.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
-                ThingUID bridgeUID = handler.getThing().getUID();
+                ThingUID bridgeUID = thingHandler.getThing().getUID();
 
-                List<LanHost> lanHosts = new ArrayList<>(handler.getManager(LanBrowserManager.class).getHosts().stream()
-                        .filter(LanHost::reachable).toList());
+                List<LanHost> lanHosts = new ArrayList<>(thingHandler.getManager(LanBrowserManager.class).getHosts()
+                        .stream().filter(LanHost::reachable).toList());
 
-                discoverServer(handler.getManager(SystemManager.class), bridgeUID);
-                discoverPhone(handler.getManager(PhoneManager.class), bridgeUID);
-                discoverPlugs(handler.getManager(FreeplugManager.class), bridgeUID);
-                discoverRepeater(handler.getManager(RepeaterManager.class), bridgeUID, lanHosts);
-                discoverPlayer(handler.getManager(PlayerManager.class), bridgeUID, lanHosts);
-                discoverVM(handler.getManager(VmManager.class), bridgeUID, lanHosts);
-                discoverHome(handler.getManager(HomeManager.class), bridgeUID);
-                if (handler.getConfiguration().discoverNetDevice) {
-                    discoverHosts(handler, bridgeUID, lanHosts);
+                discoverServer(thingHandler.getManager(SystemManager.class), bridgeUID);
+                discoverPhone(thingHandler.getManager(PhoneManager.class), bridgeUID);
+                discoverPlugs(thingHandler.getManager(FreeplugManager.class), bridgeUID);
+                discoverRepeater(thingHandler.getManager(RepeaterManager.class), bridgeUID, lanHosts);
+                discoverPlayer(thingHandler.getManager(PlayerManager.class), bridgeUID, lanHosts);
+                discoverVM(thingHandler.getManager(VmManager.class), bridgeUID, lanHosts);
+                discoverHome(thingHandler.getManager(HomeManager.class), bridgeUID);
+                if (thingHandler.getConfiguration().discoverNetDevice) {
+                    discoverHosts(thingHandler, bridgeUID, lanHosts);
                 }
             } catch (FreeboxException e) {
                 logger.warn("Error while requesting data for things discovery: {}", e.getMessage());
