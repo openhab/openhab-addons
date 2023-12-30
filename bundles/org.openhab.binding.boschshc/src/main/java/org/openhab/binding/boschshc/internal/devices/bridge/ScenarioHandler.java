@@ -42,7 +42,6 @@ public class ScenarioHandler {
     }
 
     public void triggerScenario(final BoschHttpClient httpClient, final String scenarioName) {
-
         final Scenario[] scenarios;
         try {
             scenarios = getAvailableScenarios(httpClient);

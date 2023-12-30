@@ -49,6 +49,8 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_SMART_BULB = new ThingTypeUID(BINDING_ID, "smart-bulb");
     public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR = new ThingTypeUID(BINDING_ID, "smoke-detector");
 
+    public static final ThingTypeUID THING_TYPE_USER_DEFINED_STATE = new ThingTypeUID(BINDING_ID, "user-defined-state");
+
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
     public static final String CHANNEL_SCENARIO_TRIGGERED = "scenario-triggered";
@@ -86,6 +88,8 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_SMOKE_CHECK = "smoke-check";
     public static final String CHANNEL_SILENT_MODE = "silent-mode";
     public static final String CHANNEL_ILLUMINANCE = "illuminance";
+
+    public static final String CHANNEL_USER_DEFINED_STATE = "user-state";
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";
