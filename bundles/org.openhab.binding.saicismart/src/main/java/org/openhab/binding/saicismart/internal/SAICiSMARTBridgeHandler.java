@@ -185,7 +185,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE);
                 } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException e) {
                     updateStatus(ThingStatus.OFFLINE);
-                    logger.error("Could not get messages from SAIC iSMART account", e);
+                    logger.warn("Could not get messages from SAIC iSMART account", e);
                 }
             }
         }, 1, SAICiSMARTBindingConstants.REFRESH_INTERVAL, TimeUnit.SECONDS);
