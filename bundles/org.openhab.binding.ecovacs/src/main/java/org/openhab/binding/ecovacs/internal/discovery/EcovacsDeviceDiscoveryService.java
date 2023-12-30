@@ -15,7 +15,6 @@ package org.openhab.binding.ecovacs.internal.discovery;
 import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -59,7 +58,8 @@ public class EcovacsDeviceDiscoveryService extends AbstractThingHandlerDiscovery
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
@@ -102,11 +102,7 @@ public class EcovacsDeviceDiscoveryService extends AbstractThingHandlerDiscovery
                 for (EcovacsDevice device : devices) {
                     deviceDiscovered(device);
                 }
-                EcovacsApiHandler apiHandler = thingHandler;
-                if (apiHandler == null) {
-                    return;
-                }
-                for (Thing thing : apiHandler.getThing().getThings()) {
+                for (Thing thing : thingHandler.getThing().getThings()) {
                     String serial = thing.getUID().getId();
                     if (!devices.stream().anyMatch(d -> serial.equals(d.getSerialNumber()))) {
                         thingRemoved(thing.getUID());
@@ -123,13 +119,9 @@ public class EcovacsDeviceDiscoveryService extends AbstractThingHandlerDiscovery
     }
 
     private void deviceDiscovered(EcovacsDevice device) {
-        EcovacsApiHandler apiHandler = thingHandler;
-        if (apiHandler == null) {
-            return;
-        }
-        ThingUID thingUID = new ThingUID(THING_TYPE_VACUUM, apiHandler.getThing().getUID(), device.getSerialNumber());
+        ThingUID thingUID = new ThingUID(THING_TYPE_VACUUM, thingHandler.getThing().getUID(), device.getSerialNumber());
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                .withBridge(apiHandler.getThing().getUID()).withLabel(device.getModelName())
+                .withBridge(thingHandler.getThing().getUID()).withLabel(device.getModelName())
                 .withProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber())
                 .withProperty(Thing.PROPERTY_MODEL_ID, device.getModelName())
                 .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build();
