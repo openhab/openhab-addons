@@ -28,6 +28,4 @@ public class SAICiSMARTVehicleConfiguration {
     @Nullable
     public String abrpUserToken;
 
-    // Refresh interval in seconds.
-    public int refreshInterval = 10;
 }

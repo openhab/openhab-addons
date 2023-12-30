@@ -188,7 +188,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                     logger.error("Could not get messages from SAIC iSMART account", e);
                 }
             }
-        }, 1, config.refreshInterval, TimeUnit.SECONDS);
+        }, 1, 10, TimeUnit.SECONDS);
     }
 
     private void registerAlarmMessage(String uid, String token, MP_AlarmSettingType.EnumType type)
