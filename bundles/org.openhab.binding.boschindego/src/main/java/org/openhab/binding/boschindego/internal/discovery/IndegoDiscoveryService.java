@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = IndegoDiscoveryService.class)
 @NonNullByDefault
 public class IndegoDiscoveryService extends AbstractThingHandlerDiscoveryService<BoschAccountHandler> {
-
     private static final int TIMEOUT_SECONDS = 60;
 
     private final Logger logger = LoggerFactory.getLogger(IndegoDiscoveryService.class);
@@ -59,13 +58,9 @@ public class IndegoDiscoveryService extends AbstractThingHandlerDiscoveryService
     @Override
     public void startScan() {
         try {
-            BoschAccountHandler accountHandler = this.thingHandler;
-            if (accountHandler == null) {
-                return;
-            }
-            Collection<DevicePropertiesResponse> devices = accountHandler.getDevices();
+            Collection<DevicePropertiesResponse> devices = thingHandler.getDevices();
 
-            ThingUID bridgeUID = accountHandler.getThing().getUID();
+            ThingUID bridgeUID = thingHandler.getThing().getUID();
             for (DevicePropertiesResponse device : devices) {
                 ThingUID thingUID = new ThingUID(THING_TYPE_INDEGO, bridgeUID, device.serialNumber);
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
