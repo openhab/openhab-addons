@@ -46,6 +46,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,8 +109,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                 MP_UserLoggingInReq mpUserLoggingInReq = new MP_UserLoggingInReq();
                 mpUserLoggingInReq.setPassword(config.password);
                 Message<MP_UserLoggingInReq> loginRequestMessage = mpUserLoggingInRequestMessageCoder.initializeMessage(
-                        "0000000000000000000000000000000000000000000000000#".substring(config.username.length())
-                                + config.username,
+                		StringUtils.padLeft("#" + config.username, 50, "0"),
                         null, null, "501", 513, 1, mpUserLoggingInReq);
 
                 String loginRequest = mpUserLoggingInRequestMessageCoder.encodeRequest(loginRequestMessage);
