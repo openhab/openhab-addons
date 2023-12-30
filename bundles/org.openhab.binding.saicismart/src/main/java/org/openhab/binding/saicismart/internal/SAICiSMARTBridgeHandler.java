@@ -217,7 +217,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
             logger.warn("Could not register for {} messages: {}", type,
                     new String(alarmSwitchResponseMessage.getBody().getErrorMessage(), StandardCharsets.UTF_8));
         } else {
-            logger.info("Registered for {} messages", type);
+            logger.debug("Registered for {} messages", type);
         }
     }
 
