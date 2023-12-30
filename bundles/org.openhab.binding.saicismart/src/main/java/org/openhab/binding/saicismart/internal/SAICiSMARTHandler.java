@@ -41,6 +41,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
@@ -144,8 +145,14 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
+        // Validate configuration
+        if (this.config.vin.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "VIN is empty!");
+            return;
+        }
+
         // just started, make sure we start querying
-        notifyCarActivity(ZonedDateTime.now(), true);
+        notifyCarActivity(ZonedDateTime.now(getTimeZone()), true);
 
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             if (lastCarActivity.isAfter(ZonedDateTime.now().minus(10, ChronoUnit.MINUTES))) {
@@ -175,7 +182,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         MessageCoder<OTA_RVCReq> otaRvcReqMessageCoder = new MessageCoder<>(OTA_RVCReq.class);
 
         // we send a command end expect the car to wake up
-        notifyCarActivity(ZonedDateTime.now(), false);
+        notifyCarActivity(ZonedDateTime.now(getTimeZone()), false);
 
         OTA_RVCReq req = new OTA_RVCReq();
         req.setRvcReqType(new byte[] { 6 });

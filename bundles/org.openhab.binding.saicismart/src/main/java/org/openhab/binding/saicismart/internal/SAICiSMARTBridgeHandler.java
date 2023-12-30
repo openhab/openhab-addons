@@ -43,6 +43,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -97,9 +98,23 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(SAICiSMARTBridgeConfiguration.class);
 
+        config = getConfigAs(SAICiSMARTBridgeConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
+
+        // Validate configuration
+        if (this.config.username.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "iSMART Username is empty!");
+            return;
+        }
+        if (this.config.password.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "iSMART Password is empty!");
+            return;
+        }
+        if (this.config.username.length() > 50) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "iSMART Username too long!");
+            return;
+        }
 
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             if (uid == null || token == null) {
@@ -109,8 +124,8 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                 MP_UserLoggingInReq mpUserLoggingInReq = new MP_UserLoggingInReq();
                 mpUserLoggingInReq.setPassword(config.password);
                 Message<MP_UserLoggingInReq> loginRequestMessage = mpUserLoggingInRequestMessageCoder.initializeMessage(
-                		StringUtils.padLeft("#" + config.username, 50, "0"),
-                        null, null, "501", 513, 1, mpUserLoggingInReq);
+                        StringUtils.padLeft("#" + config.username, 50, "0"), null, null, "501", 513, 1,
+                        mpUserLoggingInReq);
 
                 String loginRequest = mpUserLoggingInRequestMessageCoder.encodeRequest(loginRequestMessage);
 
