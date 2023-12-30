@@ -15,7 +15,6 @@ package org.openhab.binding.gardena.internal.discovery;
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.BINDING_ID;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -61,20 +60,8 @@ public class GardenaDeviceDiscoveryService extends AbstractThingHandlerDiscovery
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
-    }
-
-    /**
-     * Called on component activation.
-     */
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
@@ -99,17 +86,13 @@ public class GardenaDeviceDiscoveryService extends AbstractThingHandlerDiscovery
     private void loadDevices() {
         if (scanFuture == null) {
             scanFuture = scheduler.submit(() -> {
-                GardenaAccountHandler accountHandler = thingHandler;
-                if (thingHandler == null) {
-                    return;
-                }
-                GardenaSmart gardena = accountHandler.getGardenaSmart();
+                GardenaSmart gardena = thingHandler.getGardenaSmart();
                 if (gardena != null) {
                     for (Device device : gardena.getAllDevices()) {
                         deviceDiscovered(device);
                     }
 
-                    for (Thing thing : accountHandler.getThing().getThings()) {
+                    for (Thing thing : thingHandler.getThing().getThings()) {
                         try {
                             gardena.getDevice(UidUtils.getGardenaDeviceId(thing));
                         } catch (GardenaException ex) {
@@ -150,12 +133,8 @@ public class GardenaDeviceDiscoveryService extends AbstractThingHandlerDiscovery
      */
     public void deviceDiscovered(Device device) {
         if (device.active) {
-            GardenaAccountHandler accountHandler = thingHandler;
-            if (accountHandler == null) {
-                return;
-            }
-            ThingUID accountUID = accountHandler.getThing().getUID();
-            ThingUID thingUID = UidUtils.generateThingUID(device, accountHandler.getThing());
+            ThingUID accountUID = thingHandler.getThing().getUID();
+            ThingUID thingUID = UidUtils.generateThingUID(device, thingHandler.getThing());
 
             try {
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(accountUID)
