@@ -60,8 +60,7 @@ public class PanaBlurayHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
-            PanaBlurayHandler handler = new PanaBlurayHandler(thing, httpClient, translationProvider, localeProvider);
-            return handler;
+            return PanaBlurayHandler(thing, httpClient, translationProvider, localeProvider);
         }
 
         return null;
