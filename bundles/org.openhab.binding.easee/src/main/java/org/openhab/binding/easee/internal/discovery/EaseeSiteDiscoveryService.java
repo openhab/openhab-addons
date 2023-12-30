@@ -14,8 +14,6 @@ package org.openhab.binding.easee.internal.discovery;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
-import java.util.Objects;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.easee.internal.EaseeBindingConstants;
@@ -54,15 +52,13 @@ public class EaseeSiteDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
     @Override
     protected void startScan() {
-        EaseeSiteHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null) {
-            bridgeHandler.enqueueCommand(new GetSite(bridgeHandler, this::processSiteDiscoveryResult));
-        }
+        thingHandler.enqueueCommand(new GetSite(thingHandler, this::processSiteDiscoveryResult));
     }
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     /**
@@ -148,11 +144,7 @@ public class EaseeSiteDiscoveryService extends AbstractThingHandlerDiscoveryServ
      */
     private DiscoveryResultBuilder initDiscoveryResultBuilder(String deviceType, String deviceId,
             @Nullable String deviceName) {
-        EaseeSiteHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            throw new IllegalStateException("thingHandler must not be null when scan is running.");
-        }
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingTypeUID typeUid = new ThingTypeUID(BINDING_ID, deviceType);
 
         ThingUID thingUID = new ThingUID(typeUid, bridgeUID, deviceId);
