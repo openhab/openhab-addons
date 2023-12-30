@@ -151,7 +151,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                             logger.debug("ABRP: {}", execute);
                         }
                     } catch (Exception e) {
-                        logger.warn("Could not refresh car data for {}. {}", config.vin, e.getMessage());
+                        logger.debug("Could not refresh car data for {}. {}", config.vin, e.getMessage());
                         updateStatus(ThingStatus.OFFLINE);
                     }
                 }
