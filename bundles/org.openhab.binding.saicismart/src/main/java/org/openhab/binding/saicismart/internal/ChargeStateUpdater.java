@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.saicismart.internal;
 
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.API_ENDPOINT_V30;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SOC;
 
@@ -60,7 +61,7 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
         String chargingStatusRequestMessage = chargingStatusRequestmessageCoder.encodeRequest(chargingStatusMessage);
 
         String chargingStatusResponse = saiCiSMARTHandler.getBridgeHandler().sendRequest(chargingStatusRequestMessage,
-                "https://tap-eu.soimt.com/TAP.Web/ota.mpv30");
+                API_ENDPOINT_V30);
 
         Message<OTA_ChrgMangDataResp> chargingStatusResponseMessage = new MessageCoder<>(OTA_ChrgMangDataResp.class)
                 .decodeResponse(chargingStatusResponse);
@@ -83,7 +84,7 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
             chargingStatusRequestMessage = chargingStatusRequestmessageCoder.encodeRequest(chargingStatusMessage);
 
             chargingStatusResponse = saiCiSMARTHandler.getBridgeHandler().sendRequest(chargingStatusRequestMessage,
-                    "https://tap-eu.soimt.com/TAP.Web/ota.mpv30");
+                    API_ENDPOINT_V30);
 
             chargingStatusResponseMessage = new MessageCoder<>(OTA_ChrgMangDataResp.class)
                     .decodeResponse(chargingStatusResponse);

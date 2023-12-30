@@ -31,6 +31,26 @@ public class SAICiSMARTBindingConstants {
      */
     public static final int REFRESH_INTERVAL = 10;
 
+    /**
+     * URL of the SAIC API Host.
+     */
+    private static final String API_HOST_URL = "https://tap-eu.soimt.com";
+
+    /**
+     * https://github.com/SAIC-iSmart-API/documentation?tab=readme-ov-file#api-v11
+     */
+    public static final String API_ENDPOINT_V11 = API_HOST_URL + "/TAP.Web/ota.mp";
+
+    /**
+     * https://github.com/SAIC-iSmart-API/documentation?tab=readme-ov-file#api-v21
+     */
+    public static final String API_ENDPOINT_V21 = API_HOST_URL + "/TAP.Web/ota.mpv21";
+
+    /**
+     * https://github.com/SAIC-iSmart-API/documentation?tab=readme-ov-file#api-v30
+     */
+    public static final String API_ENDPOINT_V30 = API_HOST_URL + "/TAP.Web/ota.mpv30";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.saicismart.internal;
 
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.API_ENDPOINT_V11;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -113,7 +115,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                 String loginRequest = mpUserLoggingInRequestMessageCoder.encodeRequest(loginRequestMessage);
 
                 try {
-                    String loginResponse = sendRequest(loginRequest, "https://tap-eu.soimt.com/TAP.Web/ota.mp");
+                    String loginResponse = sendRequest(loginRequest, API_ENDPOINT_V11);
 
                     Message<MP_UserLoggingInResp> loginResponseMessage = new MessageCoder<>(MP_UserLoggingInResp.class)
                             .decodeResponse(loginResponse);
@@ -158,8 +160,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                 String messageListRequest = messageListReqMessageCoder.encodeRequest(messageListRequestMessage);
 
                 try {
-                    String messageListResponse = sendRequest(messageListRequest,
-                            "https://tap-eu.soimt.com/TAP.Web/ota.mp");
+                    String messageListResponse = sendRequest(messageListRequest, API_ENDPOINT_V11);
 
                     Message<MessageListResp> messageListResponseMessage = new MessageCoder<>(MessageListResp.class)
                             .decodeResponse(messageListResponse);
@@ -204,7 +205,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
         Message<AlarmSwitchReq> alarmSwitchMessage = alarmSwitchReqMessageCoder.initializeMessage(uid, token, null,
                 "521", 513, 1, alarmSwitchReq);
         String alarmSwitchRequest = alarmSwitchReqMessageCoder.encodeRequest(alarmSwitchMessage);
-        String alarmSwitchResponse = sendRequest(alarmSwitchRequest, "https://tap-eu.soimt.com/TAP.Web/ota.mp");
+        String alarmSwitchResponse = sendRequest(alarmSwitchRequest, API_ENDPOINT_V11);
         final MessageCoder<IASN1PreparedElement> alarmSwitchResMessageCoder = new MessageCoder<>(
                 IASN1PreparedElement.class);
         Message<IASN1PreparedElement> alarmSwitchResponseMessage = alarmSwitchResMessageCoder

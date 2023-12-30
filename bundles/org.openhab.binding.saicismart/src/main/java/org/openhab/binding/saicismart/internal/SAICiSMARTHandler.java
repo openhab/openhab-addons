@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.saicismart.internal;
 
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.API_ENDPOINT_V21;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_FORCE_REFRESH;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_LAST_ACTIVITY;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SWITCH_AC;
@@ -188,8 +189,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
         String enableACRequestMessage = otaRvcReqMessageCoder.encodeRequest(enableACRequest);
 
-        String enableACResponseMessage = getBridgeHandler().sendRequest(enableACRequestMessage,
-                "https://tap-eu.soimt.com/TAP.Web/ota.mpv21");
+        String enableACResponseMessage = getBridgeHandler().sendRequest(enableACRequestMessage, API_ENDPOINT_V21);
 
         net.heberling.ismart.asn1.v2_1.Message<OTA_RVCStatus25857> enableACResponse = new net.heberling.ismart.asn1.v2_1.MessageCoder<>(
                 OTA_RVCStatus25857.class).decodeResponse(enableACResponseMessage);
@@ -214,8 +214,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
             enableACRequestMessage = otaRvcReqMessageCoder.encodeRequest(enableACRequest);
 
-            enableACResponseMessage = getBridgeHandler().sendRequest(enableACRequestMessage,
-                    "https://tap-eu.soimt.com/TAP.Web/ota.mpv21");
+            enableACResponseMessage = getBridgeHandler().sendRequest(enableACRequestMessage, API_ENDPOINT_V21);
 
             enableACResponse = new net.heberling.ismart.asn1.v2_1.MessageCoder<>(OTA_RVCStatus25857.class)
                     .decodeResponse(enableACResponseMessage);

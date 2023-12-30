@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.saicismart.internal;
 
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.API_ENDPOINT_V21;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_AUXILIARY_BATTERY_VOLTAGE;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_CHARGING;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_ENGINE;
@@ -81,7 +82,7 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
                 .encodeRequest(chargingStatusMessage);
 
         String chargingStatusResponse = saiCiSMARTHandler.getBridgeHandler().sendRequest(chargingStatusRequestMessage,
-                "https://tap-eu.soimt.com/TAP.Web/ota.mpv21");
+                API_ENDPOINT_V21);
 
         Message<OTA_RVMVehicleStatusResp25857> chargingStatusResponseMessage = new MessageCoder<>(
                 OTA_RVMVehicleStatusResp25857.class).decodeResponse(chargingStatusResponse);
@@ -104,7 +105,7 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
             chargingStatusRequestMessage = otaRvmVehicleStatusRequstMessageCoder.encodeRequest(chargingStatusMessage);
 
             chargingStatusResponse = saiCiSMARTHandler.getBridgeHandler().sendRequest(chargingStatusRequestMessage,
-                    "https://tap-eu.soimt.com/TAP.Web/ota.mpv21");
+                    API_ENDPOINT_V21);
 
             chargingStatusResponseMessage = new MessageCoder<>(OTA_RVMVehicleStatusResp25857.class)
                     .decodeResponse(chargingStatusResponse);
