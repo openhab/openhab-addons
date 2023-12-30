@@ -32,7 +32,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +45,6 @@ import org.slf4j.LoggerFactory;
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = MelCloudDiscoveryService.class)
 public class MelCloudDiscoveryService extends AbstractThingHandlerDiscoveryService<@NonNull MelCloudAccountHandler> {
-
     private final Logger logger = LoggerFactory.getLogger(MelCloudDiscoveryService.class);
 
     private static final String PROPERTY_DEVICE_ID = "deviceID";
@@ -60,12 +58,6 @@ public class MelCloudDiscoveryService extends AbstractThingHandlerDiscoveryServi
     public MelCloudDiscoveryService() {
         super(MelCloudAccountHandler.class, MelCloudBindingConstants.DISCOVERABLE_THING_TYPE_UIDS,
                 DISCOVER_TIMEOUT_SECONDS, true);
-    }
-
-    @Override
-    @Modified
-    protected void modified(Map<String, Object> configProperties) {
-        super.modified(configProperties);
     }
 
     @Override
@@ -93,50 +85,47 @@ public class MelCloudDiscoveryService extends AbstractThingHandlerDiscoveryServi
 
     private void discoverDevices() {
         logger.debug("Discover devices");
-        MelCloudAccountHandler melCloudHandler = thingHandler;
-        if (melCloudHandler != null) {
-            try {
-                List<Device> deviceList = melCloudHandler.getDeviceList();
+        try {
+            List<Device> deviceList = thingHandler.getDeviceList();
 
-                if (deviceList == null) {
-                    logger.debug("No devices found");
-                } else {
-                    ThingUID bridgeUID = melCloudHandler.getThing().getUID();
+            if (deviceList == null) {
+                logger.debug("No devices found");
+            } else {
+                ThingUID bridgeUID = thingHandler.getThing().getUID();
 
-                    deviceList.forEach(device -> {
-                        ThingTypeUID thingTypeUid = null;
-                        if (device.getType() == 0) {
-                            thingTypeUid = THING_TYPE_ACDEVICE;
-                        } else if (device.getType() == 1) {
-                            thingTypeUid = THING_TYPE_HEATPUMPDEVICE;
-                        } else {
-                            logger.debug("Unsupported device found: name {} : type: {}", device.getDeviceName(),
-                                    device.getType());
-                            return;
-                        }
-                        ThingUID deviceThing = new ThingUID(thingTypeUid, melCloudHandler.getThing().getUID(),
-                                device.getDeviceID().toString());
+                deviceList.forEach(device -> {
+                    ThingTypeUID thingTypeUid = null;
+                    if (device.getType() == 0) {
+                        thingTypeUid = THING_TYPE_ACDEVICE;
+                    } else if (device.getType() == 1) {
+                        thingTypeUid = THING_TYPE_HEATPUMPDEVICE;
+                    } else {
+                        logger.debug("Unsupported device found: name {} : type: {}", device.getDeviceName(),
+                                device.getType());
+                        return;
+                    }
+                    ThingUID deviceThing = new ThingUID(thingTypeUid, thingHandler.getThing().getUID(),
+                            device.getDeviceID().toString());
 
-                        Map<String, Object> deviceProperties = new HashMap<>();
-                        deviceProperties.put(PROPERTY_DEVICE_ID, device.getDeviceID().toString());
-                        deviceProperties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
-                        deviceProperties.put(Thing.PROPERTY_MAC_ADDRESS, device.getMacAddress());
-                        deviceProperties.put("deviceName", device.getDeviceName());
-                        deviceProperties.put("buildingID", device.getBuildingID().toString());
+                    Map<String, Object> deviceProperties = new HashMap<>();
+                    deviceProperties.put(PROPERTY_DEVICE_ID, device.getDeviceID().toString());
+                    deviceProperties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getSerialNumber());
+                    deviceProperties.put(Thing.PROPERTY_MAC_ADDRESS, device.getMacAddress());
+                    deviceProperties.put("deviceName", device.getDeviceName());
+                    deviceProperties.put("buildingID", device.getBuildingID().toString());
 
-                        String label = createLabel(device);
-                        logger.debug("Found device: {} : {}", label, deviceProperties);
+                    String label = createLabel(device);
+                    logger.debug("Found device: {} : {}", label, deviceProperties);
 
-                        thingDiscovered(DiscoveryResultBuilder.create(deviceThing).withLabel(label)
-                                .withProperties(deviceProperties).withRepresentationProperty(PROPERTY_DEVICE_ID)
-                                .withBridge(bridgeUID).build());
-                    });
-                }
-            } catch (MelCloudLoginException e) {
-                logger.debug("Login error occurred during device list fetch, reason {}. ", e.getMessage(), e);
-            } catch (MelCloudCommException e) {
-                logger.debug("Error occurred during device list fetch, reason {}. ", e.getMessage(), e);
+                    thingDiscovered(
+                            DiscoveryResultBuilder.create(deviceThing).withLabel(label).withProperties(deviceProperties)
+                                    .withRepresentationProperty(PROPERTY_DEVICE_ID).withBridge(bridgeUID).build());
+                });
             }
+        } catch (MelCloudLoginException e) {
+            logger.debug("Login error occurred during device list fetch, reason {}. ", e.getMessage(), e);
+        } catch (MelCloudCommException e) {
+            logger.debug("Error occurred during device list fetch, reason {}. ", e.getMessage(), e);
         }
     }
 
