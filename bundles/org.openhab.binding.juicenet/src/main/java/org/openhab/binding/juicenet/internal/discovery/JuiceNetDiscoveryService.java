@@ -14,7 +14,6 @@ package org.openhab.binding.juicenet.internal.discovery;
 
 import static org.openhab.binding.juicenet.internal.JuiceNetBindingConstants.*;
 
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,16 +48,11 @@ public class JuiceNetDiscoveryService extends AbstractThingHandlerDiscoveryServi
 
     @Override
     protected synchronized void startScan() {
-        JuiceNetBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null) {
-            bridgeHandler.iterateApiDevices();
-        }
+        thingHandler.iterateApiDevices();
     }
 
     public void notifyDiscoveryDevice(String id, String name) {
-        JuiceNetBridgeHandler bridgeHandler = this.thingHandler;
-        Objects.requireNonNull(bridgeHandler, "Discovery with null bridgehandler.");
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
 
         ThingUID uid = new ThingUID(DEVICE_THING_TYPE, bridgeUID, id);
 
