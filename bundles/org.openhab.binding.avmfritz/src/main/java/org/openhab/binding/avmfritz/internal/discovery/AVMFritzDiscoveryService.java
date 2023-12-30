@@ -17,7 +17,6 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,45 +58,36 @@ public class AVMFritzDiscoveryService extends AbstractThingHandlerDiscoveryServi
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).registerStatusListener(this);
+        thingHandler.registerStatusListener(this);
     }
 
     @Override
     public void dispose() {
-        Objects.requireNonNull(thingHandler).unregisterStatusListener(this);
+        thingHandler.unregisterStatusListener(this);
     }
 
     @Override
     public void startScan() {
-        final AVMFritzBaseBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null) {
-            logger.debug("Start manual scan on bridge {}", bridgeHandler.getThing().getUID());
-            bridgeHandler.handleRefreshCommand();
-        }
+        logger.debug("Start manual scan on bridge {}", thingHandler.getThing().getUID());
+        thingHandler.handleRefreshCommand();
     }
 
     @Override
     protected synchronized void stopScan() {
-        final AVMFritzBaseBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null) {
-            logger.debug("Stop manual scan on bridge {}", bridgeHandler.getThing().getUID());
-        }
+        logger.debug("Stop manual scan on bridge {}", thingHandler.getThing().getUID());
         super.stopScan();
     }
 
     @Override
     public void onDeviceAdded(AVMFritzBaseModel device) {
-        final AVMFritzBaseBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null) {
-            String id = bridgeHandler.getThingTypeId(device);
-            ThingTypeUID thingTypeUID = id.isEmpty() ? null : new ThingTypeUID(BINDING_ID, id);
-            if (thingTypeUID != null && getSupportedThingTypes().contains(thingTypeUID)) {
-                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeHandler.getThing().getUID(),
-                        bridgeHandler.getThingName(device));
-                onDeviceAddedInternal(thingUID, device);
-            } else {
-                logger.debug("Discovered unsupported device: {}", device);
-            }
+        String id = thingHandler.getThingTypeId(device);
+        ThingTypeUID thingTypeUID = id.isEmpty() ? null : new ThingTypeUID(BINDING_ID, id);
+        if (thingTypeUID != null && getSupportedThingTypes().contains(thingTypeUID)) {
+            ThingUID thingUID = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(),
+                    thingHandler.getThingName(device));
+            onDeviceAddedInternal(thingUID, device);
+        } else {
+            logger.debug("Discovered unsupported device: {}", device);
         }
     }
 
@@ -112,28 +102,25 @@ public class AVMFritzDiscoveryService extends AbstractThingHandlerDiscoveryServi
     }
 
     private void onDeviceAddedInternal(ThingUID thingUID, AVMFritzBaseModel device) {
-        final AVMFritzBaseBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null) {
-            if (device.getPresent() == 1) {
-                Map<String, Object> properties = new HashMap<>();
-                properties.put(CONFIG_AIN, device.getIdentifier());
-                properties.put(PROPERTY_VENDOR, device.getManufacturer());
-                properties.put(PRODUCT_NAME, device.getProductName());
-                properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
-                properties.put(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
-                if (device instanceof GroupModel model && model.getGroupinfo() != null) {
-                    properties.put(PROPERTY_MASTER, model.getGroupinfo().getMasterdeviceid());
-                    properties.put(PROPERTY_MEMBERS, model.getGroupinfo().getMembers());
-                }
-
-                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withRepresentationProperty(CONFIG_AIN).withBridge(bridgeHandler.getThing().getUID())
-                        .withLabel(device.getName()).build();
-
-                thingDiscovered(discoveryResult);
-            } else {
-                thingRemoved(thingUID);
+        if (device.getPresent() == 1) {
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(CONFIG_AIN, device.getIdentifier());
+            properties.put(PROPERTY_VENDOR, device.getManufacturer());
+            properties.put(PRODUCT_NAME, device.getProductName());
+            properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
+            properties.put(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
+            if (device instanceof GroupModel model && model.getGroupinfo() != null) {
+                properties.put(PROPERTY_MASTER, model.getGroupinfo().getMasterdeviceid());
+                properties.put(PROPERTY_MEMBERS, model.getGroupinfo().getMembers());
             }
+
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withRepresentationProperty(CONFIG_AIN).withBridge(thingHandler.getThing().getUID())
+                    .withLabel(device.getName()).build();
+
+            thingDiscovered(discoveryResult);
+        } else {
+            thingRemoved(thingUID);
         }
     }
 }
