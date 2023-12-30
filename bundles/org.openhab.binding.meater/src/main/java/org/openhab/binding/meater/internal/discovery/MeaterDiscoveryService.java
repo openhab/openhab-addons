@@ -53,16 +53,13 @@ public class MeaterDiscoveryService extends AbstractThingHandlerDiscoveryService
 
     @Override
     protected void startScan() {
-        MeaterBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null) {
-            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            bridgeHandler.getMeaterThings().entrySet().stream().forEach(thing -> {
-                thingDiscovered(
-                        DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_MEATER_PROBE, bridgeUID, thing.getKey()))
-                                .withLabel("@text/discovery.probe.label").withBridge(bridgeUID)
-                                .withProperty(MeaterConfiguration.DEVICE_ID_LABEL, thing.getKey())
-                                .withRepresentationProperty(MeaterConfiguration.DEVICE_ID_LABEL).build());
-            });
-        }
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        thingHandler.getMeaterThings().entrySet().stream().forEach(thing -> {
+            thingDiscovered(
+                    DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_MEATER_PROBE, bridgeUID, thing.getKey()))
+                            .withLabel("@text/discovery.probe.label").withBridge(bridgeUID)
+                            .withProperty(MeaterConfiguration.DEVICE_ID_LABEL, thing.getKey())
+                            .withRepresentationProperty(MeaterConfiguration.DEVICE_ID_LABEL).build());
+        });
     }
 }
