@@ -40,7 +40,6 @@ public class BoschServiceDataDeserializer implements JsonDeserializer<BoschSHCSe
     @Override
     public BoschSHCServiceState deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         JsonElement dataType = jsonObject.get("@type");
         switch (dataType.getAsString()) {

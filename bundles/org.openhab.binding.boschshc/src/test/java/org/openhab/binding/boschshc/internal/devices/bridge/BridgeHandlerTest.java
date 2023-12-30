@@ -465,7 +465,7 @@ class BridgeHandlerTest {
     }
 
     @Test
-    void getUserStates_ReturnsEmptyList_IfRequestNotSuccessfull()
+    void getUserStatesReturnsEmptyListIfRequestNotSuccessful()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
@@ -482,7 +482,7 @@ class BridgeHandlerTest {
     }
 
     @Test
-    void getUserStates_ReturnsEmptyList_IfExceptionHappened()
+    void getUserStatesReturnsEmptyListIfExceptionHappened()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();

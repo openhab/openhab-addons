@@ -39,7 +39,7 @@ class UserStateServiceStateTest {
 
     @ParameterizedTest
     @MethodSource("provideStringsForIsBlank")
-    void setStateFromString_UpdatesTheState(String inputState, boolean expectedState) {
+    void setStateFromStringUpdatesTheState(String inputState, boolean expectedState) {
         subject.setStateFromString(inputState);
 
         assertEquals(expectedState, subject.isState());
@@ -53,7 +53,7 @@ class UserStateServiceStateTest {
     }
 
     @Test
-    void getStateAsString_ReturnsState() {
+    void getStateAsStringReturnsState() {
         subject.setState(false);
 
         assertEquals("false", subject.getStateAsString());
@@ -63,7 +63,7 @@ class UserStateServiceStateTest {
     }
 
     @Test
-    void toOnOffType_ReturnsType() {
+    void toOnOffTypeReturnsType() {
         subject.setState(false);
 
         assertEquals(OnOffType.OFF, subject.toOnOffType());

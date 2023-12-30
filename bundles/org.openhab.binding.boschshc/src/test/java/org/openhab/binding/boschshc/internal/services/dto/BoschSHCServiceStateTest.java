@@ -83,7 +83,7 @@ class BoschSHCServiceStateTest {
     }
 
     @Test
-    void fromJson_ReturnsUserStateServiceState_ForValidJson() {
+    void fromJsonReturnsUserStateServiceStateForValidJson() {
         var state = BoschSHCServiceState.fromJson(new JsonPrimitive("false"), UserStateServiceState.class);
         assertNotEquals(null, state);
         assertTrue(state.getClass().isAssignableFrom(UserStateServiceState.class));

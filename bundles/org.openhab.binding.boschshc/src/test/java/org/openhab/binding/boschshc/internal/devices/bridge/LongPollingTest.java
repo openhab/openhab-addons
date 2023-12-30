@@ -250,7 +250,7 @@ class LongPollingTest {
     }
 
     @Test
-    void startLongPolling_receiveScenario()
+    void startLongPollingReceiveScenario()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
@@ -291,7 +291,7 @@ class LongPollingTest {
     }
 
     @Test
-    void startLongPolling_receiveUserDefinedState()
+    void startLongPollingReceiveUserDefinedState()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 

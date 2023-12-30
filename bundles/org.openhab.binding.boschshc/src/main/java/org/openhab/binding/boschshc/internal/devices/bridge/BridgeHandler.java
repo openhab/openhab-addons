@@ -364,7 +364,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         @Nullable
         BoschHttpClient localHttpClient = this.httpClient;
         if (localHttpClient == null) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         try {
@@ -375,7 +375,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             // check HTTP status code
             if (!HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
                 logger.debug("Request devices failed with status code: {}", contentResponse.getStatus());
-                return Collections.emptyList();
+                return List.of();
             }
 
             String content = contentResponse.getContentAsString();
@@ -389,7 +389,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             return Optional.ofNullable(nullableUserStates).orElse(Collections.emptyList());
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Request user-defined states failed because of {}!", e.getMessage(), e);
-            return Collections.emptyList();
+            return List.of();
         }
     }
 

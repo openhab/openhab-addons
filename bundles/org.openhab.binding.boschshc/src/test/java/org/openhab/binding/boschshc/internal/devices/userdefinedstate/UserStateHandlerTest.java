@@ -95,7 +95,7 @@ class UserStateHandlerTest extends AbstractBoschSHCHandlerTest<UserStateHandler>
 
     @ParameterizedTest()
     @MethodSource("provideExceptions")
-    void testHandleCommandSetState_UpdatesThingStatusOnException(Exception mockException)
+    void testHandleCommandSetStateUpdatesThingStatusOnException(Exception mockException)
             throws InterruptedException, TimeoutException, ExecutionException {
         reset(getCallback());
         lenient().when(getBridgeHandler().putState(anyString(), anyString(), any(UserStateServiceState.class)))
