@@ -63,11 +63,6 @@ public class AirQualityDiscoveryService extends AbstractThingHandlerDiscoverySer
     }
 
     @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
     protected void startScan() {
         logger.debug("Starting Air Quality discovery scan");
         LocationProvider provider = locationProvider;
