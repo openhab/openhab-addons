@@ -13,7 +13,6 @@
 package org.openhab.binding.amplipi.internal.discovery;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,7 +26,6 @@ import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 
@@ -54,9 +52,9 @@ public class AmpliPiZoneAndGroupDiscoveryService extends AbstractThingHandlerDis
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        super.setThingHandler(handler);
-        Objects.requireNonNull(thingHandler).addStatusChangeListener(this);
+    public void initialize() {
+        thingHandler.addStatusChangeListener(this);
+        super.initialize();
     }
 
     @Override
@@ -72,36 +70,27 @@ public class AmpliPiZoneAndGroupDiscoveryService extends AbstractThingHandlerDis
     }
 
     private void createZone(Zone z) {
-        AmpliPiHandler handler = thingHandler;
-        if (handler != null) {
-            ThingUID bridgeUID = handler.getThing().getUID();
-            ThingUID uid = new ThingUID(AmpliPiBindingConstants.THING_TYPE_ZONE, bridgeUID, z.getId().toString());
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("AmpliPi Zone '" + z.getName() + "'")
-                    .withProperty(AmpliPiBindingConstants.CFG_PARAM_ID, z.getId()).withBridge(bridgeUID)
-                    .withRepresentationProperty(AmpliPiBindingConstants.CFG_PARAM_ID).build();
-            thingDiscovered(result);
-        }
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        ThingUID uid = new ThingUID(AmpliPiBindingConstants.THING_TYPE_ZONE, bridgeUID, z.getId().toString());
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("AmpliPi Zone '" + z.getName() + "'")
+                .withProperty(AmpliPiBindingConstants.CFG_PARAM_ID, z.getId()).withBridge(bridgeUID)
+                .withRepresentationProperty(AmpliPiBindingConstants.CFG_PARAM_ID).build();
+        thingDiscovered(result);
     }
 
     private void createGroup(Group g) {
-        AmpliPiHandler handler = thingHandler;
-        if (handler != null) {
-            ThingUID bridgeUID = handler.getThing().getUID();
-            ThingUID uid = new ThingUID(AmpliPiBindingConstants.THING_TYPE_GROUP, bridgeUID, g.getId().toString());
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("AmpliPi Group '" + g.getName() + "'")
-                    .withProperty(AmpliPiBindingConstants.CFG_PARAM_ID, g.getId()).withBridge(bridgeUID)
-                    .withRepresentationProperty(AmpliPiBindingConstants.CFG_PARAM_ID).build();
-            thingDiscovered(result);
-        }
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        ThingUID uid = new ThingUID(AmpliPiBindingConstants.THING_TYPE_GROUP, bridgeUID, g.getId().toString());
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("AmpliPi Group '" + g.getName() + "'")
+                .withProperty(AmpliPiBindingConstants.CFG_PARAM_ID, g.getId()).withBridge(bridgeUID)
+                .withRepresentationProperty(AmpliPiBindingConstants.CFG_PARAM_ID).build();
+        thingDiscovered(result);
     }
 
     @Override
     public void dispose() {
-        AmpliPiHandler handler = thingHandler;
-        if (handler != null) {
-            handler.removeStatusChangeListener(this);
-        }
         super.dispose();
+        thingHandler.removeStatusChangeListener(this);
     }
 
     @Override
