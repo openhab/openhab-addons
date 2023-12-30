@@ -30,7 +30,6 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -79,18 +78,15 @@ public class SmartherModuleDiscoveryService extends AbstractThingHandlerDiscover
     @Override
     public void initialize() {
         logger.debug("Bridge[{}] Activating chronothermostat discovery service", this.bridgeUID);
+        this.bridgeUID = thingHandler.getThing().getUID();
+        super.initialize();
     }
 
     @Override
     public void dispose() {
+        super.dispose();
         logger.debug("Bridge[{}] Deactivating chronothermostat discovery service", this.bridgeUID);
         removeOlderResults(new Date().getTime());
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        super.setThingHandler(handler);
-        this.bridgeUID = handler.getThing().getUID();
     }
 
     @Override
@@ -120,13 +116,10 @@ public class SmartherModuleDiscoveryService extends AbstractThingHandlerDiscover
      * Discovers Chronothermostat devices for the given bridge handler.
      */
     private synchronized void discoverChronothermostats() {
-        final SmartherAccountHandler localBridgeHandler = this.thingHandler;
-        if (localBridgeHandler != null) {
-            // If the bridge is not online no other thing devices can be found, so no reason to scan at this moment
-            if (localBridgeHandler.isOnline()) {
-                localBridgeHandler.getLocations()
-                        .forEach(l -> localBridgeHandler.getLocationModules(l).forEach(m -> addDiscoveredDevice(l, m)));
-            }
+        // If the bridge is not online no other thing devices can be found, so no reason to scan at this moment
+        if (thingHandler.isOnline()) {
+            thingHandler.getLocations()
+                    .forEach(l -> thingHandler.getLocationModules(l).forEach(m -> addDiscoveredDevice(l, m)));
         }
     }
 
