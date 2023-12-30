@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,7 +47,6 @@ import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -72,7 +70,6 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = HueDeviceDiscoveryService.class)
 @NonNullByDefault
 public class HueDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<HueBridgeHandler> {
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
             .of(HueLightHandler.SUPPORTED_THING_TYPES.stream(), DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(),
                     TapSwitchHandler.SUPPORTED_THING_TYPES.stream(), PresenceHandler.SUPPORTED_THING_TYPES.stream(),
@@ -121,20 +118,17 @@ public class HueDeviceDiscoveryService extends AbstractThingHandlerDiscoveryServ
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        super.setThingHandler(handler);
-        bridgeUID = handler.getThing().getUID();
+    public void initialize() {
+        bridgeUID = thingHandler.getThing().getUID();
+        thingHandler.registerDiscoveryListener(this);
+        super.initialize();
     }
 
     @Override
-    public void activate() {
-        Objects.requireNonNull(thingHandler).registerDiscoveryListener(this);
-    }
-
-    @Override
-    public void deactivate() {
+    public void dispose() {
+        super.dispose();
         removeOlderResults(new Date().getTime(), bridgeUID);
-        Objects.requireNonNull(thingHandler).unregisterDiscoveryListener();
+        thingHandler.unregisterDiscoveryListener();
     }
 
     @Override
@@ -144,32 +138,26 @@ public class HueDeviceDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
     @Override
     public void startScan() {
-        final HueBridgeHandler handler = thingHandler;
-        if (handler != null) {
-            List<FullLight> lights = handler.getFullLights();
-            for (FullLight l : lights) {
-                addLightDiscovery(l);
-            }
-            List<FullSensor> sensors = handler.getFullSensors();
-            for (FullSensor s : sensors) {
-                addSensorDiscovery(s);
-            }
-            List<FullGroup> groups = handler.getFullGroups();
-            for (FullGroup g : groups) {
-                addGroupDiscovery(g);
-            }
-            // search for unpaired lights
-            handler.startSearch();
+        List<FullLight> lights = thingHandler.getFullLights();
+        for (FullLight l : lights) {
+            addLightDiscovery(l);
         }
+        List<FullSensor> sensors = thingHandler.getFullSensors();
+        for (FullSensor s : sensors) {
+            addSensorDiscovery(s);
+        }
+        List<FullGroup> groups = thingHandler.getFullGroups();
+        for (FullGroup g : groups) {
+            addGroupDiscovery(g);
+        }
+        // search for unpaired lights
+        thingHandler.startSearch();
     }
 
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        final HueBridgeHandler handler = thingHandler;
-        if (handler != null) {
-            removeOlderResults(getTimestampOfLastScan(), handler.getThing().getUID());
-        }
+        removeOlderResults(getTimestampOfLastScan(), thingHandler.getThing().getUID());
     }
 
     public void addLightDiscovery(FullLight light) {

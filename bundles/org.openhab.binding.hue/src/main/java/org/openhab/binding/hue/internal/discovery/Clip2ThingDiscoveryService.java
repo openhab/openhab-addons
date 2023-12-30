@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = Clip2ThingDiscoveryService.class)
 @NonNullByDefault
 public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<Clip2BridgeHandler> {
-
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingDiscoveryService.class);
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 20;
@@ -76,16 +75,15 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).registerDiscoveryService(this);
+        thingHandler.registerDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
     public void dispose() {
-        Clip2BridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterDiscoveryService();
-            removeOlderResults(new Date().getTime(), bridgeHandler.getThing().getBridgeUID());
-        }
+        super.dispose();
+        thingHandler.unregisterDiscoveryService();
+        removeOlderResults(new Date().getTime(), thingHandler.getThing().getBridgeUID());
     }
 
     /**
@@ -93,12 +91,11 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
      * as OH things, and announce those respective things by calling the core 'thingDiscovered()' method.
      */
     private synchronized void discoverThings() {
-        Clip2BridgeHandler bridgeHandler = thingHandler;
-        if (Objects.nonNull(bridgeHandler) && bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
-                ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+                ThingUID bridgeUID = thingHandler.getThing().getUID();
                 for (Entry<ResourceType, ThingTypeUID> entry : DISCOVERY_TYPES.entrySet()) {
-                    for (Resource resource : bridgeHandler.getResources(new ResourceReference().setType(entry.getKey()))
+                    for (Resource resource : thingHandler.getResources(new ResourceReference().setType(entry.getKey()))
                             .getResources()) {
 
                         MetaData metaData = resource.getMetaData();
@@ -117,10 +114,10 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
 
                         // special zone 'all lights'
                         if (resource.getType() == ResourceType.BRIDGE_HOME) {
-                            thingLabel = bridgeHandler.getLocalizedText(ALL_LIGHTS_KEY);
+                            thingLabel = thingHandler.getLocalizedText(ALL_LIGHTS_KEY);
                         }
 
-                        Optional<Thing> legacyThingOptional = bridgeHandler.getLegacyThing(idv1);
+                        Optional<Thing> legacyThingOptional = thingHandler.getLegacyThing(idv1);
                         if (legacyThingOptional.isPresent()) {
                             Thing legacyThing = legacyThingOptional.get();
                             legacyThingUID = legacyThing.getUID().getAsString();
