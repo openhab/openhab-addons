@@ -6,7 +6,7 @@
 
 	<config-description uri="thing-type:saicismart:vehicle">
 		<parameter name="vin" type="text" required="true">
-			<label>Vehicle Identification Number (VIN)</label>
+			<label>VIN</label>
 			<description>Unique VIN given by SAIC</description>
 		</parameter>
 		<parameter name="abrpUserToken" type="text" required="false">
