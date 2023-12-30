@@ -96,7 +96,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                 try {
                     sendACCommand((byte) 5, (byte) 8);
                 } catch (URISyntaxException | ExecutionException | TimeoutException | InterruptedException e) {
-                    logger.error("A/C On Command failed", e);
+                    logger.warn("A/C On Command failed", e);
                 }
             }).start();
         } else if (channelUID.getId().equals(CHANNEL_SWITCH_AC) && command == OnOffType.OFF) {
