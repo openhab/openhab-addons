@@ -90,16 +90,14 @@ public class EcobeeDiscoveryService extends AbstractThingHandlerDiscoveryService
     }
 
     private void backgroundDiscover() {
-        EcobeeAccountBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null || !bridgeHandler.isBackgroundDiscoveryEnabled()) {
+        if (!thingHandler.isBackgroundDiscoveryEnabled()) {
             return;
         }
         discover();
     }
 
     private void discover() {
-        EcobeeAccountBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null || bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("EcobeeDiscovery: Skipping discovery because Account Bridge thing is not ONLINE");
             return;
         }
@@ -109,16 +107,12 @@ public class EcobeeDiscoveryService extends AbstractThingHandlerDiscoveryService
     }
 
     private synchronized void discoverThermostats() {
-        EcobeeAccountBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            return;
-        }
         logger.debug("EcobeeDiscovery: Discovering thermostats");
-        for (ThermostatDTO thermostat : bridgeHandler.getRegisteredThermostats()) {
+        for (ThermostatDTO thermostat : thingHandler.getRegisteredThermostats()) {
             String name = thermostat.name;
             String identifier = thermostat.identifier;
             if (identifier != null && name != null) {
-                ThingUID thingUID = new ThingUID(UID_THERMOSTAT_BRIDGE, bridgeHandler.getThing().getUID(), identifier);
+                ThingUID thingUID = new ThingUID(UID_THERMOSTAT_BRIDGE, thingHandler.getThing().getUID(), identifier);
                 thingDiscovered(createThermostatDiscoveryResult(thingUID, identifier, name));
                 logger.debug("EcobeeDiscovery: Thermostat '{}' and name '{}' added with UID '{}'", identifier, name,
                         thingUID);
@@ -139,11 +133,7 @@ public class EcobeeDiscoveryService extends AbstractThingHandlerDiscoveryService
     }
 
     private synchronized void discoverSensors() {
-        EcobeeAccountBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            return;
-        }
-        List<Thing> thermostatThings = bridgeHandler.getThing().getThings();
+        List<Thing> thermostatThings = thingHandler.getThing().getThings();
         if (thermostatThings.isEmpty()) {
             logger.debug("EcobeeDiscovery: Skipping sensor discovery because there are no thermostat things");
             return;
