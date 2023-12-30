@@ -16,7 +16,6 @@ import static org.openhab.binding.digiplex.internal.DigiplexBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,30 +56,23 @@ public class DigiplexDiscoveryService extends AbstractThingHandlerDiscoveryServi
     @Override
     @SuppressWarnings("null")
     protected void startScan() {
-        DigiplexBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            return;
-        }
-        bridgeHandler.registerMessageHandler(this);
+        thingHandler.registerMessageHandler(this);
         // find zones
         for (int i = 1; i <= MAX_ZONE; i++) {
             DigiplexRequest command = new ZoneLabelRequest(i);
-            bridgeHandler.sendRequest(command);
+            thingHandler.sendRequest(command);
         }
         // find areas
         for (int i = 1; i <= MAX_AREA; i++) {
             DigiplexRequest command = new AreaLabelRequest(i);
-            bridgeHandler.sendRequest(command);
+            thingHandler.sendRequest(command);
         }
     }
 
     @Override
     @SuppressWarnings("null")
     protected synchronized void stopScan() {
-        DigiplexBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterMessageHandler(this);
-        }
+        thingHandler.unregisterMessageHandler(this);
         super.stopScan();
     }
 
@@ -91,11 +83,7 @@ public class DigiplexDiscoveryService extends AbstractThingHandlerDiscoveryServi
         if (isDefaultName(response)) {
             return;
         }
-        DigiplexBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            return;
-        }
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingUID thingUID = new ThingUID(THING_TYPE_ZONE, bridgeUID, String.format("zone%d", response.zoneNo));
 
         Map<String, Object> properties = new HashMap<>(1);
@@ -120,12 +108,7 @@ public class DigiplexDiscoveryService extends AbstractThingHandlerDiscoveryServi
             return;
         }
 
-        DigiplexBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            return;
-        }
-
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingUID thingUID = new ThingUID(THING_TYPE_AREA, bridgeUID, String.format("area%d", response.areaNo));
 
         Map<String, Object> properties = new HashMap<>(1);
@@ -139,6 +122,7 @@ public class DigiplexDiscoveryService extends AbstractThingHandlerDiscoveryServi
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).registerMessageHandler(this);
+        thingHandler.registerMessageHandler(this);
+        super.initialize();
     }
 }
