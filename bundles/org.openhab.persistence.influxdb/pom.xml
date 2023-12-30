@@ -16,11 +16,11 @@
 
   <properties>
     <bnd.importpackage>
-      !javax.annotation.*;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*
+      !javax.annotation.*;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*,!com.influxdb.utils.*
     </bnd.importpackage>
     <okhttp3.version>3.14.9</okhttp3.version>
     <retrofit.version>2.7.2</retrofit.version>
-    <influx2.version>1.15.0</influx2.version>
+    <influx2.version>4.3.0</influx2.version>
     <influx1.version>2.21</influx1.version>
   </properties>
 
@@ -30,6 +30,16 @@
       <groupId>com.influxdb</groupId>
       <artifactId>influxdb-client-java</artifactId>
       <version>${influx2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.influxdb</groupId>
+      <artifactId>influxdb-client-utils</artifactId>
+      <version>${influx2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>adapter-rxjava2</artifactId>
+      <version>${retrofit.version}</version>
     </dependency>
     <dependency>
       <groupId>com.influxdb</groupId>
