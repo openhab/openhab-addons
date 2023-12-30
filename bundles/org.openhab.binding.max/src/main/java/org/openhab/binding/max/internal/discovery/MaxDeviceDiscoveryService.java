@@ -51,20 +51,16 @@ public class MaxDeviceDiscoveryService extends AbstractThingHandlerDiscoveryServ
     }
 
     @Override
-    public void activate() {
-        MaxCubeBridgeHandler localMaxCubeBridgeHandler = thingHandler;
-        if (localMaxCubeBridgeHandler != null) {
-            localMaxCubeBridgeHandler.registerDeviceStatusListener(this);
-        }
+    public void initialize() {
+        thingHandler.registerDeviceStatusListener(this);
+        super.initialize();
     }
 
     @Override
-    public void deactivate() {
-        MaxCubeBridgeHandler localMaxCubeBridgeHandler = thingHandler;
-        if (localMaxCubeBridgeHandler != null) {
-            localMaxCubeBridgeHandler.unregisterDeviceStatusListener(this);
-            removeOlderResults(new Date().getTime(), localMaxCubeBridgeHandler.getThing().getUID());
-        }
+    public void dispose() {
+        super.dispose();
+        thingHandler.unregisterDeviceStatusListener(this);
+        removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
     }
 
     @Override
@@ -118,11 +114,8 @@ public class MaxDeviceDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
     @Override
     protected void startScan() {
-        MaxCubeBridgeHandler localMaxCubeBridgeHandler = thingHandler;
-        if (localMaxCubeBridgeHandler != null) {
-            localMaxCubeBridgeHandler.clearDeviceList();
-            localMaxCubeBridgeHandler.deviceInclusion();
-        }
+        thingHandler.clearDeviceList();
+        thingHandler.deviceInclusion();
     }
 
     @Override
