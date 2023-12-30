@@ -600,9 +600,9 @@
 		<description>Indicates whether the device is currently bypassed.</description>
 		<state readOnly="true">
 			<options>
-				<option value="BYPASS_INACTIVE">Device is currently not bypassed</option>
-				<option value="BYPASS_ACTIVE">Device is currently bypassed</option>
-				<option value="UNKNOWN">Bypass state cannot be determined</option>
+				<option value="OFF">Device is currently not bypassed</option>
+				<option value="ON">Device is currently bypassed</option>
+				<option value="UNDEF">Bypass state cannot be determined</option>
 			</options>
 		</state>
 	</channel-type>
