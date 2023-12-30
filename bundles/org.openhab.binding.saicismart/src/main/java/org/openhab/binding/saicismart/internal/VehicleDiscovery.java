@@ -37,7 +37,9 @@ import net.heberling.ismart.asn1.v1_1.entity.VinInfo;
  */
 @NonNullByDefault
 public class VehicleDiscovery extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+
     private @Nullable SAICiSMARTBridgeHandler handler;
+    private static final String PROPERTY_VIN = "vin";
 
     public VehicleDiscovery() throws IllegalArgumentException {
         super(Set.of(THING_TYPE_VEHICLE), 0);
@@ -51,8 +53,8 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
             ThingUID thingUID = new ThingUID(type, handler.getThing().getUID(), vinInfo.getVin());
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                     .withLabel(new String(vinInfo.getBrandName()) + " " + new String(vinInfo.getModelName()))
-                    .withBridge(handler.getThing().getUID()).withProperty("vin", vinInfo.getVin())
-                    .withRepresentationProperty("vin").build();
+                    .withBridge(handler.getThing().getUID()).withProperty(PROPERTY_VIN, vinInfo.getVin())
+                    .withRepresentationProperty(PROPERTY_VIN).build();
             thingDiscovered(discoveryResult);
         }
     }
