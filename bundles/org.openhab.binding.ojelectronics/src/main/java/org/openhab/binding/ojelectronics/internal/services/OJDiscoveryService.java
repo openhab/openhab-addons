@@ -16,7 +16,6 @@ import static org.openhab.binding.ojelectronics.internal.BindingConstants.*;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,7 +37,6 @@ import org.osgi.service.component.annotations.ServiceScope;
 @NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = OJDiscoveryService.class, configurationPid = "discovery.ojelectronics")
 public final class OJDiscoveryService extends AbstractThingHandlerDiscoveryService<OJCloudHandler> {
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OJCLOUD);
     private @Nullable Collection<GroupContentModel> groupContents;
 
@@ -61,17 +59,17 @@ public final class OJDiscoveryService extends AbstractThingHandlerDiscoveryServi
 
     @Override
     protected void startScan() {
-        final OJCloudHandler bridgeHandler = this.thingHandler;
         final Collection<GroupContentModel> groupContents = this.groupContents;
-        if (groupContents != null && bridgeHandler != null) {
+        if (groupContents != null) {
             groupContents.stream().flatMap(content -> content.thermostats.stream())
-                    .forEach(thermostat -> thingDiscovered(bridgeHandler.getThing().getUID(), thermostat.serialNumber));
+                    .forEach(thermostat -> thingDiscovered(thingHandler.getThing().getUID(), thermostat.serialNumber));
         }
     }
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).setDiscoveryService(this);
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     private void thingDiscovered(ThingUID bridgeUID, String serialNumber) {
