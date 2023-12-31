@@ -38,7 +38,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.util.StringContentProvider;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -83,12 +82,12 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
     private @Nullable String token;
 
     private @Nullable Collection<VinInfo> vinList;
-    private HttpClientFactory httpClientFactory;
+    private HttpClient httpClient;
     private @Nullable Future<?> pollingJob;
 
-    public SAICiSMARTBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
+    public SAICiSMARTBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        this.httpClientFactory = httpClientFactory;
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -276,8 +275,6 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
 
     public String sendRequest(String request, String endpoint)
             throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
-        HttpClient httpClient = httpClientFactory.getCommonHttpClient();
-
         return httpClient.POST(new URI(endpoint)).content(new StringContentProvider(request), "text/html").send()
                 .getContentAsString();
     }
