@@ -5,6 +5,10 @@ Transforms an input string with an external program.
 Executes an external program and returns the output as a string.
 In the given command line the placeholder `%s` is substituted with the input value.
 
+The provided command line is split on spaces before it is passed to the shell.
+Using single quotes (`'`) splitting can be avoided (e.g. `'%s'` would prevent splitting on spaces within the input value).
+The surrounding single quotes are removed.
+
 The external program must either be in the executable search path of the server process, or an absolute path has to be used.
 
 For security reasons all commands need to be whitelisted.
@@ -23,7 +27,7 @@ numfmt --to=iec-i --suffix=B --padding=7 %s
 
 ### General Setup
 
-**Item**
+#### Item
 
 This will replace the visible label in the UI with the transformation you apply with the command <TransformProgram>.
   
@@ -31,7 +35,7 @@ This will replace the visible label in the UI with the transformation you apply 
 String yourItem "Some info  [EXEC(/absolute/path/to/your/<TransformProgram> %s):%s]"
 ```
 
-**Rule**
+#### Rule
 
 ```java
 rule "Your Rule Name"
@@ -53,7 +57,7 @@ Substitute the `/absolute/path/to/your/<TransformProgram>` with
 
 When the input argument for `%s` is `fri` the execution returns a string with the last weekday of the month, formated as readable text.
 
-```
+```shell
 Fri 31 Mar 2017 13:58:47 IST`
 ```
 
@@ -84,9 +88,7 @@ If omitted the default is `%s`, so the input value will be put into the transfor
 
 Please note: This profile is a one-way transformation, i.e. only values from a device towards the item are changed, the other direction is left untouched.
 
-# Further Reading
+## Further Reading
 
 * [Manual](http://man7.org/linux/man-pages/man1/date.1.html) and [tutorial](https://linode.com/docs/tools-reference/tools/use-the-date-command-in-linux/) for date.
 * [Manual](http://man7.org/linux/man-pages/man1/numfmt.1.html) and [tutorial](https://www.pixelbeat.org/docs/numfmt.html) for numfmt.
-
-
