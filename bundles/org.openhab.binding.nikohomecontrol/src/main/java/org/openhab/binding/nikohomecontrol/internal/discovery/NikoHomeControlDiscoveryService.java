@@ -16,7 +16,6 @@ import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindin
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +29,6 @@ import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlComm
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -46,7 +44,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NikoHomeControlDiscoveryService
         extends AbstractThingHandlerDiscoveryService<NikoHomeControlBridgeHandler> {
-
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscoveryService.class);
 
     private volatile @Nullable ScheduledFuture<?> nhcDiscoveryJob;
@@ -64,32 +61,22 @@ public class NikoHomeControlDiscoveryService
     }
 
     @Override
-    public void activate() {
-        startBackgroundDiscovery();
-    }
-
-    @Override
-    public void deactivate() {
+    public void dispose() {
+        super.dispose();
         removeOlderResults(Instant.now().toEpochMilli());
-        super.deactivate();
     }
 
     /**
      * Discovers devices connected to a Niko Home Control controller
      */
     public void discoverDevices() {
-        NikoHomeControlBridgeHandler bridgeHandler = thingHandler;
-        if (bridgeHandler == null) {
-            return;
-        }
-
-        NikoHomeControlCommunication nhcComm = bridgeHandler.getCommunication();
+        NikoHomeControlCommunication nhcComm = thingHandler.getCommunication();
 
         if ((nhcComm == null) || !nhcComm.communicationActive()) {
             logger.warn("not connected");
             return;
         }
-        logger.debug("getting devices on {}", bridgeHandler.getThing().getUID().getId());
+        logger.debug("getting devices on {}", thingHandler.getThing().getUID().getId());
 
         Map<String, NhcAction> actions = nhcComm.getActions();
 
@@ -99,20 +86,19 @@ public class NikoHomeControlDiscoveryService
 
             switch (nhcAction.getType()) {
                 case TRIGGER:
-                    addActionDevice(new ThingUID(THING_TYPE_PUSHBUTTON, bridgeHandler.getThing().getUID(), actionId),
+                    addActionDevice(new ThingUID(THING_TYPE_PUSHBUTTON, thingHandler.getThing().getUID(), actionId),
                             actionId, thingName, thingLocation);
                     break;
                 case RELAY:
-                    addActionDevice(new ThingUID(THING_TYPE_ON_OFF_LIGHT, bridgeHandler.getThing().getUID(), actionId),
+                    addActionDevice(new ThingUID(THING_TYPE_ON_OFF_LIGHT, thingHandler.getThing().getUID(), actionId),
                             actionId, thingName, thingLocation);
                     break;
                 case DIMMER:
-                    addActionDevice(
-                            new ThingUID(THING_TYPE_DIMMABLE_LIGHT, bridgeHandler.getThing().getUID(), actionId),
+                    addActionDevice(new ThingUID(THING_TYPE_DIMMABLE_LIGHT, thingHandler.getThing().getUID(), actionId),
                             actionId, thingName, thingLocation);
                     break;
                 case ROLLERSHUTTER:
-                    addActionDevice(new ThingUID(THING_TYPE_BLIND, bridgeHandler.getThing().getUID(), actionId),
+                    addActionDevice(new ThingUID(THING_TYPE_BLIND, thingHandler.getThing().getUID(), actionId),
                             actionId, thingName, thingLocation);
                     break;
                 default:
@@ -125,7 +111,7 @@ public class NikoHomeControlDiscoveryService
         thermostats.forEach((thermostatId, nhcThermostat) -> {
             String thingName = nhcThermostat.getName();
             String thingLocation = nhcThermostat.getLocation();
-            addThermostatDevice(new ThingUID(THING_TYPE_THERMOSTAT, bridgeHandler.getThing().getUID(), thermostatId),
+            addThermostatDevice(new ThingUID(THING_TYPE_THERMOSTAT, thingHandler.getThing().getUID(), thermostatId),
                     thermostatId, thingName, thingLocation);
         });
 
@@ -134,7 +120,7 @@ public class NikoHomeControlDiscoveryService
         energyMeters.forEach((energyMeterId, nhcEnergyMeter) -> {
             String thingName = nhcEnergyMeter.getName();
             String thingLocation = nhcEnergyMeter.getLocation();
-            addEnergyMeterDevice(new ThingUID(THING_TYPE_ENERGYMETER, bridgeHandler.getThing().getUID(), energyMeterId),
+            addEnergyMeterDevice(new ThingUID(THING_TYPE_ENERGYMETER, thingHandler.getThing().getUID(), energyMeterId),
                     energyMeterId, thingName, thingLocation);
         });
     }
@@ -203,8 +189,8 @@ public class NikoHomeControlDiscoveryService
     }
 
     @Override
-    public void setThingHandler(ThingHandler thingHandler) {
-        super.setThingHandler(thingHandler);
-        bridgeUID = Objects.requireNonNull(thingHandler).getThing().getUID();
+    public void initialize() {
+        bridgeUID = thingHandler.getThing().getUID();
+        super.initialize();
     }
 }
