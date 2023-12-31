@@ -48,10 +48,7 @@ public class NetatmoDiscoveryService extends AbstractThingHandlerDiscoveryServic
 
     @Override
     public void startScan() {
-        ApiBridgeHandler localHandler = thingHandler;
-        if (localHandler != null) {
-            localHandler.identifyAllModulesAndApplyAction(this::createThing);
-        }
+        thingHandler.identifyAllModulesAndApplyAction(this::createThing);
     }
 
     private Optional<ThingUID> findThingUID(ModuleType moduleType, String thingId, ThingUID bridgeUID) {
