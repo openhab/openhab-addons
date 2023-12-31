@@ -170,9 +170,6 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
     }
 
     private void addUserState(UserDefinedState userState) {
-        // see startScan for the runtime null check of shcBridgeHandler
-        assert thingHandler != null;
-
         logger.trace("Discovering user-defined state {}", userState.getName());
         logger.trace("- details: id {}, state {}", userState.getId(), userState.isState());
 
