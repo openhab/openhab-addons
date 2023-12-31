@@ -4,7 +4,7 @@ This binding connects Panasonic Blu-ray players from 2011/2012 and UHD Blu-ray p
 **Supported Blu-ray models:** DMP-BDT110, DMP-BDT210, DMP-BDT310, DMP-BDT120, DMP-BDT220, DMP-BDT320, DMP-BBT01 & DMP-BDT500.  
 **Supported UHD models:** DP-UB420/424, DP-UB820/824 & DP-UB9000/9004.  
 
-**Please Note:** The player must be on the same IP subnet as the openHAB server for this binding to function.
+**Please note:** The player must be on the same IP subnet as the openHAB server for this binding to function.
 If the connection to the player originates from a different subnet, 404 response errors are sent in response to all requests.
 
 To enable network remote control of the Blu-ray model players, configure the following settings:  
@@ -28,12 +28,12 @@ See the online discussions of the DP-UB420/820/9000 players for more information
 ## Supported Things
 
 There are two supported thing types, which represent either a BD player or a UHD player.
-A supported Blu-ray player uses the `bd_player` id and a supported UHD Blu-ray player uses the `uhd_player` id.
+A supported Blu-ray player uses the `bd-player` id and a supported UHD Blu-ray player uses the `uhd-player` id.
 Multiple Things can be added if more than one player is to be controlled.
 
 ## Discovery
 
-Auto-discovery is supported if the player can be located on the local network using UPNP.
+Auto-discovery is supported if the player can be located on the local network using UPnP.
 Otherwise the thing must be manually added.
 
 ## Binding Configuration
@@ -42,7 +42,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The Thing has a few configuration parameters:
 
 
 | Name      | Type    | Description                                                                                           | Default | Required |
@@ -63,45 +63,45 @@ Some notes:
 
 The following channels are available:
 
-| Channel ID     | Item Type   | Read/Write | Description                                                                           |
-|----------------|-------------|------------|---------------------------------------------------------------------------------------|
-| power          | Switch      | RW         | Turn the power for the player ON or OFF.                                              |
-| button         | String      | W          | Sends a command to the player. See lists of available commands in Appendix A below.   |
-| control        | Player      | RW         | Control Playback e.g. Play/Pause/Next/Previous/FForward/Rewind.                       |
-| playerStatus   | String      | R          | The player status i.e.: Power Off, Tray Open, Stopped, Playback, Pause Playback, etc. |
-| timeElapsed    | Number:Time | R          | The total number of seconds of playback time elapsed.                                 |
-| timeTotal      | Number:Time | R          | The total length of the current playing title in seconds. Not on UHD models.          |
-| chapterCurrent | Number      | R          | The current chapter number. Not on UHD models.                                        |
-| chapterTotal   | Number      | R          | The total number of chapters in the current title. Not on UHD models.                 |
+| Channel ID      | Item Type   | Read/Write | Description                                                                           |
+|-----------------|-------------|------------|---------------------------------------------------------------------------------------|
+| power           | Switch      | RW         | Turn the power for the player ON or OFF.                                              |
+| button          | String      | W          | Sends a command to the player. See lists of available commands in Appendix A below.   |
+| control         | Player      | RW         | Control Playback e.g. Play/Pause/Next/Previous/FForward/Rewind.                       |
+| player-status   | String      | R          | The player status i.e.: Power Off, Tray Open, Stopped, Playback, Pause Playback, etc. |
+| time-elapsed    | Number:Time | R          | The total number of seconds of playback time elapsed.                                 |
+| time-total      | Number:Time | R          | The total length of the current playing title in seconds. Not on UHD models.          |
+| chapter-current | Number      | R          | The current chapter number. Not on UHD models.                                        |
+| chapter-total   | Number      | R          | The total number of chapters in the current title. Not on UHD models.                 |
 
 ## Full Example
 
 panasonicbdp.things:
 
 ```java
-panasonicbdp:bd_player:mybdplayer "My Blu-ray player" [ hostName="192.168.10.1", refresh=5 ]
-panasonicbdp:uhd_player:myuhdplayer "My UHD Blu-ray player" [ hostName="192.168.10.1", refresh=5, playerKey="ABCDEF1234567890abcdef0123456789" ]
+panasonicbdp:bd-player:mybdplayer "My Blu-ray player" [ hostName="192.168.10.1", refresh=5 ]
+panasonicbdp:uhd-player:myuhdplayer "My UHD Blu-ray player" [ hostName="192.168.10.1", refresh=5, playerKey="ABCDEF1234567890abcdef0123456789" ]
 ```
 
 panasonicbdp.items:
 
 ```java
 // BD Player
-Switch Player_Power            "Power"                     { channel="panasonicbdp:bd_player:mybdplayer:power" }
-String Player_Button           "Send Command"              { channel="panasonicbdp:bd_player:mybdplayer:button", autoupdate="false" }
-Player Player_Control          "Control"                   { channel="panasonicbdp:bd_player:mybdplayer:control" }
-String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:bd_player:mybdplayer:playerStatus" }
-Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:bd_player:mybdplayer:timeElapsed" }
-Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="panasonicbdp:bd_player:mybdplayer:timeTotal" }
-Number Player_ChapterCurrent   "Current Chapter: [%d]"     { channel="panasonicbdp:bd_player:mybdplayer:chapterCurrent" }
-Number Player_ChapterTotal     "Total Chapters: [%d]"      { channel="panasonicbdp:bd_player:mybdplayer:chapterTotal" }
+Switch Player_Power            "Power"                     { channel="panasonicbdp:bd-player:mybdplayer:power" }
+String Player_Button           "Send Command"              { channel="panasonicbdp:bd-player:mybdplayer:button", autoupdate="false" }
+Player Player_Control          "Control"                   { channel="panasonicbdp:bd-player:mybdplayer:control" }
+String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:bd-player:mybdplayer:player-status" }
+Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:bd-player:mybdplayer:time-elapsed" }
+Number:Time Player_TimeTotal   "Total Time: [%d %unit%]"   { channel="panasonicbdp:bd-player:mybdplayer:time-total" }
+Number Player_ChapterCurrent   "Current Chapter: [%d]"     { channel="panasonicbdp:bd-player:mybdplayer:chapter-current" }
+Number Player_ChapterTotal     "Total Chapters: [%d]"      { channel="panasonicbdp:bd-player:mybdplayer:chapter-total" }
 
 // UHD Player
-Switch Player_Power            "Power"                     { channel="panasonicbdp:uhd_player:myuhdplayer:power" }
-String Player_Button           "Send Command"              { channel="panasonicbdp:uhd_player:myuhdplayer:button", autoupdate="false" }
-Player Player_Control          "Control"                   { channel="panasonicbdp:uhd_player:myuhdplayer:control" }
-String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:uhd_player:myuhdplayer:playerStatus" }
-Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:uhd_player:myuhdplayer:timeElapsed" }
+Switch Player_Power            "Power"                     { channel="panasonicbdp:uhd-player:myuhdplayer:power" }
+String Player_Button           "Send Command"              { channel="panasonicbdp:uhd-player:myuhdplayer:button", autoupdate="false" }
+Player Player_Control          "Control"                   { channel="panasonicbdp:uhd-player:myuhdplayer:control" }
+String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:uhd-player:myuhdplayer:player-status" }
+Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:uhd-player:myuhdplayer:time-elapsed" }
 ```
 
 panasonicbdp.sitemap:

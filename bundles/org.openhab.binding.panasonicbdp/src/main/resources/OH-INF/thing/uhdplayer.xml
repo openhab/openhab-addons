@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Panasonic UHD Blu-ray Player Thing -->
-	<thing-type id="uhd_player">
+	<thing-type id="uhd-player">
 		<label>Panasonic UHD Blu-ray Player</label>
 		<description>
 			Panasonic UHD Blu-ray model DP-UB420/424, DP-UB820/824 or DP-UB9000/9004
@@ -18,8 +18,8 @@
 			</channel>
 			<channel id="button" typeId="uhd_button"/>
 			<channel id="control" typeId="control"/>
-			<channel id="playerStatus" typeId="playerStatus"/>
-			<channel id="timeElapsed" typeId="timeElapsed"/>
+			<channel id="player-status" typeId="player-status"/>
+			<channel id="time-elapsed" typeId="time-elapsed"/>
 		</channels>
 
 		<representation-property>uuid</representation-property>
@@ -116,17 +116,18 @@
 		<category>Player</category>
 	</channel-type>
 
-	<channel-type id="playerStatus">
+	<channel-type id="player-status">
 		<item-type>String</item-type>
 		<label>Player Status</label>
 		<description>The current player status</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="timeElapsed">
+	<channel-type id="time-elapsed">
 		<item-type>Number:Time</item-type>
 		<label>Playback Time</label>
 		<description>The current playback time elapsed</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

@@ -36,18 +36,18 @@ public class PanaBlurayBindingConstants {
     public static final String PROPERTY_HOST_NAME = "hostName";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_BD_PLAYER = new ThingTypeUID(BINDING_ID, "bd_player");
-    public static final ThingTypeUID THING_TYPE_UHD_PLAYER = new ThingTypeUID(BINDING_ID, "uhd_player");
+    public static final ThingTypeUID THING_TYPE_BD_PLAYER = new ThingTypeUID(BINDING_ID, "bd-player");
+    public static final ThingTypeUID THING_TYPE_UHD_PLAYER = new ThingTypeUID(BINDING_ID, "uhd-player");
 
     // List of all Channel id's
     public static final String POWER = "power";
     public static final String BUTTON = "button";
     public static final String CONTROL = "control";
-    public static final String PLAYER_STATUS = "playerStatus";
-    public static final String TIME_ELAPSED = "timeElapsed";
-    public static final String TIME_TOTAL = "timeTotal";
-    public static final String CHAPTER_CURRENT = "chapterCurrent";
-    public static final String CHAPTER_TOTAL = "chapterTotal";
+    public static final String PLAYER_STATUS = "player-status";
+    public static final String TIME_ELAPSED = "time-elapsed";
+    public static final String TIME_TOTAL = "time-total";
+    public static final String CHAPTER_CURRENT = "chapter-current";
+    public static final String CHAPTER_TOTAL = "chapter-total";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BD_PLAYER,
             THING_TYPE_UHD_PLAYER);

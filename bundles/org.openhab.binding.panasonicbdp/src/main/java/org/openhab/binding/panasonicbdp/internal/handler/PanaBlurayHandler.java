@@ -225,8 +225,6 @@ public class PanaBlurayHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing the Panasonic Blu-ray Player handler.");
-
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
