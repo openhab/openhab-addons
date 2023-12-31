@@ -203,7 +203,7 @@ rule "TiVo Search"
 when
     Item TiVo_KeyboardStr received update
 then
-    if (TiVo_KeyboardStr.state != NULL && TiVo_KeyboardStr.state.toString.length > 0) {
+    if (newState != NULL && newState.toString.length > 0) {
 
         // Command to get us to the TiVo search menu
         sendCommand(TiVo_MenuScreen, "SEARCH")
@@ -211,7 +211,7 @@ then
 
         var i = 0
         var char txt = ""
-        var srch = TiVo_KeyboardStr.state.toString.toUpperCase
+        var srch = newState.toString.toUpperCase
         logInfo("tivo.search"," Searching for: " + srch)
 
         while (i < (srch.length)) {

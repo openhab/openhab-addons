@@ -437,14 +437,14 @@ rule "Movie Search"
 when
     Item z1_MovieSearch received update
 then
-    if (z1_MovieSearch.state != NULL && z1_MovieSearch.state.toString.length > 0) {
+    if (newState != NULL && newState.toString.length > 0) {
         kactions.sendKCommand("GO_MOVIE_LIST")
         Thread::sleep(1000)
         kactions.sendKCommand("FILTER_LIST")
         Thread::sleep(300)
 
         var i = 0
-        var srch = z1_MovieSearch.state.toString.toUpperCase
+        var srch = newState.toString.toUpperCase
         logInfo("kaleidescape.search","Searching for: " + srch)
 
         while (i < (srch.length)) {
