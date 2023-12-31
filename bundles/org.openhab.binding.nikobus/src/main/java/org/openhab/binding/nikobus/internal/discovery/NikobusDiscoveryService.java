@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = NikobusDiscoveryService.class)
 @NonNullByDefault
 public class NikobusDiscoveryService extends AbstractThingHandlerDiscoveryService<NikobusPcLinkHandler> {
-
     private final Logger logger = LoggerFactory.getLogger(NikobusDiscoveryService.class);
 
     public NikobusDiscoveryService() throws IllegalArgumentException {
@@ -52,18 +51,12 @@ public class NikobusDiscoveryService extends AbstractThingHandlerDiscoveryServic
 
     @Override
     protected void stopBackgroundDiscovery() {
-        NikobusPcLinkHandler handler = thingHandler;
-        if (handler != null) {
-            handler.resetUnhandledCommandProcessor();
-        }
+        thingHandler.resetUnhandledCommandProcessor();
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        NikobusPcLinkHandler handler = thingHandler;
-        if (handler != null) {
-            handler.setUnhandledCommandProcessor(this::process);
-        }
+        thingHandler.setUnhandledCommandProcessor(this::process);
     }
 
     private void process(String command) {
@@ -74,18 +67,15 @@ public class NikobusDiscoveryService extends AbstractThingHandlerDiscoveryServic
         String address = command.substring(2);
         logger.debug("Received address = '{}'", address);
 
-        NikobusPcLinkHandler handler = thingHandler;
-        if (handler != null) {
-            ThingUID thingUID = new ThingUID(THING_TYPE_PUSH_BUTTON, handler.getThing().getUID(), address);
+        ThingUID thingUID = new ThingUID(THING_TYPE_PUSH_BUTTON, thingHandler.getThing().getUID(), address);
 
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(CONFIG_ADDRESS, address);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(CONFIG_ADDRESS, address);
 
-            String humanReadableNikobusAddress = Utils.convertToHumanReadableNikobusAddress(address).toUpperCase();
-            logger.debug("Detected Nikobus Push Button: '{}'", humanReadableNikobusAddress);
-            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_PUSH_BUTTON)
-                    .withLabel("Nikobus Push Button " + humanReadableNikobusAddress).withProperties(properties)
-                    .withRepresentationProperty(CONFIG_ADDRESS).withBridge(handler.getThing().getUID()).build());
-        }
+        String humanReadableNikobusAddress = Utils.convertToHumanReadableNikobusAddress(address).toUpperCase();
+        logger.debug("Detected Nikobus Push Button: '{}'", humanReadableNikobusAddress);
+        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_PUSH_BUTTON)
+                .withLabel("Nikobus Push Button " + humanReadableNikobusAddress).withProperties(properties)
+                .withRepresentationProperty(CONFIG_ADDRESS).withBridge(thingHandler.getThing().getUID()).build());
     }
 }
