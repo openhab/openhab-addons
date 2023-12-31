@@ -75,6 +75,8 @@ public class SonosBindingConstants {
             MOVE2_THING_TYPE_UID, ROAM_THING_TYPE_UID, ROAM_SL_THING_TYPE_UID, ERA_100_THING_TYPE_UID,
             ERA_300_THING_TYPE_UID);
 
+    public static final Set<String> UNSUPPORTED_KNOWN_IDS = Set.of("sub", "sonos sub mini");
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(SUPPORTED_KNOWN_THING_TYPES_UIDS);
     static {
         SUPPORTED_THING_TYPES_UIDS.add(ZONEPLAYER_THING_TYPE_UID);
