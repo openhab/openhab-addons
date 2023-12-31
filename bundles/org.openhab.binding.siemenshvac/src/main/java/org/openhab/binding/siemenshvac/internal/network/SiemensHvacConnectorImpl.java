@@ -473,7 +473,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     public void CheckStaleRequest() {
         logger.debug("check stale request::begin");
         int staleRequest = 0;
-        for (SiemensHvacRequestHandler handler : handlerInErrorRegistry.keySet()) {
+        for (SiemensHvacRequestHandler handler : currentHandlerRegistry.keySet()) {
             long elapseTime = handler.getElapseTime();
             if (elapseTime > 300) {
                 String uri = "";
@@ -567,6 +567,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         handlerInErrorRegistry.clear();
     }
 
+    @Override
     public void setTimeOut(int timeout) {
         this.timeout = timeout;
     }
