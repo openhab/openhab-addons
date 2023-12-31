@@ -396,8 +396,8 @@
 		<description>If privacy mode is enabled, the camera is disabled and vice versa.</description>
 		<state>
 			<options>
-				<option value="ENABLED">Privacy mode enabled (camera disabled)</option>
-				<option value="DISABLED">Privacy mode disabled (camera enabled)</option>
+				<option value="ON">Enabled (camera disabled)</option>
+				<option value="OFF">Disabled (camera enabled)</option>
 			</options>
 		</state>
 	</channel-type>
@@ -408,8 +408,8 @@
 		<description>Enables or disables notifications for the camera.</description>
 		<state>
 			<options>
-				<option value="ENABLED">Enable notifications</option>
-				<option value="DISABLED">Disable notifications</option>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
 			</options>
 		</state>
 	</channel-type>
@@ -570,8 +570,8 @@
 		<description>Enables or disables silent mode on thermostats. When enabled, the battery usage is higher.</description>
 		<state>
 			<options>
-				<option value="MODE_NORMAL">Silent mode disabled (lower battery usage)</option>
-				<option value="MODE_SILENT">Silent mode enabled (higher battery usage)</option>
+				<option value="OFF">Disabled (lower battery usage)</option>
+				<option value="ON">Enabled (higher battery usage)</option>
 			</options>
 		</state>
 	</channel-type>
