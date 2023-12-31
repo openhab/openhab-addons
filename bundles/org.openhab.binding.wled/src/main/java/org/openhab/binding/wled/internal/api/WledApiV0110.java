@@ -62,7 +62,7 @@ public class WledApiV0110 extends WledApiV084 {
             logger.trace("Preset:{} json:{}", presetEntry.getKey(), presetEntry.getValue());
             PresetState preset = gson.fromJson(presetEntry.getValue(), PresetState.class);
             if (preset != null && counter > 0) {
-                if (preset.bri == 0) {
+                if (presetEntry.getValue().toString().contains("playlist")) {
                     playlistsOptions.add(new StateOption(presetEntry.getKey(), preset.n));
                 } else {
                     presetsOptions.add(new StateOption(presetEntry.getKey(), preset.n));
