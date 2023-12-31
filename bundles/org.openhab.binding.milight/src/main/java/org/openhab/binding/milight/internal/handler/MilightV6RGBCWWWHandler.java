@@ -84,6 +84,6 @@ public class MilightV6RGBCWWWHandler extends AbstractLedV6Handler {
 
     @Override
     public void changeSpeed(int relativeSpeed, MilightThingState state) {
-        sendNonRepeatable(4, relativeSpeed > 1 ? 3 : 4);
+        sendNonRepeatable(4, relativeSpeed == 1 ? 3 : 4);
     }
 }
