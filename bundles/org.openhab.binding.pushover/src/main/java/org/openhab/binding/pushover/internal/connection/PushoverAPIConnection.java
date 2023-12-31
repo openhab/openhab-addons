@@ -147,7 +147,7 @@ public class PushoverAPIConnection {
         try {
             final Request request = httpClient.newRequest(url).method(httpMethod).timeout(config.timeout,
                     TimeUnit.SECONDS);
-                httpClient.
+
             if (body != null) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Pushover request body: '{}'", body);
