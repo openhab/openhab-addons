@@ -110,14 +110,14 @@ panasonicbdp.sitemap:
 sitemap panasonicbdp label="Panasonic Blu-ray" {
     Frame label="Blu-ray Player" {
         Switch item=Player_Power
-        Selection item=Player_Button
+        Selection item=Player_Button icon="player"
         Default item=Player_Control
         Text item=Player_PlayerStatus
-        Text item=Player_TimeElapsed
+        Text item=Player_TimeElapsed icon="time"
         // The following three channels are not available on UHD models
-        Text item=Player_TimeTotal
-        Text item=Player_ChapterCurrent
-        Text item=Player_ChapterTotal
+        Text item=Player_TimeTotal icon="time"
+        Text item=Player_ChapterCurrent icon="time"
+        Text item=Player_ChapterTotal icon="time"
     }
 }
 ```

@@ -16,7 +16,7 @@
 				<label>Power</label>
 				<description>Turn the power for the player on or off</description>
 			</channel>
-			<channel id="button" typeId="uhd_button"/>
+			<channel id="button" typeId="uhd-button"/>
 			<channel id="control" typeId="control"/>
 			<channel id="player-status" typeId="player-status"/>
 			<channel id="time-elapsed" typeId="time-elapsed"/>
@@ -43,7 +43,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="uhd_button">
+	<channel-type id="uhd-button">
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A remote button press to send to the player</description>
