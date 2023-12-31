@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openuv.internal.handler.OpenUVBridgeHandler;
 import org.openhab.binding.openuv.internal.handler.OpenUVReportHandler;
-import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -46,14 +45,10 @@ import com.google.gson.JsonDeserializer;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.openuv")
 public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
-
-    private final LocationProvider locationProvider;
     private final Gson gson;
 
     @Activate
-    public OpenUVHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
-            @Reference LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
+    public OpenUVHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
@@ -71,8 +66,7 @@ public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return APIBRIDGE_THING_TYPE.equals(thingTypeUID)
-                ? new OpenUVBridgeHandler((Bridge) thing, locationProvider, gson)
+        return APIBRIDGE_THING_TYPE.equals(thingTypeUID) ? new OpenUVBridgeHandler((Bridge) thing, gson)
                 : LOCATION_REPORT_THING_TYPE.equals(thingTypeUID) ? new OpenUVReportHandler(thing) : null;
     }
 }

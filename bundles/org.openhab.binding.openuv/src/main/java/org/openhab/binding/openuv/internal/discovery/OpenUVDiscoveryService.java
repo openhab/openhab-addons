@@ -20,6 +20,7 @@ import org.openhab.binding.openuv.internal.handler.OpenUVBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OpenUVDiscoveryService extends AbstractThingHandlerDiscoveryService<OpenUVBridgeHandler> {
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
+    private @NonNullByDefault({}) LocationProvider locationProvider;
 
     private final Logger logger = LoggerFactory.getLogger(OpenUVDiscoveryService.class);
 
@@ -55,24 +57,23 @@ public class OpenUVDiscoveryService extends AbstractThingHandlerDiscoveryService
         this.localeProvider = localeProvider;
     }
 
+    @Reference(unbind = "-")
+    public void bindLocationProvider(LocationProvider locationProvider) {
+        this.locationProvider = locationProvider;
+    }
+
     @Override
     protected void startScan() {
         logger.debug("Starting OpenUV discovery scan");
-        OpenUVBridgeHandler bridge = thingHandler;
-        if (bridge != null) {
-            PointType location = bridge.getLocation();
-            if (location != null) {
-                ThingUID bridgeUID = bridge.getThing().getUID();
-                thingDiscovered(
-                        DiscoveryResultBuilder.create(new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL))
-                                .withLabel("@text/discovery.openuv.uvreport.local.label")
-                                .withProperty(LOCATION, location.toString()).withRepresentationProperty(LOCATION)
-                                .withBridge(bridgeUID).build());
-            } else {
-                logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
-            }
+        PointType location = locationProvider.getLocation();
+        if (location != null) {
+            ThingUID bridgeUID = thingHandler.getThing().getUID();
+            thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL))
+                    .withLabel("@text/discovery.openuv.uvreport.local.label")
+                    .withProperty(LOCATION, location.toString()).withRepresentationProperty(LOCATION)
+                    .withBridge(bridgeUID).build());
         } else {
-            logger.debug("OpenUV Bridge Handler is not set -> Will not provide any discovery results");
+            logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
         }
     }
 }
