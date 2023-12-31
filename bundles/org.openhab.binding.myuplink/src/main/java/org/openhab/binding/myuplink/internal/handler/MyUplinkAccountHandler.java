@@ -14,14 +14,27 @@ package org.openhab.binding.myuplink.internal.handler;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
+import java.util.Collection;
+import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.myuplink.internal.AtomicReferenceTrait;
+import org.openhab.binding.myuplink.internal.command.MyUplinkCommand;
 import org.openhab.binding.myuplink.internal.config.MyUplinkConfiguration;
+import org.openhab.binding.myuplink.internal.discovery.MyUplinkDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -34,35 +47,47 @@ import org.slf4j.LoggerFactory;
  * @author Alexander Friese - Initial contribution
  */
 @NonNullByDefault
-public class MyUplinkAccountHandler extends BaseThingHandler implements MyUplinkBridgeHandler, AtomicReferenceTrait {
+public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplinkBridgeHandler, AtomicReferenceTrait {
 
     private final Logger logger = LoggerFactory.getLogger(MyUplinkAccountHandler.class);
 
-    private @Nullable MyUplinkConfiguration config;
+    /**
+     * Schedule for polling live data
+     */
+    private final AtomicReference<@Nullable Future<?>> dataPollingJobReference;
 
-    public MyUplinkAccountHandler(Thing thing) {
-        super(thing);
+    private @Nullable DiscoveryService discoveryService;
+
+    /**
+     * Interface object for querying the Easee web interface
+     */
+    // TODO: private WebInterface webInterface;
+
+    public MyUplinkAccountHandler(Bridge bridge, HttpClient httpClient) {
+        super(bridge);
+        this.dataPollingJobReference = new AtomicReference<>(null);
+        // TODO: this.webInterface = new WebInterface(scheduler, this, httpClient, super::updateStatus);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // if (CHANNEL_1.equals(channelUID.getId())) {
-        //     if (command instanceof RefreshType) {
-        //         // TODO: handle data refresh
-        //     }
+        // if (command instanceof RefreshType) {
+        // // TODO: handle data refresh
+        // }
 
-        //     // TODO: handle command
+        // // TODO: handle command
 
-        //     // Note: if communication with thing fails for some reason,
-        //     // indicate that by setting the status with detail information:
-        //     // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        //     // "Could not control device at IP address x.x.x.x");
+        // // Note: if communication with thing fails for some reason,
+        // // indicate that by setting the status with detail information:
+        // // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        // // "Could not control device at IP address x.x.x.x");
         // }
     }
 
     @Override
     public void initialize() {
-        config = getConfigAs(MyUplinkConfiguration.class);
+        // TODO: ??? config = getConfigAs(MyUplinkConfiguration.class);
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly, i.e. any network access must be done in
@@ -102,5 +127,47 @@ public class MyUplinkAccountHandler extends BaseThingHandler implements MyUplink
         // Add a description to give user information to understand why thing does not work as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    /**
+     * Disposes the bridge.
+     */
+    @Override
+    public void dispose() {
+        logger.debug("Handler disposed.");
+        cancelJobReference(dataPollingJobReference);
+        // TODO: webInterface.dispose();
+    }
+
+    @Override
+    public MyUplinkConfiguration getBridgeConfiguration() {
+        return this.getConfigAs(MyUplinkConfiguration.class);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(MyUplinkDiscoveryService.class);
+    }
+
+    public void setDiscoveryService(MyUplinkDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
+
+    @Override
+    public void startDiscovery() {
+        DiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            discoveryService.startScan(null);
+        }
+    }
+
+    @Override
+    public void enqueueCommand(MyUplinkCommand command) {
+        // TODO: webInterface.enqueueCommand(command);
+    }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
     }
 }
