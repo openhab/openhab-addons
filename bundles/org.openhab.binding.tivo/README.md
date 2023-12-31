@@ -142,7 +142,6 @@ Number      TiVo_Recording      "Recording        [MAP(tivo.map):rec-%s]" {chann
 String      TiVo_IRCmd          "Ir Cmd"          {channel="tivo:sckt:Living_Room:irCommand", autoupdate="false"}
 String      TiVo_KbdCmd         "Keyboard Cmd"    {channel="tivo:sckt:Living_Room:kbdCommand", autoupdate="false"}
 String      TiVo_KeyboardStr    "Search String"
-Switch      TiVo_Search         "Search Demo"
 ```
 
 - The item `TiVo_SetChannelName` depends upon a valid `tivo.map` file to translate channel numbers to channel names. The openHAB **MAP** transformation service must also be installed.
@@ -166,7 +165,7 @@ sitemap tivo label="Tivo Central" {
         Switch      item=TiVo_IRCmd           label="Remote"       icon="screen"   mappings=["FIND_REMOTE"="Find Remote"]
         Switch      item=TiVo_IRCmd           label="Standby"      icon="screen"   mappings=["STANDBY"="Standby","TIVO"="Wake Up"]
         Text        item=TiVo_Status          label="Status"       icon="screen"
-        Switch      item=TiVo_Search          mappings=[ON="Search Demo"]
+        Input       item=TiVo_KeyboardStr     label="Search"       staticIcon=zoom inputHint="text"
     }
 }
 ```
@@ -197,20 +196,9 @@ etc...
 
 ### tivo.rules
 
-- This rule was used to overcome limitations within the HABpanel user interface at the moment when using transform/map functionality.
-
-- The following rule shows how a string change to the item `TiVo_KeyboardStr` is split into individual characters and sent to the TiVo. The method to send a keystroke multiple times is used to simulate rapid keystrokes required to achieve number based searched.
-
-- A simple custom template widget can be used within the HABpanel user interface for tablet-based searches. See [this discussion thread] (<https://community.openhab.org/t/tivo-1-1-protocol-new-binding-contribution/5572/21?u=andymb>).
+- The following rule shows how a string change to the item `TiVo_KeyboardStr` is split into individual characters and sent to the Tivo.
 
 ```java
-rule "TiVo Search Command"
-when
-  Item TiVo_Search received command
-then
-  TiVo_KeyboardStr.sendCommand("Evening News")
-end
-
 rule "TiVo Search"
 when
     Item TiVo_KeyboardStr received update
@@ -246,5 +234,4 @@ then
         }
     }
 end
-
 ```
