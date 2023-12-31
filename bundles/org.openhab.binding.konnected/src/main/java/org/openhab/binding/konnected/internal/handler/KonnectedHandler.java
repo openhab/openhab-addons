@@ -135,7 +135,7 @@ public class KonnectedHandler extends BaseThingHandler {
                     Integer state = event.getState();
                     logger.debug("The event state is: {}", state);
                     if (state != null) {
-                        OnOffType onOffType = state == zoneConfig.onValue ? OnOffType.ON : OnOffType.OFF;
+                        OnOffType onOffType = OnOffType.from(state == zoneConfig.onValue);
                         updateState(channelId, onOffType);
                     }
                 } else if (channelType.contains(CHANNEL_HUMIDITY)) {

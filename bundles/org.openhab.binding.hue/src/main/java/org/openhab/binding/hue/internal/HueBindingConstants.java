@@ -87,6 +87,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_STATUS = "status";
     public static final String CHANNEL_FLAG = "flag";
     public static final String CHANNEL_SCENE = "scene";
+    public static final String CHANNEL_TYPE_2_SCENE = "scene-v2";
 
     // List all triggers
     public static final String EVENT_DIMMER_SWITCH = "dimmer_switch_event";

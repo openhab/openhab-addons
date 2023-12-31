@@ -31,6 +31,20 @@ There is an _ip_ bridge to connect to KNX IP Gateways, and a _serial_ bridge for
 The following two bridge types are supported.
 Bridges don't have channels on their own.
 
+### Discovery
+
+KNX IP bridges, i.e. IP interfaces, routers, and knxd instances, are discovered through mulitcast communication in the local network.
+As a KNX setup is typically static, this in only done during startup of the binding.
+Corresponding bridges are added to the inbox.
+Additional configuration might be necessary after adding a bridge.
+
+Note that several items per device might be created, as routers typically support routing and tunneling.
+Make sure you import only one item per device.
+
+Discovery is not available for serial bridges and device Things described below.
+Discovery of IP bridges will not work without further measures if openHAB and the interface run on different network segments,
+as multicast traffic is typically not forwarded.
+
 ### IP Gateway
 
 The IP Gateway is the most commonly used way to connect to the KNX bus. At its base, the _ip_ bridge accepts the following configuration parameters:
@@ -235,18 +249,23 @@ For UoM support see the explanations of the `number` channel.
 #### Group Address Notation
 
 ```text
-<config>="[<dpt>:][<]<mainGA>[[+[<]<listeningGA>][+[<]<listeningGA>..]]"
+<config>="[<dpt>:][<|>]<mainGA>[[+[<]<listeningGA>][+[<]<listeningGA>..]]"
 ```
 
 where parts in brackets `[]` denote optional information.
 
+**Each configuration parameter has a `mainGA` where commands are written to and optionally several `listeningGA`s.**
+
+`mainGA` also listens to incoming packets, unless prefixed with a `>` character.
+This is recommended if you have a dedicated status group address which is added as `listeningGA`.
+
 The optional `<` sign tells whether the group address of the datapoint accepts read requests on the KNX bus (it does, if the sign is there).
-All group addresses marked with `<` are read by openHAB during startup.
+The group addresses marked with `<` are read by openHAB during startup. 
+Future versions might support reading from one GA only.
 With `*-control` channels, the state is not owned by any device on the KNX bus, therefore no read requests will be sent by the binding, i.e. `<` signs will be ignored for them.
 
-Each configuration parameter has a `mainGA` where commands are written to and optionally several `listeningGA`s.
-
-The `dpt` element is optional. If omitted, the corresponding default value will be used (see the channel descriptions above).
+The element `dpt` is  highly recommended and may change to a mandatory element in future versions.
+If omitted, the corresponding default value will be used (see the channel descriptions above).
 
 ## KNX Secure
 

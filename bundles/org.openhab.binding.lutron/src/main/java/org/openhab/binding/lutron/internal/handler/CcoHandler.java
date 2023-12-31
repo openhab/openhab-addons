@@ -191,7 +191,7 @@ public class CcoHandler extends LutronHandler {
                 }
                 try {
                     BigDecimal state = new BigDecimal(parameters[1]);
-                    updateState(CHANNEL_SWITCH, state.compareTo(BigDecimal.ZERO) == 0 ? OnOffType.OFF : OnOffType.ON);
+                    updateState(CHANNEL_SWITCH, OnOffType.from(state.compareTo(BigDecimal.ZERO) != 0));
                 } catch (NumberFormatException e) {
                     logger.warn("Unable to parse update {} {} from CCO {}", type, Arrays.asList(parameters),
                             integrationId);

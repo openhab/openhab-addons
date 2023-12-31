@@ -35,6 +35,6 @@ public class YeelightCeilingWithNightHandler extends YeelightCeilingHandler {
         super.updateUI(status);
 
         updateState(YeelightBindingConstants.CHANNEL_NIGHTLIGHT,
-                (status.getActiveMode() == ActiveMode.MOONLIGHT_MODE) ? OnOffType.ON : OnOffType.OFF);
+                OnOffType.from((status.getActiveMode() == ActiveMode.MOONLIGHT_MODE)));
     }
 }

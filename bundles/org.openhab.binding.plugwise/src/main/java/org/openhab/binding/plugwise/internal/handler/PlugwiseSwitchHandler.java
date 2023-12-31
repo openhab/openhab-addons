@@ -93,9 +93,9 @@ public class PlugwiseSwitchHandler extends AbstractSleepingEndDeviceHandler {
     @Override
     protected void handleBroadcastGroupSwitchResponseMessage(BroadcastGroupSwitchResponseMessage message) {
         if (message.getPortMask() == 1) {
-            updateState(CHANNEL_LEFT_BUTTON_STATE, message.getPowerState() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_LEFT_BUTTON_STATE, OnOffType.from(message.getPowerState()));
         } else if (message.getPortMask() == 2) {
-            updateState(CHANNEL_RIGHT_BUTTON_STATE, message.getPowerState() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_RIGHT_BUTTON_STATE, OnOffType.from(message.getPowerState()));
         }
     }
 

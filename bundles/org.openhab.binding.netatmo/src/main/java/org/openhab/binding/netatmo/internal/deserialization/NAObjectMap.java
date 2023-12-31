@@ -33,7 +33,7 @@ public class NAObjectMap<T extends NAObject> extends HashMap<String, T> {
         return super.put(thing.getId(), thing);
     }
 
-    public Optional<T> getOpt(String key) {
-        return Optional.ofNullable(super.get(key));
+    public Optional<T> getOpt(@Nullable String key) {
+        return Optional.ofNullable(key != null ? super.get(key) : null);
     }
 }

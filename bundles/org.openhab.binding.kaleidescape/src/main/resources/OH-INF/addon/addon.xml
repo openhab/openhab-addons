@@ -8,4 +8,20 @@
 	<description>Controls a Kaleidescape Movie Player</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i)Kaleidescape</regex>
+				</match-property>
+				<match-property>
+					<name>deviceType</name>
+					<regex>.*Basic.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

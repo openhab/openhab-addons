@@ -15,4 +15,26 @@
 				The folder will be created on first use when it does not exist.</description>
 		</parameter>
 	</config-description>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>deviceType</name>
+					<regex>.*MediaRenderer.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>deviceType</name>
+					<regex>.*MediaServer.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

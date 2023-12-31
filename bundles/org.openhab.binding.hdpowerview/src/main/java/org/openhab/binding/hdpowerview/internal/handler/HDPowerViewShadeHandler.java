@@ -423,7 +423,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 updateState(CHANNEL_SHADE_BATTERY_LEVEL, UnDefType.UNDEF);
                 return;
         }
-        updateState(CHANNEL_SHADE_LOW_BATTERY, batteryStatus == 1 ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_SHADE_LOW_BATTERY, OnOffType.from(batteryStatus == 1));
         updateState(CHANNEL_SHADE_BATTERY_LEVEL, new DecimalType(mappedValue));
     }
 

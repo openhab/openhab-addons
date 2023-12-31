@@ -33,26 +33,22 @@ public class NAHomeStatus {
 
     public class HomeStatus extends NAThing {
         private @Nullable NAObjectMap<HomeStatusModule> modules;
+        private @Nullable NAObjectMap<Room> rooms;
+        private @Nullable NAObjectMap<HomeStatusPerson> persons;
 
         public NAObjectMap<HomeStatusModule> getModules() {
-            NAObjectMap<HomeStatusModule> localModules = modules;
-            return localModules != null ? localModules : new NAObjectMap<>();
+            NAObjectMap<HomeStatusModule> local = modules;
+            return local != null ? local : new NAObjectMap<>();
         }
-    }
-
-    public class Energy extends HomeStatus {
-        private NAObjectMap<Room> rooms = new NAObjectMap<>();
 
         public NAObjectMap<Room> getRooms() {
-            return rooms;
+            NAObjectMap<Room> local = rooms;
+            return local != null ? local : new NAObjectMap<>();
         }
-    }
-
-    public class Security extends HomeStatus {
-        private NAObjectMap<HomeStatusPerson> persons = new NAObjectMap<>();
 
         public NAObjectMap<HomeStatusPerson> getPersons() {
-            return persons;
+            NAObjectMap<HomeStatusPerson> local = persons;
+            return local != null ? local : new NAObjectMap<>();
         }
     }
 

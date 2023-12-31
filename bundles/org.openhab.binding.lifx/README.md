@@ -28,6 +28,8 @@ The following table lists the thing types of the supported LIFX devices:
 | LIFX+ BR30                   | colorirlight  |
 |                              |               |
 | LIFX Beam                    | colormzlight  |
+| LIFX Neon                    | colormzlight  |
+| LIFX String                  | colormzlight  |
 | LIFX Z                       | colormzlight  |
 |                              |               |
 | LIFX Tile                    | tilelight     |

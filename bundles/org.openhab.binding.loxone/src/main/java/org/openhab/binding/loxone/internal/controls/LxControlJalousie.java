@@ -189,7 +189,7 @@ class LxControlJalousie extends LxControl {
     private OnOffType getAutoShadeState() {
         Double value = getStateDoubleValue(STATE_AUTO_ACTIVE);
         if (value != null) {
-            return value == 1.0 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(value == 1.0);
         }
         return null;
     }

@@ -119,7 +119,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         ShellyBaseHandler handler = null;
 
         if (thingType.equals(THING_TYPE_SHELLYPROTECTED_STR)) {
-            logger.debug("{}: Create new thing of type {} using ShellyProtectedHandler", thing.getLabel(),
+            logger.debug("{}: Create new thing of type {} using ShellyProtectedHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyProtectedHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
         } else if (thingType.equals(THING_TYPE_SHELLYBULB_STR) || thingType.equals(THING_TYPE_SHELLYDUO_STR)

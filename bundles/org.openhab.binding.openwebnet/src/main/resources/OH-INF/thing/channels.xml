@@ -343,6 +343,22 @@
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
+	<channel-type id="energyThisMonth">
+		<item-type>Number:Energy</item-type>
+		<label>Energy This Month</label>
+		<description>Total energy measured for this month</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="energyToday">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Today</label>
+		<description>Total energy measured for today</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
 	<!-- Scenario trigger channels -->
 	<channel-type id="scenarioEvent">
 		<kind>trigger</kind>

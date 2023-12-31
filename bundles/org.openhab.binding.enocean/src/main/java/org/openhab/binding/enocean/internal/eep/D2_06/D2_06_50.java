@@ -142,7 +142,7 @@ public class D2_06_50 extends _VLDMessage {
                 case CHANNEL_BATTERY_LEVEL:
                     return new DecimalType(bytes[6] & 0x7f);
                 case CHANNEL_BATTERYLOW:
-                    return getBit(bytes[6], 7) ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(getBit(bytes[6], 7));
             }
         }
 

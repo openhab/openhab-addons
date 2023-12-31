@@ -255,7 +255,6 @@
 	<thing-type id="shellydimmer">
 		<label>Shelly Dimmer</label>
 		<description>@text/thing-type.shelly.shellydimmer.description</description>
-		<category>DimmableLight</category>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -269,7 +268,6 @@
 	<thing-type id="shellydimmer2">
 		<label>Shelly Dimmer 2</label>
 		<description>@text/thing-type.shelly.shellydimmer2.description</description>
-		<category>DimmableLight</category>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -469,7 +467,7 @@
 		<item-type>Dimmer</item-type>
 		<label>@text/channel-type.shelly.dimmerBrightness.label</label>
 		<description>@text/channel-type.shelly.dimmerBrightness.description</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="meterWatts">

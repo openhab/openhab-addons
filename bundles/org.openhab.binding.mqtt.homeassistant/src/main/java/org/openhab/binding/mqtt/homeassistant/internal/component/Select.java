@@ -66,8 +66,7 @@ public class Select extends AbstractComponent<Select.ChannelConfiguration> {
 
         TextValue value = new TextValue(channelConfiguration.options);
 
-        buildChannel(SELECT_CHANNEL_ID, value, channelConfiguration.getName(),
-                componentConfiguration.getUpdateListener())
+        buildChannel(SELECT_CHANNEL_ID, value, getName(), componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)

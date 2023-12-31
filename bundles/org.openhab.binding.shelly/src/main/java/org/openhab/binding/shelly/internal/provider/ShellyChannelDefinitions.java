@@ -315,7 +315,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
         // If device has more than 1 meter the channel accumulatedWatts receives the accumulated value
-        boolean accuChannel = profile.numMeters > 1 && !profile.isRoller && !profile.isRGBW2;
+        boolean accuChannel = profile.hasRelays && profile.numMeters > 1 && !profile.isRoller && !profile.isRGBW2;
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
         addChannel(thing, add, accuChannel && (status.emeters != null), CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED);
@@ -657,19 +657,19 @@ public class ShellyChannelDefinitions {
             this.typeId = typeId;
 
             groupLabel = getText(PREFIX_GROUP + group + ".label");
-            if (groupLabel.contains(PREFIX_GROUP)) {
+            if (groupLabel.startsWith(PREFIX_GROUP)) {
                 groupLabel = "";
             }
             groupDescription = getText(PREFIX_GROUP + group + ".description");
-            if (groupDescription.contains(PREFIX_GROUP)) {
+            if (groupDescription.startsWith(PREFIX_GROUP)) {
                 groupDescription = "";
             }
             label = getText(PREFIX_CHANNEL + typeId.replace(':', '.') + ".label");
-            if (label.contains(PREFIX_CHANNEL)) {
+            if (label.startsWith(PREFIX_CHANNEL)) {
                 label = "";
             }
             description = getText(PREFIX_CHANNEL + typeId + ".description");
-            if (description.contains(PREFIX_CHANNEL)) {
+            if (description.startsWith(PREFIX_CHANNEL)) {
                 description = ""; // no resource found
             }
         }

@@ -8,4 +8,25 @@
 	<description>This is the binding for internet radios based on the Frontier Silicon chipset.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i)(MEDION|HAMA|TEUFEL|TTMICRO|REVO|ROBERTS|AUNA|SANGEAN|ROKU).*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>friendlyName</name>
+					<regex>(?i).*(MEDION|HAMA|TEUFEL|TTMICRO|REVO|ROBERTS|AUNA|SANGEAN|ROKU).*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

@@ -65,7 +65,7 @@ public class PowermaxState extends PowermaxStateContainer {
         if (isArmed == null) {
             return UnDefType.NULL;
         }
-        return isArmed ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(isArmed);
     });
 
     public DynamicValue<String> panelMode = new DynamicValue<>(this, MODE, () -> {
@@ -101,7 +101,7 @@ public class PowermaxState extends PowermaxStateContainer {
         if (status == null) {
             return UnDefType.NULL;
         }
-        return status ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(status);
     });
 
     private PowermaxPanelSettings panelSettings;

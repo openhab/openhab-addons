@@ -859,8 +859,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                                 if (params.getChannelTypeId() != null) {
                                     switch (params.getChannelTypeId()) {
                                         case CHANNEL_TYPE_RF_LOW_BATTERY:
-                                            updateState(channelId,
-                                                    dev.getBatteryLevel() == 1 ? OnOffType.OFF : OnOffType.ON);
+                                            updateState(channelId, OnOffType.from(dev.getBatteryLevel() != 1));
                                             break;
                                         case CHANNEL_TYPE_RF_SIGNAL_STRENGTH:
                                             int signalLevel = new SignalLevelConverter(dev.getSignalStrength())

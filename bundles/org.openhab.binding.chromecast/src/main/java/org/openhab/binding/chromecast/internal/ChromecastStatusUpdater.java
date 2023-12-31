@@ -124,7 +124,7 @@ public class ChromecastStatusUpdater {
             name = new StringType(application.name);
             id = new StringType(application.id);
             statusText = new StringType(application.statusText);
-            idling = application.isIdleScreen ? OnOffType.ON : OnOffType.OFF;
+            idling = OnOffType.from(application.isIdleScreen);
         }
 
         callback.updateState(CHANNEL_APP_NAME, name);
@@ -142,7 +142,7 @@ public class ChromecastStatusUpdater {
         this.volume = value;
 
         callback.updateState(CHANNEL_VOLUME, value);
-        callback.updateState(CHANNEL_MUTE, volume.muted ? OnOffType.ON : OnOffType.OFF);
+        callback.updateState(CHANNEL_MUTE, OnOffType.from(volume.muted));
     }
 
     public void updateMediaStatus(final @Nullable MediaStatus mediaStatus) {

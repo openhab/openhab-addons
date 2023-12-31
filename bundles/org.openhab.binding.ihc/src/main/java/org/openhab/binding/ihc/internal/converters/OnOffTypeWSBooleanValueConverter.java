@@ -27,7 +27,7 @@ public class OnOffTypeWSBooleanValueConverter implements Converter<WSBooleanValu
     @Override
     public OnOffType convertFromResourceValue(@NonNull WSBooleanValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return from.value ^ convertData.getInverted() ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(from.value ^ convertData.getInverted());
     }
 
     @Override

@@ -20,6 +20,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -90,7 +91,10 @@ public class AccountServlet extends HttpServlet {
             servletUrlWithoutRoot = "amazonechocontrol/" + URLEncoder.encode(id, StandardCharsets.UTF_8);
             servletUrl = "/" + servletUrlWithoutRoot;
 
-            httpService.registerServlet(servletUrl, this, null, httpService.createDefaultHttpContext());
+            Hashtable<Object, Object> initParams = new Hashtable<>();
+            initParams.put("servlet-name", servletUrl);
+
+            httpService.registerServlet(servletUrl, this, initParams, httpService.createDefaultHttpContext());
         } catch (NamespaceException | ServletException e) {
             throw new IllegalStateException(e.getMessage());
         }

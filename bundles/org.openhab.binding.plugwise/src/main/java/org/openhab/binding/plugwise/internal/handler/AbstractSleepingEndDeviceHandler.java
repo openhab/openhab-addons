@@ -64,7 +64,7 @@ public abstract class AbstractSleepingEndDeviceHandler extends AbstractPlugwiseT
     }
 
     protected void handleBroadcastGroupSwitchResponseMessage(BroadcastGroupSwitchResponseMessage message) {
-        updateState(CHANNEL_TRIGGERED, message.getPowerState() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_TRIGGERED, OnOffType.from(message.getPowerState()));
     }
 
     protected void handleInformationResponse(InformationResponseMessage message) {

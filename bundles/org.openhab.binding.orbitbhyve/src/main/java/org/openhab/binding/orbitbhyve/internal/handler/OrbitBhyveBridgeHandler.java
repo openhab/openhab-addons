@@ -288,7 +288,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 }
                 ch = getThingChannel(event.getDeviceId(), CHANNEL_CONTROL);
                 if (ch != null) {
-                    updateState(ch.getUID(), "off".equals(event.getMode()) ? OnOffType.OFF : OnOffType.ON);
+                    updateState(ch.getUID(), OnOffType.from(!"off".equals(event.getMode())));
                 }
                 updateDeviceStatus(event.getDeviceId());
                 break;

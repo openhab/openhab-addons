@@ -161,7 +161,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
             logger.debug("Updating channel: {} to value: {}", channel.getUID(), segment.getSegmentState());
             State newState;
             if (segmentId.startsWith("pgm_")) {
-                newState = "unset".equals(segment.getSegmentState()) ? OnOffType.OFF : OnOffType.ON;
+                newState = OnOffType.from(!"unset".equals(segment.getSegmentState()));
             } else {
                 newState = new StringType(segment.getSegmentState());
             }

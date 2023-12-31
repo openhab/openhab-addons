@@ -2,9 +2,7 @@
 
 This binding can be used to control the Oppo UDP-203/205 or BDP-83/93/95/103/105 Blu-ray player.
 Almost all features of the various models of this player line are supported by the binding.
-This binding was tested on a BDP-103 only, so there might be issues with other models that will need to be fixed.
-Please report any issues found.
-Also review the notes below for some important usage caveats.
+Please review the notes below for some important usage caveats.
 
 The binding supports three different kinds of connections:
 
@@ -162,7 +160,7 @@ Number oppo_osd_position "OSD Position [%s]" { channel="oppo:player:myoppo:osd_p
 Number oppo_sub_shift "Subtitle Shift [%s]" { channel="oppo:player:myoppo:sub_shift" }
 String oppo_hdmi_mode "HDMI Mode [%s]" { channel="oppo:player:myoppo:hdmi_mode" }
 String oppo_hdr_mode "HDR Mode [%s]" { channel="oppo:player:myoppo:hdr_mode" }
-String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:remote_button" }
+String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:remote_button", autoupdate="false" }
 ```
 
 secondsformat.js:
@@ -230,74 +228,78 @@ sitemap oppo label="Oppo Blu-ray" {
 
 ### Appendix A - 'remote_button' codes:
 
-POW Toggle power ON and OFF  
-SRC Select input source  
-EJT Open/close the disc tray  
-PON Discrete on  
-POF Discrete off  
-SYS Switch output TV system (PAL/NTSC/MULTI)  
-DIM Dim front panel display  
-PUR Pure audio mode (no video)  
-VUP Increase volume  
-VDN Decrease volume  
-MUT Mute/Unmute audio  
-NU1 Numeric key 1  
-NU2 Numeric key 2  
-NU3 Numeric key 3  
-NU4 Numeric key 4  
-NU5 Numeric key 5  
-NU6 Numeric key 6  
-NU7 Numeric key 7  
-NU8 Numeric key 8  
-NU9 Numeric key 9  
-NU0 Numeric key 0  
-CLR Clear numeric input  
-GOT Play from a specified location  
-HOM Go to Home Menu to select media source  
-PUP Show previous page  
-PDN Show next page  
-OSD Show/hide on-screen display  
-TTL Show BD top menu or DVD title menu  
-MNU Show BD pop-up menu or DVD menu  
-NUP Up Arrow Navigation  
-NLT Left Arrow Navigation  
-NRT Right Arrow Navigation  
-NDN Down Arrow Navigation  
-SEL ENTER Navigation  
-SET Enter the player setup menu  
-RET Return to the previous menu or mode  
-RED RED Function varies by content  
-GRN GREEN Function varies by content  
-BLU BLUE Function varies by content  
-YLW YELLOW Function varies by content  
-STP Stop playback  
-PLA Start playback  
-PAU Pause playback  
-PRE Skip to previous  
-REV Fast reverse play  
-FWD Fast forward play  
-NXT Skip to next  
-AUD Change audio language or channel  
-SUB Change subtitle language  
-ANG Change camera angle  
-ZOM Zoom in/out and adjust aspect ratio  
-SAP Turn on/off Secondary Audio Program  
-ATB AB Repeat play the selected section  
-RPT Repeat play  
-PIP Show/hide Picture-in-Picture  
-HDM Switch output resolution  
-SUH Press and hold the SUBTITLE key. This activates the subtitle shift feature  
-NFX Stop current playback and start the Netflix application  
-VDU Stop current playback and start the VUDU application  
-OPT Show/hide the Option menu  
-M3D 3D Show/hide the 2D-to-3D Conversion or 3D adjustment menu  
-SEH Display the Picture Adjustment menu  
-DRB Display the Darbee Adjustment menu  
+| Command | Function                                                                    |
+|---------|-----------------------------------------------------------------------------|
+| POW     | Toggle power ON and OFF                                                     |
+| SRC     | Select input source                                                         |
+| EJT     | Open/close the disc tray                                                    |
+| PON     | Discrete on                                                                 |
+| POF     | Discrete off                                                                |
+| SYS     | Switch output TV system (PAL/NTSC/MULTI)                                    |
+| DIM     | Dim front panel display                                                     |
+| PUR     | Pure audio mode (no video)                                                  |
+| VUP     | Increase volume                                                             |
+| VDN     | Decrease volume                                                             |
+| MUT     | Mute/Unmute audio                                                           |
+| NU1     | Numeric key 1                                                               |
+| NU2     | Numeric key 2                                                               |
+| NU3     | Numeric key 3                                                               |
+| NU4     | Numeric key 4                                                               |
+| NU5     | Numeric key 5                                                               |
+| NU6     | Numeric key 6                                                               |
+| NU7     | Numeric key 7                                                               |
+| NU8     | Numeric key 8                                                               |
+| NU9     | Numeric key 9                                                               |
+| NU0     | Numeric key 0                                                               |
+| CLR     | Clear numeric input                                                         |
+| GOT     | Play from a specified location                                              |
+| HOM     | Go to Home Menu to select media source                                      |
+| PUP     | Show previous page                                                          |
+| PDN     | Show next page                                                              |
+| OSD     | Show/hide on-screen display                                                 |
+| TTL     | Show BD top menu or DVD title menu                                          |
+| MNU     | Show BD pop-up menu or DVD menu                                             |
+| NUP     | Up Arrow Navigation                                                         |
+| NLT     | Left Arrow Navigation                                                       |
+| NRT     | Right Arrow Navigation                                                      |
+| NDN     | Down Arrow Navigation                                                       |
+| SEL     | ENTER Navigation                                                            |
+| SET     | Enter the player setup menu                                                 |
+| RET     | Return to the previous menu or mode                                         |
+| RED     | RED Function varies by content                                              |
+| GRN     | GREEN Function varies by content                                            |
+| BLU     | BLUE Function varies by content                                             |
+| YLW     | YELLOW Function varies by content                                           |
+| STP     | Stop playback                                                               |
+| PLA     | Start playback                                                              |
+| PAU     | Pause playback                                                              |
+| PRE     | Skip to previous                                                            |
+| REV     | Fast reverse play                                                           |
+| FWD     | Fast forward play                                                           |
+| NXT     | Skip to next                                                                |
+| AUD     | Change audio language or channel                                            |
+| SUB     | Change subtitle language                                                    |
+| ANG     | Change camera angle                                                         |
+| ZOM     | Zoom in/out and adjust aspect ratio                                         |
+| SAP     | Turn on/off Secondary Audio Program                                         |
+| ATB     | AB Repeat play the selected section                                         |
+| RPT     | Repeat play                                                                 |
+| PIP     | Show/hide Picture-in-Picture                                                |
+| HDM     | Switch output resolution                                                    |
+| SUH     | Press and hold the SUBTITLE key. This activates the subtitle shift feature. |
+| NFX     | Stop current playback and start the Netflix application                     |
+| VDU     | Stop current playback and start the VUDU application                        |
+| OPT     | Show/hide the Option menu                                                   |
+| M3D     | 3D Show/hide the 2D-to-3D Conversion or 3D adjustment menu                  |
+| SEH     | Display the Picture Adjustment menu                                         |
+| DRB     | Display the Darbee Adjustment menu                                          |
 
 #### Extra buttons on UDP models:
 
-HDR Display the HDR selection menu  
-INH Show on-screen detailed information  
-RLH Set resolution to Auto  
-AVS Display the A/V Sync adjustment menu  
-GPA Gapless Play. This functions the same as selecting Gapless Play in the Option Menu.  
+| Command | Function                                                                            |
+|---------|-------------------------------------------------------------------------------------|
+| HDR     | Display the HDR selection menu                                                      |
+| INH     | Show on-screen detailed information                                                 |
+| RLH     | Set resolution to Auto                                                              |
+| AVS     | Display the A/V Sync adjustment menu                                                |
+| GPA     | Gapless Play. This functions the same as selecting Gapless Play in the Option Menu. |

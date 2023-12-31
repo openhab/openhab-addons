@@ -83,7 +83,8 @@ public class ZonePlayerDiscoveryParticipant implements UpnpDiscoveryParticipant 
                 String id = SonosXMLParser
                         .buildThingTypeIdFromModelName(device.getDetails().getModelDetails().getModelName());
                 String udn = device.getIdentity().getUdn().getIdentifierString();
-                if (!id.isEmpty() && !"Sub".equalsIgnoreCase(id) && !udn.isEmpty()) {
+                if (!id.isEmpty() && !SonosBindingConstants.UNSUPPORTED_KNOWN_IDS.contains(id.toLowerCase())
+                        && !udn.isEmpty()) {
                     ThingTypeUID thingTypeUID = new ThingTypeUID(SonosBindingConstants.BINDING_ID, id);
                     if (!SonosBindingConstants.SUPPORTED_KNOWN_THING_TYPES_UIDS.contains(thingTypeUID)) {
                         // Try with the model name all in uppercase

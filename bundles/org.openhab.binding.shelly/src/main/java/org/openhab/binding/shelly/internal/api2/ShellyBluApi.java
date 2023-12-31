@@ -15,17 +15,18 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorTmp;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
@@ -110,18 +111,22 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
         ShellySettingsDevice info = new ShellySettingsDevice();
         info.hostname = !config.serviceName.isEmpty() ? config.serviceName : "";
-        info.fw = "1234";
-        info.type = "SBBT";
+        info.fw = "";
+        info.type = "BLU";
         info.mac = config.deviceAddress;
         info.auth = false;
-        info.gen = 99;
+        info.gen = 2;
         return info;
     }
 
     @Override
-    public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException {
+    public ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice devInfo)
+            throws ShellyApiException {
         ShellyDeviceProfile profile = thing != null ? getProfile() : new ShellyDeviceProfile();
 
+        if (devInfo != null) {
+            profile.device = devInfo;
+        }
         profile.isBlu = true;
         profile.settingsJson = "{}";
         profile.thingName = thingName;
@@ -130,18 +135,13 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.gateway = getThing().getProperty(PROPERTY_GW_DEVICE);
         }
 
-        ShellySettingsDevice device = getDeviceInfo();
-        profile.settings.device = device;
-        profile.hostname = device.hostname;
-        profile.deviceType = device.type;
-        profile.mac = device.mac;
-        profile.auth = device.auth;
+        profile.device = getDeviceInfo();
         if (config.serviceName.isEmpty()) {
-            config.serviceName = getString(profile.hostname);
+            config.serviceName = getString(profile.device.hostname);
         }
-        profile.fwDate = substringBefore(device.fw, "/");
-        profile.fwVersion = substringBefore(ShellyDeviceProfile.extractFwVersion(device.fw.replace("/", "/v")), "-");
-        profile.status.update.oldVersion = profile.fwVersion;
+
+        // for now we have no API to get this information
+        profile.fwDate = profile.fwVersion = profile.status.update.oldVersion = "";
         profile.status.hasUpdate = profile.status.update.hasUpdate = false;
 
         if (profile.hasBattery) {
@@ -238,7 +238,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         }
                         logger.debug("{}: BLU Device discovered", thingName);
                         if (e.data.name != null) {
-                            profile.settings.name = buildBluServiceName(e.data.name, e.data.addr);
+                            profile.settings.name = ShellyDeviceProfile.buildBluServiceName(e.data.name, e.data.addr);
                         }
                         break;
                     case SHELLY2_EVENT_BLUDATA:
@@ -271,11 +271,21 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             sensorData.lux.isValid = true;
                             sensorData.lux.value = (double) e.data.illuminance;
                         }
+                        if (e.data.temperature != null) {
+                            if (sensorData.tmp == null) {
+                                sensorData.tmp = new ShellySensorTmp();
+                            }
+                            sensorData.tmp.tC = e.data.temperature;
+                            sensorData.tmp.isValid = true;
+                        }
                         if (e.data.rotation != null) {
                             if (sensorData.accel == null) {
                                 sensorData.accel = new ShellySensorAccel();
                             }
                             sensorData.accel.tilt = e.data.rotation.intValue();
+                        }
+                        if (e.data.motionState != null) {
+                            sensorData.motion = e.data.motionState == 1;
                         }
 
                         if (e.data.buttonEvent != null) {
@@ -304,18 +314,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             t.incProtErrors();
         }
         if (updated) {
-        }
-    }
-
-    public static String buildBluServiceName(String name, String mac) throws IllegalArgumentException {
-        String model = name.contains("-") ? substringBefore(name, "-") : name; // e.g. SBBT-02C or just SBDW
-        switch (model) {
-            case SHELLYDT_BLUBUTTON:
-                return (THING_TYPE_SHELLYBLUBUTTON_STR + "-" + mac).toLowerCase();
-            case SHELLYDT_BLUDW:
-                return (THING_TYPE_SHELLYBLUDW_STR + "-" + mac).toLowerCase();
-            default:
-                throw new IllegalArgumentException("Unsupported BLU device model " + model);
         }
     }
 }

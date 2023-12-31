@@ -19,9 +19,37 @@ import org.eclipse.jdt.annotation.Nullable;
  * Interface to keep track of the availability of device using an availability topic or messages received
  *
  * @author Jochen Klein - Initial contribution
+ * @author Cody Cutrer - Support all/any/latest
  */
 @NonNullByDefault
 public interface AvailabilityTracker {
+    /**
+     * controls the conditions needed to set the entity to available
+     */
+    enum AvailabilityMode {
+        /**
+         * payload_available must be received on all configured availability topics before the entity is marked as
+         * online
+         */
+        ALL,
+
+        /**
+         * payload_available must be received on at least one configured availability topic before the entity is marked
+         * as online
+         */
+        ANY,
+
+        /**
+         * the last payload_available or payload_not_available received on any configured availability topic controls
+         * the availability
+         */
+        LATEST
+    }
+
+    /**
+     * Sets how multiple availability topics are treated
+     */
+    void setAvailabilityMode(AvailabilityMode mode);
 
     /**
      * Adds an availability topic to determine the availability of a device.

@@ -33,6 +33,12 @@ The bridge enables communication with other Nikobus components:
 - `rollershutter-module` - Nikobus roller shutter module,
 - `push-button` - Nikobus physical push button.
 
+## Warning : PC-Link software addresses writing convention 
+
+This binding and Niko's PC-Link software don't have the same address writing convention ! **You must invert the MSB & LSB**.
+
+example : PC Link's address == `23F0` --> nikobus binding address == `F023`
+
 ## Bridge Configuration
 
 The binding can connect to the PC-Link via serial interface.

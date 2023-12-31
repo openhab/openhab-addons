@@ -105,7 +105,7 @@ public class InsightParser {
     }
 
     private State getOnOff(String value) {
-        return "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(!"0".equals(value));
     }
 
     private State getDateTime(String value) {

@@ -102,7 +102,7 @@ class TypeConverters {
 
         @Override
         public Command toStateCommand(Object propertyValue) {
-            return toBoolean(propertyValue) ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(toBoolean(propertyValue));
         }
 
         @Override

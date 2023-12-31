@@ -118,6 +118,10 @@ public class ShellyApiException extends Exception {
                 || exType == NoRouteToHostException.class;
     }
 
+    public boolean isNoRouteToHost() {
+        return getCauseClass() == NoRouteToHostException.class;
+    }
+
     public boolean isUnknownHost() {
         return getCauseClass() == UnknownHostException.class;
     }

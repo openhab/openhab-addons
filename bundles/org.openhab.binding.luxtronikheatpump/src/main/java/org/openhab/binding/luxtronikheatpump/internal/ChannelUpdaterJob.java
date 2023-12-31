@@ -120,7 +120,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
     private @Nullable State convertValueToState(Integer rawValue, Class<? extends Item> itemClass,
             @Nullable Unit<?> unit) {
         if (itemClass == SwitchItem.class) {
-            return (rawValue == 0) ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(rawValue != 0);
         }
 
         if (itemClass == DateTimeItem.class && rawValue > 0) {

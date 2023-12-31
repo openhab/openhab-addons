@@ -201,4 +201,10 @@
 		<state readOnly="true" pattern="%d h"></state>
 	</channel-type>
 
+	<channel-type id="ircommand" advanced="true">
+		<item-type>String</item-type>
+		<label>IR Command</label>
+		<description>Send an infrared remote command</description>
+	</channel-type>
+
 </thing:thing-descriptions>

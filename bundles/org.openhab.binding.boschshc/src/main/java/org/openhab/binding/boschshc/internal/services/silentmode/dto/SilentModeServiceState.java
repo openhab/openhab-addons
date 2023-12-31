@@ -49,6 +49,6 @@ public class SilentModeServiceState extends BoschSHCServiceState {
     public SilentModeState mode;
 
     public OnOffType toOnOffType() {
-        return mode == SilentModeState.MODE_SILENT ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(mode == SilentModeState.MODE_SILENT);
     }
 }

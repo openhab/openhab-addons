@@ -136,7 +136,7 @@ public class ElroConnectsDeviceCxsmAlarm extends ElroConnectsDevice {
             default:
                 handler.updateState(SIGNAL_STRENGTH, new DecimalType(signalStrength));
                 handler.updateState(BATTERY_LEVEL, new DecimalType(batteryLevel));
-                handler.updateState(LOW_BATTERY, (batteryLevel < 15) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateState(LOW_BATTERY, OnOffType.from(batteryLevel < 15));
                 handler.updateStatus(ThingStatus.ONLINE);
         }
     }

@@ -11,17 +11,6 @@
 		<label>HomeAssistant MQTT Component</label>
 		<description>You need a configured Broker first. This Thing represents a device, that follows the "HomeAssistant MQTT
 			Component" specification.</description>
-		<config-description>
-			<parameter name="topics" type="text" required="true" multiple="true">
-				<label>MQTT Config Topic</label>
-				<description>List of HomeAssistant configuration topics (e.g. /homeassistant/switch/4711/config)</description>
-			</parameter>
-
-			<parameter name="basetopic" type="text" required="true">
-				<label>MQTT Base Prefix</label>
-				<description>MQTT base prefix</description>
-				<default>homeassistant</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:mqtt:homeassistant"/>
 	</thing-type>
 </thing:thing-descriptions>

@@ -74,24 +74,23 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
         final String[] stateEnum = { channelConfiguration.stateDisarmed, channelConfiguration.stateArmedHome,
                 channelConfiguration.stateArmedAway, channelConfiguration.statePending,
                 channelConfiguration.stateTriggered };
-        buildChannel(STATE_CHANNEL_ID, new TextValue(stateEnum), channelConfiguration.getName(),
-                componentConfiguration.getUpdateListener())
+        buildChannel(STATE_CHANNEL_ID, new TextValue(stateEnum), getName(), componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
                 .build();
 
         String commandTopic = channelConfiguration.commandTopic;
         if (commandTopic != null) {
             buildChannel(SWITCH_DISARM_CHANNEL_ID, new TextValue(new String[] { channelConfiguration.payloadDisarm }),
-                    channelConfiguration.getName(), componentConfiguration.getUpdateListener())
+                    getName(), componentConfiguration.getUpdateListener())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos()).build();
 
             buildChannel(SWITCH_ARM_HOME_CHANNEL_ID,
-                    new TextValue(new String[] { channelConfiguration.payloadArmHome }), channelConfiguration.getName(),
+                    new TextValue(new String[] { channelConfiguration.payloadArmHome }), getName(),
                     componentConfiguration.getUpdateListener())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos()).build();
 
             buildChannel(SWITCH_ARM_AWAY_CHANNEL_ID,
-                    new TextValue(new String[] { channelConfiguration.payloadArmAway }), channelConfiguration.getName(),
+                    new TextValue(new String[] { channelConfiguration.payloadArmAway }), getName(),
                     componentConfiguration.getUpdateListener())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos()).build();
         }

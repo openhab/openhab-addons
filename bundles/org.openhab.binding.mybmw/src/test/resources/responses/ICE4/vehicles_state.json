@@ -1,0 +1,103 @@
+{
+    "state": {
+        "isLeftSteering": true,
+        "lastFetched": "2023-01-16T15:33:57.194Z",
+        "lastUpdatedAt": "2022-06-14T08:21:50Z",
+        "isLscSupported": false,
+        "requiredServices": [],
+        "checkControlMessages": [
+            {
+                "type": "ENGINE_OIL",
+                "severity": "LOW"
+            }
+        ],
+        "combustionFuelLevel": {
+            "remainingFuelLiters": 20
+        },
+        "driverPreferences": {
+            "lscPrivacyMode": "OFF"
+        },
+        "climateTimers": [
+            {
+                "isWeeklyTimer": false,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            },
+            {
+                "isWeeklyTimer": true,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [
+                    "MONDAY"
+                ],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            },
+            {
+                "isWeeklyTimer": true,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [
+                    "MONDAY"
+                ],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            }
+        ]
+    },
+    "capabilities": {
+        "a4aType": "USB_ONLY",
+        "climateNow": true,
+        "isClimateTimerSupported": true,
+        "climateTimerTrigger": "START_TIMER",
+        "climateFunction": "VENTILATION",
+        "horn": true,
+        "isBmwChargingSupported": false,
+        "isCarSharingSupported": false,
+        "isChargeNowForBusinessSupported": false,
+        "isChargingHistorySupported": false,
+        "isChargingHospitalityEnabled": false,
+        "isChargingLoudnessEnabled": false,
+        "isChargingPlanSupported": false,
+        "isChargingPowerLimitEnabled": false,
+        "isChargingSettingsEnabled": false,
+        "isChargingTargetSocEnabled": false,
+        "isCustomerEsimSupported": false,
+        "isDataPrivacyEnabled": false,
+        "isDCSContractManagementSupported": false,
+        "isEasyChargeEnabled": false,
+        "isMiniChargingSupported": false,
+        "isEvGoChargingSupported": false,
+        "isRemoteHistoryDeletionSupported": false,
+        "isRemoteEngineStartSupported": false,
+        "isRemoteServicesActivationRequired": false,
+        "isRemoteServicesBookingRequired": false,
+        "isScanAndChargeSupported": false,
+        "lights": true,
+        "lock": true,
+        "sendPoi": true,
+        "unlock": true,
+        "vehicleFinder": false,
+        "vehicleStateSource": "A4A",
+        "isRemoteHistorySupported": true,
+        "isWifiHotspotServiceSupported": false,
+        "isNonLscFeatureEnabled": true,
+        "isSustainabilitySupported": false,
+        "isSustainabilityAccumulatedViewEnabled": false,
+        "checkSustainabilityDPP": false,
+        "specialThemeSupport": [],
+        "isRemoteParkingSupported": false,
+        "remoteChargingCommands": null,
+        "isClimateTimerWeeklyActive": false,
+        "digitalKey": {
+            "bookedServicePackage": "NONE",
+            "state": "NOT_AVAILABLE"
+        }
+    }
+}

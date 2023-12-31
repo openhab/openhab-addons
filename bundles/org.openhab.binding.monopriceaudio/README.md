@@ -3,6 +3,7 @@
 This binding can be used to control the following types of whole house multi-zone amplifier systems:
 
 - Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261), Dayton Audio DAX66 or compatible clones
+- Monoprice 44519 4 zone / 6 source variant of the 10761 **(untested)**
 - Monoprice 31028 or OSD Audio PAM1270 **(untested)**
 - Dayton Audio DAX88 **(untested)**
 - Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 **(untested)**
@@ -21,9 +22,11 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 ## Supported Things
 
 Monoprice 10761 & 39261 or Dayton Audio DAX66 amplifiers use the `amplifier` thing id. Up to 18 zones with 3 linked amps and 6 source inputs are supported.
-Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soundavo, etc. should work as well.  
+Note: Compatible clones from McLELLAND, Factor, Soundavo, etc. should work as well.  
 
-***The following three thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types.***  
+***The following thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types.***  
+
+Monoprice 44519 4 zone variants use the `monoprice4` thing id. Up to 12 zones with 3 linked amps and 6 source inputs are supported.  
 
 Monoprice 31028 or OSD Audio PAM1270 70 volt amplifiers use the `monoprice70` thing id. 6 zones per amp (not linkable) and 2 source inputs are supported.  
 
@@ -63,7 +66,7 @@ The thing has the following configuration parameters (number of sources and zone
 
 Some notes:
 
-- On the 10761/DAX66 amp, activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
+- On the 10761/44519/DAX66 amp, activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
 
 - On Linux, you may get an error stating the serial port cannot be opened when the MonopriceAudio binding tries to load.
 - You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
@@ -121,6 +124,9 @@ monopriceaudio:amplifier:myamp "Monoprice WHA" [ serialPort="COM5", pollingInter
 // Monoprice 10761, 39261 / DAX66 (serial over IP connection)
 monopriceaudio:amplifier:myamp "Monoprice WHA" [ host="192.168.0.10", port=8080, pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono" ]
 
+// Monoprice 44519
+monopriceaudio:monoprice4:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=4, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono" ]
+
 // Monoprice 31028 or OSD Audio PAM1270
 monopriceaudio:monoprice70:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=30, numZones=6, inputLabel1="Source 0 - Bus", inputLabel2="Source 1 - Line" ]
 
@@ -136,7 +142,7 @@ monopriceaudio:xantech:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=
 monoprice.items:
 
 ```java
-// substitute 'amplifier' for the appropriate thing id if using 31028, DAX88 or Xantech amplifier
+// substitute 'amplifier' for the appropriate thing id if using 44519, 31028, DAX88 or Xantech amplifier
 
 Switch all_allpower "All Zones Power" { channel="monopriceaudio:amplifier:myamp:all#allpower" }
 Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:all#allsource" }

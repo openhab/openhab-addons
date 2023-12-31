@@ -47,6 +47,21 @@ public enum AmplifierModel {
                     new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6));
         }
     },
+    // Monoprice 44519 4 zone variant
+    MONOPRICE4("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, 12,
+            6, true, List.of("11", "12", "13", "14", "21", "22", "23", "24", "31", "32", "33", "34")) {
+        @Override
+        public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
+            return getMonopriceZoneData(newZoneData);
+        }
+
+        @Override
+        public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
+            return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
+                    new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
+                    new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6));
+        }
+    },
     // Dayton Audio DAX88
     DAX88("<", "\r", "?", "", ">", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -12, 12, 12, -10, 10, 10, 8, 8,
             true, List.of("01", "02", "03", "04", "05", "06", "07", "08")) {

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="govee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="govee-light">
+		<label>Govee Light</label>
+		<description>Govee light controllable via LAN API</description>
+
+		<channels>
+			<channel id="color" typeId="system.color"/>
+			<channel id="color-temperature" typeId="system.color-temperature"/>
+			<channel id="color-temperature-abs" typeId="color-temperature-abs"/>
+		</channels>
+		<config-description-ref uri="thing-type:govee:govee-light"/>
+	</thing-type>
+
+	<channel-type id="color-temperature-abs">
+		<item-type>Number:Temperature</item-type>
+		<label>Absolute Color Temperature </label>
+		<description>Controls the color temperature of the light in Kelvin</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
+		<state min="2000" max="9000" pattern="%.0f K"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>

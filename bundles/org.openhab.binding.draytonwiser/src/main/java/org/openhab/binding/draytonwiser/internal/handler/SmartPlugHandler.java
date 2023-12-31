@@ -114,7 +114,7 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
     }
 
     private State getZigbeeConnected() {
-        return getData().device.getLqi() == null ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(getData().device.getLqi() != null);
     }
 
     private State getDeviceLocked() {

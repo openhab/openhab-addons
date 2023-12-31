@@ -49,16 +49,16 @@ public class TeslaChannelSelectorProxy {
         AR_LATITUDE("active_route_latitude", "destinationlocation", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                proxy.latitude = s;
-                return new PointType(new StringType(proxy.latitude), new StringType(proxy.longitude),
+                proxy.arLatitude = s;
+                return new PointType(new StringType(proxy.arLatitude), new StringType(proxy.arLongitude),
                         new StringType(proxy.elevation));
             }
         },
         AR_LONGITUDE("active_route_longitude", "destinationlocation", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                proxy.longitude = s;
-                return new PointType(new StringType(proxy.latitude), new StringType(proxy.longitude),
+                proxy.arLongitude = s;
+                return new PointType(new StringType(proxy.arLatitude), new StringType(proxy.arLongitude),
                         new StringType(proxy.elevation));
             }
         },
@@ -1138,6 +1138,8 @@ public class TeslaChannelSelectorProxy {
     public String elevation = "0";
     public String nativeLatitude = "0";
     public String nativeLongitude = "0";
+    public String arLatitude = "0";
+    public String arLongitude = "0";
 
     public State getState(String s, TeslaChannelSelector selector, Map<String, String> properties) {
         return selector.getState(s, this, properties);

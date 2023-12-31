@@ -231,6 +231,15 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     }
 
     /**
+     * Assert that nothing was published on given topic.
+     *
+     * @param mqttTopic Mqtt topic
+     */
+    protected void assertNothingPublished(String mqttTopic) {
+        verify(bridgeConnection, never()).publish(eq(mqttTopic), any(), anyInt(), anyBoolean());
+    }
+
+    /**
      * Publish payload to all subscribers on specified topic.
      *
      * @param mqttTopic Mqtt topic

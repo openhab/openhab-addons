@@ -71,7 +71,7 @@ public class WemoMotionHandler extends WemoHandler {
             String binaryState = stateMap.get("BinaryState");
             if (binaryState != null) {
                 if (oldValue == null || !oldValue.equals(binaryState)) {
-                    State state = "0".equals(binaryState) ? OnOffType.OFF : OnOffType.ON;
+                    State state = OnOffType.from(!"0".equals(binaryState));
                     logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
                     updateState(WemoBindingConstants.CHANNEL_MOTION_DETECTION, state);
                     if (OnOffType.ON.equals(state)) {

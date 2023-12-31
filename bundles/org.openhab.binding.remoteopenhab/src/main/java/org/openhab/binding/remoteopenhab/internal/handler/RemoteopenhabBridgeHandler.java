@@ -573,7 +573,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                         break;
                     case CoreItemFactory.SWITCH:
                         if (checkStateType(itemName, stateType, "OnOff")) {
-                            channelState = "ON".equals(state) ? OnOffType.ON : OnOffType.OFF;
+                            channelState = OnOffType.from("ON".equals(state));
                         }
                         break;
                     case CoreItemFactory.CONTACT:

@@ -1,0 +1,14 @@
+{
+    "chargingSessions": {
+        "total": "0 kWh",
+        "numberOfSessions": "0",
+        "emptyStateDescription": "Laden Sie Ihren BMW und verfolgen Sie Ihre Ladehistorie.\nLadevorgänge werden ab dem Aktivierungszeitpunkt gespeichert, d. h. ab dem 27.07.2020.",
+        "chargingListState": "CHARGE_AND_TRACK",
+        "costsGroupedByCurrency": []
+    },
+    "datePicker": {
+        "startDate": "2020-07-27T00:00:00Z",
+        "selectedDate": "2023-01-20T10:38:08Z",
+        "endDate": "2023-01-20T10:38:09Z"
+    }
+}

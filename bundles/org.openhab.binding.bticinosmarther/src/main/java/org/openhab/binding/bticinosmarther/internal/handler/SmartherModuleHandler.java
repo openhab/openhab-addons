@@ -708,7 +708,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
             updateChannelState(CHANNEL_MEASURES_TEMPERATURE, localChrono.getThermometer().toState());
             updateChannelState(CHANNEL_MEASURES_HUMIDITY, localChrono.getHygrometer().toState());
             // Update the Status channels
-            updateChannelState(CHANNEL_STATUS_STATE, (localChrono.isActive() ? OnOffType.ON : OnOffType.OFF));
+            updateChannelState(CHANNEL_STATUS_STATE, OnOffType.from((localChrono.isActive())));
             updateChannelState(CHANNEL_STATUS_FUNCTION,
                     new StringType(StringUtils.capitalize(localChrono.getFunction().toLowerCase())));
             updateChannelState(CHANNEL_STATUS_MODE,

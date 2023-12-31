@@ -25,10 +25,10 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.dto.FullGroup;
-import org.openhab.binding.hue.internal.dto.FullHueObject;
-import org.openhab.binding.hue.internal.dto.FullLight;
-import org.openhab.binding.hue.internal.dto.FullSensor;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullGroup;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullHueObject;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullLight;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullSensor;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;

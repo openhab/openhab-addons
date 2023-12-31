@@ -58,6 +58,42 @@ class FineOffsetDataParserTest {
     }
 
     @Test
+    void testLiveDataWithManySensors() {
+        byte[] bytes = HexUtils.hexToBytes(
+                "FFFF27007B0100D206240826CC0926CC02004907450A00760B00160C001F150001C00C16000017002A00144D00372C381A0085223E1B00A72333580059005A00620000000061FFFFFFFF60FF1900380E000010002D1100A012000000A013000000A00D009F63004D417000CF2C00250020001B0018020B021E06722164");
+        DebugDetails debugDetails = new DebugDetails(bytes, Command.CMD_GW1000_LIVEDATA, Protocol.DEFAULT);
+        List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(bytes,
+                new ConversionContext(ZoneOffset.UTC), debugDetails);
+        Assertions.assertThat(data)
+                .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
+                .containsExactly(new Tuple("temperature-indoor", "21 °C"), new Tuple("humidity-indoor", "36 %"),
+                        new Tuple("pressure-absolute", "993.2 hPa"), new Tuple("pressure-relative", "993.2 hPa"),
+                        new Tuple("temperature-outdoor", "7.3 °C"), new Tuple("humidity-outdoor", "69 %"),
+                        new Tuple("direction-wind", "118 °"), new Tuple("speed-wind", "2.2 m/s"),
+                        new Tuple("speed-gust", "3.1 m/s"), new Tuple("illumination", "11470 lx"),
+                        new Tuple("irradiation-uv", "0 mW/m²"), new Tuple("uv-index", "0"),
+                        new Tuple("air-quality-channel-1", "2 µg/m³"),
+                        new Tuple("air-quality-24-hour-average-channel-1", "5.5 µg/m³"),
+                        new Tuple("moisture-soil-channel-1", "56 %"), new Tuple("temperature-channel-1", "13.3 °C"),
+                        new Tuple("humidity-channel-1", "62 %"), new Tuple("temperature-channel-2", "16.7 °C"),
+                        new Tuple("humidity-channel-2", "51 %"), new Tuple("water-leak-channel-1", "OFF"),
+                        new Tuple("water-leak-channel-2", "OFF"), new Tuple("water-leak-channel-3", "OFF"),
+                        new Tuple("lightning-counter", "0"), new Tuple("lightning-time", "UNDEF"),
+                        new Tuple("lightning-distance", "UNDEF"), new Tuple("wind-max-day", "5.6 m/s"),
+                        new Tuple("rain-rate", "0 mm/h"), new Tuple("rain-day", "4.5 mm"),
+                        new Tuple("rain-week", "16 mm"), new Tuple("rain-month", "16 mm"),
+                        new Tuple("rain-year", "16 mm"), new Tuple("rain-event", "15.9 mm"),
+                        new Tuple("temperature-external-channel-1", "7.7 °C"),
+                        new Tuple("sensor-co2-temperature", "20.7 °C"), new Tuple("sensor-co2-humidity", "44 %"),
+                        new Tuple("sensor-co2-pm10", "3.7 µg/m³"),
+                        new Tuple("sensor-co2-pm10-24-hour-average", "3.2 µg/m³"),
+                        new Tuple("sensor-co2-pm25", "2.7 µg/m³"),
+                        new Tuple("sensor-co2-pm25-24-hour-average", "2.4 µg/m³"),
+                        new Tuple("sensor-co2-co2", "523 ppm"), new Tuple("sensor-co2-co2-24-hour-average", "542 ppm"),
+                        new Tuple("leaf-wetness-channel-1", "33 %"));
+    }
+
+    @Test
     void testLiveDataWH34AndWh45() {
         byte[] bytes = HexUtils.hexToBytes(
                 "FFFF2700540100CA063E0826EC0926EC02007A074C0A002F0B001F0C0023150000032016000017001A0086225558005A00620000000661654A5AF1601B1900266300884B7000CE3F001D00240016001E041A037B0695");

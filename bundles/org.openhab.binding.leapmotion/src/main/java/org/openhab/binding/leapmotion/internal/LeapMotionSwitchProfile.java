@@ -47,7 +47,7 @@ public class LeapMotionSwitchProfile implements TriggerProfile {
     @Override
     public void onTriggerFromHandler(String event) {
         if (event.equals(LeapMotionBindingConstants.GESTURE_TAP)) {
-            callback.sendCommand(lastState ? OnOffType.OFF : OnOffType.ON);
+            callback.sendCommand(OnOffType.from(!lastState));
         }
     }
 }

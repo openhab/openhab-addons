@@ -183,7 +183,7 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
 
     private void updateDevice(@Nullable MyStromBulbResponse deviceInfo) {
         if (deviceInfo != null) {
-            updateState(CHANNEL_SWITCH, deviceInfo.on ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_SWITCH, OnOffType.from(deviceInfo.on));
             updateState(CHANNEL_RAMP, QuantityType.valueOf(deviceInfo.ramp, MetricPrefix.MILLI(SECOND)));
             if (deviceInfo instanceof MyStromDeviceSpecificInfo info) {
                 updateState(CHANNEL_POWER, QuantityType.valueOf(info.power, WATT));

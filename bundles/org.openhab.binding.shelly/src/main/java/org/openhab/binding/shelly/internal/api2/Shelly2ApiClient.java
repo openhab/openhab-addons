@@ -18,7 +18,6 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -102,52 +101,46 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         super(thingName, config, httpClient);
     }
 
-    protected static final Map<String, String> MAP_INMODE_BTNTYPE = new HashMap<>();
-    static {
-        MAP_INMODE_BTNTYPE.put(SHELLY2_BTNT_MOMENTARY, SHELLY_BTNT_MOMENTARY);
-        MAP_INMODE_BTNTYPE.put(SHELLY2_BTNT_FLIP, SHELLY_BTNT_TOGGLE);
-        MAP_INMODE_BTNTYPE.put(SHELLY2_BTNT_FOLLOW, SHELLY_BTNT_EDGE);
-        MAP_INMODE_BTNTYPE.put(SHELLY2_BTNT_DETACHED, SHELLY_BTNT_MOMENTARY);
-    }
+    protected static final Map<String, String> MAP_INMODE_BTNTYPE = Map.of(//
+            SHELLY2_BTNT_MOMENTARY, SHELLY_BTNT_MOMENTARY, //
+            SHELLY2_BTNT_FLIP, SHELLY_BTNT_TOGGLE, //
+            SHELLY2_BTNT_FOLLOW, SHELLY_BTNT_EDGE, //
+            SHELLY2_BTNT_DETACHED, SHELLY_BTNT_MOMENTARY);
 
-    protected static final Map<String, String> MAP_INPUT_EVENT_TYPE = new HashMap<>();
-    static {
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH);
-        MAP_INPUT_EVENT_TYPE.put(SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH);
-    }
+    protected static final Map<String, String> MAP_INPUT_EVENT_TYPE = Map.of(//
+            SHELLY2_EVENT_1PUSH, SHELLY_BTNEVENT_1SHORTPUSH, //
+            SHELLY2_EVENT_2PUSH, SHELLY_BTNEVENT_2SHORTPUSH, //
+            SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH, //
+            SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH, //
+            SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH, //
+            SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH);
 
-    protected static final Map<String, String> MAP_INPUT_EVENT_ID = new HashMap<>();
-    static {
-        MAP_INPUT_EVENT_ID.put(SHELLY2_EVENT_BTNUP, SHELLY_EVENT_BTN_OFF);
-        MAP_INPUT_EVENT_ID.put(SHELLY2_EVENT_BTNDOWN, SHELLY_EVENT_BTN_ON);
-        MAP_INPUT_EVENT_ID.put(SHELLY2_EVENT_1PUSH, SHELLY_EVENT_SHORTPUSH);
-        MAP_INPUT_EVENT_ID.put(SHELLY2_EVENT_2PUSH, SHELLY_EVENT_DOUBLE_SHORTPUSH);
-        MAP_INPUT_EVENT_ID.put(SHELLY2_EVENT_3PUSH, SHELLY_EVENT_TRIPLE_SHORTPUSH);
-        MAP_INPUT_EVENT_ID.put(SHELLY2_EVENT_LPUSH, SHELLY_EVENT_LONGPUSH);
-        MAP_INPUT_EVENT_ID.put(SHELLY2_EVENT_LSPUSH, SHELLY_EVENT_LONG_SHORTPUSH);
-        MAP_INPUT_EVENT_ID.put(SHELLY2_EVENT_SLPUSH, SHELLY_EVENT_SHORT_LONGTPUSH);
-    }
+    protected static final Map<String, String> MAP_INPUT_EVENT_ID = Map.of(//
+            SHELLY2_EVENT_BTNUP, SHELLY_EVENT_BTN_OFF, //
+            SHELLY2_EVENT_BTNDOWN, SHELLY_EVENT_BTN_ON, //
+            SHELLY2_EVENT_1PUSH, SHELLY_EVENT_SHORTPUSH, //
+            SHELLY2_EVENT_2PUSH, SHELLY_EVENT_DOUBLE_SHORTPUSH, //
+            SHELLY2_EVENT_3PUSH, SHELLY_EVENT_TRIPLE_SHORTPUSH, //
+            SHELLY2_EVENT_LPUSH, SHELLY_EVENT_LONGPUSH, //
+            SHELLY2_EVENT_LSPUSH, SHELLY_EVENT_LONG_SHORTPUSH, //
+            SHELLY2_EVENT_SLPUSH, SHELLY_EVENT_SHORT_LONGTPUSH);
 
-    protected static final Map<String, String> MAP_INPUT_MODE = new HashMap<>();
-    static {
-        MAP_INPUT_MODE.put(SHELLY2_RMODE_SINGLE, SHELLY_INP_MODE_ONEBUTTON);
-        MAP_INPUT_MODE.put(SHELLY2_RMODE_DUAL, SHELLY_INP_MODE_OPENCLOSE);
-        MAP_INPUT_MODE.put(SHELLY2_RMODE_DETACHED, SHELLY_INP_MODE_ONEBUTTON);
-    }
+    protected static final Map<String, String> MAP_INPUT_MODE = Map.of(//
+            SHELLY2_RMODE_SINGLE, SHELLY_INP_MODE_ONEBUTTON, //
+            SHELLY2_RMODE_DUAL, SHELLY_INP_MODE_OPENCLOSE, //
+            SHELLY2_RMODE_DETACHED, SHELLY_INP_MODE_ONEBUTTON);
 
-    protected static final Map<String, String> MAP_ROLLER_STATE = new HashMap<>();
-    static {
-        MAP_ROLLER_STATE.put(SHELLY2_RSTATE_OPEN, SHELLY_RSTATE_OPEN);
-        MAP_ROLLER_STATE.put(SHELLY2_RSTATE_CLOSED, SHELLY_RSTATE_CLOSE);
-        MAP_ROLLER_STATE.put(SHELLY2_RSTATE_OPENING, SHELLY2_RSTATE_OPENING); // Gen2-only
-        MAP_ROLLER_STATE.put(SHELLY2_RSTATE_CLOSING, SHELLY2_RSTATE_CLOSING); // Gen2-only
-        MAP_ROLLER_STATE.put(SHELLY2_RSTATE_STOPPED, SHELLY_RSTATE_STOP);
-        MAP_ROLLER_STATE.put(SHELLY2_RSTATE_CALIB, SHELLY2_RSTATE_CALIB); // Gen2-only
-    }
+    protected static final Map<String, String> MAP_ROLLER_STATE = Map.of(//
+            SHELLY2_RSTATE_OPEN, SHELLY_RSTATE_OPEN, //
+            SHELLY2_RSTATE_CLOSED, SHELLY_RSTATE_CLOSE, //
+            SHELLY2_RSTATE_OPENING, SHELLY2_RSTATE_OPENING, // Gen2-only
+            SHELLY2_RSTATE_CLOSING, SHELLY2_RSTATE_CLOSING, // Gen2-only
+            SHELLY2_RSTATE_STOPPED, SHELLY_RSTATE_STOP, //
+            SHELLY2_RSTATE_CALIB, SHELLY2_RSTATE_CALIB); // Gen2-only
+
+    protected static final Map<String, String> MAP_PROFILE = Map.of(//
+            SHELLY_CLASS_RELAY, SHELLY2_PROFILE_RELAY, //
+            SHELLY_CLASS_ROLLER, SHELLY2_PROFILE_COVER);
 
     protected @Nullable ArrayList<@Nullable ShellySettingsRelay> fillRelaySettings(ShellyDeviceProfile profile,
             Shelly2GetConfigResult dc) {
@@ -514,7 +507,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         rs.isValid = sm.isValid = emeter.isValid = true;
         if (cs.state != null) {
             if (!getString(rs.state).equals(cs.state)) {
-                logger.debug("{}: Roller status changed from {} to {}, updateChannels={}", thingName, rs.state,
+                logger.debug("{}: Roller status changed from {} to {}, updateChannels={}", thingName, rs.state,
                         mapValue(MAP_ROLLER_STATE, cs.state), updateChannels);
             }
             rs.state = mapValue(MAP_ROLLER_STATE, cs.state);

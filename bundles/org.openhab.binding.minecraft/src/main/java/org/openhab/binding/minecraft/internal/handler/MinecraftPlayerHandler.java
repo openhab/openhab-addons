@@ -91,7 +91,7 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
                     break;
                 }
             }
-            State onlineState = playerOnline ? OnOffType.ON : OnOffType.OFF;
+            State onlineState = OnOffType.from(playerOnline);
             updateState(MinecraftBindingConstants.CHANNEL_PLAYER_ONLINE, onlineState);
         }).flatMap(players -> Observable.from(players)).filter(player -> config.getName().equals(player.getName()))
                 .subscribe(player -> updatePlayerState(player));

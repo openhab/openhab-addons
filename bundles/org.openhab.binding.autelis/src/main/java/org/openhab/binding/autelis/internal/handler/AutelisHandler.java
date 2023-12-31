@@ -497,7 +497,7 @@ public class AutelisHandler extends BaseThingHandler {
         if ("Number".equals(type)) {
             return new DecimalType(value);
         } else if ("Switch".equals(type)) {
-            return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(Integer.parseInt(value) > 0);
         } else {
             return StringType.valueOf(value);
         }

@@ -202,7 +202,7 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
             int num = getConfigAs(PowermaxX10Configuration.class).deviceNumber;
             Boolean status = state.getPGMX10DeviceStatus(num);
             if (channel.equals(X10_STATUS) && (status != null)) {
-                updateState(X10_STATUS, status ? OnOffType.ON : OnOffType.OFF);
+                updateState(X10_STATUS, OnOffType.from(status));
             }
         }
     }

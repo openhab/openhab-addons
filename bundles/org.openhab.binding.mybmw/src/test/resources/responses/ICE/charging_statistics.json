@@ -1,0 +1,8 @@
+{
+    "description": "Charge your BMW and track your charging history. Session data collected from 1/1/0001 on, your activation date.",
+    "optStateType": "OPT_IN_WITHOUT_SESSIONS",
+    "statistics": {
+        "totalEnergyCharged": 0,
+        "numberOfChargingSessions": 0
+    }
+}

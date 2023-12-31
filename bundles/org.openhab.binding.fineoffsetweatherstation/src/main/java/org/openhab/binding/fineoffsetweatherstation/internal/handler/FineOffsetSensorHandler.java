@@ -81,7 +81,7 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
         BatteryStatus batteryStatus = sensorDevice.getBatteryStatus();
 
         updateState(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_LOW_BATTERY,
-                batteryStatus.isLow() ? OnOffType.ON : OnOffType.OFF);
+                OnOffType.from(batteryStatus.isLow()));
         Integer percentage = batteryStatus.getPercentage();
         if (percentage != null) {
             updateState(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_LEVEL,

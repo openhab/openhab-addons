@@ -82,9 +82,9 @@ public class DigitalIoConfig {
 
     public State convertState(Boolean rawValue) {
         if (ioLogic == DigitalIoLogic.NORMAL) {
-            return rawValue ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(rawValue);
         } else {
-            return rawValue ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(!rawValue);
         }
     }
 

@@ -138,7 +138,7 @@ public class SOAPValueConverter {
             // map rawValue to State
             switch (dataType) {
                 case "boolean" -> {
-                    return "0".equals(rawValue) ? OnOffType.OFF : OnOffType.ON;
+                    return OnOffType.from(!"0".equals(rawValue));
                 }
                 case "string" -> {
                     return new StringType(rawValue);

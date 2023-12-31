@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hue.internal.dto.ColorTemperature;
-import org.openhab.binding.hue.internal.dto.State;
-import org.openhab.binding.hue.internal.dto.State.ColorMode;
-import org.openhab.binding.hue.internal.dto.StateUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.ColorTemperature;
+import org.openhab.binding.hue.internal.api.dto.clip1.State;
+import org.openhab.binding.hue.internal.api.dto.clip1.State.ColorMode;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
 import org.openhab.binding.hue.internal.handler.LightStateConverter;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;

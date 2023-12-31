@@ -1,0 +1,319 @@
+{
+    "capabilities": {
+        "a4aType": "BLUETOOTH",
+        "checkSustainabilityDPP": false,
+        "climateFunction": "AIR_CONDITIONING",
+        "climateNow": true,
+        "digitalKey": {
+            "bookedServicePackage": "SMACC_2_UWB",
+            "readerGraphics": "readerGraphics",
+            "state": "ACTIVATED"
+        },
+        "horn": true,
+        "inCarCamera": true,
+        "isBmwChargingSupported": true,
+        "isCarSharingSupported": false,
+        "isChargeNowForBusinessSupported": true,
+        "isChargingHistorySupported": true,
+        "isChargingHospitalityEnabled": true,
+        "isChargingLoudnessEnabled": true,
+        "isChargingPlanSupported": true,
+        "isChargingPowerLimitEnabled": true,
+        "isChargingSettingsEnabled": true,
+        "isChargingTargetSocEnabled": true,
+        "isClimateTimerWeeklyActive": false,
+        "isCustomerEsimSupported": true,
+        "isDCSContractManagementSupported": true,
+        "isDataPrivacyEnabled": false,
+        "isEasyChargeEnabled": true,
+        "isEvGoChargingSupported": false,
+        "isMiniChargingSupported": false,
+        "isNonLscFeatureEnabled": false,
+        "isRemoteEngineStartSupported": false,
+        "isRemoteHistoryDeletionSupported": false,
+        "isRemoteHistorySupported": true,
+        "isRemoteParkingSupported": false,
+        "isRemoteServicesActivationRequired": false,
+        "isRemoteServicesBookingRequired": false,
+        "isScanAndChargeSupported": true,
+        "isSustainabilityAccumulatedViewEnabled": false,
+        "isSustainabilitySupported": false,
+        "isWifiHotspotServiceSupported": false,
+        "lastStateCallState": "ACTIVATED",
+        "lights": true,
+        "lock": true,
+        "remote360": true,
+        "remoteSoftwareUpgrade": true,
+        "sendPoi": true,
+        "specialThemeSupport": [],
+        "speechThirdPartyAlexa": false,
+        "speechThirdPartyAlexaSDK": false,
+        "surroundViewRecorder": true,
+        "unlock": true,
+        "vehicleFinder": true,
+        "vehicleStateSource": "LAST_STATE_CALL"
+    },
+    "state": {
+        "chargingProfile": {
+            "chargingControlType": "WEEKLY_PLANNER",
+            "chargingMode": "IMMEDIATE_CHARGING",
+            "chargingPreference": "NO_PRESELECTION",
+            "chargingSettings": {
+                "acCurrentLimit": 16,
+                "hospitality": "NO_ACTION",
+                "idcc": "UNLIMITED_LOUD",
+                "targetSoc": 80
+            },
+            "departureTimes": [
+                {
+                    "action": "DEACTIVATE",
+                    "id": 1,
+                    "timeStamp": {
+                        "hour": 0,
+                        "minute": 0
+                    },
+                    "timerWeekDays": []
+                },
+                {
+                    "action": "DEACTIVATE",
+                    "id": 2,
+                    "timeStamp": {
+                        "hour": 0,
+                        "minute": 0
+                    },
+                    "timerWeekDays": []
+                },
+                {
+                    "action": "DEACTIVATE",
+                    "id": 3,
+                    "timeStamp": {
+                        "hour": 0,
+                        "minute": 0
+                    },
+                    "timerWeekDays": []
+                },
+                {
+                    "action": "DEACTIVATE",
+                    "id": 4,
+                    "timeStamp": {
+                        "hour": 0,
+                        "minute": 0
+                    },
+                    "timerWeekDays": []
+                }
+            ]
+        },
+        "checkControlMessages": [
+            {
+                "severity": "LOW",
+                "type": "TIRE_PRESSURE"
+            }
+        ],
+        "climateControlState": {
+            "activity": "INACTIVE"
+        },
+        "climateTimers": [
+            {
+                "departureTime": {
+                    "hour": 0,
+                    "minute": 0
+                },
+                "isWeeklyTimer": false,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": []
+            },
+            {
+                "departureTime": {
+                    "hour": 0,
+                    "minute": 0
+                },
+                "isWeeklyTimer": true,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": []
+            },
+            {
+                "departureTime": {
+                    "hour": 0,
+                    "minute": 0
+                },
+                "isWeeklyTimer": true,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": []
+            }
+        ],
+        "combustionFuelLevel": {
+            "remainingFuelPercent": 10
+        },
+        "currentMileage": 1121,
+        "doorsState": {
+            "combinedSecurityState": "LOCKED",
+            "combinedState": "CLOSED",
+            "hood": "CLOSED",
+            "leftFront": "CLOSED",
+            "leftRear": "CLOSED",
+            "rightFront": "CLOSED",
+            "rightRear": "CLOSED",
+            "trunk": "CLOSED"
+        },
+        "driverPreferences": {
+            "lscPrivacyMode": "OFF"
+        },
+        "electricChargingState": {
+            "chargingConnectionType": "UNKNOWN",
+            "chargingLevelPercent": 70,
+            "chargingStatus": "CHARGING",
+            "chargingTarget": 80,
+            "isChargerConnected": true,
+            "range": 340,
+            "remainingChargingMinutes": 10
+        },
+        "isLeftSteering": true,
+        "isLscSupported": true,
+        "lastFetched": "2023-01-04T14:57:06.371Z",
+        "lastUpdatedAt": "2023-01-04T14:57:06.383Z",
+        "location": {
+            "address": {
+                "formatted": "Am Olympiapark 1, 80809 München"
+            },
+            "coordinates": {
+                "latitude": 48.177334,
+                "longitude": 11.556274
+            },
+            "heading": 180
+        },
+        "range": 340,
+        "requiredServices": [
+            {
+                "dateTime": "2024-12-01T00:00:00.000Z",
+                "description": "",
+                "mileage": 50000,
+                "status": "OK",
+                "type": "BRAKE_FLUID"
+            },
+            {
+                "dateTime": "2024-12-01T00:00:00.000Z",
+                "description": "",
+                "mileage": 50000,
+                "status": "OK",
+                "type": "VEHICLE_TUV"
+            },
+            {
+                "dateTime": "2024-12-01T00:00:00.000Z",
+                "description": "",
+                "mileage": 50000,
+                "status": "OK",
+                "type": "VEHICLE_CHECK"
+            },
+            {
+                "status": "OK",
+                "type": "TIRE_WEAR_REAR"
+            },
+            {
+                "status": "OK",
+                "type": "TIRE_WEAR_FRONT"
+            }
+        ],
+        "roofState": {
+            "roofState": "CLOSED",
+            "roofStateType": "SUN_ROOF"
+        },
+        "tireState": {
+            "frontLeft": {
+                "details": {
+                    "dimension": "275/40 R22 107Y XL",
+                    "isOptimizedForOemBmw": true,
+                    "manufacturer": "Pirelli",
+                    "manufacturingWeek": 4021,
+                    "mountingDate": "2022-04-20T00:00:00.000Z",
+                    "partNumber": "5A401A1",
+                    "season": 2,
+                    "speedClassification": {
+                        "atLeast": false,
+                        "speedRating": 300
+                    },
+                    "treadDesign": "P-ZERO"
+                },
+                "status": {
+                    "currentPressure": 241,
+                    "pressureStatus": 0,
+                    "targetPressure": 241,
+                    "wearStatus": 0
+                }
+            },
+            "frontRight": {
+                "details": {
+                    "dimension": "275/40 R22 107Y XL",
+                    "isOptimizedForOemBmw": true,
+                    "manufacturer": "Pirelli",
+                    "manufacturingWeek": 4021,
+                    "mountingDate": "2022-04-20T00:00:00.000Z",
+                    "partNumber": "5A401A1",
+                    "season": 2,
+                    "speedClassification": {
+                        "atLeast": false,
+                        "speedRating": 300
+                    },
+                    "treadDesign": "P-ZERO"
+                },
+                "status": {
+                    "currentPressure": 241,
+                    "pressureStatus": 0,
+                    "targetPressure": 241,
+                    "wearStatus": 0
+                }
+            },
+            "rearLeft": {
+                "details": {
+                    "dimension": "275/40 R22 107Y XL",
+                    "isOptimizedForOemBmw": true,
+                    "manufacturer": "Pirelli",
+                    "manufacturingWeek": 4021,
+                    "mountingDate": "2022-04-20T00:00:00.000Z",
+                    "partNumber": "5A401A1",
+                    "season": 2,
+                    "speedClassification": {
+                        "atLeast": false,
+                        "speedRating": 300
+                    },
+                    "treadDesign": "P-ZERO"
+                },
+                "status": {
+                    "currentPressure": 261,
+                    "pressureStatus": 0,
+                    "targetPressure": 269,
+                    "wearStatus": 0
+                }
+            },
+            "rearRight": {
+                "details": {
+                    "dimension": "275/40 R22 107Y XL",
+                    "isOptimizedForOemBmw": true,
+                    "manufacturer": "Pirelli",
+                    "manufacturingWeek": 4021,
+                    "mountingDate": "2022-04-20T00:00:00.000Z",
+                    "partNumber": "5A401A1",
+                    "season": 2,
+                    "speedClassification": {
+                        "atLeast": false,
+                        "speedRating": 300
+                    },
+                    "treadDesign": "P-ZERO"
+                },
+                "status": {
+                    "currentPressure": 269,
+                    "pressureStatus": 0,
+                    "targetPressure": 269,
+                    "wearStatus": 0
+                }
+            }
+        },
+        "windowsState": {
+            "combinedState": "CLOSED",
+            "leftFront": "CLOSED",
+            "leftRear": "CLOSED",
+            "rear": "CLOSED",
+            "rightFront": "CLOSED",
+            "rightRear": "CLOSED"
+        }
+    }
+}

@@ -1125,16 +1125,14 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void onValueReceivedMute(String variable, @Nullable String value) {
         if (value != null && !value.isEmpty()) {
             String upnpChannel = variable.replace("Mute", "mute").replace("Master", "");
-            updateState(upnpChannel,
-                    ("1".equals(value) || "true".equals(value.toLowerCase())) ? OnOffType.ON : OnOffType.OFF);
+            updateState(upnpChannel, OnOffType.from("1".equals(value) || "true".equalsIgnoreCase(value)));
         }
     }
 
     private void onValueReceivedLoudness(String variable, @Nullable String value) {
         if (value != null && !value.isEmpty()) {
             String upnpChannel = variable.replace("Loudness", "loudness").replace("Master", "");
-            updateState(upnpChannel,
-                    ("1".equals(value) || "true".equals(value.toLowerCase())) ? OnOffType.ON : OnOffType.OFF);
+            updateState(upnpChannel, OnOffType.from("1".equals(value) || "true".equalsIgnoreCase(value)));
         }
     }
 

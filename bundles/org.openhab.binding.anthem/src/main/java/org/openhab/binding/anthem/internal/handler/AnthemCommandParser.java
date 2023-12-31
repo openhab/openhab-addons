@@ -200,8 +200,7 @@ public class AnthemCommandParser {
                 mmatcher.find();
                 String zone = mmatcher.group(1);
                 String power = mmatcher.group(2);
-                return AnthemUpdate.createStateUpdate(zone, CHANNEL_POWER,
-                        "1".equals(power) ? OnOffType.ON : OnOffType.OFF);
+                return AnthemUpdate.createStateUpdate(zone, CHANNEL_POWER, OnOffType.from("1".equals(power)));
             } catch (IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
             }
@@ -231,8 +230,7 @@ public class AnthemCommandParser {
                 matcher.find();
                 String zone = matcher.group(1);
                 String mute = matcher.group(2);
-                return AnthemUpdate.createStateUpdate(zone, CHANNEL_MUTE,
-                        "1".equals(mute) ? OnOffType.ON : OnOffType.OFF);
+                return AnthemUpdate.createStateUpdate(zone, CHANNEL_MUTE, OnOffType.from("1".equals(mute)));
             } catch (IndexOutOfBoundsException | IllegalStateException e) {
                 logger.debug("Parsing exception on command: {}", command, e);
             }

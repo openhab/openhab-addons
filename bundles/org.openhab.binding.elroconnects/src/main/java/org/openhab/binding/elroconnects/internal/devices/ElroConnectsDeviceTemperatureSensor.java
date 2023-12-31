@@ -81,7 +81,7 @@ public class ElroConnectsDeviceTemperatureSensor extends ElroConnectsDevice {
             default:
                 handler.updateState(SIGNAL_STRENGTH, new DecimalType(signalStrength));
                 handler.updateState(BATTERY_LEVEL, new DecimalType(batteryLevel));
-                handler.updateState(LOW_BATTERY, (batteryLevel < 15) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateState(LOW_BATTERY, OnOffType.from(batteryLevel < 15));
                 handler.updateState(TEMPERATURE, new QuantityType<>(temperature, CELSIUS));
                 handler.updateState(HUMIDITY, new QuantityType<>(humidity, Units.PERCENT));
                 handler.updateStatus(ThingStatus.ONLINE);

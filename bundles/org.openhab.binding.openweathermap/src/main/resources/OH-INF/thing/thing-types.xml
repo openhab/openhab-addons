@@ -142,6 +142,9 @@
 
 		<channel-groups>
 			<channel-group id="current" typeId="oneCallCurrent"/>
+
+			<channel-group id="forecastMinutely" typeId="oneCallMinutelyTimeSeries"/>
+
 			<channel-group id="forecastMinutes01" typeId="oneCallMinutely"/>
 			<channel-group id="forecastMinutes02" typeId="oneCallMinutely"/>
 			<channel-group id="forecastMinutes03" typeId="oneCallMinutely"/>
@@ -208,6 +211,8 @@
 			<channel-group id="forecastMinutes59" typeId="oneCallMinutely"/>
 			<channel-group id="forecastMinutes60" typeId="oneCallMinutely"/>
 
+			<channel-group id="forecastHourly" typeId="oneCallHourlyTimeSeries"/>
+
 			<channel-group id="forecastHours01" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours02" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours03" typeId="oneCallHourly"/>
@@ -232,6 +237,8 @@
 			<channel-group id="forecastHours22" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours23" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours24" typeId="oneCallHourly"/>
+
+			<channel-group id="forecastDaily" typeId="oneCallDailyTimeSeries"/>
 
 			<channel-group id="forecastToday" typeId="oneCallDaily">
 				<label>One Call API Todays Forecast</label>
@@ -267,6 +274,9 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>location</representation-property>
 
 		<config-description-ref uri="thing-type:openweathermap:onecall"/>

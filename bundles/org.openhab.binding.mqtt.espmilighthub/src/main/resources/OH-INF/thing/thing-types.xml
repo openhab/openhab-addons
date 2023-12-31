@@ -12,13 +12,16 @@
 		<description>LED globe with full Colour, and both cool and warm whites.</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel id="level" typeId="level"/>
-			<channel id="colourTemperature" typeId="colourTemperature"/>
-			<channel id="colour" typeId="colour"/>
+			<channel id="colourTemperature" typeId="system.color-temperature"/>
+			<channel id="colourTemperatureAbs" typeId="system.color-temperature-abs"/>
+			<channel id="colour" typeId="system.color"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:rgbandcct"/>
 	</thing-type>
 
@@ -30,13 +33,16 @@
 		<description>Use this when your remote is the newer 8 group type called FUT089 and your globes are rgb_cct</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel id="level" typeId="level"/>
-			<channel id="colourTemperature" typeId="colourTemperature"/>
-			<channel id="colour" typeId="colour"/>
+			<channel id="colourTemperature" typeId="system.color-temperature"/>
+			<channel id="colourTemperatureAbs" typeId="system.color-temperature-abs"/>
+			<channel id="colour" typeId="system.color"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:rgbandcct"/>
 	</thing-type>
 
@@ -48,10 +54,14 @@
 		<description>Use this when your remote is the newer fut091 and your globes are cct</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel id="level" typeId="level"/>
-			<channel id="colourTemperature" typeId="colourTemperature"/>
+			<channel id="level" typeId="system.brightness"/>
+			<channel id="colourTemperature" typeId="system.color-temperature"/>
+			<channel id="colourTemperatureAbs" typeId="system.color-temperature-abs"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:cct"/>
 	</thing-type>
 
@@ -63,10 +73,14 @@
 		<description>LED globe with both cool and warm white controls</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel id="level" typeId="level"/>
-			<channel id="colourTemperature" typeId="colourTemperature"/>
+			<channel id="level" typeId="system.brightness"/>
+			<channel id="colourTemperature" typeId="system.color-temperature"/>
+			<channel id="colourTemperatureAbs" typeId="system.color-temperature-abs"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:cct"/>
 	</thing-type>
 
@@ -78,12 +92,14 @@
 		<description>RGB Globe with a fixed white</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel id="level" typeId="level"/>
-			<channel id="colour" typeId="colour"/>
+			<channel id="colour" typeId="system.color"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:rgbw"/>
 	</thing-type>
 
@@ -95,47 +111,16 @@
 		<description>RGB Globe with no white</description>
 		<category>Lightbulb</category>
 		<channels>
-			<channel id="level" typeId="level"/>
-			<channel id="colour" typeId="colour"/>
+			<channel id="colour" typeId="system.color"/>
 			<channel id="discoMode" typeId="discoMode"/>
 			<channel id="bulbMode" typeId="bulbMode"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:rgb"/>
 	</thing-type>
-
-	<channel-type id="level">
-		<item-type>Dimmer</item-type>
-		<label>Level</label>
-		<description>Level changes the brightness of the globe.</description>
-		<category>Slider</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
-	</channel-type>
-
-	<channel-type id="colourTemperature">
-		<item-type>Dimmer</item-type>
-		<label>Colour Temperature</label>
-		<description>Change from cool to warm white with this control.</description>
-		<category>Slider</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
-	</channel-type>
-
-	<channel-type id="colour">
-		<item-type>Color</item-type>
-		<label>Colour</label>
-		<description>Allows you to change the colour, brightness and saturation of the globe.</description>
-		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
-	</channel-type>
 
 	<channel-type id="command" advanced="true">
 		<item-type>String</item-type>

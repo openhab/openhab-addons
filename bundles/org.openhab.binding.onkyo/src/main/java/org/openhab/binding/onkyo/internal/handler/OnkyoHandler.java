@@ -561,7 +561,7 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
 
             } else if (classToConvert == OnOffType.class) {
                 index = Integer.parseInt(data, 16);
-                state = index == 0 ? OnOffType.OFF : OnOffType.ON;
+                state = OnOffType.from(index != 0);
 
             } else if (classToConvert == DecimalType.class) {
                 index = Integer.parseInt(data, 16);

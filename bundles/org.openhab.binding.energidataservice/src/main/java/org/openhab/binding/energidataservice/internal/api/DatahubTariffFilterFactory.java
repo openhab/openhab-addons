@@ -71,7 +71,7 @@ public class DatahubTariffFilterFactory {
     public static final LocalDate RADIUS_CUTOFF_DATE = LocalDate.of(2023, 1, 1);
     public static final LocalDate KONSTANT_CUTOFF_DATE = LocalDate.of(2023, 2, 1);
 
-    public static DatahubTariffFilter getNetTariffByGLN(String globalLocationNumber) {
+    public static DatahubTariffFilter getGridTariffByGLN(String globalLocationNumber) {
         switch (globalLocationNumber) {
             case GLN_AAL_ELNET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("AAL-NT-05"), ChargeTypeCode.of("AAL-NTR05")),
@@ -167,6 +167,11 @@ public class DatahubTariffFilterFactory {
                 DateQueryParameter.of(ENERGINET_CUTOFF_DATE));
     }
 
+    public static DatahubTariffFilter getTransmissionGridTariff() {
+        return new DatahubTariffFilter(Set.of(), Set.of(NOTE_TRANSMISSION_NET_TARIFF),
+                DateQueryParameter.of(ENERGINET_CUTOFF_DATE));
+    }
+
     public static DatahubTariffFilter getElectricityTax() {
         return new DatahubTariffFilter(Set.of(), Set.of(NOTE_ELECTRICITY_TAX),
                 DateQueryParameter.of(ENERGINET_CUTOFF_DATE));
@@ -175,10 +180,5 @@ public class DatahubTariffFilterFactory {
     public static DatahubTariffFilter getReducedElectricityTax() {
         return new DatahubTariffFilter(Set.of(), Set.of(NOTE_REDUCED_ELECTRICITY_TAX),
                 DateQueryParameter.of(LocalDate.of(2021, 2, 1)));
-    }
-
-    public static DatahubTariffFilter getTransmissionNetTariff() {
-        return new DatahubTariffFilter(Set.of(), Set.of(NOTE_TRANSMISSION_NET_TARIFF),
-                DateQueryParameter.of(ENERGINET_CUTOFF_DATE));
     }
 }

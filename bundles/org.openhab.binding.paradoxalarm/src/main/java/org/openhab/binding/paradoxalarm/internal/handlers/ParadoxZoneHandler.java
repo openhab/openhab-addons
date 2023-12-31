@@ -94,7 +94,7 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
     }
 
     private OnOffType booleanToSwitchState(boolean value) {
-        return value ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(value);
     }
 
     @Override

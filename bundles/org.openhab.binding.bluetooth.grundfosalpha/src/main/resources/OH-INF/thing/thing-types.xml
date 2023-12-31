@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="grundfos-flow">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Current Flow</label>
+		<description>Current flow</description>
+		<category>Flow</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="grundfos-head">
+		<item-type>Number:Length</item-type>
+		<label>Current Head</label>
+		<description>Current head</description>
+		<category>Water</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="grundfos-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Pump Temperature</label>
+		<description>Current pump temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<thing-type id="mi401">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
+			<bridge-type-ref id="bluegiga"/>
+			<bridge-type-ref id="bluez"/>
+		</supported-bridge-type-refs>
+
+		<label>Grundfos Alpha Reader MI401</label>
+		<description>A Grundfos Alpha Reader MI401</description>
+		<category>Pump</category>
+
+		<channels>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="flow-rate" typeId="grundfos-flow"/>
+			<channel id="pump-head" typeId="grundfos-head"/>
+			<channel id="pump-temperature" typeId="grundfos-temperature"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

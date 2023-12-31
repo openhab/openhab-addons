@@ -68,7 +68,7 @@ public class StateUtil {
         if (value == null) {
             return UnDefType.NULL;
         }
-        return value ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(value);
     }
 
     public static State boolContactOrNull(@Nullable Boolean value) {

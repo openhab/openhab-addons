@@ -1,0 +1,11 @@
+{
+    "description": "January 2023",
+    "optStateType": "OPT_IN_WITH_SESSIONS",
+    "statistics": {
+        "totalEnergyCharged": 78,
+        "totalEnergyChargedSemantics": "Charged a total of approximately 78 kilowatt-hours",
+        "symbol": "~",
+        "numberOfChargingSessions": 4,
+        "numberOfChargingSessionsSemantics": "4 charging sessions"
+    }
+}

@@ -161,7 +161,7 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     public void updateHomeState() {
         try {
             updateState(TadoBindingConstants.CHANNEL_HOME_PRESENCE_MODE,
-                    getHomeState().getPresence() == PresenceState.HOME ? OnOffType.ON : OnOffType.OFF);
+                    OnOffType.from(getHomeState().getPresence() == PresenceState.HOME));
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage(), e);
         }

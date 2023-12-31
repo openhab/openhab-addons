@@ -16,6 +16,8 @@
 			<channel id="radius-hybrid" typeId="range-radius-hybrid-channel"/>
 			<channel id="soc" typeId="soc-channel"/>
 			<channel id="remaining-fuel" typeId="remaining-fuel-channel"/>
+			<channel id="estimated-fuel-l-100km" typeId="estimated-fuel-l-100km-channel"/>
+			<channel id="estimated-fuel-mpg" typeId="estimated-fuel-mpg-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -8,4 +8,20 @@
 	<description>Binding to connect LG's WebOS based smart TVs</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>modelName</name>
+					<regex>.*TV.*</regex>
+				</match-property>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>LG Electronics</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

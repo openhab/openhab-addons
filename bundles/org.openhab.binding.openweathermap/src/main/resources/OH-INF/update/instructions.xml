@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="openweathermap:onecall">
+		<instruction-set targetVersion="1">
+			<add-channel id="precipitation" groupIds="forecastMinutely">
+				<type>openweathermap:precipitation</type>
+			</add-channel>
+
+			<add-channel id="condition" groupIds="forecastHourly">
+				<type>openweathermap:condition</type>
+			</add-channel>
+			<add-channel id="condition-id" groupIds="forecastHourly">
+				<type>openweathermap:condition-id</type>
+			</add-channel>
+			<add-channel id="icon" groupIds="forecastHourly">
+				<type>openweathermap:condition-icon</type>
+			</add-channel>
+			<add-channel id="icon-id" groupIds="forecastHourly">
+				<type>openweathermap:condition-icon-id</type>
+			</add-channel>
+			<add-channel id="temperature" groupIds="forecastHourly">
+				<type>system:outdoor-temperature</type>
+			</add-channel>
+			<add-channel id="apperent-temperature" groupIds="forecastHourly">
+				<type>openweathermap:apparent-temperature</type>
+			</add-channel>
+			<add-channel id="pressure" groupIds="forecastHourly">
+				<type>system:barometric-pressure</type>
+			</add-channel>
+			<add-channel id="humidity" groupIds="forecastHourly">
+				<type>system:atmospheric-humidity</type>
+			</add-channel>
+			<add-channel id="dew-point" groupIds="forecastHourly">
+				<type>openweathermap:dew-point</type>
+			</add-channel>
+			<add-channel id="wind-speed" groupIds="forecastHourly">
+				<type>system:wind-speed</type>
+			</add-channel>
+			<add-channel id="wind-direction" groupIds="forecastHourly">
+				<type>system:wind-direction</type>
+			</add-channel>
+			<add-channel id="gust-speed" groupIds="forecastHourly">
+				<type>openweathermap:gust-speed</type>
+			</add-channel>
+			<add-channel id="cloudiness" groupIds="forecastHourly">
+				<type>openweathermap:cloudiness</type>
+			</add-channel>
+			<add-channel id="precip-probability" groupIds="forecastHourly">
+				<type>openweathermap:precip-probability</type>
+			</add-channel>
+			<add-channel id="rain" groupIds="forecastHourly">
+				<type>openweathermap:rain</type>
+			</add-channel>
+			<add-channel id="snow" groupIds="forecastHourly">
+				<type>openweathermap:snow</type>
+			</add-channel>
+			<add-channel id="visbility" groupIds="forecastHourly">
+				<type>openweathermap:visibility</type>
+			</add-channel>
+
+			<add-channel id="sunrise" groupIds="forecastDaily">
+				<type>openweathermap:sunrise</type>
+			</add-channel>
+			<add-channel id="sunset" groupIds="forecastDaily">
+				<type>openweathermap:sunset</type>
+			</add-channel>
+			<add-channel id="condition" groupIds="forecastDaily">
+				<type>openweathermap:condition</type>
+			</add-channel>
+			<add-channel id="condition-id" groupIds="forecastDaily">
+				<type>openweathermap:condition-id</type>
+			</add-channel>
+			<add-channel id="icon" groupIds="forecastDaily">
+				<type>openweathermap:condition-icon</type>
+			</add-channel>
+			<add-channel id="icon-id" groupIds="forecastDaily">
+				<type>openweathermap:condition-icon-id</type>
+			</add-channel>
+			<add-channel id="morning-temperature" groupIds="forecastDaily">
+				<type>openweathermap:morning-temperature</type>
+			</add-channel>
+			<add-channel id="day-temperature" groupIds="forecastDaily">
+				<type>openweathermap:day-temperature</type>
+			</add-channel>
+			<add-channel id="evening-temperature" groupIds="forecastDaily">
+				<type>openweathermap:evening-temperature</type>
+			</add-channel>
+			<add-channel id="night-temperature" groupIds="forecastDaily">
+				<type>openweathermap:night-temperature</type>
+			</add-channel>
+			<add-channel id="min-temperature" groupIds="forecastDaily">
+				<type>openweathermap:forecasted-min-outdoor-temperature</type>
+			</add-channel>
+			<add-channel id="max-temperature" groupIds="forecastDaily">
+				<type>openweathermap:forecasted-max-outdoor-temperature</type>
+			</add-channel>
+			<add-channel id="apparent-morning" groupIds="forecastDaily">
+				<type>openweathermap:apparent-morning</type>
+			</add-channel>
+			<add-channel id="apparent-day" groupIds="forecastDaily">
+				<type>openweathermap:apparent-day</type>
+			</add-channel>
+			<add-channel id="apparent-evening" groupIds="forecastDaily">
+				<type>openweathermap:apparent-evening</type>
+			</add-channel>
+			<add-channel id="apparent-night" groupIds="forecastDaily">
+				<type>openweathermap:apparent-night</type>
+			</add-channel>
+			<add-channel id="pressure" groupIds="forecastDaily">
+				<type>system:barometric-pressure</type>
+			</add-channel>
+			<add-channel id="humidity" groupIds="forecastDaily">
+				<type>system:atmospheric-humidity</type>
+			</add-channel>
+			<add-channel id="dew-point" groupIds="forecastDaily">
+				<type>openweathermap:dew-point</type>
+			</add-channel>
+			<add-channel id="wind-speed" groupIds="forecastDaily">
+				<type>system:wind-speed</type>
+			</add-channel>
+			<add-channel id="wind-direction" groupIds="forecastDaily">
+				<type>system:wind-direction</type>
+			</add-channel>
+			<add-channel id="gust-speed" groupIds="forecastDaily">
+				<type>openweathermap:gust-speed</type>
+			</add-channel>
+			<add-channel id="cloudiness" groupIds="forecastDaily">
+				<type>openweathermap:cloudiness</type>
+			</add-channel>
+			<add-channel id="uvindex" groupIds="forecastDaily">
+				<type>openweathermap:forecasted-uvindex</type>
+			</add-channel>
+			<add-channel id="precip-probability" groupIds="forecastDaily">
+				<type>openweathermap:precip-probability</type>
+			</add-channel>
+			<add-channel id="rain" groupIds="forecastDaily">
+				<type>openweathermap:rain</type>
+			</add-channel>
+			<add-channel id="snow" groupIds="forecastDaily">
+				<type>openweathermap:snow</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

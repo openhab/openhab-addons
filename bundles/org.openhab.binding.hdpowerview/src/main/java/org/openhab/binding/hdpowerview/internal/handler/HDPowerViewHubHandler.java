@@ -564,7 +564,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         for (ScheduledEvent scheduledEvent : scheduledEvents) {
             String scheduledEventId = Integer.toString(scheduledEvent.id);
             ChannelUID channelUid = new ChannelUID(channelGroupUid, scheduledEventId);
-            updateState(channelUid, scheduledEvent.enabled ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUid, OnOffType.from(scheduledEvent.enabled));
         }
     }
 

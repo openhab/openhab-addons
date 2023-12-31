@@ -1,0 +1,74 @@
+{
+    "paginationInfo": null,
+    "chargingSessions": {
+        "total": "~ 142 kWh",
+        "numberOfSessions": "7",
+        "chargingListState": "HAS_SESSIONS",
+        "sessions": [
+            {
+                "id": "2023-01-13T20:46:46Z_20735abd",
+                "title": "Vrijdag 21:46",
+                "subtitle": "Leopoldstrasse 30 • 2u 06min • -- EUR",
+                "energyCharged": "~ 22 kWh",
+                "sessionStatus": "FINISHED",
+                "isPublic": false
+            },
+            {
+                "id": "2023-01-12T17:39:51Z_20735abd",
+                "title": "Donderdag 18:39",
+                "subtitle": "Leopoldstrasse 30 • 3u 00min • -- EUR",
+                "energyCharged": "~ 31 kWh",
+                "sessionStatus": "FINISHED",
+                "isPublic": false
+            },
+            {
+                "id": "2023-01-08T16:16:13Z_20735abd",
+                "title": "08-01-2023 17:16",
+                "subtitle": "Leopoldstrasse 30 • 2u 15min • -- EUR",
+                "energyCharged": "~ 24 kWh",
+                "sessionStatus": "FINISHED",
+                "isPublic": false
+            },
+            {
+                "id": "2023-01-08T16:16:04.000Z_20735abd",
+                "title": "08-01-2023 17:16",
+                "subtitle": "Leopoldstrasse 30 • 0 min • -- EUR",
+                "energyCharged": "0 kWh",
+                "sessionStatus": "FINISHED",
+                "isPublic": false
+            },
+            {
+                "id": "2023-01-08T15:05:06Z_20735abd",
+                "title": "08-01-2023 16:05",
+                "subtitle": "Leopoldstrasse 30 • 2 min • -- EUR",
+                "energyCharged": "< 2 kWh",
+                "sessionStatus": "FINISHED",
+                "isPublic": false
+            },
+            {
+                "id": "2023-01-05T22:46:55Z_20735abd",
+                "title": "05-01-2023 23:46",
+                "subtitle": "Leopoldstrasse 30 • 2u 30min • -- EUR",
+                "energyCharged": "~ 27 kWh",
+                "sessionStatus": "FINISHED",
+                "isPublic": false
+            },
+            {
+                "id": "2023-01-03T17:08:29Z_20735abd",
+                "title": "03-01-2023 18:08",
+                "subtitle": "Leopoldstrasse 30 • 3u 34min • -- EUR",
+                "energyCharged": "~ 38 kWh",
+                "sessionStatus": "FINISHED",
+                "isPublic": false
+            }
+        ],
+        "costsGroupedByCurrency": [
+            "--"
+        ]
+    },
+    "datePicker": {
+        "startDate": "2022-11-25T12:15:40Z",
+        "selectedDate": "2023-01-13T20:46:48Z",
+        "endDate": "2023-01-16T15:20:49Z"
+    }
+}

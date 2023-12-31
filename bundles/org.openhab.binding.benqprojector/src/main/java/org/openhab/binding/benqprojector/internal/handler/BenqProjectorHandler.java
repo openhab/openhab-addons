@@ -205,10 +205,10 @@ public class BenqProjectorHandler extends BaseThingHandler {
                     }
                 case FREEZE:
                     Switch freeze = remoteController.getFreeze();
-                    return freeze == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(freeze == Switch.ON);
                 case BLANK:
                     Switch blank = remoteController.getBlank();
-                    return blank == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(blank == Switch.ON);
                 case DIRECTCMD:
                     break;
                 case LAMP_TIME:

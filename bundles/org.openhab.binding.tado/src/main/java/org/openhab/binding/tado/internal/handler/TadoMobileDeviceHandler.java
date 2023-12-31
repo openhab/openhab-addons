@@ -108,7 +108,7 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
         try {
             MobileDevice device = getMobileDevice();
             updateState(TadoBindingConstants.CHANNEL_MOBILE_DEVICE_AT_HOME,
-                    device.getLocation().isAtHome() ? OnOffType.ON : OnOffType.OFF);
+                    OnOffType.from(device.getLocation().isAtHome()));
         } catch (IOException | ApiException e) {
             logger.debug("Status update of mobile device with id {} failed: {}", configuration.id, e.getMessage());
         }
