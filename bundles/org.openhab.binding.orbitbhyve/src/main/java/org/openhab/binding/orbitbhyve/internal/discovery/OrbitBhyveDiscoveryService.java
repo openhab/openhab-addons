@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = OrbitBhyveDiscoveryService.class)
 @NonNullByDefault
 public class OrbitBhyveDiscoveryService extends AbstractThingHandlerDiscoveryService<OrbitBhyveBridgeHandler> {
-
     private final Logger logger = LoggerFactory.getLogger(OrbitBhyveDiscoveryService.class);
 
     private @Nullable ScheduledFuture<?> discoveryJob;
@@ -61,16 +60,6 @@ public class OrbitBhyveDiscoveryService extends AbstractThingHandlerDiscoverySer
     @Override
     protected void startScan() {
         runDiscovery();
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
     }
 
     @Override
@@ -94,9 +83,8 @@ public class OrbitBhyveDiscoveryService extends AbstractThingHandlerDiscoverySer
     }
 
     private synchronized void runDiscovery() {
-        OrbitBhyveBridgeHandler localBridgeHandler = thingHandler;
-        if (localBridgeHandler != null && ThingStatus.ONLINE == localBridgeHandler.getThing().getStatus()) {
-            List<OrbitBhyveDevice> devices = localBridgeHandler.getDevices();
+        if (ThingStatus.ONLINE == thingHandler.getThing().getStatus()) {
+            List<OrbitBhyveDevice> devices = thingHandler.getDevices();
             logger.debug("Discovered total of {} devices", devices.size());
             for (OrbitBhyveDevice device : devices) {
                 sprinklerDiscovered(device);
@@ -105,26 +93,22 @@ public class OrbitBhyveDiscoveryService extends AbstractThingHandlerDiscoverySer
     }
 
     private void sprinklerDiscovered(OrbitBhyveDevice device) {
-        OrbitBhyveBridgeHandler localBridgeHandler = thingHandler;
-        if (localBridgeHandler != null) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put("id", device.getId());
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFwVersion());
-            properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.getHwVersion());
-            properties.put(Thing.PROPERTY_MAC_ADDRESS, device.getMacAddress());
-            properties.put(Thing.PROPERTY_MODEL_ID, device.getType());
-            properties.put("Zones", device.getNumStations());
-            properties.put("Active zones", device.getZones().size());
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("id", device.getId());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFwVersion());
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.getHwVersion());
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, device.getMacAddress());
+        properties.put(Thing.PROPERTY_MODEL_ID, device.getType());
+        properties.put("Zones", device.getNumStations());
+        properties.put("Active zones", device.getZones().size());
 
-            ThingUID thingUID = new ThingUID(THING_TYPE_SPRINKLER, localBridgeHandler.getThing().getUID(),
-                    device.getId());
+        ThingUID thingUID = new ThingUID(THING_TYPE_SPRINKLER, thingHandler.getThing().getUID(), device.getId());
 
-            logger.debug("Detected a/an {} - label: {} id: {}", THING_TYPE_SPRINKLER.getId(), device.getName(),
-                    device.getId());
-            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_SPRINKLER)
-                    .withProperties(properties).withRepresentationProperty("id").withLabel(device.getName())
-                    .withBridge(localBridgeHandler.getThing().getUID()).build());
-        }
+        logger.debug("Detected a/an {} - label: {} id: {}", THING_TYPE_SPRINKLER.getId(), device.getName(),
+                device.getId());
+        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_SPRINKLER)
+                .withProperties(properties).withRepresentationProperty("id").withLabel(device.getName())
+                .withBridge(thingHandler.getThing().getUID()).build());
     }
 
     @Override
