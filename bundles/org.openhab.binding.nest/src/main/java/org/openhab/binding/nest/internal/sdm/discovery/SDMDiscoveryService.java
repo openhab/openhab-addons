@@ -49,7 +49,6 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = SDMDiscoveryService.class)
 @NonNullByDefault
 public class SDMDiscoveryService extends AbstractThingHandlerDiscoveryService<SDMAccountHandler> {
-
     private final Logger logger = LoggerFactory.getLogger(SDMDiscoveryService.class);
     private @Nullable Future<?> discoveryJob;
 
@@ -59,6 +58,7 @@ public class SDMDiscoveryService extends AbstractThingHandlerDiscoveryService<SD
 
     @Override
     public void dispose() {
+        super.dispose();
         cancelDiscoveryJob();
     }
 
@@ -82,14 +82,10 @@ public class SDMDiscoveryService extends AbstractThingHandlerDiscoveryService<SD
     }
 
     private void discoverDevices() {
-        SDMAccountHandler accountHandler = thingHandler;
-        if (accountHandler == null) {
-            return;
-        }
-        ThingUID bridgeUID = accountHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         logger.debug("Starting discovery scan for {}", bridgeUID);
         try {
-            accountHandler.getAPI().listDevices().forEach(device -> addDeviceDiscoveryResult(bridgeUID, device));
+            thingHandler.getAPI().listDevices().forEach(device -> addDeviceDiscoveryResult(bridgeUID, device));
         } catch (FailedSendingSDMDataException | InvalidSDMAccessTokenException e) {
             logger.debug("Exception during discovery scan for {}", bridgeUID, e);
         }
