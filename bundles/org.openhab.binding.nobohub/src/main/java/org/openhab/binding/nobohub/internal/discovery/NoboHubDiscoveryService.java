@@ -71,6 +71,7 @@ public class NoboHubDiscoveryService extends AbstractThingHandlerDiscoveryServic
 
     @Override
     public void dispose() {
+        super.dispose();
         removeOlderResults(new Date().getTime());
     }
 
