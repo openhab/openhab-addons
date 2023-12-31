@@ -18,13 +18,20 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkAccountHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link myUplinkHandlerFactory} is responsible for creating things and thing
@@ -36,6 +43,18 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.myuplink", service = ThingHandlerFactory.class)
 public class MyUplinkHandlerFactory extends BaseThingHandlerFactory {
 
+    private final Logger logger = LoggerFactory.getLogger(MyUplinkHandlerFactory.class);
+
+        /**
+     * the shared http client
+     */
+    private final HttpClient httpClient;
+
+    @Activate
+    public MyUplinkHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -46,7 +65,9 @@ public class MyUplinkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new MyUplinkAccountHandler(thing);
+            return new MyUplinkAccountHandler((Bridge) thing, httpClient);
+        } else {
+            logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }
 
         return null;
