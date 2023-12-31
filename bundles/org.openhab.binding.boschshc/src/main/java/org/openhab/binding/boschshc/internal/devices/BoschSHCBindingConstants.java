@@ -36,6 +36,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_INWALL_SWITCH = new ThingTypeUID(BINDING_ID, "in-wall-switch");
     public static final ThingTypeUID THING_TYPE_TWINGUARD = new ThingTypeUID(BINDING_ID, "twinguard");
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT = new ThingTypeUID(BINDING_ID, "window-contact");
+    public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2 = new ThingTypeUID(BINDING_ID, "window-contact-2");
     public static final ThingTypeUID THING_TYPE_MOTION_DETECTOR = new ThingTypeUID(BINDING_ID, "motion-detector");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
@@ -88,6 +89,8 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_SMOKE_CHECK = "smoke-check";
     public static final String CHANNEL_SILENT_MODE = "silent-mode";
     public static final String CHANNEL_ILLUMINANCE = "illuminance";
+    public static final String CHANNEL_BYPASS_STATE = "bypass-state";
+    public static final String CHANNEL_SIGNAL_STRENGTH = "signal-strength";
 
     public static final String CHANNEL_USER_DEFINED_STATE = "user-state";
 

@@ -57,10 +57,11 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
 
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(
             BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH, BoschSHCBindingConstants.THING_TYPE_TWINGUARD,
-            BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT, BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR,
-            BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL, BoschSHCBindingConstants.THING_TYPE_THERMOSTAT,
-            BoschSHCBindingConstants.THING_TYPE_CLIMATE_CONTROL, BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT,
-            BoschSHCBindingConstants.THING_TYPE_CAMERA_360, BoschSHCBindingConstants.THING_TYPE_CAMERA_EYES,
+            BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT, BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2,
+            BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR, BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL,
+            BoschSHCBindingConstants.THING_TYPE_THERMOSTAT, BoschSHCBindingConstants.THING_TYPE_CLIMATE_CONTROL,
+            BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT, BoschSHCBindingConstants.THING_TYPE_CAMERA_360,
+            BoschSHCBindingConstants.THING_TYPE_CAMERA_EYES,
             BoschSHCBindingConstants.THING_TYPE_INTRUSION_DETECTION_SYSTEM,
             BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT, BoschSHCBindingConstants.THING_TYPE_SMART_BULB,
             BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR);
@@ -83,6 +84,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
             new AbstractMap.SimpleEntry<>("HUE_LIGHT", BoschSHCBindingConstants.THING_TYPE_SMART_BULB),
             new AbstractMap.SimpleEntry<>("LEDVANCE_LIGHT", BoschSHCBindingConstants.THING_TYPE_SMART_BULB),
             new AbstractMap.SimpleEntry<>("SWD", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT),
+            new AbstractMap.SimpleEntry<>("SWD2", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2),
             new AbstractMap.SimpleEntry<>("TRV", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT)
 // Future Extension: map deviceModel names to BoschSHC Thing Types when they are supported
 //            new AbstractMap.SimpleEntry<>("SMOKE_DETECTION_SYSTEM", BoschSHCBindingConstants.),
