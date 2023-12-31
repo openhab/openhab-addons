@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -67,7 +66,8 @@ public class NanoleafPanelsDiscoveryService extends AbstractThingHandlerDiscover
 
     @Override
     public void dispose() {
-        boolean result = Objects.requireNonNull(thingHandler).unregisterControllerListener(this);
+        super.dispose();
+        boolean result = thingHandler.unregisterControllerListener(this);
         logger.debug("unregistration of controller was {}", result ? "successful" : "unsuccessful");
     }
 
@@ -136,6 +136,7 @@ public class NanoleafPanelsDiscoveryService extends AbstractThingHandlerDiscover
 
     @Override
     public void initialize() {
-        Objects.requireNonNull(thingHandler).registerControllerListener(this);
+        thingHandler.registerControllerListener(this);
+        super.initialize();
     }
 }
