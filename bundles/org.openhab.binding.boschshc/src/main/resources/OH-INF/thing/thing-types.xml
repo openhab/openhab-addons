@@ -593,7 +593,7 @@
 		<label>State</label>
 		<description>State of user-defined state</description>
 	</channel-type>
-	
+
 	<channel-type id="bypass-state">
 		<item-type>Switch</item-type>
 		<label>Bypass State</label>
