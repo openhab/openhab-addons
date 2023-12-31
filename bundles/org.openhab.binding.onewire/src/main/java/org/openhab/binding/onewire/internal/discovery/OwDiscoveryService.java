@@ -92,15 +92,9 @@ public class OwDiscoveryService extends AbstractThingHandlerDiscoveryService<Ows
 
     @Override
     public void startScan() {
-        OwserverBridgeHandler bridgeHandler = this.thingHandler;
-        if (bridgeHandler == null) {
-            logger.warn("bridgeHandler not found");
-            return;
-        }
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
 
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-
-        scanDirectory(bridgeHandler, "/");
+        scanDirectory(thingHandler, "/");
 
         // remove duplicates
         owDiscoveryItems.entrySet().removeIf(s -> associatedSensors.contains(s.getKey()));
@@ -139,6 +133,7 @@ public class OwDiscoveryService extends AbstractThingHandlerDiscoveryService<Ows
 
     @Override
     public void dispose() {
+        super.dispose();
         removeOlderResults(new Date().getTime());
     }
 }
