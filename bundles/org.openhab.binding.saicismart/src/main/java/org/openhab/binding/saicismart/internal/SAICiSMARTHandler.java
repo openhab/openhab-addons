@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.saicismart.internal;
 
+import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.ABRP_API_KEY;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.API_ENDPOINT_V21;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_FORCE_REFRESH;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_LAST_ACTIVITY;
@@ -153,28 +154,29 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
         // just started, make sure we start querying
         notifyCarActivity(ZonedDateTime.now(getTimeZone()), true);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::updateStatus, 2,
+                SAICiSMARTBindingConstants.REFRESH_INTERVAL, TimeUnit.SECONDS);
+    }
 
-        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-            if (lastCarActivity.isAfter(ZonedDateTime.now().minus(10, ChronoUnit.MINUTES))) {
-                if (this.getBridgeHandler().getUid() != null && this.getBridgeHandler().getToken() != null) {
-                    try {
-                        OTA_RVMVehicleStatusResp25857 otaRvmVehicleStatusResp25857 = new VehicleStateUpdater(this)
-                                .call();
-                        OTA_ChrgMangDataResp otaChrgMangDataResp = new ChargeStateUpdater(this).call();
+    private void updateStatus() {
+        if (lastCarActivity.isAfter(ZonedDateTime.now().minus(10, ChronoUnit.MINUTES))) {
+            if (this.getBridgeHandler().getUid() != null && this.getBridgeHandler().getToken() != null) {
+                try {
+                    OTA_RVMVehicleStatusResp25857 otaRvmVehicleStatusResp25857 = new VehicleStateUpdater(this).call();
+                    OTA_ChrgMangDataResp otaChrgMangDataResp = new ChargeStateUpdater(this).call();
 
-                        if (config.abrpUserToken != null && config.abrpUserToken.length() > 0) {
-                            String execute = ABRP.updateAbrp("8cfc314b-03cd-4efe-ab7d-4431cd8f2e2d",
-                                    config.abrpUserToken, otaRvmVehicleStatusResp25857, otaChrgMangDataResp);
+                    if (config.abrpUserToken != null && config.abrpUserToken.length() > 0) {
+                        String execute = ABRP.updateAbrp(ABRP_API_KEY, config.abrpUserToken,
+                                otaRvmVehicleStatusResp25857, otaChrgMangDataResp);
 
-                            logger.debug("ABRP: {}", execute);
-                        }
-                    } catch (Exception e) {
-                        logger.debug("Could not refresh car data for {}. {}", config.vin, e.getMessage());
-                        updateStatus(ThingStatus.OFFLINE);
+                        logger.debug("ABRP: {}", execute);
                     }
+                } catch (Exception e) {
+                    logger.debug("Could not refresh car data for {}. {}", config.vin, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE);
                 }
             }
-        }, 2, SAICiSMARTBindingConstants.REFRESH_INTERVAL, TimeUnit.SECONDS);
+        }
     }
 
     private void sendACCommand(byte command, byte temperature)

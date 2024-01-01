@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.bn.coders.IASN1PreparedElement;
+import org.openhab.binding.saicismart.internal.exceptions.ChargingStatusAPIException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -50,8 +51,8 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
         this.saiCiSMARTHandler = saiCiSMARTHandler;
     }
 
-    public OTA_ChrgMangDataResp call()
-            throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+    public OTA_ChrgMangDataResp call() throws URISyntaxException, ExecutionException, InterruptedException,
+            TimeoutException, ChargingStatusAPIException {
         MessageCoder<IASN1PreparedElement> chargingStatusRequestmessageCoder = new MessageCoder<>(
                 IASN1PreparedElement.class);
         Message<IASN1PreparedElement> chargingStatusMessage = chargingStatusRequestmessageCoder.initializeMessage(
@@ -69,13 +70,13 @@ class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
         // we get an eventId back...
         chargingStatusMessage.getBody().setEventID(chargingStatusResponseMessage.getBody().getEventID());
         // ... use that to request the data again, until we have it
-        // TODO: check for real errors (result!=0 and/or errorMessagePresent)
         while (chargingStatusResponseMessage.getApplicationData() == null) {
-            if (chargingStatusResponseMessage.getBody().isErrorMessagePresent()) {
+            if (chargingStatusResponseMessage.getBody().getResult() != 0
+                    || chargingStatusResponseMessage.getBody().isErrorMessagePresent()) {
                 if (chargingStatusResponseMessage.getBody().getResult() == 2) {
                     saiCiSMARTHandler.getBridgeHandler().relogin();
                 }
-                throw new TimeoutException(new String(chargingStatusResponseMessage.getBody().getErrorMessage()));
+                throw new ChargingStatusAPIException(chargingStatusResponseMessage.getBody());
             }
 
             chargingStatusMessage.getBody().setUid(saiCiSMARTHandler.getBridgeHandler().getUid());

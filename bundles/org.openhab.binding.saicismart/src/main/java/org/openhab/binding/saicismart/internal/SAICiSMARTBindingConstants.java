@@ -51,6 +51,8 @@ public class SAICiSMARTBindingConstants {
      */
     public static final String API_ENDPOINT_V30 = API_HOST_URL + "/TAP.Web/ota.mpv30";
 
+    public static final String ABRP_API_KEY = "8cfc314b-03cd-4efe-ab7d-4431cd8f2e2d";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");

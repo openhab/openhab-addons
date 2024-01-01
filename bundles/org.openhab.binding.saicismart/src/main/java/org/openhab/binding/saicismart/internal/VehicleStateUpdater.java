@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.saicismart.internal.exceptions.VehicleStatusAPIException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -64,8 +65,8 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
     }
 
     @Override
-    public OTA_RVMVehicleStatusResp25857 call()
-            throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+    public OTA_RVMVehicleStatusResp25857 call() throws URISyntaxException, ExecutionException, InterruptedException,
+            TimeoutException, VehicleStatusAPIException {
         MessageCoder<OTA_RVMVehicleStatusReq> otaRvmVehicleStatusRequstMessageCoder = new MessageCoder<>(
                 OTA_RVMVehicleStatusReq.class);
 
@@ -89,13 +90,13 @@ class VehicleStateUpdater implements Callable<OTA_RVMVehicleStatusResp25857> {
         // we get an eventId back...
         chargingStatusMessage.getBody().setEventID(chargingStatusResponseMessage.getBody().getEventID());
         // ... use that to request the data again, until we have it
-        // TODO: check for real errors (result!=0 and/or errorMessagePresent)
         while (chargingStatusResponseMessage.getApplicationData() == null) {
-            if (chargingStatusResponseMessage.getBody().isErrorMessagePresent()) {
+            if (chargingStatusResponseMessage.getBody().getResult() != 0
+                    || chargingStatusResponseMessage.getBody().isErrorMessagePresent()) {
                 if (chargingStatusResponseMessage.getBody().getResult() == 2) {
                     saiCiSMARTHandler.getBridgeHandler().relogin();
                 }
-                throw new TimeoutException(new String(chargingStatusResponseMessage.getBody().getErrorMessage()));
+                throw new VehicleStatusAPIException(chargingStatusResponseMessage.getBody());
             }
 
             chargingStatusMessage.getBody().setUid(saiCiSMARTHandler.getBridgeHandler().getUid());
