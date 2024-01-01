@@ -14,7 +14,7 @@
 
   <name>openHAB Add-ons :: Bundles :: SAICiSMART Binding</name>
   <properties>
-    <bnd.importpackage>org.brotli.dec;resolution:=optional,org.conscrypt;resolution:=optional,org.glassfish.jersey.internal.spi;resolution:=optional,org.graalvm.nativeimage.hosted;resolution:=optional,org.joda.time;resolution:=optional,org.joda.time.base;resolution:=optional,org.joda.time.format;resolution:=optional,org.springframework.core;resolution:=optional,org.springframework.http;resolution:=optional,org.springframework.http.converter;resolution:=optional,org.springframework.web;resolution:=optional,org.springframework.web.bind.support;resolution:=optional,org.springframework.web.context.request;resolution:=optional,org.springframework.web.method.support;resolution:=optional,org.springframework.web.servlet.mvc.method.annotation;resolution:=optional,picocli;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>org.brotli.dec;resolution:=optional,org.conscrypt;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -47,19 +47,6 @@
       <groupId>net.heberling.binarynotes</groupId>
       <artifactId>binarynotes</artifactId>
       <version>1.7.0</version>
-    </dependency>
-    <!-- These should be bnd.import packages I think...? -->
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.10.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.measure</groupId>
-      <artifactId>unit-api</artifactId>
-      <version>2.2</version>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
