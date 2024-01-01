@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.freedesktop.dbus.errors.NoReply;
+import org.freedesktop.dbus.errors.UnknownObject;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.types.UInt16;
@@ -195,7 +196,12 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         BluetoothDevice dev = device;
         if (dev != null) {
             logger.debug("Disconnecting '{}'", address);
-            return dev.disconnect();
+            try {
+                return dev.disconnect();
+            } catch (UnknownObject exception) {
+                logger.debug("Failed to disconnect the device, UnknownObject", exception);
+                return false;
+            }
         }
         return false;
     }
