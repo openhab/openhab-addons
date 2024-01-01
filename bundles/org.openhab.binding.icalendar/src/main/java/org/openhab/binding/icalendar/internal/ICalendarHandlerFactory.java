@@ -87,7 +87,7 @@ public class ICalendarHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_CALENDAR)) {
             if (thing instanceof Bridge bridge) {
-                return new ICalendarHandler(bridge, sharedHttpClient, eventPublisher, tzProvider);
+                return new ICalendarHandler(bridge, sharedHttpClient, tzProvider);
             } else {
                 logger.warn(
                         "The API of iCalendar has changed. You have to recreate the calendar according to the docs.");
