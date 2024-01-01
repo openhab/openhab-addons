@@ -16,6 +16,7 @@ It is absolutely recommended to configure static IP addresses for both, the open
 
 The Nuki Binding will manage the required callback from the Nuki Bridge to the openHAB server if _manageCallbacks_ is set to `true`.
 If _manageCallbacks_ is not set it will default to `true`.  
+Make sure that you've selected the correct primary address in the [network settings](https://www.openhab.org/docs/settings/services_system.html#network-settings).
 
 If you want to manage the callbacks from the Nuki Bridge to the openHAB server by yourself, you need to set _manageCallbacks_ to `false`.
 Then add the callback on the Nuki Bridge via Bridge API Endpoint _/callback/add_ in the format `http://<openHAB_IP>:<openHAB_PORT>/nuki/bcb`.  
