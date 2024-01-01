@@ -221,13 +221,14 @@ public class FreeAtHomeDatapointGroup {
                 break;
             default:
                 pattern = "";
+                logger.debug("Type pattern not forund for PairingID {} - using default",
+                        String.format("0x%04X", pairingId));
                 break;
         }
 
         return pattern;
     }
 
-    @SuppressWarnings("null")
     public ValueStateConverter getValueStateConverter() {
         ValueStateConverter valueStateConverter = new BooleanValueStateConverter();
 
@@ -249,7 +250,9 @@ public class FreeAtHomeDatapointGroup {
                 valueStateConverter = new ShuttercontrolValueStateConverter();
                 break;
             default:
-                valueStateConverter = new BooleanValueStateConverter();
+                valueStateConverter = new DecimalValueStateConverter();
+                logger.debug("Value converter not forund for PairingID {} - using default",
+                        String.format("0x%04X", pairingId));
                 break;
         }
 
@@ -275,7 +278,9 @@ public class FreeAtHomeDatapointGroup {
                 itemTypeString = CoreItemFactory.ROLLERSHUTTER;
                 break;
             default:
-                logger.info("wrong datapoint {}", String.format("0x%04X", pairingId));
+                itemTypeString = CoreItemFactory.NUMBER;
+                logger.debug("Item type constant not forund for PairingID {} - using default",
+                        String.format("0x%04X", pairingId));
                 break;
         }
 
