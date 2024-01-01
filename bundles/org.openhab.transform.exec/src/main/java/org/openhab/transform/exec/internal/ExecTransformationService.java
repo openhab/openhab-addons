@@ -69,7 +69,7 @@ public class ExecTransformationService implements TransformationService {
 
         String formattedCommandLine = String.format(commandLine, source);
         String[] cmdLineParts = SPLIT_ON_SPACE.matcher(formattedCommandLine).results()
-            .map(mr -> mr.group(2) == null ? mr.group() : mr.group(2)).toArray(String[]::new);
+                .map(mr -> mr.group(2) == null ? mr.group() : mr.group(2)).toArray(String[]::new);
         String result = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofSeconds(5), cmdLineParts);
         logger.trace("command line execution elapsed {} ms", System.currentTimeMillis() - startTime);
 
