@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.plex.discovery;
+package org.openhab.binding.plex.internal.discovery;
 
 import static org.openhab.binding.plex.internal.PlexBindingConstants.*;
 
