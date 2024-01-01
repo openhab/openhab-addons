@@ -23,7 +23,7 @@ To enable the binding to control the player while off (network active while off)
 The UHD models require authentication to use the control API.
 A player key must be specified in the thing configuration in order for the `power`, `button` and `control` channels to work.
 UHD model players that are patched do not require a player key.
-See the online discussions of the DP-UB420/820/9000 players for more information.
+See the [AVForums discussions](https://www.avforums.com/forums/blu-ray-dvd-player-multiregion-hacks.126/) of the DP-UB420/820/9000 players for more information.
 
 ## Supported Things
 
