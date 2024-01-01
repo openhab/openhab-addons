@@ -142,9 +142,11 @@ public class WebSocketConnection {
     public void close() {
         closed = true;
         Timer pingTimer = this.pingTimer;
+        this.pingTimer = null;
         if (pingTimer != null) {
             pingTimer.cancel();
         }
+
         clearPongTimeoutTimer();
         Session session = this.session;
         this.session = null;
@@ -157,6 +159,7 @@ public class WebSocketConnection {
         }
         logger.trace("Connect future = {}", sessionFuture);
         final Future<?> sessionFuture = this.sessionFuture;
+        this.sessionFuture = null;
         if (sessionFuture != null && !sessionFuture.isDone()) {
             sessionFuture.cancel(true);
         }
