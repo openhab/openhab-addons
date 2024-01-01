@@ -103,6 +103,11 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
         }
         GroupUpdate update = new GroupUpdate();
         switch (channelUID.getId()) {
+            case AmpliPiBindingConstants.CHANNEL_POWER:
+                if (command instanceof OnOffType) {
+                    update.setMute(command == OnOffType.OFF);
+                }
+                break;
             case AmpliPiBindingConstants.CHANNEL_MUTE:
                 if (command instanceof OnOffType) {
                     update.setMute(command == OnOffType.ON);
@@ -159,10 +164,12 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
     private void updateGroupState(Group state) {
         this.groupState = state;
 
+        Boolean power = !groupState.getMute();
         Boolean mute = groupState.getMute();
         Integer volDelta = groupState.getVolDelta();
         Integer sourceId = groupState.getSourceId();
 
+        updateState(AmpliPiBindingConstants.CHANNEL_POWER, OnOffType.from(power));
         updateState(AmpliPiBindingConstants.CHANNEL_MUTE, OnOffType.from(mute));
         updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(volDelta));
         updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(sourceId));
