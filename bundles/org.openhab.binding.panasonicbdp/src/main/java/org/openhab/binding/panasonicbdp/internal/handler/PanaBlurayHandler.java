@@ -113,6 +113,10 @@ public class PanaBlurayHandler extends BaseThingHandler {
         }
 
         if (!playerKey.isBlank()) {
+            if (playerKey.length() != 32) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.keyerror");
+                return;
+            }
             this.playerKey = playerKey;
             authEnabled = true;
         }
@@ -173,11 +177,11 @@ public class PanaBlurayHandler extends BaseThingHandler {
                 }
                 debounce = true;
             } else {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.polling");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.polling");
                 return;
             }
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.polling");
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.polling");
             return;
         }
 
@@ -275,18 +279,12 @@ public class PanaBlurayHandler extends BaseThingHandler {
 
                 // if command authentication enabled, get nonce to create authKey and add it to the POST fields
                 if (authEnabled) {
-                    if (playerKey.length() != 32) {
-                        logger.debug("Invalid playerKey length, was {}, should be 32", playerKey.length());
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.keyerror");
-                        return;
-                    }
-
                     final String nonce = sendCommand(GET_NONCE_CMD, nonceUrlStr).trim();
                     if (nonce.isBlank()) {
                         return;
                     } else if (nonce.length() != 32) {
                         logger.debug("Error retrieving nonce, message was: {}", nonce);
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nonce");
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.nonce");
                         return;
                     }
                     try {
@@ -294,7 +292,7 @@ public class PanaBlurayHandler extends BaseThingHandler {
                         fields.add("cAUTH_VALUE", getAuthKey(playerKey + nonce));
                     } catch (NoSuchAlgorithmException e) {
                         logger.debug("Error creating auth key: {}", e.getMessage());
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.authkey");
+                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.authkey");
                         return;
                     }
                 }
@@ -324,10 +322,10 @@ public class PanaBlurayHandler extends BaseThingHandler {
             logger.trace("Response status: {}, response: {}", response.getStatus(), output);
 
             if (response.getStatus() != OK_200) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.polling");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.polling");
                 return EMPTY;
             } else if (output.startsWith(PLAYER_CMD_ERR)) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.invalid");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.invalid");
                 return EMPTY;
             }
 
