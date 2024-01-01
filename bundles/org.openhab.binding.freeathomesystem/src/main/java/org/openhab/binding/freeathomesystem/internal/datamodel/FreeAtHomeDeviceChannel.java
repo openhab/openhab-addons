@@ -92,7 +92,12 @@ public class FreeAtHomeDeviceChannel {
                 logger.debug("Dimming sensor channel found - Channel FID: {}", channelFunctionID);
 
                 FreeAtHomeDatapointGroup newDatapointGroup = new FreeAtHomeDatapointGroup();
-                newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 272, channelId, channelObject);
+                newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 17, channelId, channelObject);
+
+                datapointGroups.add(newDatapointGroup);
+
+                newDatapointGroup = new FreeAtHomeDatapointGroup();
+                newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 1, channelId, channelObject);
 
                 datapointGroups.add(newDatapointGroup);
 

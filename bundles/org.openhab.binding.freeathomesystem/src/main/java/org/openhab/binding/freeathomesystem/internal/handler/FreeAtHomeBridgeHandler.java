@@ -178,10 +178,14 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             }
 
             ret = true;
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             logger.debug("Error to build up the Component list [ {} ]", e.getMessage());
 
-            ret = false;
+            throw new FreeAtHomeHttpCommunicationException(0,
+                    "Http communication interrupted [ " + e.getMessage() + " ]");
+        } catch (ExecutionException | TimeoutException e) {
+            logger.debug("Error to build up the Component list [ {} ]", e.getMessage());
 
             throw new FreeAtHomeHttpCommunicationException(0,
                     "Http communication interrupted in getDeviceList [ " + e.getMessage() + " ]");
@@ -255,7 +259,14 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             }
 
             device = new FreeAtHomeDeviceDescription(jsonObject, id);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("No communication possible to get device list - Communication interrupt [ {} ]",
+                    e.getMessage());
+
+            throw new FreeAtHomeHttpCommunicationException(0,
+                    "Http communication interrupted [ " + e.getMessage() + " ]");
+        } catch (ExecutionException | TimeoutException e) {
             logger.debug("No communication possible to get device list - Communication interrupt [ {} ]",
                     e.getMessage());
 
@@ -313,11 +324,17 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             }
 
             return value;
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
 
             throw new FreeAtHomeHttpCommunicationException(0,
                     "Http communication interrupted [ " + e.getMessage() + " ]");
+        } catch (ExecutionException | TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+
+            throw new FreeAtHomeHttpCommunicationException(0,
+                    "Http communication timout or execution interrupted [ " + e.getMessage() + " ]");
         } catch (JsonParseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
 
@@ -351,7 +368,13 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             if (response.getStatus() != 200) {
                 throw new FreeAtHomeHttpCommunicationException(response.getStatus(), response.getReason());
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+
+            throw new FreeAtHomeHttpCommunicationException(0,
+                    "Http communication interrupted [ " + e.getMessage() + " ]");
+        } catch (ExecutionException | TimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
 
             restartHttpConnection();

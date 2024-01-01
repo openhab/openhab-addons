@@ -100,7 +100,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
             logger.debug("Device created - device id: {}", deviceID);
         });
-
     }
 
     @Override
@@ -286,19 +285,21 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         }
 
         if (freeAtHomeBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not valid!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/gen-error.no-bridge-avail");
             return;
         }
 
         if (dpg == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Datapoint group is not valid!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error.datapointgroup-invalid");
             return;
         }
 
         FreeAtHomeDatapoint inputDatapoint = dpg.getInputDatapoint();
 
         if (inputDatapoint == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Input Datapoint is not valid!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error.inputdatapoint-invalid");
             return;
         }
 
