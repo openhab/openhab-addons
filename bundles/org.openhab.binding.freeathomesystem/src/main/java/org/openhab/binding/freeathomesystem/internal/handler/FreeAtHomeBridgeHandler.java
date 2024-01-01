@@ -564,7 +564,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
     /**
      * Method to connect the websocket session
      */
-    @SuppressWarnings("null")
     public boolean connectWebsocketSession() {
         boolean ret = false;
 
@@ -580,17 +579,19 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
         authField = "Basic " + authStringEnc;
 
+        WebSocketClient localWebsocketClient = websocketClient;
+
         try {
             // Start socket client
-            if ((websocketClient != null) && (socket != null)) {
-                websocketClient.setMaxTextMessageBufferSize(8 * 1024);
-                websocketClient.setMaxIdleTimeout(BRIDGE_WEBSOCKET_TIMEOUT * 60 * 1000);
-                websocketClient.setConnectTimeout(BRIDGE_WEBSOCKET_TIMEOUT * 60 * 1000);
-                websocketClient.start();
+            if (localWebsocketClient != null) {
+                localWebsocketClient.setMaxTextMessageBufferSize(8 * 1024);
+                localWebsocketClient.setMaxIdleTimeout(BRIDGE_WEBSOCKET_TIMEOUT * 60 * 1000);
+                localWebsocketClient.setConnectTimeout(BRIDGE_WEBSOCKET_TIMEOUT * 60 * 1000);
+                localWebsocketClient.start();
                 ClientUpgradeRequest request = new ClientUpgradeRequest();
                 request.setHeader("Authorization", authField);
                 request.setTimeout(BRIDGE_WEBSOCKET_TIMEOUT, TimeUnit.MINUTES);
-                websocketClient.connect(socket, uri, request);
+                localWebsocketClient.connect(socket, uri, request);
 
                 logger.debug("Websocket connection to SysAP is OK, timeout: {}", BRIDGE_WEBSOCKET_TIMEOUT);
 
@@ -601,9 +602,9 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         } catch (Exception e) {
             logger.debug("Error by opening Websocket connection [{}]", e.getMessage());
 
-            if (websocketClient != null) {
+            if (localWebsocketClient != null) {
                 try {
-                    websocketClient.stop();
+                    localWebsocketClient.stop();
 
                     ret = false;
                 } catch (Exception e1) {
