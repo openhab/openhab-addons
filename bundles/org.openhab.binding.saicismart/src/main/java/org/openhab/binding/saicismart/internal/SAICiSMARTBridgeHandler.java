@@ -191,8 +191,6 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
                                     .forEach(t -> t.handleMessage(message));
                         }
                     }
-                } else {
-                    logger.warn("No application data found!");
                 }
                 updateStatus(ThingStatus.ONLINE);
             } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException e) {
