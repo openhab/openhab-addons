@@ -44,7 +44,6 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 The Thing has a few configuration parameters:
 
-
 | Name      | Type    | Description                                                                                           | Default | Required |
 |-----------|---------|-------------------------------------------------------------------------------------------------------|---------|----------|
 | hostName  | text    | The host name or IP address of the player.                                                            | N/A     | yes      |
