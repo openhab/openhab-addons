@@ -18,7 +18,7 @@ import java.util.Hashtable;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.plex.discovery.PlexDiscoveryService;
+import org.openhab.binding.plex.internal.discovery.PlexDiscoveryService;
 import org.openhab.binding.plex.internal.handler.PlexPlayerHandler;
 import org.openhab.binding.plex.internal.handler.PlexServerHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
