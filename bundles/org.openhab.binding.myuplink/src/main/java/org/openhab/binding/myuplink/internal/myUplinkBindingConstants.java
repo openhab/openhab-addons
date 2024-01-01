@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.myuplink.internal;
 
+import java.time.Instant;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,30 +36,32 @@ public class MyUplinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, DEVICE_ACCOUNT);
 
     // List of all channel groups
-    //TODO: add content
+    // TODO: add content
 
     // Channel types
-    //TODO: add content
+    // TODO: add content
     public static final String CHANNEL_TYPEPREFIX_RW = "rw";
 
-
     // Channels with specific handling
-    //TODO: add content
+    // TODO: add content
 
     // JSON Keys
-    //TODO: add content
+    // TODO: add content
 
     // Write Commands
-    //TODO: add content
+    // TODO: add content
 
     // Command Values
-    //TODO: add content
+    // TODO: add content
 
     // web request constants
-    //TODO: add content
+    // TODO: add content
+    public static final long WEB_REQUEST_INITIAL_DELAY = 30;
+    public static final long WEB_REQUEST_INTERVAL = 5;
+    public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
 
     // URLs
-    //TODO: add content
+    // TODO: add content
 
     // Status Keys
     public static final String STATUS_TOKEN_VALIDATED = "@text/status.token.validated";
@@ -69,6 +72,8 @@ public class MyUplinkBindingConstants {
 
     // other
     public static final long POLLING_INITIAL_DELAY = 1;
+
+    public static final Instant OUTDATED_DATE = Instant.EPOCH;
 
     public static final String PARAMETER_NAME_WRITE_COMMAND = "writeCommand";
     public static final String PARAMETER_NAME_VALIDATION_REGEXP = "validationExpression";
