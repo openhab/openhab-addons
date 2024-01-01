@@ -1,7 +1,5 @@
 # Modbus Sungrow Binding
 
-<img src="./doc/sungrow_logo_25_pc.png" alt="Sungrow logo" align="right"/>
-
 This binding integrates the sungrow inverters into openHAB.
 It is based on the Sungrow specification "Communication Protocol of Residential Hybrid Inverter V1.0.23",
 which can be found here: https://github.com/bohdan-s/SunGather/issues/36.
@@ -53,9 +51,9 @@ You just have to select the configured bridge and optional configure the polling
 
 ### `sungrowInverter` Thing Configuration
 
-| Name            | Type    | Description                          | Default | Required | Advanced |
-|-----------------|---------|--------------------------------------|---------|----------|----------|
-| pollInterval    | integer | Interval the device is polled in ms.  | 5000    | no       | no       |
+| Name         | Type    | Description                          | Default | Required | Advanced |
+|--------------|---------|--------------------------------------|---------|----------|----------|
+| pollInterval | integer | Interval the device is polled in ms. | 5000    | yes      | no       |
 
 ## Channels
 

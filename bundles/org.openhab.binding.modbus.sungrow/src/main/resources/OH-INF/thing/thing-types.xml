@@ -39,9 +39,6 @@
 			<channel id="sg-daily-pv-generation" typeId="sg-daily-pv-generation"/>
 			<channel id="sg-total-pv-generation" typeId="sg-total-pv-generation"/>
 			<channel id="sg-power-factor" typeId="sg-power-factor"/>
-			<!-- Not working
-				<channel id="sg-co2-reduction" typeId="sg-co2-reduction"/>
-			-->
 			<channel id="sg-internal-temperature" typeId="sg-internal-temperature"/>
 		</channels>
 	</channel-group-type>
@@ -86,9 +83,6 @@
 			<channel id="sg-daily-export-power-from-pv" typeId="sg-daily-export-power-from-pv"/>
 			<channel id="sg-total-export-energy-from-pv" typeId="sg-total-export-energy-from-pv"/>
 			<channel id="sg-export-power" typeId="sg-export-power"/>
-			<!-- not working
-				<channel id="sg-grid-state" typeId="sg-grid-state"/>
-			-->
 		</channels>
 	</channel-group-type>
 
@@ -298,13 +292,6 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<!--
-		<channel-type id="sg-co2-reduction">
-		<item-type>Number:Mass</item-type>
-		<label>CO2-REDUCTION</label>
-		<state pattern="%.2f %unit%" readOnly="true"/>
-		</channel-type>
-	-->
 	<channel-type id="sg-daily-direct-energy-consumption">
 		<item-type>Number:Energy</item-type>
 		<label>Daily Direct Energy Consumption</label>
@@ -406,13 +393,6 @@
 		<label>Self Consumption Today</label>
 		<state pattern="%.2f %%" readOnly="true"/>
 	</channel-type>
-	<!-->
-		<channel-type id="sg-grid-state" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
-		<label>GRID-STATE</label>
-		<state pattern="%.2f %unit%" readOnly="true"/>
-		</channel-type>
-	-->
 	<channel-type id="sg-phase-a-current" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Phase A Current</label>
