@@ -46,8 +46,7 @@ public class TextValue extends Value {
      * @param states Allowed states. Empty states are filtered out. If the resulting set is empty, all string values
      *            will be allowed.
      * @param commands Allowed commands. Empty commands are filtered out. If the resulting set is empty, all string
-     *            values
-     *            will be allowed.
+     *            values will be allowed.
      */
     public TextValue(String[] states, String[] commands) {
         super(CoreItemFactory.STRING, List.of(StringType.class));
@@ -57,11 +56,11 @@ public class TextValue extends Value {
         } else {
             this.states = null;
         }
-        s = Stream.of(commands).filter(not(String::isBlank)).collect(Collectors.toSet());
-        if (!s.isEmpty()) {
-            this.commands = s;
+        Set<String> c = Stream.of(commands).filter(not(String::isBlank)).collect(Collectors.toSet());
+        if (!c.isEmpty()) {
+            this.commands = c;
         } else {
-            this.commands = this.states;
+            this.commands = null;
         }
     }
 
@@ -69,7 +68,7 @@ public class TextValue extends Value {
      * Create a string value with a limited number of allowed states.
      *
      * @param states Allowed states. Empty states are filtered out. If the resulting set is empty, all string values
-     *            will be allowed.
+     *            will be allowed. This same array is also used for allowed commands.
      */
     public TextValue(String[] states) {
         this(states, states);
