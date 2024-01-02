@@ -83,5 +83,6 @@ public class WLedSegmentDiscoveryService extends AbstractThingHandlerDiscoverySe
     @Override
     public void initialize() {
         bridgeUID = thingHandler.getThing().getUID();
+        super.initialize();
     }
 }

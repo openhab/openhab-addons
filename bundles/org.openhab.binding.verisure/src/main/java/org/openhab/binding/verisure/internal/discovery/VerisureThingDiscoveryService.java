@@ -105,5 +105,6 @@ public class VerisureThingDiscoveryService extends AbstractThingHandlerDiscovery
     @Override
     public void initialize() {
         bridgeUID = thingHandler.getUID();
+        super.initialize();
     }
 }

@@ -42,7 +42,6 @@ import org.osgi.service.component.annotations.ServiceScope;
 @Component(scope = ServiceScope.PROTOTYPE, service = VeSyncDiscoveryService.class, configurationPid = "discovery.vesync")
 public class VeSyncDiscoveryService extends AbstractThingHandlerDiscoveryService<VeSyncBridgeHandler>
         implements DeviceMetaDataUpdatedHandler {
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
@@ -71,6 +70,7 @@ public class VeSyncDiscoveryService extends AbstractThingHandlerDiscoveryService
     @Override
     public void initialize() {
         bridgeUID = thingHandler.getUID();
+        super.initialize();
     }
 
     @Override

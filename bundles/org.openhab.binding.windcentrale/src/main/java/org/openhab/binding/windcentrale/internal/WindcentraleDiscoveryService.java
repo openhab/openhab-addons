@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WindcentraleDiscoveryService extends AbstractThingHandlerDiscoveryService<WindcentraleAccountHandler>
         implements ThingStatusListener {
-
     private final Logger logger = LoggerFactory.getLogger(WindcentraleDiscoveryService.class);
     private @Nullable Future<?> discoveryJob;
 
@@ -70,6 +69,7 @@ public class WindcentraleDiscoveryService extends AbstractThingHandlerDiscoveryS
     @Override
     public void initialize() {
         thingHandler.addThingStatusListener(this);
+        super.initialize();
     }
 
     @Override
