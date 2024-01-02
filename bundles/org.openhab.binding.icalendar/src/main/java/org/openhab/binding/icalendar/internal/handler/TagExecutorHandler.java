@@ -88,15 +88,14 @@ public class TagExecutorHandler extends BaseThingHandler implements CalendarUpda
 
     @Override
     public void initialize() {
-        Bridge iCalendarBridge = getBridge();
+        final Bridge iCalendarBridge = getBridge();
         if (iCalendarBridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "This thing requires a bridge configured to work.");
             return;
         }
 
-        final TagExecutorConfiguration config = getConfigAs(TagExecutorConfiguration.class);
-        configuration = config;
+        configuration = getConfigAs(TagExecutorConfiguration.class);
 
         if (iCalendarBridge.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -142,13 +141,13 @@ public class TagExecutorHandler extends BaseThingHandler implements CalendarUpda
             logger.debug("Ignoring call for updating states as this instance is not initialized yet.");
             return;
         }
-        AbstractPresentableCalendar cal = this.calendar;
+        final AbstractPresentableCalendar cal = this.calendar;
         if (cal != null) {
             updateStatus(ThingStatus.ONLINE);
 
-            Instant reference = Instant.now();
+            final Instant reference = Instant.now();
 
-            Instant lastUpdate = this.lastUpdate;
+            final Instant lastUpdate = this.lastUpdate;
             if (lastUpdate != null) {
 
                 // process all Command Tags in all Calendar Events which ENDED since updateStates was last called
@@ -257,7 +256,7 @@ public class TagExecutorHandler extends BaseThingHandler implements CalendarUpda
                     eventPublisherCallback.post(ItemEventFactory.createCommandEvent(cmdTag.getItemName(), cmdState));
                     if (logger.isDebugEnabled()) {
                         String cmdType = cmdState.getClass().toString();
-                        int index = cmdType.lastIndexOf(".") + 1;
+                        final int index = cmdType.lastIndexOf(".") + 1;
                         if ((index > 0) && (index < cmdType.length())) {
                             cmdType = cmdType.substring(index);
                         }
@@ -267,7 +266,7 @@ public class TagExecutorHandler extends BaseThingHandler implements CalendarUpda
                 } catch (IllegalArgumentException | IllegalStateException e) {
                     logger.warn("Event: {}, Command Tag: {} => Unable to push command to target item!", event.title,
                             cmdTag.getFullTag());
-                    logger.debug("Exception occured while pushing to item!", e);
+                    logger.debug("Exception occurred while pushing to item!", e);
                 }
             }
         }

@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The EventFilterConfiguration holds configuration for the Live Event Item Type.
+ * The LiveEventConfiguration holds configuration for the Live Event Item Type.
  *
  * @author Michael Wodniok - Initial contribution
  */

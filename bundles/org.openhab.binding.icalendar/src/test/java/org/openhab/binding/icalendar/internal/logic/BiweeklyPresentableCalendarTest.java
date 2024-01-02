@@ -629,35 +629,35 @@ public class BiweeklyPresentableCalendarTest {
         assertEquals(Instant.parse("2021-08-16T17:00:00Z"), events3.get(0).end);
     }
 
-    @SuppressWarnings("null")
+    // @SuppressWarnings("null")
     @Test
     public void testGetFilteredEventsBetween() {
         Event[] expectedFilteredEvents1 = new Event[] {
                 new Event("Test Series in UTC", Instant.parse("2019-09-12T09:05:00Z"),
-                        Instant.parse("2019-09-12T09:10:00Z"), ""),
+                        Instant.parse("2019-09-12T09:10:00Z"), null),
                 new Event("Test Event in UTC+2", Instant.parse("2019-09-14T08:00:00Z"),
-                        Instant.parse("2019-09-14T09:00:00Z"), "") };
+                        Instant.parse("2019-09-14T09:00:00Z"), null) };
         List<Event> realFilteredEvents1 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
                 Instant.parse("2019-09-15T06:00:00Z"), null, 3);
         assertArrayEquals(expectedFilteredEvents1, realFilteredEvents1.toArray(new Event[0]));
 
         Event[] expectedFilteredEvents2 = new Event[] {
-                new Event("Evt", Instant.parse("2019-11-10T10:00:00Z"), Instant.parse("2019-11-10T11:45:00Z"), ""),
-                new Event("Evt", Instant.parse("2019-11-17T10:00:00Z"), Instant.parse("2019-11-17T11:45:00Z"), ""),
-                new Event("Evt", Instant.parse("2019-12-01T10:00:00Z"), Instant.parse("2019-12-01T11:45:00Z"), "") };
+                new Event("Evt", Instant.parse("2019-11-10T10:00:00Z"), Instant.parse("2019-11-10T11:45:00Z"), null),
+                new Event("Evt", Instant.parse("2019-11-17T10:00:00Z"), Instant.parse("2019-11-17T11:45:00Z"), null),
+                new Event("Evt", Instant.parse("2019-12-01T10:00:00Z"), Instant.parse("2019-12-01T11:45:00Z"), null) };
         List<Event> realFilteredEvents2 = calendar2.getFilteredEventsBetween(Instant.parse("2019-11-08T06:00:00Z"),
                 Instant.parse("2019-12-31T06:00:00Z"), null, 3);
         assertArrayEquals(expectedFilteredEvents2, realFilteredEvents2.toArray(new Event[] {}));
 
         Event[] expectedFilteredEvents3 = new Event[] { new Event("Test Event in UTC+2",
-                Instant.parse("2019-09-14T08:00:00Z"), Instant.parse("2019-09-14T09:00:00Z"), "") };
+                Instant.parse("2019-09-14T08:00:00Z"), Instant.parse("2019-09-14T09:00:00Z"), null) };
         List<Event> realFilteredEvents3 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
                 Instant.parse("2019-09-15T06:00:00Z"),
                 new EventTextFilter(EventTextFilter.Field.SUMMARY, "utc+2", EventTextFilter.Type.TEXT), 3);
         assertArrayEquals(expectedFilteredEvents3, realFilteredEvents3.toArray(new Event[] {}));
 
         Event[] expectedFilteredEvents4 = new Event[] { new Event("Test Series in UTC",
-                Instant.parse("2019-09-12T09:05:00Z"), Instant.parse("2019-09-12T09:10:00Z"), "") };
+                Instant.parse("2019-09-12T09:05:00Z"), Instant.parse("2019-09-12T09:10:00Z"), null) };
         List<Event> realFilteredEvents4 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
                 Instant.parse("2019-09-15T06:00:00Z"),
                 new EventTextFilter(EventTextFilter.Field.SUMMARY, ".*UTC$", EventTextFilter.Type.REGEX), 3);
@@ -678,9 +678,11 @@ public class BiweeklyPresentableCalendarTest {
 
         Event[] expectedFilteredEvents8 = new Event[] {
                 new Event("Restabfall", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
-                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), ""),
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), "", "", null,
+                        null),
                 new Event("Gelbe Tonne", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
-                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), "") };
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), "", "", null,
+                        null) };
         List<Event> realFilteredEvents8 = calendar_issue9647.getFilteredEventsBetween(
                 LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
                 LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), null, 3);

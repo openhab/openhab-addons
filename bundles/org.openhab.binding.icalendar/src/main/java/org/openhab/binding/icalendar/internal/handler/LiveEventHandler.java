@@ -106,7 +106,7 @@ public class LiveEventHandler extends BaseThingHandler implements CalendarUpdate
 
     @Override
     public void initialize() {
-        Bridge iCalendarBridge = getBridge();
+        final Bridge iCalendarBridge = getBridge();
         if (iCalendarBridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "This thing requires a bridge configured to work.");
@@ -186,24 +186,24 @@ public class LiveEventHandler extends BaseThingHandler implements CalendarUpdate
             return;
         }
         final long offset = offsetPre.longValue();
-        AbstractPresentableCalendar cal = this.calendar;
+        final AbstractPresentableCalendar cal = this.calendar;
         if (cal != null) {
             updateStatus(ThingStatus.ONLINE);
 
-            Instant reference = Instant.now().plus(offset, ChronoUnit.SECONDS);
+            final Instant reference = Instant.now().plus(offset, ChronoUnit.SECONDS);
             EventTextFilter filter = null;
 
             try {
-                String textFilterValue = config.textEventValue;
+                final String textFilterValue = config.textEventValue;
                 if (textFilterValue != null) {
-                    String textEventField = config.textEventField;
-                    String textValueType = config.textValueType;
+                    final String textEventField = config.textEventField;
+                    final String textValueType = config.textValueType;
                     if (textEventField == null || textValueType == null) {
                         throw new ConfigBrokenException("Text filter settings are not set properly.");
                     }
                     try {
-                        EventTextFilter.Field textFilterField = EventTextFilter.Field.valueOf(textEventField);
-                        EventTextFilter.Type textFilterType = EventTextFilter.Type.valueOf(textValueType);
+                        final EventTextFilter.Field textFilterField = EventTextFilter.Field.valueOf(textEventField);
+                        final EventTextFilter.Type textFilterType = EventTextFilter.Type.valueOf(textValueType);
 
                         filter = new EventTextFilter(textFilterField, textFilterValue, textFilterType);
                     } catch (IllegalArgumentException e2) {

@@ -50,19 +50,17 @@ public class Event implements Comparable<Event> {
         this.location = location;
         this.comment = comment;
         this.contact = contact;
-
-        if (description == null || description.isEmpty()) {
-            return;
-        }
     }
 
-    public Event(String title, Instant start, Instant end, String description) {
+    public Event(@Nullable String title, Instant start, Instant end, @Nullable String description) {
         this(title, start, end, description, null, null, null);
     }
 
     @Override
     public String toString() {
-        return "Event(title: " + this.title + ", start: " + this.start.toString() + ", end: " + this.end.toString();
+        return "Event(title: " + this.title + ", start: " + this.start.toString() + ", end: " + this.end.toString()
+                + ", description: " + this.description + ", location: " + this.location + ", comment: " + this.comment
+                + ", contact: " + this.contact + ")";
     }
 
     @Override
@@ -71,9 +69,33 @@ public class Event implements Comparable<Event> {
             return false;
         }
         final Event otherEvent = (Event) other;
-        String title = this.title;
+        final String title = this.title;
+        final String comment = this.comment;
+        final String contact = this.contact;
+        final String description = this.description;
+        final String location = this.location;
         return (this.start.equals(otherEvent.start) && this.end.equals(otherEvent.end)
-                && ((title == null && otherEvent.title == null) || (title != null && title.equals(otherEvent.title))));
+                && ((title == null && otherEvent.title == null) || (title != null && title.equals(otherEvent.title)))
+                && ((comment == null && otherEvent.comment == null)
+                        || (comment != null && comment.equals(otherEvent.comment)))
+                && ((contact == null && otherEvent.contact == null)
+                        || (contact != null && contact.equals(otherEvent.contact)))
+                && ((description == null && otherEvent.description == null)
+                        || (description != null && description.equals(otherEvent.description)))
+                && ((location == null && otherEvent.location == null)
+                        || (location != null && location.equals(otherEvent.location))));
+    }
+
+    @Override
+    public int hashCode() {
+        final String title = this.title;
+        final String comment = this.comment;
+        final String contact = this.contact;
+        final String description = this.description;
+        final String location = this.location;
+        return this.start.hashCode() + this.end.hashCode() + (title != null ? title.hashCode() : 0)
+                + (comment != null ? comment.hashCode() : 0) + (contact != null ? contact.hashCode() : 0)
+                + (description != null ? description.hashCode() : 0) + (location != null ? location.hashCode() : 0);
     }
 
     @Override
