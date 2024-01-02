@@ -122,8 +122,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
             if (ready != null) {
                 isUp = ready.getStatus() == Ready.StatusEnum.READY;
             } else {
-                logger.warn(
-                        "Failure resolving database readiness. Falling back to ping check. This is normal when using InfluxDB Cloud Serverless.");
+                logger.debug("Failure resolving database readiness. Falling back to ping check. This is normal when using InfluxDB Cloud Serverless.");
                 isUp = currentClient.ping();
             }
 
