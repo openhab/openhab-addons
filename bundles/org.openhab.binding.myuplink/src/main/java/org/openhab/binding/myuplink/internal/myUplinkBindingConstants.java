@@ -75,6 +75,7 @@ public class MyUplinkBindingConstants {
     // URLs
     private static final String API_BASE_URL = "https://api.myuplink.com";
     public static final String LOGIN_URL = API_BASE_URL + "/oauth/token";
+    public static final String GET_SYSTEMS_URL = API_BASE_URL + "/v2/systems/me";
 
     // TODO: add content
 

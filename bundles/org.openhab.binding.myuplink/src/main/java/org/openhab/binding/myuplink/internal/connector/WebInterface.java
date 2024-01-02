@@ -123,7 +123,7 @@ public class WebInterface implements AtomicReferenceTrait {
         }
 
         private void processAuthenticationResult(CommunicationStatus status, JsonObject jsonObject) {
-            //TODO: remove this
+            // TODO: remove this
             logger.debug(status.getHttpCode().toString());
             logger.debug(jsonObject.toString());
 
@@ -208,7 +208,7 @@ public class WebInterface implements AtomicReferenceTrait {
             setAuthenticated(false);
             MyUplinkCommand loginCommand = new Login(handler, this::processAuthenticationResult);
             try {
-                loginCommand.performAction(httpClient, accessToken);
+                loginCommand.performAction(httpClient, "");
             } catch (ValidationException e) {
                 // this cannot happen
             }
@@ -227,7 +227,7 @@ public class WebInterface implements AtomicReferenceTrait {
 
                 MyUplinkCommand refreshCommand = new Login(handler, this::processAuthenticationResult);
                 try {
-                    refreshCommand.performAction(httpClient, accessToken);
+                    refreshCommand.performAction(httpClient, "");
                 } catch (ValidationException e) {
                     // this cannot happen
                 }
