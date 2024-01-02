@@ -59,10 +59,12 @@ public class AVMFritzDiscoveryService extends AbstractThingHandlerDiscoveryServi
     @Override
     public void initialize() {
         thingHandler.registerStatusListener(this);
+        super.initialize();
     }
 
     @Override
     public void dispose() {
+        super.dispose();
         thingHandler.unregisterStatusListener(this);
     }
 

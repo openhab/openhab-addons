@@ -54,6 +54,7 @@ public class AsuswrtDiscoveryService extends AbstractThingHandlerDiscoveryServic
 
     @Override
     public void dispose() {
+        super.dispose();
         removeAllResults();
     }
 
