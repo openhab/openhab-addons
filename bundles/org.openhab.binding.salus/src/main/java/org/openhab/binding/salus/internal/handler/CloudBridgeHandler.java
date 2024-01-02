@@ -89,8 +89,8 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             return;
         }
         var httpClient = new JettyHttpClient(httpClientFactory.getCommonHttpClient());
-        var localSalusApi = salusApi = new SalusApi(config.getUsername(), config.getPassword(), config.getUrl(),
-                httpClient, GsonMapper.INSTANCE);
+        var localSalusApi = salusApi = new SalusApi(config.getUsername(), config.getPassword().toCharArray(),
+                config.getUrl(), httpClient, GsonMapper.INSTANCE);
         logger = LoggerFactory
                 .getLogger(CloudBridgeHandler.class.getName() + "[" + config.getUsername().replace(".", "_") + "]");
         try {
