@@ -968,9 +968,3 @@ channels:
 
 The Salus API poses challenges, and all coding efforts are a result of reverse engineering. Attempts were made to contact the Salus Team, but the closed-source nature of the API limited assistance. Consequently, there may be errors in implementation or channel visibility issues. If you encounter any issues, please report them, and efforts will be made to address and resolve them.
 
-### How to Report Bugs
-
-1. Log in to the Karaf console and set Salus binding logs to `debug`: `log:set DEBUG org.openhab.binding.salus`
-2. Tail the logs with: `log:tail`
-3. Open an issue in OpenHAB (or [my fork](https://github.com/magx2/openhab2-addons/)). Provide as much information as possible, including logs.
-4. Await a response.
