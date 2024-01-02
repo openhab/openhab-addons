@@ -77,7 +77,9 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
 
         this.optimistic = channelConfiguration.optimistic || channelConfiguration.stateTopic.isBlank();
 
-        lockValue = new OnOffValue(channelConfiguration.stateLocked, channelConfiguration.stateUnlocked,
+        lockValue = new OnOffValue(new String[] { channelConfiguration.stateLocked },
+                new String[] { channelConfiguration.stateUnlocked, channelConfiguration.stateLocking,
+                        channelConfiguration.stateUnlocking, channelConfiguration.stateJammed },
                 channelConfiguration.payloadLock, channelConfiguration.payloadUnlock);
 
         buildChannel(LOCK_CHANNEL_ID, lockValue, "Lock", componentConfiguration.getUpdateListener())

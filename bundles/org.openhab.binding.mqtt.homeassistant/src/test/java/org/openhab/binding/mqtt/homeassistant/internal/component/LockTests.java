@@ -224,6 +224,9 @@ public class LockTests extends AbstractComponentTests {
         publishMessage("zigbee2mqtt/lock/state", "UNLOCKED");
         assertState(component, Lock.STATE_CHANNEL_ID, new StringType("UNLOCKED"));
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.OFF);
+        publishMessage("zigbee2mqtt/lock/state", "LOCKED");
+        assertState(component, Lock.STATE_CHANNEL_ID, new StringType("LOCKED"));
+        assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/lock/state", "JAMMED");
         assertState(component, Lock.STATE_CHANNEL_ID, new StringType("JAMMED"));
         assertState(component, Lock.LOCK_CHANNEL_ID, OnOffType.OFF);
