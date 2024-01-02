@@ -36,6 +36,7 @@ public class MyUplinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, DEVICE_ACCOUNT);
 
     // List of all channel groups
+    public static final String CHANNEL_GROUP_NONE = "";
     // TODO: add content
 
     // Channel types
@@ -59,8 +60,17 @@ public class MyUplinkBindingConstants {
     public static final long WEB_REQUEST_INITIAL_DELAY = 30;
     public static final long WEB_REQUEST_INTERVAL = 5;
     public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
+    public static final String WEB_REQUEST_BEARER_TOKEN_PREFIX = "Bearer ";
+    public static final String LOGIN_BASIC_AUTH_PREFIX = "Basic ";
+    public static final String LOGIN_FIELD_SCOPE_KEY = "scope";
+    public static final String LOGIN_FIELD_SCOPE_VALUE = "READSYSTEM WRITESYSTEM";
+    public static final String LOGIN_FIELD_GRANT_TYPE_KEY = "grant_type";
+    public static final String LOGIN_FIELD_GRANT_TYPE_VALUE = "client_credentials";
 
     // URLs
+    private static final String API_BASE_URL = "https://api.myuplink.com";
+    public static final String LOGIN_URL = API_BASE_URL + "/oauth/token";
+
     // TODO: add content
 
     // Status Keys

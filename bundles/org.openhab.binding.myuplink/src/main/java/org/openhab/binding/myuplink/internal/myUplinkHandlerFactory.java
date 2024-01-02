@@ -14,8 +14,6 @@ package org.openhab.binding.myuplink.internal;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -45,7 +43,7 @@ public class MyUplinkHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(MyUplinkHandlerFactory.class);
 
-        /**
+    /**
      * the shared http client
      */
     private final HttpClient httpClient;
