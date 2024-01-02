@@ -50,7 +50,6 @@ public class CloudDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.debug("Start Salus discovery");
         try {
             var devices = cloudApi.findDevices();
             logger.debug("Found {} devices while scanning", devices.size());
