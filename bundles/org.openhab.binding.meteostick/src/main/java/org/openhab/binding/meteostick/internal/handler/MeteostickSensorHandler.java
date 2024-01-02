@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -173,7 +173,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     }
 
     private void processBattery(boolean batteryLow) {
-        OnOffType state = batteryLow ? OnOffType.ON : OnOffType.OFF;
+        OnOffType state = OnOffType.from(batteryLow);
 
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_LOW_BATTERY), state);
     }

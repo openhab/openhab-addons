@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -132,7 +132,7 @@ public class DenonMarantzState {
     }
 
     public void setPower(boolean power) {
-        OnOffType newVal = power ? OnOffType.ON : OnOffType.OFF;
+        OnOffType newVal = OnOffType.from(power);
         if (newVal != this.power) {
             this.power = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_POWER, this.power);
@@ -140,7 +140,7 @@ public class DenonMarantzState {
     }
 
     public void setMainZonePower(boolean mainPower) {
-        OnOffType newVal = mainPower ? OnOffType.ON : OnOffType.OFF;
+        OnOffType newVal = OnOffType.from(mainPower);
         if (newVal != this.mainZonePower) {
             this.mainZonePower = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_MAIN_ZONE_POWER, this.mainZonePower);
@@ -148,7 +148,7 @@ public class DenonMarantzState {
     }
 
     public void setMute(boolean mute) {
-        OnOffType newVal = mute ? OnOffType.ON : OnOffType.OFF;
+        OnOffType newVal = OnOffType.from(mute);
         if (newVal != this.mute) {
             this.mute = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_MUTE, this.mute);
@@ -207,7 +207,7 @@ public class DenonMarantzState {
     }
 
     public void setZone2Power(boolean power) {
-        OnOffType newVal = power ? OnOffType.ON : OnOffType.OFF;
+        OnOffType newVal = OnOffType.from(power);
         if (newVal != this.zone2Power) {
             this.zone2Power = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_POWER, this.zone2Power);
@@ -227,7 +227,7 @@ public class DenonMarantzState {
     }
 
     public void setZone2Mute(boolean mute) {
-        OnOffType newVal = mute ? OnOffType.ON : OnOffType.OFF;
+        OnOffType newVal = OnOffType.from(mute);
         if (newVal != this.zone2Mute) {
             this.zone2Mute = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_MUTE, this.zone2Mute);
@@ -243,7 +243,7 @@ public class DenonMarantzState {
     }
 
     public void setZone3Power(boolean power) {
-        OnOffType newVal = power ? OnOffType.ON : OnOffType.OFF;
+        OnOffType newVal = OnOffType.from(power);
         if (newVal != this.zone3Power) {
             this.zone3Power = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_POWER, this.zone3Power);
@@ -263,7 +263,7 @@ public class DenonMarantzState {
     }
 
     public void setZone3Mute(boolean mute) {
-        OnOffType newVal = mute ? OnOffType.ON : OnOffType.OFF;
+        OnOffType newVal = OnOffType.from(mute);
         if (newVal != this.zone3Mute) {
             this.zone3Mute = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_MUTE, this.zone3Mute);
@@ -279,7 +279,7 @@ public class DenonMarantzState {
     }
 
     public void setZone4Power(boolean power) {
-        OnOffType newVal = power ? OnOffType.ON : OnOffType.OFF;
+        OnOffType newVal = OnOffType.from(power);
         if (newVal != this.zone4Power) {
             this.zone4Power = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE4_POWER, this.zone4Power);
@@ -299,7 +299,7 @@ public class DenonMarantzState {
     }
 
     public void setZone4Mute(boolean mute) {
-        OnOffType newVal = mute ? OnOffType.ON : OnOffType.OFF;
+        OnOffType newVal = OnOffType.from(mute);
         if (newVal != this.zone4Mute) {
             this.zone4Mute = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE4_MUTE, this.zone4Mute);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ public class IpCameraBindingConstants {
     public static final String COMMON_HANDLER = "commonHandler";
     public static final String INSTAR_HANDLER = "instarHandler";
     public static final String REOLINK_HANDLER = "reolinkHandler";
+    public static final String HIKVISION_HANDLER = "hikvisionHandler";
 
     public enum FFmpegFormat {
         HLS,

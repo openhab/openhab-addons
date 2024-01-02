@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,7 +103,7 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
                     channel.set(reading.getChannel());
 
                     BigDecimal current = new BigDecimal(reading.getCurrent()).setScale(1, RoundingMode.HALF_UP);
-                    state = reading.isOn() ? OnOffType.ON : OnOffType.OFF;
+                    state = OnOffType.from(reading.isOn());
 
                     updateState(CURRENT_POWER_CHANNEL, new QuantityType<>(current, Units.WATT));
                     updateState(CONSUMPTION_CHANNEL, new QuantityType<>(reading.getTotal(), Units.WATT_HOUR));

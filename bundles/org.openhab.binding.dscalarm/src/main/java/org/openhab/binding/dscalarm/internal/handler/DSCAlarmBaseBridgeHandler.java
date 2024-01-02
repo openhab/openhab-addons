@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -233,7 +233,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
         updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), BRIDGE_RESET);
-        updateState(channelUID, isOnline ? OnOffType.ON : OnOffType.OFF);
+        updateState(channelUID, OnOffType.from(isOnline));
     }
 
     /**

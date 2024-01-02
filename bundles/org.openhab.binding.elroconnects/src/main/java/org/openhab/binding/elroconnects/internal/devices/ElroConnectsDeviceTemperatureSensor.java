@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public class ElroConnectsDeviceTemperatureSensor extends ElroConnectsDevice {
             default:
                 handler.updateState(SIGNAL_STRENGTH, new DecimalType(signalStrength));
                 handler.updateState(BATTERY_LEVEL, new DecimalType(batteryLevel));
-                handler.updateState(LOW_BATTERY, (batteryLevel < 15) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateState(LOW_BATTERY, OnOffType.from(batteryLevel < 15));
                 handler.updateState(TEMPERATURE, new QuantityType<>(temperature, CELSIUS));
                 handler.updateState(HUMIDITY, new QuantityType<>(humidity, Units.PERCENT));
                 handler.updateStatus(ThingStatus.ONLINE);

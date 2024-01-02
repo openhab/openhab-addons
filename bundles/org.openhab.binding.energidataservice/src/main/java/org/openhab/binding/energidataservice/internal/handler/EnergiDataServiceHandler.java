@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -57,7 +59,9 @@ import org.openhab.binding.energidataservice.internal.retry.RetryPolicyFactory;
 import org.openhab.binding.energidataservice.internal.retry.RetryStrategy;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.CurrencyUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -67,6 +71,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -320,14 +325,36 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             return;
         }
         BigDecimal spotPrice = cacheManager.getSpotPrice();
-        updateState(CHANNEL_SPOT_PRICE, spotPrice != null ? new DecimalType(spotPrice) : UnDefType.UNDEF);
+        updatePriceState(CHANNEL_SPOT_PRICE, spotPrice, config.getCurrency());
     }
 
     private void updateCurrentTariff(String channelId, @Nullable BigDecimal tariff) {
         if (!isLinked(channelId)) {
             return;
         }
-        updateState(channelId, tariff != null ? new DecimalType(tariff) : UnDefType.UNDEF);
+        updatePriceState(channelId, tariff, CURRENCY_DKK);
+    }
+
+    private void updatePriceState(String channelID, @Nullable BigDecimal price, Currency currency) {
+        updateState(channelID, price != null ? getEnergyPrice(price, currency) : UnDefType.UNDEF);
+    }
+
+    private State getEnergyPrice(BigDecimal price, Currency currency) {
+        Unit<?> unit = CurrencyUnits.getInstance().getUnit(currency.getCurrencyCode());
+        if (unit == null) {
+            logger.trace("Currency {} is unknown, falling back to DecimalType", currency.getCurrencyCode());
+            return new DecimalType(price);
+        }
+        try {
+            String currencyUnit = unit.getSymbol();
+            if (currencyUnit == null) {
+                currencyUnit = unit.getName();
+            }
+            return new QuantityType<>(price + " " + currencyUnit + "/kWh");
+        } catch (IllegalArgumentException e) {
+            logger.debug("Unable to create QuantityType, falling back to DecimalType", e);
+            return new DecimalType(price);
+        }
     }
 
     private void updateHourlyPrices() {
@@ -367,7 +394,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         for (Entry<Instant, BigDecimal> spotPrice : spotPrices) {
             Instant hourStart = spotPrice.getKey();
             if (isLinked(CHANNEL_SPOT_PRICE)) {
-                spotPriceTimeSeries.add(hourStart, new DecimalType(spotPrice.getValue()));
+                spotPriceTimeSeries.add(hourStart, getEnergyPrice(spotPrice.getValue(), config.getCurrency()));
             }
             for (Map.Entry<DatahubTariff, TimeSeries> entry : datahubTimeSeriesMap.entrySet()) {
                 DatahubTariff datahubTariff = entry.getKey();
@@ -378,7 +405,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
                 BigDecimal tariff = cacheManager.getTariff(datahubTariff, hourStart);
                 if (tariff != null) {
                     TimeSeries timeSeries = entry.getValue();
-                    timeSeries.add(hourStart, new DecimalType(tariff));
+                    timeSeries.add(hourStart, getEnergyPrice(tariff, CURRENCY_DKK));
                 }
             }
         }

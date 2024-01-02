@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.chatgpt.internal;
+
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.CHANNEL_TYPE_UID_CHAT;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -39,8 +41,7 @@ public class ChatGPTModelOptionProvider implements ThingHandlerService, ConfigOp
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
-        String accountParameterUrl = "thing-type:" + ChatGPTBindingConstants.THING_TYPE_ACCOUNT.getAsString();
-        if (accountParameterUrl.equals(uri.toString())) {
+        if (CHANNEL_TYPE_UID_CHAT.getAsString().equals(uri.toString())) {
             if ("model".equals(param)) {
                 List<ParameterOption> options = new ArrayList<>();
                 if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {

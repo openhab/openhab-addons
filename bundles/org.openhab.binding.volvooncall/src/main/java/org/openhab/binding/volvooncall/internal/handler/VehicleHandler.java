@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -448,7 +448,7 @@ public class VehicleHandler extends BaseThingHandler {
             case SERVICE_WARNING:
                 return new StringType(status.serviceWarningStatus);
             case BULB_FAILURE:
-                return status.aFailedBulb() ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(status.aFailedBulb());
             case REMOTE_HEATER:
             case PRECLIMATIZATION:
                 return status.getHeater().map(heater -> getHeaterValue(channelId, heater)).orElse(UnDefType.NULL);
@@ -491,7 +491,7 @@ public class VehicleHandler extends BaseThingHandler {
                 return status.averageFuelConsumption != UNDEFINED ? new DecimalType(status.averageFuelConsumption / 10)
                         : UnDefType.UNDEF;
             case FUEL_ALERT:
-                return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(status.distanceToEmpty < 100);
         }
         return UnDefType.UNDEF;
     }

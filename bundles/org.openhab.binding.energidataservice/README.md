@@ -47,15 +47,15 @@ It will not impact channels, see [Electricity Tax](#electricity-tax) for further
 
 ### Channel Group `electricity`
 
-| Channel                  | Type   | Description                                                                            | Advanced |
-|--------------------------|--------|----------------------------------------------------------------------------------------|----------|
-| spot-price               | Number | Current spot price in DKK or EUR per kWh                                               | no       |
-| grid-tariff              | Number | Current grid tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured | no       |
-| system-tariff            | Number | Current system tariff in DKK per kWh                                                   | no       |
-| transmission-grid-tariff | Number | Current transmission grid tariff in DKK per kWh                                        | no       |
-| electricity-tax          | Number | Current electricity tax in DKK per kWh                                                 | no       |
-| reduced-electricity-tax  | Number | Current reduced electricity tax in DKK per kWh. For electric heating customers only    | no       |
-| hourly-prices            | String | JSON array with hourly prices from 24 hours ago and onward                             | yes      |
+| Channel                  | Type               | Description                                                                    | Advanced |
+|--------------------------|--------------------|--------------------------------------------------------------------------------|----------|
+| spot-price               | Number:EnergyPrice | Spot price in DKK or EUR per kWh                                               | no       |
+| grid-tariff              | Number:EnergyPrice | Grid tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured | no       |
+| system-tariff            | Number:EnergyPrice | System tariff in DKK per kWh                                                   | no       |
+| transmission-grid-tariff | Number:EnergyPrice | Transmission grid tariff in DKK per kWh                                        | no       |
+| electricity-tax          | Number:EnergyPrice | Electricity tax in DKK per kWh                                                 | no       |
+| reduced-electricity-tax  | Number:EnergyPrice | Reduced electricity tax in DKK per kWh. For electric heating customers only    | no       |
+| hourly-prices            | String             | JSON array with hourly prices from 24 hours ago and onward                     | yes      |
 
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
@@ -67,6 +67,13 @@ This has the following advantages:
 
 If you want electricity tax included in your total price, please add either `electricity-tax` or `reduced-electricity-tax` to the group - depending on which one applies.
 See [Electricity Tax](#electricity-tax) for further information.
+
+#### Currencies
+
+There are some existing limitations related to currency support.
+While the binding attempts to update channels in the correct currency, such attempts may face rejection.
+In such cases, the binding will resort to omitting the currency unit.
+While this ensures correct prices, it's important to note that the currency information may be incorrect in these instances.
 
 #### Value-Added Tax
 

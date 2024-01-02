@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -484,7 +484,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 updateState(channel, new PercentType(this.volume));
                 break;
             case MUTE:
-                updateState(channel, this.isMuted ? OnOffType.ON : OnOffType.OFF);
+                updateState(channel, OnOffType.from(this.isMuted));
                 break;
             case TITLE_NAME:
                 connector.sendCommand(GET_PLAYING_TITLE_NAME, cache.get("TITLE_NAME"));

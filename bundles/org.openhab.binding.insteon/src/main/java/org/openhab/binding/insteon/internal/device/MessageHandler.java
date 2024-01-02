@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -514,7 +514,7 @@ public abstract class MessageHandler {
                 } else {
                     boolean isOn = isLEDLit(cmd2, button);
                     logger.debug("{}: dev {} button {} switched to {}", nm(), a, button, isOn ? "ON" : "OFF");
-                    feature.publish(isOn ? OnOffType.ON : OnOffType.OFF, StateChangeType.CHANGED);
+                    feature.publish(OnOffType.from(isOn), StateChangeType.CHANGED);
                 }
             } catch (FieldException e) {
                 logger.warn("{} error parsing {}: ", nm(), msg, e);

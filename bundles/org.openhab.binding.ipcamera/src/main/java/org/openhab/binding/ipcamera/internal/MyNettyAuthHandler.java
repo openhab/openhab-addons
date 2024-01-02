@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -160,8 +160,8 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                     if (!authenticate.isEmpty()) {
                         processAuth(authenticate, httpMethod, httpUrl, true);
                     } else {
-                        ipCameraHandler.cameraConfigError(
-                                "Camera gave no WWW-Authenticate: Your login details must be wrong.");
+                        ipCameraHandler.cameraCommunicationError(
+                                "Camera gave no WWW-Authenticate: Your login details might be wrong. Trying to reconnect");
                     }
                 }
             } else if (response.status().code() != 200) {

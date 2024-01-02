@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -920,7 +920,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     case SHELLY_EVENT_FLOOD_DETECTED:
                     case SHELLY_EVENT_FLOOD_GONE:
                         updateChannel(group, CHANNEL_SENSOR_FLOOD,
-                                event.equalsIgnoreCase(SHELLY_EVENT_FLOOD_DETECTED) ? OnOffType.ON : OnOffType.OFF);
+                                OnOffType.from(event.equalsIgnoreCase(SHELLY_EVENT_FLOOD_DETECTED)));
                         break;
 
                     case SHELLY_EVENT_CLOSE: // DW 1.7
@@ -949,7 +949,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
 
                 if (!onoff.isEmpty()) {
-                    updateChannel(group, onoff, event.toLowerCase().contains("_on") ? OnOffType.ON : OnOffType.OFF);
+                    updateChannel(group, onoff, OnOffType.from(event.toLowerCase().contains("_on")));
                 }
                 if (!payload.isEmpty()) {
                     // Pass event to trigger channel
@@ -1211,7 +1211,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             if (status.input != null) {
                 // RGBW2: a single int rather than an array
                 return updateChannel(profile.getControlGroup(0), CHANNEL_INPUT,
-                        getInteger(status.input) == 0 ? OnOffType.OFF : OnOffType.ON);
+                        OnOffType.from(getInteger(status.input) != 0));
             }
         }
         return updated;

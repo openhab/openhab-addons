@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -130,7 +130,7 @@ public class RFXComHomeConfortMessage extends RFXComDeviceMessageImpl<RFXComHome
     public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
             throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         if (channelId.equals(CHANNEL_COMMAND)) {
-            return (command == Commands.OFF || command == Commands.GROUP_OFF ? OnOffType.OFF : OnOffType.ON);
+            return OnOffType.from(command != Commands.OFF && command != Commands.GROUP_OFF);
         } else {
             return super.convertToState(channelId, config, deviceState);
         }
