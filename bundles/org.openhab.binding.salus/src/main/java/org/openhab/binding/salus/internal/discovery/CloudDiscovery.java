@@ -16,6 +16,8 @@ import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_DEV
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_IT600_DEVICE_TYPE;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.IT_600;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.OEM_MODEL;
 
 import java.util.Locale;
 import java.util.Map;
@@ -68,10 +70,10 @@ public class CloudDiscovery extends AbstractDiscoveryService {
 
     private static ThingTypeUID findDeviceType(Device device) {
         var props = device.properties();
-        if (props.containsKey("oem_model")) {
-            var model = props.get("oem_model");
+        if (props.containsKey(OEM_MODEL)) {
+            var model = props.get(OEM_MODEL);
             if (model != null) {
-                if (model.toString().toLowerCase(Locale.ENGLISH).contains("it600")) {
+                if (model.toString().toLowerCase(Locale.ENGLISH).contains(IT_600)) {
                     return SALUS_IT600_DEVICE_TYPE;
                 }
             }
