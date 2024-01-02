@@ -18,13 +18,13 @@ After adding a bridge, all connected devices can be automatically discovered fro
 
 ### `salus-cloud-bridge` Thing Configuration
 
-| Name                      | Type    | Description                                 | Default                    | Required | Advanced |
-|---------------------------|---------|---------------------------------------------|----------------------------|----------|----------|
-| username                  | text    | Username/email to log in to Salus Cloud     | N/A                        | yes      | no       |
-| password                  | text    | Password to log in to Salus Cloud           | N/A                        | yes      | no       |
-| url                       | integer | URL to Salus Cloud                          | https://eu.salusconnect.io | no       | yes      |
-| refreshInterval           | integer | Refresh time in seconds                     | 30                         | no       | yes      |
-| propertiesRefreshInterval | integer | How long device properties should be cached | 5                          | no       | yes      |
+| Name                      | Type              | Description                                 | Default                    | Required | Advanced |
+|---------------------------|-------------------|---------------------------------------------|----------------------------|----------|----------|
+| username                  | text              | Username/email to log in to Salus Cloud     | N/A                        | yes      | no       |
+| password                  | text              | Password to log in to Salus Cloud           | N/A                        | yes      | no       |
+| url                       | text              | URL to Salus Cloud                          | https://eu.salusconnect.io | no       | yes      |
+| refreshInterval           | integer (seconds) | Refresh time in seconds                     | 30                         | no       | yes      |
+| propertiesRefreshInterval | integer (seconds) | How long device properties should be cached | 5                          | no       | yes      |
 
 ### `salus-device` and `salus-it600-device` Thing Configuration
 
