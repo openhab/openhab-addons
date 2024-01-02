@@ -15,13 +15,11 @@ package org.openhab.binding.salus.internal.handler;
 import static java.util.Collections.emptySortedSet;
 import static java.util.Objects.requireNonNullElse;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusCloud.DEFAULT_URL;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.SortedSet;
@@ -56,14 +54,6 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     private final HttpClientFactory httpClientFactory;
     @NonNullByDefault({})
     private LoadingCache<String, SortedSet<DeviceProperty<?>>> devicePropertiesCache;
-    @NonNullByDefault({})
-    private String username;
-    @NonNullByDefault({})
-    private char[] password;
-    @NonNullByDefault({})
-    private String url;
-    private long refreshInterval;
-    private long propertiesRefreshInterval;
     @Nullable
     private SalusApi salusApi;
     @Nullable
@@ -85,24 +75,24 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     }
 
     private void internalInitialize() {
-        loadConfigs();
-        var missingUsername = "".equals(username);
-        var missingPassword = password == null || password.length == 0;
-        var missingUrl = "".equals(url);
-        if (missingUsername || missingPassword || missingUrl) {
+        var config = this.getConfigAs(CloudBridgeConfig.class);
+        var missingUsername = !config.hasUsername();
+        var missingPassword = !config.hasPassword();
+        if (missingUsername || missingPassword) {
             var sb = new StringBuilder();
             sb.append("Missing configuration!\n");
             sb.append(missingUsername ? "❌" : "✅").append(" username\n");
             sb.append(missingPassword ? "❌" : "✅").append(" password\n");
-            sb.append(missingUrl ? "❌" : "✅").append(" url\n");
             sb.append("Please check your configuration!\n");
             logger.error("{}", sb);
             updateStatus(OFFLINE, CONFIGURATION_ERROR, sb.toString());
             return;
         }
         var httpClient = new JettyHttpClient(httpClientFactory.getCommonHttpClient());
-        var localSalusApi = salusApi = new SalusApi(username, password, url, httpClient, GsonMapper.INSTANCE);
-        logger = LoggerFactory.getLogger(CloudBridgeHandler.class.getName() + "[" + username.replace(".", "_") + "]");
+        var localSalusApi = salusApi = new SalusApi(config.getUsername(), config.getPassword(), config.getUrl(),
+                httpClient, GsonMapper.INSTANCE);
+        logger = LoggerFactory
+                .getLogger(CloudBridgeHandler.class.getName() + "[" + config.getUsername().replace(".", "_") + "]");
         try {
             localSalusApi.findDevices();
         } catch (Exception ex) {
@@ -112,32 +102,15 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             return;
         }
         this.devicePropertiesCache = Caffeine.newBuilder().maximumSize(10_000)
-                .expireAfterWrite(Duration.ofSeconds(propertiesRefreshInterval))
-                .refreshAfterWrite(Duration.ofSeconds(propertiesRefreshInterval)).build(this::loadPropertiesForDevice);
+                .expireAfterWrite(Duration.ofSeconds(config.getPropertiesRefreshInterval()))
+                .refreshAfterWrite(Duration.ofSeconds(config.getPropertiesRefreshInterval()))
+                .build(this::loadPropertiesForDevice);
         var scheduledPool = ThreadPoolManager.getScheduledPool("Salus");
-        this.scheduledFuture = scheduledPool.scheduleWithFixedDelay(this::refreshCloudDevices, refreshInterval * 2,
-                refreshInterval, SECONDS);
+        this.scheduledFuture = scheduledPool.scheduleWithFixedDelay(this::refreshCloudDevices,
+                config.getRefreshInterval() * 2, config.getRefreshInterval(), SECONDS);
 
         // done
         updateStatus(ONLINE);
-    }
-
-    private void loadConfigs() {
-        var config = this.getConfig();
-        username = (String) config.get("username");
-        password = ((String) config.get("password")).toCharArray();
-        url = (String) config.get("url");
-        if ("".equals(url)) {
-            url = DEFAULT_URL;
-        }
-        refreshInterval = ((BigDecimal) config.get("refreshInterval")).longValue();
-        if (refreshInterval <= 0) {
-            this.refreshInterval = 30;
-        }
-        propertiesRefreshInterval = ((BigDecimal) config.get("propertiesRefreshInterval")).longValue();
-        if (propertiesRefreshInterval <= 0) {
-            this.propertiesRefreshInterval = 5;
-        }
     }
 
     private void refreshCloudDevices() {
