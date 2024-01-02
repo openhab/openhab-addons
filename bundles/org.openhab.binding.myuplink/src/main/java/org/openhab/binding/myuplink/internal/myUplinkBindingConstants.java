@@ -65,6 +65,9 @@ public class MyUplinkBindingConstants {
     public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
     public static final int WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES = 5;
     public static final int WEB_REQUEST_TOKEN_MAX_AGE_MINUTES = 45;
+    public static final String WEB_REQUEST_PARAM_PAGE_KEY = "page";
+    public static final String WEB_REQUEST_PARAM_PAGE_SIZE_KEY = "itemsPerPage";
+    public static final int WEB_REQUEST_PARAM_PAGE_SIZE_VALUE = 100;
     public static final String WEB_REQUEST_BEARER_TOKEN_PREFIX = "Bearer ";
     public static final String LOGIN_BASIC_AUTH_PREFIX = "Basic ";
     public static final String LOGIN_FIELD_SCOPE_KEY = "scope";

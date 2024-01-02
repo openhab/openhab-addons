@@ -15,12 +15,16 @@ package org.openhab.binding.myuplink.internal.discovery;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myuplink.internal.MyUplinkBindingConstants;
+import org.openhab.binding.myuplink.internal.command.account.GetSystems;
+import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkAccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * this class will handle discovery of wallboxes and circuits within the site configured.
@@ -36,12 +40,6 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
 
     public MyUplinkDiscoveryService() throws IllegalArgumentException {
         super(MyUplinkBindingConstants.SUPPORTED_THING_TYPES_UIDS, 300, false);
-    }
-
-    @Override
-    protected void startScan() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'startScan'");
     }
 
     @Override
@@ -61,5 +59,29 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
     @Override
     public void deactivate() {
         super.deactivate();
+    }
+
+    @Override
+    protected void startScan() {
+        bridgeHandler.enqueueCommand(new GetSystems(bridgeHandler, this::processSystemsDiscoveryResult));
+    }
+
+    /**
+     * callback that handles json result data to provide discovery result.
+     *
+     * @param site
+     */
+    private void processSystemsDiscoveryResult(CommunicationStatus status, JsonObject systems) {
+        logger.debug("processSystemsDiscoveryResult {}", systems);
+
+        // TODO implement
+        // JsonArray circuits = site.getAsJsonArray(JSON_KEY_CIRCUITS);
+        // if (circuits == null) {
+        // logger.info("Site discovery failed, no circuits found.");
+        // } else {
+        // circuits.forEach(this::handleCircuitDiscovery);
+        // }
+
+        throw new UnsupportedOperationException("Unimplemented method 'processSystemsDiscoveryResult'");
     }
 }

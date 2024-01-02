@@ -127,7 +127,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         super.onSuccess(response);
         if (response != null) {
             communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
-            logger.debug("HTTP response {}", response.getStatus());
+            logger.debug("[{}] HTTP response {}", getClass().getSimpleName(), response.getStatus());
         }
     }
 
@@ -138,7 +138,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     public final void onFailure(@Nullable Response response, @Nullable Throwable failure) {
         super.onFailure(response, failure);
         if (failure != null) {
-            logger.info("Request failed: {}", failure.toString());
+            logger.info("[{}] Request failed: {}", getClass().getSimpleName(), failure.toString());
             communicationStatus.setError((Exception) failure);
             if (failure instanceof SocketTimeoutException || failure instanceof TimeoutException) {
                 communicationStatus.setHttpCode(Code.REQUEST_TIMEOUT);
@@ -148,7 +148,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
                 communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
             }
         } else {
-            logger.info("Request failed");
+            logger.info("[{}] Request failed", getClass().getSimpleName());
         }
         if (response != null && response.getStatus() > 0) {
             communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
@@ -161,7 +161,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     @Override
     public void onContent(@Nullable Response response, @Nullable ByteBuffer content) {
         super.onContent(response, content);
-        logger.debug("received content, length: {}", getContentAsString().length());
+        logger.debug("[{}] received content, length: {}", getClass().getSimpleName(), getContentAsString().length());
     }
 
     /**
@@ -171,7 +171,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     public void onComplete(@Nullable Result result) {
         String json = getContentAsString(StandardCharsets.UTF_8);
 
-        logger.debug("JSON String: {}", json);
+        logger.debug("[{}] JSON String: {}", getClass().getSimpleName(), json);
         switch (getCommunicationStatus().getHttpCode()) {
             case OK:
             case ACCEPTED:
@@ -190,7 +190,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     protected void onCompleteCodeOk(@Nullable String json) {
         JsonObject jsonObject = transform(json);
         if (jsonObject != null) {
-            logger.debug("success");
+            logger.debug("[{}] success", getClass().getSimpleName());
             // TODO: handler.updateChannelStatus(transformer.transform(jsonObject, getChannelGroup()));
             processResult(jsonObject);
         }
@@ -215,7 +215,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         }
 
         if (retryOnFailure == RetryOnFailure.YES && retries++ < MAX_RETRIES) {
-            // TODO: handler.enqueueCommand(this);
+            handler.enqueueCommand(this);
         }
     }
 
@@ -230,7 +230,8 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
             try {
                 return gson.fromJson(json, JsonObject.class);
             } catch (Exception ex) {
-                logger.debug("JSON could not be parsed: {}\nError: {}", json, ex.getMessage());
+                logger.debug("[{}] JSON could not be parsed: {}\nError: {}", getClass().getSimpleName(), json,
+                        ex.getMessage());
             }
         }
         return null;
@@ -246,7 +247,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     public void performAction(HttpClient asyncclient, String accessToken) throws ValidationException {
         Request request = asyncclient.newRequest(getURL()).timeout(handler.getBridgeConfiguration().getAsyncTimeout(),
                 TimeUnit.SECONDS);
-        logger.debug("running command: {}", this.getClass().toString());
+        logger.debug("[{}] running command", getClass().getSimpleName());
 
         // we want to receive json only, so explicitely set this!
         request.header(HttpHeader.ACCEPT, "application/json");
@@ -280,7 +281,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
             resultProcessor.processResult(getCommunicationStatus(), jsonObject);
         } catch (Exception ex) {
             // this should not happen
-            logger.warn("Exception caught: {}", ex.getMessage(), ex);
+            logger.warn("[{}] Exception caught: {}", getClass().getSimpleName(), ex.getMessage(), ex);
         }
     }
 
