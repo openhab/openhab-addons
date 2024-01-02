@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class CloudBridgeConfig {
     private String username = "";
-    private char[] password = new char[0];
+    private String password = "";
     private String url = "";
     private long refreshInterval;
     private long propertiesRefreshInterval;
@@ -30,7 +30,7 @@ public class CloudBridgeConfig {
     public CloudBridgeConfig() {
     }
 
-    public CloudBridgeConfig(String username, char[] password, String url, long refreshInterval,
+    public CloudBridgeConfig(String username, String password, String url, long refreshInterval,
             long propertiesRefreshInterval) {
         this.username = username;
         this.password = password;
@@ -47,11 +47,11 @@ public class CloudBridgeConfig {
         this.username = username;
     }
 
-    public char[] getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(char[] password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -87,12 +87,12 @@ public class CloudBridgeConfig {
     }
 
     public boolean hasPassword() {
-        return password.length > 0;
+        return !"".equals(password);
     }
 
     @Override
     public String toString() {
-        return "CloudBridgeConfig{" + "username='" + username + '\'' + ", password=<SECRET>" + ", url='" + url + '\''
+        return "CloudBridgeConfig{" + "username='" + username + '\'' + ", password='<SECRET>'" + ", url='" + url + '\''
                 + ", refreshInterval=" + refreshInterval + ", propertiesRefreshInterval=" + propertiesRefreshInterval
                 + '}';
     }
