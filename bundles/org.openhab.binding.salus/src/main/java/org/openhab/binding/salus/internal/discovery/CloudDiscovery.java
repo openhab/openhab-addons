@@ -57,7 +57,6 @@ public class CloudDiscovery extends AbstractDiscoveryService {
         } catch (Exception e) {
             logger.warn("Error while scanning", e);
         }
-        logger.debug("Finished Salus discovery");
     }
 
     private void addThing(Device device) {
