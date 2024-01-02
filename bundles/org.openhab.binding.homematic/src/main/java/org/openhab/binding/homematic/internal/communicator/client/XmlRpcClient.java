@@ -14,18 +14,22 @@ package org.openhab.binding.homematic.internal.communicator.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.http.HttpHeader;
+import org.openhab.binding.homematic.internal.common.AuthenticationHandler;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.message.XmlRpcRequest;
@@ -43,10 +47,12 @@ import org.xml.sax.SAXException;
 public class XmlRpcClient extends RpcClient<String> {
     private final Logger logger = LoggerFactory.getLogger(XmlRpcClient.class);
     private HttpClient httpClient;
+    private @NonNull AuthenticationHandler authenticationHandler;
 
     public XmlRpcClient(HomematicConfig config, HttpClient httpClient) throws IOException {
         super(config);
         this.httpClient = httpClient;
+        this.authenticationHandler = new AuthenticationHandler(config, httpClient);
     }
 
     @Override
@@ -103,8 +109,13 @@ public class XmlRpcClient extends RpcClient<String> {
             if (port == config.getGroupPort()) {
                 url += "/groups";
             }
-            Request req = httpClient.POST(url).content(content).timeout(config.getTimeout(), TimeUnit.SECONDS)
+            final URI uri = new URI(url);
+
+            authenticationHandler.updateAuthenticationInformation(uri);
+
+            Request req = httpClient.POST(uri).content(content).timeout(config.getTimeout(), TimeUnit.SECONDS)
                     .header(HttpHeader.CONTENT_TYPE, "text/xml;charset=" + config.getEncoding());
+
             FutureResponseListener listener = new FutureResponseListener(req, config.getBufferSize() * 1024);
             req.send(listener);
             ContentResponse response = listener.get(config.getTimeout(), TimeUnit.SECONDS);
@@ -116,7 +127,8 @@ public class XmlRpcClient extends RpcClient<String> {
                 String result = new String(ret, config.getEncoding());
                 logger.trace("Client XmlRpcResponse (port {}):\n{}", port, result);
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException | IllegalArgumentException e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException | IllegalArgumentException
+                | URISyntaxException e) {
             throw new IOException(e);
         }
         return ret;

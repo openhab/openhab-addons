@@ -15,6 +15,8 @@ package org.openhab.binding.homematic.internal.communicator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.openhab.binding.homematic.internal.common.AuthenticationHandler;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.UnknownParameterSetException;
 import org.openhab.binding.homematic.internal.communicator.client.UnknownRpcFailureException;
@@ -61,8 +64,15 @@ public class CcuGateway extends AbstractHomematicGateway {
     private XStream xStream = new XStream(new StaxDriver());
 
     protected CcuGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter,
-            HttpClient httpClient) {
+            HttpClient httpClient) throws IOException {
         super(id, config, gatewayAdapter, httpClient);
+
+        try {
+            new AuthenticationHandler(config, httpClient)
+                    .updateAuthenticationInformation(new URI(config.getTclRegaUrl()));
+        } catch (URISyntaxException e) {
+            throw new IOException(e);
+        }
 
         xStream.allowTypesByWildcard(new String[] { HmDevice.class.getPackageName() + ".**" });
         xStream.setClassLoader(CcuGateway.class.getClassLoader());
