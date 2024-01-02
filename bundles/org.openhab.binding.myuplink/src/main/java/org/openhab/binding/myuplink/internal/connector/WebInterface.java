@@ -14,7 +14,6 @@ package org.openhab.binding.myuplink.internal.connector;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
-import java.time.Instant;
 import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,6 +26,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.openhab.binding.myuplink.internal.AtomicReferenceTrait;
 import org.openhab.binding.myuplink.internal.command.MyUplinkCommand;
+import org.openhab.binding.myuplink.internal.command.account.Login;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkBridgeHandler;
 import org.openhab.binding.myuplink.internal.handler.StatusHandler;
 import org.openhab.binding.myuplink.internal.model.ValidationException;
@@ -63,7 +63,7 @@ public class WebInterface implements AtomicReferenceTrait {
     /**
      * access token returned by login, needed to authenticate all requests send to API.
      */
-    // TODO: private String accessToken;
+    private String accessToken;
 
     /**
      * refresh token returned by login, needed for refreshing the access token.
@@ -86,7 +86,8 @@ public class WebInterface implements AtomicReferenceTrait {
     private final HttpClient httpClient;
 
     /**
-     * the scheduler which periodically sends web requests to the NIBE myUplink Cloud API. Should be initiated with the thing's
+     * the scheduler which periodically sends web requests to the NIBE myUplink Cloud API. Should be initiated with the
+     * thing's
      * existing scheduler instance.
      */
     private final ScheduledExecutorService scheduler;
@@ -122,6 +123,7 @@ public class WebInterface implements AtomicReferenceTrait {
         }
 
         private void processAuthenticationResult(CommunicationStatus status, JsonObject jsonObject) {
+            logger.debug(jsonObject.toString());
             // TODO: processAuthenticationResult
             // String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
             // if (msg == null || msg.isBlank()) {
@@ -203,14 +205,13 @@ public class WebInterface implements AtomicReferenceTrait {
          * authenticates with the NIBE myUplink Cloud interface.
          */
         private synchronized void authenticate() {
-            //TODO: authenticate
-            // setAuthenticated(false);
-            // MyUplinkCommand loginCommand = new Login(handler, this::processAuthenticationResult);
-            // try {
-            //     loginCommand.performAction(httpClient, accessToken);
-            // } catch (ValidationException e) {
-            //     // this cannot happen
-            // }
+            setAuthenticated(false);
+            MyUplinkCommand loginCommand = new Login(handler, this::processAuthenticationResult);
+            try {
+                loginCommand.performAction(httpClient, accessToken);
+            } catch (ValidationException e) {
+                // this cannot happen
+            }
         }
 
         /**
@@ -243,7 +244,7 @@ public class WebInterface implements AtomicReferenceTrait {
         private void executeCommand() throws ValidationException {
             MyUplinkCommand command = commandQueue.poll();
             if (command != null) {
-                // TODO: command.performAction(httpClient, accessToken);
+                command.performAction(httpClient, accessToken);
             }
         }
     }
@@ -259,7 +260,7 @@ public class WebInterface implements AtomicReferenceTrait {
         this.httpClient = httpClient;
         // this.tokenExpiry = OUTDATED_DATE;
         // this.tokenRefreshDate = OUTDATED_DATE;
-        // this.accessToken = "";
+        this.accessToken = "";
         // this.refreshToken = "";
         this.requestExecutor = new WebRequestExecutor();
         this.requestExecutorJobReference = new AtomicReference<>(null);
@@ -304,12 +305,12 @@ public class WebInterface implements AtomicReferenceTrait {
      * @param authenticated
      */
     private void setAuthenticated(boolean authenticated) {
-        //TODO: setAuthenticated
+        // TODO: setAuthenticated
         // this.authenticated = authenticated;
         // if (!authenticated) {
-        //     this.tokenExpiry = OUTDATED_DATE;
-        //     this.accessToken = "";
-        //     this.refreshToken = "";
+        // this.tokenExpiry = OUTDATED_DATE;
+        // this.accessToken = "";
+        // this.refreshToken = "";
         // }
     }
 
@@ -319,7 +320,6 @@ public class WebInterface implements AtomicReferenceTrait {
      * @return
      */
     public String getAccessToken() {
-        //TODO: return accessToken;
-        return null;
+        return accessToken;
     }
 }

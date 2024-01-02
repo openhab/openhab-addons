@@ -24,8 +24,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.myuplink.internal.AtomicReferenceTrait;
+import org.openhab.binding.myuplink.internal.command.JsonResultProcessor;
 import org.openhab.binding.myuplink.internal.command.MyUplinkCommand;
+import org.openhab.binding.myuplink.internal.command.account.Login;
 import org.openhab.binding.myuplink.internal.config.MyUplinkConfiguration;
+import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.myuplink.internal.connector.WebInterface;
 import org.openhab.binding.myuplink.internal.discovery.MyUplinkDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -38,6 +41,8 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
 
 /**
  * The {@link myUplinkHandler} is responsible for handling commands, which are
@@ -94,7 +99,8 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
         webInterface.start();
         startPolling();
 
-        enqueueCommand(new GetSite(this, this::updateProperties));
+        // TODO: add command to update properties
+        // enqueueCommand(new GetSite(this, this::updateProperties));
     }
 
     /**
@@ -113,7 +119,12 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
         // logger.debug("polling site data for {}", siteId);
 
         // SiteState state = new SiteState(this, siteId, getChildChargerHandlers(), this::updateOnlineStatus);
-        // enqueueCommand(state);
+        enqueueCommand(new Login(this, new JsonResultProcessor() {
+
+            @Override
+            public void processResult(CommunicationStatus status, JsonObject jsonObject) {
+            }
+        }));
 
         // proceed if site is online
         if (getThing().getStatus() == ThingStatus.ONLINE) {

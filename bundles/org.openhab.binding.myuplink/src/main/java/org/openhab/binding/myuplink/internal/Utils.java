@@ -14,10 +14,6 @@ package org.openhab.binding.myuplink.internal;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myuplink.internal.model.ConfigurationException;
@@ -25,12 +21,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 /**
  * some helper methods.
@@ -47,79 +37,79 @@ public final class Utils {
     private Utils() {
     }
 
-    //TODO: check which methods are needed, delete unused
+    // TODO: check which methods are needed, delete unused
 
     // /**
-    //  * parses a date string in easee format to ZonedDateTime which is used by Openhab.
-    //  *
-    //  * @param date
-    //  * @return
-    //  */
+    // * parses a date string in easee format to ZonedDateTime which is used by Openhab.
+    // *
+    // * @param date
+    // * @return
+    // */
     // public static ZonedDateTime parseDate(String date) throws DateTimeParseException {
-    //     DateTimeFormatter formatter;
-    //     if (date.length() == 24) {
-    //         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-    //     } else {
-    //         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
-    //     }
-    //     LOGGER.trace("parsing: {}", date);
-    //     return ZonedDateTime.parse(date, formatter);
+    // DateTimeFormatter formatter;
+    // if (date.length() == 24) {
+    // formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+    // } else {
+    // formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+    // }
+    // LOGGER.trace("parsing: {}", date);
+    // return ZonedDateTime.parse(date, formatter);
     // }
 
     // /**
-    //  * get element as JsonObject.
-    //  *
-    //  * @param jsonObject
-    //  * @param key
-    //  * @return
-    //  */
+    // * get element as JsonObject.
+    // *
+    // * @param jsonObject
+    // * @param key
+    // * @return
+    // */
     // public static @Nullable JsonObject getAsJsonObject(@Nullable JsonObject jsonObject, String key) {
-    //     JsonElement element = jsonObject == null ? null : jsonObject.get(key);
-    //     return (element instanceof JsonObject) ? element.getAsJsonObject() : null;
+    // JsonElement element = jsonObject == null ? null : jsonObject.get(key);
+    // return (element instanceof JsonObject) ? element.getAsJsonObject() : null;
     // }
 
     // /**
-    //  * get element as String.
-    //  *
-    //  * @param jsonObject
-    //  * @param key
-    //  * @return
-    //  */
+    // * get element as String.
+    // *
+    // * @param jsonObject
+    // * @param key
+    // * @return
+    // */
     // public static @Nullable String getAsString(@Nullable JsonObject jsonObject, String key) {
-    //     JsonElement element = jsonObject == null ? null : jsonObject.get(key);
-    //     String text = null;
-    //     if (element != null) {
-    //         if (element instanceof JsonPrimitive) {
-    //             text = element.getAsString();
-    //         } else if (element instanceof JsonObject || element instanceof JsonArray) {
-    //             text = element.toString();
-    //         }
-    //     }
-    //     return text;
+    // JsonElement element = jsonObject == null ? null : jsonObject.get(key);
+    // String text = null;
+    // if (element != null) {
+    // if (element instanceof JsonPrimitive) {
+    // text = element.getAsString();
+    // } else if (element instanceof JsonObject || element instanceof JsonArray) {
+    // text = element.toString();
+    // }
+    // }
+    // return text;
     // }
 
     // /**
-    //  * get element as int.
-    //  *
-    //  * @param jsonObject
-    //  * @param key
-    //  * @return
-    //  */
+    // * get element as int.
+    // *
+    // * @param jsonObject
+    // * @param key
+    // * @return
+    // */
     // public static int getAsInt(@Nullable JsonObject jsonObject, String key) {
-    //     JsonElement element = jsonObject == null ? null : jsonObject.get(key);
-    //     return (element instanceof JsonPrimitive) ? element.getAsInt() : 0;
+    // JsonElement element = jsonObject == null ? null : jsonObject.get(key);
+    // return (element instanceof JsonPrimitive) ? element.getAsInt() : 0;
     // }
 
     // /**
-    //  * get element as boolean.
-    //  *
-    //  * @param jsonObject
-    //  * @param key
-    //  * @return
-    //  */
+    // * get element as boolean.
+    // *
+    // * @param jsonObject
+    // * @param key
+    // * @return
+    // */
     // public static @Nullable Boolean getAsBool(@Nullable JsonObject jsonObject, String key) {
-    //     JsonElement json = jsonObject == null ? null : jsonObject.get(key);
-    //     return (json == null || json instanceof JsonNull) ? null : json.getAsBoolean();
+    // JsonElement json = jsonObject == null ? null : jsonObject.get(key);
+    // return (json == null || json instanceof JsonNull) ? null : json.getAsBoolean();
     // }
 
     /**
