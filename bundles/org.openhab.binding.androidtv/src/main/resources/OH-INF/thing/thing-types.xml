@@ -43,9 +43,15 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="port" type="integer">
-				<label>Port</label>
+			<parameter name="googletvPort" type="integer">
+				<label>GoogleTV Port</label>
 				<description>Port to connect to</description>
+				<default>6466</default>
+			</parameter>
+			<parameter name="shieldtvPort" type="integer">
+				<label>ShieldTV Port</label>
+				<description>Port to connect to</description>
+				<default>8987</default>
 			</parameter>
 			<parameter name="keystoreFileName" type="text">
 				<label>Keystore File Name</label>
@@ -114,9 +120,10 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="port" type="integer">
-				<label>Port</label>
+			<parameter name="googletvPort" type="integer">
+				<label>GoogleTV Port</label>
 				<description>Port to connect to</description>
+				<default>6466</default>
 			</parameter>
 			<parameter name="keystoreFileName" type="text">
 				<label>Keystore File Name</label>
