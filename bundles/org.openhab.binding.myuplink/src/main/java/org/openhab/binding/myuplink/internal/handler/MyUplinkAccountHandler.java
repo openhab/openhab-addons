@@ -24,9 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.myuplink.internal.AtomicReferenceTrait;
-import org.openhab.binding.myuplink.internal.command.JsonResultProcessor;
+import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.binding.myuplink.internal.command.MyUplinkCommand;
-import org.openhab.binding.myuplink.internal.command.account.Login;
+import org.openhab.binding.myuplink.internal.command.account.GetSystems;
 import org.openhab.binding.myuplink.internal.config.MyUplinkConfiguration;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.myuplink.internal.connector.WebInterface;
@@ -118,17 +118,35 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
         // String siteId = getConfig().get(THING_CONFIG_SITE_ID).toString();
         // logger.debug("polling site data for {}", siteId);
 
-        // SiteState state = new SiteState(this, siteId, getChildChargerHandlers(), this::updateOnlineStatus);
-        enqueueCommand(new Login(this, new JsonResultProcessor() {
-
-            @Override
-            public void processResult(CommunicationStatus status, JsonObject jsonObject) {
-            }
-        }));
+        // TODO: check if this is the best polling command?!
+        GetSystems state = new GetSystems(this, this::updateOnlineStatus);
+        enqueueCommand(state);
 
         // proceed if site is online
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             // add further polling commands here
+        }
+    }
+
+    /**
+     * result processor to handle online status updates
+     *
+     * @param status of command execution
+     * @param jsonObject json respone result
+     */
+    protected final void updateOnlineStatus(CommunicationStatus status, JsonObject jsonObject) {
+        String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR);
+        if (msg == null || msg.isBlank()) {
+            msg = status.getMessage();
+        }
+
+        switch (status.getHttpCode()) {
+            case OK:
+            case ACCEPTED:
+                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                break;
+            default:
+                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
         }
     }
 
@@ -139,7 +157,7 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
     public void dispose() {
         logger.debug("Handler disposed.");
         cancelJobReference(dataPollingJobReference);
-        // TODO: webInterface.dispose();
+        webInterface.dispose();
     }
 
     @Override
@@ -166,7 +184,7 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
 
     @Override
     public void enqueueCommand(MyUplinkCommand command) {
-        // TODO: webInterface.enqueueCommand(command);
+        webInterface.enqueueCommand(command);
     }
 
     @Override
