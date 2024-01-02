@@ -140,6 +140,16 @@ public class ValueTests {
     }
 
     @Test
+    public void onoffMultiStates() {
+        OnOffValue v = new OnOffValue(new String[] { "LOCKED" }, new String[] { "UNLOCKED", "JAMMED" }, "LOCK",
+                "UNLOCK");
+
+        assertThat(v.parseCommand(new StringType("LOCKED")), is(OnOffType.ON));
+        assertThat(v.parseCommand(new StringType("UNLOCKED")), is(OnOffType.OFF));
+        assertThat(v.parseCommand(new StringType("JAMMED")), is(OnOffType.OFF));
+    }
+
+    @Test
     public void openCloseUpdate() {
         OpenCloseValue v = new OpenCloseValue("fancyON", "fancyOff");
 
