@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.smartmeter.internal.conformity.negate;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.internal.MeterValue;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles the Negate Bit property for a specific meter value.
@@ -64,7 +68,15 @@ public class NegateHandler {
      * @return Whether the given bit is set or not
      */
     public static boolean isNegateSet(String value, int negatePosition) {
-        long longValue = Long.parseLong(value);
+        NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
+        long longValue = 0;
+        try {
+            longValue = format.parse(value).longValue();
+        } catch (ParseException e) {
+            LoggerFactory.getLogger(NegateHandler.class)
+                    .warn("Failed to parse value: {} when determining isNegateSet, assuming false", value);
+            return false;
+        }
         return (longValue & (1L << negatePosition)) != 0;
     }
 }
