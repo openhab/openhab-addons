@@ -80,7 +80,6 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             internalInitialize();
             updateStatus(ONLINE);
         } catch (Exception ex) {
-            logger.error("Cannot start server!", ex);
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "Cannot start server! " + ex.getMessage());
         }
     }
