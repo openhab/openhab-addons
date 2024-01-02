@@ -14,6 +14,8 @@ package org.openhab.binding.myuplink.internal.connector;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,11 +27,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.openhab.binding.myuplink.internal.AtomicReferenceTrait;
+import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.binding.myuplink.internal.command.MyUplinkCommand;
 import org.openhab.binding.myuplink.internal.command.account.Login;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkBridgeHandler;
 import org.openhab.binding.myuplink.internal.handler.StatusHandler;
 import org.openhab.binding.myuplink.internal.model.ValidationException;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,19 +71,14 @@ public class WebInterface implements AtomicReferenceTrait {
     private String accessToken;
 
     /**
-     * refresh token returned by login, needed for refreshing the access token.
-     */
-    // TODO: private String refreshToken;
-
-    /**
      * expiry of the access token.
      */
-    // TODO: private Instant tokenExpiry;
+    private Instant tokenExpiry;
 
     /**
      * last refresh of the access token.
      */
-    // TODO: private Instant tokenRefreshDate;
+    private Instant tokenRefreshDate;
 
     /**
      * HTTP client for asynchronous calls
@@ -123,43 +123,43 @@ public class WebInterface implements AtomicReferenceTrait {
         }
 
         private void processAuthenticationResult(CommunicationStatus status, JsonObject jsonObject) {
+            //TODO: remove this
+            logger.debug(status.getHttpCode().toString());
             logger.debug(jsonObject.toString());
-            // TODO: processAuthenticationResult
-            // String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
-            // if (msg == null || msg.isBlank()) {
-            // msg = status.getMessage();
-            // }
 
-            // switch (status.getHttpCode()) {
-            // case BAD_REQUEST:
-            // bridgeStatusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-            // msg);
-            // setAuthenticated(false);
-            // break;
-            // case OK:
-            // String accessToken = Utils.getAsString(jsonObject, JSON_KEY_AUTH_ACCESS_TOKEN);
-            // String refreshToken = Utils.getAsString(jsonObject, JSON_KEY_AUTH_REFRESH_TOKEN);
-            // int expiresInSeconds = Utils.getAsInt(jsonObject, JSON_KEY_AUTH_EXPIRES_IN);
-            // if (accessToken != null && refreshToken != null && expiresInSeconds != 0) {
-            // WebInterface.this.accessToken = accessToken;
-            // WebInterface.this.refreshToken = refreshToken;
-            // tokenRefreshDate = Instant.now();
-            // tokenExpiry = tokenRefreshDate.plusSeconds(expiresInSeconds);
+            String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR);
+            if (msg == null || msg.isBlank()) {
+                msg = status.getMessage();
+            }
 
-            // logger.debug("access token refreshed: {}, expiry: {}", tokenRefreshDate.toString(),
-            // tokenExpiry.toString());
+            switch (status.getHttpCode()) {
+                case BAD_REQUEST:
+                    bridgeStatusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            msg);
+                    setAuthenticated(false);
+                    break;
+                case OK:
+                    String accessToken = Utils.getAsString(jsonObject, JSON_KEY_AUTH_ACCESS_TOKEN);
+                    int expiresInSeconds = Utils.getAsInt(jsonObject, JSON_KEY_AUTH_EXPIRES_IN);
+                    if (accessToken != null && expiresInSeconds != 0) {
+                        WebInterface.this.accessToken = accessToken;
+                        tokenRefreshDate = Instant.now();
+                        tokenExpiry = tokenRefreshDate.plusSeconds(expiresInSeconds);
 
-            // bridgeStatusHandler.updateStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-            // STATUS_TOKEN_VALIDATED);
-            // setAuthenticated(true);
-            // handler.startDiscovery();
-            // break;
-            // }
-            // default:
-            // bridgeStatusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // msg);
-            // setAuthenticated(false);
-            // }
+                        logger.debug("access token refreshed: {}, expiry: {}", tokenRefreshDate.toString(),
+                                tokenExpiry.toString());
+
+                        bridgeStatusHandler.updateStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                                STATUS_TOKEN_VALIDATED);
+                        setAuthenticated(true);
+                        handler.startDiscovery();
+                        break;
+                    }
+                default:
+                    bridgeStatusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            msg);
+                    setAuthenticated(false);
+            }
         }
 
         /**
@@ -218,22 +218,20 @@ public class WebInterface implements AtomicReferenceTrait {
          * periodically refreshed the access token.
          */
         private synchronized void refreshAccessToken() {
-            // TODO: refreshAccessToken
-            // Instant now = Instant.now();
+            Instant now = Instant.now();
 
-            // if (now.plus(WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES, ChronoUnit.MINUTES).isAfter(tokenExpiry)
-            // || now.isAfter(tokenRefreshDate.plus(WEB_REQUEST_TOKEN_MAX_AGE_MINUTES, ChronoUnit.MINUTES))) {
-            // logger.debug("access token needs to be refreshed, last refresh: {}, expiry: {}",
-            // tokenRefreshDate.toString(), tokenExpiry.toString());
+            if (now.plus(WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES, ChronoUnit.MINUTES).isAfter(tokenExpiry)
+                    || now.isAfter(tokenRefreshDate.plus(WEB_REQUEST_TOKEN_MAX_AGE_MINUTES, ChronoUnit.MINUTES))) {
+                logger.debug("access token needs to be refreshed, last refresh: {}, expiry: {}",
+                        tokenRefreshDate.toString(), tokenExpiry.toString());
 
-            // MyUplinkCommand refreshCommand = new RefreshToken(handler, accessToken, refreshToken,
-            // this::processAuthenticationResult);
-            // try {
-            // refreshCommand.performAction(httpClient, accessToken);
-            // } catch (ValidationException e) {
-            // // this cannot happen
-            // }
-            // }
+                MyUplinkCommand refreshCommand = new Login(handler, this::processAuthenticationResult);
+                try {
+                    refreshCommand.performAction(httpClient, accessToken);
+                } catch (ValidationException e) {
+                    // this cannot happen
+                }
+            }
         }
 
         /**
@@ -258,10 +256,9 @@ public class WebInterface implements AtomicReferenceTrait {
         this.bridgeStatusHandler = bridgeStatusHandler;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
-        // this.tokenExpiry = OUTDATED_DATE;
-        // this.tokenRefreshDate = OUTDATED_DATE;
+        this.tokenExpiry = OUTDATED_DATE;
+        this.tokenRefreshDate = OUTDATED_DATE;
         this.accessToken = "";
-        // this.refreshToken = "";
         this.requestExecutor = new WebRequestExecutor();
         this.requestExecutorJobReference = new AtomicReference<>(null);
     }
@@ -305,13 +302,11 @@ public class WebInterface implements AtomicReferenceTrait {
      * @param authenticated
      */
     private void setAuthenticated(boolean authenticated) {
-        // TODO: setAuthenticated
-        // this.authenticated = authenticated;
-        // if (!authenticated) {
-        // this.tokenExpiry = OUTDATED_DATE;
-        // this.accessToken = "";
-        // this.refreshToken = "";
-        // }
+        this.authenticated = authenticated;
+        if (!authenticated) {
+            this.tokenExpiry = OUTDATED_DATE;
+            this.accessToken = "";
+        }
     }
 
     /**
