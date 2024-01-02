@@ -174,9 +174,9 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Override
     public void dispose() {
-        var f = scheduledFuture;
-        if (f != null) {
-            f.cancel(true);
+        var localScheduledFuture = scheduledFuture;
+        if (localScheduledFuture != null) {
+            localScheduledFuture.cancel(true);
             scheduledFuture = null;
         }
         super.dispose();
