@@ -24,11 +24,36 @@ import org.openhab.binding.salus.internal.rest.DeviceProperty;
  */
 @NonNullByDefault
 public interface CloudApi {
+    /**
+     * Finds all devices from cloud
+     * 
+     * @return all devices from cloud
+     */
     SortedSet<Device> findDevices();
 
+    /**
+     * Find a device by DSN
+     * 
+     * @param dsn of the device to find
+     * @return a device with given DSN (or empty if no found)
+     */
     Optional<Device> findDevice(String dsn);
 
+    /**
+     * Sets value for a property
+     * 
+     * @param dsn of the device
+     * @param propertyName property name
+     * @param value value to set
+     * @return if value was properly set
+     */
     boolean setValueForProperty(String dsn, String propertyName, Object value);
 
+    /**
+     * Finds all properties for a device
+     * 
+     * @param dsn of the device
+     * @return all properties of the device
+     */
     SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn);
 }
