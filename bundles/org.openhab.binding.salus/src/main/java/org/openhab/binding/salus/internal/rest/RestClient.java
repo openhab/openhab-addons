@@ -23,8 +23,22 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public interface RestClient {
+    /**
+     * GET request to server
+     * 
+     * @param url to send request
+     * @param headers to send
+     * @return response from server
+     */
     Response<@Nullable String> get(String url, @Nullable Header... headers);
 
+    /**
+     * POST request to server
+     * 
+     * @param url to send request
+     * @param headers to send
+     * @return response from server
+     */
     Response<@Nullable String> post(String url, Content content, @Nullable Header... headers);
 
     record Content(String body, String type) {
