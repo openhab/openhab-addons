@@ -1263,7 +1263,7 @@ public enum HeatpumpChannel {
      * (will directly set the target return temperature, no automatic changes depending on outside temperature)
      * (original: Rücklauf FestwerteHK)
      */
-    CHANNEL_EINST_HZ_FIX(17, "temperatureHeatingFixReturn", NumberItem.class, SIUnits.CELSIUS, true, 
+    CHANNEL_EINST_HZ_FIX(17, "temperatureHeatingFixReturn", NumberItem.class, SIUnits.CELSIUS, true,
             HeatpumpVisibility.HEIZUNG),
 
     /**
