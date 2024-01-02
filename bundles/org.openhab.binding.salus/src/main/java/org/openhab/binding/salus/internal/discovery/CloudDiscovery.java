@@ -56,7 +56,7 @@ public class CloudDiscovery extends AbstractDiscoveryService {
             logger.debug("Found {} devices while scanning", devices.size());
             devices.stream().filter(Device::isConnected).forEach(this::addThing);
         } catch (Exception e) {
-            logger.error("Error while scanning", e);
+            logger.warn("Error while scanning", e);
         }
         logger.debug("Finished Salus discovery");
     }
