@@ -34,6 +34,7 @@ public class AmpliPiBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_PRESET = "preset";
     public static final String CHANNEL_INPUT = "input";
+    public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_SOURCE = "source";
