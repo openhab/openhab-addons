@@ -13,9 +13,9 @@
 package org.openhab.binding.salus.internal.handler;
 
 import static java.util.Collections.emptySortedSet;
-import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElse;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusCloud.DEFAULT_URL;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
@@ -128,7 +128,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         password = ((String) config.get("password")).toCharArray();
         url = (String) config.get("url");
         if ("".equals(url)) {
-            url = "https://eu.salusconnect.io";
+            url = DEFAULT_URL;
         }
         refreshInterval = ((BigDecimal) config.get("refreshInterval")).longValue();
         if (refreshInterval <= 0) {

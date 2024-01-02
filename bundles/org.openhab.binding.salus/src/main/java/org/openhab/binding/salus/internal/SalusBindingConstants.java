@@ -41,10 +41,13 @@ public class SalusBindingConstants {
             SALUS_IT600_DEVICE_TYPE, SALUS_SERVER_TYPE);
 
     public static class SalusCloud {
+        public static final String DEFAULT_URL = "https://eu.salusconnect.io";
     }
 
     public static class SalusDevice {
         public static final String DSN = "dsn";
+        public static final String OEM_MODEL = "oem_model";
+        public static final String IT_600 = "it600";
     }
 
     public static class It600Device {
