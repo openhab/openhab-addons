@@ -74,10 +74,8 @@ public class DeviceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         try {
-            logger.debug("Initializing thing...");
             internalInitialize();
         } catch (Exception e) {
-            logger.error("Error occurred while initializing Salus device!", e);
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
                     "Error occurred while initializing Salus device! " + e.getLocalizedMessage());
         }
@@ -86,15 +84,12 @@ public class DeviceHandler extends BaseThingHandler {
     private void internalInitialize() {
         var bridge = getBridge();
         if (bridge == null) {
-            logger.debug("No bridge for thing with UID {}", thing.getUID());
             updateStatus(OFFLINE, BRIDGE_UNINITIALIZED,
                     "There is no bridge for this thing. Remove it and add it again.");
             return;
         }
         var bridgeHandler = bridge.getHandler();
         if (!(bridgeHandler instanceof CloudBridgeHandler cloudHandler)) {
-            logger.debug("Bridge is not instance of {}! Current bridge class {}, Thing UID {}",
-                    CloudBridgeHandler.class.getSimpleName(), CloudBridgeHandler.class.getSimpleName(), thing.getUID());
             updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "There is wrong type of bridge for cloud device!");
             return;
         }
@@ -103,7 +98,6 @@ public class DeviceHandler extends BaseThingHandler {
         dsn = (String) getConfig().get(DSN);
 
         if ("".equals(dsn)) {
-            logger.debug("No {} for thing with UID {}", DSN, thing.getUID());
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
                     "There is no " + DSN + " for this thing. Remove it and add it again.");
             return;
@@ -113,13 +107,11 @@ public class DeviceHandler extends BaseThingHandler {
             var device = this.cloudApi.findDevice(dsn);
             if (device.isEmpty()) {
                 var msg = "Device with DSN " + dsn + " not found!";
-                logger.error(msg);
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
                 return;
             }
             if (!device.get().isConnected()) {
                 var msg = "Device with DSN " + dsn + " is not connected!";
-                logger.error(msg);
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
                 return;
             }
@@ -131,7 +123,6 @@ public class DeviceHandler extends BaseThingHandler {
             updateChannels(channels);
         } catch (Exception e) {
             var msg = "Error when connecting to Salus Cloud!";
-            logger.error(msg, e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
             return;
         }
