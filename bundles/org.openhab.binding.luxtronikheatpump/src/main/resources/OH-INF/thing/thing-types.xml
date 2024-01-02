@@ -312,6 +312,9 @@
 			<channel id="comfortCoolingATExcess" typeId="comfortCoolingATExcess"/>
 			<channel id="comfortCoolingATUndercut" typeId="comfortCoolingATUndercut"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
