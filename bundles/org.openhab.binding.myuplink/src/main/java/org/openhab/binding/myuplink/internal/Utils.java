@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.myuplink.internal;
 
-import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.PARAMETER_NAME_VALIDATION_REGEXP;
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.PARAMETER_NAME_WRITE_COMMAND;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,6 +22,11 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * some helper methods.
@@ -68,37 +74,37 @@ public final class Utils {
     // return (element instanceof JsonObject) ? element.getAsJsonObject() : null;
     // }
 
-    // /**
-    // * get element as String.
-    // *
-    // * @param jsonObject
-    // * @param key
-    // * @return
-    // */
-    // public static @Nullable String getAsString(@Nullable JsonObject jsonObject, String key) {
-    // JsonElement element = jsonObject == null ? null : jsonObject.get(key);
-    // String text = null;
-    // if (element != null) {
-    // if (element instanceof JsonPrimitive) {
-    // text = element.getAsString();
-    // } else if (element instanceof JsonObject || element instanceof JsonArray) {
-    // text = element.toString();
-    // }
-    // }
-    // return text;
-    // }
+    /**
+     * get element as String.
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
+    public static @Nullable String getAsString(@Nullable JsonObject jsonObject, String key) {
+        JsonElement element = jsonObject == null ? null : jsonObject.get(key);
+        String text = null;
+        if (element != null) {
+            if (element instanceof JsonPrimitive) {
+                text = element.getAsString();
+            } else if (element instanceof JsonObject || element instanceof JsonArray) {
+                text = element.toString();
+            }
+        }
+        return text;
+    }
 
-    // /**
-    // * get element as int.
-    // *
-    // * @param jsonObject
-    // * @param key
-    // * @return
-    // */
-    // public static int getAsInt(@Nullable JsonObject jsonObject, String key) {
-    // JsonElement element = jsonObject == null ? null : jsonObject.get(key);
-    // return (element instanceof JsonPrimitive) ? element.getAsInt() : 0;
-    // }
+    /**
+     * get element as int.
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
+    public static int getAsInt(@Nullable JsonObject jsonObject, String key) {
+        JsonElement element = jsonObject == null ? null : jsonObject.get(key);
+        return (element instanceof JsonPrimitive) ? element.getAsInt() : 0;
+    }
 
     // /**
     // * get element as boolean.

@@ -248,13 +248,11 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
                 TimeUnit.SECONDS);
         logger.debug("running command: {}", this.getClass().toString());
 
-        // we want to send and receive json only, so explicitely set this!
-        // TODO: check this
-        // request.header(HttpHeader.ACCEPT, "application/json");
-        // request.header(HttpHeader.CONTENT_TYPE, "application/json");
+        // we want to receive json only, so explicitely set this!
+        request.header(HttpHeader.ACCEPT, "application/json");
 
         // this should be the default for myUplink Cloud API
-        // request.followRedirects(false);
+        request.followRedirects(false);
 
         // add authentication data for every request. Handling this here makes it obsolete to implement for each and
         // every command
