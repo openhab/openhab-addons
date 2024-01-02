@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
 public class DeviceHandler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private final Logger logger;
+    @NonNullByDefault({})
     private String dsn;
     @NonNullByDefault({})
     private CloudApi cloudApi;
