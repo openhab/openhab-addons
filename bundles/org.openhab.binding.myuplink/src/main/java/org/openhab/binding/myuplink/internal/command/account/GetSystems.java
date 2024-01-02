@@ -15,9 +15,7 @@ package org.openhab.binding.myuplink.internal.command.account;
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.myuplink.internal.command.AbstractCommand;
+import org.openhab.binding.myuplink.internal.command.AbstractPagingCommand;
 import org.openhab.binding.myuplink.internal.command.JsonResultProcessor;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkBridgeHandler;
 
@@ -27,18 +25,12 @@ import org.openhab.binding.myuplink.internal.handler.MyUplinkBridgeHandler;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class GetSystems extends AbstractCommand {
+public class GetSystems extends AbstractPagingCommand {
 
     public GetSystems(MyUplinkBridgeHandler handler, JsonResultProcessor resultProcessor) {
         // retry does not make much sense as it is a polling command, command should always succeed therefore update
         // handler on failure.
         super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES, resultProcessor);
-    }
-
-    @Override
-    protected Request prepareRequest(Request requestToPrepare) {
-        requestToPrepare.method(HttpMethod.GET);
-        return requestToPrepare;
     }
 
     @Override
