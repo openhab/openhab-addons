@@ -57,6 +57,10 @@
 			<channel typeId="source" id="source"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>Zone ID</label>
@@ -85,6 +89,10 @@
 			<channel typeId="system.mute" id="mute"/>
 			<channel typeId="source" id="source"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="id" type="integer" required="true">
