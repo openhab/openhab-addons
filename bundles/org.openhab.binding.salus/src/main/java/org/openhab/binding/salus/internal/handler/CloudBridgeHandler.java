@@ -71,7 +71,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     public CloudBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
-        this.httpClientFactory = requireNonNull(httpClientFactory, "httpClientFactory");
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
