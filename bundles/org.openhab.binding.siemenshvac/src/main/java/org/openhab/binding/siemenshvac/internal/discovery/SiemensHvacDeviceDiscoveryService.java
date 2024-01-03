@@ -127,7 +127,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
                     ThingUID bridgeUID = lcSiemensHvacBridgeHandler.getThing().getUID();
 
                     if (thingUID != null) {
-                        Map<String, Object> properties = new HashMap<>(1);
+                        Map<String, Object> properties = new HashMap<>(4);
                         properties.put("name", name);
                         properties.put("type", type);
                         properties.put("addr", addr);
@@ -151,8 +151,8 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SiemensHvacBridgeBaseThingHandler) {
-            siemensHvacBridgeHandler = (SiemensHvacBridgeBaseThingHandler) handler;
+        if (handler instanceof SiemensHvacBridgeBaseThingHandler siemensHvacBridgeHandler) {
+            this.siemensHvacBridgeHandler = siemensHvacBridgeHandler;
         }
     }
 
