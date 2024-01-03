@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.myuplink.internal;
 
-import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.PARAMETER_NAME_VALIDATION_REGEXP;
-import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.PARAMETER_NAME_WRITE_COMMAND;
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
+
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,22 +48,22 @@ public final class Utils {
 
     // TODO: check which methods are needed, delete unused
 
-    // /**
-    // * parses a date string in easee format to ZonedDateTime which is used by Openhab.
-    // *
-    // * @param date
-    // * @return
-    // */
-    // public static ZonedDateTime parseDate(String date) throws DateTimeParseException {
-    // DateTimeFormatter formatter;
-    // if (date.length() == 24) {
-    // formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-    // } else {
-    // formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
-    // }
-    // LOGGER.trace("parsing: {}", date);
-    // return ZonedDateTime.parse(date, formatter);
-    // }
+    /**
+     * parses a date string in easee format to ZonedDateTime which is used by Openhab.
+     *
+     * @param date
+     * @return
+     */
+    public static ZonedDateTime parseDate(String date) throws DateTimeParseException {
+        DateTimeFormatter formatter;
+        if (date.length() == 24) {
+            formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        } else {
+            formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+        }
+        LOGGER.trace("parsing: {}", date);
+        return ZonedDateTime.parse(date, formatter);
+    }
 
     // /**
     // * get element as JsonObject.

@@ -123,10 +123,6 @@ public class WebInterface implements AtomicReferenceTrait {
         }
 
         private void processAuthenticationResult(CommunicationStatus status, JsonObject jsonObject) {
-            // TODO: remove this
-            logger.debug(status.getHttpCode().toString());
-            logger.debug(jsonObject.toString());
-
             String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR);
             if (msg == null || msg.isBlank()) {
                 msg = status.getMessage();
