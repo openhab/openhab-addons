@@ -47,11 +47,11 @@ import com.google.gson.JsonObject;
 public class GenericResponseTransformer {
     private final Logger logger = LoggerFactory.getLogger(GenericResponseTransformer.class);
     private final ChannelProvider channelProvider;
-    //TODO: private final CustomResponseTransformer customResponseTransformer;
+    // TODO: private final CustomResponseTransformer customResponseTransformer;
 
     public GenericResponseTransformer(ChannelProvider channelProvider) {
         this.channelProvider = channelProvider;
-        //TODO: this.customResponseTransformer = new CustomResponseTransformer(channelProvider);
+        // TODO: this.customResponseTransformer = new CustomResponseTransformer(channelProvider);
     }
 
     public Map<Channel, State> transform(JsonObject jsonData, String group) {
@@ -120,7 +120,7 @@ public class GenericResponseTransformer {
 
                         // call the custom handler to handle specific / composite channels which do not map 1:1 to JSON
                         // fields.
-                        //TODO: result.putAll(customResponseTransformer.transform(channel, value, jsonData));
+                        // TODO: result.putAll(customResponseTransformer.transform(channel, value, jsonData));
 
                     } catch (NumberFormatException | DateTimeParseException ex) {
                         logger.warn("caught exception while parsing data for channel {} (value '{}'). Exception: {}",

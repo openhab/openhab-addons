@@ -27,7 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class MyUplinkBindingConstants {
 
-    private static final String BINDING_ID = "myuplink";
+    public static final String BINDING_ID = "myuplink";
 
     // List of main device types
     public static final String DEVICE_ACCOUNT = "account";
@@ -60,6 +60,13 @@ public class MyUplinkBindingConstants {
 
     // JSON Keys
     public static final String JSON_KEY_ERROR = "error";
+    public static final String JSON_KEY_SYSTEMS = "systems";
+    public static final String JSON_KEY_DEVICES = "devices";
+    public static final String JSON_KEY_GENERIC_ID = "id";
+    public static final String JSON_KEY_PRODUCT = "product";
+    public static final String JSON_KEY_SERIAL = "serialNumber";
+    public static final String JSON_KEY_NAME = "name";
+
     public static final String JSON_KEY_AUTH_ACCESS_TOKEN = "access_token";
     public static final String JSON_KEY_AUTH_EXPIRES_IN = "expires_in";
     // TODO: add content
@@ -103,6 +110,8 @@ public class MyUplinkBindingConstants {
 
     // other
     public static final long POLLING_INITIAL_DELAY = 1;
+
+    public static final String THING_CONFIG_ID = "id";
 
     public static final Instant OUTDATED_DATE = Instant.EPOCH;
 

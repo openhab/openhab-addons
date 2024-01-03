@@ -15,16 +15,23 @@ package org.openhab.binding.myuplink.internal.discovery;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myuplink.internal.MyUplinkBindingConstants;
+import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.binding.myuplink.internal.command.account.GetSystems;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkAccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
 /**
  * this class will handle discovery of wallboxes and circuits within the site configured.
@@ -63,7 +70,7 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
 
     @Override
     protected void startScan() {
-        bridgeHandler.enqueueCommand(new GetSystems(bridgeHandler, this::processSystemsDiscoveryResult));
+        bridgeHandler.enqueueCommand(new GetSystems(bridgeHandler, this::processMyUplinkDiscoveryResult));
     }
 
     /**
@@ -71,17 +78,60 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
      *
      * @param site
      */
-    private void processSystemsDiscoveryResult(CommunicationStatus status, JsonObject systems) {
-        logger.debug("processSystemsDiscoveryResult {}", systems);
+    void processMyUplinkDiscoveryResult(CommunicationStatus status, JsonObject json) {
+        logger.debug("processMyUplinkDiscoveryResult {}", json);
 
-        // TODO implement
-        // JsonArray circuits = site.getAsJsonArray(JSON_KEY_CIRCUITS);
-        // if (circuits == null) {
-        // logger.info("Site discovery failed, no circuits found.");
-        // } else {
-        // circuits.forEach(this::handleCircuitDiscovery);
-        // }
+        JsonArray systems = json.getAsJsonArray(JSON_KEY_SYSTEMS);
+        if (systems == null || systems.isEmpty()) {
+            logger.info("System discovery failed, no systems found.");
+        } else {
+            systems.forEach(this::handleSystemDiscovery);
+        }
+    }
 
-        throw new UnsupportedOperationException("Unimplemented method 'processSystemsDiscoveryResult'");
+    void handleSystemDiscovery(JsonElement json) {
+        logger.debug("handleSystemDiscovery {}", json);
+
+        JsonObject system = json.getAsJsonObject();
+        JsonArray devices = system.getAsJsonArray(JSON_KEY_DEVICES);
+        if (devices == null || devices.isEmpty()) {
+            logger.info("System discovery failed, no devices found.");
+        } else {
+            devices.forEach(this::handleDeviceDiscovery);
+        }
+    }
+
+    void handleDeviceDiscovery(JsonElement json) {
+        logger.debug("handleDeviceDiscovery {}", json);
+
+        JsonObject device = json.getAsJsonObject();
+        String id = Utils.getAsString(device, JSON_KEY_GENERIC_ID);
+        String serial = Utils.getAsString(device.getAsJsonObject(JSON_KEY_PRODUCT), JSON_KEY_SERIAL);
+        String name = Utils.getAsString(device.getAsJsonObject(JSON_KEY_PRODUCT), JSON_KEY_NAME);
+
+        if (id != null && serial != null && name != null) {
+            DiscoveryResultBuilder builder;
+            //builder = initDiscoveryResultBuilder(DEVICE_MASTER_CHARGER, id, name);
+
+        }
+    }
+
+    /**
+     * sends discovery notification to the framework.
+     *
+     * @param deviceType
+     * @param deviceId
+     * @param deviceName
+     */
+    private DiscoveryResultBuilder initDiscoveryResultBuilder(String deviceType, String deviceId,
+            @Nullable String deviceName) {
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        ThingTypeUID typeUid = new ThingTypeUID(BINDING_ID, deviceType);
+
+        ThingUID thingUID = new ThingUID(typeUid, bridgeUID, deviceId);
+        String label = deviceName != null ? deviceName : deviceId;
+
+        return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
+                .withProperty(THING_CONFIG_ID, deviceId).withRepresentationProperty(THING_CONFIG_ID);
     }
 }
