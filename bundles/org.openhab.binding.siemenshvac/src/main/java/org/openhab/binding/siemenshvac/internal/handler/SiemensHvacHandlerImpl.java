@@ -100,12 +100,11 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.info("bridge status changed : {} ", bridgeStatusInfo);
     }
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY);
+        updateStatus(ThingStatus.UNKNOWN);
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 5, TimeUnit.SECONDS);
     }
 
@@ -114,6 +113,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         ScheduledFuture<?> lcPollingJob = pollingJob;
         if (lcPollingJob != null) {
             lcPollingJob.cancel(true);
+            pollingJob = null;
         }
     }
 
@@ -125,18 +125,13 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         }
 
         if (lcBridge.getStatus() == ThingStatus.OFFLINE) {
-            logger.debug("Bridge is offline, change thing status to offline!");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
         if (lcBridge.getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Bridge is not ready, don't enter pooling for now!");
+            logger.debug("Bridge is not ready, don't enter polling for now!");
             return;
-        }
-
-        if (getThing().getStatus() != ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.ONLINE);
         }
 
         long start = System.currentTimeMillis();
@@ -183,7 +178,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             }
 
             lcHvacConnector.displayRequestStats();
-
         }
     }
 
@@ -199,7 +193,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             return;
         }
 
-        logger.debug("readChannel : {}", channel.getDescription());
+        logger.debug("readChannel: {}", channel.getDescription());
 
         ChannelType tp = channelTypeRegistry.getChannelType(channel.getChannelTypeUID());
 
@@ -216,11 +210,11 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         }
 
         if (id == null) {
-            logger.debug("pollingCode : Id is null {} ", channel);
+            logger.debug("pollingCode: Id is null {} ", channel);
             return;
         }
         if (type == null) {
-            logger.debug("pollingCode : type is null {} ", channel);
+            logger.debug("pollingCode: type is null {} ", channel);
             return;
         }
         readDp(id, uid, type, true);
@@ -312,8 +306,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
                             logger.trace("End read : {}", dp);
 
-                            if (response instanceof JsonObject) {
-                                decodeReadDp((JsonObject) response, uid, dp, type);
+                            if (response instanceof JsonObject jsonResponse) {
+                                decodeReadDp(jsonResponse, uid, dp, type);
                             }
                         }
                     });
@@ -328,7 +322,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             logger.debug("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
         } finally {
-            logger.trace("End read : {}", dp);
+            logger.trace("End read: {}", dp);
             lockObj.unlock();
         }
     }
@@ -352,15 +346,12 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             String valUpdate = "0";
             String valUpdateEnum = "";
 
-            if (dpVal instanceof PercentType) {
-                PercentType pct = (PercentType) dpVal;
-                valUpdate = pct.toString();
-            } else if (dpVal instanceof DecimalType) {
-                DecimalType bdc = (DecimalType) dpVal;
-                valUpdate = bdc.toString();
-            } else if (dpVal instanceof StringType) {
-                StringType bdc = (StringType) dpVal;
-                valUpdate = bdc.toString();
+            if (dpVal instanceof PercentType percentValue) {
+                valUpdate = percentValue.toString();
+            } else if (dpVal instanceof DecimalType decimalValue) {
+                valUpdate = decimalValue.toString();
+            } else if (dpVal instanceof StringType stringValue) {
+                valUpdate = stringValue.toString();
 
                 if ("Enumeration".equals(type)) {
                     String[] valuesUpdateDp = valUpdate.split(":");
@@ -399,9 +390,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             BigDecimal step = sd.getStep();
             boolean doMods = false;
 
-            if (command instanceof DecimalType) {
-                DecimalType bdc = (DecimalType) command;
-                double v1 = bdc.doubleValue();
+            if (command instanceof DecimalType decimalCommand) {
+                double v1 = decimalCommand.doubleValue();
 
                 if (step != null) {
                     doMods = true;
@@ -474,11 +464,9 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 }
             }
 
-            if (command instanceof State) {
+            if (command instanceof State commandState) {
                 commandVar = applyState(tp, commandVar);
-                State state = (State) commandVar;
-
-                this.updateState(channelUID, state);
+                this.updateState(channelUID, commandState);
             }
 
             if (id != null && type != null) {
