@@ -25,12 +25,15 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * Provider class to provide channel types for user configured channels.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { NUTChannelTypeProvider.class, ChannelTypeProvider.class })
 @NonNullByDefault
 public class NUTChannelTypeProvider implements ChannelTypeProvider, ThingHandlerService {
 

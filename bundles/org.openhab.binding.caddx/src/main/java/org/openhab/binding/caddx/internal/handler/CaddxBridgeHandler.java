@@ -17,7 +17,6 @@ import static org.openhab.binding.caddx.internal.CaddxBindingConstants.SEND_COMM
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TooManyListenersException;
@@ -451,10 +450,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        Set<Class<? extends ThingHandlerService>> set = new HashSet<Class<? extends ThingHandlerService>>(2);
-        set.add(CaddxDiscoveryService.class);
-        set.add(CaddxBridgeActions.class);
-        return set;
+        return Set.of(CaddxBridgeActions.class, CaddxDiscoveryService.class);
     }
 
     public void restart() {
