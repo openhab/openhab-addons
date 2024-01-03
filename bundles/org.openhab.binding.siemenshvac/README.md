@@ -84,9 +84,9 @@ Regime                 | Number                                   | Enumeration 
 Things file `.things`
 
 ```java
-Bridge siemenshvac:ozw672:local "Ozw672"@"Chaufferie" [ baseUrl="https://192.168.254.42/", userName="Administrator", userPassword="mypass"  ] 
+Bridge siemenshvac:ozw672:local "Ozw672" [ baseUrl="https://192.168.254.42/", userName="Administrator", userPassword="mypass"  ] 
 {
-    Thing RVS41_813_327 local "RVS41.813/327" @ "Chaudiere"  [  ]
+    Thing RVS41_813_327 local "RVS41.813/327"  [  ]
     {
         Channels:
             Type Setpoint:temperature                 "Temperature"  [ id="1726" ]
