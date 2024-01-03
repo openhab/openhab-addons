@@ -185,7 +185,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     }
 
     /**
-     * Submit newly discovered devices. This method is called by the spawned threads in {@link startScan}.
+     * Submit newly discovered devices. This method is called by the spawned threads in {@link #startScan()}.
      *
      * @param ip The device IP
      * @param tcpPort The TCP port
@@ -228,7 +228,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     }
 
     /**
-     * Submit newly discovered devices. This method is called by the spawned threads in {@link startScan}.
+     * Submit newly discovered devices. This method is called by the spawned threads in {@link #startScan()}.
      *
      * @param ip The device IP
      */
