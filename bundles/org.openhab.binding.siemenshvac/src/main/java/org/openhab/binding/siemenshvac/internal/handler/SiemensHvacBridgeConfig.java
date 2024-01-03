@@ -13,7 +13,6 @@
 package org.openhab.binding.siemenshvac.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  *
@@ -22,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class SiemensHvacBridgeConfig {
 
-    public @Nullable String baseUrl;
-    public @Nullable String userName;
-    public @Nullable String userPassword;
+    public String baseUrl = "";
+    public String userName = "Administrator";
+    public String userPassword = "password";
 }
