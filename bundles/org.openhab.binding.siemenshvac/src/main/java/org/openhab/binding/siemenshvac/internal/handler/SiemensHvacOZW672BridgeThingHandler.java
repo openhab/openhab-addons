@@ -34,8 +34,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SiemensHvacOZW672BridgeThingHandler} is responsible for handling communication to Siemens Gateway using
- * HTTP API
- * interface.
+ * HTTP API interface.
  *
  * @author Laurent ARNAL - Initial contribution
  */
@@ -52,7 +51,9 @@ public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseTh
 
     @Override
     public void initialize() {
-        logger.debug("Initialize() bridge : {}", getBuildDate());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Initialize() bridge : {}", getBuildDate());
+        }
         super.initialize();
     }
 
@@ -70,9 +71,8 @@ public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseTh
             }
 
         } catch (Exception ex) {
-
         }
-        return "unknow";
+        return "unknown";
     }
 
     @Override
