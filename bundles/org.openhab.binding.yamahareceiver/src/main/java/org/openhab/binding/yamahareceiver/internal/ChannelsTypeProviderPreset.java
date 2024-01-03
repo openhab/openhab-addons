@@ -34,6 +34,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * Provide a custom channel type for the preset channel
@@ -41,6 +43,7 @@ import org.openhab.core.types.StateOption;
  * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - RX-V3900 compatibility improvements
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { ChannelsTypeProviderPreset.class, ChannelTypeProvider.class })
 @NonNullByDefault
 public class ChannelsTypeProviderPreset implements ChannelTypeProvider, ThingHandlerService {
     private @NonNullByDefault({}) ChannelType channelType;

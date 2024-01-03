@@ -31,13 +31,15 @@ import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link PushsaferConfigOptionProvider} class contains fields mapping thing configuration parameters.
  *
  * @author Kevin Siml - Initial contribution, forked from Christoph Weitkamp
  */
-@Component(service = ConfigOptionProvider.class)
+@Component(scope = ServiceScope.PROTOTYPE, service = { PushsaferConfigOptionProvider.class,
+        ConfigOptionProvider.class })
 @NonNullByDefault
 public class PushsaferConfigOptionProvider implements ConfigOptionProvider, ThingHandlerService {
 

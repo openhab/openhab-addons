@@ -68,7 +68,7 @@ public class SncfHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (APIBRIDGE_THING_TYPE.equals(thingTypeUID)) {
-            return new SncfBridgeHandler((Bridge) thing, gson, locationProvider, httpClient);
+            return new SncfBridgeHandler((Bridge) thing, gson, httpClient);
         } else if (STATION_THING_TYPE.equals(thingTypeUID)) {
             return new StationHandler(thing, locationProvider);
         }

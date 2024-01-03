@@ -26,6 +26,8 @@ import org.openhab.core.config.core.ConfigOptionProvider;
 import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link ChatGPTModelOptionProvider} provides the available models from OpenAI as options for the channel
@@ -33,6 +35,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { ChatGPTModelOptionProvider.class, ConfigOptionProvider.class })
 @NonNullByDefault
 public class ChatGPTModelOptionProvider implements ThingHandlerService, ConfigOptionProvider {
 

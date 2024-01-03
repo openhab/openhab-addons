@@ -24,6 +24,8 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.communication.Response;
 import org.openwebnet4j.message.CEN;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Massimo Valla - Initial contribution
  */
 
+@Component(scope = ServiceScope.PROTOTYPE, service = OpenWebNetCENActions.class)
 @ThingActionsScope(name = "openwebnet")
 @NonNullByDefault
 public class OpenWebNetCENActions implements ThingActions {

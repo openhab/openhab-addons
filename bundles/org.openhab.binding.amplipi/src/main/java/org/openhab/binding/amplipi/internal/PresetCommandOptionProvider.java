@@ -24,8 +24,11 @@ import org.openhab.core.thing.binding.BaseDynamicCommandDescriptionProvider;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.DynamicCommandDescriptionProvider;
 import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.CommandOption;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * This class provides the list of valid commands for the preset channel.
@@ -33,6 +36,8 @@ import org.openhab.core.types.CommandOption;
  * @author Kai Kreuzer - Initial contribution
  *
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { PresetCommandOptionProvider.class,
+        DynamicCommandDescriptionProvider.class })
 @NonNullByDefault
 public class PresetCommandOptionProvider extends BaseDynamicCommandDescriptionProvider implements ThingHandlerService {
 

@@ -41,6 +41,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +56,7 @@ import com.google.gson.JsonParser;
  * @author Sebastian Prehn - Initial contribution
  * @author Laurent Garnier - new method invokeMethodOf + interface ILGWebOSActions
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = LGWebOSActions.class)
 @ThingActionsScope(name = "lgwebos")
 @NonNullByDefault
 public class LGWebOSActions implements ThingActions {

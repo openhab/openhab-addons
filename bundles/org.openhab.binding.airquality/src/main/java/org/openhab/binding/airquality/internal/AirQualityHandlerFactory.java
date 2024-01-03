@@ -64,7 +64,6 @@ public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
 
         return THING_TYPE_STATION.equals(thingTypeUID)
                 ? new AirQualityStationHandler(thing, timeZoneProvider, locationProvider)
-                : BRIDGE_TYPE_API.equals(thingTypeUID) ? new AirQualityBridgeHandler((Bridge) thing, locationProvider)
-                        : null;
+                : BRIDGE_TYPE_API.equals(thingTypeUID) ? new AirQualityBridgeHandler((Bridge) thing) : null;
     }
 }

@@ -100,6 +100,7 @@ public class DraytonWiserDiscoveryServiceTest {
             }
         };
         service.setThingHandler(bridgeHandler);
+        service.initialize();
         final DomainDTO domain = api.getDomain();
 
         if (domain == null) {

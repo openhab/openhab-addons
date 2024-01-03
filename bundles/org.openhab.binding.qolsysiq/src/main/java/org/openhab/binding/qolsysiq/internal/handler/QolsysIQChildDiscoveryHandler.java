@@ -14,6 +14,7 @@ package org.openhab.binding.qolsysiq.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.qolsysiq.internal.discovery.QolsysIQChildDiscoveryService;
+import org.openhab.core.thing.binding.ThingHandler;
 
 /**
  * Callback for our custom discovery service
@@ -22,7 +23,7 @@ import org.openhab.binding.qolsysiq.internal.discovery.QolsysIQChildDiscoverySer
  *
  */
 @NonNullByDefault
-public interface QolsysIQChildDiscoveryHandler {
+public interface QolsysIQChildDiscoveryHandler extends ThingHandler {
     /**
      * Sets a {@link QolsysIQChildDiscoveryService} to call when device information is received
      *

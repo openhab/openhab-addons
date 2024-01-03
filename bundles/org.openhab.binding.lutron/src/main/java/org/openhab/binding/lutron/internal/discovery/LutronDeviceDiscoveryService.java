@@ -83,7 +83,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
-
     private static final int DECLARATION_MAX_LEN = 80;
     private static final long HTTP_REQUEST_TIMEOUT = 60; // seconds
     private static final int DISCOVERY_SERVICE_TIMEOUT = 90; // seconds
