@@ -138,12 +138,6 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.info("bridge status changed : {} ", bridgeStatusInfo);
-    }
-
-    @Override
-    public void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
     }
 
     @Override
@@ -165,7 +159,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
     public boolean unregisterDiscoveryListener() {
         SiemensHvacDeviceDiscoveryService lcDiscoveryService = discoveryService;
         if (lcDiscoveryService != null) {
-            lcDiscoveryService = null;
+            discoveryService = null;
             return true;
         }
 
