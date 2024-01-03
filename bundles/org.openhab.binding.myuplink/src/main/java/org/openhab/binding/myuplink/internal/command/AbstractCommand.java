@@ -33,6 +33,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkThingHandler;
+import org.openhab.binding.myuplink.internal.model.GenericResponseTransformer;
 import org.openhab.binding.myuplink.internal.model.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +84,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     /**
      * generic transformer which just transfers all values in a plain map.
      */
-    // TODO: protected final GenericResponseTransformer transformer;
+    protected final GenericResponseTransformer transformer;
 
     /**
      * retry counter.
@@ -112,7 +113,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
             ProcessFailureResponse processFailureResponse, JsonResultProcessor resultProcessor) {
         this.gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
         this.communicationStatus = new CommunicationStatus();
-        // TODO: this.transformer = new GenericResponseTransformer(handler);
+        this.transformer = new GenericResponseTransformer(handler);
         this.handler = handler;
         this.processFailureResponse = processFailureResponse;
         this.retryOnFailure = retryOnFailure;
@@ -191,7 +192,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         JsonObject jsonObject = transform(json);
         if (jsonObject != null) {
             logger.debug("[{}] success", getClass().getSimpleName());
-            // TODO: handler.updateChannelStatus(transformer.transform(jsonObject, getChannelGroup()));
+            handler.updateChannelStatus(transformer.transform(jsonObject, getChannelGroup()));
             processResult(jsonObject);
         }
     }
@@ -210,8 +211,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
             processResult(jsonObject);
         } else {
             logger.info("command failed, url: {} - code: {} - result: {}", getURL(),
-                    // TODO: adopt this getCommunicationStatus().getHttpCode(), jsonObject.get(JSON_KEY_ERROR_TITLE)
-                    "TODO");
+                    getCommunicationStatus().getHttpCode(), jsonObject.get(JSON_KEY_ERROR));
         }
 
         if (retryOnFailure == RetryOnFailure.YES && retries++ < MAX_RETRIES) {

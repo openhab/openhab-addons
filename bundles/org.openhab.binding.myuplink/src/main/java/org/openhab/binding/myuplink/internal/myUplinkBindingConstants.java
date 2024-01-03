@@ -41,7 +41,19 @@ public class MyUplinkBindingConstants {
 
     // Channel types
     // TODO: add content
+    public static final String CHANNEL_TYPE_SWITCH = "Switch";
+    public static final String CHANNEL_TYPE_VOLT = "Number:ElectricPotential";
+    public static final String CHANNEL_TYPE_AMPERE = "Number:ElectricCurrent";
+    public static final String CHANNEL_TYPE_KWH = "Number:Energy";
+    public static final String CHANNEL_TYPE_POWER = "Number:Power";
+    public static final String CHANNEL_TYPE_DATE = "DateTime";
+    public static final String CHANNEL_TYPE_STRING = "String";
+    public static final String CHANNEL_TYPE_NUMBER = "Number";
+
     public static final String CHANNEL_TYPEPREFIX_RW = "rw";
+
+    public static final String CHANNEL_TYPENAME_INTEGER = "type-integer";
+    public static final String CHANNEL_TYPENAME_RSSI = "type-rssi";
 
     // Channels with specific handling
     // TODO: add content
