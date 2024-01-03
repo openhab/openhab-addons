@@ -93,6 +93,7 @@ public class DeconzTest {
                 .getBridgeFullState();
         ThingDiscoveryService discoveryService = new ThingDiscoveryService();
         discoveryService.setThingHandler(bridgeHandler);
+        discoveryService.initialize();
         discoveryService.addDiscoveryListener(discoveryListener);
         discoveryService.startScan();
         Mockito.verify(discoveryListener, times(20)).thingDiscovered(any(), any());
