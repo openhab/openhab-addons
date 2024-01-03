@@ -1,18 +1,42 @@
 package org.openhab.binding.myuplink.internal.discovery;
 
-import org.junit.jupiter.api.BeforeAll;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
+import org.openhab.binding.myuplink.internal.handler.MyUplinkAccountHandler;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingUID;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+@ExtendWith(MockitoExtension.class)
 public class MyUplinkDiscoveryServiceTest {
 
-    private static final String EMPTY_RESPONSE_STRING = "{\"page\":1,\"itemsPerPage\":100,\"numItems\":0,\"systems\":[]}";
-    private static JsonObject EMPTY_RESPONSE;
+    @Mock
+    private MyUplinkAccountHandler bridgeHandler;
 
-    private static final String TEST_RESPONSE_STRING = """
+    @Mock
+    private CommunicationStatus communicationStatus;
+
+    @Spy
+    private MyUplinkDiscoveryService discoveryService;
+
+    private final String emptyResponseString = "{\"page\":1,\"itemsPerPage\":100,\"numItems\":0,\"systems\":[]}";
+    private JsonObject emptyResponse;
+
+    private final String testResponseString = """
             {
                 \"page\": 0,
                 \"itemsPerPage\": 0,
@@ -26,12 +50,21 @@ public class MyUplinkDiscoveryServiceTest {
                         \"country\": \"string\",
                         \"devices\": [
                             {
-                                \"id\": \"Device ID\",
+                                \"id\": \"Dev-1337\",
                                 \"connectionState\": \"Disconnected\",
                                 \"currentFwVersion\": \"string\",
                                 \"product\": {
-                                    \"serialNumber\": \"4711\",
-                                    \"name\": \"My Device\"
+                                    \"serialNumber\": \"1337\",
+                                    \"name\": \"My Device 1337\"
+                                }
+                            },
+                            {
+                                \"id\": \"Dev-4712\",
+                                \"connectionState\": \"Disconnected\",
+                                \"currentFwVersion\": \"string\",
+                                \"product\": {
+                                    \"serialNumber\": \"4712\",
+                                    \"name\": \"My Device 4712\"
                                 }
                             }
                         ]
@@ -39,19 +72,34 @@ public class MyUplinkDiscoveryServiceTest {
                 ]
             }
             """;
-    private static JsonObject TEST_RESPONSE;
+    private static JsonObject testResponse;
 
-    @BeforeAll
-    public static void prepareTestData() {
+    @BeforeEach
+    public void prepareTestData() {
+        emptyResponse = JsonParser.parseString(emptyResponseString).getAsJsonObject();
+        testResponse = JsonParser.parseString(testResponseString).getAsJsonObject();
 
-        EMPTY_RESPONSE = JsonParser.parseString(EMPTY_RESPONSE_STRING).getAsJsonObject();
-        TEST_RESPONSE = JsonParser.parseString(TEST_RESPONSE_STRING).getAsJsonObject();
+        discoveryService.setThingHandler(bridgeHandler);
+
+        Bridge mockThing = mock(Bridge.class);
+        when(mockThing.getUID()).thenReturn(new ThingUID(THING_TYPE_ACCOUNT, "testAccount4711"));
+        when(bridgeHandler.getThing()).thenReturn(mockThing);
     }
 
     @Test
     public void testProcessMyUplinkDiscoveryResult() {
-        MyUplinkDiscoveryService discoveryService = new MyUplinkDiscoveryService();
 
-        discoveryService.processMyUplinkDiscoveryResult(new CommunicationStatus(), TEST_RESPONSE);
+        discoveryService.processMyUplinkDiscoveryResult(communicationStatus, testResponse);
+
+        // testdata contains one system
+        verify(discoveryService, times(1)).handleSystemDiscovery(any());
+        // testdata contains two devices
+        verify(discoveryService, times(2)).handleDeviceDiscovery(any());
+        // builder should be called once for each device
+        verify(discoveryService, times(2)).initDiscoveryResultBuilder(any(), any(), any());
+
+        // verify that correct values are extracted from data
+        verify(discoveryService).initDiscoveryResultBuilder(DEVICE_GENERIC_DEVICE, "Dev-4712", "My Device 4712");
+        verify(discoveryService).initDiscoveryResultBuilder(DEVICE_GENERIC_DEVICE, "Dev-1337", "My Device 1337");
     }
 }

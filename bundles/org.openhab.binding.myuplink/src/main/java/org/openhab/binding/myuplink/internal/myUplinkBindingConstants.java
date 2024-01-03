@@ -31,9 +31,11 @@ public class MyUplinkBindingConstants {
 
     // List of main device types
     public static final String DEVICE_ACCOUNT = "account";
+    public static final String DEVICE_GENERIC_DEVICE = "generic";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, DEVICE_ACCOUNT);
+    public static final ThingTypeUID THING_TYPE_GENERIC_DEVICE = new ThingTypeUID(BINDING_ID, DEVICE_GENERIC_DEVICE);
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_NONE = "";
@@ -112,6 +114,7 @@ public class MyUplinkBindingConstants {
     public static final long POLLING_INITIAL_DELAY = 1;
 
     public static final String THING_CONFIG_ID = "id";
+    public static final String THING_CONFIG_SERIAL = "serial";
 
     public static final Instant OUTDATED_DATE = Instant.EPOCH;
 
