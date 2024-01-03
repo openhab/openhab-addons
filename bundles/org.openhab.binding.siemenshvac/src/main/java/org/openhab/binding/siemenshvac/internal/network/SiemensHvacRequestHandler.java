@@ -100,9 +100,8 @@ public class SiemensHvacRequestHandler {
         this.result = result;
     }
 
-    public long getElapseTime() {
+    public long getElapsedTime() {
         Instant finish = Instant.now();
-        long elapseTime = Duration.between(startRequest, finish).toSeconds();
-        return elapseTime;
+        return Duration.between(startRequest, finish).toSeconds();
     }
 }
