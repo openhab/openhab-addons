@@ -20,11 +20,8 @@ import org.openhab.binding.qolsysiq.internal.handler.QolsysIQChildDiscoveryHandl
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class QolsysIQChildDiscoveryService extends AbstractThingHandlerDiscoveryService<QolsysIQChildDiscoveryHandler>
-        implements DiscoveryService, ThingHandlerService {
+public class QolsysIQChildDiscoveryService extends AbstractThingHandlerDiscoveryService<QolsysIQChildDiscoveryHandler> {
     private final Logger logger = LoggerFactory.getLogger(QolsysIQChildDiscoveryService.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_DISCOVERY_THING_TYPES_UIDS = Set
@@ -49,14 +45,12 @@ public class QolsysIQChildDiscoveryService extends AbstractThingHandlerDiscovery
     @Override
     public void initialize() {
         thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
     protected void startScan() {
-        ThingHandler handler = this.thingHandler;
-        if (handler != null) {
-            ((QolsysIQChildDiscoveryHandler) handler).startDiscovery();
-        }
+        thingHandler.startDiscovery();
     }
 
     public void discoverQolsysIQChildThing(ThingUID thingUID, ThingUID bridgeUID, Integer id, String label) {

@@ -25,6 +25,7 @@ import org.openhab.binding.tapocontrol.internal.structures.TapoBridgeConfigurati
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -60,24 +61,12 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
         super(TapoBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_S, false);
     }
 
-    /**
-     * activate
-     */
     @Override
     public void initialize() {
         thingHandler.setDiscoveryService(this);
         TapoBridgeConfiguration config = thingHandler.getBridgeConfig();
-        if (config.cloudDiscovery) {
-            startBackgroundDiscovery();
-        }
-    }
-
-    @Override
-    public void dispose() {
-        TapoBridgeConfiguration config = thingHandler.getBridgeConfig();
-        if (config.cloudDiscovery) {
-            stopBackgroundDiscovery();
-        }
+        modified(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, config.cloudDiscovery));
+        super.initialize();
     }
 
     /***********************************
