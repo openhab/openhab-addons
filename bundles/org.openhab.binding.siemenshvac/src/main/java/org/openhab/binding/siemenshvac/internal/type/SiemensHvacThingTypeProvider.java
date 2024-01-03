@@ -38,8 +38,7 @@ public interface SiemensHvacThingTypeProvider extends ThingTypeProvider {
      * excluded by {@link ThingTypeExcluder}
      *
      * @param thingTypeUID
-     *            e.g. <i>homematic:HM-Sec-SC</i>
-     * @return ThingType that was added to HomematicThingTypeProvider, identified
+     * @return ThingType that was added to SiemensHvacThingTypeProvider, identified
      *         by its thingTypeUID<br>
      *         <i>null</i> if no ThingType with the given thingTypeUID was added
      *         before

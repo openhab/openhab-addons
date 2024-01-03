@@ -26,7 +26,7 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Provides all ChannelGroupTypes from all Homematic bridges.
+ * Provides all ChannelGroupTypes from all SiemensHvac bridges.
  *
  * @author Laurent Arnal - Initial contribution
  */
