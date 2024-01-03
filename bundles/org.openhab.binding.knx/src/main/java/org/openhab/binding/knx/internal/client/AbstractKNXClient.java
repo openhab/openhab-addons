@@ -503,7 +503,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
         GroupAddress groupAddress = commandSpec.getGroupAddress();
 
-        logger.trace("writeToKNX groupAddress '{}', commandSpec '{}'", groupAddress, commandSpec);
+        logger.trace("writeToKNX groupAddress '{}', commandSpec '{}:{} {}'", groupAddress, groupAddress,
+                commandSpec.getDPT(), commandSpec.getValue());
 
         sendToKNX(processCommunicator, groupAddress, commandSpec.getDPT(), commandSpec.getValue());
     }
