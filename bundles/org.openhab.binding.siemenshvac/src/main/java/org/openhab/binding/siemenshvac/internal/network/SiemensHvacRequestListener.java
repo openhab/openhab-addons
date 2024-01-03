@@ -119,15 +119,15 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
 
             String msg = cause.getLocalizedMessage();
 
-            if (cause instanceof ConnectException) {
+            if (cause instanceof ConnectException e) {
                 logger.debug("ConnectException", e);
-            } else if (cause instanceof SocketException) {
+            } else if (cause instanceof SocketException e) {
                 logger.debug("SocketException", e);
-            } else if (cause instanceof SocketTimeoutException.) {
+            } else if (cause instanceof SocketTimeoutException e) {
                 logger.debug("SocketTimeoutException");
-            } else if (cause instanceof EOFException) {
+            } else if (cause instanceof EOFException e) {
                 logger.debug("EOFException", e);
-            } else if (cause instanceof TimeoutException) {
+            } else if (cause instanceof TimeoutException e) {
                 logger.debug("TimeoutException", e);
             } else {
                 logger.debug("unknown");

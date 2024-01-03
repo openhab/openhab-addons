@@ -474,7 +474,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         logger.debug("check stale request::begin");
         int staleRequest = 0;
         for (SiemensHvacRequestHandler handler : currentHandlerRegistry.keySet()) {
-            long elapseTime = handler.getElapseTime();
+            long elapseTime = handler.getElapsedTime();
             if (elapseTime > 300) {
                 String uri = "";
                 Request request = handler.getRequest();
