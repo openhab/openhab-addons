@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Arrays;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -117,7 +118,7 @@ public class WakeOnLanPacketSenderTest {
         }
 
         try {
-            WakeOnLanPacketSender sender = new WakeOnLanPacketSender("6f70656e4841", hostname, port);
+            WakeOnLanPacketSender sender = new WakeOnLanPacketSender("6f70656e4841", hostname, port, Set.of());
             sender.sendWakeOnLanPacketViaIp();
 
             // This Test is only applicable for IP Requests
