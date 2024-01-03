@@ -271,7 +271,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
 
         if (lcHvacConnector == null) {
-            logger.info("SiemensHvacMetadataRegistryImpl:ReadMeta() : lHvacConnector not initialize.");
+            logger.debug("SiemensHvacMetadataRegistryImpl:ReadMeta() : lHvacConnector not initialize.");
             return;
         }
 
@@ -279,7 +279,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
         SiemensHvacBridgeConfig config = lcHvacConnector.getBridgeConfiguration();
         if (config == null) {
-            logger.info("SiemensHvacMetadataRegistryImpl:ReadMeta() : config not initialize.");
+            logger.debug("SiemensHvacMetadataRegistryImpl:ReadMeta() : config not initialize.");
             return;
         }
 
@@ -291,13 +291,13 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
 
         if (user == null) {
-            logger.info("SiemensHvacMetadataRegistryImpl:ReadMeta() : cannot find user, aborting.");
+            logger.error("SiemensHvacMetadataRegistryImpl:ReadMeta() : cannot find user, aborting.");
             return;
         }
 
-        logger.info("siemensHvac:Initialization():Begin_0001");
+        logger.trace("siemensHvac:Initialization():Begin_0001");
 
-        logger.info("siemensHvac:Initialization():ReadCache");
+        logger.trace("siemensHvac:Initialization():ReadCache");
         loadMetaDataFromCache();
 
         // increase the timeout during this phase
@@ -307,13 +307,13 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         Instant start = Instant.now();
         lcHvacConnector.setTimeOut(600);
 
-        logger.info("siemensHvac:Initialization():ReadDeviceList");
+        logger.trace("siemensHvac:Initialization():ReadDeviceList");
         readDeviceList();
 
         if (root == null) {
-            logger.info("siemensHvac:Initialization():No cache information, root==null, reading metadata from device");
+            logger.trace("siemensHvac:Initialization():No cache information, root==null, reading metadata from device");
 
-            logger.info("siemensHvac:Initialization():BeginReadMenu");
+            logger.trace("siemensHvac:Initialization():BeginReadMenu");
             root = new SiemensHvacMetadataMenu();
 
             changeLanguage(user, 1);
@@ -326,20 +326,19 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             lcHvacConnector.waitNoNewRequest();
             lcHvacConnector.waitAllPendingRequest();
 
-            logger.info("siemensHvac:Initialization():EndReadMenu");
+            logger.trace("siemensHvac:Initialization():EndReadMenu");
         }
 
         if (root != null) {
-            logger.info("siemensHvac:Initialization():BeginInitDptMap");
+            logger.trace("siemensHvac:Initialization():BeginInitDptMap");
             initDptMap(root);
-            logger.info("siemensHvac:Initialization():EndInitDptMap");
+            logger.trace("siemensHvac:Initialization():EndInitDptMap");
         }
 
         int unresolveCount = unresolveCount();
-        // unresolveCount = 0;
 
         while (unresolveCount > 0) {
-            logger.info("siemensHvac:Initialization():BeginResolveDtpMap {}", unresolveCount);
+            logger.trace("siemensHvac:Initialization():BeginResolveDtpMap {}", unresolveCount);
             resolveDetails(unresolveCount);
             lcHvacConnector.waitAllPendingRequest();
             unresolveCount = unresolveCount();
@@ -349,12 +348,12 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         lcHvacConnector.setTimeOut(30);
 
         long elapseTime = Duration.between(start, end).toSeconds();
-        logger.info("siemensHvac:Initialization():ReadMetadata in {} s", elapseTime);
+        logger.trace("siemensHvac:Initialization():ReadMetadata in {} s", elapseTime);
 
-        logger.info("siemensHvac:Initialization():SaveCache");
+        logger.trace("siemensHvac:Initialization():SaveCache");
         saveMetaDataToCache();
 
-        logger.info("siemensHvac:Initialization():InitThing");
+        logger.trace("siemensHvac:Initialization():InitThing");
         getRoot();
         lcDevices = devices;
         if (lcDevices != null) {
@@ -363,12 +362,12 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             }
         }
 
-        logger.debug("siemensHvac:InitDptMap():end");
+        logger.trace("siemensHvac:InitDptMap():end");
     }
 
     private void generateThingsType(SiemensHvacMetadataDevice device) {
         SiemensHvacThingTypeProvider lcThingTypeProvider = thingTypeProvider;
-        logger.debug("Generate thing types for device : {} / {}", device.getName(), device.getSerialNr());
+        logger.debug("Generate thing types for device: {} / {}", device.getName(), device.getSerialNr());
         if (lcThingTypeProvider != null) {
             ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
             ThingType tt = null;
@@ -403,9 +402,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         SiemensHvacChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         SiemensHvacChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
 
-        if (child instanceof SiemensHvacMetadataMenu) {
-            SiemensHvacMetadataMenu subMenu = (SiemensHvacMetadataMenu) child;
-
+        if (child instanceof SiemensHvacMetadataMenu subMenu) {
             List<ChannelDefinition> channelDefinitions = new ArrayList<>();
 
             for (SiemensHvacMetadata childDt : subMenu.getChilds().values()) {
@@ -414,8 +411,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     if (childDt instanceof SiemensHvacMetadataMenu) {
                         generateThingsType(childDt, groupTypes, menu);
                     }
-                    if (childDt instanceof SiemensHvacMetadataDataPoint) {
-                        SiemensHvacMetadataDataPoint dataPoint = (SiemensHvacMetadataDataPoint) childDt;
+                    if (childDt instanceof SiemensHvacMetadataDataPoint metadataDataPoint) {
+                        SiemensHvacMetadataDataPoint dataPoint = metadataDataPoint;
 
                         if (dataPoint.getDptType().isEmpty()) {
                             continue;
@@ -441,7 +438,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                         props.put("subId", "" + dpt.getSubId());
                         props.put("groupdId", "" + dpt.getGroupId());
 
-                        String id = dataPoint.getId() + "_" + UidUtils.sanetizeId(dataPoint.getShortDesc());
+                        String id = dataPoint.getId() + "-" + UidUtils.sanetizeId(dataPoint.getShortDesc());
 
                         if (channelType != null) {
                             ChannelDefinition channelDef = new ChannelDefinitionBuilder(id, channelType.getUID())
@@ -452,7 +449,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                         }
                     }
                 } catch (Exception ex) {
-                    logger.info("unable to create channel for: {}", childDt);
+                    logger.warn("Unable to create channel for: {}", childDt);
                 }
             }
 
