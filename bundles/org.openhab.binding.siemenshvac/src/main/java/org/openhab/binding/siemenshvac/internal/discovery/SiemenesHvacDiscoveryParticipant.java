@@ -27,6 +27,7 @@ import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingCons
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
+import org.openhab.core.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
@@ -34,8 +35,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 
 /**
- * The {@link SiemenesHvacDiscoveryParticipant} is responsible for discovering new and
- * removed siemensHvac bridges. It uses the central {@link UpnpDiscoveryServic}.
+ * The {@link SiemensHvacDiscoveryParticipant} is responsible for discovering new and
+ * removed siemensHvac bridges. It uses the central {@link UpnpDiscoveryService}.
  *
  * @author Laurent Arnal - Initial contribution
  */
