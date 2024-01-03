@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
- * @author Sönke Küper - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public class UidUtilsTest {

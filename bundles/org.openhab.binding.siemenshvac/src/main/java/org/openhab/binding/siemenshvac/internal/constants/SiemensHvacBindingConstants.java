@@ -19,7 +19,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link SiemensHvacBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Laurent ARNAL - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public class SiemensHvacBindingConstants {
