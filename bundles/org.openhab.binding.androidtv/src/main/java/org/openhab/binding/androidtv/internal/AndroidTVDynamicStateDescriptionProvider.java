@@ -40,7 +40,6 @@ import org.osgi.service.component.annotations.Deactivate;
 public class AndroidTVDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
     private final Map<ChannelUID, List<@NonNull StateOption>> channelOptionsMap = new ConcurrentHashMap<>();
 
-    // @SuppressWarnings("null")
     public void setStateOptions(ChannelUID channelUID, List<StateOption> options) {
         channelOptionsMap.put(channelUID, options);
     }
