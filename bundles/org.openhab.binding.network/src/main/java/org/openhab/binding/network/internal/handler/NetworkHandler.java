@@ -173,6 +173,7 @@ public class NetworkHandler extends BaseThingHandler
 
         this.presenceDetection = presenceDetection;
         presenceDetection.setHostname(handlerConfiguration.hostname);
+        presenceDetection.setNetworkInterfaceNames(handlerConfiguration.networkInterfaceNames);
         presenceDetection.setPreferResponseTimeAsLatency(configuration.preferResponseTimeAsLatency);
 
         if (isTCPServiceDevice) {
@@ -199,7 +200,7 @@ public class NetworkHandler extends BaseThingHandler
         presenceDetection.setTimeout(handlerConfiguration.timeout.intValue());
 
         wakeOnLanPacketSender = new WakeOnLanPacketSender(handlerConfiguration.macAddress,
-                handlerConfiguration.hostname, handlerConfiguration.port);
+                handlerConfiguration.hostname, handlerConfiguration.port, handlerConfiguration.networkInterfaceNames);
 
         updateStatus(ThingStatus.ONLINE);
         presenceDetection.startAutomaticRefresh(scheduler);

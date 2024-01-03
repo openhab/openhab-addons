@@ -54,6 +54,14 @@
 				<default>5000</default>
 				<advanced>true</advanced>
 			</parameter>
+
+			<parameter name="networkInterfaceNames" type="text" required="false" multiple="true">
+				<label>Network Interface Names</label>
+				<context>network-interface</context>
+				<description>The network interface names used for communicating with the device. Limiting the network interfaces
+					reduces the load when arping and Wake-on-LAN are used. All interfaces are used when left empty.</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -111,6 +119,14 @@
 				<label>Refresh Interval</label>
 				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
 				<default>60000</default>
+			</parameter>
+
+			<parameter name="networkInterfaceNames" type="text" required="false" multiple="true">
+				<label>Network Interface Names</label>
+				<context>network-interface</context>
+				<description>The network interface names used for communicating with the device. Limiting the network interfaces
+					reduces the load when arping and Wake-on-LAN are used. All interfaces are used when left empty.</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
