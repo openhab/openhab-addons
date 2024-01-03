@@ -68,7 +68,7 @@ sungrow.things
 
 ```java
 Bridge modbus:tcp:sungrowBridge [ host="10.0.0.2", port=502, id=1, enableDiscovery=false ] {
-    Thing modbus:sungrow-inverter:sungrowBridge:sungrowInverter "Sungrow Inverter" [ pollInterval=5000 ]
+    Thing sungrow-inverter sungrowInverter "Sungrow Inverter" [ pollInterval=5000 ]
 }
 ```
 
@@ -89,8 +89,8 @@ Number:Energy daily_pv_generation "Daily PV Generation" (overview) ["Measurement
 Number:Energy total_pv_generation "Total PV Generation" (overview) ["Measurement", "Energy"]  {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-overview#sg-total-pv-generation"}
 
 // Battery information
-Number:Power battery_power "Battery Power" (batteryInformation) ["Measurement", "Power"] {modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-battery-information#sg-battery-power}
-Number:Dimensionless battery_level "Battery Level" (batteryInformation) ["Measurement", "Energy"] {modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-battery-information#sg-battery-power}
+Number:Power battery_power "Battery Power" (batteryInformation) ["Measurement", "Power"] {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-battery-information#sg-battery-power"}
+Number:Dimensionless battery_level "Battery Level" (batteryInformation) ["Measurement", "Energy"] {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-battery-information#sg-battery-power", stateDescription=""[pattern="%.1f W"]}
 Number:Energy daily_charge_energy "Daily Battery Charge Energy" (batteryInformation) ["Measurement", "Energy"] {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-battery-information#sg-daily-charge-energy"}
 Number:Energy daily_discharge_energy "Daily Battery Discharge Energy" (batteryInformation) ["Measurement", "Energy"] {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-battery-information#sg-daily-battery-discharge-energy"}
 
@@ -100,5 +100,4 @@ Number:Energy daily_export_energy "Daily Export Energy" (gridInformation) ["Meas
 
 // Load information
 Number:Power load_power "Load Power" (loadInformation) ["Measurement", "Power"] {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-load-information#sg-load-power"}
-Number:Energy daily_direct_energy_consumption "Daily Direct Energy Consumption" (loadInformation) ["Measurement", "Energy"] {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-load-information#sg-daily-direct-energy-consumption"}
-```
+Number:Energy daily_direct_energy_consumption "Daily Direct Energy Consumption" (loadInformation) ["Measurement", "Energy"] {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-load-information#sg-daily-direct-energy-consumption"}```
