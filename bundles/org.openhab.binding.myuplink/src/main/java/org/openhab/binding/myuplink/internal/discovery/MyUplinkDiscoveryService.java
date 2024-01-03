@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.myuplink.internal.discovery;
 
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myuplink.internal.MyUplinkBindingConstants;
@@ -31,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
 /**
  * this class will handle discovery of wallboxes and circuits within the site configured.
@@ -109,10 +110,11 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
         String serial = Utils.getAsString(device.getAsJsonObject(JSON_KEY_PRODUCT), JSON_KEY_SERIAL);
         String name = Utils.getAsString(device.getAsJsonObject(JSON_KEY_PRODUCT), JSON_KEY_NAME);
 
-        if (id != null && serial != null && name != null) {
+        if (id != null && serial != null) {
             DiscoveryResultBuilder builder;
-            //builder = initDiscoveryResultBuilder(DEVICE_MASTER_CHARGER, id, name);
-
+            builder = initDiscoveryResultBuilder(DEVICE_GENERIC_DEVICE, id, name);
+            builder.withProperty(THING_CONFIG_SERIAL, serial);
+            thingDiscovered(builder.build());
         }
     }
 
@@ -123,8 +125,7 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
      * @param deviceId
      * @param deviceName
      */
-    private DiscoveryResultBuilder initDiscoveryResultBuilder(String deviceType, String deviceId,
-            @Nullable String deviceName) {
+    DiscoveryResultBuilder initDiscoveryResultBuilder(String deviceType, String deviceId, @Nullable String deviceName) {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingTypeUID typeUid = new ThingTypeUID(BINDING_ID, deviceType);
 
