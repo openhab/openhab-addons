@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Deactivate;
 /**
  * Dynamic provider of state options while leaving other state description fields as original.
  *
- * @author Benjamin Meyer - Initial contribution
+ * @author Ben Rosenblum - Initial contribution
  */
 @Component(service = { DynamicStateDescriptionProvider.class,
         AndroidTVDynamicStateDescriptionProvider.class }, immediate = true)
