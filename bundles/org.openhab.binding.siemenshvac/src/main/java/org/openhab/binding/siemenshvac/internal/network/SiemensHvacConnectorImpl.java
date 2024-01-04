@@ -224,8 +224,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 response = request.send();
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new SiemensHvacException("siemensHvac:Exception by executing request: " + request.getURI() + " ; "
-                    + e.getLocalizedMessage());
+            throw new SiemensHvacException("siemensHvac:Exception by executing request: "
+                    + anominized(request.getURI().toString()) + " ; " + e.getLocalizedMessage());
         }
         return response;
     }
@@ -479,7 +479,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 if (request != null) {
                     uri = request.getURI().toString();
                 }
-                logger.debug("find stale request: {} {}", elapseTime, uri);
+                logger.debug("find stale request: {} {}", elapseTime, anominized(uri));
                 staleRequest++;
 
                 try {
@@ -492,6 +492,15 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             }
         }
         logger.debug("check stale request::end : {}", staleRequest);
+    }
+
+    public String anominized(String uri) {
+        int p0 = uri.indexOf("pwd=");
+        if (p0 > 0) {
+            return uri.substring(0, p0) + "pwd=xxxxx";
+        }
+
+        return uri;
     }
 
     @Override
