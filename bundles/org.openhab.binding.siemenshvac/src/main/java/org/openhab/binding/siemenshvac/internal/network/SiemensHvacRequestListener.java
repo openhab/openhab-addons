@@ -149,19 +149,6 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
         requestHandler.setRequest(request);
     }
 
-    public void displayStats() {
-        SiemensHvacRequestListener.displayStats(logger);
-    }
-
-    public static void displayStats(Logger logger) {
-        logger.info("DisplayStats :");
-        logger.info("     onSuccessCount       : {}", onSuccessCount);
-        logger.info("     onBeginCount         : {}", onBeginCount);
-        logger.info("     onQueuedCount        : {}", onQueuedCount);
-        logger.info("     onCompleteCount      : {}", onCompleteCount);
-        logger.info("     onFailureCount       : {}", onFailureCount);
-    }
-
     @Override
     public void onComplete(@Nullable Result result) {
         onCompleteCount++;

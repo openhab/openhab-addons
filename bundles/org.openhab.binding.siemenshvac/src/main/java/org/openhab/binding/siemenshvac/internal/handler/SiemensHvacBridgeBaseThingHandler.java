@@ -77,11 +77,9 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
         SiemensHvacBridgeConfig lcConfig = getConfigAs(SiemensHvacBridgeConfig.class);
         String baseUrl = null;
 
-        if (lcConfig.baseUrl != null) {
-            baseUrl = lcConfig.baseUrl;
-        }
+        baseUrl = lcConfig.baseUrl;
 
-        if (baseUrl == null) {
+        if (baseUrl.isEmpty()) {
             logger.debug("baseUrl is mandatory on configuration !");
             return;
         }

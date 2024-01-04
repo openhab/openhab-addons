@@ -142,8 +142,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             throw new SiemensHvacException("internalError : onError call with reqHandler == null");
         }
 
-        // reqHandler.displayStats();
-
         if (reqHandler.getRetryCount() >= 1) {
             logger.info("unable to handle request, retryCount>5, cancel it");
             unregisterRequestHandler(reqHandler);
