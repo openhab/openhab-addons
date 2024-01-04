@@ -406,9 +406,9 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 | ----------- | --------------------------------------------------------------------------------- |
 | RESTARTED   | The device has been restarted. This could be an indicator for a firmware problem. |
 | WEAK_SIGNAL | An alarm is triggered when RSSI is < -80, which indicates an unstable connection. |
-| OVER_TEMP   | The device is overheating, check installation and housing.                        |
-| OVER_LOAD   | An over load condition has been detected, e.g. from the roller motor.             |
-| OVER_POWER  | Maximum allowed power was exceeded. The relay was turned off.                     |
+| OVERTEMP    | The device is overheating, check installation and housing.                        |
+| OVERLOAD    | An over load condition has been detected, e.g. from the roller motor.             |
+| OVERPOWER   | Maximum allowed power was exceeded. The relay was turned off.                     |
 | LOAD_ERROR  | Device reported a load problem, so far Dimmer only.                               |
 
 ### Sensors
