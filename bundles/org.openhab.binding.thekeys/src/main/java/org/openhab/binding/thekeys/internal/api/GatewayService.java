@@ -84,7 +84,7 @@ public class GatewayService {
     }
 
     /**
-     * Synchronize the gateway
+     * Synchronize the lock
      */
     public SynchronizeDTO synchronizeLock() throws IOException {
         return get("/locker/synchronize", SynchronizeDTO.class);
@@ -126,7 +126,7 @@ public class GatewayService {
      *
      * @param path Path of the request
      * @param responseType Response type
-     * @param remainingRetryCount Number of retry in case of request failed
+     * @param remainingRetryCount Number of retries in case of request failed
      * @return The deserialized response to the response type
      */
     private <T> T get(String path, Class<T> responseType, int remainingRetryCount) throws IOException {
@@ -141,8 +141,8 @@ public class GatewayService {
             // Retry the same request because the gateway failed sometimes to handle the request
             if ((remainingRetryCount > 0
                     && (rootCause instanceof ConnectException || rootCause instanceof EOFException))) {
-                String rootCauseString = rootCause == null ? "" : String.valueOf(rootCause.getClass());
-                logger.debug("Request failed. {}, retrying {} more times", rootCauseString, remainingRetryCount);
+                String rootCauseClass = rootCause == null ? "" : rootCause.getClass().getSimpleName();
+                logger.debug("Request failed. {}, retrying {} more times", rootCauseClass, remainingRetryCount);
                 return get(path, responseType, --remainingRetryCount);
             }
             throw e;
