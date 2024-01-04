@@ -126,7 +126,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
             updateStatus(ThingStatus.ONLINE);
         } catch (SiemensHvacException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Error occurs during gateway initialization: %s", getStackTrace(ex)));
+                    String.format("Error occurs during gateway initialization: %s", ex.getMessage()));
         }
     }
 
