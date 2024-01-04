@@ -4,9 +4,7 @@
 
 	<feature name="openhab-binding-systeminfo" description="System Info Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<bundle dependency="true">mvn:net.java.dev.jna/jna/5.12.1</bundle>
-		<bundle dependency="true">mvn:net.java.dev.jna/jna-platform/5.12.1</bundle>
-		<bundle dependency="true">mvn:com.github.oshi/oshi-core/6.2.2</bundle>
+		<bundle dependency="true">mvn:com.github.oshi/oshi-core/6.4.8</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.systeminfo/${project.version}</bundle>
 	</feature>
 </features>
