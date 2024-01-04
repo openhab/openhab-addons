@@ -2,6 +2,7 @@ package org.openhab.binding.myuplink.internal.discovery;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -80,14 +81,25 @@ public class MyUplinkDiscoveryServiceTest {
         testResponse = JsonParser.parseString(testResponseString).getAsJsonObject();
 
         discoveryService.setThingHandler(bridgeHandler);
-
-        Bridge mockThing = mock(Bridge.class);
-        when(mockThing.getUID()).thenReturn(new ThingUID(THING_TYPE_ACCOUNT, "testAccount4711"));
-        when(bridgeHandler.getThing()).thenReturn(mockThing);
     }
 
     @Test
-    public void testProcessMyUplinkDiscoveryResult() {
+    public void testEmptyResponse() {
+
+        discoveryService.processMyUplinkDiscoveryResult(communicationStatus, emptyResponse);
+
+        // testdata contains no systems -> no further processing
+        verify(discoveryService, never()).handleSystemDiscovery(any());
+        verify(discoveryService, never()).handleDeviceDiscovery(any());
+        verify(discoveryService, never()).initDiscoveryResultBuilder(any(), any(), any());
+    }
+
+    @Test
+    public void testSampleResponse() {
+        // mocking of bridgehandler needed to get an UID.
+        Bridge mockThing = mock(Bridge.class);
+        when(mockThing.getUID()).thenReturn(new ThingUID(THING_TYPE_ACCOUNT, "testAccount4711"));
+        when(bridgeHandler.getThing()).thenReturn(mockThing);
 
         discoveryService.processMyUplinkDiscoveryResult(communicationStatus, testResponse);
 
