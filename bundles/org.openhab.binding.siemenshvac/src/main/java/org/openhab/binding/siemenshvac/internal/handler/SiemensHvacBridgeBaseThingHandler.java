@@ -26,7 +26,6 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -132,10 +131,6 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
 
     public @Nullable SiemensHvacBridgeConfig getBridgeConfiguration() {
         return config;
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
     }
 
     @Override
