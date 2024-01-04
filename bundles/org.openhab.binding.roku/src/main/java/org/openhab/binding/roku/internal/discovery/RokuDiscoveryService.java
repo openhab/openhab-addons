@@ -253,7 +253,8 @@ public class RokuDiscoveryService extends AbstractDiscoveryService {
         try {
             RokuCommunicator communicator = new RokuCommunicator(httpClient, host, port);
             DeviceInfo device = communicator.getDeviceInfo();
-            label = device.getModelName() + " " + device.getModelNumber();
+            label = (device.getFriendlyModelName() + " " + device.getModelNumber()).replaceAll("[^a-zA-Z0-9_\\.-]",
+                    " ");
             if (device.isTv()) {
                 thingUid = new ThingUID(THING_TYPE_ROKU_TV, uuid);
             }
