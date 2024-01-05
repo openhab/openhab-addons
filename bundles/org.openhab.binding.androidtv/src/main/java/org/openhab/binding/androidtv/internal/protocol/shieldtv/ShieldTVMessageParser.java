@@ -350,6 +350,8 @@ public class ShieldTVMessageParser {
                     logger.warn("{} - MP empty msg: {} appDB appNameDB: {} appURLDB: {}", thingId, msg,
                             appNameDB.toString(), appURLDB.toString());
                 }
+            } else if (msg.startsWith(MESSAGE_APPDB)) {
+                logger.debug("{} - Individual app update ignored {}", thingId, msg);
             } else if (msg.startsWith(MESSAGE_GOOD_COMMAND)) {
                 // This has something to do with successful command response, maybe.
                 logger.trace("{} - Good Command Response", thingId);
