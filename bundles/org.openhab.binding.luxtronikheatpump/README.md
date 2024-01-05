@@ -287,26 +287,27 @@ The following channels are holding read only values:
 The usage of the numbered channels above is currently unknown. If you are able to directly match one of the values to any value reported by your heat pump, feel free to report back on the forum, so we are able to give the channel a proper name instead.
 
 The following channels are also writable:
-| channel                                  | type               | advanced | description                          |
-|------------------------------------------|--------------------|----------|--------------------------------------|
-| temperatureHeatingParallelShift          | Number:Temperature |          | Heating temperature (parallel shift) |
-| temperatureHotWaterTarget                | Number:Temperature |          | Hot water target temperature         |
-| heatingMode                              | Number             |          | Heating mode                         |
-| hotWaterMode                             | Number             |          | Hot water operating mode             |
-| thermalDisinfectionMonday                | Switch             | x        | Thermal disinfection (Monday)        |
-| thermalDisinfectionTuesday               | Switch             | x        | Thermal disinfection (Tuesday)       |
-| thermalDisinfectionWednesday             | Switch             | x        | Thermal disinfection (Wednesday)     |
-| thermalDisinfectionThursday              | Switch             | x        | Thermal disinfection (Thursday)      |
-| thermalDisinfectionFriday                | Switch             | x        | Thermal disinfection (Friday)        |
-| thermalDisinfectionSaturday              | Switch             | x        | Thermal disinfection (Saturday)      |
-| thermalDisinfectionSunday                | Switch             | x        | Thermal disinfection (Sunday)        |
-| thermalDisinfectionPermanent             | Switch             | x        | Thermal disinfection (Permanent)     |
-| comfortCoolingMode                       | Number             |          | Comfort cooling mode                 |
-| temperatureComfortCoolingATRelease       | Number:Temperature |          | Comfort cooling AT release           |
-| temperatureComfortCoolingATReleaseTarget | Number:Temperature |          | Comfort cooling AT release target    |
-| temperatureHeatingLimit                  | Number:Temperature |          | Temperature Heating Limit            |
-| comfortCoolingATExcess                   | Number:Time        |          | AT Excess                            |
-| comfortCoolingATUndercut                 | Number:Time        |          | AT undercut                          |
+| channel                                  | type               | advanced | description                                                                         |
+|------------------------------------------|--------------------|----------|-------------------------------------------------------------------------------------|
+| temperatureHeatingParallelShift          | Number:Temperature |          | Heating temperature (parallel shift)                                                |
+| temperatureHotWaterTarget                | Number:Temperature |          | Hot water target temperature                                                        |
+| temperatureHeatingFixedReturnTarget      | Number:Temperature |          | Fixed return target temperature if heat pump is operating in fixed temperature mode |
+| heatingMode                              | Number             |          | Heating mode                                                                        |
+| hotWaterMode                             | Number             |          | Hot water operating mode                                                            |
+| thermalDisinfectionMonday                | Switch             | x        | Thermal disinfection (Monday)                                                       |
+| thermalDisinfectionTuesday               | Switch             | x        | Thermal disinfection (Tuesday)                                                      |
+| thermalDisinfectionWednesday             | Switch             | x        | Thermal disinfection (Wednesday)                                                    |
+| thermalDisinfectionThursday              | Switch             | x        | Thermal disinfection (Thursday)                                                     |
+| thermalDisinfectionFriday                | Switch             | x        | Thermal disinfection (Friday)                                                       |
+| thermalDisinfectionSaturday              | Switch             | x        | Thermal disinfection (Saturday)                                                     |
+| thermalDisinfectionSunday                | Switch             | x        | Thermal disinfection (Sunday)                                                       |
+| thermalDisinfectionPermanent             | Switch             | x        | Thermal disinfection (Permanent)                                                    |
+| comfortCoolingMode                       | Number             |          | Comfort cooling mode                                                                |
+| temperatureComfortCoolingATRelease       | Number:Temperature |          | Comfort cooling AT release                                                          |
+| temperatureComfortCoolingATReleaseTarget | Number:Temperature |          | Comfort cooling AT release target                                                   |
+| temperatureHeatingLimit                  | Number:Temperature |          | Temperature Heating Limit                                                           |
+| comfortCoolingATExcess                   | Number:Time        |          | AT Excess                                                                           |
+| comfortCoolingATUndercut                 | Number:Time        |          | AT undercut                                                                         |
 
 ## Example
 
