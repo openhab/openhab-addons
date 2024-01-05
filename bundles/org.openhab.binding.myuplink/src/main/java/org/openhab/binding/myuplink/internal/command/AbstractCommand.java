@@ -193,7 +193,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         JsonObject jsonObject = transform(json);
         if (jsonObject != null) {
             logger.debug("[{}] success", getClass().getSimpleName());
-            handler.updateChannelStatus(transformer.transform(jsonObject, getChannelGroup()));
+            handler.updateChannelStatus(transformer.transform(jsonObject));
             processResult(jsonObject);
         }
     }
@@ -297,15 +297,6 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     protected Request prepareRequest(Request requestToPrepare) throws ValidationException {
         requestToPrepare.method(HttpMethod.GET);
         return requestToPrepare;
-    }
-
-    /**
-     * default implementation assumes no channel group. can ber overridden to set a specific channel group.
-     *
-     * @return
-     */
-    protected String getChannelGroup() {
-        return CHANNEL_GROUP_NONE;
     }
 
     /**
