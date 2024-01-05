@@ -5,7 +5,6 @@
 	<feature name="openhab-binding-tradfri" description="TRÅDFRI Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-coap</feature>
-		<feature>openhab-transport-mdns</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tradfri/${project.version}</bundle>
 	</feature>
 </features>
