@@ -83,12 +83,12 @@ public class CloudDiscovery extends AbstractDiscoveryService {
 
     private DiscoveryResult createDiscoveryResult(ThingUID thingUID, String label, Map<String, Object> properties) {
         return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUid).withProperties(properties).withLabel(label)
-                .build();
+                .withRepresentationProperty(DSN).build();
     }
 
     private String buildThingLabel(Device device) {
-            var name = device.name();
-            return (!"".equals(name)) ? name :  device.dsn();
+        var name = device.name();
+        return (!"".equals(name)) ? name : device.dsn();
     }
 
     private Map<String, Object> buildThingProperties(Device device) {
