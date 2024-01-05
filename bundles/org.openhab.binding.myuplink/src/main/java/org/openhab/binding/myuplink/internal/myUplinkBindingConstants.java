@@ -100,6 +100,7 @@ public class MyUplinkBindingConstants {
     private static final String API_BASE_URL = "https://api.myuplink.com";
     public static final String LOGIN_URL = API_BASE_URL + "/oauth/token";
     public static final String GET_SYSTEMS_URL = API_BASE_URL + "/v2/systems/me";
+    public static final String GET_DEVICE_POINTS = API_BASE_URL + "/v2/devices/{deviceId}/points";
 
     // TODO: add content
 

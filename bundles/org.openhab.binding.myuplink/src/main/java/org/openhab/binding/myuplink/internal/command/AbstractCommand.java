@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
@@ -286,20 +287,26 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     }
 
     /**
-     * concrete implementation has to prepare the requests with additional parameters, etc
+     * default implementation just assumes that we want to retrieve data via GET.
+     * can be overridden for any special case and has to prepare the requests with additional parameters, etc
      *
      * @param requestToPrepare the request to prepare
      * @return prepared Request object
      * @throws ValidationException
      */
-    protected abstract Request prepareRequest(Request requestToPrepare) throws ValidationException;
+    protected Request prepareRequest(Request requestToPrepare) throws ValidationException {
+        requestToPrepare.method(HttpMethod.GET);
+        return requestToPrepare;
+    }
 
     /**
-     * concrete implementation has to provide the channel group.
+     * default implementation assumes no channel group. can ber overridden to set a specific channel group.
      *
      * @return
      */
-    protected abstract String getChannelGroup();
+    protected String getChannelGroup() {
+        return CHANNEL_GROUP_NONE;
+    }
 
     /**
      * concrete implementation has to provide the URL

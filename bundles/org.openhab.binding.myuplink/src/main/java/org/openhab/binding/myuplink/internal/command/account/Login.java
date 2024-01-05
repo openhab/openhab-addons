@@ -78,9 +78,4 @@ public class Login extends AbstractCommand {
             processResult(jsonObject);
         }
     }
-
-    @Override
-    protected String getChannelGroup() {
-        return CHANNEL_GROUP_NONE;
-    }
 }
