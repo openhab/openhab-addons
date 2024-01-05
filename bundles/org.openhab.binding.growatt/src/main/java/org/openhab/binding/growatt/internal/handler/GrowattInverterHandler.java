@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.growatt.internal.handler;
 
-import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +27,8 @@ import org.openhab.binding.growatt.internal.cloud.GrowattCloud;
 import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
 import org.openhab.binding.growatt.internal.dto.GrottValues;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -53,21 +52,17 @@ public class GrowattInverterHandler extends BaseThingHandler {
     private static final int AWAITING_DATA_TIMEOUT_MINUTES = 11;
 
     private final Logger logger = LoggerFactory.getLogger(GrowattInverterHandler.class);
-    private final HttpClientFactory httpClientFactory;
 
     private String deviceId = "unknown";
 
     private @Nullable ScheduledFuture<?> awaitingDataTimeoutTask;
-    private @Nullable GrowattCloud growattCloud;
 
-    public GrowattInverterHandler(Thing thing, HttpClientFactory httpClientFactory) {
+    public GrowattInverterHandler(Thing thing) {
         super(thing);
-        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
     public void dispose() {
-        growattCloud = null;
         ScheduledFuture<?> task = awaitingDataTimeoutTask;
         if (task != null) {
             task.cancel(true);
@@ -167,56 +162,31 @@ public class GrowattInverterHandler extends BaseThingHandler {
     }
 
     private GrowattCloud getGrowattCloud() throws IllegalStateException {
-        GrowattCloud growattCloud = this.growattCloud;
-        if (growattCloud == null) {
-            try {
-                growattCloud = new GrowattCloud(getConfigAs(GrowattInverterConfiguration.class), httpClientFactory);
-            } catch (Exception e) {
-                throw new IllegalStateException("GrowattCloud not created", e);
-            }
-            this.growattCloud = growattCloud;
+        Bridge bridge = getBridge();
+        if (bridge != null && (bridge.getHandler() instanceof GrowattBridgeHandler bridgeHandler)) {
+            return bridgeHandler.getGrowattCloud();
         }
-        return growattCloud;
+        throw new IllegalStateException("Unable to get GrowattCloud from bridge handler");
     }
 
     /**
      * This method is called from a Rule Action to setup the battery charging program.
      *
-     * @param chargingPower the rate of charging 0%..100%
-     * @param targetSOC the SOC at which to stop charging 0%..100%
-     * @param allowAcCharging allow the battery to be charged from AC power
+     * @param programMode indicates if the program is Load first (0), Battery first (1), Grid first (2)
+     * @param powerLevel the rate of charging / discharging 0%..100%
+     * @param stopSOC the SOC at which to stop charging / discharging 0%..100%
+     * @param enableAcCharging allow the battery to be charged from AC power
      * @param startTime the start time of the charging program; a time formatted string e.g. "12:34"
      * @param stopTime the stop time of the charging program; a time formatted string e.g. "12:34"
-     * @param programEnable charge program shall be enabled
+     * @param enableProgram charge / discharge program shall be enabled
      */
-    public void setupChargingProgram(Number chargingPower, Number targetSOC, boolean allowAcCharging, String startTime,
-            String stopTime, boolean programEnable) {
+    public void setupBatteryProgram(Integer programMode, Integer powerLevel, Integer stopSOC, Boolean enableAcCharging,
+            String startTime, String stopTime, Boolean enableProgram) {
         try {
-            getGrowattCloud().setupChargingProgram(chargingPower.intValue(), targetSOC.intValue(), allowAcCharging,
-                    GrowattCloud.localTimeOf(startTime), GrowattCloud.localTimeOf(stopTime), programEnable);
-        } catch (IllegalStateException | DateTimeParseException | GrowattApiException e) {
-            logger.warn("setupChargingProgram() error", e);
-            this.growattCloud = null;
-        }
-    }
-
-    /**
-     * This method is called from a Rule Action to setup the battery discharging program.
-     *
-     * @param dischargingPower the rate of discharging 1%..100%
-     * @param targetSOC the SOC at which to stop charging 1%..100%
-     * @param startTime the start time of the discharging program; a time formatted string e.g. "12:34"
-     * @param stopTime the stop time of the discharging program; a time formatted string e.g. "12:34"
-     * @param programEnable the discharge program shall be enabled
-     */
-    public void setupDischargingProgram(Number dischargingPower, Number targetSOC, String startTime, String stopTime,
-            boolean programEnable) {
-        try {
-            getGrowattCloud().setupDischargingProgram(dischargingPower.intValue(), targetSOC.intValue(),
-                    GrowattCloud.localTimeOf(startTime), GrowattCloud.localTimeOf(stopTime), programEnable);
-        } catch (IllegalStateException | DateTimeParseException | GrowattApiException e) {
-            logger.warn("setupDischargingProgram() error", e);
-            this.growattCloud = null;
+            getGrowattCloud().setupBatteryProgram(deviceId, programMode, powerLevel, stopSOC, enableAcCharging,
+                    startTime, stopTime, enableProgram);
+        } catch (GrowattApiException e) {
+            logger.warn("setupBatteryProgram() error", e);
         }
     }
 }

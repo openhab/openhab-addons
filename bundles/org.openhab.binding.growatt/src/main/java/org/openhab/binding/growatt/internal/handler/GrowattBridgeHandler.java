@@ -16,10 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.growatt.internal.cloud.GrowattCloud;
+import org.openhab.binding.growatt.internal.config.GrowattBridgeConfiguration;
 import org.openhab.binding.growatt.internal.discovery.GrowattDiscoveryService;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
 import org.openhab.binding.growatt.internal.gson.GrottIntegerDeserializer;
 import org.openhab.binding.growatt.internal.servlet.GrowattHttpServlet;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -48,12 +52,16 @@ public class GrowattBridgeHandler extends BaseBridgeHandler {
     private final GrowattDiscoveryService discoveryService;
     private final Map<String, GrottDevice> inverters = new HashMap<>();
     private final GrowattHttpServlet httpServlet;
+    private final HttpClientFactory httpClientFactory;
 
-    public GrowattBridgeHandler(Bridge bridge, GrowattHttpServlet httpServlet,
-            GrowattDiscoveryService discoveryService) {
+    private @Nullable GrowattCloud growattCloud;
+
+    public GrowattBridgeHandler(Bridge bridge, GrowattHttpServlet httpServlet, GrowattDiscoveryService discoveryService,
+            HttpClientFactory httpClientFactory) {
         super(bridge);
         this.httpServlet = httpServlet;
         this.discoveryService = discoveryService;
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -61,6 +69,19 @@ public class GrowattBridgeHandler extends BaseBridgeHandler {
         inverters.clear();
         httpServlet.handlerRemove(this);
         discoveryService.putInverters(thing.getUID(), inverters.keySet());
+    }
+
+    public GrowattCloud getGrowattCloud() throws IllegalStateException {
+        GrowattCloud growattCloud = this.growattCloud;
+        if (growattCloud == null) {
+            try {
+                growattCloud = new GrowattCloud(getConfigAs(GrowattBridgeConfiguration.class), httpClientFactory);
+            } catch (Exception e) {
+                throw new IllegalStateException("GrowattCloud not created", e);
+            }
+            this.growattCloud = growattCloud;
+        }
+        return growattCloud;
     }
 
     @Override

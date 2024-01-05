@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.growatt.internal.GrowattChannels;
 import org.openhab.binding.growatt.internal.GrowattChannels.UoM;
 import org.openhab.binding.growatt.internal.cloud.GrowattCloud;
-import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
+import org.openhab.binding.growatt.internal.config.GrowattBridgeConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
 import org.openhab.binding.growatt.internal.dto.GrottValues;
 import org.openhab.binding.growatt.internal.gson.GrottIntegerDeserializer;
@@ -280,18 +279,19 @@ public class GrowattTest {
      */
     @Test
     void testServer() throws Exception {
-        GrowattInverterConfiguration configuration = new GrowattInverterConfiguration();
+        GrowattBridgeConfiguration configuration = new GrowattBridgeConfiguration();
+
         /*
          * To test on an actual inverter, populate its plant data and user credentials below.
          *
-         * configuration.deviceId = "aa";
-         * configuration.userName = "bb";
-         * configuration.password ="cc";
-         * configuration.userId = "dd";
-         * configuration.plantId = "ee";
+         * configuration.userName = "aa";
+         * configuration.password ="bb";
+         *
+         * deviceId = "cc";
+         *
          */
 
-        if (configuration.userName == null) {
+        if (configuration.userName.isBlank()) {
             return;
         }
 
@@ -300,45 +300,45 @@ public class GrowattTest {
                 .thenReturn(new HttpClient(new SslContextFactory.Client(true)));
 
         try (GrowattCloud api = new GrowattCloud(configuration, httpClientFactory)) {
-            assertFalse(api.getPlantList().isEmpty());
-            assertFalse(api.getPlantInfo().isEmpty());
-
-            int chargingPower = 97;
-            int targetSOC = 23;
-            boolean allowAcCharging = false;
-            LocalTime startTime = LocalTime.of(1, 16);
-            LocalTime stopTime = LocalTime.of(2, 17);
-            boolean programEnable = false;
-            assertFalse(api
-                    .setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable)
-                    .isEmpty());
-            Map<String, JsonElement> result = api.getMixAllSettings();
+            Integer programMode = GrowattCloud.ProgramMode.BATTERY_FIRST.ordinal();
+            Integer chargingPower = 97;
+            Integer targetSOC = 23;
+            Boolean allowAcCharging = false;
+            String startTime = "01:16";
+            String stopTime = "02:17";
+            Boolean programEnable = false;
+            api.setupBatteryProgram(deviceId, programMode, chargingPower, targetSOC, allowAcCharging, startTime,
+                    stopTime, programEnable);
+            Map<String, JsonElement> result = api.getDeviceSettings(deviceId);
             assertFalse(result.isEmpty());
             assertEquals(chargingPower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
             assertEquals(targetSOC, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_TARGET_SOC));
             assertEquals(allowAcCharging,
                     GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ALLOW_AC_CHARGING));
-            assertEquals(startTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
-            assertEquals(stopTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
+            assertEquals(GrowattCloud.localTimeOf(startTime),
+                    GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
+            assertEquals(GrowattCloud.localTimeOf(stopTime),
+                    GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
             assertEquals(programEnable, GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ENABLE));
 
             chargingPower = 100;
             targetSOC = 20;
             allowAcCharging = true;
-            startTime = LocalTime.of(0, 15);
-            stopTime = LocalTime.of(6, 45);
+            startTime = "00:15";
+            stopTime = "06:45";
             programEnable = true;
-            assertFalse(api
-                    .setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable)
-                    .isEmpty());
-            result = api.getMixAllSettings();
+            api.setupBatteryProgram(deviceId, programMode, chargingPower, targetSOC, allowAcCharging, startTime,
+                    stopTime, programEnable);
+            result = api.getDeviceSettings(deviceId);
             assertFalse(result.isEmpty());
             assertEquals(chargingPower, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_POWER));
             assertEquals(targetSOC, GrowattCloud.mapGetInteger(result, GrowattCloud.CHARGE_PROGRAM_TARGET_SOC));
             assertEquals(allowAcCharging,
                     GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ALLOW_AC_CHARGING));
-            assertEquals(startTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
-            assertEquals(stopTime, GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
+            assertEquals(GrowattCloud.localTimeOf(startTime),
+                    GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_START_TIME));
+            assertEquals(GrowattCloud.localTimeOf(stopTime),
+                    GrowattCloud.mapGetLocalTime(result, GrowattCloud.CHARGE_PROGRAM_STOP_TIME));
             assertEquals(programEnable, GrowattCloud.mapGetBoolean(result, GrowattCloud.CHARGE_PROGRAM_ENABLE));
         }
     }

@@ -35,20 +35,11 @@ public class GrowattActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(GrowattActions.class);
     private @Nullable GrowattInverterHandler handler;
 
-    public static void setupChargingProgram(ThingActions actions, Number chargingPower, Number targetSOC,
-            boolean allowAcCharging, String startTime, String stopTime, boolean programEnable) {
+    public static void setupBatteryProgram(ThingActions actions, Integer programMode, Integer powerLevel,
+            Integer stopSOC, Boolean enableAcCharging, String startTime, String stopTime, Boolean enableProgram) {
         if (actions instanceof GrowattActions growattActions) {
-            growattActions.setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime,
-                    programEnable);
-        } else {
-            throw new IllegalArgumentException("The 'actions' argument is not an instance of GrowattActions");
-        }
-    }
-
-    public static void setupDischargingProgram(ThingActions actions, Number dischargingPower, Number targetSOC,
-            String startTime, String stopTime, boolean programEnable) {
-        if (actions instanceof GrowattActions growattActions) {
-            growattActions.setupDischargingProgram(dischargingPower, targetSOC, startTime, stopTime, programEnable);
+            growattActions.setupBatteryProgram(programMode, powerLevel, stopSOC, enableAcCharging, startTime, stopTime,
+                    enableProgram);
         } else {
             throw new IllegalArgumentException("The 'actions' argument is not an instance of GrowattActions");
         }
@@ -64,32 +55,19 @@ public class GrowattActions implements ThingActions {
         this.handler = (handler instanceof GrowattInverterHandler growattHandler) ? growattHandler : null;
     }
 
-    @RuleAction(label = "@text/actions.charging.label", description = "@text/actions.charging.description")
-    public void setupChargingProgram(
-            @ActionInput(name = "charging-power", label = "@text/actions.charging-power.label", description = "@text/actions.charging-power.description") Number chargingPower,
-            @ActionInput(name = "target-soc", label = "@text/actions.target-soc.label", description = "@text/actions.target-soc.description") Number targetSOC,
-            @ActionInput(name = "allow-ac-charging", label = "@text/actions.allow-ac-charging.label", description = "@text/actions.allow-ac-charging.description") boolean allowAcCharging,
+    @RuleAction(label = "@text/actions.battery-program.label", description = "@text/actions.battery-program.description")
+    public void setupBatteryProgram(
+            @ActionInput(name = "program-mode", label = "@text/actions.program-mode.label", description = "@text/actions.program-mode.description") Integer programMode,
+            @ActionInput(name = "power-level", label = "@text/actions.power-level.label", description = "@text/actions.power-level.description") Integer powerLevel,
+            @ActionInput(name = "stop-soc", label = "@text/actions.stop-soc.label", description = "@text/actions.stop-soc.description") Integer stopSOC,
+            @ActionInput(name = "enable-ac-charging", label = "@text/actions.enable-ac-charging.label", description = "@text/actions.enable-ac-charging.description") Boolean enableAcCharging,
             @ActionInput(name = "start-time", label = "@text/actions.start-time.label", description = "@text/actions.start-time.description") String startTime,
             @ActionInput(name = "stop-time", label = "@text/actions.stop-time.label", description = "@text/actions.stop-time.description") String stopTime,
-            @ActionInput(name = "program-enable", label = "@text/actions.program-enable.label", description = "@text/actions.program-enable.description") boolean programEnable) {
+            @ActionInput(name = "enable-program", label = "@text/actions.enable-program.label", description = "@text/actions.enable-program.description") Boolean enableProgram) {
         GrowattInverterHandler handler = this.handler;
         if (handler != null) {
-            handler.setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable);
-        } else {
-            logger.warn("ThingHandler is null.");
-        }
-    }
-
-    @RuleAction(label = "@text/actions.discharging.label", description = "@text/actions.discharging.description")
-    public void setupDischargingProgram(
-            @ActionInput(name = "charging-power", label = "@text/actions.charging-power.label", description = "@text/actions.charging-power.description") Number dischargingPower,
-            @ActionInput(name = "target-soc", label = "@text/actions.target-soc.label", description = "@text/actions.target-soc.description") Number targetSOC,
-            @ActionInput(name = "start-time", label = "@text/actions.start-time.label", description = "@text/actions.start-time.description") String startTime,
-            @ActionInput(name = "stop-time", label = "@text/actions.stop-time.label", description = "@text/actions.stop-time.description") String stopTime,
-            @ActionInput(name = "program-enable", label = "@text/actions.program-enable.label", description = "@text/actions.program-enable.description") boolean programEnable) {
-        GrowattInverterHandler handler = this.handler;
-        if (handler != null) {
-            handler.setupDischargingProgram(dischargingPower, targetSOC, startTime, stopTime, programEnable);
+            handler.setupBatteryProgram(programMode, powerLevel, stopSOC, enableAcCharging, startTime, stopTime,
+                    enableProgram);
         } else {
             logger.warn("ThingHandler is null.");
         }

@@ -10,19 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.growatt.internal.config;
+package org.openhab.binding.growatt.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link GrowattInverterConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link GrowattUser} is a DTO containing user data fields received from the Growatt cloud server.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class GrowattInverterConfiguration {
+public class GrowattUser {
 
-    public static final String DEVICE_ID = "deviceId";
+    private @Nullable String id;
 
-    public String deviceId = "";
+    public String getId() {
+        String id = this.id;
+        return id != null ? id : "";
+    }
 }

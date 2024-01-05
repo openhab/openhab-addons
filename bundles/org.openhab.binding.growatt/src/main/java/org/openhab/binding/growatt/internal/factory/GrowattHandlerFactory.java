@@ -95,11 +95,11 @@ public class GrowattHandlerFactory extends BaseThingHandlerFactory {
             discoveryRegister();
             bridges.add(thing.getUID());
             return new GrowattBridgeHandler((Bridge) thing, Objects.requireNonNull(httpServlet),
-                    Objects.requireNonNull(discoveryService));
+                    Objects.requireNonNull(discoveryService), httpClientFactory);
         }
 
         if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
-            return new GrowattInverterHandler(thing, httpClientFactory);
+            return new GrowattInverterHandler(thing);
         }
 
         return null;
