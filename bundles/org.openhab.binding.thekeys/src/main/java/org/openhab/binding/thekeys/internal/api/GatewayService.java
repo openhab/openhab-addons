@@ -13,7 +13,6 @@
 package org.openhab.binding.thekeys.internal.api;
 
 import java.io.EOFException;
-import java.io.IOException;
 import java.net.ConnectException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -55,15 +54,21 @@ public class GatewayService {
 
     /**
      * Get infos of the gateway
+     *
+     * @return The gateway response
+     * @throws TheKeysException If the request failed
      */
-    public GatewayInfosDTO getGatewayInfos() throws IOException {
+    public GatewayInfosDTO getGatewayInfos() throws TheKeysException {
         return get("/", GatewayInfosDTO.class);
     }
 
     /**
      * Get available locks
+     *
+     * @return The list of the lock
+     * @throws TheKeysException If the request failed
      */
-    public List<LockerDTO> getLocks() throws IOException {
+    public List<LockerDTO> getLocks() throws TheKeysException {
         return get("/lockers", LockersDTO.class).getDevices();
     }
 
@@ -71,22 +76,30 @@ public class GatewayService {
      * Get state of a lock
      *
      * @param lockId The lockId
+     * @return The status of the specified lock
+     * @throws TheKeysException If the request failed
      */
-    public LockerStatusDTO getLockStatus(int lockId) throws IOException {
+    public LockerStatusDTO getLockStatus(int lockId) throws TheKeysException {
         return post("/locker_status", LockerStatusDTO.class, lockId);
     }
 
     /**
      * Synchronize the gateway
+     *
+     * @return The result status of the synchronization
+     * @throws TheKeysException If the request failed
      */
-    public SynchronizeDTO synchronizeGateway() throws IOException {
+    public SynchronizeDTO synchronizeGateway() throws TheKeysException {
         return get("/synchronize", SynchronizeDTO.class);
     }
 
     /**
      * Synchronize the lock
+     *
+     * @return The result status of the lock synchronization
+     * @throws TheKeysException If the request failed
      */
-    public SynchronizeDTO synchronizeLock() throws IOException {
+    public SynchronizeDTO synchronizeLock() throws TheKeysException {
         return get("/locker/synchronize", SynchronizeDTO.class);
     }
 
@@ -95,8 +108,9 @@ public class GatewayService {
      *
      * @param lockId Identifier of the lock
      * @return The gateway response
+     * @throws TheKeysException If the request failed
      */
-    public OpenCloseDTO open(int lockId) throws IOException {
+    public OpenCloseDTO open(int lockId) throws TheKeysException {
         return post("/open", OpenCloseDTO.class, lockId);
     }
 
@@ -105,8 +119,9 @@ public class GatewayService {
      *
      * @param lockId Identifier of the lock
      * @return The gateway response
+     * @throws TheKeysException If the request failed
      */
-    public OpenCloseDTO close(int lockId) throws IOException {
+    public OpenCloseDTO close(int lockId) throws TheKeysException {
         return post("/close", OpenCloseDTO.class, lockId);
     }
 
@@ -115,9 +130,10 @@ public class GatewayService {
      *
      * @param path Path of the request
      * @param responseType Response type
-     * @return The deserialized response to the response type
+     * @return The deserialized response
+     * @throws TheKeysException If the request failed
      */
-    private <T> T get(String path, Class<T> responseType) throws IOException {
+    private <T> T get(String path, Class<T> responseType) throws TheKeysException {
         return get(path, responseType, 3);
     }
 
@@ -127,16 +143,16 @@ public class GatewayService {
      * @param path Path of the request
      * @param responseType Response type
      * @param remainingRetryCount Number of retries in case of request failed
-     * @return The deserialized response to the response type
+     * @return The deserialized response
+     * @throws TheKeysException If the request failed
      */
-    private <T> T get(String path, Class<T> responseType, int remainingRetryCount) throws IOException {
+    private synchronized <T> T get(String path, Class<T> responseType, int remainingRetryCount)
+            throws TheKeysException {
+        String url = API_SCHEME + configuration.host + path;
         try {
-            synchronized (this) {
-                String url = API_SCHEME + configuration.host + path;
-                logger.debug("Call the gateway : GET {}", url);
-                return httpClient.get(url, configuration.apiTimeout * 1000, responseType);
-            }
-        } catch (Exception e) {
+            logger.debug("Call the gateway : GET {}", url);
+            return httpClient.get(url, configuration.apiTimeout * 1000, responseType);
+        } catch (TheKeysException e) {
             Throwable rootCause = ExceptionUtils.getRootCause(e);
             // Retry the same request because the gateway failed sometimes to handle the request
             if ((remainingRetryCount > 0
@@ -155,14 +171,13 @@ public class GatewayService {
      * @param path Path of the request
      * @param responseType Response type
      * @param lockId The lockId
-     * @return The deserialized response to the response type
+     * @return The deserialized response
+     * @throws TheKeysException If the request failed
      */
-    private <T> T post(String path, Class<T> responseType, int lockId) throws IOException {
-        synchronized (this) {
-            String url = API_SCHEME + configuration.host + path;
-            logger.debug("Call the gateway : POST {}", url);
-            return httpClient.post(url, createRequestBody(lockId), configuration.apiTimeout * 1000, responseType);
-        }
+    private synchronized <T> T post(String path, Class<T> responseType, int lockId) throws TheKeysException {
+        String url = API_SCHEME + configuration.host + path;
+        logger.debug("Call the gateway : POST {}", url);
+        return httpClient.post(url, createRequestBody(lockId), configuration.apiTimeout * 1000, responseType);
     }
 
     /**
@@ -170,14 +185,11 @@ public class GatewayService {
      *
      * @param lockId The lockId
      * @return The request body as inputstream
+     * @throws TheKeysException If the hmac cannot be computed
      */
-    private String createRequestBody(int lockId) {
-        try {
-            String timestamp = String.valueOf(Instant.now().toEpochMilli() / 1000);
-            return computeRequestBodyWithHash(timestamp, lockId);
-        } catch (Exception e) {
-            throw new TheKeysError("Failed to compute the auth data", e);
-        }
+    private String createRequestBody(int lockId) throws TheKeysException {
+        String timestamp = String.valueOf(Instant.now().toEpochMilli() / 1000);
+        return computeRequestBodyWithHash(timestamp, lockId);
     }
 
     /**
@@ -186,8 +198,9 @@ public class GatewayService {
      * @param timestamp Timestamp of the request in seconds
      * @param lockId The lockId
      * @return The request body
+     * @throws TheKeysException If the hmac cannot be computed
      */
-    String computeRequestBodyWithHash(String timestamp, int lockId) {
+    String computeRequestBodyWithHash(String timestamp, int lockId) throws TheKeysException {
         String hash = hmacSha256(timestamp, configuration.code);
         return "identifier=%s&ts=%s&hash=%s".formatted(lockId, timestamp, hash);
     }
@@ -198,16 +211,17 @@ public class GatewayService {
      * @param data The string to encode
      * @param key The private key
      * @return The encoded string
+     * @throws TheKeysException If the hmac cannot be computed
      */
-    static String hmacSha256(String data, String key) {
+    static String hmacSha256(String data, String key) throws TheKeysException {
         try {
             String algorithm = "HmacSHA256";
             SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), algorithm);
             Mac mac = Mac.getInstance(algorithm);
             mac.init(secretKeySpec);
             return Base64.getEncoder().encodeToString(mac.doFinal(data.getBytes()));
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new TheKeysError("Failed to generate auth data", e);
+        } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalStateException e) {
+            throw new TheKeysException("Failed to generate auth data", e);
         }
     }
 }

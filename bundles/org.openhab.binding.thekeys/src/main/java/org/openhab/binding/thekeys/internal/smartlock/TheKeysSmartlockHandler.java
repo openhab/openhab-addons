@@ -28,7 +28,7 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.thekeys.internal.api.GatewayService;
-import org.openhab.binding.thekeys.internal.api.TheKeysError;
+import org.openhab.binding.thekeys.internal.api.TheKeysException;
 import org.openhab.binding.thekeys.internal.api.model.LockerDTO;
 import org.openhab.binding.thekeys.internal.api.model.LockerStatusDTO;
 import org.openhab.binding.thekeys.internal.gateway.TheKeysGatewayHandler;
@@ -134,7 +134,7 @@ public class TheKeysSmartlockHandler extends BaseThingHandler {
             updateState(CHANNEL_SYNC_IN_PROGRESS, OnOffType.ON);
             LockerStatusDTO lockStatus = gatewayApi().getLockStatus(getTheKeysConfig().lockId);
             if ("ko".equals(lockStatus.getStatus())) {
-                throw new TheKeysError(
+                throw new TheKeysException(
                         "Request failed with code " + lockStatus.getCode() + ". " + lockStatus.getCause());
             }
 

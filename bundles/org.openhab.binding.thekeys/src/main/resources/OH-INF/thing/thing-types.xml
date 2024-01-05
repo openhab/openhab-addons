@@ -42,14 +42,14 @@
 		<description>A smartlock controlled by the gateway</description>
 
 		<channels>
-			<channel id="status" typeId="lock_status"/>
-			<channel id="batteryLevel" typeId="system.battery-level"/>
-			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="status" typeId="lock-status"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="position" typeId="position"/>
-			<channel id="syncInProgress" typeId="syncInProgress"/>
-			<channel id="lastSync" typeId="lastSync"/>
-			<channel id="lock" typeId="smartlockLock"/>
+			<channel id="sync-in-progress" typeId="sync-in-progress"/>
+			<channel id="last-sync" typeId="last-sync"/>
+			<channel id="lock" typeId="smartlock-lock"/>
 		</channels>
 
 		<config-description>
@@ -60,7 +60,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="lock_status">
+	<channel-type id="lock-status">
 		<item-type>String</item-type>
 		<label>Lock Status</label>
 		<description>Status of the smartlock</description>
@@ -82,21 +82,21 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="lastSync">
+	<channel-type id="last-sync">
 		<item-type>DateTime</item-type>
 		<label>Last Sync</label>
 		<description>Last success synchronization with the smartlock</description>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
-	<channel-type id="syncInProgress">
+	<channel-type id="sync-in-progress">
 		<item-type>Switch</item-type>
 		<label>Synchronization In Progress</label>
 		<description>Indicate synchronization with the gateway</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="smartlockLock">
+	<channel-type id="smartlock-lock">
 		<item-type>Switch</item-type>
 		<label>Lock</label>
 		<description>Use this channel with a Switch Item to open and close the smartlock</description>

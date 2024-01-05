@@ -13,7 +13,7 @@
 package org.openhab.binding.thekeys.internal.api.model;
 
 /**
- * Response DTO for /locker_status endpoint
+ * Response DTO for /synchronize and /locker/synchronize endpointss
  *
  * @author Jordan Martin - Initial contribution
  */

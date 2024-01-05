@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 import java.io.EOFException;
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.ConnectException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,28 +54,30 @@ class GatewayServiceTest {
 
     @ParameterizedTest
     @ValueSource(classes = { ConnectException.class, EOFException.class })
-    void shouldRetryOnSpecificExceptions(Class<? extends Throwable> clazz) throws IOException {
+    void shouldRetryOnSpecificExceptions(Class<? extends Throwable> clazz)
+            throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         // Given
         TheKeysHttpClient httpMock = Mockito.mock(TheKeysHttpClient.class);
-        Mockito.when(httpMock.get(any(), anyInt(), any())).thenThrow(clazz);
+        Throwable rootCause = clazz.getDeclaredConstructor().newInstance();
+        Mockito.when(httpMock.get(any(), anyInt(), any())).thenThrow(new TheKeysException("", rootCause));
         GatewayService gatewayService = getGatewayApi(httpMock);
 
         // When
-        assertThrows(IOException.class, gatewayService::getLocks);
+        assertThrows(TheKeysException.class, gatewayService::getLocks);
 
         // Then
         Mockito.verify(httpMock, Mockito.times(4)).get(any(), anyInt(), any());
     }
 
     @Test
-    void shouldNotRetryForOthersExceptions() throws IOException {
+    void shouldNotRetryForOthersExceptions() {
         // Given
         TheKeysHttpClient httpMock = Mockito.mock(TheKeysHttpClient.class);
-        Mockito.when(httpMock.get(any(), anyInt(), any())).thenThrow(IOException.class);
+        Mockito.when(httpMock.get(any(), anyInt(), any())).thenThrow(TheKeysException.class);
         GatewayService gatewayService = getGatewayApi(httpMock);
 
         // When
-        assertThrows(IOException.class, gatewayService::getLocks);
+        assertThrows(TheKeysException.class, gatewayService::getLocks);
 
         // Then
         Mockito.verify(httpMock, Mockito.times(1)).get(any(), anyInt(), any());

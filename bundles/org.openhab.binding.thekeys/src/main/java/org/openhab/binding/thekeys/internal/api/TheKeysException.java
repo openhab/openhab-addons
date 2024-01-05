@@ -23,16 +23,16 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Jordan Martin - Initial contribution
  */
 @NonNullByDefault
-public class TheKeysError extends RuntimeException {
+public class TheKeysException extends RuntimeException {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public TheKeysError(String message) {
+    public TheKeysException(String message) {
         super(message);
     }
 
-    public TheKeysError(String message, Throwable cause) {
+    public TheKeysException(String message, Throwable cause) {
         super(message, cause);
     }
 

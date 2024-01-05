@@ -22,22 +22,9 @@ import java.util.List;
  */
 public class LockersDTO {
 
-    private String status;
     private List<LockerDTO> devices = new ArrayList<>();
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     public List<LockerDTO> getDevices() {
         return devices;
-    }
-
-    public void setDevices(List<LockerDTO> devices) {
-        this.devices = devices;
     }
 }
