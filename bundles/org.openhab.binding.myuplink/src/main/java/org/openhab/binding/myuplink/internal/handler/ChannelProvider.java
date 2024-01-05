@@ -26,4 +26,7 @@ public interface ChannelProvider {
 
     @Nullable
     Channel getChannel(String groupId, String channelId);
+
+    @Nullable
+    Channel getChannel(String uniqueChannelId);
 }

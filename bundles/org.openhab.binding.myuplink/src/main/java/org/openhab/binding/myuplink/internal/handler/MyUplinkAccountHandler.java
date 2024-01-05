@@ -33,12 +33,10 @@ import org.openhab.binding.myuplink.internal.connector.WebInterface;
 import org.openhab.binding.myuplink.internal.discovery.MyUplinkDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
