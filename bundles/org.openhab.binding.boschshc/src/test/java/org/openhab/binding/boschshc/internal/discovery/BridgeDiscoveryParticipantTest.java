@@ -13,10 +13,16 @@
 package org.openhab.binding.boschshc.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import javax.jmdns.ServiceInfo;
 
@@ -35,6 +41,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.PublicInformation;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.ThingUID;
 
@@ -59,7 +66,10 @@ class BridgeDiscoveryParticipantTest {
     @BeforeEach
     public void beforeEach() throws Exception {
         when(shcBridge.getHostAddresses()).thenReturn(new String[] { "192.168.0.123" });
+        when(shcBridge.getName()).thenReturn("Bosch SHC [xx-xx-xx-xx-xx-xx]");
+
         when(otherDevice.getHostAddresses()).thenReturn(new String[] { "192.168.0.1" });
+        when(otherDevice.getName()).thenReturn("Other Device");
 
         ContentResponse contentResponse = mock(ContentResponse.class);
         when(contentResponse.getContentAsString()).thenReturn(
@@ -118,6 +128,13 @@ class BridgeDiscoveryParticipantTest {
     }
 
     @Test
+    void testCreateResultNoIPAddress() throws Exception {
+        when(shcBridge.getHostAddresses()).thenReturn(new String[] { "" });
+        DiscoveryResult result = fixture.createResult(shcBridge);
+        assertNull(result);
+    }
+
+    @Test
     void testGetThingUID() throws Exception {
         assert fixture != null;
         ThingUID thingUID = fixture.getThingUID(shcBridge);
@@ -135,13 +152,13 @@ class BridgeDiscoveryParticipantTest {
     @Test
     void testGetBridgeAddress() throws Exception {
         assert fixture != null;
-        assertThat(fixture.discoverBridge(shcBridge).shcIpAddress, is("192.168.0.123"));
+        assertThat(fixture.discoverBridge("192.168.0.123").shcIpAddress, is("192.168.0.123"));
     }
 
     @Test
     void testGetBridgeAddressOtherDevice() throws Exception {
         assert fixture != null;
-        assertThat(fixture.discoverBridge(otherDevice).shcIpAddress, is(""));
+        assertThat(fixture.discoverBridge("192.168.0.1"), is(nullValue()));
     }
 
     @Test
@@ -167,7 +184,7 @@ class BridgeDiscoveryParticipantTest {
         when(mockHttpClient.newRequest(url)).thenReturn(mockRequest);
 
         fixture = new BridgeDiscoveryParticipant(mockHttpClient);
-        assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("shcAddress").shcIpAddress, is(""));
+        assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("shcAddress"), is(nullValue()));
     }
 
     @Test
@@ -186,6 +203,16 @@ class BridgeDiscoveryParticipantTest {
         when(mockHttpClient.newRequest(url)).thenReturn(mockRequest);
 
         fixture = new BridgeDiscoveryParticipant(mockHttpClient);
-        assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("shcAddress").shcIpAddress, is(""));
+        assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("shcAddress"), is(nullValue()));
+    }
+
+    @Test
+    void testGetOrComputePublicInformation() throws Exception {
+        @Nullable
+        PublicInformation result = fixture.getOrComputePublicInformation(shcBridge, "192.168.0.123");
+        assertNotNull(result);
+        @Nullable
+        PublicInformation result2 = fixture.getOrComputePublicInformation(shcBridge, "192.168.0.123");
+        assertSame(result, result2);
     }
 }
