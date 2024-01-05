@@ -27,13 +27,17 @@ public class SerialBindingConstants {
     private static final String BINDING_ID = "serial";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "serialBridge");
+    public static final ThingTypeUID THING_TYPE_SERIAL_BRIDGE = new ThingTypeUID(BINDING_ID, "serialBridge");
+    public static final ThingTypeUID THING_TYPE_TCP_BRIDGE = new ThingTypeUID(BINDING_ID, "tcpBridge");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "serialDevice");
 
     // List of all Channel ids
     public static final String TRIGGER_CHANNEL = "data";
+    public static final String TRIGGER_TCP_CHANNEL = "dataTcp";
     public static final String STRING_CHANNEL = "string";
+    public static final String STRING_TCP_CHANNEL = "stringTcp";
     public static final String BINARY_CHANNEL = "binary";
+    public static final String BINARY_TCP_CHANNEL = "binaryTcp";
     public static final String DEVICE_STRING_CHANNEL = "string";
     public static final String DEVICE_NUMBER_CHANNEL = "number";
     public static final String DEVICE_DIMMER_CHANNEL = "dimmer";

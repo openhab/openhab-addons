@@ -89,9 +89,63 @@
 		</config-description>
 	</bridge-type>
 
+	<bridge-type id="tcpBridge">
+		<label>TCP Bridge</label>
+		<description>TCP socket which can send and receive data</description>
+
+		<channels>
+			<channel id="stringTcp" typeId="stringData"/>
+			<channel id="binaryTcp" typeId="binaryData"/>
+			<channel id="dataTcp" typeId="system.rawbutton"/>
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<context>network-address</context>
+				<limitToOptions>false</limitToOptions>
+				<label>Address</label>
+				<description>The IP address or hostname</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535" required="true">
+				<label>Port</label>
+				<description>TCP port to connect</description>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
+			<parameter name="timeout" type="integer" min="0">
+				<advanced>true</advanced>
+				<label>Socket Timeout</label>
+				<description>Timeout in seconds</description>
+			</parameter>
+			<parameter name="keepAlive" type="boolean" min="0">
+				<advanced>true</advanced>
+				<label>Keep-Alive</label>
+				<description>Send keep-alive</description>
+			</parameter>
+			<parameter name="reconnectInterval" type="integer" min="0">
+				<advanced>true</advanced>
+				<label>Reconnect Interval</label>
+				<description>Reconnection interval in seconds after connection failure (0 = disabled)</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="charset" type="text">
+				<advanced>true</advanced>
+				<label>Charset or HEX</label>
+				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1). Enter 'HEX' to
+					convert binary data into hexadecimal strings, seperated by space.</description>
+			</parameter>
+			<parameter name="eolPattern" type="text">
+				<advanced>true</advanced>
+				<label>EOL pattern</label>
+				<description>Only for Charset = HEX: 'End of line' pattern as regular expression. For example, "0D 10" matches \r\n,
+					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.".</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 	<thing-type id="serialDevice" extensible="string, number, dimmer, switch, rollershutter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serialBridge"/>
+			<bridge-type-ref id="tcpBridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Serial Device</label>

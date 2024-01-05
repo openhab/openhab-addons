@@ -80,7 +80,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
             if (channel != null) {
                 final Bridge bridge = getBridge();
                 if (bridge != null) {
-                    final SerialBridgeHandler handler = (SerialBridgeHandler) bridge.getHandler();
+                    final CommonBridgeHandler handler = (CommonBridgeHandler) bridge.getHandler();
                     if (handler != null) {
                         channel.mapCommand(command).ifPresent(value -> handler.writeString(value));
                     }
@@ -187,7 +187,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
         if (!channel.getRefreshValue().isBlank()) {
             final Bridge bridge = getBridge();
             if (bridge != null) {
-                final SerialBridgeHandler handler = (SerialBridgeHandler) bridge.getHandler();
+                final CommonBridgeHandler handler = (CommonBridgeHandler) bridge.getHandler();
                 if (handler != null) {
                     Optional<String> value = channel.transformCommand(channel.getRefreshValue());
                     if (value.isPresent()) {

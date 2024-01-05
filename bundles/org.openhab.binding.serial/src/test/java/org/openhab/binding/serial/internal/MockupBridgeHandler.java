@@ -26,6 +26,8 @@ import org.openhab.core.thing.Bridge;
  */
 public class MockupBridgeHandler extends SerialBridgeHandler {
 
+    private final SerialBridgeConfiguration config;
+
     MockupBridgeHandler(Bridge bridgeMock, SerialPortManager serialPortManager, SerialBridgeConfiguration config) {
         super(bridgeMock, serialPortManager);
         this.config = config;

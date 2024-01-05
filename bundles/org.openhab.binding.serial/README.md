@@ -1,15 +1,15 @@
 # Serial Binding
 
-The Serial binding allows openHAB to communicate over serial ports attached to the openHAB server.
+The Serial binding allows openHAB to communicate over serial ports attached to the openHAB server and TCP sockets.
 
-The binding allows data to be sent and received from a serial port.
+The binding allows data to be sent and received from a serial port or TCP socket.
 The binding does not support any particular serial protocols and simply reads what is available and sends what is provided.
 
 The binding can be used to communicate with simple serial devices for which a dedicated openHAB binding does not exist.
 
 ## Overview
 
-The Serial binding represents a serial port as a bridge thing and data matching defined patterns as things connected to the bridge.
+The Serial binding represents a serial port as a bridge thing, a TCP socket as an alternative bridge thing, and data matching defined patterns as things connected to the bridge.
 
 ### Serial Bridge
 
@@ -18,15 +18,19 @@ A Serial Bridge thing (`serialBridge`) represents a single serial port.
 The bridge supports a String channel which is set to the currently received data from the serial port.
 Sending a command to this channel sends the command as a string to the serial port.
 
-To communicate with protocols requiring binary data it is possible to select a special 'HEX' charset.
-This results into all binary data being converted into space-separacted hexadecimal strings that can be parsed using regular expressions.
-In this mode, the input data is also expected to be encoded as hexadecimal characters.
+To communicate with protocols requiring binary data it is possible to select a special 'HEX' charset. 
+This results into all binary data being converted into space-separacted hexadecimal strings that can be parsed using regular expressions. 
+In this mode, the input data is also expected to be encoded as hexadecimal characters. 
 
 The bridge also supports a String channel which encodes the received data as the string representation of a RawType to handle data that is
 not supported by the REST interface.
 A command sent to this channel will only be sent to the serial port if it is encoded as the string representation of a RawType.
 
 A trigger channel is also provided which triggers when data is received.
+
+### TCP Bridge
+
+The TCP bridge is an alternative implementation of the Serial Bridge that uses TCP sockets instead of serial ports.
 
 ### Serial Device
 
@@ -56,7 +60,19 @@ The configuration for the `serialBridge` consists of the following parameters:
 | parity     | Set the parity. Valid values: N(one), O(dd), E(even), M(ark), S(pace) (default N)                                                                                                                          |
 | stopBits   | Set the stop bits. Valid values: 1, 1.5, 2 (default 1)                                                                                                                                                     |
 | charset    | The charset to use for converting between bytes and string (e.g. UTF-8,ISO-8859-1). Enter 'HEX' to convert binary data into hexadecimal strings separated by space.                                        |
-| eolPattern | In charset=HEX mode, a regular expression is required to match the binaries equivalent of an 'End of line' character. For example, '\bFF' would match a byte value of 255 as end of the current response.  |
+| eolPattern | In charset=HEX mode, a regular expression is required to match the binaries equivalent of an 'End of line' character. For example, '\bFF' would match a byte value of 255 as end of the current response. |
+
+The configuration for the `tcpBridge` consists of the following parameters:
+
+| Parameter         | Description                                                                                                                                                                                               |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| address           | The IP or hostname to connect to.                                                                                                                                                                         |
+| port              | The number of the TCP port to connect to                                                                                                                                                                  |
+| timeout           | Socket timeout in seconds (0 = no timeout)                                                                                                                                                                |
+| keepAlive         | Enable socket keep-alive                                                                                                                                                                                  |
+| reconnectInterval | Interval in seconds for automatic reconnect after connection failure                                                                                                                                      |
+| charset           | The charset to use for converting between bytes and string (e.g. UTF-8,ISO-8859-1). Enter 'HEX' to convert binary data into hexadecimal strings separated by space.                                       |
+| eolPattern        | In charset=HEX mode, a regular expression is required to match the binaries equivalent of an 'End of line' character. For example, '\bFF' would match a byte value of 255 as end of the current response. |
 
 The configuration for the `serialDevice` consists of the following parameters:
 
@@ -87,7 +103,7 @@ The channels supported by the `serialDevice` are:
 The configuration for the `serialDevice` channels consists of the following parameters:
 
 | Parameter               | Description                                                                                                                     | Supported Channels                            |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
 | `stateTransformation`   | One or more transformation (concatenated with `∩`) used to convert device data to channel state, e.g. `REGEX:.*?STATE=(.*?);.*` | string, number, dimmer, switch, rollershutter |
 | `commandTransformation` | One or more transformation (concatenated with `∩`) used to convert command to device data, e.g. `JS:device.js`                  | string, number, dimmer, switch, rollershutter |
 | `commandFormat`         | Format string applied to the command before transform, e.g. `ID=671;COMMAND=%s`                                                 | string, number, dimmer, rollershutter         |
