@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="cp750"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="connection">
+		<label>CP750 Binding Thing</label>
+		<description>Sample thing for CP750 Binding</description>
+
+		<channels>
+			<channel id="channel-fader" typeId="fader"/>
+			<channel id="channel-mute" typeId="mute"/>
+			<channel id="channel-input" typeId="input"/>
+			<channel id="channel-analog" typeId="input-analog"/>
+			<channel id="channel-dig1" typeId="input-dig1"/>
+			<channel id="channel-dig2" typeId="input-dig2"/>
+			<channel id="channel-dig3" typeId="input-dig3"/>
+			<channel id="channel-dig4" typeId="input-dig4"/>
+			<channel id="channel-nonsync" typeId="input-non_sync"/>
+			<channel id="channel-mic" typeId="input-mic"/>
+			<channel id="channel-version" typeId="version"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<default>61408</default>
+				<description>Port to access the device</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="0">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="reconnectInterval" type="integer" unit="s" min="0">
+				<advanced>true</advanced>
+				<label>Retry interval</label>
+				<description>Reconnect interval in seconds after connection failure (0 = disabled)</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="fader">
+		<item-type>Dimmer</item-type>
+		<label>Fader channel</label>
+		<description>Fader state</description>
+	</channel-type>
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute channel</label>
+		<description>Mute state</description>
+	</channel-type>
+	<channel-type id="input">
+		<item-type>String</item-type>
+		<label>Current Input</label>
+		<description>Handles the state of INPUT_MODE</description>
+	</channel-type>
+	<channel-type id="input-analog">
+		<item-type>Switch</item-type>
+		<label>Analog Input Switch</label>
+		<description>Handles the state of INPUT_MODE=analog</description>
+	</channel-type>
+	<channel-type id="input-dig1">
+		<item-type>Switch</item-type>
+		<label>Digital 1 Input Switch</label>
+		<description>Handles the state of INPUT_MODE=dig-1</description>
+	</channel-type>
+	<channel-type id="input-dig2">
+		<item-type>Switch</item-type>
+		<label>Digital 2 Input Switch</label>
+		<description>Handles the state of INPUT_MODE=dig-3</description>
+	</channel-type>
+	<channel-type id="input-dig3">
+		<item-type>Switch</item-type>
+		<label>Digital 3 Input Switch</label>
+		<description>Handles the state of INPUT_MODE=dig-3</description>
+	</channel-type>
+	<channel-type id="input-dig4">
+		<item-type>Switch</item-type>
+		<label>Digital 4 Input Switch</label>
+		<description>Handles the state of INPUT_MODE=dig-4</description>
+	</channel-type>
+	<channel-type id="input-non_sync">
+		<item-type>Switch</item-type>
+		<label>Non-Sync Input Switch</label>
+		<description>Handles the state of INPUT_MODE=non_sync</description>
+	</channel-type>
+	<channel-type id="input-mic">
+		<item-type>Switch</item-type>
+		<label>Mic Input Switch</label>
+		<description>Handles the state of INPUT_MODE=mic</description>
+	</channel-type>
+	<channel-type id="version">
+		<item-type>String</item-type>
+		<label>CP750 version</label>
+		<description>Returns the OS version of the CP750 (read-only)</description>
+	</channel-type>
+</thing:thing-descriptions>

@@ -66,6 +66,7 @@
 /bundles/org.openhab.binding.comfoair/ @boehan
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
 /bundles/org.openhab.binding.coronastats/ @DerOetzi
+/bundles/org.openhab.binding.cp750/ @Cybso
 /bundles/org.openhab.binding.daikin/ @caffineehacker
 /bundles/org.openhab.binding.dali/ @rs22
 /bundles/org.openhab.binding.danfossairunit/ @pravussum
