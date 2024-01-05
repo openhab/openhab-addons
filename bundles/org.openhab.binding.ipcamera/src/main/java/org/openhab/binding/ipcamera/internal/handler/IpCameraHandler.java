@@ -1739,7 +1739,8 @@ public class IpCameraHandler extends BaseThingHandler {
                     reolinkAuth = "&user=" + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword();
                     // The reply to api.cgi?cmd=Login also sends this only with a token
                     sendHttpPOST("/api.cgi?cmd=GetAbility" + reolinkAuth,
-                            "[{\"cmd\":\"GetAbility\",\"param\":{\"User\":{\"userName\":\"admin\"}}}]");
+                            "[{ \"cmd\":\"GetAbility\", \"param\":{ \"User\":{ \"userName\":\"" + cameraConfig.getUser()
+                                    + "\" }}}]");
                 }
                 if (snapshotUri.isEmpty()) {
                     if (cameraConfig.getNvrChannel() < 1) {

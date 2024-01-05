@@ -85,7 +85,8 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                 + ipCameraHandler.reolinkAuth;
                         // We will use admin so users don't blame missing channels/features on a bug.
                         ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAbility" + ipCameraHandler.reolinkAuth,
-                                "[{\"cmd\":\"GetAbility\",\"param\":{\"User\":{\"userName\":\"admin\"}}}]");
+                                "[{ \"cmd\":\"GetAbility\", \"param\":{ \"User\":{ \"userName\":\""
+                                        + ipCameraHandler.cameraConfig.getUser() + "\" }}}]");
                     } else {
                         ipCameraHandler.logger.info("Your Reolink camera gave a bad login response:{}", content);
                     }
