@@ -251,7 +251,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      */
     protected long getRefreshAllLastTS() {
         return -1;
-    };
+    }
 
     /**
      * Refresh all devices for this handler

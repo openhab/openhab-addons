@@ -51,7 +51,7 @@ public abstract class Shape extends Panel {
 
     public int getOrientation() {
         return orientation;
-    };
+    }
 
     protected int getPanelId() {
         return panelId;

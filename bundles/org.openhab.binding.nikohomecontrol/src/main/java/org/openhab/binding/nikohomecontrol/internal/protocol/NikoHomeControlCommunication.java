@@ -204,12 +204,12 @@ public abstract class NikoHomeControlCommunication {
      *
      */
     public void startEnergyMeter(String energyMeterId) {
-    };
+    }
 
     /**
      * Stop retrieving energy meter data from Niko Home Control.
      *
      */
     public void stopEnergyMeter(String energyMeterId) {
-    };
+    }
 }
