@@ -132,4 +132,24 @@ public interface MyUplinkThingHandler extends ThingHandler, ChannelProvider {
         ChannelGroupUID channelGroupUID = new ChannelGroupUID(thingUID, groupId);
         return getThing().getChannel(new ChannelUID(channelGroupUID, channelId));
     }
+
+    /**
+     * determines the channel for a given unique channelId. Will check all groups and return first match.
+     *
+     * @param groupId groupId of the channel
+     * @param channelId channelId of the channel
+     */
+    @Override
+    default @Nullable Channel getChannel(String uniqueChannelId) {
+        Channel channel = getThing().getChannel(uniqueChannelId);
+        if (channel == null) {
+            for (String groupId : SUPPORTED_CHANNEL_GROUPS) {
+                channel = getChannel(groupId, uniqueChannelId);
+                if (channel != null) {
+                    break;
+                }
+            }
+        }
+        return channel;
+    }
 }

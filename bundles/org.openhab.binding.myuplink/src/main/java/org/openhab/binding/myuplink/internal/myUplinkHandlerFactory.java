@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkAccountHandler;
+import org.openhab.binding.myuplink.internal.handler.MyUplinkGenericDeviceHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -64,6 +65,8 @@ public class MyUplinkHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             return new MyUplinkAccountHandler((Bridge) thing, httpClient);
+        } else if (THING_TYPE_GENERIC_DEVICE.equals(thingTypeUID)) {
+            return new MyUplinkGenericDeviceHandler(thing);
         } else {
             logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }

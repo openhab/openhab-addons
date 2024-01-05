@@ -31,15 +31,20 @@ public class MyUplinkBindingConstants {
 
     // List of main device types
     public static final String DEVICE_ACCOUNT = "account";
-    public static final String DEVICE_GENERIC_DEVICE = "generic";
+    public static final String DEVICE_GENERIC_DEVICE = "genericDevice";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, DEVICE_ACCOUNT);
     public static final ThingTypeUID THING_TYPE_GENERIC_DEVICE = new ThingTypeUID(BINDING_ID, DEVICE_GENERIC_DEVICE);
 
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT,
+            THING_TYPE_GENERIC_DEVICE);
+
     // List of all channel groups
     public static final String CHANNEL_GROUP_NONE = "";
     // TODO: add content
+
+    public static final Set<String> SUPPORTED_CHANNEL_GROUPS = Set.of(CHANNEL_GROUP_NONE);
 
     // Channel types
     // TODO: add content
@@ -121,6 +126,4 @@ public class MyUplinkBindingConstants {
 
     public static final String PARAMETER_NAME_WRITE_COMMAND = "writeCommand";
     public static final String PARAMETER_NAME_VALIDATION_REGEXP = "validationExpression";
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT);
 }

@@ -49,7 +49,7 @@ public final class Utils {
     // TODO: check which methods are needed, delete unused
 
     /**
-     * parses a date string in easee format to ZonedDateTime which is used by Openhab.
+     * parses a date string in api source format to ZonedDateTime which is used by Openhab.
      *
      * @param date
      * @return
