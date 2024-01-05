@@ -246,12 +246,12 @@ public class GsonMapper {
             Boolean bool;
             if (value == null) {
                 bool = null;
-            } else if (value instanceof Boolean) {
-                bool = (Boolean) value;
-            } else if (value instanceof Number) {
-                bool = ((Number) value).longValue() != 0;
-            } else if (value instanceof String) {
-                bool = parseBoolean((String) value);
+            } else if (value instanceof Boolean typedValue) {
+                bool = typedValue;
+            } else if (value instanceof Number typedValue) {
+                bool = typedValue.longValue() != 0;
+            } else if (value instanceof String typedValue) {
+                bool = parseBoolean(typedValue);
             } else {
                 logger.warn("Cannot parse boolean from [{}]", value);
                 bool = null;
@@ -263,10 +263,10 @@ public class GsonMapper {
             Long longValue;
             if (value == null) {
                 longValue = null;
-            } else if (value instanceof Long) {
-                longValue = (Long) value;
-            } else if (value instanceof Number) {
-                longValue = ((Number) value).longValue();
+            } else if (value instanceof Long typedValue) {
+                longValue = typedValue;
+            } else if (value instanceof Number typedValue) {
+                longValue = typedValue.longValue();
             } else if (value instanceof String string) {
                 try {
                     longValue = parseLong(string);
