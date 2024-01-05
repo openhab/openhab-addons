@@ -87,16 +87,8 @@ public class CloudDiscovery extends AbstractDiscoveryService {
     }
 
     private String buildThingLabel(Device device) {
-        var sb = new StringBuilder();
-        {
             var name = device.name();
-            if (!"".equals(name)) {
-                sb.append(name);
-            } else {
-                sb.append(device.dsn());
-            }
-        }
-        return sb.toString();
+            return (!"".equals(name)) ? name :  device.dsn();
     }
 
     private Map<String, Object> buildThingProperties(Device device) {
