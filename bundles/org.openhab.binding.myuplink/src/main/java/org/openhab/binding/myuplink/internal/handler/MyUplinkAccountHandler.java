@@ -74,22 +74,6 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // if (CHANNEL_1.equals(channelUID.getId())) {
-        // if (command instanceof RefreshType) {
-        // // TODO: handle data refresh
-        // }
-
-        // // TODO: handle command
-
-        // // Note: if communication with thing fails for some reason,
-        // // indicate that by setting the status with detail information:
-        // // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // // "Could not control device at IP address x.x.x.x");
-        // }
-    }
-
-    @Override
     public void initialize() {
         logger.debug("About to initialize myUplink Account");
         MyUplinkConfiguration config = getBridgeConfiguration();
@@ -115,9 +99,6 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
      * Poll the Easee Cloud API one time.
      */
     void pollingRun() {
-        // String siteId = getConfig().get(THING_CONFIG_SITE_ID).toString();
-        // logger.debug("polling site data for {}", siteId);
-
         // TODO: check if this is the best polling command?!
         GetSystems state = new GetSystems(this, this::updateOnlineStatus);
         enqueueCommand(state);
