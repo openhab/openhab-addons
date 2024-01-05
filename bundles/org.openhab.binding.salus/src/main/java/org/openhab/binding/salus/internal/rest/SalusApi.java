@@ -87,7 +87,7 @@ public class SalusApi {
             logger.info("Refreshing access token");
             login(username, password);
             if (times > MAX_TIMES) {
-                logger.warn("Could not refresh access token after {} times", MAX_TIMES);
+                logger.debug("Could not refresh access token after {} times", MAX_TIMES);
                 return response;
             }
             return post(url, content, header, times + 1);
