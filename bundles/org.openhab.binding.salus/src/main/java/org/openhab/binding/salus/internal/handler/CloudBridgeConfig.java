@@ -24,8 +24,8 @@ public class CloudBridgeConfig {
     private String username = "";
     private String password = "";
     private String url = "";
-    private long refreshInterval;
-    private long propertiesRefreshInterval;
+    private long refreshInterval = 30;
+    private long propertiesRefreshInterval = 5;
 
     public CloudBridgeConfig() {
     }
