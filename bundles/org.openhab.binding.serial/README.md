@@ -18,6 +18,10 @@ A Serial Bridge thing (`serialBridge`) represents a single serial port.
 The bridge supports a String channel which is set to the currently received data from the serial port.
 Sending a command to this channel sends the command as a string to the serial port.
 
+To communicate with protocols requiring binary data it is possible to select a special 'HEX' charset.
+This results into all binary data being converted into space-separacted hexadecimal strings that can be parsed using regular expressions.
+In this mode, the input data is also expected to be encoded as hexadecimal characters.
+
 The bridge also supports a String channel which encodes the received data as the string representation of a RawType to handle data that is
 not supported by the REST interface.
 A command sent to this channel will only be sent to the serial port if it is encoded as the string representation of a RawType.
@@ -44,14 +48,15 @@ When using a Serial Device the expectation is that the received data for each de
 
 The configuration for the `serialBridge` consists of the following parameters:
 
-| Parameter  | Description                                                                             |
-| ---------- | --------------------------------------------------------------------------------------- |
-| serialPort | The serial port to use (e.g. Linux: /dev/ttyUSB0, Windows: COM1) (mandatory)            |
-| baudRate   | Set the baud rate. Valid values: 4800, 9600, 19200, 38400, 57600, 115200 (default 9600) |
-| dataBits   | Set the data bits. Valid values: 5, 6, 7, 8 (default 8)                                 |
-| parity     | Set the parity. Valid values: N(one), O(dd), E(even), M(ark), S(pace) (default N)       |
-| stopBits   | Set the stop bits. Valid values: 1, 1.5, 2 (default 1)                                  |
-| charset    | The charset to use for converting between bytes and string (e.g. UTF-8,ISO-8859-1)      |
+| Parameter  | Description                                                                                                                                                                                                |
+|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| serialPort | The serial port to use (e.g. Linux: /dev/ttyUSB0, Windows: COM1) (mandatory)                                                                                                                               |
+| baudRate   | Set the baud rate. Valid values: 4800, 9600, 19200, 38400, 57600, 115200 (default 9600)                                                                                                                    |
+| dataBits   | Set the data bits. Valid values: 5, 6, 7, 8 (default 8)                                                                                                                                                    |
+| parity     | Set the parity. Valid values: N(one), O(dd), E(even), M(ark), S(pace) (default N)                                                                                                                          |
+| stopBits   | Set the stop bits. Valid values: 1, 1.5, 2 (default 1)                                                                                                                                                     |
+| charset    | The charset to use for converting between bytes and string (e.g. UTF-8,ISO-8859-1). Enter 'HEX' to convert binary data into hexadecimal strings separated by space.                                        |
+| eolPattern | In charset=HEX mode, a regular expression is required to match the binaries equivalent of an 'End of line' character. For example, '\bFF' would match a byte value of 255 as end of the current response.  |
 
 The configuration for the `serialDevice` consists of the following parameters:
 

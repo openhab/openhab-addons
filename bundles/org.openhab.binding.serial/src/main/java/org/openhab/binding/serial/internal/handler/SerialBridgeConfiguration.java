@@ -52,9 +52,15 @@ public class SerialBridgeConfiguration {
      */
     public @Nullable String charset;
 
+    /**
+     * EOL regex for charset = HEX
+     */
+    public @Nullable String eolPattern;
+
     @Override
     public String toString() {
         return "SerialBridgeConfiguration [serialPort=" + serialPort + ", Baudrate=" + baudRate + ", Databits="
-                + dataBits + ", Parity=" + parity + ", Stopbits=" + stopBits + ", charset=" + charset + "]";
+                + dataBits + ", Parity=" + parity + ", Stopbits=" + stopBits + ", charset=" + charset + ", eolPatterb="
+                + eolPattern + "]";
     }
 }

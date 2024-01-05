@@ -22,11 +22,14 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Base64;
+import java.util.HexFormat;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,21 +60,28 @@ import org.slf4j.LoggerFactory;
  * are sent to one of the channels.
  *
  * @author Mike Major - Initial contribution
+ * @author Roland Tapken - Added code for charset=HEX and channel refresh
  */
 @NonNullByDefault
 public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPortEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(SerialBridgeHandler.class);
 
-    private SerialBridgeConfiguration config = new SerialBridgeConfiguration();
+    protected SerialBridgeConfiguration config = new SerialBridgeConfiguration();
 
     private final SerialPortManager serialPortManager;
     private @Nullable SerialPort serialPort;
 
-    private @Nullable InputStream inputStream;
-    private @Nullable OutputStream outputStream;
+    @Nullable
+    protected InputStream inputStream;
+    @Nullable
+    protected OutputStream outputStream;
 
     private Charset charset = StandardCharsets.UTF_8;
+
+    private boolean binaryHexData = false;
+
+    private @Nullable Pattern eolPattern;
 
     private @Nullable String lastValue;
 
@@ -112,11 +122,32 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
 
         try {
             if (config.charset != null) {
-                charset = Charset.forName(config.charset);
+                if (config.charset.equalsIgnoreCase("hex")) {
+                    binaryHexData = true;
+                    logger.debug("Serial port '{}' converting to hex", config.serialPort, charset);
+                } else {
+                    binaryHexData = false;
+                    charset = Charset.forName(config.charset);
+                    logger.debug("Serial port '{}' charset '{}' set", config.serialPort, charset);
+                }
             }
-            logger.debug("Serial port '{}' charset '{}' set", config.serialPort, charset);
-        } catch (final IllegalCharsetNameException e) {
+        } catch (final IllegalCharsetNameException | UnsupportedCharsetException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Invalid charset");
+            return;
+        }
+
+        if (config.eolPattern != null && !config.eolPattern.trim().isEmpty()) {
+            try {
+                this.eolPattern = Pattern.compile(config.eolPattern, Pattern.CASE_INSENSITIVE);
+                logger.debug("Serial port '{}' eolPattern '{}' set", config.serialPort, this.eolPattern.toString());
+            } catch (IllegalArgumentException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "Invalid EOL sequence");
+                return;
+            }
+        } else if (binaryHexData) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "EOL pattern required for charset = HEX");
             return;
         }
 
@@ -257,7 +288,7 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
      * @param sb the string builder to receive the data
      * @param firstAttempt indicates if this is the first read attempt without waiting
      */
-    private void receiveAndProcess(final StringBuilder sb, final boolean firstAttempt) {
+    protected void receiveAndProcess(final StringBuilder sb, final boolean firstAttempt) {
         final InputStream inputStream = this.inputStream;
 
         if (inputStream == null) {
@@ -270,9 +301,26 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
                 final byte[] readBuffer = new byte[20];
 
                 // read data from serial device
+                String line = "";
                 while (inputStream.available() > 0) {
                     final int bytes = inputStream.read(readBuffer);
-                    sb.append(new String(readBuffer, 0, bytes, charset));
+                    if (binaryHexData) {
+                        for (int i = 0; i < bytes; i++) {
+                            line += String.format("%02X", readBuffer[i]);
+                            if (eolPattern.matcher(line).find()) {
+                                sb.append(line).append(System.lineSeparator());
+                                line = "";
+                            } else {
+                                line += " ";
+                            }
+                        }
+                    } else {
+                        sb.append(new String(readBuffer, 0, bytes, charset));
+                    }
+                }
+                line = line.trim();
+                if (!line.isEmpty()) {
+                    sb.append(line);
                 }
 
                 // Add wait states around reading the stream, so that interrupted transmissions
@@ -331,6 +379,8 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
             if (isRawType) {
                 final RawType rt = RawType.valueOf(string);
                 outputStream.write(rt.getBytes());
+            } else if (binaryHexData) {
+                outputStream.write(parseHexString(string));
             } else {
                 outputStream.write(string.getBytes(charset));
             }
@@ -339,5 +389,10 @@ public class SerialBridgeHandler extends BaseBridgeHandler implements SerialPort
         } catch (final IOException | IllegalArgumentException e) {
             logger.warn("Error writing '{}' to serial port {}: {}", string, config.serialPort, e.getMessage());
         }
+    }
+
+    private byte[] parseHexString(String input) {
+        input = input.replaceAll("\\s", "");
+        return HexFormat.of().parseHex(input);
     }
 }
