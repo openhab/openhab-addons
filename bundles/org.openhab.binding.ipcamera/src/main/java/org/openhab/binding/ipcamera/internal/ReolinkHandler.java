@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ipcamera.internal.ReolinkState.GetAbilityResponse;
 import org.openhab.binding.ipcamera.internal.ReolinkState.GetAiStateResponse;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.OnOffType;
@@ -92,6 +93,9 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 case "/api.cgi?cmd=GetAbility": // Used to check what channels the camera supports
                     List<org.openhab.core.thing.Channel> removeChannels = new ArrayList<>();
                     org.openhab.core.thing.Channel channel;
+                    GetAbilityResponse getAbilityResponse = gson.fromJson(content, GetAbilityResponse.class);
+                    ipCameraHandler.reolinkScheduleVersion = getAbilityResponse.value.ability.scheduleVersion.ver;
+
                     if (content.contains("\"supportFtpEnable\": { \"permit\": 0")) {
                         ipCameraHandler.logger.debug("Camera has no Enable FTP support.");
                         channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_FTP);
@@ -301,46 +305,80 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 break;
             case CHANNEL_ENABLE_AUDIO_ALARM:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\": \" SetAudioAlarm\",\"param\": {\"Audio\": {\"schedule\": {\"enable\": 1,\"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"}}}}]");
+                    if (ipCameraHandler.reolinkScheduleVersion == 1) {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarmV20" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetAudioAlarmV20\",\"param\":{\"Audio\" : {\"enable\" : 1}}}]");
+                    } else {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\": \" SetAudioAlarm\",\"param\": {\"Audio\": {\"schedule\": {\"enable\": 1,\"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"}}}}]");
+                    }
                 } else {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\": \" SetAudioAlarm\",\"param\": {\"Audio\": {\"schedule\": {\"enable\": 0,\"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"}}}}]");
+                    if (ipCameraHandler.reolinkScheduleVersion == 1) {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarmV20" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetAudioAlarmV20\",\"param\":{\"Audio\" : {\"enable\" : 0}}}]");
+
+                    } else {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetAudioAlarm" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\": \" SetAudioAlarm\",\"param\": {\"Audio\": {\"schedule\": {\"enable\": 0,\"table\": \"111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111\"}}}}]");
+                    }
                 }
                 break;
             case CHANNEL_ENABLE_FTP:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetFtp" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\":\"SetFtp\",\"param\":{\"Rec\" : {\"channel\" : "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel()
-                                    + ",\"schedule\" : {\"enable\" : 1}}}}]");
+                    if (ipCameraHandler.reolinkScheduleVersion == 1) {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetFtpV20" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetFtpV20\",\"param\":{\"Ftp\" : {\"enable\" : 1}}}]");
+
+                    } else {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetFtp" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetFtp\",\"param\":{\"Ftp\" : {\"schedule\" : {\"enable\" : 1}}}}]");
+                    }
                 } else {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetFtp" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\":\"SetFtp\",\"param\":{\"Rec\" : {\"channel\" : "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel()
-                                    + ",\"schedule\" : {\"enable\" : 0}}}}]");
+                    if (ipCameraHandler.reolinkScheduleVersion == 1) {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetFtpV20" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetFtpV20\",\"param\":{\"Ftp\" : {\"enable\" : 0}}}]");
+                    } else {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetFtp" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetFtp\",\"param\":{\"Ftp\" : {\"schedule\" : {\"enable\" : 0}}}}]");
+                    }
                 }
                 break;
             case CHANNEL_ENABLE_EMAIL:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetEmailV20" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\":\"SetEmailV20\",\"param\":{\"Email\" : {\"channel\" : "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel()
-                                    + ",\"schedule\" : {\"enable\" : 1}}}}]");
+                    if (ipCameraHandler.reolinkScheduleVersion == 1) {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetEmailV20" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetEmailV20\",\"param\":{\"Email\" : {\"enable\" : 1}}}]");
+                    } else {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetEmail" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetEmail\",\"param\":{\"Email\" : {\"schedule\" : {\"enable\" : 1}}}}]");
+                    }
                 } else {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetEmailV20" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\":\"SetEmailV20\",\"param\":{\"Email\" : {\"channel\" : "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel()
-                                    + ",\"schedule\" : {\"enable\" : 0}}}}]");
+                    if (ipCameraHandler.reolinkScheduleVersion == 1) {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetEmailV20" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetEmailV20\",\"param\":{\"Email\" : {\"enable\" : 0}}}]");
+                    } else {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetEmail" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetEmail\",\"param\":{\"Email\" : {\"schedule\" : {\"enable\" : 0}}}}]");
+                    }
                 }
                 break;
             case CHANNEL_ENABLE_PUSH:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetPushV20" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\":\"SetPushV20\",\"param\":{\"Push\":{\"enable\":1}}}]");
+                    if (ipCameraHandler.reolinkScheduleVersion == 1) {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetPushV20" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetPushV20\",\"param\":{\"Push\":{\"enable\":1}}}]");
+                    } else {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetPush" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetPush\",\"param\":{\"Push\" : {\"schedule\" : {\"enable\" : 1}}}}]");
+                    }
                 } else {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetPushV20" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\":\"SetPushV20\",\"param\":{\"Push\":{\"enable\":0}}}]");
+                    if (ipCameraHandler.reolinkScheduleVersion == 1) {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetPushV20" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetPushV20\",\"param\":{\"Push\":{\"enable\":0}}}]");
+                    } else {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetPush" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetPush\",\"param\":{\"Push\" : {\"schedule\" : {\"enable\" : 0}}}}]");
+                    }
                 }
                 break;
             case CHANNEL_ENABLE_LED:
@@ -365,15 +403,27 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 break;
             case CHANNEL_ENABLE_RECORDINGS:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetRec" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\":\"SetRec\",\"param\":{\"Rec\" : {\"channel\" : "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel()
-                                    + ",\"schedule\" : {\"enable\" : 1}}}}]");
+                    if (ipCameraHandler.reolinkScheduleVersion == 1) {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetRecV20" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetRecV20\",\"param\":{\"Rec\":{\"enable\":1}}}]");
+
+                    } else {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetRec" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetRec\",\"param\":{\"Rec\" : {\"channel\" : "
+                                        + ipCameraHandler.cameraConfig.getNvrChannel()
+                                        + ",\"schedule\" : {\"enable\" : 1}}}}]");
+                    }
                 } else {
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetRec" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\":\"SetRec\",\"param\":{\"Rec\" : {\"channel\" : "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel()
-                                    + ",\"schedule\" : {\"enable\" : 0}}}}]");
+                    if (ipCameraHandler.reolinkScheduleVersion == 1) {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetRecV20" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetRecV20\",\"param\":{\"Rec\":{\"enable\":0}}}]");
+
+                    } else {
+                        ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetRec" + ipCameraHandler.reolinkAuth,
+                                "[{\"cmd\":\"SetRec\",\"param\":{\"Rec\" : {\"channel\" : "
+                                        + ipCameraHandler.cameraConfig.getNvrChannel()
+                                        + ",\"schedule\" : {\"enable\" : 0}}}}]");
+                    }
                 }
                 break;
             case CHANNEL_WHITE_LED:

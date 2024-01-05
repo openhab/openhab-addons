@@ -14,6 +14,8 @@ package org.openhab.binding.ipcamera.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link ReolinkState} class holds the state and GSON parsed replies for a single Reolink Camera.
  *
@@ -37,6 +39,23 @@ public class ReolinkState {
 
         public String cmd = "";
         public int code = 0;
+        public Value value = new Value();
+    }
+
+    public class GetAbilityResponse {
+        public class Value {
+            public class Ability {
+                public class ScheduleVersion {
+                    public int ver = 0;
+                }
+
+                public ScheduleVersion scheduleVersion = new ScheduleVersion();
+            }
+
+            @SerializedName(value = "ability", alternate = { "Ability" }) // uses uppercase A
+            public Ability ability = new Ability();
+        }
+
         public Value value = new Value();
     }
 }

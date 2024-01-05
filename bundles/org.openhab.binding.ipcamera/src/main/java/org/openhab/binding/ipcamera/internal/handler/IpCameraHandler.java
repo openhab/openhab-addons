@@ -173,6 +173,7 @@ public class IpCameraHandler extends BaseThingHandler {
     // basicAuth MUST remain private as it holds the cameraConfig.getPassword()
     private String basicAuth = "";
     public String reolinkAuth = "&token=null";
+    public int reolinkScheduleVersion = 0;
     public boolean useBasicAuth = false;
     public boolean useDigestAuth = false;
     public boolean newInstarApi = false;
