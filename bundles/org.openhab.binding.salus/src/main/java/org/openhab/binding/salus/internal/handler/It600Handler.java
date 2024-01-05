@@ -74,7 +74,6 @@ public class It600Handler extends BaseThingHandler {
             logger.debug("Initializing thing...");
             internalInitialize();
         } catch (Exception e) {
-            logger.error("Error occurred while initializing Salus device!", e);
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
                     "Error occurred while initializing Salus device! " + e.getLocalizedMessage());
         }
@@ -84,7 +83,6 @@ public class It600Handler extends BaseThingHandler {
         {
             var bridge = getBridge();
             if (bridge == null) {
-                logger.debug("No bridge for thing with UID {}", thing.getUID());
                 updateStatus(OFFLINE, BRIDGE_UNINITIALIZED,
                         "There is no bridge for this thing. Remove it and add it again.");
                 return;
@@ -93,8 +91,6 @@ public class It600Handler extends BaseThingHandler {
             if (!(bridgeHandler instanceof CloudBridgeHandler cloudHandler)) {
                 var bridgeHandlerClassName = Optional.ofNullable(bridgeHandler).map(BridgeHandler::getClass)
                         .map(Class::getSimpleName).orElse("null");
-                logger.debug("Bridge is not instance of {}! Current bridge class {}, Thing UID {}",
-                        CloudBridgeHandler.class.getSimpleName(), bridgeHandlerClassName, thing.getUID());
                 updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "There is wrong type of bridge for cloud device!");
                 return;
             }
@@ -104,7 +100,6 @@ public class It600Handler extends BaseThingHandler {
         dsn = (String) getConfig().get(DSN);
 
         if (dsn == null || dsn.length() == 0) {
-            logger.debug("No {} for thing with UID {}", DSN, thing.getUID());
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
                     "There is no " + DSN + " for this thing. Remove it and add it again.");
             return;
@@ -114,16 +109,12 @@ public class It600Handler extends BaseThingHandler {
             var device = this.cloudApi.findDevice(dsn);
             // no device in cloud
             if (device.isEmpty()) {
-                var msg = "Device with DSN " + dsn + " not found!";
-                logger.error(msg);
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, "Device with DSN " + dsn + " not found!");
                 return;
             }
             // device is not connected
             if (!device.get().isConnected()) {
-                var msg = "Device with DSN " + dsn + " is not connected!";
-                logger.error(msg);
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, "Device with DSN " + dsn + " is not connected!");
                 return;
             }
             // device is missing properties
@@ -131,15 +122,12 @@ public class It600Handler extends BaseThingHandler {
             var result = new ArrayList<>(REQUIRED_CHANNELS);
             result.removeAll(deviceProperties);
             if (!result.isEmpty()) {
-                var msg = "Device with DSN " + dsn + " is missing required properties: " + String.join(", ", result);
-                logger.error(msg);
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, msg);
+                updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                        "Device with DSN " + dsn + " is missing required properties: " + String.join(", ", result));
                 return;
             }
         } catch (Exception e) {
-            var msg = "Error when connecting to Salus Cloud!";
-            logger.error(msg, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, "Error when connecting to Salus Cloud!");
             return;
         }
 
@@ -149,7 +137,6 @@ public class It600Handler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Accepting command `{}` for channel `{}`", command, channelUID.getId());
         var id = channelUID.getId();
         switch (id) {
             case TEMPERATURE:
