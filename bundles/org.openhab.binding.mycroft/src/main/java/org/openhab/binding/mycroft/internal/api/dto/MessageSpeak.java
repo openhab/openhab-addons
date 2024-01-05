@@ -45,7 +45,7 @@ public class MessageSpeak extends BaseMessage {
         public String utterance = "";
         @SerializedName("expect_response")
         public String expectResponse = "";
-    };
+    }
 
     public static class Context {
         @SerializedName("client_name")
