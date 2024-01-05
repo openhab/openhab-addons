@@ -263,8 +263,6 @@ public class GsonMapper {
             Long longValue;
             if (value == null) {
                 longValue = null;
-            } else if (value instanceof Long typedValue) {
-                longValue = typedValue;
             } else if (value instanceof Number typedValue) {
                 longValue = typedValue.longValue();
             } else if (value instanceof String string) {
