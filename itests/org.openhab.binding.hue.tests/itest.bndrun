@@ -26,7 +26,7 @@ Fragment-Host: org.openhab.binding.hue
 	si.uom.si-quantity;version='[2.1.0,2.1.1)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	org.eclipse.jdt.annotation;version='[2.2.100,2.2.101)',\
-	javax.jmdns;version='[3.5.8,3.5.9)',\
+	javax.jmdns;version='[3.5.9,3.5.10)',\
 	org.jupnp;version='[2.7.1,2.7.2)',\
 	org.apache.felix.configadmin;version='[1.9.26,1.9.27)',\
 	org.apache.felix.http.servlet-api;version='[1.2.0,1.2.1)',\
@@ -93,4 +93,5 @@ Fragment-Host: org.openhab.binding.hue
 	org.openhab.core.io.transport.mdns;version='[4.2.0,4.2.1)',\
 	org.openhab.core.test;version='[4.2.0,4.2.1)',\
 	org.openhab.core.thing;version='[4.2.0,4.2.1)',\
-	org.openhab.core.transform;version='[4.2.0,4.2.1)'
+	org.openhab.core.transform;version='[4.2.0,4.2.1)',\
+	org.osgi.service.component.annotations;version='[1.5.0,1.5.1)'
