@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myuplink.internal.command.account;
+package org.openhab.binding.myuplink.internal.command.device;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.myuplink.internal.command.AbstractPagingCommand;
+import org.openhab.binding.myuplink.internal.command.AbstractCommand;
 import org.openhab.binding.myuplink.internal.command.JsonResultProcessor;
-import org.openhab.binding.myuplink.internal.handler.MyUplinkBridgeHandler;
+import org.openhab.binding.myuplink.internal.handler.MyUplinkThingHandler;
 
 /**
  * implements the get sites api call of the site.
@@ -25,17 +25,18 @@ import org.openhab.binding.myuplink.internal.handler.MyUplinkBridgeHandler;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class GetSystems extends AbstractPagingCommand {
+public class GetPoints extends AbstractCommand {
+    private final String url;
 
-    public GetSystems(MyUplinkBridgeHandler handler, JsonResultProcessor resultProcessor) {
+    public GetPoints(MyUplinkThingHandler handler, String deviceId, JsonResultProcessor resultProcessor) {
         // retry does not make much sense as it is a polling command, command should always succeed therefore update
         // handler on failure.
         super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES, resultProcessor);
+        this.url = GET_DEVICE_POINTS.replaceAll("\\{deviceId\\}", deviceId);
     }
 
     @Override
     protected String getURL() {
-        String url = GET_SYSTEMS_URL;
         return url;
     }
 }
