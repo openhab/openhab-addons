@@ -54,7 +54,7 @@ The following channels are available:
 
 Some Notes:
 
-- The values for `activeApp`, `playMode`, `timeElapsed`, `timeTotal`, `activeChannel`, `signalMode`, `signalQuality`, `channelName`, `programTitle`, `programDescription` & `programRating` refresh automatically per the configured `refresh` interval.
+- The values for `activeApp`, `activeAppName`, `playMode`, `timeElapsed`, `timeTotal`, `activeChannel`, `signalMode`, `signalQuality`, `channelName`, `programTitle`, `programDescription`, `programRating`, `power` & `powerState` refresh automatically per the configured `refresh` interval.
 
 **List of available button commands for Roku streaming devices:**  
 Home  
