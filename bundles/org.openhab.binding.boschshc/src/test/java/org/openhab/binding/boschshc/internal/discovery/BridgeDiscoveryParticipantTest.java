@@ -20,9 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+import java.net.ConnectException;
+import java.util.concurrent.ExecutionException;
 
 import javax.jmdns.ServiceInfo;
 
@@ -37,6 +40,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -55,13 +59,20 @@ import org.openhab.core.thing.ThingUID;
 @NonNullByDefault
 class BridgeDiscoveryParticipantTest {
 
-    @Nullable
-    private BridgeDiscoveryParticipant fixture;
+    private @NonNullByDefault({}) BridgeDiscoveryParticipant fixture;
 
     private final String url = "https://192.168.0.123:8446/smarthome/public/information";
+    private final String urlOtherDevice = "https://192.168.0.1:8446/smarthome/public/information";
 
     private @Mock @NonNullByDefault({}) ServiceInfo shcBridge;
     private @Mock @NonNullByDefault({}) ServiceInfo otherDevice;
+
+    private @Mock @NonNullByDefault({}) ContentResponse contentResponse;
+
+    /**
+     * Spy needed because some final methods can't be mocked
+     */
+    private @Spy @NonNullByDefault({}) HttpClient mockHttpClient;
 
     @BeforeEach
     public void beforeEach() throws Exception {
@@ -71,17 +82,23 @@ class BridgeDiscoveryParticipantTest {
         when(otherDevice.getHostAddresses()).thenReturn(new String[] { "192.168.0.1" });
         when(otherDevice.getName()).thenReturn("Other Device");
 
-        ContentResponse contentResponse = mock(ContentResponse.class);
         when(contentResponse.getContentAsString()).thenReturn(
                 "{\"apiVersions\":[\"2.9\",\"3.2\"], \"shcIpAddress\":\"192.168.0.123\", \"shcGeneration\":\"SHC_1\"}");
         when(contentResponse.getStatus()).thenReturn(HttpStatus.OK_200);
 
         Request mockRequest = mock(Request.class);
         when(mockRequest.send()).thenReturn(contentResponse);
-        when(mockRequest.method((HttpMethod) any())).thenReturn(mockRequest);
+        when(mockRequest.method(any(HttpMethod.class))).thenReturn(mockRequest);
+        when(mockRequest.timeout(anyLong(), any())).thenReturn(mockRequest);
 
-        HttpClient mockHttpClient = spy(HttpClient.class); // spy needed, because some final methods can't be mocked
         when(mockHttpClient.newRequest(url)).thenReturn(mockRequest);
+
+        Request failingRequest = mock(Request.class);
+        when(failingRequest.method(any(HttpMethod.class))).thenReturn(failingRequest);
+        when(failingRequest.timeout(anyLong(), any())).thenReturn(failingRequest);
+        when(failingRequest.send()).thenThrow(new ExecutionException(new ConnectException("Connection refused")));
+
+        when(mockHttpClient.newRequest(urlOtherDevice)).thenReturn(failingRequest);
 
         fixture = new BridgeDiscoveryParticipant(mockHttpClient);
     }
@@ -94,7 +111,6 @@ class BridgeDiscoveryParticipantTest {
 
     @Test
     void testGetSupportedThingTypeUIDs() {
-        assert fixture != null;
         assertTrue(fixture.getSupportedThingTypeUIDs().contains(BoschSHCBindingConstants.THING_TYPE_SHC));
     }
 
@@ -105,13 +121,11 @@ class BridgeDiscoveryParticipantTest {
      */
     @Test
     void testGetServiceType() throws Exception {
-        assert fixture != null;
         assertThat(fixture.getServiceType(), is("_http._tcp.local."));
     }
 
     @Test
     void testCreateResult() throws Exception {
-        assert fixture != null;
         DiscoveryResult result = fixture.createResult(shcBridge);
         assertNotNull(result);
         assertThat(result.getBindingId(), is(BoschSHCBindingConstants.BINDING_ID));
@@ -122,7 +136,6 @@ class BridgeDiscoveryParticipantTest {
 
     @Test
     void testCreateResultOtherDevice() throws Exception {
-        assert fixture != null;
         DiscoveryResult result = fixture.createResult(otherDevice);
         assertNull(result);
     }
@@ -136,7 +149,6 @@ class BridgeDiscoveryParticipantTest {
 
     @Test
     void testGetThingUID() throws Exception {
-        assert fixture != null;
         ThingUID thingUID = fixture.getThingUID(shcBridge);
         assertNotNull(thingUID);
         assertThat(thingUID.getBindingId(), is(BoschSHCBindingConstants.BINDING_ID));
@@ -145,65 +157,39 @@ class BridgeDiscoveryParticipantTest {
 
     @Test
     void testGetThingUIDOtherDevice() throws Exception {
-        assert fixture != null;
         assertNull(fixture.getThingUID(otherDevice));
     }
 
     @Test
     void testGetBridgeAddress() throws Exception {
-        assert fixture != null;
         assertThat(fixture.discoverBridge("192.168.0.123").shcIpAddress, is("192.168.0.123"));
     }
 
     @Test
     void testGetBridgeAddressOtherDevice() throws Exception {
-        assert fixture != null;
         assertThat(fixture.discoverBridge("192.168.0.1"), is(nullValue()));
     }
 
     @Test
     void testGetPublicInformationFromPossibleBridgeAddress() throws Exception {
-        assert fixture != null;
         assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("192.168.0.123").shcIpAddress,
                 is("192.168.0.123"));
     }
 
     @Test
     void testGetPublicInformationFromPossibleBridgeAddressInvalidContent() throws Exception {
-        assert fixture != null;
-
-        ContentResponse contentResponse = mock(ContentResponse.class);
         when(contentResponse.getContentAsString()).thenReturn("{\"nothing\":\"useful\"}");
-        when(contentResponse.getStatus()).thenReturn(HttpStatus.OK_200);
-
-        Request mockRequest = mock(Request.class);
-        when(mockRequest.send()).thenReturn(contentResponse);
-        when(mockRequest.method((HttpMethod) any())).thenReturn(mockRequest);
-
-        HttpClient mockHttpClient = spy(HttpClient.class); // spy needed, because some final methods can't be mocked
-        when(mockHttpClient.newRequest(url)).thenReturn(mockRequest);
 
         fixture = new BridgeDiscoveryParticipant(mockHttpClient);
-        assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("shcAddress"), is(nullValue()));
+        assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("192.168.0.123"), is(nullValue()));
     }
 
     @Test
     void testGetPublicInformationFromPossibleBridgeAddressInvalidStatus() throws Exception {
-        assert fixture != null;
-
-        ContentResponse contentResponse = mock(ContentResponse.class);
-        // when(contentResponse.getContentAsString()).thenReturn("{\"nothing\":\"useful\"}"); no content needed
         when(contentResponse.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
 
-        Request mockRequest = mock(Request.class);
-        when(mockRequest.send()).thenReturn(contentResponse);
-        when(mockRequest.method((HttpMethod) any())).thenReturn(mockRequest);
-
-        HttpClient mockHttpClient = spy(HttpClient.class); // spy needed, because some final methods can't be mocked
-        when(mockHttpClient.newRequest(url)).thenReturn(mockRequest);
-
         fixture = new BridgeDiscoveryParticipant(mockHttpClient);
-        assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("shcAddress"), is(nullValue()));
+        assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("192.168.0.123"), is(nullValue()));
     }
 
     @Test

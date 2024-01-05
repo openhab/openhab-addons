@@ -233,7 +233,9 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
         logger.trace("Requesting SHC information via URL {}", url);
         try {
             httpClient.start();
-            ContentResponse contentResponse = httpClient.newRequest(url).method(HttpMethod.GET).send();
+            ContentResponse contentResponse = httpClient.newRequest(url).method(HttpMethod.GET)
+                    .timeout(BoschHttpClient.DEFAULT_TIMEOUT_SECONDS, BoschHttpClient.DEFAULT_TIMEOUT_UNIT).send();
+
             // check HTTP status code
             if (!HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
                 logger.debug("Discovery failed with status code {}: {}", contentResponse.getStatus(),
@@ -244,7 +246,7 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
             String content = contentResponse.getContentAsString();
             logger.debug("Discovered SHC at IP {}, public info: {}", ipAddress, content);
             PublicInformation bridgeInfo = gson.fromJson(content, PublicInformation.class);
-            if (bridgeInfo != null && bridgeInfo.shcIpAddress != null) {
+            if (bridgeInfo != null && bridgeInfo.shcIpAddress != null && !bridgeInfo.shcIpAddress.isBlank()) {
                 return bridgeInfo;
             }
         } catch (TimeoutException | ExecutionException e) {
