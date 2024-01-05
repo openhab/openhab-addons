@@ -36,7 +36,7 @@ public class ZoneStatus extends AbstractMessageBody {
     @SerializedName("FanSpeed")
     public FanSpeedType fanSpeed;
     @SerializedName("Zone")
-    public Href zone = new Href();;
+    public Href zone = new Href();
     @SerializedName("StatusAccuracy")
     public String statusAccuracy = ""; // "Good" or ??
 

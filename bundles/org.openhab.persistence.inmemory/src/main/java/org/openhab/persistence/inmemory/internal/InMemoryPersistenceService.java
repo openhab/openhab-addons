@@ -314,8 +314,8 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
     }
 
     private record PersistEntry(ZonedDateTime timestamp, State state) {
-    };
+    }
 
     private record PersistItem(TreeSet<PersistEntry> database, Lock lock) {
-    };
+    }
 }

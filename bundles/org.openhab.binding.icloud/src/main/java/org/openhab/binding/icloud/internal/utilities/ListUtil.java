@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public abstract class ListUtil {
 
     private ListUtil() {
-    };
+    }
 
     /**
      * Replace entries in the given originalList with entries from replacements, if the have an equal key.

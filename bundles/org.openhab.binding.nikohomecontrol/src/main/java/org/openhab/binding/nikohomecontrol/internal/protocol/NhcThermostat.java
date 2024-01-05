@@ -304,7 +304,7 @@ public abstract class NhcThermostat {
             logger.debug("Thermostat mode {} not recognized, default to Day mode", mode);
         }
         executeMode(intMode);
-    };
+    }
 
     /**
      * Sends thermostat setpoint to Niko Home Control. This method is implemented in {@link NhcThermostat1} and

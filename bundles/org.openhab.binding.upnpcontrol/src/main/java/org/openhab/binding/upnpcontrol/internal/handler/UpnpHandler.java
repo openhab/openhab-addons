@@ -235,7 +235,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     public void updateDeviceConfig(RemoteDevice device) {
         this.device = device;
-    };
+    }
 
     protected void updateStateDescription(ChannelUID channelUID, List<StateOption> stateOptionList) {
         StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withReadOnly(false)

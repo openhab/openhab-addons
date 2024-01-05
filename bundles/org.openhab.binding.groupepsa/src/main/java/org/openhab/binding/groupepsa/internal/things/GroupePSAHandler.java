@@ -119,7 +119,7 @@ public class GroupePSAHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
-    };
+    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

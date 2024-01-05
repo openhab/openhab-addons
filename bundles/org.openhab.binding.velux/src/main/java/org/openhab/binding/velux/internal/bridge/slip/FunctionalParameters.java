@@ -203,5 +203,5 @@ public class FunctionalParameters {
     @Override
     public int hashCode() {
         return Arrays.hashCode(values);
-    };
+    }
 }
