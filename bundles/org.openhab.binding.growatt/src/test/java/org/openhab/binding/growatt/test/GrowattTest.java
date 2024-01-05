@@ -280,6 +280,7 @@ public class GrowattTest {
     @Test
     void testServer() throws Exception {
         GrowattBridgeConfiguration configuration = new GrowattBridgeConfiguration();
+        String deviceId = "";
 
         /*
          * To test on an actual inverter, populate its plant data and user credentials below.
