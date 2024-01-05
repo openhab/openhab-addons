@@ -54,17 +54,17 @@ public class GenericResponseTransformer {
         // TODO: this.customResponseTransformer = new CustomResponseTransformer(channelProvider);
     }
 
-    public Map<Channel, State> transform(JsonObject jsonData, String group) {
+    public Map<Channel, State> transform(JsonObject jsonData) {
         Map<Channel, State> result = new HashMap<>(20);
 
         for (String channelId : jsonData.keySet()) {
             String value = Utils.getAsString(jsonData, channelId);
 
-            Channel channel = channelProvider.getChannel(group, channelId);
+            Channel channel = channelProvider.getChannel(channelId);
             if (channel == null) {
                 // As we have a generic response mapper it ould happen that a subset of key/values in the response
                 // cannot be mapped to openhab channels.
-                logger.debug("Channel not found: {}#{}", group, channelId);
+                logger.debug("Channel not found: {}", channelId);
             } else {
                 logger.debug("mapping value '{}' to channel {}", value, channel.getUID().getId());
                 String channelType = channel.getAcceptedItemType();
