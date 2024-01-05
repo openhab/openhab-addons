@@ -136,6 +136,14 @@
 				<label>Command Transformation</label>
 				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
 			</parameter>
+			<parameter name="refreshValue" type="text">
+				<label>Refresh Value</label>
+				<description>Send this value to receive the current state</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0">
+				<label>Refresh Interval</label>
+				<description>Interval for automatic channel refresh in seconds</description>
+			</parameter>
 		</config-description>
 	</channel-type>
 
@@ -155,6 +163,14 @@
 			<parameter name="commandTransformation" type="text">
 				<label>Command Transformation</label>
 				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+			</parameter>
+			<parameter name="refreshValue" type="text">
+				<label>Refresh Value</label>
+				<description>Send this value to receive the current state</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0">
+				<label>Refresh Interval</label>
+				<description>Interval for automatic channel refresh in seconds</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -192,6 +208,14 @@
 				<label>Command Transformation</label>
 				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
 			</parameter>
+			<parameter name="refreshValue" type="text">
+				<label>Refresh Value</label>
+				<description>Send this value to receive the current state</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0">
+				<label>Refresh Interval</label>
+				<description>Interval for automatic channel refresh in seconds</description>
+			</parameter>
 		</config-description>
 	</channel-type>
 
@@ -215,6 +239,14 @@
 			<parameter name="commandTransformation" type="text">
 				<label>Command Transformation</label>
 				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+			</parameter>
+			<parameter name="refreshValue" type="text">
+				<label>Refresh Value</label>
+				<description>Send this value to receive the current state</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0">
+				<label>Refresh Interval</label>
+				<description>Interval for automatic channel refresh in seconds</description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -247,6 +279,14 @@
 			<parameter name="commandTransformation" type="text">
 				<label>Command Transformation</label>
 				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+			</parameter>
+			<parameter name="refreshValue" type="text">
+				<label>Refresh Value</label>
+				<description>Send this value to receive the current state</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0">
+				<label>Refresh Interval</label>
+				<description>Interval for automatic channel refresh in seconds</description>
 			</parameter>
 		</config-description>
 	</channel-type>

@@ -84,7 +84,7 @@ The channels supported by the `serialDevice` are:
 | `switch`        | Switch        | Channel for receiving commands from a Switch. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the ON and OFF commands.                     |
 | `rollershutter` | Rollershutter | Channel for receiving commands from a Rollershutter. The channel can be configured to apply a transform on the received data to convert to the channel state. The channel can be configured to apply a simple mapping for the UP, DOWN and STOP commands.       |
 
-The configuration for the `serialBridge` channels consists of the following parameters:
+The configuration for the `serialDevice` channels consists of the following parameters:
 
 | Parameter               | Description                                                                                                                     | Supported Channels                            |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
@@ -98,6 +98,8 @@ The configuration for the `serialBridge` channels consists of the following para
 | `upValue`               | Send this value when receiving an UP command                                                                                    | rollershutter                                 |
 | `downValue`             | Send this value when receiving a DOWN command                                                                                   | rollershutter                                 |
 | `stopValue`             | Send this value when receiving a STOP command                                                                                   | rollershutter                                 |
+| `refreshCommand`        | Command that should be issued to receive the current channel state                                                              | string, number, dimmer, switch, rollershutter |
+| `refreshInterval`       | If configured, this defines an interval that will schedule automatic channel refresh                                            | string, number, dimmer, switch, rollershutter |
 
 ## Full Example
 

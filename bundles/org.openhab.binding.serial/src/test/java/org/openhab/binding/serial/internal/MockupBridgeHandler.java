@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.serial.internal;
 
-import java.io.ByteArrayOutputStream;
-import java.util.stream.Stream;
-
 import org.openhab.binding.serial.internal.handler.SerialBridgeConfiguration;
 import org.openhab.binding.serial.internal.handler.SerialBridgeHandler;
-import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 
