@@ -90,7 +90,6 @@ public class SalusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private ThingHandler newSalusCloudBridge(Thing thing) {
-        logger.debug("Registering CloudBridgeHandler");
         var handler = new CloudBridgeHandler((Bridge) thing, httpClientFactory);
         var cloudDiscovery = new CloudDiscovery(handler, handler, handler.getThing().getUID());
         registerThingDiscovery(cloudDiscovery);
@@ -98,8 +97,6 @@ public class SalusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerThingDiscovery(DiscoveryService discoveryService) {
-        logger.trace("Try to register Discovery service on BundleID: {} Service: {}",
-                bundleContext.getBundle().getBundleId(), DiscoveryService.class.getName());
         bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>());
     }
 }

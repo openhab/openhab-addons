@@ -182,12 +182,10 @@ public class SalusApi {
         var response = get(url("/apiv1/devices.json"), authHeader(), 1);
         if (response.statusCode() != 200) {
             // there was an error when querying endpoint
-            logger.debug("findDevices()->ERROR {}", response.statusCode());
             return error(mapper.parseError(response));
         }
 
         var devices = new TreeSet<>(mapper.parseDevices(requireNonNull(response.body())));
-        logger.debug("findDevices()->OK");
         return ApiResponse.ok(devices);
     }
 
@@ -196,17 +194,14 @@ public class SalusApi {
     }
 
     public ApiResponse<SortedSet<DeviceProperty<?>>> findDeviceProperties(String dsn) {
-        logger.debug("findDeviceProperties({})", dsn);
         refreshAccessToken();
         var response = get(url("/apiv1/dsns/" + dsn + "/properties.json"), authHeader(), 1);
         if (response.statusCode() != 200) {
             // there was an error when querying endpoint
-            logger.debug("findDeviceProperties()->ERROR {}", response.statusCode());
             return error(mapper.parseError(response));
         }
 
         var deviceProperties = new TreeSet<>(mapper.parseDeviceProperties(requireNonNull(response.body())));
-        logger.debug("findDeviceProperties({})->OK", dsn);
         return ApiResponse.ok(deviceProperties);
     }
 

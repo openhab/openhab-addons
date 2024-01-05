@@ -217,7 +217,6 @@ public class DeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Accepting command {} for channel {}", command, channelUID.getId());
         try {
             if (command instanceof RefreshType) {
                 handleRefreshCommand(channelUID);
@@ -289,7 +288,6 @@ public class DeviceHandler extends BaseThingHandler {
             logger.warn("Property class {} is not supported!", property.getClass().getSimpleName());
             return;
         }
-        logger.debug("Setting value {}{} for channel {}", state, isX100 ? " (x100)" : "", channelUID);
         updateState(channelUID, state);
     }
 
