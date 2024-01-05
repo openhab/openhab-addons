@@ -186,7 +186,7 @@ public class VerisureSession {
 
     public void setVerisureThingHandler(VerisureThingHandler<?> vth, String deviceId) {
         verisureHandlers.put(deviceId, vth);
-    };
+    }
 
     public void removeVerisureThingHandler(String deviceId) {
         verisureHandlers.remove(deviceId);

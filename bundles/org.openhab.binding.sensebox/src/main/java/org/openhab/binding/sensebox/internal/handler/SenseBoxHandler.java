@@ -149,7 +149,7 @@ public class SenseBoxHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
-    };
+    }
 
     private void startAutomaticRefresh() {
         stopAutomaticRefresh();

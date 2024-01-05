@@ -296,5 +296,5 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
             closed = true;
             input.close();
         }
-    };
+    }
 }

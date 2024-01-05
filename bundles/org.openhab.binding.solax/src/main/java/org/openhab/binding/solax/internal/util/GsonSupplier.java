@@ -26,7 +26,7 @@ public class GsonSupplier {
     private static final Gson GSON = new Gson();
 
     private GsonSupplier() {
-    };
+    }
 
     public static Gson getInstance() {
         return GSON;

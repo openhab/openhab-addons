@@ -363,7 +363,7 @@ public class ThermostatHandler extends BaseThingHandler {
         map.put(8, "boost");
         map.put(9, "eco");
         return map;
-    };
+    }
 
     private static Map<String, Integer> createRegulationReverseMap() {
         HashMap<String, Integer> map = new HashMap<>();
@@ -375,7 +375,7 @@ public class ThermostatHandler extends BaseThingHandler {
         map.put("boost", 8);
         map.put("eco", 9);
         return map;
-    };
+    }
 
     private Map<String, Consumer<ThermostatModel>> createChannelRefreshActionMap() {
         HashMap<String, Consumer<ThermostatModel>> map = new HashMap<>();

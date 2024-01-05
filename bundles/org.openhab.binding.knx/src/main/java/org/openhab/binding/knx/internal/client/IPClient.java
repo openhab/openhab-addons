@@ -56,7 +56,7 @@ public class IPClient extends AbstractKNXClient {
         ROUTER,
         SECURE_TUNNEL,
         SECURE_ROUTER
-    };
+    }
 
     private final Logger logger = LoggerFactory.getLogger(IPClient.class);
 

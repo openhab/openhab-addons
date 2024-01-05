@@ -68,11 +68,11 @@ public interface InverterData {
 
     default double getBatteryVoltage() {
         return Short.MIN_VALUE;
-    };
+    }
 
     default double getBatteryCurrent() {
         return Short.MIN_VALUE;
-    };
+    }
 
     default short getBatteryPower() {
         return Short.MIN_VALUE;

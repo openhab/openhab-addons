@@ -1155,7 +1155,7 @@ public enum EcoTouchTags {
         Bitfield,
         Float,
         Enum
-    };
+    }
 
     /**
      * The format of the response of the heat pump

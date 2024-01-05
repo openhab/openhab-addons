@@ -336,4 +336,4 @@ public class MQTTProtocol {
         public String robotid;
         public String hostname;
     }
-};
+}

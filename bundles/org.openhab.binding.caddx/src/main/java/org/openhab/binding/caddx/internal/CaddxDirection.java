@@ -23,4 +23,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum CaddxDirection {
     IN,
     OUT
-};
+}

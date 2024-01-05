@@ -802,4 +802,4 @@ public class AirqHandler extends BaseThingHandler {
             }
         }
     }
-};
+}
