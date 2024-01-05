@@ -83,7 +83,7 @@ public class CloudBridgeConfig {
     }
 
     public boolean hasUsername() {
-        return !"".equals(username);
+        return !username.isBlank();
     }
 
     public boolean hasPassword() {
