@@ -170,7 +170,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         logger.debug("Finding properties for device {} using salusClient", dsn);
         var response = api.findDeviceProperties(dsn);
         if (response.failed()) {
-            logger.error("Cannot find properties for device {} using salusClient\n{}", dsn, response.error());
+            logger.warn("Cannot find properties for device {} using salusClient\n{}", dsn, response.error());
             return null;
         }
         return response.body();
