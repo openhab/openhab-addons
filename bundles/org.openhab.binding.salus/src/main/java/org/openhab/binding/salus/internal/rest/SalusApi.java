@@ -107,7 +107,7 @@ public class SalusApi {
     }
 
     private void login(String username, char[] password, int times) {
-        logger.info("Login with username '{}', times={}", username, times);
+        logger.debug("Login with username '{}', times={}", username, times);
         authToken = null;
         authTokenExpireTime = null;
         var finalUrl = url("/users/sign_in.json");
