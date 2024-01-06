@@ -56,7 +56,7 @@ public class CloudBridgeConfig {
     }
 
     public String getUrl() {
-        if ("".equals(url)) {
+        if (url.isBank()) {
             return DEFAULT_URL;
         }
         return url;
