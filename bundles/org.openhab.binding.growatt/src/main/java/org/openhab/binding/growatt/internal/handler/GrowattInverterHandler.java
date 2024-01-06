@@ -180,8 +180,9 @@ public class GrowattInverterHandler extends BaseThingHandler {
      * @param stopTime the stop time of the charging program; a time formatted string e.g. "12:34"
      * @param enableProgram charge / discharge program shall be enabled
      */
-    public void setupBatteryProgram(Integer programMode, Integer powerLevel, Integer stopSOC, Boolean enableAcCharging,
-            String startTime, String stopTime, Boolean enableProgram) {
+    public void setupBatteryProgram(Integer programMode, @Nullable Integer powerLevel, @Nullable Integer stopSOC,
+            @Nullable Boolean enableAcCharging, @Nullable String startTime, @Nullable String stopTime,
+            @Nullable Boolean enableProgram) {
         try {
             getGrowattCloud().setupBatteryProgram(deviceId, programMode, powerLevel, stopSOC, enableAcCharging,
                     startTime, stopTime, enableProgram);

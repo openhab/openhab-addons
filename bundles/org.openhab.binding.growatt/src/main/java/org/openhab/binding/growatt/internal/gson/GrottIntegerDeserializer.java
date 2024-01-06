@@ -16,6 +16,7 @@ import java.lang.reflect.Type;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonDeserializationContext;
@@ -29,6 +30,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class GrottIntegerDeserializer implements JsonDeserializer<Integer> {
 
     private static final long INT_BIT_MASK = 0xffffffff;
