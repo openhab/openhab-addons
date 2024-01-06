@@ -94,8 +94,12 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 case "/api.cgi?cmd=GetAbility": // Used to check what channels the camera supports
                     List<org.openhab.core.thing.Channel> removeChannels = new ArrayList<>();
                     org.openhab.core.thing.Channel channel;
-                    GetAbilityResponse getAbilityResponse = gson.fromJson(content, GetAbilityResponse.class);
-                    ipCameraHandler.reolinkScheduleVersion = getAbilityResponse.value.ability.scheduleVersion.ver;
+                    GetAbilityResponse[] getAbilityResponse = gson.fromJson(content, GetAbilityResponse[].class);
+                    try {
+                        ipCameraHandler.reolinkScheduleVersion = getAbilityResponse[0].value.ability.scheduleVersion.ver;
+                    } catch (JsonParseException e) {
+                        ipCameraHandler.logger.warn("API command GetAbility may not be supported by the camera.");
+                    }
 
                     if (content.contains("\"supportFtpEnable\": { \"permit\": 0")) {
                         ipCameraHandler.logger.debug("Camera has no Enable FTP support.");

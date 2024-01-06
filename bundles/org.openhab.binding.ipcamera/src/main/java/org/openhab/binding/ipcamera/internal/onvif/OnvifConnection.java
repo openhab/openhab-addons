@@ -315,7 +315,6 @@ public class OnvifConnection {
             sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
         } else if (message.contains("GetSystemDateAndTimeResponse")) {// 1st to be sent.
             setIsConnected(true);
-            sendOnvifRequest(RequestType.GetCapabilities, deviceXAddr);
             parseDateAndTime(message);
             logger.debug("openHAB UTC dateTime is: {}", getUTCdateTime());
         } else if (message.contains("GetCapabilitiesResponse")) {// 2nd to be sent.
