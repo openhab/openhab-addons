@@ -27,19 +27,20 @@ public class ReolinkState {
         public class Value {
             public class Alarm {
                 public int alarm_state = 0;
-                public int support = 0;
             }
 
-            public int channel = 0;
             public Alarm dog_cat = new Alarm();
             public Alarm face = new Alarm();
             public Alarm people = new Alarm();
             public Alarm vehicle = new Alarm();
         }
 
-        public String cmd = "";
-        public int code = 0;
+        public class Error {
+            public String detail = "";
+        }
+
         public Value value = new Value();
+        public Error error = new Error();
     }
 
     public class GetAbilityResponse {

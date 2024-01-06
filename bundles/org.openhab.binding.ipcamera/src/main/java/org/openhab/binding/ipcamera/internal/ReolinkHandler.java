@@ -171,7 +171,13 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     try {
                         GetAiStateResponse[] aiResponse = gson.fromJson(content, GetAiStateResponse[].class);
                         if (aiResponse == null || aiResponse[0].value == null) {
-                            ipCameraHandler.logger.debug("The GetAiStateResponse could not be parsed");
+                            if (aiResponse[0].error != null) {
+                                ipCameraHandler.logger.warn("The GetAiStateResponse could not be parsed: {}",
+                                        aiResponse[0].error.detail);
+                            } else {
+                                ipCameraHandler.logger.warn(
+                                        "The GetAiStateResponse could not be parsed, camera may be rebooting or wifi issues");
+                            }
                             return;
                         }
                         if (aiResponse[0].value.dog_cat.alarm_state == 1) {
@@ -198,6 +204,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.logger.debug("API GetAiState is not supported by the camera.");
                     }
                     break;
+                case "/api.cgi?cmd=GetAudioAlarm":
                 case "/api.cgi?cmd=GetAudioAlarmV20":
                     if (content.contains("\"enable\" : 1")) {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
@@ -212,6 +219,13 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.ON);
                     }
                     break;
+                case "/api.cgi?cmd=GetMdAlarm":
+                    if (content.contains("00000")) {
+                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
+                    } else {
+                        ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
+                    }
+                    break;
                 case "/api.cgi?cmd=GetMdState":
                     if (content.contains("\"state\" : 0")) {
                         ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.OFF);
@@ -219,6 +233,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.ON);
                     }
                     break;
+                case "/api.cgi?cmd=GetEmail":
                 case "/api.cgi?cmd=GetEmailV20":
                     if (content.contains("\"enable\" : 0")) {
                         ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.OFF);
@@ -227,14 +242,30 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     }
                     break;
                 case "/api.cgi?cmd=GetPush":
+                case "/api.cgi?cmd=GetPushV20":
                     if (content.contains("\"enable\" : 0")) {
                         ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.OFF);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.ON);
                     }
                     break;
+                case "/api.cgi?cmd=GetWhiteLed":
+                    if (content.contains("\"state\" : 0")) {
+                        ipCameraHandler.setChannelState(CHANNEL_WHITE_LED, OnOffType.OFF);
+                    } else {
+                        ipCameraHandler.setChannelState(CHANNEL_WHITE_LED, OnOffType.ON);
+                    }
+                    break;
+                default:
+                    if (!content.contains("cmd=Set")) {// ignore the responses from all Setxxxxx commands
+                        ipCameraHandler.logger.warn(
+                                "URL {} is not handled currently by the binding, please report this message",
+                                cutDownURL);
+                    }
             }
-        } finally {
+        } finally
+
+        {
             ReferenceCountUtil.release(msg);
         }
     }
@@ -244,7 +275,9 @@ public class ReolinkHandler extends ChannelDuplexHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_ENABLE_MOTION_ALARM:
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetMdState" + ipCameraHandler.reolinkAuth);
+                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetMdAlarm" + ipCameraHandler.reolinkAuth,
+                            "[{\"cmd\": \"GetMdAlarm\", \"action\": 1,\"param\": {\"channel\": "
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + "}}]");
                     break;
                 case CHANNEL_ENABLE_AUDIO_ALARM:
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAudioAlarmV20" + ipCameraHandler.reolinkAuth,
@@ -255,12 +288,10 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                             "[{ \"cmd\":\"GetIrLights\"}]");
                     break;
                 case CHANNEL_AUTO_WHITE_LED:
-                    ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetWhiteLed" + ipCameraHandler.reolinkAuth,
-                            "[{ \"cmd\":\"GetWhiteLed\"}]");
-                    break;
                 case CHANNEL_WHITE_LED:
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetWhiteLed" + ipCameraHandler.reolinkAuth,
-                            "[{ \"cmd\":\"GetWhiteLed\"}]");
+                            "[{\"cmd\": \"GetWhiteLed\",\"action\": 0,\"param\": {\"channel\": "
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + "}}]");
                     break;
                 case CHANNEL_ENABLE_EMAIL:
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetEmailV20" + ipCameraHandler.reolinkAuth,
@@ -391,11 +422,11 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 if (OnOffType.OFF.equals(command) || PercentType.ZERO.equals(command)) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\": \"SetIrLights\",\"action\": 0,\"param\": {\"IrLights\": {\"channel\": "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"state\": \"Off\"}");
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"state\": \"Off\"}}}]");
                 } else if (OnOffType.ON.equals(command) || command instanceof PercentType percentCommand) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\": \"SetIrLights\",\"action\": 0,\"param\": {\"IrLights\": {\"channel\": "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"state\": \"On\"}");
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"state\": \"On\"}}}]");
                 } else {
                     ipCameraHandler.logger.warn("Unsupported command sent to enableLED channel");
                 }
