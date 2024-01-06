@@ -238,7 +238,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     public SortedSet<Device> findDevices() {
         var api = this.salusApi;
         if (api == null) {
-            logger.error("Cannot find devices because salusClient is null");
+            logger.debug("Cannot find devices because salusClient is null");
             return emptySortedSet();
         }
         logger.debug("Finding devices using salusClient");
