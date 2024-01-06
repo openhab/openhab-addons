@@ -15,7 +15,8 @@ package org.openhab.binding.freecurrency.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ExchangeRateListener} class defines
+ * The {@link ExchangeRateListener} interface can be implemented to receive a notification when exchange rates have been
+ * updated.
  *
  * @author Jan N. Klug - Initial contribution
  */

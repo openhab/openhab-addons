@@ -31,7 +31,7 @@ The thing has no configuration options and is automatically attached to the curr
 
 | Channel        | Channel Type  | Item Type | Read/Write | Description                                                                                  |
 |----------------|---------------|-----------|------------|----------------------------------------------------------------------------------------------|
-| lastUpdate     | last-update   | DateTime  | R/O        | The timestamp iof the last exchange rate refresh                                             |
+| lastUpdate     | last-update   | DateTime  | R/O        | The timestamp of the last exchange rate refresh                                              |
 | <user defined> | exchange-rate | Number    | R/O        | The exchange rate between the configured currency and the base currency (or second currency) |
 
 The `exchange-rate` channels have two configuration parameters: `currency1` and `currency2`.

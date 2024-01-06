@@ -59,8 +59,10 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link FreecurrencyProvider} class defines
- *
+ * The {@link FreecurrencyProvider} class implements a {@link CurrencyProvider} based on currencies and dynamic exchange
+ * rates from <a href="https://freecurrencyapi.com">Freecurrency API</a>. It also allows to register
+ * {@link ExchangeRateListener}s for classes that want to be notified about changed exchange rates.
+ * 
  * @author Jan N. Klug - Initial contribution
  */
 @Component(immediate = true, configurationPid = "binding.freecurrency", configurationPolicy = ConfigurationPolicy.REQUIRE, service = {
@@ -159,7 +161,7 @@ public class FreecurrencyProvider implements CurrencyProvider, ConfigOptionProvi
 
     private void getExchangeRates() {
         if (!currencies.containsKey(config.baseCurrency)) {
-            logger.warn("Configured error: Base currency '{}' is not in list of available currencies {}.",
+            logger.warn("Configuration error: Base currency '{}' is not in list of available currencies {}.",
                     config.baseCurrency, currencies.keySet());
             return;
         }
