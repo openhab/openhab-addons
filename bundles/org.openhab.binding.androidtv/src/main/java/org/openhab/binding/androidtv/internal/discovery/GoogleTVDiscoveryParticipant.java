@@ -15,7 +15,6 @@ package org.openhab.binding.androidtv.internal.discovery;
 import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
 
 import java.net.InetAddress;
-import java.util.Map;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -79,9 +78,9 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
             if (uid != null) {
                 final String id = uid.getId();
                 final String label = service.getName() + " (" + id + ")";
-                final Map<String, Object> properties = Map.of(PROPERTY_IP_ADDRESS, ipAddress);
-
-                return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
+                return DiscoveryResultBuilder.create(uid).withLabel(label)
+                        .withRepresentationProperty(PROPERTY_IP_ADDRESS).withProperty(PROPERTY_IP_ADDRESS, ipAddress)
+                        .build();
             } else {
                 return null;
             }
