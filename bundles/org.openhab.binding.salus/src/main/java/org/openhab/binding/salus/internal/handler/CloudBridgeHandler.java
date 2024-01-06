@@ -187,7 +187,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         logger.debug("Setting property {} on device {} to value {} using salusClient", propertyName, dsn, value);
         var response = api.setValueForProperty(dsn, propertyName, value);
         if (response.failed()) {
-            logger.error("Cannot set property {} on device {} to value {} using salusClient\n{}", propertyName, dsn,
+            logger.debug("Cannot set property {} on device {} to value {} using salusClient\n{}", propertyName, dsn,
                     value, response.error());
             devicePropertiesCache.invalidate(dsn);
             return false;
