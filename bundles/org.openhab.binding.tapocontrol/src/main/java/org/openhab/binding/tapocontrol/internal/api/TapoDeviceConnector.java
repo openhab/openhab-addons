@@ -62,6 +62,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     private long lastQuery = 0L;
     private long lastSent = 0L;
     private long lastLogin = 0L;
+    private boolean queryAfterCommand = false;
 
     /***********************
      * Init Class
@@ -159,6 +160,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
      * @param ignoreGap ignore gap to last query. query anyway
      */
     public void sendQueryCommand(String queryCommand, boolean ignoreGap) {
+        queryAfterCommand = false;
         long now = System.currentTimeMillis();
         if (ignoreGap || now > lastQuery + TAPO_QUERY_MIN_GAP_MS) {
             lastQuery = now;
@@ -188,21 +190,48 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
     }
 
     /**
-     * Send command to device with params and query info immediately
+     * Send command to device with params
      * 
      * @param command command
      * @param deviceDataClass clazz contains devicedata which should be sent
      * @param ignoreGap ignore gap to last query. query anyway
      */
     public void sendDeviceCommand(String command, Object deviceDataClass, boolean ignoreGap) {
+        queryAfterCommand = false;
         long now = System.currentTimeMillis();
         if (ignoreGap || now > lastSent + TAPO_SEND_MIN_GAP_MS) {
+            sendAsyncRequest(new TapoRequest(command, deviceDataClass));
+        } else {
+            logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastSent);
+        }
+    }
+
+    /**
+     * Send command to device with params and query info immediately
+     * 
+     * @param deviceDataClass clazz contains devicedata which should be sent
+     * @param multipleRequestSupported set to true if device supports multipleRequests
+     */
+    public void sendCommandAndQuery(Object deviceDataClass, boolean multipleRequestSupported) {
+        sendCommandAndQuery(DEVICE_CMD_SETINFO, deviceDataClass, multipleRequestSupported);
+    }
+
+    /**
+     * Send command to device with params and query info immediately
+     * 
+     * @param command command
+     * @param deviceDataClass clazz contains devicedata which should be sent
+     * @param multipleRequestSupported set to true if device supports multipleRequests
+     */
+    public void sendCommandAndQuery(String command, Object deviceDataClass, boolean multipleRequestSupported) {
+        if (multipleRequestSupported) {
             List<TapoRequest> requests = new ArrayList<>();
             requests.add(new TapoRequest(command, deviceDataClass));
             requests.add(new TapoRequest(DEVICE_CMD_GETINFO));
             sendAsyncRequest(new TapoMultipleRequest(requests));
         } else {
-            logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastSent);
+            sendDeviceCommand(command, deviceDataClass, true);
+            queryAfterCommand = true;
         }
     }
 
@@ -247,6 +276,7 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
      * @param ignoreGap ignoreGap ignore gap to last query. query anyway
      */
     public void sendMultipleRequest(List<TapoRequest> requests, boolean ignoreGap) {
+        queryAfterCommand = false;
         long now = System.currentTimeMillis();
         if (ignoreGap || now > lastQuery + TAPO_QUERY_MIN_GAP_MS) {
             lastQuery = now;
@@ -387,8 +417,13 @@ public class TapoDeviceConnector implements TapoConnectorInterface {
         if (response.hasError()) {
             logger.debug("({}) set deviceInfo not successful: {}", uid, response);
             device.setError(new TapoErrorHandler(response.errorCode()));
+        } else {
+            logger.trace("({}) setcommand successfull '{}'", uid, response);
+            if (queryAfterCommand) {
+                sendQueryCommand(DEVICE_CMD_GETINFO, true);
+            }
         }
-        logger.trace("({}) setcommand successfull '{}'", uid, response);
+        queryAfterCommand = false;
         this.device.responsePasstrough(response);
     }
 

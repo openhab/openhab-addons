@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -169,7 +169,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
      */
     protected void switchOnOff(boolean on) {
         lightStripData.switchOnOff(on);
-        connector.sendDeviceCommand(lightStripData);
+        connector.sendCommandAndQuery(lightStripData, true);
     }
 
     /**
@@ -185,7 +185,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
             lightStripData.switchOn();
             lightStripData.setBrightness(newBrightness);
         }
-        connector.sendDeviceCommand(lightStripData);
+        connector.sendCommandAndQuery(lightStripData, true);
     }
 
     /**
@@ -198,7 +198,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
         lightStripData.setHue(command.getHue().intValue());
         lightStripData.setSaturation(command.getSaturation().intValue());
         lightStripData.setBrightness(command.getBrightness().intValue());
-        connector.sendDeviceCommand(lightStripData);
+        connector.sendCommandAndQuery(lightStripData, true);
     }
 
     /**
@@ -209,7 +209,7 @@ public class TapoLightStripHandler extends TapoBaseDeviceHandler {
     protected void setColorTemp(Integer colorTemp) {
         lightStripData.switchOn();
         lightStripData.setColorTemp(colorTemp);
-        connector.sendDeviceCommand(lightStripData);
+        connector.sendCommandAndQuery(lightStripData, true);
     }
 
     /**

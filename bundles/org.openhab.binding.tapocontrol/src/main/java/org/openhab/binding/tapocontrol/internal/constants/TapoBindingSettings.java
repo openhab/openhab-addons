@@ -44,6 +44,7 @@ public class TapoBindingSettings {
     public static final Integer TAPO_LOGIN_MAX_GAP_M = 1440; // max minutes to relogin to device
     public static final Integer TAPO_DISCOVERY_TIMEOUT_S = 20; // timout device discovery in seconds
     public static final Integer POLLING_MIN_INTERVAL_S = 1; // min polling interval (settings)
+    public static final Integer TAPO_MULTI_COMMAND_OFFSET_MS = 100; // Offset between sending multiple commands in ms
 
     // FORMATING CONSTANTS
     public static final String IPV4_REGEX = "(([0-1]?[0-9]{1,2}\\.)|(2[0-4][0-9]\\.)|(25[0-5]\\.)){3}(([0-1]?[0-9]{1,2})|(2[0-4][0-9])|(25[0-5]))";

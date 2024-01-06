@@ -23,11 +23,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-<<<<<<< HEAD
-import org.openhab.binding.tapocontrol.internal.device.TapoBridgeHandler;
-import org.openhab.binding.tapocontrol.internal.structures.TapoBridgeConfiguration;
-import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
-=======
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tapocontrol.internal.api.TapoCloudConnector;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeConfiguration;
@@ -36,15 +31,13 @@ import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoDeviceConfigura
 import org.openhab.binding.tapocontrol.internal.discovery.dto.TapoDiscoveryResult;
 import org.openhab.binding.tapocontrol.internal.discovery.dto.TapoDiscoveryResultList;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
->>>>>>> 0b9eab3141 ([tapocontrol] new tapo klap-protocol integration)
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ServiceScope;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,12 +46,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christian Wild - Initial contribution
  */
-@Component(scope = ServiceScope.PROTOTYPE, service = TapoDiscoveryService.class)
 @NonNullByDefault
-public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<TapoBridgeHandler> {
+public class TapoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(TapoDiscoveryService.class);
-<<<<<<< HEAD
-=======
     private final String uid;
     protected @NonNullByDefault({}) TapoBridgeHandler bridge;
     protected @NonNullByDefault({}) TapoUdpDiscovery udpDiscovery;
@@ -66,7 +56,6 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
     private @NonNullByDefault({}) TapoBridgeConfiguration config;
     private @Nullable ScheduledFuture<?> discoveryJob;
     private TapoDiscoveryResultList discoveryResultList = new TapoDiscoveryResultList();
->>>>>>> e2ccc62ddd ([tapocontrol] KLAP-Protocol integration)
 
     /***********************************
      *
@@ -75,19 +64,6 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
      ************************************/
 
     public TapoDiscoveryService() {
-<<<<<<< HEAD
-        super(TapoBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_S, false);
-    }
-
-    @Override
-<<<<<<< HEAD
-    public void initialize() {
-        thingHandler.setDiscoveryService(this);
-        TapoBridgeConfiguration config = thingHandler.getBridgeConfig();
-        modified(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, config.cloudDiscovery));
-        super.initialize();
-=======
-=======
         super(SUPPORTED_THING_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_S, false);
         uid = "Discovery-Service";
     }
@@ -120,7 +96,6 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
      * setThingHandler - set bridge and other handlers on initializing service
      */
     @Override
->>>>>>> e2ccc62ddd ([tapocontrol] KLAP-Protocol integration)
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof TapoBridgeHandler bridgeHandler) {
             TapoBridgeHandler tapoBridge = bridgeHandler;
@@ -134,7 +109,6 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
     @Override
     public @Nullable ThingHandler getThingHandler() {
         return this.bridge;
->>>>>>> 0b9eab3141 ([tapocontrol] new tapo klap-protocol integration)
     }
 
     /*************************
@@ -182,14 +156,6 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
     public void startScan() {
         logger.trace("{} starting scan", this.uid);
         removeOlderResults(getTimestampOfLastScan());
-<<<<<<< HEAD
-<<<<<<< HEAD
-        JsonArray jsonArray = thingHandler.getDeviceList();
-        handleCloudDevices(jsonArray);
-=======
-        if (bridge != null) {
-            bridge.startDeviceScan();
-=======
         discoveryResultList.clear();
         try {
             if (bridge != null) {
@@ -204,9 +170,7 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
             }
         } catch (Exception e) {
             logger.debug("({}) scan failed: ", uid, e);
->>>>>>> e2ccc62ddd ([tapocontrol] KLAP-Protocol integration)
         }
->>>>>>> 0b9eab3141 ([tapocontrol] new tapo klap-protocol integration)
     }
 
     @Override
@@ -284,16 +248,8 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
      * @param device JsonObject with device information
      * @return DiscoveryResult-Object
      */
-<<<<<<< HEAD
-<<<<<<< HEAD
-    public DiscoveryResult createResult(JsonObject device) {
-=======
-    public DiscoveryResult createResult(TapoCloudDevice device) {
-=======
     private DiscoveryResult createResult(TapoDiscoveryResult device) {
->>>>>>> e2ccc62ddd ([tapocontrol] KLAP-Protocol integration)
         TapoBridgeHandler tapoBridge = this.bridge;
->>>>>>> 0b9eab3141 ([tapocontrol] new tapo klap-protocol integration)
         String deviceModel = getDeviceModel(device);
         String label = getDeviceLabel(device);
         String deviceMAC = device.deviceMac();
@@ -313,14 +269,6 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
             properties.put(TapoDeviceConfiguration.CONFIG_PROTOCOL, device.encryptionShema().encryptType());
         }
 
-<<<<<<< HEAD
-        logger.debug("device {} discovered", deviceModel);
-        ThingUID bridgeUID = thingHandler.getUID();
-        ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, deviceMAC);
-        return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withRepresentationProperty(DEVICE_REPRESENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
-                .build();
-=======
         logger.debug("device {} discovered with mac {}", deviceModel, deviceMAC);
         if (tapoBridge != null) {
             ThingUID bridgeUID = tapoBridge.getUID();
@@ -332,72 +280,6 @@ public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<T
             ThingUID thingUID = new ThingUID(BINDING_ID, deviceMAC);
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withRepresentationProperty(DEVICE_REPRESENTATION_PROPERTY).withLabel(label).build();
-        }
->>>>>>> 0b9eab3141 ([tapocontrol] new tapo klap-protocol integration)
-    }
-
-    /**
-     * GET DEVICEMODEL
-     * 
-     * @param device JsonObject with deviceData
-     * @return String with DeviceModel
-     */
-    protected String getDeviceModel(TapoDiscoveryResult device) {
-        try {
-            String deviceModel = device.deviceModel();
-            deviceModel = deviceModel.replaceAll("\\(.*\\)", ""); // replace (DE)
-            deviceModel = deviceModel.replace("Tapo", "");
-            deviceModel = deviceModel.replace("Series", "");
-            deviceModel = deviceModel.trim();
-            deviceModel = deviceModel.replace(" ", "_");
-            deviceModel = deviceModel.substring(0, 4);
-            return deviceModel;
-        } catch (Exception e) {
-            logger.debug("error getDeviceModel", e);
-            return "";
-        }
-    }
-
-    /**
-     * GET DEVICE LABEL
-     * 
-     * @param device JsonObject with deviceData
-     * @return String with DeviceLabel
-     */
-    protected String getDeviceLabel(TapoDiscoveryResult device) {
-        try {
-            String deviceLabel = "";
-            String deviceModel = getDeviceModel(device);
-            String alias = device.alias();
-            ThingTypeUID deviceUID = new ThingTypeUID(BINDING_ID, deviceModel);
-
-            if (SUPPORTED_HUB_UIDS.contains(deviceUID)) {
-                deviceLabel = DEVICE_DESCRIPTION_HUB;
-            } else if (SUPPORTED_SOCKET_UIDS.contains(deviceUID)) {
-                deviceLabel = DEVICE_DESCRIPTION_SOCKET;
-            } else if (SUPPORTED_SOCKET_STRIP_UIDS.contains(deviceUID)) {
-                deviceLabel = DEVICE_DESCRIPTION_SOCKET_STRIP;
-            } else if (SUPPORTED_WHITE_BULB_UIDS.contains(deviceUID)) {
-                deviceLabel = DEVICE_DESCRIPTION_WHITE_BULB;
-            } else if (SUPPORTED_COLOR_BULB_UIDS.contains(deviceUID)) {
-                deviceLabel = DEVICE_DESCRIPTION_COLOR_BULB;
-            } else if (SUPPORTED_LIGHT_STRIP_UIDS.contains(deviceUID)) {
-                deviceLabel = DEVICE_DESCRIPTION_LIGHTSTRIP;
-            } else if (SUPPORTED_SMART_CONTACTS.contains(deviceUID)) {
-                deviceLabel = DEVICE_DESCRIPTION_SMART_CONTACT;
-            } else if (SUPPORTED_MOTION_SENSORS.contains(deviceUID)) {
-                deviceLabel = DEVICE_DESCRIPTION_MOTION_SENSOR;
-            } else if (SUPPORTED_WHEATHER_SENSORS.contains(deviceUID)) {
-                deviceLabel = DEVICE_DESCRIPTION_TEMP_SENSOR;
-            }
-            if (alias.length() > 0) {
-                return String.format("%s %s %s (%s)", DEVICE_VENDOR, deviceModel, deviceLabel, alias);
-            }
-            return String.format("%s %s %s", DEVICE_VENDOR, deviceModel, deviceLabel);
-
-        } catch (Exception e) {
-            logger.debug("error getDeviceLabel", e);
-            return "";
         }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -209,7 +209,7 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
      */
     protected void switchOnOff(boolean on) {
         deviceData.switchOnOff(on);
-        connector.sendDeviceCommand(deviceData);
+        connector.sendCommandAndQuery(deviceData, false);
     }
 
     /**
@@ -224,7 +224,7 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
         } else {
             deviceData.switchOn();
             deviceData.setBrightness(newBrightness);
-            connector.sendDeviceCommand(deviceData);
+            connector.sendCommandAndQuery(deviceData, false);
         }
     }
 
@@ -238,7 +238,7 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
         deviceData.setHue(command.getHue().intValue());
         deviceData.setSaturation(command.getSaturation().intValue());
         deviceData.setBrightness(command.getBrightness().intValue());
-        connector.sendDeviceCommand(deviceData);
+        connector.sendCommandAndQuery(deviceData, false);
     }
 
     /**
@@ -249,7 +249,7 @@ public class TapoUniversalDeviceHandler extends TapoBaseDeviceHandler {
     protected void setColorTemp(Integer colorTemp) {
         deviceData.switchOn();
         deviceData.setColorTemp(colorTemp);
-        connector.sendDeviceCommand(deviceData);
+        connector.sendCommandAndQuery(deviceData, false);
     }
 
     /**

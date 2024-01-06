@@ -131,6 +131,7 @@ public class TapoThingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_TEMP = "colorTemperature";
+    public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_OUTPUT = "output";
     public static final String CHANNEL_SWITCH = "switch";
     // channel group device

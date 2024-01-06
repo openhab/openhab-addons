@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tapocontrol.internal.devices.wifi.bulb;
+
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoBaseDeviceData;
@@ -33,7 +35,7 @@ public class TapoBulbData extends TapoBaseDeviceData {
     private boolean deviceOn = false;
 
     @Expose(serialize = true, deserialize = true)
-    private int brightness = 0;
+    private int brightness = 100;
 
     @SerializedName("color_temp")
     @Expose(serialize = true, deserialize = true)
@@ -102,6 +104,10 @@ public class TapoBulbData extends TapoBaseDeviceData {
         saturation = value;
     }
 
+    public void setDynamicLightEffectId(String fxId) {
+        dynamicLightEffectId = fxId;
+    }
+
     /***********************************
      *
      * GET VALUES
@@ -111,7 +117,7 @@ public class TapoBulbData extends TapoBaseDeviceData {
         return dynamicLightEffectEnable;
     }
 
-    public String dynamicLightEffectId() {
+    public String getDynamicLightEffectId() {
         return dynamicLightEffectId;
     }
 
@@ -160,5 +166,28 @@ public class TapoBulbData extends TapoBaseDeviceData {
 
     public long getTimeUsagePastToday() {
         return timeUsageToday;
+    }
+
+    public TapoBulbModeEnum getWorkingMode() {
+        if (dynamicLightEffectEnable) {
+            return TapoBulbModeEnum.LIGHT_FX;
+        } else if (colorTemp == 0) {
+            return TapoBulbModeEnum.COLOR_LIGHT;
+        } else {
+            return TapoBulbModeEnum.WHITE_LIGHT;
+        }
+    }
+
+    public boolean supportsMultiRequest() {
+        return !getHardwareVersion().startsWith("1");
+    }
+
+    @Override
+    public String toString() {
+        return toJson();
+    }
+
+    public String toJson() {
+        return GSON.toJson(this);
     }
 }

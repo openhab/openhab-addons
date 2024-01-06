@@ -34,6 +34,22 @@
 		<state readOnly="false"/>
 	</channel-type>
 
+	<!-- Color Bulb Mode -->
+	<channel-type id="colorBulbMode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Working mode of device</description>
+		<category>LightBulb</category>
+		<state readOnly="false"/>
+		<command>
+			<options>
+				<option value="WHITE_LIGHT">White</option>
+				<option value="COLOR_LIGHT">Color</option>
+				<option value="LIGHT_FX">Effects</option>
+			</options>
+		</command>
+	</channel-type>
+
 	<!-- Color Channel Type -->
 	<channel-type id="colorChannel">
 		<item-type>Color</item-type>

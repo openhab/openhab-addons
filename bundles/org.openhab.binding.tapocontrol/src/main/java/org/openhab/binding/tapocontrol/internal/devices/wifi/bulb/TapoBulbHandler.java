@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConsta
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightEffect;
+import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightDynamicFx;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 public class TapoBulbHandler extends TapoBaseDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(TapoBulbHandler.class);
     private TapoBulbData bulbData = new TapoBulbData();
+    private TapoBulbLastStates lastStates = new TapoBulbLastStates();
 
     /**
      * Constructor
@@ -61,6 +62,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
         super.newDataResult(queryCommand);
         if (DEVICE_CMD_GETINFO.equals(queryCommand)) {
             bulbData = connector.getResponseData(TapoBulbData.class);
+            lastStates.put(bulbData.getWorkingMode(), bulbData);
             updateChannels(bulbData);
         }
     }
@@ -96,6 +98,9 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
                     break;
                 case CHANNEL_FX_NAME:
                     handleLightFx(command);
+                    break;
+                case CHANNEL_MODE:
+                    handleModeChange(command);
                     break;
                 default:
                     logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command,
@@ -133,6 +138,10 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
         setLightEffect(command.toString());
     }
 
+    private void handleModeChange(Command command) {
+        setLastMode(TapoBulbModeEnum.valueOf(command.toString()));
+    }
+
     /*****************************
      * SEND COMMANDS
      *****************************/
@@ -144,7 +153,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
      */
     protected void switchOnOff(boolean on) {
         bulbData.switchOnOff(on);
-        connector.sendDeviceCommand(bulbData);
+        connector.sendCommandAndQuery(bulbData, bulbData.supportsMultiRequest());
     }
 
     /**
@@ -160,7 +169,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
             bulbData.switchOn();
             bulbData.setBrightness(newBrightness);
         }
-        connector.sendDeviceCommand(bulbData);
+        connector.sendCommandAndQuery(bulbData, bulbData.supportsMultiRequest());
     }
 
     /**
@@ -170,10 +179,11 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
      */
     protected void setColor(HSBType command) {
         bulbData.switchOn();
+        bulbData.setColorTemp(0);
         bulbData.setHue(command.getHue().intValue());
         bulbData.setSaturation(command.getSaturation().intValue());
         bulbData.setBrightness(command.getBrightness().intValue());
-        connector.sendDeviceCommand(bulbData);
+        connector.sendCommandAndQuery(bulbData, bulbData.supportsMultiRequest());
     }
 
     /**
@@ -183,17 +193,38 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
      */
     protected void setColorTemp(Integer colorTemp) {
         bulbData.switchOn();
+        bulbData.setHue(0);
         bulbData.setColorTemp(colorTemp);
-        connector.sendDeviceCommand(bulbData);
+        connector.sendCommandAndQuery(bulbData, bulbData.supportsMultiRequest());
     }
 
     /**
      * Set light effect
      * 
-     * @param fxName (String) id of LightEffect
+     * @param fxId (String) id of LightEffect
      */
-    protected void setLightEffect(String fxName) {
-        connector.sendDeviceCommand(DEVICE_CMD_SET_DYNAIMCLIGHT_FX, new TapoLightEffect(fxName));
+    protected void setLightEffect(String fxId) {
+        try {
+            TapoLightDynamicFx fxData = new TapoLightDynamicFx();
+            fxData.setEffect(fxId);
+            connector.sendCommandAndQuery(DEVICE_CMD_SET_DYNAIMCLIGHT_FX, fxData, bulbData.supportsMultiRequest());
+        } catch (Exception e) {
+            logger.warn("({}) could not load effect '{}'", uid, fxId);
+        }
+    }
+
+    /**
+     * Set last state by mode
+     * 
+     * @param mode mode to set
+     */
+    protected void setLastMode(TapoBulbModeEnum mode) {
+        TapoBulbData lastState = lastStates.get(mode);
+        if (TapoBulbModeEnum.LIGHT_FX.equals(mode)) {
+            setLightEffect(lastState.getDynamicLightEffectId());
+        } else {
+            connector.sendCommandAndQuery(lastState, bulbData.supportsMultiRequest());
+        }
     }
 
     /*****************************
@@ -202,6 +233,8 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
 
     protected void updateChannels(TapoBulbData deviceData) {
         updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_OUTPUT), getOnOffType(deviceData.isOn()));
+        updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_MODE),
+                getStringType(deviceData.getWorkingMode().toString()));
         updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_BRIGHTNESS),
                 getPercentType(deviceData.getBrightness()));
         updateState(getChannelID(CHANNEL_GROUP_ACTUATOR, CHANNEL_COLOR_TEMP),
@@ -222,7 +255,7 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
     protected void updateLightEffectChannels(TapoBulbData deviceData) {
         String fxId = "";
         if (deviceData.dynamicLightEffectEnabled()) {
-            fxId = deviceData.dynamicLightEffectId();
+            fxId = deviceData.getDynamicLightEffectId();
         }
         updateState(getChannelID(CHANNEL_GROUP_EFFECTS, CHANNEL_FX_NAME), getStringType(fxId));
     }

@@ -271,6 +271,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
      */
     protected Boolean isThingModel(String model) {
         try {
+            model = getDeviceModel(model);
             ThingTypeUID foundType = new ThingTypeUID(BINDING_ID, model);
             ThingTypeUID expectedType = getThing().getThingTypeUID();
             return expectedType.equals(foundType);

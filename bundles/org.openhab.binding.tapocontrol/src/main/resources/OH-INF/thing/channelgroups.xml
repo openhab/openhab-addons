@@ -83,6 +83,7 @@
 		<description>Tapo Multicolor Smart Light Bulb</description>
 		<channels>
 			<channel id="output" typeId="lightOn"/>
+			<channel id="mode" typeId="colorBulbMode"/>
 			<channel id="brightness" typeId="dimmerChannel"/>
 			<channel id="color" typeId="colorChannel"/>
 			<channel id="colorTemperature" typeId="colorTemperature"/>

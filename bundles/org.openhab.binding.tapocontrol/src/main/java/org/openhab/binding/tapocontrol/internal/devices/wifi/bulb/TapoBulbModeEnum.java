@@ -10,17 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.dto;
+package org.openhab.binding.tapocontrol.internal.devices.wifi.bulb;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Interface for main requests sent to devices
+ * Tapo-Bulb-Mode Enum
  *
  * @author Christian Wild - Initial contribution
  */
-public interface TapoBaseRequestInterface {
-    public String method();
-
-    public Object params();
-
-    public long requestTimeMils();
+@NonNullByDefault
+public enum TapoBulbModeEnum {
+    UNKOWN,
+    WHITE_LIGHT,
+    COLOR_LIGHT,
+    LIGHT_FX;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ public class StringUtils {
      * @param defVal - Default Value
      * @return boolean value
      */
-    public Boolean stringToBool(@Nullable String s, boolean defVal) {
+    public static Boolean stringToBool(@Nullable String s, boolean defVal) {
         if (s == null) {
             return defVal;
         }
@@ -48,12 +48,30 @@ public class StringUtils {
      * @param defVal - Default Value
      * @return Integer
      */
-    public Integer stringToInteger(@Nullable String s, Integer defVal) {
+    public static Integer stringToInteger(@Nullable String s, Integer defVal) {
         if (s == null) {
             return defVal;
         }
         try {
             return Integer.valueOf(s);
+        } catch (Exception e) {
+            return defVal;
+        }
+    }
+
+    /**
+     * Get String from object
+     * 
+     * @param o - object to be converted
+     * @param defVal - Default value
+     * @return String
+     */
+    public static String objectToString(@Nullable Object o, String defVal) {
+        if (o == null) {
+            return defVal;
+        }
+        try {
+            return o.toString();
         } catch (Exception e) {
             return defVal;
         }

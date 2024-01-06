@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,15 @@
  */
 package org.openhab.binding.tapocontrol.internal.helpers.utils;
 
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
+
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tapocontrol.internal.discovery.dto.TapoDiscoveryResult;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * {@link TapoUtils} TapoUtils -
@@ -106,5 +111,77 @@ public class TapoUtils {
         mac = mac.replace(":", "");
         mac = mac.replace(".", "");
         return mac;
+    }
+
+    /**
+     * Get DeviceModel from String - Formats different spellings in model-strings
+     * 
+     * @param device JsonObject with deviceData
+     * @return String with DeviceModel
+     */
+    public static String getDeviceModel(TapoDiscoveryResult device) {
+        return getDeviceModel(device.deviceModel());
+    }
+
+    /**
+     * Get DeviceModel from String - Formats different spellings in model-strings
+     * 
+     * @param deviceModel String to find model from
+     * @return String with DeviceModel
+     */
+    public static String getDeviceModel(String deviceModel) {
+        try {
+            deviceModel = deviceModel.replaceAll("\\(.*\\)", ""); // replace (DE)
+            deviceModel = deviceModel.replace("Tapo", "");
+            deviceModel = deviceModel.replace("Series", "");
+            deviceModel = deviceModel.trim();
+            deviceModel = deviceModel.replace(" ", "_");
+            deviceModel = deviceModel.substring(0, 4);
+            return deviceModel;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * GET DEVICE LABEL
+     * 
+     * @param device JsonObject with deviceData
+     * @return String with DeviceLabel
+     */
+    public static String getDeviceLabel(TapoDiscoveryResult device) {
+        try {
+            String deviceLabel = "";
+            String deviceModel = getDeviceModel(device);
+            String alias = device.alias();
+            ThingTypeUID deviceUID = new ThingTypeUID(BINDING_ID, deviceModel);
+
+            if (SUPPORTED_HUB_UIDS.contains(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_HUB;
+            } else if (SUPPORTED_SOCKET_UIDS.contains(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_SOCKET;
+            } else if (SUPPORTED_SOCKET_STRIP_UIDS.contains(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_SOCKET_STRIP;
+            } else if (SUPPORTED_WHITE_BULB_UIDS.contains(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_WHITE_BULB;
+            } else if (SUPPORTED_COLOR_BULB_UIDS.contains(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_COLOR_BULB;
+            } else if (SUPPORTED_LIGHT_STRIP_UIDS.contains(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_LIGHTSTRIP;
+            } else if (SUPPORTED_SMART_CONTACTS.contains(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_SMART_CONTACT;
+            } else if (SUPPORTED_MOTION_SENSORS.contains(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_MOTION_SENSOR;
+            } else if (SUPPORTED_WHEATHER_SENSORS.contains(deviceUID)) {
+                deviceLabel = DEVICE_DESCRIPTION_TEMP_SENSOR;
+            }
+            if (alias.length() > 0) {
+                return String.format("%s %s %s (%s)", DEVICE_VENDOR, deviceModel, deviceLabel, alias);
+            }
+            return String.format("%s %s %s", DEVICE_VENDOR, deviceModel, deviceLabel);
+
+        } catch (Exception e) {
+            return "";
+        }
     }
 }
