@@ -8,8 +8,7 @@
 	<description>
 		This is the binding for Salus, a renowned manufacturer of smart home solutions. This binding allows
 		integration of Salus' wide range devices into your home control system, facilitating bidirectional communication
-		and
-		control.
+		and control.
 	</description>
 	<connection>cloud</connection>
 
