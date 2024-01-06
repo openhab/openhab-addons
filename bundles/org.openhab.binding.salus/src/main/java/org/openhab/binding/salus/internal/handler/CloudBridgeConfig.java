@@ -87,7 +87,7 @@ public class CloudBridgeConfig {
     }
 
     public boolean hasPassword() {
-        return !"".equals(password);
+        return password.isBlank();
     }
 
     @Override
