@@ -10,12 +10,12 @@
 		<description>Bridge Thing for Growatt Binding</description>
 
 		<config-description>
-			<parameter name="userName" type="text" required="true">
+			<parameter name="userName" type="text" required="false">
 				<label>User Name</label>
 				<description>User name to login to the Shine App.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="password" type="text" required="true">
+			<parameter name="password" type="text" required="false">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password to login to the Shine App.</description>
@@ -425,18 +425,18 @@
 				<description>Percent of full load.</description>
 			</channel>
 
-			<!-- rac ?? -->
-			<channel id="rac" typeId="advanced-fault-code">
-				<label>RAC</label>
-				<description>RAC code.</description>
+			<!-- rac = reserve ac supply ?? -->
+			<channel id="rac" typeId="system-status-code">
+				<label>Reserve AC Status</label>
+				<description>Reserve AC supply status.</description>
 			</channel>
-			<channel id="erac-today" typeId="advanced-fault-code">
-				<label>ERAC Today</label>
-				<description>ERAC count today.</description>
+			<channel id="erac-today" typeId="system.electric-energy">
+				<label>Reserve Energy Today</label>
+				<description>Reserve AC supply energy today.</description>
 			</channel>
-			<channel id="erac-total" typeId="advanced-fault-code">
-				<label>ERAC Total</label>
-				<description>Total ERAC count.</description>
+			<channel id="erac-total" typeId="system.electric-energy">
+				<label>Total Reserve Energy</label>
+				<description>Total reserve AC supply energy.</description>
 			</channel>
 
 		</channels>

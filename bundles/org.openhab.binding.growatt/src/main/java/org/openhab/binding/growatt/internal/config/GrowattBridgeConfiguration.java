@@ -13,6 +13,7 @@
 package org.openhab.binding.growatt.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link GrowattBridgeConfiguration} class contains fields mapping thing configuration parameters.
@@ -25,6 +26,6 @@ public class GrowattBridgeConfiguration {
     public static final String USER_NAME = "userName";
     public static final String PASSWORD = "password";
 
-    public String userName = "";
-    public String password = "";
+    public @Nullable String userName;
+    public @Nullable String password;
 }

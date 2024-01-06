@@ -292,7 +292,7 @@ public class GrowattTest {
          *
          */
 
-        if (configuration.userName.isBlank()) {
+        if (configuration.userName == null) {
             return;
         }
 

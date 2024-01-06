@@ -94,6 +94,8 @@ public class GrowattCloud implements AutoCloseable {
     private static final String PLANT_INFO_API_ENDPOINT = "newTwoPlantAPI.do";
     private static final String NEW_TCP_SET_API_ENDPOINT = "newTcpsetAPI.do";
 
+    private static final String FMT_NEW_DEVICE_TYPE_API_DO = "new%sApi.do";
+
     // command operations
     private static final String OP_GET_ALL_DEVICE_LIST = "getAllDeviceList";
 
@@ -108,7 +110,7 @@ public class GrowattCloud implements AutoCloseable {
     }
 
     /*
-     * Map of device types vs. field parameters for GET commands from FMT_API_ENDPOINT's.
+     * Map of device types vs. field parameters for GET requests to FMT_NEW_DEVICE_TYPE_API_DO end-points.
      * Note: some values are guesses which have not yet been confirmed by users
      */
     private static final Map<DeviceType, String> SUPPORTED_TYPES_GET_PARAM = Map.of(
@@ -326,14 +328,16 @@ public class GrowattCloud implements AutoCloseable {
             for (String plantId : plantIds) {
                 for (GrowattDevice device : getPlantInfo(plantId)) {
                     try {
-                        DeviceType deviceType = DeviceType.valueOf(device.getType().toUpperCase());
-                        deviceIdTypeMap.put(deviceId, deviceType);
+                        deviceIdTypeMap.put(device.getId(), DeviceType.valueOf(device.getType().toUpperCase()));
                     } catch (IllegalArgumentException e) {
-                        // ignore unsupported device types
+                        // just ignore unsupported device types
                     }
                 }
             }
             logger.debug("Downloaded deviceTypes:{}", deviceIdTypeMap);
+        }
+        if (deviceId.isBlank()) {
+            throw new GrowattApiException("Device id is blank");
         }
         DeviceType deviceType = deviceIdTypeMap.get(deviceId);
         if (deviceType != null) {
@@ -353,7 +357,7 @@ public class GrowattCloud implements AutoCloseable {
         DeviceType deviceType = getDeviceTypeChecked(deviceId);
         String dt = deviceType.name().toLowerCase();
 
-        String endPoint = String.format("new%sApi.do", dt.substring(0, 1).toUpperCase() + dt.substring(1));
+        String endPoint = String.format(FMT_NEW_DEVICE_TYPE_API_DO, dt.substring(0, 1).toUpperCase() + dt.substring(1));
 
         Map<String, String> params = new LinkedHashMap<>(); // keep params in order
         params.put("op", Objects.requireNonNull(SUPPORTED_TYPES_GET_PARAM.get(deviceType)));
@@ -439,16 +443,18 @@ public class GrowattCloud implements AutoCloseable {
      * @throws GrowattApiException if any error occurs.
      */
     private void postLoginCredentials() throws GrowattApiException {
-        if (configuration.userName.isBlank()) {
+        String userName = configuration.userName;
+        if (userName == null || userName.isBlank()) {
             throw new GrowattApiException("User name missing");
         }
-        if (configuration.password.isBlank()) {
+        String password = configuration.password;
+        if (password == null || password.isBlank()) {
             throw new GrowattApiException("Password missing");
         }
 
         Fields fields = new Fields();
-        fields.put("userName", configuration.userName);
-        fields.put("password", createHash(configuration.password));
+        fields.put("userName", userName);
+        fields.put("password", createHash(password));
 
         Map<String, JsonElement> result = doHttpRequestInner(HttpMethod.POST, LOGIN_API_ENDPOINT, null, fields);
 
@@ -475,7 +481,7 @@ public class GrowattCloud implements AutoCloseable {
      * Post a command to setup the inverter battery charging program.
      *
      * @param the deviceId to set up
-     * @param programModeIndex index of the type of program Load First (0) / Battery First (1) / Grid First (2)
+     * @param programModeInt index of the type of program Load First (0) / Battery First (1) / Grid First (2)
      * @param powerLevel the rate of charging / discharging
      * @param stopSOC the SOC at which to stop charging / discharging
      * @param enableAcCharging allow charging from AC power
@@ -485,7 +491,7 @@ public class GrowattCloud implements AutoCloseable {
      *
      * @throws GrowattApiException if any error occurs
      */
-    public void setupBatteryProgram(String deviceId, int programModeIndex, @Nullable Integer powerLevel,
+    public void setupBatteryProgram(String deviceId, int programModeInt, @Nullable Integer powerLevel,
             @Nullable Integer stopSOC, @Nullable Boolean enableAcCharging, @Nullable String startTime,
             @Nullable String stopTime, @Nullable Boolean enableProgram) throws GrowattApiException {
         //
@@ -495,9 +501,9 @@ public class GrowattCloud implements AutoCloseable {
 
         ProgramMode programMode;
         try {
-            programMode = ProgramMode.values()[programModeIndex];
+            programMode = ProgramMode.values()[programModeInt];
         } catch (IndexOutOfBoundsException e) {
-            throw new GrowattApiException("Program mode index is out of range (0..2)");
+            throw new GrowattApiException("Program mode is out of range (0..2)");
         }
 
         DeviceType deviceType = getDeviceTypeChecked(deviceId);
@@ -752,7 +758,7 @@ public class GrowattCloud implements AutoCloseable {
         //
         Fields fields = new Fields();
 
-        fields.put("action", Objects.requireNonNull(SUPPORTED_TYPE_POST_PARAM.get(deviceType)));
+        fields.put("op", Objects.requireNonNull(SUPPORTED_TYPE_POST_PARAM.get(deviceType)));
         fields.put("serialNum", deviceId);
         fields.put("type", "ac_charge");
         fields.put("param1", enableAcCharging ? "1" : "0");
@@ -792,7 +798,7 @@ public class GrowattCloud implements AutoCloseable {
 
         Fields fields = new Fields();
 
-        fields.put("action", Objects.requireNonNull(SUPPORTED_TYPE_POST_PARAM.get(deviceType)));
+        fields.put("op", Objects.requireNonNull(SUPPORTED_TYPE_POST_PARAM.get(deviceType)));
         fields.put("serialNum", deviceId);
         fields.put("type", typeParam);
         fields.put("param1", String.format("%d", powerLevel));
@@ -823,7 +829,7 @@ public class GrowattCloud implements AutoCloseable {
                 typeParam = "charge_stop_soc";
                 break;
             case GRID_FIRST:
-                typeParam = "on-grid-discharge_stop_soc";
+                typeParam = "on_grid_discharge_stop_soc";
                 break;
             case LOAD_FIRST:
                 typeParam = "discharge_stop_soc";
@@ -834,7 +840,7 @@ public class GrowattCloud implements AutoCloseable {
 
         Fields fields = new Fields();
 
-        fields.put("action", Objects.requireNonNull(SUPPORTED_TYPE_POST_PARAM.get(deviceType)));
+        fields.put("op", Objects.requireNonNull(SUPPORTED_TYPE_POST_PARAM.get(deviceType)));
         fields.put("serialNum", deviceId);
         fields.put("type", typeParam);
         fields.put("param1", String.format("%d", stopSOC));
@@ -883,7 +889,7 @@ public class GrowattCloud implements AutoCloseable {
 
         Fields fields = new Fields();
 
-        fields.put("action", Objects.requireNonNull(SUPPORTED_TYPE_POST_PARAM.get(deviceType)));
+        fields.put("op", Objects.requireNonNull(SUPPORTED_TYPE_POST_PARAM.get(deviceType)));
         fields.put("serialNum", deviceId);
         fields.put("type", String.format("time_segment%d", programMode.ordinal() + 1));
         fields.put("param1", String.format("%d", programMode.ordinal()));

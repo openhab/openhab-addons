@@ -23,15 +23,18 @@ However if a bridge exists and it receives inverter data, then a matching invert
 
 ## Thing Configuration
 
-The `bridge` thing requires no configuration.
+The `bridge` thing requires configuration of the user credentials:
+
+| Name      | Type    | Description                                                                              | Required |
+|-----------|---------|------------------------------------------------------------------------------------------|----------|
+| userName  | text    | User name for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)  | no       |
+| password  | text    | Password for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)   | no       |
 
 The `inverter` thing requires configuration of its serial number resp. `deviceId`:
 
 | Name      | Type    | Description                                                                              | Required |
 |-----------|---------|------------------------------------------------------------------------------------------|----------|
 | deviceId  | text    | Device serial number or id as configured in the Growatt cloud and the Grott application. | yes      |
-| userName  | text    | User name for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)  | no       |
-| password  | text    | Password for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)   | no       |
 
 ## Channels
 
@@ -129,9 +132,9 @@ The list of all possible channels is as follows:
 | sp-display-status             | Number:Dimensionless      | Solar panel display status code.                     | yes      |
 | constant-power-ok             | Number:Dimensionless      | Constant power OK code.                              | yes      |
 | load-percent                  | Number:Dimensionless      | Percent of full load.                                | yes      |
-| rac                           | Number:Dimensionless      | RAC code.                                            | yes      |
-| erac-today                    | Number:Dimensionless      | ERAC count today.                                    | yes      |
-| erac-total                    | Number:Dimensionless      | Total ERAC count.                                    | yes      |
+| rac                           | Number:Dimensionless      | RAC state.                                           | yes      |
+| erac-today                    | Number:Energy             | RAC energy today.                                    | yes      |
+| erac-total                    | Number:Energy             | Total RAC energy.                                    | yes      |
 
 ## Rule Actions
 
@@ -143,23 +146,36 @@ val growattActions = getActions("growatt", "growatt:inverter:home:sph")
 ```
 
 Where the first parameter must always be `growatt` and the second must be the full inverter thing UID.
-Once the action instance has been retrieved, you can invoke the following methods.
+Once the action instance has been retrieved, you can invoke the following method:
 
 ```php
-growattActions.setupChargingProgram(int chargingPower, int targetSOC, boolean allowAcCharging, String startTime, String stopTime, boolean programEnable) 
-
-growattActions.setupDischargingProgram(int dischargingPower, int targetSOC, String startTime, String stopTime, boolean programEnable)
+growattActions.setupBatteryProgram(int programMode, @Nullable Integer powerLevel, @Nullable Integer stopSOC, @Nullable Boolean enableAcCharging, @Nullable String startTime, @Nullable String stopTime, @Nullable Boolean enableProgram) 
 ```
+
+The meaning of the method parameters is as follows:
 
 | Parameter        | Description                                                                           |
 |------------------|---------------------------------------------------------------------------------------|
-| chargingPower    | The rate of charging the battery 1%..100% (e.g. 50)                                   |
-| dischargingPower | The rate of discharging the battery 1%..100% (e.g. 100)                               |
-| targetSOC        | The target battery SOC (state of charge) when the program stops. (e.g. 20)            |
-| allowAcCharging  | Allow the battery to be charged from the AC mains supply. (e.g. true, false)          |
+| programMode      | The program mode to set i.e. 'Load First' (0), 'Battery First' (1), 'Grid First' (2)  |
+| powerLevel       | The rate of charging resp. discharging the battery 1%..100% (e.g. 100)                |
+| stopSOC          | The target battery SOC (state of charge) when the program stops. (e.g. 20)            |
+| enableAcCharging | Allow the battery to be charged from the AC mains supply. (e.g. true, false)          |
 | startTime        | String representation of the local time when the program shall start. (e.g. "00:15")  |
 | stopTime         | String representation of the  local time when the program shall stop. (e.g. "06:45")  |
-| programEnable    | Disable / enable the program. (e.g. true, false)                                      |
+| enableProgram    | Disable / enable the program. (e.g. true, false)                                      |
+
+Depending on the inverter type and the program mode certain parameters may be 'null'.
+The 'mix', 'sph' or 'spa' inverter types set their battery program in one single command, so all parameters except `enableAcCharging` MUST be non-null.
+By contrast the 'tlx' inverter type sets its battery program in up to four partial commands, and to omit such a partial command you can set its respective parameter(s) to null.
+The permission for using null paramater values, and the effect of null paramater values, is shown in the table below:
+
+| Parameter                          | Permission for- resp. Effect of- Null Parameter Value                                                                      |
+|------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| programMode                        | Shall NOT be null under any circumstance.                                                                                  |
+| powerLevel                         | May be null on 'tlx' inverters whereby the prior programMode powerLevel continues.                                         |
+| stopSOC                            | May be null on 'tlx' inverters whereby the prior programMode stopSOC continues.                                            |
+| enableAcCharging                   | Shall NOT be null on 'mix' inverter 'Battery First' programs. If null the prior enableAcCharging state (if any) continues. |
+| startTime, stopTime, enableProgram | May be null on 'tlx' inverters whereby the prior programMode time segment continues. Either ALL null or ALL non-null.      |
 
 Example:
 
@@ -174,29 +190,30 @@ then
     } else {
 
         // fixed algorithm parameters
-        val chargingPower = 25
-        val allowAcCharging = true
-        val startTime = "00:20"
-        val stopTime = "07:00"
-        val programEnable = true
-        val batteryFull = 6500
-        val batteryMin = 500
-        val daylightConsumption = 10000
-        val maximumSOC = 100
-        val minimumSOC = 20
+        val Integer programMode = 1
+        val Integer powerLevel = 23
+        val Boolean enableAcCharging = true
+        val String startTime = "00:20"
+        val String stopTime = "07:00"
+        val Boolean enableProgram = true
+        val Integer batteryFull = 6500
+        val Integer batteryMin = 500
+        val Integer daylightConsumption = 10000
+        val Integer maximumSOC = 100
+        val Integer minimumSOC = 20
 
         // variable algorithm parameters
-        val solarForecast = (ForecastSolar_PV_Whole_Site_Forecast_Today.state as QuantityType<Energy>).toUnit("Wh").toBigDecimal()
-        var targetSOC = (100 * (batteryMin + daylightConsumption - solarForecast)) / batteryFull
+        val Double solarForecast = (ForecastSolar_PV_Whole_Site_Forecast_Today.state as QuantityType<Energy>).toUnit("Wh").doubleValue()
+        var Double targetSOC = (100 * (batteryMin + daylightConsumption - solarForecast)) / batteryFull
         if (targetSOC > maximumSOC) {
             targetSOC = maximumSOC
         } else if (targetSOC < minimumSOC) {
             targetSOC = minimumSOC
         }
+        val Integer stopSOC = targetSOC.intValue()
 
-        logInfo("Rules", "Setup Charging Program:{solarForecast:" + solarForecast + ", chargingPower:" + chargingPower + ", targetSOC:" + targetSOC + ", allowAcCharging:" +
-            allowAcCharging + ", startTime:" + startTime + ", stopTime:" + stopTime + ", programEnable:" + programEnable +"}")
-        growattActions.setupChargingProgram(chargingPower, targetSOC, allowAcCharging, startTime, stopTime, programEnable)
+        logInfo("Rules", "Setup Charging Program:{solarForecast:" + solarForecast + ", programMode:" + programMode + ", powerLevel:" + powerLevel + ", stopSOC:" + stopSOC + ", enableCharging:" + enableAcCharging + ", startTime:" + startTime + ", stopTime:" + stopTime + ", enableProgram:" + enableProgram +"}")
+        growattActions.setupBatteryProgram(programMode, powerLevel, stopSOC, enableAcCharging, startTime, stopTime, enableProgram)
     }
 end
 ```

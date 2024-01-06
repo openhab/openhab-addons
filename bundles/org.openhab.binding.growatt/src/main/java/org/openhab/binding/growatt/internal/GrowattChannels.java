@@ -185,8 +185,8 @@ public class GrowattChannels {
 
             // rac ??
             new AbstractMap.SimpleEntry<String, UoM>("rac", new UoM(Units.ONE, 1)),
-            new AbstractMap.SimpleEntry<String, UoM>("erac-today", new UoM(Units.ONE, 1)),
-            new AbstractMap.SimpleEntry<String, UoM>("erac-total", new UoM(Units.ONE, 1))
+            new AbstractMap.SimpleEntry<String, UoM>("erac-today", new UoM(Units.KILOWATT_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("erac-total", new UoM(Units.KILOWATT_HOUR, 10))
     //
     );
 
