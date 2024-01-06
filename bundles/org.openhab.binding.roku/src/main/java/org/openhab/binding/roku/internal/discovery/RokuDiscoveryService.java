@@ -253,8 +253,10 @@ public class RokuDiscoveryService extends AbstractDiscoveryService {
         try {
             RokuCommunicator communicator = new RokuCommunicator(httpClient, host, port);
             DeviceInfo device = communicator.getDeviceInfo();
+
+            // replace extraneous characters with spaces and remove any consecutive spaces
             label = (device.getFriendlyModelName() + " " + device.getUserDeviceLocation())
-                    .replaceAll("[^a-zA-Z0-9_\\.-]", " ");
+                    .replaceAll("[^a-zA-Z0-9\\-_]", " ").trim().replaceAll("  +", " ");
             if (device.isTv()) {
                 thingUid = new ThingUID(THING_TYPE_ROKU_TV, uuid);
             }
