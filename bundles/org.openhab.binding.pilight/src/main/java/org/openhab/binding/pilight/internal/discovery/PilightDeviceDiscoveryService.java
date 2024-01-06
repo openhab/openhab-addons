@@ -15,7 +15,6 @@ package org.openhab.binding.pilight.internal.discovery;
 import static org.openhab.binding.pilight.internal.PilightBindingConstants.*;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.pilight.internal.PilightHandlerFactory;
 import org.openhab.binding.pilight.internal.dto.Config;
 import org.openhab.binding.pilight.internal.dto.DeviceType;
 import org.openhab.binding.pilight.internal.dto.Status;
@@ -51,14 +49,14 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = PilightDeviceDiscoveryService.class)
 @NonNullByDefault
 public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<PilightBridgeHandler> {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = PilightHandlerFactory.SUPPORTED_THING_TYPES_UIDS;
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CONTACT, THING_TYPE_DIMMER,
+            THING_TYPE_GENERIC, THING_TYPE_SWITCH);
 
     private static final int AUTODISCOVERY_SEARCH_TIME_SEC = 10;
-    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC = 60 * 10;
+    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INITIAL_DELAY_SEC = 20;
+    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC = 10 * 60; // 10 minutes
 
     private final Logger logger = LoggerFactory.getLogger(PilightDeviceDiscoveryService.class);
-
-    private @NonNullByDefault({}) ThingUID bridgeUID;
 
     private @Nullable ScheduledFuture<?> backgroundDiscoveryJob;
     private CompletableFuture<Config> configFuture;
@@ -76,7 +74,7 @@ public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscovery
         statusFuture = new CompletableFuture<>();
 
         configFuture.thenAcceptBoth(statusFuture, (config, allStatus) -> {
-            removeOlderResults(getTimestampOfLastScan(), bridgeUID);
+            removeOlderResults(getTimestampOfLastScan(), thingHandler.getThing().getUID());
             config.getDevices().forEach((deviceId, device) -> {
                 final Optional<Status> status = allStatus.stream().filter(s -> s.getDevices().contains(deviceId))
                         .findFirst();
@@ -108,11 +106,9 @@ public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscovery
 
                 final ThingUID thingUID = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(), deviceId);
 
-                final Map<String, Object> properties = new HashMap<>();
-                properties.put(PROPERTY_NAME, deviceId);
-
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                        .withProperties(properties).withBridge(bridgeUID).withRepresentationProperty(PROPERTY_NAME)
+                        .withProperties(Map.of(PROPERTY_NAME, deviceId)).withBridge(thingHandler.getThing().getUID())
+                        .withRepresentationProperty(PROPERTY_NAME)
                         .withLabel("Pilight " + typeString + " Device '" + deviceId + "'").build();
 
                 thingDiscovered(discoveryResult);
@@ -127,7 +123,7 @@ public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscovery
         super.stopScan();
         configFuture.cancel(true);
         statusFuture.cancel(true);
-        removeOlderResults(getTimestampOfLastScan(), bridgeUID);
+        removeOlderResults(getTimestampOfLastScan(), thingHandler.getThing().getUID());
     }
 
     @Override
@@ -135,8 +131,9 @@ public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscovery
         logger.debug("Start Pilight device background discovery");
         final @Nullable ScheduledFuture<?> backgroundDiscoveryJob = this.backgroundDiscoveryJob;
         if (backgroundDiscoveryJob == null || backgroundDiscoveryJob.isCancelled()) {
-            this.backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 20,
-                    AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC, TimeUnit.SECONDS);
+            this.backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan,
+                    AUTODISCOVERY_BACKGROUND_SEARCH_INITIAL_DELAY_SEC, AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -152,20 +149,18 @@ public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscovery
 
     @Override
     public void initialize() {
-        bridgeUID = thingHandler.getThing().getUID();
-        boolean discoveryEnabled = false;
         removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
-        discoveryEnabled = thingHandler.isBackgroundDiscoveryEnabled();
         thingHandler.registerDiscoveryListener(this);
 
         super.initialize();
-        super.modified(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, discoveryEnabled));
+        super.modified(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
+                thingHandler.isBackgroundDiscoveryEnabled()));
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(getTimestampOfLastScan(), bridgeUID);
+        removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
         thingHandler.unregisterDiscoveryListener();
     }
 
@@ -185,10 +180,5 @@ public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscovery
      */
     public void setStatus(List<Status> status) {
         statusFuture.complete(status);
-    }
-
-    @Override
-    public Set<ThingTypeUID> getSupportedThingTypes() {
-        return SUPPORTED_THING_TYPES_UIDS;
     }
 }
