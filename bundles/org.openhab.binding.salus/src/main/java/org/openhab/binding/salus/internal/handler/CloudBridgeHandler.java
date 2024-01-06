@@ -79,13 +79,11 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         var missingUsername = !config.hasUsername();
         var missingPassword = !config.hasPassword();
         if (missingUsername || missingPassword) {
-            var sb = new StringBuilder();
-            sb.append("Missing configuration!\n");
-            sb.append(missingUsername ? "❌" : "✅").append(" username\n");
-            sb.append(missingPassword ? "❌" : "✅").append(" password\n");
-            sb.append("Please check your configuration!\n");
-            logger.error("{}", sb);
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, sb.toString());
+            var sb = "Missing configuration!\n" +
+                    (missingUsername ? "❌" : "✅") + " username\n" +
+                    (missingPassword ? "❌" : "✅") + " password\n" +
+                    "Please check your configuration!\n";
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, sb);
             return;
         }
         var httpClient = new JettyHttpClient(httpClientFactory.getCommonHttpClient());
