@@ -244,7 +244,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         logger.debug("Finding devices using salusClient");
         var response = api.findDevices();
         if (response.failed()) {
-            logger.error("Cannot find devices using salusClient\n{}", response.error());
+            logger.warn("Cannot find devices using salusClient\n{}", response.error());
             return emptySortedSet();
         }
 
