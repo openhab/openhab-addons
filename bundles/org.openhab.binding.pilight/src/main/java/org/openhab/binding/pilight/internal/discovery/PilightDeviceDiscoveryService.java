@@ -14,7 +14,7 @@ package org.openhab.binding.pilight.internal.discovery;
 
 import static org.openhab.binding.pilight.internal.PilightBindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -149,7 +149,7 @@ public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscovery
 
     @Override
     public void initialize() {
-        removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
         thingHandler.registerDiscoveryListener(this);
 
         super.initialize();
@@ -160,7 +160,7 @@ public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscovery
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
         thingHandler.unregisterDiscoveryListener();
     }
 
