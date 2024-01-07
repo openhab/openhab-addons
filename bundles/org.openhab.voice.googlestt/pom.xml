@@ -97,67 +97,67 @@
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-api</artifactId>
-      <version>1.53.0</version>
+      <version>1.60.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
-      <version>1.53.0</version>
+      <version>1.60.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf-lite</artifactId>
-      <version>1.53.0</version>
+      <version>1.60.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-alts</artifactId>
-      <version>1.53.0</version>
+      <version>1.60.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-core</artifactId>
-      <version>1.53.0</version>
+      <version>1.60.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-grpclb</artifactId>
-      <version>1.53.0</version>
+      <version>1.60.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-auth</artifactId>
-      <version>1.53.0</version>
+      <version>1.60.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-context</artifactId>
-      <version>1.53.0</version>
+      <version>1.60.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-netty-shaded</artifactId>
-      <version>1.53.0</version>
+      <version>1.60.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-xds</artifactId>
-      <version>1.53.0</version>
+      <version>1.60.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-services</artifactId>
-      <version>1.53.0</version>
+      <version>1.60.1</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

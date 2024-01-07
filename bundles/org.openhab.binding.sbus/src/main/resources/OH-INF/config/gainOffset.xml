@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+	https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:modbus:gainOffset">
+		<parameter name="pre-gain-offset" type="decimal">
+			<label>Pre-gain Offset</label>
+			<description>Offset to add to raw value towards the item (before the gain). The negative
+				offset will be applied in the
+				reverse direction (before inverting the gain). If omitted, zero offset is used.</description>
+		</parameter>
+		<parameter name="gain" type="text">
+			<label>Gain</label>
+			<description>Gain to apply to the state towards the item. One can also specify the unit to declare resulting unit.
+				This is used as divisor for values in the reverse direction. If omitted, gain of 1 is used.</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
