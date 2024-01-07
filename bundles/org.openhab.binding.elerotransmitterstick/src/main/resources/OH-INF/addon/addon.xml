@@ -16,11 +16,6 @@
 					<name>manufacturer</name>
 					<regex>(?i)elero gmbh.*</regex>
 				</match-property>
-			</match-properties>
-		</discovery-method>
-		<discovery-method>
-			<service-type>usb</service-type>
-			<match-properties>
 				<match-property>
 					<name>chipId</name>
 					<regex>0403:6001</regex>
