@@ -49,11 +49,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PresenceDetection} handles the connection to the Device
+ * The {@link PresenceDetection} handles the connection to the Device.
  *
  * @author Marc Mettke - Initial contribution
  * @author David Gräff, 2017 - Rewritten
  * @author Jan N. Klug - refactored host name resolution
+ * @author Wouter Born - Reuse ExpiringCacheAsync from Core
  */
 @NonNullByDefault
 public class PresenceDetection implements IPRequestReceivedCallback {
@@ -126,8 +127,8 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 InetAddress destinationAddress = InetAddress.getByName(hostname);
                 InetAddress cached = cachedDestination;
                 if (!destinationAddress.equals(cached)) {
-                    logger.trace("Hostname '{}' resolved to other address '{}', (re-)setup presence detection",
-                            hostname, destinationAddress);
+                    logger.trace("Hostname {} resolved to other address {}, (re-)setup presence detection", hostname,
+                            destinationAddress);
                     setUseArpPing(true, destinationAddress);
                     if (useDHCPsniffing) {
                         if (cached != null) {
@@ -139,7 +140,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 }
                 return destinationAddress;
             } catch (UnknownHostException e) {
-                logger.trace("Hostname resolution for '{}' failed", hostname);
+                logger.trace("Hostname resolution for {} failed", hostname);
                 InetAddress cached = cachedDestination;
                 if (cached != null) {
                     disableDHCPListen(cached);
@@ -175,11 +176,11 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     /**
-     * Sets the ping method. This method will perform a feature test. If SYSTEM_PING
-     * does not work on this system, JAVA_PING will be used instead.
+     * Sets the ping method. This method will perform a feature test. If {@link IpPingMethodEnum#SYSTEM_PING}
+     * does not work on this system, {@link IpPingMethodEnum#JAVA_PING} will be used instead.
      *
-     * @param useSystemPing Set to true to use a system ping method, false to use java ping and null to disable ICMP
-     *            pings.
+     * @param useSystemPing Set to <code>true</code> to use a system ping method, <code>false</code> to use Java ping
+     *            and <code>null</code> to disable ICMP pings.
      */
     public void setUseIcmpPing(@Nullable Boolean useSystemPing) {
         if (useSystemPing == null) {
@@ -213,9 +214,9 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     /**
-     * sets the path to arp ping
+     * Sets the path to ARP ping.
      *
-     * @param enable Enable or disable ARP ping
+     * @param enable enable or disable ARP ping
      * @param arpPingUtilPath enableDHCPListen(useDHCPsniffing);
      */
     public void setUseArpPing(boolean enable, String arpPingUtilPath, ArpPingUtilEnum arpPingUtilMethod) {
@@ -237,7 +238,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     /**
-     * Return true if the device presence detection is performed for an iOS device
+     * Return <code>true</code> if the device presence detection is performed for an iOS device
      * like iPhone or iPads. An additional port knock is performed before a ping.
      */
     public boolean isIOSdevice() {
@@ -245,7 +246,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     /**
-     * Set to true if the device presence detection should be performed for an iOS device
+     * Set to <code>true</code> if the device presence detection should be performed for an iOS device
      * like iPhone or iPads. An additional port knock is performed before a ping.
      */
     public void setIOSDevice(boolean value) {
@@ -283,6 +284,15 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
     public ExecutorService getThreadsFor(int threadCount) {
         return Executors.newFixedThreadPool(threadCount);
+    }
+
+    private void withDestinationAddress(Consumer<InetAddress> consumer) {
+        InetAddress destinationAddress = destination.getValue();
+        if (destinationAddress == null) {
+            logger.trace("The destinationAddress for {} is null", hostname);
+        } else {
+            consumer.accept(destinationAddress);
+        }
     }
 
     /**
@@ -365,11 +375,9 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         }
 
         return CompletableFuture.supplyAsync(() -> {
-            logger.debug("Waiting for '{}' detection futures to complete", hostname);
-            for (CompletableFuture<Void> completableFuture : completableFutures) {
-                completableFuture.join();
-            }
-            logger.debug("All '{}' detection futures have completed", hostname);
+            logger.debug("Waiting for {} detection futures for {} to complete", completableFutures.size(), hostname);
+            completableFutures.forEach(CompletableFuture::join);
+            logger.debug("All {} detection futures for {} have completed", completableFutures.size(), hostname);
 
             if (!pdv.isReachable()) {
                 logger.debug("{} is unreachable, invalidating destination value", hostname);
@@ -431,63 +439,55 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     protected void performServicePing(PresenceDetectionValue pdv, int tcpPort) {
         logger.trace("Perform TCP presence detection for {} on port: {}", hostname, tcpPort);
 
-        InetAddress destinationAddress = destination.getValue();
-        if (destinationAddress == null) {
-            logger.trace("The destinationAddress for {} is null", hostname);
-            return;
-        }
-
-        try {
-            PingResult pingResult = networkUtils.servicePing(destinationAddress.getHostAddress(), tcpPort, timeout);
-            if (pingResult.isSuccess()) {
-                updateReachable(pdv, TCP_CONNECTION, getLatency(pingResult), tcpPort);
+        withDestinationAddress(destinationAddress -> {
+            try {
+                PingResult pingResult = networkUtils.servicePing(destinationAddress.getHostAddress(), tcpPort, timeout);
+                if (pingResult.isSuccess()) {
+                    updateReachable(pdv, TCP_CONNECTION, getLatency(pingResult), tcpPort);
+                }
+            } catch (IOException e) {
+                // This should not happen and might be a user configuration issue, we log a warning message therefore.
+                logger.warn("Could not create a socket connection", e);
             }
-        } catch (IOException e) {
-            // This should not happen and might be a user configuration issue, we log a warning message therefore.
-            logger.warn("Could not create a socket connection", e);
-        }
+        });
     }
 
     /**
      * Performs an "ARP ping" (ARP request) on the given interface.
-     * If it is an iOS device, the {@see NetworkUtils.wakeUpIOS()} method is
+     * If it is an iOS device, the {@link NetworkUtils#wakeUpIOS(InetAddress)} method is
      * called before performing the ARP ping.
      *
      * @param pdv the {@link PresenceDetectionValue} to update
-     * @param interfaceName The interface name. You can request a list of interface names
-     *            from {@see NetworkUtils.getInterfaceNames()} for example.
+     * @param interfaceName the interface name. You can request a list of interface names
+     *            from {@link NetworkUtils#getInterfaceNames()} for example.
      */
     protected void performARPping(PresenceDetectionValue pdv, String interfaceName) {
         logger.trace("Perform ARP ping presence detection for {} on interface: {}", hostname, interfaceName);
 
-        InetAddress destinationAddress = destination.getValue();
-        if (destinationAddress == null) {
-            logger.trace("The destinationAddress for {} is null", hostname);
-            return;
-        }
-
-        try {
-            if (iosDevice) {
-                networkUtils.wakeUpIOS(destinationAddress);
-                Thread.sleep(50);
-            }
-
-            PingResult pingResult = networkUtils.nativeARPPing(arpPingMethod, arpPingUtilPath, interfaceName,
-                    destinationAddress.getHostAddress(), timeout);
-            if (pingResult != null) {
-                if (pingResult.isSuccess()) {
-                    updateReachable(pdv, ARP_PING, getLatency(pingResult));
-                    lastReachableNetworkInterfaceName = interfaceName;
-                } else if (lastReachableNetworkInterfaceName.equals(interfaceName)) {
-                    logger.trace("{} is no longer reachable on network interface: {}", hostname, interfaceName);
-                    lastReachableNetworkInterfaceName = "";
+        withDestinationAddress(destinationAddress -> {
+            try {
+                if (iosDevice) {
+                    networkUtils.wakeUpIOS(destinationAddress);
+                    Thread.sleep(50);
                 }
+
+                PingResult pingResult = networkUtils.nativeARPPing(arpPingMethod, arpPingUtilPath, interfaceName,
+                        destinationAddress.getHostAddress(), timeout);
+                if (pingResult != null) {
+                    if (pingResult.isSuccess()) {
+                        updateReachable(pdv, ARP_PING, getLatency(pingResult));
+                        lastReachableNetworkInterfaceName = interfaceName;
+                    } else if (lastReachableNetworkInterfaceName.equals(interfaceName)) {
+                        logger.trace("{} is no longer reachable on network interface: {}", hostname, interfaceName);
+                        lastReachableNetworkInterfaceName = "";
+                    }
+                }
+            } catch (IOException e) {
+                logger.trace("Failed to execute an ARP ping for {}", hostname, e);
+            } catch (InterruptedException ignored) {
+                // This can be ignored, the thread will end anyway
             }
-        } catch (IOException e) {
-            logger.trace("Failed to execute an arp ping for ip {}", hostname, e);
-        } catch (InterruptedException ignored) {
-            // This can be ignored, the thread will end anyway
-        }
+        });
     }
 
     /**
@@ -499,37 +499,30 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     protected void performJavaPing(PresenceDetectionValue pdv) {
         logger.trace("Perform java ping presence detection for {}", hostname);
 
-        InetAddress destinationAddress = destination.getValue();
-        if (destinationAddress == null) {
-            logger.trace("The destinationAddress for {} is null", hostname);
-            return;
-        }
-
-        PingResult pingResult = networkUtils.javaPing(timeout, destinationAddress);
-        if (pingResult.isSuccess()) {
-            updateReachable(pdv, ICMP_PING, getLatency(pingResult));
-        }
+        withDestinationAddress(destinationAddress -> {
+            PingResult pingResult = networkUtils.javaPing(timeout, destinationAddress);
+            if (pingResult.isSuccess()) {
+                updateReachable(pdv, ICMP_PING, getLatency(pingResult));
+            }
+        });
     }
 
     protected void performSystemPing(PresenceDetectionValue pdv) {
         logger.trace("Perform native ping presence detection for {}", hostname);
 
-        InetAddress destinationAddress = destination.getValue();
-        if (destinationAddress == null) {
-            logger.trace("The destinationAddress for {} is null", hostname);
-            return;
-        }
-
-        try {
-            PingResult pingResult = networkUtils.nativePing(pingMethod, destinationAddress.getHostAddress(), timeout);
-            if (pingResult != null && pingResult.isSuccess()) {
-                updateReachable(pdv, ICMP_PING, getLatency(pingResult));
+        withDestinationAddress(destinationAddress -> {
+            try {
+                PingResult pingResult = networkUtils.nativePing(pingMethod, destinationAddress.getHostAddress(),
+                        timeout);
+                if (pingResult != null && pingResult.isSuccess()) {
+                    updateReachable(pdv, ICMP_PING, getLatency(pingResult));
+                }
+            } catch (IOException e) {
+                logger.trace("Failed to execute a native ping for ip {}", hostname, e);
+            } catch (InterruptedException e) {
+                // This can be ignored, the thread will end anyway
             }
-        } catch (IOException e) {
-            logger.trace("Failed to execute a native ping for ip {}", hostname, e);
-        } catch (InterruptedException e) {
-            // This can be ignored, the thread will end anyway
-        }
+        });
     }
 
     private Duration getLatency(PingResult pingResult) {
@@ -558,13 +551,13 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 logger.debug("Refreshing {} reachability state", hostname);
                 getValue();
             } catch (InterruptedException | ExecutionException e) {
-                logger.debug("Failed to refresh '{}' presence detection", hostname, e);
+                logger.debug("Failed to refresh {} presence detection", hostname, e);
             }
         }, 0, refreshInterval.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     /**
-     * Return true if automatic refreshing is enabled.
+     * Return <code>true</code> if automatic refreshing is enabled.
      */
     public boolean isAutomaticRefreshing() {
         return refreshJob != null;
@@ -590,7 +583,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * for iOS devices. The hostname of this network service object will be registered to the DHCP request packet
      * listener if enabled and unregistered otherwise.
      *
-     * @param destinationAddress the InetAddress to listen for.
+     * @param destinationAddress the {@link InetAddress} to listen for.
      */
     private void enableDHCPListen(InetAddress destinationAddress) {
         try {

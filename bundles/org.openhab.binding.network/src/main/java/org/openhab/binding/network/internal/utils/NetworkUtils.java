@@ -423,12 +423,13 @@ public class NetworkUtils {
      * @throws IOException if an error occurs during the connection
      */
     public void wakeUpIOS(InetAddress address) throws IOException {
+        int port = 5353;
         try (DatagramSocket s = new DatagramSocket()) {
             byte[] buffer = new byte[0];
-            s.send(new DatagramPacket(buffer, buffer.length, address, 5353));
-            logger.debug("Sent packet to {}:5353 to wake up iOS device", address);
+            s.send(new DatagramPacket(buffer, buffer.length, address, port));
+            logger.debug("Sent packet to {}:{} to wake up iOS device", address, port);
         } catch (PortUnreachableException e) {
-            logger.debug("Unable to send pack to wake up iOS device at {}:5353", address, e);
+            logger.debug("Unable to send packet to wake up iOS device at {}:{}", address, port, e);
         }
     }
 }
