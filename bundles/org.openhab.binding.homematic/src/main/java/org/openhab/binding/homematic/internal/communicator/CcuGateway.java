@@ -15,8 +15,6 @@ package org.openhab.binding.homematic.internal.communicator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -44,6 +43,7 @@ import org.openhab.binding.homematic.internal.model.HmResult;
 import org.openhab.binding.homematic.internal.model.TclScript;
 import org.openhab.binding.homematic.internal.model.TclScriptDataList;
 import org.openhab.binding.homematic.internal.model.TclScriptList;
+import org.openhab.core.i18n.ConfigurationException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -63,16 +63,13 @@ public class CcuGateway extends AbstractHomematicGateway {
     private Map<String, String> tclregaScripts;
     private XStream xStream = new XStream(new StaxDriver());
 
+    private @NonNull AuthenticationHandler authenticationHandler;
+
     protected CcuGateway(String id, HomematicConfig config, HomematicGatewayAdapter gatewayAdapter,
-            HttpClient httpClient) throws IOException {
+            HttpClient httpClient) throws IOException, ConfigurationException {
         super(id, config, gatewayAdapter, httpClient);
 
-        try {
-            new AuthenticationHandler(config, httpClient)
-                    .updateAuthenticationInformation(new URI(config.getTclRegaUrl()));
-        } catch (URISyntaxException e) {
-            throw new IOException(e);
-        }
+        this.authenticationHandler = new AuthenticationHandler(config);
 
         xStream.allowTypesByWildcard(new String[] { HmDevice.class.getPackageName() + ".**" });
         xStream.setClassLoader(CcuGateway.class.getClassLoader());
@@ -221,9 +218,9 @@ public class CcuGateway extends AbstractHomematicGateway {
             }
 
             StringContentProvider content = new StringContentProvider(script, config.getEncoding());
-            ContentResponse response = httpClient.POST(config.getTclRegaUrl()).content(content)
-                    .timeout(config.getTimeout(), TimeUnit.SECONDS)
-                    .header(HttpHeader.CONTENT_TYPE, "text/plain;charset=" + config.getEncoding()).send();
+            ContentResponse response = authenticationHandler.updateAuthenticationInformation(httpClient
+                    .POST(config.getTclRegaUrl()).content(content).timeout(config.getTimeout(), TimeUnit.SECONDS)
+                    .header(HttpHeader.CONTENT_TYPE, "text/plain;charset=" + config.getEncoding())).send();
 
             String result = new String(response.getContent(), config.getEncoding());
             int lastPos = result.lastIndexOf("<xml><exec>");

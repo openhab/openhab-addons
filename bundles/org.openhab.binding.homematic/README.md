@@ -35,7 +35,7 @@ The new user should have the following configuration:
 
 The user and password must then be entered in the 'Username' and 'Password' settings.
 
-If this is not done the binding will not be able to connect to the CCU and the CCU Thing will stay uninitialized and sets a timeout exception:
+If this is not done the binding will not be able to connect to the CCU and the CCU Thing will stay uninitialized and sets a timeout exception or a authentication error
 
 ```text
 xxx-xx-xx xx:xx:xx.xxx [hingStatusInfoChangedEvent] - - 'homematic:bridge:xxx' changed from INITIALIZING to OFFLINE (COMMUNICATION_ERROR): java.net.SocketTimeoutException: Connect Timeout

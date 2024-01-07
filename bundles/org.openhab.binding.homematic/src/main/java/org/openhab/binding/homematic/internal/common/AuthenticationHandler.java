@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.homematic.internal.common;
 
-import java.net.URI;
+import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.util.BasicAuthentication;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.openhab.core.i18n.ConfigurationException;
 
 /**
  * Handles the authentication to Homematic server.
@@ -28,32 +28,26 @@ import org.eclipse.jetty.client.util.BasicAuthentication;
 @NonNullByDefault
 public class AuthenticationHandler {
 
-    private final HomematicConfig config;
-    private final HttpClient httpClient;
+    private Boolean useAuthentication;
+    private @Nullable String authValue;
 
-    public AuthenticationHandler(HomematicConfig config, HttpClient httpClient) {
-        this.config = config;
-        this.httpClient = httpClient;
+    public AuthenticationHandler(HomematicConfig config) throws ConfigurationException {
+        this.useAuthentication = config.getUseAuthentication();
+        if (!useAuthentication) {
+            return;
+        }
+
+        if (config.getPassword() == null || config.getUserName() == null) {
+            throw new ConfigurationException("Username or password missing");
+        }
+        this.authValue = "Basic "
+                + Base64.getEncoder().encodeToString((config.getUserName() + ":" + config.getPassword()).getBytes());
     }
 
     /**
-     * Add or remove the basic auth credetials to the AuthenticationStore if needed.
+     * Add or remove the basic auth credentials th the request if needed.
      */
-    public synchronized void updateAuthenticationInformation(final URI uri) throws IllegalStateException {
-        final AuthenticationStore authStore = httpClient.getAuthenticationStore();
-
-        Authentication findAuthentication = authStore.findAuthentication("Basic", uri, Authentication.ANY_REALM);
-
-        if (config.getUseAuthentication()) {
-            if (findAuthentication == null) {
-                if (config.getPassword() == null || config.getUserName() == null) {
-                    throw new IllegalStateException("Username or password missing");
-                }
-                authStore.addAuthentication(new BasicAuthentication(uri, Authentication.ANY_REALM, config.getUserName(),
-                        config.getPassword()));
-            }
-        } else if (findAuthentication != null) {
-            authStore.removeAuthentication(findAuthentication);
-        }
+    public Request updateAuthenticationInformation(final Request request) {
+        return useAuthentication ? request.header(HttpHeader.AUTHORIZATION, authValue) : request;
     }
 }
