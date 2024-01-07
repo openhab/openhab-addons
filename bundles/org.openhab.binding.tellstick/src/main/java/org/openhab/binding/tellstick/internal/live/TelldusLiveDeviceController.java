@@ -71,7 +71,7 @@ public class TelldusLiveDeviceController implements DeviceChangeListener, Sensor
     public static final long DEFAULT_INTERVAL_BETWEEN_SEND = 250;
     private static final int REQUEST_TIMEOUT_MS = 15000;
     private AsyncHttpClient client;
-    static final String HTTP_API_TELLDUS_COM_XML = "http://api.telldus.com/xml/";
+    static final String HTTP_API_TELLDUS_COM_XML = "http://pa-api.telldus.com/xml/";
     static final String HTTP_TELLDUS_CLIENTS = HTTP_API_TELLDUS_COM_XML + "clients/list";
     static final String HTTP_TELLDUS_DEVICES = HTTP_API_TELLDUS_COM_XML + "devices/list?supportedMethods=19";
     static final String HTTP_TELLDUS_SENSORS = HTTP_API_TELLDUS_COM_XML
