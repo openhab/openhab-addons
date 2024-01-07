@@ -38,7 +38,6 @@ import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
 import org.openhab.binding.network.internal.utils.PingResult;
-import org.openhab.core.cache.ExpiringCacheAsync;
 
 /**
  * Tests cases for {@see PresenceDetectionValue}
@@ -49,9 +48,7 @@ import org.openhab.core.cache.ExpiringCacheAsync;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public class PresenceDetectionTest {
-    private static final Duration CACHE_TIME = Duration.ofSeconds(2);
 
-    private @NonNullByDefault({}) TestableExpiringCacheAsync<PresenceDetectionValue> cache;
     private @NonNullByDefault({}) PresenceDetection subject;
 
     private @Mock @NonNullByDefault({}) Consumer<PresenceDetectionValue> callback;
@@ -60,21 +57,6 @@ public class PresenceDetectionTest {
     private @Mock @NonNullByDefault({}) PresenceDetectionListener listener;
     private @Mock @NonNullByDefault({}) NetworkUtils networkUtils;
 
-    public static class TestableExpiringCacheAsync<V> extends ExpiringCacheAsync<V> {
-        public TestableExpiringCacheAsync(long expiry) throws IllegalArgumentException {
-            super(expiry);
-        }
-
-        @Override
-        public long getCurrentNanoTime() {
-            return super.getCurrentNanoTime();
-        }
-
-        public long getExpiresAt() {
-            return expiresAt;
-        }
-    }
-
     @BeforeEach
     public void setUp() {
         // Mock an interface
@@ -82,10 +64,8 @@ public class PresenceDetectionTest {
         doReturn(ArpPingUtilEnum.IPUTILS_ARPING).when(networkUtils).determineNativeARPpingMethod(anyString());
         doReturn(IpPingMethodEnum.WINDOWS_PING).when(networkUtils).determinePingMethod();
 
-        cache = spy(new TestableExpiringCacheAsync<>(CACHE_TIME.toMillis()));
-        subject = spy(new PresenceDetection(listener, scheduledExecutorService, CACHE_TIME));
+        subject = spy(new PresenceDetection(listener, scheduledExecutorService, Duration.ofSeconds(2)));
         subject.networkUtils = networkUtils;
-        subject.cache = cache;
 
         // Set a useful configuration. The default presenceDetection is a no-op.
         subject.setHostname("127.0.0.1");
@@ -177,7 +157,7 @@ public class PresenceDetectionTest {
         doReturn(detectionExecutorService).when(subject).getThreadsFor(anyInt());
 
         // We expect no valid value
-        assertTrue(cache.isExpired());
+        assertTrue(subject.cache.isExpired());
         // Get value will issue a PresenceDetection internally.
         subject.getValue(callback);
         verify(subject).performPresenceDetection();
@@ -206,7 +186,7 @@ public class PresenceDetectionTest {
         verify(callback, times(2)).accept(any());
 
         // Invalidate value, we should not get a new callback immediately again
-        cache.invalidateValue();
+        subject.cache.invalidateValue();
         subject.getValue(callback);
         verify(callback, times(2)).accept(any());
     }
