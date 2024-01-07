@@ -39,7 +39,7 @@ public class AuthenticationHandler {
     /**
      * Add or remove the basic auth credetials to the AuthenticationStore if needed.
      */
-    public synchronized void updateAuthenticationInformation(final URI uri) {
+    public synchronized void updateAuthenticationInformation(final URI uri) throws IllegalStateException {
         final AuthenticationStore authStore = httpClient.getAuthenticationStore();
 
         Authentication findAuthentication = authStore.findAuthentication("Basic", uri, Authentication.ANY_REALM);
