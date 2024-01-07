@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.cp750.internal;
+package org.openhab.binding.dolbycp.internal;
 
-import static org.openhab.binding.cp750.internal.CP750BindingConstants.*;
+import static org.openhab.binding.dolbycp.internal.DolbyCPBindingConstants.*;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -36,22 +36,22 @@ import de.cybso.cp750.CP750InputMode;
 import de.cybso.cp750.CP750Listener;
 
 /**
- * The {@link CP750Handler} is responsible for handling commands, which are
+ * The {@link DolbyCPHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Roland Tapken - Initial contribution
  */
-public class CP750Handler extends BaseThingHandler implements CP750Listener {
+public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
 
-    private final Logger logger = LoggerFactory.getLogger(CP750Handler.class);
+    private final Logger logger = LoggerFactory.getLogger(DolbyCPHandler.class);
 
-    private @Nullable CP750Configuration config;
+    private @Nullable DolbyCPConfiguration config;
 
     private @Nullable CP750Client client;
 
     private @Nullable ScheduledFuture scheduleFuture;
 
-    public CP750Handler(Thing thing) {
+    public DolbyCPHandler(Thing thing) {
         super(thing);
     }
 
@@ -130,7 +130,7 @@ public class CP750Handler extends BaseThingHandler implements CP750Listener {
 
     @Override
     public void initialize() {
-        config = getConfigAs(CP750Configuration.class);
+        config = getConfigAs(DolbyCPConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
@@ -197,7 +197,7 @@ public class CP750Handler extends BaseThingHandler implements CP750Listener {
      */
     private void tryToReconnect() {
         if (config.reconnectInterval > 0) {
-            logger.info("CP750 at {}:{} try to reconnect in {} seconds", config.hostname, config.port,
+            logger.info("DolbyCP at {}:{} try to reconnect in {} seconds", config.hostname, config.port,
                     config.reconnectInterval);
             scheduler.schedule(() -> {
                 if (getThing().getStatus() == ThingStatus.OFFLINE) {
@@ -229,7 +229,7 @@ public class CP750Handler extends BaseThingHandler implements CP750Listener {
      */
     @Override
     public void receive(CP750Field field, String value) {
-        logger.debug("CP750 at {}:{} received {} with value {}", config.hostname, config.port, field, value);
+        logger.debug("DolbyCP at {}:{} received {} with value {}", config.hostname, config.port, field, value);
         switch (field) {
             case SYS_MUTE -> updateState(CHANNEL_MUTE, OnOffType.from(value));
             case SYSINFO_VERSION -> updateState(CHANNEL_VERSION, StringType.valueOf(value));

@@ -184,7 +184,6 @@
     <module>org.openhab.binding.coolmasternet</module>
         
     <module>org.openhab.binding.coronastats</module>
-    <module>org.openhab.binding.cp750</module>
         
     <module>org.openhab.binding.daikin</module>
         
@@ -208,6 +207,8 @@
         
     <module>org.openhab.binding.dmx</module>
         
+    <module>org.openhab.binding.dolbycp</module>
+
     <module>org.openhab.binding.dominoswiss</module>
         
     <module>org.openhab.binding.doorbird</module>

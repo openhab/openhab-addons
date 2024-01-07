@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.cp750.internal;
+package org.openhab.binding.dolbycp.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link CP750Configuration} class contains fields mapping thing configuration parameters.
+ * The {@link DolbyCPConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Roland Tapken - Initial contribution
  */
 @NonNullByDefault
-public class CP750Configuration {
+public class DolbyCPConfiguration {
     /**
      * Hostname or IP address of the CP750 device
      */

@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.cp750.internal;
+package org.openhab.binding.dolbycp.internal;
 
-import static org.openhab.binding.cp750.internal.CP750BindingConstants.*;
+import static org.openhab.binding.dolbycp.internal.DolbyCPBindingConstants.*;
 
 import java.util.Set;
 
@@ -26,14 +26,14 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link CP750HandlerFactory} is responsible for creating things and thing
+ * The {@link DolbyCPHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Roland Tapken - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.cp750", service = ThingHandlerFactory.class)
-public class CP750HandlerFactory extends BaseThingHandlerFactory {
+@Component(configurationPid = "binding.dolbycp", service = ThingHandlerFactory.class)
+public class DolbyCPHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
 
@@ -47,7 +47,7 @@ public class CP750HandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new CP750Handler(thing);
+            return new DolbyCPHandler(thing);
         }
 
         return null;

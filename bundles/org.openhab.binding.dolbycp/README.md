@@ -1,6 +1,7 @@
-# CP750 Binding
+# DolbyCP Binding
 
 This binding is intended to connect to a _Dolby Digital Cinema Processor CP750_.
+Support for CP950 may be added in future (if someone who owns one helps to test it).
 
 It uses ASCII commands send over a TCP connection on port 61408. Please note that the CP750 only accepts up to 20 simultaneous connection and will discard the oldest connection if a 21st connection is established. So be sure to grateful shutdown each connection using the client's close() method, or it's AutoCloseable functionality.
 
@@ -12,7 +13,7 @@ Currently, only _Fader_, _Mute_ and _Input Mode_ channels are implemented.
 
 ## Supported Things
 
-- `cp750` 
+- `cp750`
 
 ## Thing Configuration
 

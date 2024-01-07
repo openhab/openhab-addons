@@ -66,7 +66,6 @@
 /bundles/org.openhab.binding.comfoair/ @boehan
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
 /bundles/org.openhab.binding.coronastats/ @DerOetzi
-/bundles/org.openhab.binding.cp750/ @Cybso
 /bundles/org.openhab.binding.daikin/ @caffineehacker
 /bundles/org.openhab.binding.dali/ @rs22
 /bundles/org.openhab.binding.danfossairunit/ @pravussum
@@ -78,6 +77,7 @@
 /bundles/org.openhab.binding.digitalstrom/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.dolbycp/ @Cybso
 /bundles/org.openhab.binding.dominoswiss/ @Friesoch
 /bundles/org.openhab.binding.doorbird/ @mhilbush
 /bundles/org.openhab.binding.draytonwiser/ @andrew-schofield

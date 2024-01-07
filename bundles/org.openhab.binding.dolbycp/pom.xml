@@ -10,9 +10,9 @@
     <version>4.2.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>org.openhab.binding.cp750</artifactId>
+  <artifactId>org.openhab.binding.dolbycp</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: CP750 Binding</name>
+  <name>openHAB Add-ons :: Bundles :: DolbyCP Binding</name>
 
   <dependencies>
     <dependency>

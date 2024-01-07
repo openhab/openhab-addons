@@ -10,21 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.cp750.internal;
+package org.openhab.binding.dolbycp.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link CP750BindingConstants} class defines common constants, which are
+ * The {@link DolbyCPBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Roland Tapken - Initial contribution
  */
 @NonNullByDefault
-public class CP750BindingConstants {
+public class DolbyCPBindingConstants {
 
-    private static final String BINDING_ID = "cp750";
+    private static final String BINDING_ID = "dolbycp";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "connection");
