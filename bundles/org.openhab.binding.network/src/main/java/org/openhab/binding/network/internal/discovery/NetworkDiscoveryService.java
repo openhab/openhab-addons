@@ -13,6 +13,7 @@
 package org.openhab.binding.network.internal.discovery;
 
 import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
+import static org.openhab.binding.network.internal.utils.NetworkUtils.durationToMillis;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -70,8 +71,9 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     private final NetworkUtils networkUtils = new NetworkUtils();
 
     public NetworkDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, Math
-                .round(new NetworkUtils().getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE).size() * (PING_TIMEOUT.toSeconds())),
+        super(SUPPORTED_THING_TYPES_UIDS,
+                (int) Math.round(new NetworkUtils().getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE).size()
+                        * (durationToMillis(PING_TIMEOUT) / 1000.0)),
                 false);
     }
 
