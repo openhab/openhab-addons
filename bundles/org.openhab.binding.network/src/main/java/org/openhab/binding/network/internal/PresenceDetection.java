@@ -325,7 +325,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             detectionChecks += interfaceNames.size();
         }
 
-        logger.debug("Performing {} presence detection checks for {}", detectionChecks, hostname);
+        logger.trace("Performing {} presence detection checks for {}", detectionChecks, hostname);
 
         PresenceDetectionValue pdv = new PresenceDetectionValue(hostname, PresenceDetectionValue.UNREACHABLE);
 
@@ -494,10 +494,11 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * Performs a Java ping. It is not recommended to use this, as it is not interruptible,
      * and will not work on Windows systems reliably and will fall back from ICMP pings to
      * the TCP echo service on port 7 which barely no device or server supports nowadays.
-     * (https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/InetAddress.html#isReachable%28int%29)
+     *
+     * @see InetAddress#isReachable(int)
      */
     protected void performJavaPing(PresenceDetectionValue pdv) {
-        logger.trace("Perform java ping presence detection for {}", hostname);
+        logger.trace("Perform Java ping presence detection for {}", hostname);
 
         withDestinationAddress(destinationAddress -> {
             PingResult pingResult = networkUtils.javaPing(timeout, destinationAddress);
@@ -518,7 +519,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                     updateReachable(pdv, ICMP_PING, getLatency(pingResult));
                 }
             } catch (IOException e) {
-                logger.trace("Failed to execute a native ping for ip {}", hostname, e);
+                logger.trace("Failed to execute a native ping for {}", hostname, e);
             } catch (InterruptedException e) {
                 // This can be ignored, the thread will end anyway
             }
@@ -526,7 +527,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     }
 
     private Duration getLatency(PingResult pingResult) {
-        logger.debug("Getting latency from ping result {} using latency mode {}", pingResult,
+        logger.trace("Getting latency from ping result {} using latency mode {}", pingResult,
                 preferResponseTimeAsLatency);
         Duration executionTime = pingResult.getExecutionTime();
         Duration responseTime = pingResult.getResponseTime();
@@ -589,7 +590,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         try {
             DHCPPacketListenerServer listener = DHCPListenService.register(destinationAddress.getHostAddress(), this);
             dhcpState = String.format("Bound to port %d - %s", listener.getCurrentPort(),
-                    (listener.usingPrivilegedPort() ? "Running normally" : "Port forwarding necessary !"));
+                    (listener.usingPrivilegedPort() ? "Running normally" : "Port forwarding necessary!"));
         } catch (SocketException e) {
             dhcpState = String.format("Cannot use DHCP sniffing: %s", e.getMessage());
             logger.warn("{}", dhcpState);

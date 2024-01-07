@@ -106,7 +106,7 @@ public class NetworkUtils {
                 result.add(InetAddress.getByAddress(segments).getHostAddress());
             }
         } catch (UnknownHostException e) {
-            logger.debug("Could not build net IP address.", e);
+            logger.trace("Could not build net IP address.", e);
         }
         return result;
     }
@@ -127,7 +127,7 @@ public class NetworkUtils {
                 }
             }
         } catch (SocketException e) {
-            logger.debug("Could not get network interfaces", e);
+            logger.trace("Could not get network interfaces", e);
         }
 
         return result;
@@ -203,7 +203,7 @@ public class NetworkUtils {
             socket.connect(new InetSocketAddress(host, port), (int) timeout.toMillis());
             success = true;
         } catch (ConnectException | SocketTimeoutException | NoRouteToHostException e) {
-            logger.debug("Could not connect to {}:{}", host, port, e);
+            logger.trace("Could not connect to {}:{}", host, port, e);
         }
         return new PingResult(success, Duration.between(execStartTime, Instant.now()));
     }
@@ -411,7 +411,7 @@ public class NetworkUtils {
                 success = true;
             }
         } catch (IOException e) {
-            logger.debug("Could not connect to {}", destinationAddress, e);
+            logger.trace("Could not connect to {}", destinationAddress, e);
         }
         return new PingResult(success, Duration.between(execStartTime, Instant.now()));
     }
@@ -427,9 +427,9 @@ public class NetworkUtils {
         try (DatagramSocket s = new DatagramSocket()) {
             byte[] buffer = new byte[0];
             s.send(new DatagramPacket(buffer, buffer.length, address, port));
-            logger.debug("Sent packet to {}:{} to wake up iOS device", address, port);
+            logger.trace("Sent packet to {}:{} to wake up iOS device", address, port);
         } catch (PortUnreachableException e) {
-            logger.debug("Unable to send packet to wake up iOS device at {}:{}", address, port, e);
+            logger.trace("Unable to send packet to wake up iOS device at {}:{}", address, port, e);
         }
     }
 }
