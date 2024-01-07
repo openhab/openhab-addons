@@ -196,20 +196,25 @@ then
         val String startTime = "00:20"
         val String stopTime = "07:00"
         val Boolean enableProgram = true
-        val Integer batteryFull = 6500
-        val Integer batteryMin = 500
-        val Integer daylightConsumption = 10000
-        val Integer maximumSOC = 100
-        val Integer minimumSOC = 20
 
-        // variable algorithm parameters
+        // calculation intermediaries
+        val batteryFull = 6500.0 // kWh
+        val batteryMin = 500.0 // kWh
+        val daylightConsumption = 10000.0 // kWh
+        val maximumSOC = 100.0 // percent
+        val minimumSOC = 20.0 // percent
+
+
+        // calculate stop SOC based on weather forecast
         val Double solarForecast = (ForecastSolar_PV_Whole_Site_Forecast_Today.state as QuantityType<Energy>).toUnit("Wh").doubleValue()
-        var Double targetSOC = (100 * (batteryMin + daylightConsumption - solarForecast)) / batteryFull
+        var Double targetSOC = (100.0 * (batteryMin + daylightConsumption - solarForecast)) / batteryFull
         if (targetSOC > maximumSOC) {
             targetSOC = maximumSOC
         } else if (targetSOC < minimumSOC) {
             targetSOC = minimumSOC
         }
+
+        // convert to integer
         val Integer stopSOC = targetSOC.intValue()
 
         logInfo("Rules", "Setup Charging Program:{solarForecast:" + solarForecast + ", programMode:" + programMode + ", powerLevel:" + powerLevel + ", stopSOC:" + stopSOC + ", enableCharging:" + enableAcCharging + ", startTime:" + startTime + ", stopTime:" + stopTime + ", enableProgram:" + enableProgram +"}")
