@@ -255,7 +255,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } catch (HydrawiseAuthenticationException e) {
-            logger.debug("Token has been rejected, will try to refresh token in {} min : {}", TOKEN_REFRESH_SECONDS,
+            logger.debug("Token has been rejected, will try to refresh token in {} secs : {}", TOKEN_REFRESH_SECONDS,
                     e.getLocalizedMessage());
             clearPolling();
             retryToken();
