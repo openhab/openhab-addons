@@ -46,17 +46,33 @@ public class ReolinkState {
     public class GetAbilityResponse {
         public class Value {
             public class Ability {
-                public class ScheduleVersion {
+                public class AbilityKey {
                     public int ver = 0;
+                    public int permit = 0;
                 }
 
-                public ScheduleVersion scheduleVersion = new ScheduleVersion();
+                public AbilityKey push = new AbilityKey();
+                public AbilityKey scheduleVersion = new AbilityKey();
+                public AbilityKey supportAiDogCat = new AbilityKey();
+                public AbilityKey supportAiFace = new AbilityKey();
+                public AbilityKey supportAiPeople = new AbilityKey();
+                public AbilityKey supportAiVehicle = new AbilityKey();
+                public AbilityKey supportAudioAlarm = new AbilityKey();
+                public AbilityKey supportAudioAlarmEnable = new AbilityKey();
+                public AbilityKey supportEmailEnable = new AbilityKey();
+                public AbilityKey supportFtpEnable = new AbilityKey();
+                public AbilityKey supportRecordEnable = new AbilityKey();
             }
 
             @SerializedName(value = "ability", alternate = { "Ability" }) // uses uppercase A
             public Ability ability = new Ability();
         }
 
+        public class Error {
+            public String detail = "";
+        }
+
         public Value value = new Value();
+        public Error error = new Error();
     }
 }
