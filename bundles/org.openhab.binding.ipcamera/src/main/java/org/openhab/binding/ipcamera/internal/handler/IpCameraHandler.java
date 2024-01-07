@@ -522,8 +522,8 @@ public class IpCameraHandler extends BaseThingHandler {
             return; // ffmpeg snapshot stream is still alive
         }
 
-        // if ONVIF cam also use connection state which is updated by regular messages to camera
-        if (thing.getThingTypeUID().getId().equals(ONVIF_THING) && snapshotUri.isEmpty() && onvifCamera.isConnected()) {
+        // ONVIF cameras get regular event messages from the camera
+        if (supportsOnvifEvents() && onvifCamera.isConnected()) {
             return;
         }
 
@@ -1406,6 +1406,12 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * The {@link pollingCameraConnection} This polls to see if the camera is reachable only until the camera
+     * successfully connects.
+     *
+     */
+
     void pollingCameraConnection() {
         keepMjpegRunning();
         if (thing.getThingTypeUID().getId().equals(GENERIC_THING)
@@ -1422,12 +1428,6 @@ public class IpCameraHandler extends BaseThingHandler {
             return;
         }
         if (cameraConfig.getOnvifPort() > 0 && !onvifCamera.isConnected()) {
-            if (onvifCamera.isConnectError()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Camera is not reachable");
-            } else if (onvifCamera.isRefusedError()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Camera refused connection on ONVIF ports.");
-            }
             logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP: {}:{}", cameraConfig.getIp(),
                     cameraConfig.getOnvifPort());
             onvifCamera.connect(supportsOnvifEvents());
@@ -1597,13 +1597,8 @@ public class IpCameraHandler extends BaseThingHandler {
                             + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
                     sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + "&user="
                             + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
-                } else {
-                    if (!snapshotPolling) {
-                        checkCameraConnection();
-                    }
-                    if (!onvifCamera.isConnected()) {
-                        onvifCamera.connect(true);
-                    }
+                } else if (!snapshotPolling) {
+                    checkCameraConnection();
                 }
                 break;
             case DAHUA_THING:

@@ -105,63 +105,72 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                             return;
                         }
                         ipCameraHandler.reolinkScheduleVersion = getAbilityResponse[0].value.ability.scheduleVersion.ver;
-                        if (getAbilityResponse[0].value.ability.supportFtpEnable.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.supportFtpEnable == null
+                                || getAbilityResponse[0].value.ability.supportFtpEnable.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no Enable FTP support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_FTP);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportRecordEnable.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.supportRecordEnable == null
+                                || getAbilityResponse[0].value.ability.supportRecordEnable.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no enable recording support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_RECORDINGS);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportAiDogCat.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.supportAiDogCat == null
+                                || getAbilityResponse[0].value.ability.supportAiDogCat.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no AiDogCat support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_ANIMAL_ALARM);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportAiPeople.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.supportAiPeople == null
+                                || getAbilityResponse[0].value.ability.supportAiPeople.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no AiPeople support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_HUMAN_ALARM);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportAiVehicle.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.supportAiVehicle == null
+                                || getAbilityResponse[0].value.ability.supportAiVehicle.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no AiVehicle support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_CAR_ALARM);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportEmailEnable.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.supportEmailEnable == null
+                                || getAbilityResponse[0].value.ability.supportEmailEnable.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no EmailEnable support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_EMAIL);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.push.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.push == null
+                                || getAbilityResponse[0].value.ability.push.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no Push support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_ENABLE_PUSH);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportAudioAlarm.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.supportAudioAlarm == null
+                                || getAbilityResponse[0].value.ability.supportAudioAlarm.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no AudioAlarm support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_AUDIO_ALARM);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportAudioAlarmEnable.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.supportAudioAlarmEnable == null
+                                || getAbilityResponse[0].value.ability.supportAudioAlarmEnable.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no AudioAlarm support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_THRESHOLD_AUDIO_ALARM);
                             if (channel != null) {
@@ -172,7 +181,8 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportAiFace.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.supportAiFace == null
+                                || getAbilityResponse[0].value.ability.supportAiFace.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no AiFace support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_FACE_DETECTED);
                             if (channel != null) {

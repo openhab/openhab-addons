@@ -129,8 +129,6 @@ public class OnvifConnection {
     private String imagingXAddr = "http://" + ipAddress + "/onvif/device_service";
     private String ptzXAddr = "http://" + ipAddress + "/onvif/ptz_service";
     private String subscriptionXAddr = "http://" + ipAddress + "/onvif/device_service";
-    private boolean connectError = false;
-    private boolean refusedError = false;
     private boolean isConnected = false;
     private int mediaProfileIndex = 0;
     private String snapshotUri = "";
@@ -577,21 +575,21 @@ public class OnvifConnection {
                         return;
                     }
                     if (future.isSuccess()) {
-                        connectError = false;
                         Channel ch = future.channel();
                         ch.writeAndFlush(request);
                     } else { // an error occurred
                         if (future.isDone() && !future.isCancelled()) {
                             Throwable cause = future.cause();
                             String msg = cause.getMessage();
-                            logger.trace("connect failed - cause {}", cause.getMessage());
+                            logger.debug("connect failed - cause {}", cause.getMessage());
                             if (cause instanceof ConnectTimeoutException) {
-                                logger.debug("Camera is not reachable on IP {}", ipAddress);
-                                connectError = true;
+                                usingEvents = false;// Prevent Unsubscribe from being sent
+                                ipCameraHandler.cameraCommunicationError(
+                                        "Camera timed out when trying to connect to the ONVIF port");
                             } else if ((cause instanceof ConnectException) && msg != null
                                     && msg.contains("Connection refused")) {
-                                logger.debug("Camera ONVIF port {} is refused.", onvifPort);
-                                refusedError = true;
+                                usingEvents = false;// Prevent Unsubscribe from being sent
+                                ipCameraHandler.cameraCommunicationError("Camera refused to connect to the ONVIF port");
                             }
                         }
                         if (isConnected) {
@@ -943,14 +941,6 @@ public class OnvifConnection {
         }
     }
 
-    public boolean isConnectError() {
-        return connectError;
-    }
-
-    public boolean isRefusedError() {
-        return refusedError;
-    }
-
     public boolean isConnected() {
         connecting.lock();
         try {
@@ -964,8 +954,6 @@ public class OnvifConnection {
         connecting.lock();
         try {
             this.isConnected = isConnected;
-            this.connectError = false;
-            this.refusedError = false;
         } finally {
             connecting.unlock();
         }
