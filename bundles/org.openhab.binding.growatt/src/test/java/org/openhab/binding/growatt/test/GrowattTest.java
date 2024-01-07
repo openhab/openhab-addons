@@ -369,7 +369,7 @@ public class GrowattTest {
 
         Map<String, QuantityType<?>> channelStates = grottValues.getChannelStates();
         assertNotNull(channelStates);
-        assertEquals(15, channelStates.size());
+        assertEquals(16, channelStates.size());
 
         assertEquals(QuantityType.valueOf(809.8, Units.WATT), channelStates.get("import-power"));
         assertEquals(QuantityType.valueOf(171.0, Units.WATT), channelStates.get("import-power-s"));

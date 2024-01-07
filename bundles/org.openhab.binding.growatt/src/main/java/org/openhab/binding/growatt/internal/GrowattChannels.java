@@ -84,7 +84,7 @@ public class GrowattChannels {
             new AbstractMap.SimpleEntry<String, UoM>("inverter-va", new UoM(Units.VOLT_AMPERE, 10)),
 
             // battery discharge / charge power
-            new AbstractMap.SimpleEntry<String, UoM>("charge-current", new UoM(Units.VOLT_AMPERE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("charge-current", new UoM(Units.AMPERE, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("charge-power", new UoM(Units.WATT, 10)),
 
             new AbstractMap.SimpleEntry<String, UoM>("discharge-power", new UoM(Units.WATT, 10)),
@@ -183,10 +183,10 @@ public class GrowattChannels {
             new AbstractMap.SimpleEntry<String, UoM>("constant-power-ok", new UoM(Units.ONE, 1)),
             new AbstractMap.SimpleEntry<String, UoM>("load-percent", new UoM(Units.PERCENT, 10)),
 
-            // rac ??
-            new AbstractMap.SimpleEntry<String, UoM>("rac", new UoM(Units.ONE, 1)),
-            new AbstractMap.SimpleEntry<String, UoM>("erac-today", new UoM(Units.KILOWATT_HOUR, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("erac-total", new UoM(Units.KILOWATT_HOUR, 10))
+            // reactive 'power' resp. 'energy'
+            new AbstractMap.SimpleEntry<String, UoM>("rac", new UoM(Units.VAR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("erac-today", new UoM(Units.KILOVAR_HOUR, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("erac-total", new UoM(Units.KILOVAR_HOUR, 10))
     //
     );
 

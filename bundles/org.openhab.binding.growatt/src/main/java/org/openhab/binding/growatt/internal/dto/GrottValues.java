@@ -81,6 +81,7 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "pvgridpower2") Integer inverter_power_s;
     public @Nullable @SerializedName(value = "pvgridpower3") Integer inverter_power_t;
 
+    // apparent power VA
     public @Nullable @SerializedName(value = "op_va", alternate = { "AC_InVA" }) Integer inverter_va;
 
     // battery discharge / charge power
@@ -184,9 +185,9 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "constantPowerOK") Integer constant_power_ok;
     public @Nullable @SerializedName(value = "loadpercent") Integer load_percent;
 
-    // rac ??
-    public @Nullable @SerializedName(value = "rac") Integer rac;
-    public @Nullable @SerializedName(value = "eractoday") Integer erac_today;
+    // reactive 'power' resp. 'energy'
+    public @Nullable @SerializedName(value = "rac", alternate = { "react_power" }) Integer rac;
+    public @Nullable @SerializedName(value = "eractoday", alternate = { "react_energy_kvar" }) Integer erac_today;
     public @Nullable @SerializedName(value = "eractotal") Integer erac_total;
 
     // @formatter:on

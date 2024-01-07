@@ -425,18 +425,18 @@
 				<description>Percent of full load.</description>
 			</channel>
 
-			<!-- rac = reserve ac supply ?? -->
-			<channel id="rac" typeId="system-status-code">
-				<label>Reserve AC Status</label>
-				<description>Reserve AC supply status.</description>
+			<!-- reactive power resp. energy -->
+			<channel id="rac" typeId="advanced-electric-var">
+				<label>Reactive Power</label>
+				<description>Reactive power output.</description>
 			</channel>
-			<channel id="erac-today" typeId="system.electric-energy">
-				<label>Reserve Energy Today</label>
-				<description>Reserve AC supply energy today.</description>
+			<channel id="erac-today" typeId="advanced-electric-kvarh">
+				<label>Reactive Energy Today</label>
+				<description>Reactive energy supplied today.</description>
 			</channel>
-			<channel id="erac-total" typeId="system.electric-energy">
-				<label>Total Reserve Energy</label>
-				<description>Total reserve AC supply energy.</description>
+			<channel id="erac-total" typeId="advanced-electric-kvarh">
+				<label>Total Reactive Energy</label>
+				<description>Total reactive energy supplied.</description>
 			</channel>
 
 		</channels>
@@ -525,6 +525,20 @@
 		<label>Electric Energy</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%0.0f kWh"/>
+	</channel-type>
+
+	<channel-type id="advanced-electric-var" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Electric Reactive Power</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%0.0f var"/>
+	</channel-type>
+
+	<channel-type id="advanced-electric-kvarh" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Electric Reactive Energy</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%0.0f kvarh"/>
 	</channel-type>
 
 	<channel-type id="advanced-outdoor-temperature" advanced="true">
