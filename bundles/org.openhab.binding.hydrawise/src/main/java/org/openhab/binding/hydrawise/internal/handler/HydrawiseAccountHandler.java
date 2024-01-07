@@ -218,8 +218,8 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
     }
 
     private void clearFuture(@Nullable final ScheduledFuture<?> future) {
-        if (future != null && !future.isCancelled()) {
-            future.cancel(false);
+        if (future != null) {
+            future.cancel(true);
         }
     }
 
