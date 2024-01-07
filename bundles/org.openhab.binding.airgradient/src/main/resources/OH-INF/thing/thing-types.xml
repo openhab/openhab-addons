@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="airgradient"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="airgradientapi">
+		<label>AirGradient API</label>
+		<description>Connection to the AirGradient API</description>
+
+		<representation-property>token</representation-property>
+		<config-description>
+			<parameter name="token" type="text" required="true">
+				<context>password</context>
+				<label>Token</label>
+				<description>Token to access the device</description>
+			</parameter>
+			<parameter name="hostname" type="text">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<default>https://api.airgradient.com/</default>
+				<description>Hostname or IP address of the API</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Sample Thing Type -->
+	<thing-type id="location">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="airgradientapi"/>
+		</supported-bridge-type-refs>
+
+		<label>AirGradient Location</label>
+		<description>AirGradient Location is where measurements are made</description>
+
+		<channels>
+			<channel id="pm01" typeId="pm1"/>
+			<channel id="pm02" typeId="pm2"/>
+			<channel id="pm10" typeId="pm10"/>
+			<channel id="pm003Count" typeId="particle-count"/>
+			<channel id="atmp" typeId="temperature"/>
+			<channel id="rhum" typeId="humidity"/>
+			<channel id="wifi" typeId="wifi"/>
+			<channel id="rco2" typeId="co2"/>
+			<channel id="tvoc" typeId="tvoc"/>
+		</channels>
+
+		<properties>
+			<property name="name"/>
+			<property name="firmwareVersion"/>
+			<property name="serialNo"/>
+		</properties>
+		<representation-property>location</representation-property>
+
+		<config-description>
+			<parameter name="location" type="text" required="true">
+				<label>Location ID</label>
+				<description>ID of the location</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="pm1">
+		<item-type>Number:Density</item-type>
+		<label>PM1</label>
+		<description>Particulate Matter 1 (0.001mm)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="pm2">
+		<item-type>Number:Density</item-type>
+		<label>PM2</label>
+		<description>Particulate Matter 2 (0.002mm)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="pm10">
+		<item-type>Number:Density</item-type>
+		<label>PM10</label>
+		<description>Particulate Matter 10 (0.01mm)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="particle-count">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Particle Count</label>
+		<description>Count of particles in 1 decilitre of air</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Humidity</description>
+		<category>Humidity</category>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="wifi">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<description>Received signal strength indicator</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d dBm"/>
+	</channel-type>
+
+	<channel-type id="co2">
+		<item-type>Number:Density</item-type>
+		<label>CO2</label>
+		<description>CarbonDioxide</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="tvoc">
+		<item-type>Number:Density</item-type>
+		<label>TVOC</label>
+		<description>Total Volatile Organic Compounds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>
