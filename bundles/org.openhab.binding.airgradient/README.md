@@ -1,6 +1,6 @@
 # AirGradient Binding
 
-AirGradient provide open source and open hardware air quiality monitors.
+AirGradient provide open source and open hardware air quality monitors.
 
 This binding reads air quality data from the the AirGradient (https://www.airgradient.com/) API.
 
@@ -31,6 +31,8 @@ To add a location, you need to know the location ID. To get the location ID, you
 2. Navigate to Locations from the upper left hamburger menu.
 3. Here you will find a list of all of your sensors, with a location ID in the left column. Use that id when you add new Location things.
 
+This binding supports changing the hostname you are reading the data from, and supports reading a single object instead of an array of objects.
+This makes it possible to use this binding to read from the sensor on your local network instead of from the API if you flash your own AirGradient sensor with a web server that return the postToServer() data on GET requests.
 
 ### `API` Thing Configuration
 

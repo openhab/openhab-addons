@@ -49,7 +49,11 @@ public class AirGradientAPIHandlerTest {
         }
     };
 
-    private static final String CONTENT = """
+    private static final String SINGLE_CONTENT = """
+             {"locationId":4321,"locationName":"Some other name","pm01":1,"pm02":2,"pm10":2,"pm003Count":536,"atmp":20.45,"rhum":16.61,"rco2":null,"tvoc":null,"wifi":-54,"timestamp":"2024-01-07T13:00:20.000Z","ledMode":"co2","ledCo2Threshold1":1000,"ledCo2Threshold2":2000,"ledCo2ThresholdEnd":4000,"serialno":"serial","firmwareVersion":null,"tvocIndex":null,"noxIndex":null}
+            """;
+
+    private static final String MULTI_CONTENT = """
             [
              {"locationId":1234,"locationName":"Some Name","pm01":1,"pm02":2,"pm10":2,"pm003Count":536,"atmp":20.45,"rhum":16.61,"rco2":null,"tvoc":null,"wifi":-54,"timestamp":"2024-01-07T13:00:20.000Z","ledMode":"co2","ledCo2Threshold1":1000,"ledCo2Threshold2":2000,"ledCo2ThresholdEnd":4000,"serialno":"serial","firmwareVersion":null,"tvocIndex":null,"noxIndex":null},
              {"locationId":4321,"locationName":"Some other name","pm01":1,"pm02":2,"pm10":2,"pm003Count":536,"atmp":20.45,"rhum":16.61,"rco2":null,"tvoc":null,"wifi":-54,"timestamp":"2024-01-07T13:00:20.000Z","ledMode":"co2","ledCo2Threshold1":1000,"ledCo2Threshold2":2000,"ledCo2ThresholdEnd":4000,"serialno":"serial","firmwareVersion":null,"tvocIndex":null,"noxIndex":null}
@@ -93,11 +97,24 @@ public class AirGradientAPIHandlerTest {
     }
 
     @Test
-    public void testGetMeasuresTwo() throws Exception {
+    public void testGetMeasuresSingle() throws Exception {
         ContentResponse response = Mockito.mock(ContentResponse.class);
         Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
         Mockito.when(response.getStatus()).thenReturn(200);
-        Mockito.when(response.getContentAsString()).thenReturn(CONTENT);
+        Mockito.when(response.getContentAsString()).thenReturn(SINGLE_CONTENT);
+
+        var res = sut.getMeasures();
+        assertThat(res, is(not(empty())));
+        assertThat(res.size(), is(1));
+        assertThat(res.get(0).locationName, is("Some other name"));
+    }
+
+    @Test
+    public void testGetMeasuresMulti() throws Exception {
+        ContentResponse response = Mockito.mock(ContentResponse.class);
+        Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
+        Mockito.when(response.getStatus()).thenReturn(200);
+        Mockito.when(response.getContentAsString()).thenReturn(MULTI_CONTENT);
 
         var res = sut.getMeasures();
         assertThat(res, is(not(empty())));
@@ -125,7 +142,7 @@ public class AirGradientAPIHandlerTest {
         ContentResponse response = Mockito.mock(ContentResponse.class);
         Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
         Mockito.when(response.getStatus()).thenReturn(200);
-        Mockito.when(response.getContentAsString()).thenReturn(CONTENT);
+        Mockito.when(response.getContentAsString()).thenReturn(MULTI_CONTENT);
         ThingHandlerCallback callbackMock = Mockito.mock(ThingHandlerCallback.class);
 
         sut.setCallback(callbackMock);

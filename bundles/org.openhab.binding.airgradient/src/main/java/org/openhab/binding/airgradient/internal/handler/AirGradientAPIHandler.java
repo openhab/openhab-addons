@@ -148,9 +148,22 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
             if (response.getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
 
-                Type measuresType = new TypeToken<List<@Nullable Measure>>() {
-                }.getType();
-                List<@Nullable Measure> measures = gson.fromJson(response.getContentAsString(), measuresType);
+                String stringResponse = response.getContentAsString().trim();
+                List<@Nullable Measure> measures = null;
+                if (stringResponse.startsWith("[")) {
+                    // Array of measures, like returned from the AirGradients API
+                    Type measuresType = new TypeToken<List<@Nullable Measure>>() {
+                    }.getType();
+                    measures = gson.fromJson(stringResponse, measuresType);
+                } else if (stringResponse.startsWith("{")) {
+                    // Single measure e.g. if you read directly from the device
+                    Type measureType = new TypeToken<Measure>() {
+                    }.getType();
+                    Measure measure = gson.fromJson(stringResponse, measureType);
+                    measures = new ArrayList(1);
+                    measures.add(measure);
+                }
+
                 if (measures != null) {
                     List<@Nullable Measure> nullableMeasuresWithoutNulls = measures.stream().filter(Objects::nonNull)
                             .toList();
