@@ -381,6 +381,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     private void updateTimeSeries() {
         TimeSeries spotPriceTimeSeries = new TimeSeries(REPLACE);
         Map<DatahubTariff, TimeSeries> datahubTimeSeriesMap = new HashMap<>();
+        Map<DatahubTariff, BigDecimal> datahubPreviousTariff = new HashMap<>();
         for (DatahubTariff datahubTariff : DatahubTariff.values()) {
             datahubTimeSeriesMap.put(datahubTariff, new TimeSeries(REPLACE));
         }
@@ -401,8 +402,14 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
                 }
                 BigDecimal tariff = cacheManager.getTariff(datahubTariff, hourStart);
                 if (tariff != null) {
+                    BigDecimal previousTariff = datahubPreviousTariff.get(datahubTariff);
+                    if (previousTariff != null && tariff.equals(previousTariff)) {
+                        // Skip redundant states.
+                        continue;
+                    }
                     TimeSeries timeSeries = entry.getValue();
                     timeSeries.add(hourStart, getEnergyPrice(tariff, CURRENCY_DKK));
+                    datahubPreviousTariff.put(datahubTariff, tariff);
                 }
             }
         }
