@@ -167,7 +167,8 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
 
                 // Start scheduler
                 if (config.refreshInterval > 0) {
-                    this.scheduleFuture = scheduler.scheduleWithFixedDelay(this::refresh, config.refreshInterval, config.refreshInterval, TimeUnit.SECONDS);
+                    this.scheduleFuture = scheduler.scheduleWithFixedDelay(this::refresh, config.refreshInterval,
+                            config.refreshInterval, TimeUnit.SECONDS);
                 }
             } catch (IOException e) {
                 disposeClient(e);
