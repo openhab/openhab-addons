@@ -14,7 +14,7 @@
 			<match-properties>
 				<match-property>
 					<name>chipId</name>
-					<regex>1781:0C31</regex>
+					<regex>(?i)1781:0C31</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>
