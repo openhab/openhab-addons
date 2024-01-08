@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PresenceDetection implements IPRequestReceivedCallback {
 
-    private static final Duration DESTINATION_TTL = Duration.ofMillis(300);
+    private static final Duration DESTINATION_TTL = Duration.ofMinutes(5);
 
     NetworkUtils networkUtils = new NetworkUtils();
     private final Logger logger = LoggerFactory.getLogger(PresenceDetection.class);
