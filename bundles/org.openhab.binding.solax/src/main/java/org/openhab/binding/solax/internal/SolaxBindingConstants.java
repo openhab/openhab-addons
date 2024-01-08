@@ -61,6 +61,10 @@ public class SolaxBindingConstants {
     public static final String CHANNEL_INVERTER_OUTPUT_FREQUENCY_PHASE1 = "inverter-frequency-phase1";
     public static final String CHANNEL_INVERTER_OUTPUT_FREQUENCY_PHASE2 = "inverter-frequency-phase2";
     public static final String CHANNEL_INVERTER_OUTPUT_FREQUENCY_PHASE3 = "inverter-frequency-phase3";
+    public static final String CHANNEL_INVERTER_TEMPERATURE1 = "inverter-temperature1";
+    public static final String CHANNEL_INVERTER_TEMPERATURE2 = "inverter-temperature2";
+    public static final String CHANNEL_INVERTER_WORKMODE_CODE = "inverter-workmode-code";
+    public static final String CHANNEL_INVERTER_WORKMODE = "inverter-workmode";
 
     // Generic
     public static final String CHANNEL_INVERTER_PV1_POWER = "pv1-power";
@@ -100,6 +104,14 @@ public class SolaxBindingConstants {
     public static final String CHANNEL_TODAY_BATTERY_CHARGE_ENERGY = "today-battery-charge-energy";
     public static final String CHANNEL_TODAY_FEED_IN_ENERGY = "today-feed-in-energy";
     public static final String CHANNEL_TODAY_CONSUMPTION = "today-consumption";
+
+    // Workmodes
+    public static final String WORKMODE_WAITING = "Waiting";
+    public static final String WORKMODE_CHECKING = "Checking";
+    public static final String WORKMODE_NORMAL = "Normal";
+    public static final String WORKMODE_FAULT = "Fault";
+    public static final String WORKMODE_PERMANENT_FAULT = "Permanent fault";
+    public static final String WORKMODE_UPGRADING = "Upgrading";
 
     // I18N Keys
     protected static final String I18N_KEY_OFFLINE_COMMUNICATION_ERROR_JSON_CANNOT_BE_RETRIEVED = "@text/offline.communication-error.json-cannot-be-retrieved";

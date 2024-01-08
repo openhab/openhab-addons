@@ -24,6 +24,28 @@
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="inverter-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Inverter Temperature</label>
+		<description>Inverter Temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="inverter-workmode-code">
+		<item-type>Number</item-type>
+		<label>Inverter Workmode Code</label>
+		<description>Inverter Workmode Code</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+	<channel-type id="inverter-workmode">
+		<item-type>String</item-type>
+		<label>Inverter Workmode</label>
+		<description>Inverter Workmode</description>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
 	<channel-type id="last-retrieve-time-stamp">
 		<item-type>DateTime</item-type>
 		<label>Last Retrieve Time Stamp</label>
