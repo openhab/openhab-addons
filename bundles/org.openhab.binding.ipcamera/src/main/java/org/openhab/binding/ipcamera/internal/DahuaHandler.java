@@ -318,21 +318,10 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     ipCameraHandler
                             .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[" + nvrChannelAdjusted
                                     + "][0][1].Mode=Off&Lighting_V2[" + nvrChannelAdjusted + "][0][0].Mode=Auto");
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmLighting[" + nvrChannelAdjusted
-                                    + "][0].Enable=true&Alarm[2].EventHandler.LightingLink.LightDuration=300");
                 } else if (OnOffType.ON.equals(command)) {
-                    // Disable white light for motion, then white led on.
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmLighting[" + nvrChannelAdjusted
-                                    + "][0].Enable=false&Alarm[2].EventHandler.LightingLink.LightDuration=0");
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2["
                             + nvrChannelAdjusted + "][0][1].Mode=Manual");
                 } else if (command instanceof PercentType percentCommand) {
-                    // Disable white light for motion, then white led on.
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmLighting[" + nvrChannelAdjusted
-                                    + "][0].Enable=false&Alarm[2].EventHandler.LightingLink.LightDuration=0");
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2["
                             + nvrChannelAdjusted + "][0][1].Mode=Manual&Lighting_V2[" + nvrChannelAdjusted
                             + "][0][1].NearLight[0].Light=" + command.toString());
