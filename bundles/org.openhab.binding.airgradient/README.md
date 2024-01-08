@@ -1,5 +1,7 @@
 # AirGradient Binding
 
+![AirGradient logo](doc/logo.png)
+
 AirGradient provide open source and open hardware air quality monitors.
 
 This binding reads air quality data from the the AirGradient (https://www.airgradient.com/) API.
@@ -7,6 +9,8 @@ This binding reads air quality data from the the AirGradient (https://www.airgra
 This API is documented at https://api.airgradient.com/public/docs/api/v1/
 
 ## Supported Things
+
+![AirGradient sensors](doc/airgradient_sensors.png)
 
 This binding supports all the different AirGradient sensors, with most of the data. If you are missing something; please let the author know.
 
