@@ -55,7 +55,7 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
 
     private @Nullable CP750Client client;
 
-    private @Nullable ScheduledFuture scheduleFuture;
+    private @Nullable ScheduledFuture<?> scheduleFuture;
 
     public DolbyCPHandler(Thing thing) {
         super(thing);
@@ -63,10 +63,11 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (this.client != null) {
+        CP750Client client = this.client;
+        if (client != null) {
             try {
                 if (command instanceof RefreshType) {
-                    this.client.refresh();
+                    client.refresh();
                     return;
                 }
 
@@ -75,56 +76,56 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
                         if (command instanceof StringType) {
                             CP750InputMode mode = CP750InputMode.byValue(((StringType) command).toString());
                             if (mode != null) {
-                                this.client.setInputMode(mode);
+                                client.setInputMode(mode);
                             }
                         }
                     }
                     case CHANNEL_ANALOG -> {
                         if (command == OnOffType.ON) {
-                            this.client.setInputMode(CP750InputMode.ANALOG);
+                            client.setInputMode(CP750InputMode.ANALOG);
                         }
                     }
                     case CHANNEL_DIG1 -> {
                         if (command == OnOffType.ON) {
-                            this.client.setInputMode(CP750InputMode.DIG_1);
+                            client.setInputMode(CP750InputMode.DIG_1);
                         }
                     }
                     case CHANNEL_DIG2 -> {
                         if (command == OnOffType.ON) {
-                            this.client.setInputMode(CP750InputMode.DIG_2);
+                            client.setInputMode(CP750InputMode.DIG_2);
                         }
                     }
                     case CHANNEL_DIG3 -> {
                         if (command == OnOffType.ON) {
-                            this.client.setInputMode(CP750InputMode.DIG_3);
+                            client.setInputMode(CP750InputMode.DIG_3);
                         }
                     }
                     case CHANNEL_DIG4 -> {
                         if (command == OnOffType.ON) {
-                            this.client.setInputMode(CP750InputMode.DIG_4);
+                            client.setInputMode(CP750InputMode.DIG_4);
                         }
                     }
                     case CHANNEL_MIC -> {
                         if (command == OnOffType.ON) {
-                            this.client.setInputMode(CP750InputMode.MIC);
+                            client.setInputMode(CP750InputMode.MIC);
                         }
                     }
                     case CHANNEL_NONSYNC -> {
                         if (command == OnOffType.ON) {
-                            this.client.setInputMode(CP750InputMode.NON_SYNC);
+                            client.setInputMode(CP750InputMode.NON_SYNC);
                         }
                     }
                     case CHANNEL_MUTE -> {
                         if (command instanceof OnOffType) {
-                            this.client.setMuted(command == OnOffType.ON);
+                            client.setMuted(command == OnOffType.ON);
                         }
                     }
                     case CHANNEL_FADER -> {
                         if (command instanceof DecimalType) {
-                            this.client.setFader(((DecimalType) command).intValue());
+                            client.setFader(((DecimalType) command).intValue());
                         }
                         if (command instanceof IncreaseDecreaseType) {
-                            this.client.setFaderDelta(command == IncreaseDecreaseType.INCREASE ? 1 : -1);
+                            client.setFaderDelta(command == IncreaseDecreaseType.INCREASE ? 1 : -1);
                         }
                     }
                 }
@@ -136,27 +137,32 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
 
     @Override
     public void initialize() {
-        config = getConfigAs(DolbyCPConfiguration.class);
+        final DolbyCPConfiguration config = getConfigAs(DolbyCPConfiguration.class);
+        this.config = config;
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
             try {
-                if (this.scheduleFuture != null) {
-                    this.scheduleFuture.cancel(true);
-                    this.scheduleFuture = null;
-                }
-                if (this.client != null) {
-                    this.client.close();
-                    this.client = null;
+                ScheduledFuture<?> scheduleFuture = this.scheduleFuture;
+                this.scheduleFuture = null;
+                if (scheduleFuture != null) {
+                    scheduleFuture.cancel(true);
                 }
 
-                this.client = new CP750Client(config.hostname, config.port);
-                for (CP750Field field : CP750Field.values()) {
-                    this.client.addListener(field, this);
+                CP750Client client = this.client;
+                this.client = null;
+                if (client != null) {
+                    client.close();
                 }
-                this.client.refresh();
+
+                client = new CP750Client(config.hostname, config.port);
+                this.client = client;
+                for (CP750Field field : CP750Field.values()) {
+                    client.addListener(field, this);
+                }
+                client.refresh();
                 logger.info("Connected CP750 Client to {}:{}. OS version is {}", config.hostname, config.port,
-                        this.client.getVersion());
+                        client.getVersion());
                 updateStatus(ThingStatus.ONLINE);
 
                 // Start scheduler
@@ -171,28 +177,33 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
         });
     }
 
-    private void disposeClient(Exception e) {
-        if (this.scheduleFuture != null) {
+    private void disposeClient(@Nullable Exception e) {
+        ScheduledFuture<?> scheduleFuture = this.scheduleFuture;
+        this.scheduleFuture = null;
+        if (scheduleFuture != null) {
             try {
-                this.scheduleFuture.cancel(true);
+                scheduleFuture.cancel(true);
             } catch (Exception ignore) {
             }
-            this.scheduleFuture = null;
         }
-        if (this.client != null) {
-            this.client.removeListener(this);
+        CP750Client client = this.client;
+        this.client = null;
+        if (client != null) {
+            client.removeListener(this);
             try {
-                this.client.close();
+                client.close();
             } catch (Exception ignore) {
             }
-            this.client = null;
         }
         if (e == null) {
             updateStatus(ThingStatus.OFFLINE);
         } else {
+            DolbyCPConfiguration config = this.config;
+            String hostname = config == null ? "unknown" : config.hostname;
+            int port = config == null ? -1 : config.port;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error to " + config.hostname + ":" + config.port);
-            logger.error("CP750 on {}:{}", config.hostname, config.port, e);
+                    "Communication error to " + hostname + ":" + port);
+            logger.error("CP750 on {}:{}", hostname, port, e);
             tryToReconnect();
         }
     }
@@ -201,7 +212,8 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
      * Tries to reconnect until the device becomes available
      */
     private void tryToReconnect() {
-        if (config.reconnectInterval > 0) {
+        DolbyCPConfiguration config = this.config;
+        if (config != null && config.reconnectInterval > 0) {
             logger.info("DolbyCP at {}:{} try to reconnect in {} seconds", config.hostname, config.port,
                     config.reconnectInterval);
             scheduler.schedule(() -> {
@@ -221,8 +233,9 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
 
     public void refresh() {
         try {
-            if (this.client != null) {
-                this.client.refresh();
+            CP750Client client = this.client;
+            if (client != null) {
+                client.refresh();
             }
         } catch (IOException e) {
             disposeClient(e);
@@ -233,8 +246,16 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
      * Handles input data
      */
     @Override
-    public void receive(CP750Field field, String value) {
-        logger.debug("DolbyCP at {}:{} received {} with value {}", config.hostname, config.port, field, value);
+    public void receive(@Nullable CP750Field field, @Nullable String value) {
+        DolbyCPConfiguration config = this.config;
+        String hostname = config == null ? "unknown" : config.hostname;
+        int port = config == null ? -1 : config.port;
+
+        logger.debug("DolbyCP at {}:{} received {} with value {}", hostname, port, field, value);
+        if (field == null || value == null) {
+            return;
+        }
+
         switch (field) {
             case SYS_MUTE -> updateState(CHANNEL_MUTE, OnOffType.from(value));
             case SYSINFO_VERSION -> updateState(CHANNEL_VERSION, StringType.valueOf(value));
@@ -258,6 +279,9 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
                         case DIG_4 -> dig4 = OnOffType.ON;
                         case MIC -> mic = OnOffType.ON;
                         case NON_SYNC -> nonsync = OnOffType.ON;
+                        default -> {
+                            // Ignore unknown value
+                        }
                     }
                     updateState(CHANNEL_ANALOG, analog);
                     updateState(CHANNEL_DIG1, dig1);
@@ -267,6 +291,9 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
                     updateState(CHANNEL_MIC, mic);
                     updateState(CHANNEL_NONSYNC, nonsync);
                 }
+            }
+            default -> {
+                // Ignore unknown value
             }
         }
     }
