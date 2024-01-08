@@ -132,9 +132,9 @@ The list of all possible channels is as follows:
 | sp-display-status             | Number:Dimensionless      | Solar panel display status code.                     | yes      |
 | constant-power-ok             | Number:Dimensionless      | Constant power OK code.                              | yes      |
 | load-percent                  | Number:Dimensionless      | Percent of full load.                                | yes      |
-| rac                           | Number:Dimensionless      | RAC state.                                           | yes      |
-| erac-today                    | Number:Energy             | RAC energy today.                                    | yes      |
-| erac-total                    | Number:Energy             | Total RAC energy.                                    | yes      |
+| rac                           | Number:Power              | Reactive 'power' (var).                              | yes      |
+| erac-today                    | Number:Energy             | Reactive 'energy' today (kvarh).                     | yes      |
+| erac-total                    | Number:Energy             | Total reactive 'energy' (kvarh).                     | yes      |
 
 ## Rule Actions
 
@@ -154,28 +154,33 @@ growattActions.setupBatteryProgram(int programMode, @Nullable Integer powerLevel
 
 The meaning of the method parameters is as follows:
 
-| Parameter        | Description                                                                           |
-|------------------|---------------------------------------------------------------------------------------|
-| programMode      | The program mode to set i.e. 'Load First' (0), 'Battery First' (1), 'Grid First' (2)  |
-| powerLevel       | The rate of charging resp. discharging the battery 1%..100% (e.g. 100)                |
-| stopSOC          | The target battery SOC (state of charge) when the program stops. (e.g. 20)            |
-| enableAcCharging | Allow the battery to be charged from the AC mains supply. (e.g. true, false)          |
-| startTime        | String representation of the local time when the program shall start. (e.g. "00:15")  |
-| stopTime         | String representation of the  local time when the program shall stop. (e.g. "06:45")  |
-| enableProgram    | Disable / enable the program. (e.g. true, false)                                      |
+| Parameter                     | Description                                                                                                                                    |
+|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| programMode                   | The program mode to set i.e. 'Load First' (0), 'Battery First' (1), 'Grid First' (2).                                                          |
+| powerLevel<sup>2)</sup>       | The percentage rate of battery (dis-)charge e.g. 100 - in 'Battery First' mode => charge power, otherwise => discharge power.                  |
+| stopSOC<sup>2)</sup>          | The battery SOC (state of charge) percentage when the program shall stop e.g. 20 - in 'Battery First' mode => max. SOC, otherwise => min. SOC. |
+| enableAcCharging<sup>2)</sup> | Allow the battery to be charged from the AC mains supply e.g. true, false.                                                                     |
+| startTime<sup>1,2)</sup>      | String representation of the local time when the program `time segment` shall start e.g. "00:15"                                               |
+| stopTime<sup>1,2)</sup>       | String representation of the local time when the program `time segment` shall stop e.g. "06:45"                                                |
+| enableProgram<sup>1,2)</sup>  | Enable / disable the program `time segment` e.g. true, false                                                                                   |
 
-Depending on the inverter type and the program mode certain parameters may be 'null'.
-The 'mix', 'sph' or 'spa' inverter types set their battery program in one single command, so all parameters except `enableAcCharging` MUST be non-null.
-By contrast the 'tlx' inverter type sets its battery program in up to four partial commands, and to omit such a partial command you can set its respective parameter(s) to null.
-The permission for using null paramater values, and the effect of null paramater values, is shown in the table below:
+Notes:
 
-| Parameter                          | Permission for- resp. Effect of- Null Parameter Value                                                                      |
-|------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| programMode                        | Shall NOT be null under any circumstance.                                                                                  |
-| powerLevel                         | May be null on 'tlx' inverters whereby the prior programMode powerLevel continues.                                         |
-| stopSOC                            | May be null on 'tlx' inverters whereby the prior programMode stopSOC continues.                                            |
-| enableAcCharging                   | Shall NOT be null on 'mix' inverter 'Battery First' programs. If null the prior enableAcCharging state (if any) continues. |
-| startTime, stopTime, enableProgram | May be null on 'tlx' inverters whereby the prior programMode time segment continues. Either ALL null or ALL non-null.      |
+-1) ***WARNING*** inverters have different program `time segment`'s for each `programMode`.
+To prevent unexpected results do not overlap the `time segment`'s.
+
+-2) Depending on inverter type and `programMode` certain parameters may accept 'null' values.
+The 'mix', 'sph' and 'spa' types set the battery program in a single command, so all parameters - except `enableAcCharging` - <u>**must**</u> be ***non-***'null'.
+By contrast 'tlx' types set the battery program in up to four partial commands, and you may pass 'null' parameters in order to omit a partial command.
+The permission for passing 'null' parameters, and the effect of such 'null' parameters, is shown in detail in the table below:
+
+| Parameter                          | Permission for.. / effect of.. passing a 'null' parameter                                                                                     |
+|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| programMode                        | Shall <u>**not**</u> be 'null' under any circumstance!                                                                                        |
+| powerLevel                         | May be 'null' on 'tlx' inverters whereby the prior `programMode` / `powerLevel` continues to apply.                                           |
+| stopSOC                            | May be 'null' on 'tlx' inverters whereby the prior `programMode` / `stopSOC` continues to apply.                                              |
+| enableAcCharging                   | If 'null' the prior `enableAcCharging` (if any) continues to apply. Shall <u>**not**</u> be 'null' on 'mix' inverter 'Battery First' program. |
+| startTime, stopTime, enableProgram | May be 'null' on 'tlx' inverters whereby the prior `programMode` / `time segment` continues to apply - note all 'null' resp. non-'null'.      |
 
 Example:
 
@@ -184,23 +189,23 @@ rule "Setup Solar Battery Charging Program"
 when
     Time cron "0 10 0 ? * * *"
 then
-    val growattActions = getActions("growatt", "growatt:inverter:home:ABCD1234")
+    val growattActions = getActions("growatt", "growatt:inverter:home:ABCD1234") // thing UID
     if (growattActions === null) {
         logWarn("Rules", "growattActions is null")
     } else {
 
         // fixed algorithm parameters
-        val Integer programMode = 1
-        val Integer powerLevel = 23
+        val Integer programMode = 1 // 0 = Load First, 1 = Battery First, 2 = Grid First
+        val Integer powerLevel = 23 // percent
         val Boolean enableAcCharging = true
         val String startTime = "00:20"
         val String stopTime = "07:00"
         val Boolean enableProgram = true
 
         // calculation intermediaries
-        val batteryFull = 6500.0 // kWh
-        val batteryMin = 500.0 // kWh
-        val daylightConsumption = 10000.0 // kWh
+        val batteryFull = 6500.0 // Wh
+        val batteryMin = 500.0 // Wh
+        val daylightConsumption = 10000.0 // Wh
         val maximumSOC = 100.0 // percent
         val minimumSOC = 20.0 // percent
 
@@ -215,9 +220,9 @@ then
         }
 
         // convert to integer
-        val Integer stopSOC = targetSOC.intValue()
+        val Integer stopSOC = targetSOC.intValue() // percent
 
-        logInfo("Rules", "Setup Charging Program:{solarForecast:" + solarForecast + ", programMode:" + programMode + ", powerLevel:" + powerLevel + ", stopSOC:" + stopSOC + ", enableCharging:" + enableAcCharging + ", startTime:" + startTime + ", stopTime:" + stopTime + ", enableProgram:" + enableProgram +"}")
+        logInfo("Rules", "Setup Charging Program:{solarForecast:" + solarForecast + "Wh, programMode:" + programMode + ", powerLevel:" + powerLevel + "%, stopSOC:" + stopSOC + "%, enableCharging:" + enableAcCharging + ", startTime:" + startTime + ", stopTime:" + stopTime + ", enableProgram:" + enableProgram +"}")
         growattActions.setupBatteryProgram(programMode, powerLevel, stopSOC, enableAcCharging, startTime, stopTime, enableProgram)
     }
 end
