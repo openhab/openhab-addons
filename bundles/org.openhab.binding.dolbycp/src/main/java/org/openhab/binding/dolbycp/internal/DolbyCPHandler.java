@@ -18,8 +18,13 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -41,6 +46,7 @@ import de.cybso.cp750.CP750Listener;
  *
  * @author Roland Tapken - Initial contribution
  */
+@NonNullByDefault
 public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
 
     private final Logger logger = LoggerFactory.getLogger(DolbyCPHandler.class);
@@ -159,7 +165,6 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
                         refresh();
                     }, config.refreshInterval, config.refreshInterval, TimeUnit.SECONDS);
                 }
-
             } catch (IOException e) {
                 disposeClient(e);
             }
@@ -187,7 +192,7 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Communication error to " + config.hostname + ":" + config.port);
-            logger.error("CP750 on " + config.hostname + ":" + config.port, e);
+            logger.error("CP750 on {}:{}", config.hostname, config.port, e);
             tryToReconnect();
         }
     }
