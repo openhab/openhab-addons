@@ -11,7 +11,7 @@ The binding has the following configuration options:
 
 - **allowSystemPings:** Use the external ICMP ping program of the operating system instead of the Java ping. Useful if the devices cannot be reached by Java ping. Default is true.
 - **allowDHCPlisten:**  If devices leave and reenter a network, they usually request their last IPv4 address by using DHCP requests. By listening for those messages, the status update can be more "real-time" without having to wait for the next refresh cycle. Default is true.
-- **arpPingToolPath:** If the arp ping tool is not called `arping` and cannot be found in the PATH environment variable, the absolute path can be configured here. Default is `arping`.
+- **arpPingToolPath:** If the ARP ping tool is not called `arping` and cannot be found in the PATH environment variable, the absolute path can be configured here. Default is `arping`.
 - **cacheDeviceStateTimeInMS:** The result of a device presence detection is cached for a small amount of time. Set this time here in milliseconds. Be aware that no new pings will be issued within this time frame, even if explicitly requested. Default is 2000.
 - **preferResponseTimeAsLatency:** If enabled, an attempt will be made to extract the latency from the output of the ping command. If no such latency value is found in the ping command output, the time to execute the ping command is used as fallback latency. If disabled, the time to execute the ping command is always used as latency value. This is disabled by default to be backwards-compatible and to not break statistics and monitoring which existed before this feature.
 
@@ -26,7 +26,7 @@ binding.network:cacheDeviceStateTimeInMS=2000
 
 ## Supported Things
 
-- **pingdevice:** Detects device presence by using ICMP pings, arp pings and dhcp packet sniffing.
+- **pingdevice:** Detects device presence by using ICMP pings, ARP pings and DHCP packet sniffing.
 - **servicedevice:** Detects device presence by scanning for a specific open tcp port.
 - **speedtest:** Monitors available bandwidth for upload and download.
 
@@ -41,7 +41,7 @@ Please note: things discovered by the network binding will be provided with a ti
 
 ```java
 network:pingdevice:one_device [ hostname="192.168.0.64" ]
-network:pingdevice:second_device [ hostname="192.168.0.65", macAddress="6f:70:65:6e:48:41", retry=1, timeout=5000, refreshInterval=60000 ]
+network:pingdevice:second_device [ hostname="192.168.0.65", macAddress="6f:70:65:6e:48:41", retry=1, timeout=5000, refreshInterval=60000, networkInterfaceNames="eth0","wlan0" ]
 network:servicedevice:important_server [ hostname="192.168.0.62", port=1234 ]
 network:speedtest:local "SpeedTest 50Mo" @ "Internet" [refreshInterval=20, uploadSize=1000000, url="https://bouygues.testdebit.info/", fileName="50M.iso"]
 ```
@@ -53,6 +53,9 @@ Use the following options for a **network:pingdevice**:
 - **retry:** After how many refresh interval cycles the device will be assumed to be offline. Default: `1`.
 - **timeout:** How long the ping will wait for an answer, in milliseconds. Default: `5000` (5 seconds).
 - **refreshInterval:** How often the device will be checked, in milliseconds. Default: `60000` (one minute).
+- **networkInterfaceNames:** The network interface names used for communicating with the device.
+  Limiting the network interfaces reduces the load when arping and Wake-on-LAN are used.
+  Use comma separated values when using textual config. Default: empty (all network interfaces).
 
 Use the following additional options for a **network:servicedevice**:
 
@@ -62,10 +65,10 @@ Use the following options for a **network:speedtest**:
 
 - **refreshInterval:** Interval between each test execution, in minutes. Default: `20`.
 - **uploadSize:** Size of the file to be uploaded in bytes. Default: `1000000`.
-- **url:** Url of the speed test server.
+- **url:** URL of the speed test server.
 - **fileName:** Name of the file to download from test server.
 - **initialDelay:** Delay (in minutes) before starting the first speed test (can help avoid flooding your server at startup). Default: `5`.
-- **maxTimeout:** Number of timeout events that can happend (resetted at success) before setting the thing offline. Default: `3`.
+- **maxTimeout:** Number of timeout events that can happend (reset when successful) before setting the thing offline. Default: `3`.
 
 ## Presence detection - Configure target device
 
@@ -81,15 +84,15 @@ Windows 10 must be configured to allow "Echo Request for ICMPv4" so that it can 
 
 Because mobile devices put themselves in a deep sleep mode after some inactivity, they do not react to normal ICMP pings.
 Configure ARP ping to realize presence detection for those devices.
-This only works if the devices have WIFI enabled, have been configured to use the WIFI network, and have the option "Disable wifi in standby" disabled (default).
-Use DHCP listen for an almost immediate presence detection for phones and tablets when they (re)join the home Wifi network.
+This only works if the devices have Wi-Fi enabled, have been configured to use the Wi-Fi network, and have the option "Disable Wi-Fi in standby" disabled (default).
+Use DHCP listen for an almost immediate presence detection for phones and tablets when they (re)join the home Wi-Fi network.
 
 ### iPhones, iPads
 
 Apple iOS devices are usually in a deep sleep mode and do not respond to ARP pings under all conditions, but to Bonjour service discovery messages (UDP port 5353).
-Therefore first a Bonjour message is sent, before the ARP presence detection is performed.
+Therefore, first a Bonjour message is sent, before the ARP presence detection is performed.
 The binding automatically figures out if the target device is an iOS device.
-To check if the binding has correctly recognised a device, have a look at the _uses_ios_wakeup_ property of the THING.
+To check if the binding has correctly recognised a device, have a look at the _uses_ios_wakeup_ property of the Thing.
 
 ### Use open TCP ports
 
@@ -115,7 +118,7 @@ Nmap done: 1 IP address (1 host up) scanned in 106.17 seconds
 
 In this example, there are four suitable ports to use.
 The port 554 (Windows network file sharing service) is open on most Windows PCs and Windows compatible Linux systems.
-Port 1025 (MS RPC) is open on XBox systems. Port 548 (Apple Filing Protocol (AFP)) is open on Mac OS X systems.
+Port 1025 (MS RPC) is open on XBox systems. Port 548 (Apple Filing Protocol (AFP)) is open on macOS systems.
 
 Please don't forget to open the required ports in the system's firewall setup.
 
@@ -125,7 +128,7 @@ Because external tools are used for some of the presence detection mechanism or 
 
 ### Arping
 
-For arp pings to work, a separate tool called "arping" is used.
+For ARP pings to work, a separate tool called "arping" is used.
 Linux has three different tools:
 
 - arp-scan (not yet supported by this binding)
@@ -144,7 +147,7 @@ Just test the executable on the command line; if `sudo` is required, grant eleva
 
 Some operating systems such as Linux restrict applications to only use ports >= 1024 without elevated privileges.
 If the binding is not able to use port 67 (DHCP) because of such a restriction, or because the same system is used as a DHCP server, port 6767 will be used instead.
-Check the property _dhcp_state_ on the THING for such a hint. In this case, establish port forwarding:
+Check the property _dhcp_state_ on the Thing for such a hint. In this case, establish port forwarding:
 
 ```shell
 sysctl -w net.ipv4.ip_forward=1

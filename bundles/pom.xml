@@ -582,7 +582,9 @@
     <module>org.openhab.binding.orbitbhyve</module>
         
     <module>org.openhab.binding.orvibo</module>
-        
+    
+    <module>org.openhab.binding.panasonicbdp</module>
+    
     <module>org.openhab.binding.paradoxalarm</module>
         
     <module>org.openhab.binding.pentair</module>

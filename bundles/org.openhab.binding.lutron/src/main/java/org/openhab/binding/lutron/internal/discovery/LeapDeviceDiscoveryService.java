@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,14 +25,13 @@ import org.openhab.binding.lutron.internal.handler.LeapBridgeHandler;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +40,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bob Adair - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = LeapDeviceDiscoveryService.class)
 @NonNullByDefault
-public class LeapDeviceDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<LeapBridgeHandler> {
 
     private static final int DISCOVERY_SERVICE_TIMEOUT = 0; // seconds
 
@@ -53,29 +52,20 @@ public class LeapDeviceDiscoveryService extends AbstractDiscoveryService
     private @Nullable Map<Integer, String> areaMap;
     private @Nullable List<OccupancyGroup> oGroupList;
 
-    private @NonNullByDefault({}) LeapBridgeHandler bridgeHandler;
-
     public LeapDeviceDiscoveryService() {
-        super(LutronHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS, DISCOVERY_SERVICE_TIMEOUT);
+        super(LeapBridgeHandler.class, LutronHandlerFactory.DISCOVERABLE_DEVICE_TYPES_UIDS, DISCOVERY_SERVICE_TIMEOUT);
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof LeapBridgeHandler leapBridgeHandler) {
-            bridgeHandler = leapBridgeHandler;
-            bridgeHandler.setDiscoveryService(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
     protected void startScan() {
         logger.debug("Active discovery scan started");
-        bridgeHandler.queryDiscoveryData();
+        thingHandler.queryDiscoveryData();
     }
 
     public void processDeviceDefinitions(List<Device> deviceList) {
@@ -198,10 +188,10 @@ public class LeapDeviceDiscoveryService extends AbstractDiscoveryService
     private void notifyDiscovery(ThingTypeUID thingTypeUID, @Nullable Integer integrationId, String label,
             @Nullable String propName, @Nullable Object propValue) {
         if (integrationId == null) {
-            logger.debug("Discovered {} with no integration ID", label);
+            logger.debug("Discovered {} with no integration ID or thinghandler", label);
             return;
         }
-        ThingUID bridgeUID = this.bridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, integrationId.toString());
 
         Map<String, Object> properties = new HashMap<>();
@@ -219,10 +209,5 @@ public class LeapDeviceDiscoveryService extends AbstractDiscoveryService
 
     private void notifyDiscovery(ThingTypeUID thingTypeUID, Integer integrationId, String label) {
         notifyDiscovery(thingTypeUID, integrationId, label, null, null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
     }
 }

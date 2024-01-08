@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="panasonicbdp"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Panasonic Blu-ray Player Thing -->
+	<thing-type id="bd-player">
+		<label>Panasonic Blu-ray Player</label>
+		<description>
+			Panasonic Blu-ray Player model DMP-BDT[1-3]10, DMP-BDT[1-3]20, DMP-BBT01 or DMP-BDT500
+		</description>
+
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Turn the power for the player on or off</description>
+			</channel>
+			<channel id="button" typeId="button"/>
+			<channel id="control" typeId="control"/>
+			<channel id="player-status" typeId="player-status"/>
+			<channel id="time-elapsed" typeId="time-elapsed"/>
+			<channel id="time-total" typeId="time-total"/>
+			<channel id="chapter-current" typeId="chapter-current"/>
+			<channel id="chapter-total" typeId="chapter-total"/>
+		</channels>
+
+		<representation-property>uuid</representation-property>
+
+		<config-description>
+			<parameter name="hostName" type="text" required="true">
+				<context>network-address</context>
+				<label>Player Host Name/IP Address</label>
+				<description>Host Name or IP Address of the player</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="5" required="false" unit="s">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds</description>
+				<default>5</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="button">
+		<item-type>String</item-type>
+		<label>Remote Button</label>
+		<description>A remote button press to send to the player</description>
+		<state>
+			<options>
+				<option value="POWERON">Power On</option>
+				<option value="POWEROFF">Power Off</option>
+				<option value="POWER">Power Toggle</option>
+				<option value="PLAYBACK">Play</option>
+				<option value="PAUSE">Pause</option>
+				<option value="STOP">Stop</option>
+				<option value="CUE">Fast Forward</option>
+				<option value="REV">Reverse</option>
+				<option value="SKIPFWD">Skip Forward</option>
+				<option value="SKIPREV">Skip Back</option>
+				<option value="OP_CL">Open/Close</option>
+				<option value="DSPSEL">Status</option>
+				<option value="TITLE">Top Menu</option>
+				<option value="PUPMENU">Pop-up Menu</option>
+				<option value="UP">Up</option>
+				<option value="DOWN">Down</option>
+				<option value="LEFT">Left</option>
+				<option value="RIGHT">Right</option>
+				<option value="SELECT">OK</option>
+				<option value="MENU">Submenu</option>
+				<option value="RETURN">Return</option>
+				<option value="D1">1</option>
+				<option value="D2">2</option>
+				<option value="D3">3</option>
+				<option value="D4">4</option>
+				<option value="D5">5</option>
+				<option value="D6">6</option>
+				<option value="D7">7</option>
+				<option value="D8">8</option>
+				<option value="D9">9</option>
+				<option value="D0">0</option>
+				<option value="D12">12</option>
+				<option value="CLEAR">Cancel</option>
+				<option value="SHARP">#</option>
+				<option value="RED">Red</option>
+				<option value="GREEN">Green</option>
+				<option value="BLUE">Blue</option>
+				<option value="YELLOW">Yellow</option>
+				<option value="MLTNAVI">Home</option>
+				<option value="V_CAST">Viera Cast</option>
+				<option value="NETWORK">Network</option>
+				<option value="SETUP">Setup</option>
+				<option value="EXIT">Exit</option>
+				<option value="AUDIOSEL">Audio</option>
+				<option value="3D">3D</option>
+				<option value="P_IN_P">PIP</option>
+				<option value="OSDONOFF">OSD</option>
+				<option value="SHFWD2">(swipe in CW circle)</option>
+				<option value="SHREV2">(swipe in CCW circle)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Transport Controls e.g. Play/Pause/Next/Previous/FForward/Rewind</description>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="player-status">
+		<item-type>String</item-type>
+		<label>Player Status</label>
+		<description>The current player status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="time-elapsed">
+		<item-type>Number:Time</item-type>
+		<label>Playback Time</label>
+		<description>The current playback time elapsed</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="time-total">
+		<item-type>Number:Time</item-type>
+		<label>Total Time</label>
+		<description>The total length of the current title</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="chapter-current">
+		<item-type>Number</item-type>
+		<label>Current Chapter</label>
+		<description>The current chapter number</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="chapter-total">
+		<item-type>Number</item-type>
+		<label>Total Chapters</label>
+		<description>The total number of chapters in the current title</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,6 +137,16 @@ public class ValueTests {
         // Test custom formatting
         assertThat(v.getMQTTpublishValue(OnOffType.OFF, "=%s"), is("=fancyOff"));
         assertThat(v.getMQTTpublishValue(OnOffType.ON, "=%s"), is("=fancyON"));
+    }
+
+    @Test
+    public void onoffMultiStates() {
+        OnOffValue v = new OnOffValue(new String[] { "LOCKED" }, new String[] { "UNLOCKED", "JAMMED" }, "LOCK",
+                "UNLOCK");
+
+        assertThat(v.parseCommand(new StringType("LOCKED")), is(OnOffType.ON));
+        assertThat(v.parseCommand(new StringType("UNLOCKED")), is(OnOffType.OFF));
+        assertThat(v.parseCommand(new StringType("JAMMED")), is(OnOffType.OFF));
     }
 
     @Test
