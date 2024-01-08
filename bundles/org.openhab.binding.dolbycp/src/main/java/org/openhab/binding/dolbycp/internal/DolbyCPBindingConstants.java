@@ -40,5 +40,5 @@ public class DolbyCPBindingConstants {
     public static final String CHANNEL_DIG4 = "channel-dig4";
     public static final String CHANNEL_NONSYNC = "channel-nonsync";
     public static final String CHANNEL_MIC = "channel-mic";
-    public static final String CHANNEL_VERSION = "channel-version";
+    public static final String CHANNEL_VERSION = "channel-osversion";
 }

@@ -27,7 +27,7 @@ public class DolbyCPConfiguration {
     public String hostname = "";
 
     /**
-     * TCP Port to connect o (default: 61408)
+     * TCP Port to connect to (default: 61408)
      */
     public int port = 61408;
 

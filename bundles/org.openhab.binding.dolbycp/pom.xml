@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.dolbycp</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: DolbyCP Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Dolby Cinema Processor Binding</name>
 
   <dependencies>
     <dependency>

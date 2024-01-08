@@ -149,7 +149,7 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
                     this.client.addListener(field, this);
                 }
                 this.client.refresh();
-                logger.info("Connected CP750 Client to {}:{}. Server version is {}", config.hostname, config.port,
+                logger.info("Connected CP750 Client to {}:{}. OS version is {}", config.hostname, config.port,
                         this.client.getVersion());
                 updateStatus(ThingStatus.ONLINE);
 
