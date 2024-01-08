@@ -61,7 +61,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
     private final Map<ChannelUID, DeviceChannel> channels = new HashMap<>();
 
-    private final Map<ChannelUID, ScheduledFuture> futures = new HashMap<>();
+    private final Map<ChannelUID, ScheduledFuture<?>> futures = new HashMap<>();
 
     public SerialDeviceHandler(final Thing thing, final ValueTransformationProvider valueTransformationProvider) {
         super(thing);
@@ -113,7 +113,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
                         int delay = deviceChannel.getRefreshInterval();
                         if (delay > 0) {
-                            ScheduledFuture future = scheduler.scheduleWithFixedDelay(
+                            ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(
                                     () -> refresh(c.getUID(), deviceChannel), delay, delay, TimeUnit.SECONDS);
                             futures.put(c.getUID(), future);
                         }
@@ -135,7 +135,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        for (ScheduledFuture future : this.futures.values()) {
+        for (ScheduledFuture<?> future : this.futures.values()) {
             future.cancel(true);
         }
         channels.clear();

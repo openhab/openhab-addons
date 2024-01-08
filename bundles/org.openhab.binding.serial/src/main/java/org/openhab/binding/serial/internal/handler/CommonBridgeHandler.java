@@ -102,14 +102,16 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
         this.config = config;
 
         try {
-            if (config.charset != null) {
-                if (config.charset.equalsIgnoreCase("hex")) {
+            String strCharset = config.charset;
+            if (strCharset != null) {
+                if (strCharset.equalsIgnoreCase("hex")) {
                     binaryHexData = true;
                     logger.debug("{} converting to hex", getLogPrefix());
                 } else {
                     binaryHexData = false;
-                    charset = Charset.forName(config.charset);
+                    Charset charset = Charset.forName(strCharset);
                     logger.debug("{} charset '{}' set", getLogPrefix(), charset);
+                    this.charset = charset;
                 }
             }
         } catch (final IllegalCharsetNameException | UnsupportedCharsetException e) {
@@ -117,10 +119,13 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        if (config.eolPattern != null && !config.eolPattern.trim().isEmpty()) {
+        String eolPatternStr = config.eolPattern;
+        this.eolPattern = null;
+        if (eolPatternStr != null && !eolPatternStr.trim().isEmpty()) {
             try {
-                this.eolPattern = Pattern.compile(config.eolPattern, Pattern.CASE_INSENSITIVE);
-                logger.debug("{} eolPattern '{}' set", getLogPrefix(), this.eolPattern.toString());
+                Pattern eolPattern = Pattern.compile(eolPatternStr, Pattern.CASE_INSENSITIVE);
+                this.eolPattern = eolPattern;
+                logger.debug("{} eolPattern '{}' set", getLogPrefix(), eolPattern.toString());
             } catch (IllegalArgumentException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Invalid EOL sequence");
@@ -138,30 +143,30 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         final InputStream inputStream = this.inputStream;
+        this.inputStream = null;
         if (inputStream != null) {
             try {
                 inputStream.close();
             } catch (final IOException e) {
                 logger.debug("Error while closing the input stream: {}", e.getMessage());
             }
-            this.inputStream = null;
         }
 
         final OutputStream outputStream = this.outputStream;
+        this.outputStream = null;
         if (outputStream != null) {
             try {
                 outputStream.close();
             } catch (final IOException e) {
                 logger.debug("Error while closing the output stream: {}", e.getMessage());
             }
-            this.outputStream = null;
         }
 
         readerActive.set(false);
         final ScheduledFuture<?> reader = this.reader;
+        this.reader = null;
         if (reader != null) {
             reader.cancel(false);
-            this.reader = null;
         }
 
         lastValue = null;
@@ -227,12 +232,23 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
                 if (firstAttempt || inputStream.available() > 0) {
                     final byte[] readBuffer = new byte[20];
 
-                    // read data from serial device
                     String line = "";
+                    boolean binaryHexData = this.binaryHexData;
+                    Pattern eolPattern = this.eolPattern;
+                    Charset charset = this.charset;
+
+                    // read data from serial device
                     while (inputStream.available() > 0) {
                         final int bytes = inputStream.read(readBuffer);
                         if (binaryHexData) {
                             for (int i = 0; i < bytes; i++) {
+                                if (eolPattern == null) {
+                                    // Should not happen, but the code actually allows this to happen,
+                                    // so just make the compiler happy and suppress any warnings.
+                                    throw new IOException(
+                                            "Failed to parse input stream as HEX pattern: Parameter 'eolPattern' is null.");
+                                }
+
                                 line += String.format("%02X", readBuffer[i]);
                                 if (eolPattern.matcher(line).find()) {
                                     sb.append(line).append(System.lineSeparator());
@@ -308,7 +324,7 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
 
         logger.debug("Writing '{}' to {}", string, getLogPrefix());
         try {
-            synchronized (this.outputStream) {
+            synchronized (outputStream) {
                 // write string to serial port
                 if (isRawType) {
                     final RawType rt = RawType.valueOf(string);

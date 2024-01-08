@@ -15,7 +15,6 @@ package org.openhab.binding.serial.internal.channel;
 import java.util.IllegalFormatException;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.serial.internal.transform.ValueTransformation;
 import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
@@ -105,7 +104,7 @@ public abstract class DeviceChannel {
         return data;
     }
 
-    public @NonNull String getRefreshValue() {
+    public String getRefreshValue() {
         String command = config.refreshValue;
         if (command == null) {
             return "";

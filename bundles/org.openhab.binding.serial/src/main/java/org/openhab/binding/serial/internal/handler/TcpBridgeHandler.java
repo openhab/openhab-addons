@@ -13,6 +13,7 @@
 package org.openhab.binding.serial.internal.handler;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ScheduledFuture;
@@ -20,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.io.transport.serial.*;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -38,7 +38,7 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
 
     private @Nullable Socket socket;
 
-    private @Nullable ScheduledFuture readScheduler;
+    private @Nullable ScheduledFuture<?> readScheduler;
 
     public TcpBridgeHandler(final Bridge bridge) {
         super(bridge);
@@ -98,9 +98,12 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
             scheduler.schedule(() -> {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     try {
-                        synchronized (this.inputStream) {
-                            if (inputStream.available() > 0) {
-                                receiveAndProcessNow();
+                        InputStream inputStream = this.inputStream;
+                        if (inputStream != null) {
+                            synchronized (inputStream) {
+                                if (inputStream.available() > 0) {
+                                    receiveAndProcessNow();
+                                }
                             }
                         }
 
@@ -115,20 +118,22 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
 
     @Override
     public void dispose() {
-        if (this.readScheduler != null) {
+        ScheduledFuture<?> readScheduler = this.readScheduler;
+        this.readScheduler = null;
+        if (readScheduler != null) {
             try {
-                this.readScheduler.cancel(true);
+                readScheduler.cancel(true);
             } catch (Exception ignore) {
             }
-            ;
-            this.readScheduler = null;
         }
-        if (this.socket != null) {
+
+        Socket socket = this.socket;
+        this.socket = null;
+        if (socket != null) {
             try {
-                this.socket.close();
+                socket.close();
             } catch (IOException e) {
             }
-            this.socket = null;
         }
 
         super.dispose();
