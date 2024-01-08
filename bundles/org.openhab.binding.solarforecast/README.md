@@ -94,7 +94,7 @@ If the item delivers a raw number without unit, please select `powerUnit` accord
 
 ## Solcast Channels
 
-Each `sc-plane` reports its own values including a `raw` channel holding JSON content.
+Each `sc-plane` reports it's own values including a `raw` channel holding JSON content.
 The `sc-site` bridge sums up all attached `sc-plane` values and provides the total forecast for your home location.  
 
 Channels are covering today's actual data with current, remaining and today's total prediction.
@@ -159,7 +159,7 @@ Read linked documentation in order to know what you're doing.
 
 [Damping factors](https://doc.forecast.solar/doku.php?id=damping) for morning and evening.
 
-[Horizon information](https://doc.forecast.solar/doku.php?id=api) as comma separated integer list.
+[Horizon information](https://doc.forecast.solar/doku.php?id=api) as comma-separated integer list.
 This configuration item is aimed to expert users.
 You need to understand the [horizon concept](https://joint-research-centre.ec.europa.eu/pvgis-photovoltaic-geographical-information-system/getting-started-pvgis/pvgis-user-manual_en#ref-2-using-horizon-information).
 Shadow obstacles like mountains, hills, buildings can be expressed here.
@@ -245,7 +245,7 @@ Check for `UndefType.UNDEF` in case of errors.
 ## Date Time
 
 Each forecast is bound to a certain location which automatically defines the time zone.
-Most common use case is forecast and your locarion are matching the same time zone.
+Most common use case is forecast and your location are matching the same time zone.
 Action interface is using `Instant` as timestamps which enables you translating to any time zone.
 This allows you with an easy conversion to query also foreign forecast locations.  
 

@@ -31,9 +31,7 @@ import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -181,8 +179,6 @@ public class SolcastObject implements SolarForecast {
                 // production during period is half of previous and next value
                 if (endValue != null) {
                     double addedValue = (endValue.doubleValue() + previousEstimate) / 2.0 / 2.0;
-                    // System.out.println(
-                    // "End " + endValue.doubleValue() + " Prev: " + previousEstimate + " Add " + addedValue);
                     forecastValue += addedValue;
                     previousEstimate = endValue.doubleValue();
                 } else {
@@ -199,7 +195,6 @@ public class SolcastObject implements SolarForecast {
                     int interpolation = query.getMinute() - f.getKey().getMinute();
                     double interpolationProduction = getActualPowerValue(query, mode) * interpolation / 30.0 / 2.0;
                     forecastValue += interpolationProduction;
-                    // System.out.println(interpolationProduction);
                     return forecastValue;
                 } else {
                     // if ceiling value is 0 there's no further production in this period
@@ -271,7 +266,6 @@ public class SolcastObject implements SolarForecast {
             // production during period is half of previous and next value
             if (endValue != null) {
                 double addedValue = (endValue.doubleValue() + previousEstimate) / 2.0 / 2.0;
-                // System.out.println(key + " add " + addedValue);
                 forecastValue += addedValue;
                 previousEstimate = endValue.doubleValue();
             } else {
