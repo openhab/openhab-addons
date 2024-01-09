@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ public class LcnModuleRelaySubHandler extends AbstractLcnModuleSubHandler {
     public void handleCommandPercent(PercentType command, LcnChannelGroup channelGroup, int number)
             throws LcnException {
         // don't use OnOffType.as(), because it returns @Nullable
-        handleCommandOnOff(command.intValue() > 0 ? OnOffType.ON : OnOffType.OFF, channelGroup, number);
+        handleCommandOnOff(OnOffType.from(command.intValue() > 0), channelGroup, number);
     }
 
     @Override

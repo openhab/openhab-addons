@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -363,7 +363,7 @@ public class ThermostatHandler extends BaseThingHandler {
         map.put(8, "boost");
         map.put(9, "eco");
         return map;
-    };
+    }
 
     private static Map<String, Integer> createRegulationReverseMap() {
         HashMap<String, Integer> map = new HashMap<>();
@@ -375,7 +375,7 @@ public class ThermostatHandler extends BaseThingHandler {
         map.put("boost", 8);
         map.put("eco", 9);
         return map;
-    };
+    }
 
     private Map<String, Consumer<ThermostatModel>> createChannelRefreshActionMap() {
         HashMap<String, Consumer<ThermostatModel>> map = new HashMap<>();

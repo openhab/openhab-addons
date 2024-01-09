@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -399,7 +399,7 @@ public abstract class SonyProjectorConnector {
      * @throws SonyProjectorException in case of any problem
      */
     public OnOffType getPictureMuting() throws SonyProjectorException {
-        return Arrays.equals(getSetting(SonyProjectorItem.PICTURE_MUTING), PICTURE_ON) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(Arrays.equals(getSetting(SonyProjectorItem.PICTURE_MUTING), PICTURE_ON));
     }
 
     /**
@@ -462,7 +462,7 @@ public abstract class SonyProjectorConnector {
             throw new SonyProjectorException("Unavailable item " + SonyProjectorItem.OVERSCAN.getName()
                     + " for projector model " + model.getName());
         }
-        return Arrays.equals(getSetting(SonyProjectorItem.OVERSCAN), OVERSCAN_ON) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(Arrays.equals(getSetting(SonyProjectorItem.OVERSCAN), OVERSCAN_ON));
     }
 
     /**
@@ -853,7 +853,7 @@ public abstract class SonyProjectorConnector {
             throw new SonyProjectorException("Unavailable item " + SonyProjectorItem.XVCOLOR.getName()
                     + " for projector model " + model.getName());
         }
-        return Arrays.equals(getSetting(SonyProjectorItem.XVCOLOR), XVCOLOR_ON) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(Arrays.equals(getSetting(SonyProjectorItem.XVCOLOR), XVCOLOR_ON));
     }
 
     /**

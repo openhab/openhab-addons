@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -146,7 +146,7 @@ public class PentairIntelliFloHandler extends PentairBaseThingHandler {
         switch (channel) {
             case INTELLIFLO_RUN:
                 if (pps == null || (pps.run != ppscur.run)) {
-                    updateState(channel, (ppscur.run) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((ppscur.run)));
                 }
                 break;
             case INTELLIFLO_MODE:

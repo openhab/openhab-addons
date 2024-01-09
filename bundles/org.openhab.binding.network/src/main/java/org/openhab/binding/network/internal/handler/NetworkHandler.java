@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,8 +92,7 @@ public class NetworkHandler extends BaseThingHandler
 
         switch (channelUID.getId()) {
             case CHANNEL_ONLINE:
-                presenceDetection.getValue(
-                        value -> updateState(CHANNEL_ONLINE, value.isReachable() ? OnOffType.ON : OnOffType.OFF));
+                presenceDetection.getValue(value -> updateState(CHANNEL_ONLINE, OnOffType.from(value.isReachable())));
                 break;
             case CHANNEL_LATENCY:
             case CHANNEL_DEPRECATED_TIME:
@@ -174,6 +173,7 @@ public class NetworkHandler extends BaseThingHandler
 
         this.presenceDetection = presenceDetection;
         presenceDetection.setHostname(handlerConfiguration.hostname);
+        presenceDetection.setNetworkInterfaceNames(handlerConfiguration.networkInterfaceNames);
         presenceDetection.setPreferResponseTimeAsLatency(configuration.preferResponseTimeAsLatency);
 
         if (isTCPServiceDevice) {
@@ -200,7 +200,7 @@ public class NetworkHandler extends BaseThingHandler
         presenceDetection.setTimeout(handlerConfiguration.timeout.intValue());
 
         wakeOnLanPacketSender = new WakeOnLanPacketSender(handlerConfiguration.macAddress,
-                handlerConfiguration.hostname, handlerConfiguration.port);
+                handlerConfiguration.hostname, handlerConfiguration.port, handlerConfiguration.networkInterfaceNames);
 
         updateStatus(ThingStatus.ONLINE);
         presenceDetection.startAutomaticRefresh(scheduler);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -976,7 +976,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
 
             State boolLikeState;
             if (containsOnOff(acceptedDataTypes)) {
-                boolLikeState = boolValue ? OnOffType.ON : OnOffType.OFF;
+                boolLikeState = OnOffType.from(boolValue);
             } else if (containsOpenClosed(acceptedDataTypes)) {
                 boolLikeState = boolValue ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             } else {

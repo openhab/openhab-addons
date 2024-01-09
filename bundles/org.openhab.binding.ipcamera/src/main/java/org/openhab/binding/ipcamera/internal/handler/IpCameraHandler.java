@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -583,8 +583,8 @@ public class IpCameraHandler extends BaseThingHandler {
                                     new FoscamHandler(getHandle(), cameraConfig.getUser(), cameraConfig.getPassword()));
                             break;
                         case HIKVISION_THING:
-                            socketChannel.pipeline()
-                                    .addLast(new HikvisionHandler(getHandle(), cameraConfig.getNvrChannel()));
+                            socketChannel.pipeline().addLast(HIKVISION_HANDLER,
+                                    new HikvisionHandler(getHandle(), cameraConfig.getNvrChannel()));
                             break;
                         case INSTAR_THING:
                             socketChannel.pipeline().addLast(INSTAR_HANDLER, new InstarHandler(getHandle()));
@@ -653,6 +653,11 @@ public class IpCameraHandler extends BaseThingHandler {
                                 case AMCREST_THING:
                                     AmcrestHandler amcrestHandler = (AmcrestHandler) ch.pipeline().get(AMCREST_HANDLER);
                                     amcrestHandler.setURL(httpRequestURL);
+                                    break;
+                                case HIKVISION_THING:
+                                    HikvisionHandler hikvisionHandler = (HikvisionHandler) ch.pipeline()
+                                            .get(HIKVISION_HANDLER);
+                                    hikvisionHandler.setURL(httpRequestURL);
                                     break;
                                 case INSTAR_THING:
                                     InstarHandler instarHandler = (InstarHandler) ch.pipeline().get(INSTAR_HANDLER);
@@ -1701,7 +1706,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     snapshotUri = "/ISAPI/Streaming/channels/" + cameraConfig.getNvrChannel() + "01/picture";
                 }
                 if (lowPriorityRequests.isEmpty()) {
-                    lowPriorityRequests.add("/ISAPI/System/IO/inputs/" + cameraConfig.getNvrChannel() + "/status");
+                    lowPriorityRequests.add("/ISAPI/System/IO/capabilities");
                 }
                 break;
             case INSTAR_THING:

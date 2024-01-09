@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,7 +65,7 @@ public class LeapMotionDimmerProfile implements TriggerProfile {
     @Override
     public void onTriggerFromHandler(String event) {
         if (event.equals(LeapMotionBindingConstants.GESTURE_TAP)) {
-            callback.sendCommand(lastState.equals(BigDecimal.ZERO) ? OnOffType.ON : OnOffType.OFF);
+            callback.sendCommand(OnOffType.from(lastState.equals(BigDecimal.ZERO)));
         } else if (event.startsWith(LeapMotionBindingConstants.GESTURE_FINGERS)) {
             int fingers = Integer
                     .valueOf(Character.toString(event.charAt(LeapMotionBindingConstants.GESTURE_FINGERS.length())));

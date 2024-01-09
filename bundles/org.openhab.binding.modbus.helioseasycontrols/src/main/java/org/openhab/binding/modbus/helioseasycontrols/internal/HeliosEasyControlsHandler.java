@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -877,7 +877,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                             break;
                         case "Switch":
                             if (variableType.equals(HeliosVariable.TYPE_INTEGER)) {
-                                updateState(v.getGroupAndName(), "1".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                                updateState(v.getGroupAndName(), OnOffType.from("1".equals(value)));
                             }
                             break;
                         case "String":

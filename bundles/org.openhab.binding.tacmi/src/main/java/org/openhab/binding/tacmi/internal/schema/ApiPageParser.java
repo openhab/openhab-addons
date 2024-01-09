@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -323,7 +323,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
         switch (this.fieldType) {
             case BUTTON:
                 type = Type.SWITCH_BUTTON;
-                state = this.buttonValue == ButtonValue.ON ? OnOffType.ON : OnOffType.OFF;
+                state = OnOffType.from(this.buttonValue == ButtonValue.ON);
                 ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_SWITCH_RW_UID;
                 channelType = "Switch";
                 break;
@@ -333,7 +333,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                 boolean isOn = "ON".equals(vs) || "EIN".equals(vs); // C.M.I. mixes up languages...
                 if (isOn || "OFF".equals(vs) || "AUS".equals(vs)) {
                     channelType = "Switch";
-                    state = isOn ? OnOffType.ON : OnOffType.OFF;
+                    state = OnOffType.from(isOn);
                     if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
                         ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_SWITCH_RO_UID;
                         type = Type.READ_ONLY_SWITCH;

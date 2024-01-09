@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -202,7 +202,7 @@ public class PushButtonToCommandProfile implements TriggerProfile {
     private Command toggleCommandIfNeeded(@Nullable Command command) {
         if (command == null) {
             logger.debug("Toggling command: previous state is '{}'", previousState);
-            return OnOffType.ON.equals(previousState) ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(!OnOffType.ON.equals(previousState));
         }
         return command;
     }

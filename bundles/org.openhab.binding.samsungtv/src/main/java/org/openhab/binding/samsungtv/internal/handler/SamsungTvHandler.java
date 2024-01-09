@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -125,7 +125,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public void channelLinked(ChannelUID channelUID) {
         logger.trace("channelLinked: {}", channelUID);
 
-        updateState(POWER, getPowerState() ? OnOffType.ON : OnOffType.OFF);
+        updateState(POWER, OnOffType.from(getPowerState()));
 
         for (SamsungTvService service : services) {
             service.clearCache();

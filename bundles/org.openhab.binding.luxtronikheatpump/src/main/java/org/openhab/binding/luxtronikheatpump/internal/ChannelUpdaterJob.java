@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,7 +120,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
     private @Nullable State convertValueToState(Integer rawValue, Class<? extends Item> itemClass,
             @Nullable Unit<?> unit) {
         if (itemClass == SwitchItem.class) {
-            return (rawValue == 0) ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(rawValue != 0);
         }
 
         if (itemClass == DateTimeItem.class && rawValue > 0) {

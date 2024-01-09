@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,8 +45,8 @@ public class SirenChannelHelper extends EventChannelHelper {
             return switch (channelId) {
                 case CHANNEL_MONITORING -> homeStatus.getMonitoring();
                 case CHANNEL_STATUS -> homeStatus.getStatus().map(SirenStatus::get)
-                        .map(status -> SirenStatus.SOUND == status ? OnOffType.ON : OnOffType.OFF)
-                        .map(State.class::cast).orElse(UnDefType.UNDEF);
+                        .map(status -> OnOffType.from(SirenStatus.SOUND == status)).map(State.class::cast)
+                        .orElse(UnDefType.UNDEF);
                 default -> null;
             };
         }

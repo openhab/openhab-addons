@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ public abstract class TradfriWirelessDeviceData extends TradfriDeviceData {
 
     public @Nullable OnOffType getBatteryLow() {
         if (generalInfo.get(DEVICE_BATTERY_LEVEL) != null) {
-            return generalInfo.get(DEVICE_BATTERY_LEVEL).getAsInt() <= 10 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(generalInfo.get(DEVICE_BATTERY_LEVEL).getAsInt() <= 10);
         } else {
             return null;
         }

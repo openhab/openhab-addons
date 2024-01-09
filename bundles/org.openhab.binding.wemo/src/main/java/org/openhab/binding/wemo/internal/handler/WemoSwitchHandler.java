@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class WemoSwitchHandler extends WemoHandler {
             String binaryState = stateMap.get("BinaryState");
             if (binaryState != null) {
                 if (oldValue == null || !oldValue.equals(binaryState)) {
-                    State state = "0".equals(binaryState) ? OnOffType.OFF : OnOffType.ON;
+                    State state = OnOffType.from(!"0".equals(binaryState));
                     logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
                     updateState(WemoBindingConstants.CHANNEL_STATE, state);
                 }

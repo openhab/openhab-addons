@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -246,7 +246,7 @@ public class ShellyUtils {
     }
 
     public static OnOffType getOnOff(@Nullable Boolean value) {
-        return (value != null && value ? OnOffType.ON : OnOffType.OFF);
+        return OnOffType.from(value != null && value);
     }
 
     public static OpenClosedType getOpenClosed(@Nullable Boolean value) {
@@ -254,7 +254,7 @@ public class ShellyUtils {
     }
 
     public static OnOffType getOnOff(int value) {
-        return value == 0 ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(value != 0);
     }
 
     public static State toQuantityType(@Nullable Double value, int digits, Unit<?> unit) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Represents all heatpump visibily settings
  * 
- * The names of the enum values are those used in the code if the internal Java applet of the heat pump
+ * The names of the enum values are those used in the code of the internal Java applet of the heat pump
  * The meaning of most of the values is currently unclear, but are included here for completeness only
  *
  * @author Stefan Giehl - Initial contribution

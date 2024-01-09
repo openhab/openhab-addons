@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,7 +114,7 @@ public class SmartPlugHandler extends DraytonWiserThingHandler<SmartPlugData> {
     }
 
     private State getZigbeeConnected() {
-        return getData().device.getLqi() == null ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(getData().device.getLqi() != null);
     }
 
     private State getDeviceLocked() {

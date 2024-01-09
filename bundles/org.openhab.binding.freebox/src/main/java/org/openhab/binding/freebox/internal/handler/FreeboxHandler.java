@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -706,7 +706,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
     }
 
     private void updateChannelSwitchState(String channel, boolean state) {
-        updateState(new ChannelUID(getThing().getUID(), channel), state ? OnOffType.ON : OnOffType.OFF);
+        updateState(new ChannelUID(getThing().getUID(), channel), OnOffType.from(state));
     }
 
     private void updateChannelDecimalState(String channel, int state) {

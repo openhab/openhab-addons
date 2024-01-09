@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -249,7 +249,7 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
         BedStatus localPreviousStatus = previousStatus;
 
         BedSideStatus left = status.getLeftSide();
-        updateState(CHANNEL_LEFT_IN_BED, left.isInBed() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_LEFT_IN_BED, OnOffType.from(left.isInBed()));
         updateState(CHANNEL_LEFT_SLEEP_NUMBER, new DecimalType(left.getSleepNumber()));
         updateState(CHANNEL_LEFT_PRESSURE, new DecimalType(left.getPressure()));
         updateState(CHANNEL_LEFT_LAST_LINK, new StringType(left.getLastLink().toString()));
@@ -260,7 +260,7 @@ public class SleepIQDualBedHandler extends BaseThingHandler implements BedStatus
         }
 
         BedSideStatus right = status.getRightSide();
-        updateState(CHANNEL_RIGHT_IN_BED, right.isInBed() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_RIGHT_IN_BED, OnOffType.from(right.isInBed()));
         updateState(CHANNEL_RIGHT_SLEEP_NUMBER, new DecimalType(right.getSleepNumber()));
         updateState(CHANNEL_RIGHT_PRESSURE, new DecimalType(right.getPressure()));
         updateState(CHANNEL_RIGHT_LAST_LINK, new StringType(right.getLastLink().toString()));

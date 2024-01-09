@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -488,7 +488,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                         switch (element.uid) {
                             case 1:
                                 updateState(CHANNEL_TYPE_POWER,
-                                        "0".equals(String.valueOf(element.value)) ? OnOffType.OFF : OnOffType.ON);
+                                        OnOffType.from(!"0".equals(String.valueOf(element.value))));
                                 break;
                             case 2:
                                 switch (element.value) {
@@ -552,7 +552,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                 break;
                             case 14:
                                 updateState(CHANNEL_TYPE_ERRORSTATUS,
-                                        "0".equals(String.valueOf(element.value)) ? OnOffType.OFF : OnOffType.ON);
+                                        OnOffType.from(!"0".equals(String.valueOf(element.value))));
                                 break;
                             case 15:
                                 updateState(CHANNEL_TYPE_ERRORCODE, StringType.valueOf(String.valueOf(element.value)));

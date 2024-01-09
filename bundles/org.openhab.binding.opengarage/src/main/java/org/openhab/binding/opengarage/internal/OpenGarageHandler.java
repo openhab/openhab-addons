@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -148,7 +148,7 @@ public class OpenGarageHandler extends BaseThingHandler {
                     logger.debug("Received unknown door value: {}", controllerVariables.door);
                 } else {
                     boolean doorOpen = controllerVariables.door == 1;
-                    OnOffType onOff = maybeInvert.apply(doorOpen) ? OnOffType.ON : OnOffType.OFF;
+                    OnOffType onOff = OnOffType.from(maybeInvert.apply(doorOpen));
                     UpDownType upDown = doorOpen ? UpDownType.UP : UpDownType.DOWN;
                     OpenClosedType contact = doorOpen ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -564,7 +564,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         for (ScheduledEvent scheduledEvent : scheduledEvents) {
             String scheduledEventId = Integer.toString(scheduledEvent.id);
             ChannelUID channelUid = new ChannelUID(channelGroupUid, scheduledEventId);
-            updateState(channelUid, scheduledEvent.enabled ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUid, OnOffType.from(scheduledEvent.enabled));
         }
     }
 

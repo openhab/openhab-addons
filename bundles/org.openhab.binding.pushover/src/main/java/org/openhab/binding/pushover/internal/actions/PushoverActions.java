@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Initial contribution
  * @author Jacob Laursen - Added support for Expiring Messages
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = PushoverActions.class)
 @ThingActionsScope(name = "pushover")
 @NonNullByDefault
 public class PushoverActions implements ThingActions {
@@ -56,11 +59,32 @@ public class PushoverActions implements ThingActions {
             @ActionInput(name = "attachment", label = "@text/sendMessageActionInputAttachmentLabel", description = "@text/sendMessageActionInputAttachmentDescription", type = "java.lang.String") @Nullable String attachment,
             @ActionInput(name = "contentType", label = "@text/sendMessageActionInputContentTypeLabel", description = "@text/sendMessageActionInputContentTypeDescription", type = "java.lang.String", defaultValue = DEFAULT_CONTENT_TYPE) @Nullable String contentType,
             @ActionInput(name = "priority", label = "@text/sendMessageActionInputPriorityLabel", description = "@text/sendMessageActionInputPriorityDescription", type = "java.lang.Integer", defaultValue = DEFAULT_EMERGENCY_PRIORITY) @Nullable Integer priority,
+            @ActionInput(name = "device", label = "@text/sendMessageActionInputDeviceLabel", description = "@text/sendMessageActionInputDeviceDescription", type = "java.lang.String") @Nullable String device) {
+        return sendMessage(message, title, sound, url, urlTitle, attachment, contentType, priority, device, null);
+    }
+
+    public static Boolean sendMessage(ThingActions actions, String message, @Nullable String title,
+            @Nullable String sound, @Nullable String url, @Nullable String urlTitle, @Nullable String attachment,
+            @Nullable String contentType, @Nullable Integer priority, @Nullable String device) {
+        return ((PushoverActions) actions).sendMessage(message, title, sound, url, urlTitle, attachment, contentType,
+                priority, device);
+    }
+
+    @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
+    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
+            @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
+            @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
+            @ActionInput(name = "sound", label = "@text/sendMessageActionInputSoundLabel", description = "@text/sendMessageActionInputSoundDescription", type = "java.lang.String", defaultValue = DEFAULT_SOUND) @Nullable String sound,
+            @ActionInput(name = "url", label = "@text/sendMessageActionInputURLLabel", description = "@text/sendMessageActionInputURLDescription", type = "java.lang.String") @Nullable String url,
+            @ActionInput(name = "urlTitle", label = "@text/sendMessageActionInputURLTitleLabel", description = "@text/sendMessageActionInputURLTitleDescription", type = "java.lang.String") @Nullable String urlTitle,
+            @ActionInput(name = "attachment", label = "@text/sendMessageActionInputAttachmentLabel", description = "@text/sendMessageActionInputAttachmentDescription", type = "java.lang.String") @Nullable String attachment,
+            @ActionInput(name = "contentType", label = "@text/sendMessageActionInputContentTypeLabel", description = "@text/sendMessageActionInputContentTypeDescription", type = "java.lang.String", defaultValue = DEFAULT_CONTENT_TYPE) @Nullable String contentType,
+            @ActionInput(name = "priority", label = "@text/sendMessageActionInputPriorityLabel", description = "@text/sendMessageActionInputPriorityDescription", type = "java.lang.Integer", defaultValue = DEFAULT_EMERGENCY_PRIORITY) @Nullable Integer priority,
             @ActionInput(name = "device", label = "@text/sendMessageActionInputDeviceLabel", description = "@text/sendMessageActionInputDeviceDescription", type = "java.lang.String") @Nullable String device,
             @ActionInput(name = "ttl", label = "@text/sendMessageActionInputTTLLabel", description = "@text/sendMessageActionInputTTLDescription", type = "java.time.Duration") @Nullable Duration ttl) {
         logger.trace(
-                "ThingAction 'sendMessage' called with value(s): message='{}', title='{}', sound='{}', url='{}', urlTitle='{}', attachment='{}', contentType='{}', priority='{}', device='{}'",
-                message, title, sound, url, urlTitle, attachment, contentType, priority, device);
+                "ThingAction 'sendMessage' called with value(s): message='{}', title='{}', sound='{}', url='{}', urlTitle='{}', attachment='{}', contentType='{}', priority='{}', device='{}', ttl='{}'",
+                message, title, sound, url, urlTitle, attachment, contentType, priority, device, ttl);
 
         PushoverMessageBuilder builder = getDefaultPushoverMessageBuilder(message);
         // add sound, if defined

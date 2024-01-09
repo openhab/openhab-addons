@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -101,12 +102,14 @@ public class AsuswrtBindingConstants {
      * Properties
      */
 
+    // Router
+    public static final String PROPERTY_HOSTNAME = "hostname";
     // Interface
     public static final String PROPERTY_INTERFACE_NAME = "interfaceName";
     public static final String NETWORK_REPRESENTATION_PROPERTY = "interfaceName";
-    // client
+    // Client
     public static final String PROPERTY_CLIENT_NAME = "dnsName";
-    public static final String CLIENT_REPRESENTATION_PROPERTY = "macAddress";
+    public static final String CLIENT_REPRESENTATION_PROPERTY = Thing.PROPERTY_MAC_ADDRESS;
 
     /*
      * JSON request member names

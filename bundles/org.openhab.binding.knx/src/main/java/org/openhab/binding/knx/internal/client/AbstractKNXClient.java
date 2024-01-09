@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -503,7 +503,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
         GroupAddress groupAddress = commandSpec.getGroupAddress();
 
-        logger.trace("writeToKNX groupAddress '{}', commandSpec '{}'", groupAddress, commandSpec);
+        logger.trace("writeToKNX groupAddress '{}', commandSpec '{}:{} {}'", groupAddress, groupAddress,
+                commandSpec.getDPT(), commandSpec.getValue());
 
         sendToKNX(processCommunicator, groupAddress, commandSpec.getDPT(), commandSpec.getValue());
     }
