@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solax.internal.model;
 
+import static org.openhab.binding.solax.internal.SolaxBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -80,6 +82,37 @@ public interface InverterData {
 
     default short getBatteryTemperature() {
         return Short.MIN_VALUE;
+    }
+
+    default short getInverterTemperature1() {
+        return Short.MIN_VALUE;
+    }
+
+    default short getInverterTemperature2() {
+        return Short.MIN_VALUE;
+    }
+
+    default short getInverterWorkModeCode() {
+        return Short.MIN_VALUE;
+    }
+
+    @Nullable
+    default String getInverterWorkMode() {
+        switch (getInverterWorkModeCode()) {
+            case 0:
+                return WORKMODE_WAITING;
+            case 1:
+                return WORKMODE_CHECKING;
+            case 2:
+                return WORKMODE_NORMAL;
+            case 3:
+                return WORKMODE_FAULT;
+            case 4:
+                return WORKMODE_PERMANENT_FAULT;
+            case 5:
+                return WORKMODE_UPGRADING;
+        }
+        return null;
     }
 
     default short getBatteryLevel() {

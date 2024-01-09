@@ -13,6 +13,7 @@
 package org.openhab.binding.solax.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.solax.internal.SolaxBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -88,6 +89,9 @@ public class TestX3HybridG4Parser {
         assertEquals(49.96, data.getFrequencyPhase1()); // [16]
         assertEquals(49.96, data.getFrequencyPhase2()); // [17]
         assertEquals(49.96, data.getFrequencyPhase3()); // [18]
+
+        assertEquals(2, data.getInverterWorkModeCode()); // [19]
+        assertEquals(WORKMODE_NORMAL, data.getInverterWorkMode()); // [19]
 
         assertEquals(-41, data.getFeedInPower()); // [34] - [35]
 
