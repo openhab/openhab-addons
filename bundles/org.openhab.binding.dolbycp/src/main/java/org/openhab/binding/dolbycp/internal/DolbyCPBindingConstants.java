@@ -27,7 +27,7 @@ public class DolbyCPBindingConstants {
     private static final String BINDING_ID = "dolbycp";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "connection");
+    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "cp750");
 
     // List of all Channel ids
     public static final String CHANNEL_FADER = "channel-fader";

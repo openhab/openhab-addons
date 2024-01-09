@@ -177,8 +177,6 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
                     client.addListener(field, this);
                 }
                 client.refresh();
-                logger.info("Connected CP750 Client to {}:{}. OS version is {}", config.hostname, config.port,
-                        client.getVersion());
                 updateStatus(ThingStatus.ONLINE);
 
                 // Start scheduler
