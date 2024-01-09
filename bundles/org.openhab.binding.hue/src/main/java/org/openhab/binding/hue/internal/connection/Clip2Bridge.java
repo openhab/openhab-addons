@@ -122,7 +122,7 @@ public class Clip2Bridge implements Closeable {
      * <li>onHeaders() HTTP unauthorized codes</li>
      */
     private abstract class BaseStreamListenerAdapter<T> extends Stream.Listener.Adapter {
-        protected final CompletableFuture<T> completable = new CompletableFuture<T>();
+        protected final CompletableFuture<T> completable = new CompletableFuture<>();
         private String contentType = "UNDEFINED";
         private int status;
 

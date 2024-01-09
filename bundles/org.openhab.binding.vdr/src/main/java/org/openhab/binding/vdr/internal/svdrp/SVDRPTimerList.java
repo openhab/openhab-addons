@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SVDRPTimerList {
 
-    private List<String> timers = new ArrayList<String>();
+    private List<String> timers = new ArrayList<>();
 
     /**
      * parse object from SVDRP Client Response
@@ -36,7 +36,7 @@ public class SVDRPTimerList {
      */
     public static SVDRPTimerList parse(String message) {
         SVDRPTimerList timers = new SVDRPTimerList();
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
 
         StringTokenizer st = new StringTokenizer(message, System.lineSeparator());
         while (st.hasMoreTokens()) {

@@ -125,7 +125,7 @@ public class MycroftConnection {
     public void registerListener(MessageType messageType, MycroftMessageListener<? extends BaseMessage> listener) {
         Set<MycroftMessageListener<? extends BaseMessage>> messageTypeListeners = listeners.get(messageType);
         if (messageTypeListeners == null) {
-            messageTypeListeners = new HashSet<MycroftMessageListener<? extends BaseMessage>>();
+            messageTypeListeners = new HashSet<>();
             listeners.put(messageType, messageTypeListeners);
         }
         messageTypeListeners.add(listener);

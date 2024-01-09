@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class MPDResponseParser {
 
     static Map<String, String> responseToMap(MPDResponse response) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
 
         for (String line : response.getLines()) {
             int offset = line.indexOf(':');

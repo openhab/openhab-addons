@@ -79,9 +79,9 @@ public class GetOperationHoursCommand extends BRC1HCommand {
         Integer iIndoorFanHours = (int) (fanHours.getComputedValue(ByteOrder.LITTLE_ENDIAN));
         Integer iIndoorPowerHours = (int) (powerHours.getComputedValue(ByteOrder.LITTLE_ENDIAN));
 
-        this.indoorOperationHours = new QuantityType<Time>(iIndoorOperationHours, Units.HOUR);
-        this.indoorFanHours = new QuantityType<Time>(iIndoorFanHours, Units.HOUR);
-        this.indoorPowerHours = new QuantityType<Time>(iIndoorPowerHours, Units.HOUR);
+        this.indoorOperationHours = new QuantityType<>(iIndoorOperationHours, Units.HOUR);
+        this.indoorFanHours = new QuantityType<>(iIndoorFanHours, Units.HOUR);
+        this.indoorPowerHours = new QuantityType<>(iIndoorPowerHours, Units.HOUR);
 
         logger.debug("indoorOperationHours: {}", indoorOperationHours);
         logger.debug("indoorFanHours: {}", indoorFanHours);

@@ -22,9 +22,9 @@ import java.util.List;
  */
 public class LocalScheduleResponse extends Response {
 
-    public List<Running> running = new LinkedList<Running>();
+    public List<Running> running = new LinkedList<>();
 
-    public List<Relay> relays = new LinkedList<Relay>();
+    public List<Relay> relays = new LinkedList<>();
 
     public String name;
 

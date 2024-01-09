@@ -49,7 +49,7 @@ public class Group {
     /**
      * Set of zones belonging to a group
      **/
-    private Set<Integer> zones = new LinkedHashSet<Integer>();
+    private Set<Integer> zones = new LinkedHashSet<>();
 
     @Schema
     /**

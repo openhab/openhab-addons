@@ -71,7 +71,7 @@ public class DeviceStateDispatcherTest {
 
         devices = mock(DeviceCollection.class);
         when(getDevices().getDeviceIdentifiers())
-                .thenReturn(new HashSet<String>(Arrays.asList(FIRST_DEVICE_IDENTIFIER, SECOND_DEVICE_IDENTIFIER)));
+                .thenReturn(new HashSet<>(Arrays.asList(FIRST_DEVICE_IDENTIFIER, SECOND_DEVICE_IDENTIFIER)));
         when(getDevices().getDevice(FIRST_DEVICE_IDENTIFIER)).thenReturn(getFirstDevice());
         when(getDevices().getDevice(SECOND_DEVICE_IDENTIFIER)).thenReturn(getSecondDevice());
     }
@@ -152,7 +152,7 @@ public class DeviceStateDispatcherTest {
         Device deviceWithUnknownIdentifier = mockDevice(UNKNOWN_DEVICE_IDENTIFIER);
         DeviceCollection devicesWithUnknownDevice = mock(DeviceCollection.class);
         when(devicesWithUnknownDevice.getDeviceIdentifiers())
-                .thenReturn(new HashSet<String>(Arrays.asList(UNKNOWN_DEVICE_IDENTIFIER)));
+                .thenReturn(new HashSet<>(Arrays.asList(UNKNOWN_DEVICE_IDENTIFIER)));
         when(devicesWithUnknownDevice.getDevice(UNKNOWN_DEVICE_IDENTIFIER)).thenReturn(deviceWithUnknownIdentifier);
 
         DeviceStateDispatcher dispatcher = new DeviceStateDispatcher();
@@ -178,11 +178,11 @@ public class DeviceStateDispatcherTest {
         Device deviceWithUnknownIdentifier = mockDevice(UNKNOWN_DEVICE_IDENTIFIER);
         DeviceCollection devicesWithUnknownDevice = mock(DeviceCollection.class);
         when(devicesWithUnknownDevice.getDeviceIdentifiers())
-                .thenReturn(new HashSet<String>(Arrays.asList(UNKNOWN_DEVICE_IDENTIFIER)));
+                .thenReturn(new HashSet<>(Arrays.asList(UNKNOWN_DEVICE_IDENTIFIER)));
         when(devicesWithUnknownDevice.getDevice(UNKNOWN_DEVICE_IDENTIFIER)).thenReturn(deviceWithUnknownIdentifier);
 
         DeviceCollection emptyDevices = mock(DeviceCollection.class);
-        when(emptyDevices.getDeviceIdentifiers()).thenReturn(new HashSet<String>());
+        when(emptyDevices.getDeviceIdentifiers()).thenReturn(new HashSet<>());
 
         DeviceStateDispatcher dispatcher = new DeviceStateDispatcher();
         dispatcher.dispatchDeviceStateUpdates(devicesWithUnknownDevice);

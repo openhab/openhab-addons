@@ -316,11 +316,11 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         }
 
         // Set new futures, so we don't try to use service when connection id's are not known yet
-        isConnectionIdSet = new CompletableFuture<Boolean>();
-        isAvTransportIdSet = new CompletableFuture<Boolean>();
-        isRcsIdSet = new CompletableFuture<Boolean>();
+        isConnectionIdSet = new CompletableFuture<>();
+        isAvTransportIdSet = new CompletableFuture<>();
+        isRcsIdSet = new CompletableFuture<>();
 
-        HashMap<String, String> inputs = new HashMap<String, String>();
+        HashMap<String, String> inputs = new HashMap<>();
         inputs.put("RemoteProtocolInfo", remoteProtocolInfo);
         inputs.put("PeerConnectionManager", peerConnectionManager);
         inputs.put("PeerConnectionID", Integer.toString(peerConnectionId));
@@ -363,8 +363,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         }
 
         // Set new futures, so we don't try to use service when connection id's are not known yet
-        isAvTransportIdSet = new CompletableFuture<Boolean>();
-        isRcsIdSet = new CompletableFuture<Boolean>();
+        isAvTransportIdSet = new CompletableFuture<>();
+        isRcsIdSet = new CompletableFuture<>();
 
         // ConnectionID will default to 0 if not set through prepareForConnection method
         Map<String, String> inputs = Map.of(CONNECTION_ID, Integer.toString(connectionId));
