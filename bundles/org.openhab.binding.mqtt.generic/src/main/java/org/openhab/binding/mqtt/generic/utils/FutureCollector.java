@@ -31,11 +31,10 @@ import org.eclipse.jdt.annotation.Nullable;
 public class FutureCollector {
 
     public static <X> Collector<CompletableFuture<X>, Set<CompletableFuture<X>>, CompletableFuture<@Nullable Void>> allOf() {
-        return Collector.<CompletableFuture<X>, Set<CompletableFuture<X>>, CompletableFuture<@Nullable Void>> of(
-                (Supplier<Set<CompletableFuture<X>>>) HashSet::new, Set::add, (left, right) -> {
-                    left.addAll(right);
-                    return left;
-                }, a -> CompletableFuture.allOf(a.toArray(new CompletableFuture[a.size()])),
+        return Collector.of((Supplier<Set<CompletableFuture<X>>>) HashSet::new, Set::add, (left, right) -> {
+            left.addAll(right);
+            return left;
+        }, a -> CompletableFuture.allOf(a.toArray(new CompletableFuture[a.size()])),
                 Collector.Characteristics.UNORDERED);
     }
 }

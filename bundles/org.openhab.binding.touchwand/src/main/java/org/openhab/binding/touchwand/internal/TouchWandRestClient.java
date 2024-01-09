@@ -76,7 +76,7 @@ public class TouchWandRestClient {
 
     private static final int REQUEST_TIMEOUT_SEC = 10;
 
-    private static final Map<String, String> COMMAND_MAP = new HashMap<String, String>();
+    private static final Map<String, String> COMMAND_MAP = new HashMap<>();
     static {
         COMMAND_MAP.put(CMD_LOGIN, "/auth/login?");
         COMMAND_MAP.put(CMD_LIST_UNITS, "/units/listUnits");

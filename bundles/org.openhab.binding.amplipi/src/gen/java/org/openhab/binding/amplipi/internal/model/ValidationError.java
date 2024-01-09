@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class ValidationError {
 
     @Schema(required = true)
-    private List<String> loc = new ArrayList<String>();
+    private List<String> loc = new ArrayList<>();
 
     @Schema(required = true)
     private String msg;

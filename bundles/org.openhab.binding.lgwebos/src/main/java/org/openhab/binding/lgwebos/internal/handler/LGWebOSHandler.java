@@ -191,19 +191,18 @@ public class LGWebOSHandler extends BaseThingHandler
 
             // it is irrelevant which service is queried. Only need to send some packets over the wire
 
-            keepAliveJob = scheduler
-                    .scheduleWithFixedDelay(() -> getSocket().getRunningApp(new ResponseListener<AppInfo>() {
+            keepAliveJob = scheduler.scheduleWithFixedDelay(() -> getSocket().getRunningApp(new ResponseListener<>() {
 
-                        @Override
-                        public void onSuccess(AppInfo responseObject) {
-                            // ignore - actual response is not relevant here
-                        }
+                @Override
+                public void onSuccess(AppInfo responseObject) {
+                    // ignore - actual response is not relevant here
+                }
 
-                        @Override
-                        public void onError(String message) {
-                            // ignore
-                        }
-                    }), keepAliveInterval, keepAliveInterval, TimeUnit.MILLISECONDS);
+                @Override
+                public void onError(String message) {
+                    // ignore
+                }
+            }), keepAliveInterval, keepAliveInterval, TimeUnit.MILLISECONDS);
 
         }
     }

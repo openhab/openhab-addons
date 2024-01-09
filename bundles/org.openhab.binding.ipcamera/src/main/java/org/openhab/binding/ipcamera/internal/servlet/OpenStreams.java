@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class OpenStreams {
-    private List<StreamOutput> openStreams = Collections.synchronizedList(new ArrayList<StreamOutput>());
+    private List<StreamOutput> openStreams = Collections.synchronizedList(new ArrayList<>());
     public String boundary = "thisMjpegStream";
 
     public synchronized void addStream(StreamOutput stream) {

@@ -29,6 +29,6 @@ public class DeviceGroup implements DeviceNode {
     }
 
     public List<Device> getDevices() {
-        return devices != null ? devices : Collections.<Device> emptyList();
+        return devices != null ? devices : Collections.emptyList();
     }
 }

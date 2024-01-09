@@ -60,7 +60,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
     }
 
     public void activate() {
-        activate(new Hashtable<String, Object>());
+        activate(new Hashtable<>());
     }
 
     @Override

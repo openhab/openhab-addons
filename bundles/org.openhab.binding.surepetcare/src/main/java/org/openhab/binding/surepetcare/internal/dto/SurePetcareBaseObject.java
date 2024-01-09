@@ -32,7 +32,7 @@ public class SurePetcareBaseObject {
     public ZonedDateTime updatedAt = ZonedDateTime.now();
 
     public Map<String, String> getThingProperties() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("id", id.toString());
         properties.put("version", version);
         properties.put("createdAt", createdAt.toString());

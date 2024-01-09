@@ -22,8 +22,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Time;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zoneminder.internal.action.ZmActions;
@@ -217,7 +215,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
                 new DateTimeType(ZonedDateTime.ofInstant(event.getEnd().toInstant(), timeZoneProvider.getTimeZone())));
         updateChannelState(CHANNEL_EVENT_FRAMES, new DecimalType(event.getFrames()));
         updateChannelState(CHANNEL_EVENT_ALARM_FRAMES, new DecimalType(event.getAlarmFrames()));
-        updateChannelState(CHANNEL_EVENT_LENGTH, new QuantityType<Time>(event.getLength(), Units.SECOND));
+        updateChannelState(CHANNEL_EVENT_LENGTH, new QuantityType<>(event.getLength(), Units.SECOND));
     }
 
     private void clearEventChannels() {

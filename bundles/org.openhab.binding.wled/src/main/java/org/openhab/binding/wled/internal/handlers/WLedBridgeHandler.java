@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
 public class WLedBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     public final WledDynamicStateDescriptionProvider stateDescriptionProvider;
-    private Map<Integer, WLedSegmentHandler> segmentHandlers = new HashMap<Integer, WLedSegmentHandler>();
+    private Map<Integer, WLedSegmentHandler> segmentHandlers = new HashMap<>();
     private WledApiFactory apiFactory;
     public boolean hasWhite = false;
     public @Nullable WledApi api;

@@ -37,7 +37,7 @@ public enum RFXComMessageFactoryImpl implements RFXComMessageFactory {
 
     @SuppressWarnings("serial")
     private static final Map<PacketType, Class<? extends RFXComMessage>> MESSAGE_CLASSES = Collections
-            .unmodifiableMap(new HashMap<PacketType, Class<? extends RFXComMessage>>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
                     put(PacketType.INTERFACE_CONTROL, RFXComInterfaceControlMessage.class);
                     put(PacketType.INTERFACE_MESSAGE, RFXComInterfaceMessage.class);

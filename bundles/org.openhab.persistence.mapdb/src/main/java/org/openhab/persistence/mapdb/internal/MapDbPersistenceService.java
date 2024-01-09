@@ -207,7 +207,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
     @SuppressWarnings("null")
     private Optional<MapDbItem> deserialize(String json) {
-        MapDbItem item = mapper.<MapDbItem> fromJson(json, MapDbItem.class);
+        MapDbItem item = mapper.fromJson(json, MapDbItem.class);
         if (item == null || !item.isValid()) {
             logger.warn("Deserialized invalid item: {}", item);
             return Optional.empty();

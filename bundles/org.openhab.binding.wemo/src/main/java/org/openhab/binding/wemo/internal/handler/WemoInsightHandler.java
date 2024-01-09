@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class WemoInsightHandler extends WemoHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoInsightHandler.class);
-    private final Map<String, String> stateMap = new ConcurrentHashMap<String, String>();
+    private final Map<String, String> stateMap = new ConcurrentHashMap<>();
 
     private WemoPowerBank wemoPowerBank = new WemoPowerBank();
     private int currentPowerSlidingSeconds;

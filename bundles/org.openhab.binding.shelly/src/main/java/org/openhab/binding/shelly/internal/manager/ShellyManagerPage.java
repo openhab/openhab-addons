@@ -457,7 +457,7 @@ public class ShellyManagerPage {
             // no files available for this device type
             logger.info("{}: No firmware files found for device type {}", LOG_PREFIX, deviceType);
             list = new FwArchList();
-            list.versions = new ArrayList<FwArchEntry>();
+            list.versions = new ArrayList<>();
         } else {
             // Create selection list
             json = "{" + json.replace("[{", "\"versions\":[{") + "}"; // make it a named array

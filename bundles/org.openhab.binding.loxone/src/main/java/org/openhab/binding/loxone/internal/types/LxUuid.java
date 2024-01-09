@@ -34,7 +34,7 @@ public class LxUuid {
     private final String uuid;
     private final String uuidOriginal;
 
-    public static final JsonDeserializer<LxUuid> DESERIALIZER = new JsonDeserializer<LxUuid>() {
+    public static final JsonDeserializer<LxUuid> DESERIALIZER = new JsonDeserializer<>() {
         @Override
         public LxUuid deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
