@@ -45,8 +45,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ForecastSolarObject implements SolarForecast {
-    private static final double UNDEF = -1;
-
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarObject.class);
     private final TreeMap<ZonedDateTime, Double> wattHourMap = new TreeMap<ZonedDateTime, Double>();
     private final TreeMap<ZonedDateTime, Double> wattMap = new TreeMap<ZonedDateTime, Double>();
@@ -106,7 +104,7 @@ public class ForecastSolarObject implements SolarForecast {
 
     public double getActualEnergyValue(ZonedDateTime queryDateTime) {
         if (wattHourMap.isEmpty()) {
-            return UNDEF;
+            return -1;
         }
         Entry<ZonedDateTime, Double> f = wattHourMap.floorEntry(queryDateTime);
         Entry<ZonedDateTime, Double> c = wattHourMap.ceilingEntry(queryDateTime);
@@ -117,7 +115,7 @@ public class ForecastSolarObject implements SolarForecast {
                 return f.getValue() / 1000.0;
             } else {
                 // floor date doesn't fit
-                return UNDEF;
+                return -1;
             }
         } else if (f == null && c != null) {
             if (c.getKey().toLocalDate().equals(queryDateTime.toLocalDate())) {
@@ -125,7 +123,7 @@ public class ForecastSolarObject implements SolarForecast {
                 return 0;
             } else {
                 // ceiling date doesn't fit
-                return UNDEF;
+                return -1;
             }
         } else if (f != null && c != null) {
             // ceiling and floor available
@@ -146,7 +144,7 @@ public class ForecastSolarObject implements SolarForecast {
                 return 0;
             }
         } // else both null - date time doesn't fit to forecast data
-        return UNDEF;
+        return -1;
     }
 
     public TimeSeries getEnergyTimeSeries() {
@@ -159,7 +157,7 @@ public class ForecastSolarObject implements SolarForecast {
 
     public double getActualPowerValue(ZonedDateTime queryDateTime) {
         if (wattMap.isEmpty()) {
-            return UNDEF;
+            return -1;
         }
         double actualPowerValue = 0;
         Entry<ZonedDateTime, Double> f = wattMap.floorEntry(queryDateTime);
@@ -171,7 +169,7 @@ public class ForecastSolarObject implements SolarForecast {
                 return f.getValue() / 1000.0;
             } else {
                 // floor date doesn't fit
-                return UNDEF;
+                return -1;
             }
         } else if (f == null && c != null) {
             if (c.getKey().toLocalDate().equals(queryDateTime.toLocalDate())) {
@@ -179,7 +177,7 @@ public class ForecastSolarObject implements SolarForecast {
                 return 0;
             } else {
                 // ceiling date doesn't fit
-                return UNDEF;
+                return -1;
             }
         } else if (f != null && c != null) {
             // we're during suntime!
@@ -191,7 +189,7 @@ public class ForecastSolarObject implements SolarForecast {
             actualPowerValue = ((1 - interpolation) * powerFloor) + (interpolation * powerCeiling);
             return actualPowerValue / 1000.0;
         } // else both null - this shall not happen
-        return UNDEF;
+        return -1;
     }
 
     public TimeSeries getPowerTimeSeries() {
@@ -204,7 +202,7 @@ public class ForecastSolarObject implements SolarForecast {
 
     public double getDayTotal(LocalDate queryDate) {
         if (rawData.isEmpty()) {
-            return UNDEF;
+            return -1;
         }
         JSONObject contentJson = new JSONObject(rawData.get());
         JSONObject resultJson = contentJson.getJSONObject("result");
@@ -213,17 +211,17 @@ public class ForecastSolarObject implements SolarForecast {
         if (wattsDay.has(queryDate.toString())) {
             return wattsDay.getDouble(queryDate.toString()) / 1000.0;
         }
-        return UNDEF;
+        return -1;
     }
 
     public double getRemainingProduction(ZonedDateTime queryDateTime) {
         if (wattHourMap.isEmpty()) {
-            return UNDEF;
+            return -1;
         }
         double daily = getDayTotal(queryDateTime.toLocalDate());
         double actual = getActualEnergyValue(queryDateTime);
         if (daily < 0 || actual < 0) {
-            return UNDEF;
+            return -1;
         }
         return daily - actual;
     }
@@ -241,24 +239,22 @@ public class ForecastSolarObject implements SolarForecast {
      * SolarForecast Interface
      */
     @Override
-    public QuantityType<Energy> getDay(LocalDate localDate, String... args) {
+    public QuantityType<Energy> getDay(LocalDate localDate, String... args) throws IllegalArgumentException {
         if (args.length > 0) {
-            logger.info("ForecastSolar doesn't accept arguments");
-            return Utils.getEnergyState(-1);
+            throw new IllegalArgumentException("ForecastSolar doesn't accept arguments");
         }
         double measure = getDayTotal(localDate);
         return Utils.getEnergyState(measure);
     }
 
     @Override
-    public QuantityType<Energy> getEnergy(Instant start, Instant end, String... args) {
+    public QuantityType<Energy> getEnergy(Instant start, Instant end, String... args) throws IllegalArgumentException {
         if (args.length > 0) {
-            logger.info("ForecastSolar doesn't accept arguments");
-            return Utils.getEnergyState(-1);
+            throw new IllegalArgumentException("ForecastSolar doesn't accept arguments");
         }
         LocalDate beginDate = start.atZone(zone).toLocalDate();
         LocalDate endDate = end.atZone(zone).toLocalDate();
-        double measure = UNDEF;
+        double measure = -1;
         if (beginDate.equals(endDate)) {
             measure = getDayTotal(beginDate) - getActualEnergyValue(start.atZone(zone))
                     - getRemainingProduction(end.atZone(zone));
@@ -281,10 +277,9 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     @Override
-    public QuantityType<Power> getPower(Instant timestamp, String... args) {
+    public QuantityType<Power> getPower(Instant timestamp, String... args) throws IllegalArgumentException {
         if (args.length > 0) {
-            logger.info("ForecastSolar doesn't accept arguments");
-            return Utils.getPowerState(-1);
+            throw new IllegalArgumentException("ForecastSolar doesn't accept arguments");
         }
         double measure = getActualPowerValue(timestamp.atZone(zone));
         return Utils.getPowerState(measure);

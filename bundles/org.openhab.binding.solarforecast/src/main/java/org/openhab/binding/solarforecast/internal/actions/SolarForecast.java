@@ -44,7 +44,7 @@ public interface SolarForecast {
      * @param args possible arguments from this interface
      * @return QuantityType<Energy> in kW/h
      */
-    public QuantityType<Energy> getDay(LocalDate date, String... args);
+    public QuantityType<Energy> getDay(LocalDate date, String... args) throws IllegalArgumentException;
 
     /**
      * Returns electric energy between two timestamps
@@ -54,7 +54,7 @@ public interface SolarForecast {
      * @param args possible arguments from this interface
      * @return QuantityType<Energy> in kW/h
      */
-    public QuantityType<Energy> getEnergy(Instant start, Instant end, String... args);
+    public QuantityType<Energy> getEnergy(Instant start, Instant end, String... args) throws IllegalArgumentException;
 
     /**
      * Returns electric power at one specific point of time
@@ -63,7 +63,7 @@ public interface SolarForecast {
      * @param args possible arguments from this interface
      * @return QuantityType<Power> in kW
      */
-    public QuantityType<Power> getPower(Instant timestamp, String... args);
+    public QuantityType<Power> getPower(Instant timestamp, String... args) throws IllegalArgumentException;
 
     /**
      * Get the first date and time of forecast data

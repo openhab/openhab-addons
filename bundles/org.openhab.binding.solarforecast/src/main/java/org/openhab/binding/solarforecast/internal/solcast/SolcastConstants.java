@@ -27,10 +27,10 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public class SolcastConstants {
-    public static final String FORECAST_URL = "https://api.solcast.com.au/rooftop_sites/%s/forecasts?format=json&hours=168";
-    public static final String CURRENT_ESTIMATE_URL = "https://api.solcast.com.au/rooftop_sites/%s/estimated_actuals?format=json";
-    public static final String MEASUREMENT_URL = "https://api.solcast.com.au/rooftop_sites/%s/measurements?format=json";
+    private static final String BASE_URL = "https://api.solcast.com.au/rooftop_sites/";
+    public static final String FORECAST_URL = BASE_URL + "%s/forecasts?format=json&hours=168";
+    public static final String CURRENT_ESTIMATE_URL = BASE_URL + "%s/estimated_actuals?format=json";
+    public static final String MEASUREMENT_URL = BASE_URL + "%s/measurements?format=json";
     public static final String BEARER = "Bearer ";
     public static final Unit<Power> KILOWATT_UNIT = MetricPrefix.KILO(Units.WATT);
-    public static final double UNDEF_DOUBLE = -1.0;
 }

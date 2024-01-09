@@ -24,6 +24,7 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.library.types.QuantityType;
@@ -32,7 +33,6 @@ import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public class SolarForecastActions implements ThingActions {
     private Optional<ThingHandler> thingHandler = Optional.empty();
 
     @RuleAction(label = "@text/actionDayLabel", description = "@text/actionDayDesc")
-    public State getDay(
+    public QuantityType<Energy> getDay(
             @ActionInput(name = "localDate", label = "@text/actionInputDayLabel", description = "@text/actionInputDayDesc") LocalDate localDate,
             String... args) {
         if (thingHandler.isPresent()) {
@@ -63,22 +63,22 @@ public class SolarForecastActions implements ThingActions {
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
                         logger.trace("Ambiguous measure {} found for {} - return UNDEF", s, localDate);
-                        return UnDefType.UNDEF;
+                        return Utils.getEnergyState(-1);
                     }
                 }
                 return measure;
             } else {
                 logger.trace("No forecasts found for {} - return UNDEF", localDate);
-                return UnDefType.UNDEF;
+                return Utils.getEnergyState(-1);
             }
         } else {
             logger.trace("Handler missing - return UNDEF");
-            return UnDefType.UNDEF;
+            return Utils.getEnergyState(-1);
         }
     }
 
     @RuleAction(label = "@text/actionPowerLabel", description = "@text/actionPowerDesc")
-    public State getPower(
+    public QuantityType<Power> getPower(
             @ActionInput(name = "timestamp", label = "@text/actionInputDateTimeLabel", description = "@text/actionInputDateTimeDesc") Instant timestamp,
             String... args) {
         if (thingHandler.isPresent()) {
@@ -93,22 +93,22 @@ public class SolarForecastActions implements ThingActions {
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
                         logger.trace("Ambiguous measure {} found for {} - return UNDEF", s, timestamp);
-                        return UnDefType.UNDEF;
+                        return Utils.getPowerState(-1);
                     }
                 }
                 return measure;
             } else {
                 logger.trace("No forecasts found for {} - return UNDEF", timestamp);
-                return UnDefType.UNDEF;
+                return Utils.getPowerState(-1);
             }
         } else {
             logger.trace("Handler missing - return UNDEF");
-            return UnDefType.UNDEF;
+            return Utils.getPowerState(-1);
         }
     }
 
     @RuleAction(label = "@text/actionEnergyLabel", description = "@text/actionEnergyDesc")
-    public State getEnergy(
+    public QuantityType<Energy> getEnergy(
             @ActionInput(name = "start", label = "@text/actionInputDateTimeBeginLabel", description = "@text/actionInputDateTimeBeginDesc") Instant start,
             @ActionInput(name = "end", label = "@text/actionInputDateTimeEndLabel", description = "@text/actionInputDateTimeEndDesc") Instant end,
             String... args) {
@@ -124,17 +124,17 @@ public class SolarForecastActions implements ThingActions {
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
                         logger.trace("Ambiguous measure {} found between {} and {} - return UNDEF", s, start, end);
-                        return UnDefType.UNDEF;
+                        return Utils.getEnergyState(-1);
                     }
                 }
                 return measure;
             } else {
                 logger.trace("No forecasts found for between {} and {} - return UNDEF", start, end);
-                return UnDefType.UNDEF;
+                return Utils.getEnergyState(-1);
             }
         } else {
             logger.trace("Handler missing - return UNDEF");
-            return UnDefType.UNDEF;
+            return Utils.getEnergyState(-1);
         }
     }
 

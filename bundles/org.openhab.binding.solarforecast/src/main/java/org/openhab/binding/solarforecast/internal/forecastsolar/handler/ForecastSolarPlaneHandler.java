@@ -88,7 +88,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                     bridgeHandler = Optional.of(fsbh);
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
                             "@text/solarforecast.plane.status.await-feedback");
-                    bridgeHandler.get().addPlane(this);
+                    fsbh.addPlane(this);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.plane.status.wrong-handler" + " [\"" + handler + "\"]");
@@ -148,17 +148,23 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                     if (cr.getStatus() == 200) {
                         ForecastSolarObject localForecast = new ForecastSolarObject(cr.getContentAsString(),
                                 Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
-                        setForecast(localForecast);
                         updateState(CHANNEL_RAW, StringType.valueOf(cr.getContentAsString()));
-                        updateStatus(ThingStatus.ONLINE);
+                        if (localForecast.isValid()) {
+                            setForecast(localForecast);
+                            updateStatus(ThingStatus.ONLINE);
+                        } else {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "@text/solarforecast.plane.status.json-status");
+                        }
                     } else {
-                        logger.info("{} Call {} failed {}", thing.getLabel(), url, cr.getStatus());
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/solarforecast.plane.status.http-status [\"" + cr.getStatus() + "\"]");
                     }
-                } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    logger.info("{} Call {} failed {}", thing.getLabel(), url, e.getMessage());
+                } catch (ExecutionException | TimeoutException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                } catch (InterruptedException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
             } // else use available forecast
             updateChannels(forecast);

@@ -150,9 +150,11 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/solarforecast.plane.status.http-status [\"" + crEstimate.getStatus() + "\"]");
                 }
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, e.getMessage());
+            } catch (ExecutionException | TimeoutException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (InterruptedException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                Thread.currentThread().interrupt();
             }
         } // else use available forecast
         updateChannels(forecast.get());

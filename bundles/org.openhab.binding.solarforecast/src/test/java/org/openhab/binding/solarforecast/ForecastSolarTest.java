@@ -189,10 +189,24 @@ class ForecastSolarTest {
         assertEquals(QuantityType.valueOf(129.137, Units.KILOWATT_HOUR).toString(),
                 fo.getEnergy(queryDateTime.toInstant(), queryDateTime.plusDays(2).toInstant()).toFullString(),
                 "Actual out of scope");
-
-        assertEquals(ENERGY_UNDEF, fo.getDay(queryDateTime.toLocalDate(), "optimistic"));
-        assertEquals(ENERGY_UNDEF, fo.getDay(queryDateTime.toLocalDate(), "pessimistic"));
-        assertEquals(ENERGY_UNDEF, fo.getDay(queryDateTime.toLocalDate(), "total", "rubbish"));
+        try {
+            fo.getDay(queryDateTime.toLocalDate(), "optimistic");
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("ForecastSolar doesn't accept arguments", e.getMessage(), "optimistic");
+        }
+        try {
+            fo.getDay(queryDateTime.toLocalDate(), "pessimistic");
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("ForecastSolar doesn't accept arguments", e.getMessage(), "pessimistic");
+        }
+        try {
+            fo.getDay(queryDateTime.toLocalDate(), "total", "rubbish");
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("ForecastSolar doesn't accept arguments", e.getMessage(), "rubbish");
+        }
     }
 
     @Test

@@ -317,11 +317,32 @@ class SolcastTest {
 
         // access in past shall be rejected
         Instant past = Instant.now().minus(5, ChronoUnit.MINUTES);
-        assertEquals(POWER_UNDEF, scfo.getPower(past, SolarForecast.OPTIMISTIC), "Optimistic Power");
-        assertEquals(POWER_UNDEF, scfo.getPower(past, SolarForecast.PESSIMISTIC), "Pessimistic Power");
-        assertEquals(POWER_UNDEF, scfo.getPower(past, "total", "rubbish"), "Rubbish arguments");
-        assertEquals(POWER_UNDEF, scfo.getPower(past.plus(2, ChronoUnit.HOURS), "total", "rubbish"),
-                "Rubbish arguments");
+        try {
+            scfo.getPower(past, SolarForecast.OPTIMISTIC);
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Solcast argument optimistic only available for future values", e.getMessage(),
+                    "Optimistic Power");
+        }
+        try {
+            scfo.getPower(past, SolarForecast.PESSIMISTIC);
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Solcast argument pessimistic only available for future values", e.getMessage(),
+                    "Pessimistic Power");
+        }
+        try {
+            scfo.getPower(past, "total", "rubbish");
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Solcast doesn't support 2 arguments", e.getMessage(), "Too many qrguments");
+        }
+        try {
+            scfo.getPower(past.plus(2, ChronoUnit.HOURS), "rubbish");
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Solcast doesn't support argument rubbish", e.getMessage(), "Rubbish argument");
+        }
         assertEquals(POWER_UNDEF, scfo.getPower(past), "Normal Power");
     }
 

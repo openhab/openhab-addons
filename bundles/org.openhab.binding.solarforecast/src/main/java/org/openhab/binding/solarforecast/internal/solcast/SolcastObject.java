@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolcastObject implements SolarForecast {
-    private static final double UNDEF = -1;
     private static final TreeMap<ZonedDateTime, Double> EMPTY_MAP = new TreeMap<ZonedDateTime, Double>();
 
     private final Logger logger = LoggerFactory.getLogger(SolcastObject.class);
@@ -155,7 +154,7 @@ public class SolcastObject implements SolarForecast {
         TreeMap<ZonedDateTime, Double> dtm = getDataMap(mode);
         Entry<ZonedDateTime, Double> nextEntry = dtm.higherEntry(iterationDateTime);
         if (nextEntry == null) {
-            return UNDEF;
+            return -1;
         }
         double forecastValue = 0;
         double previousEstimate = 0;
@@ -210,7 +209,7 @@ public class SolcastObject implements SolarForecast {
      */
     public double getActualPowerValue(ZonedDateTime query, QueryMode mode) {
         if (query.toInstant().isBefore(getForecastBegin()) || query.toInstant().isAfter(getForecastEnd())) {
-            return UNDEF;
+            return -1;
         }
         TreeMap<ZonedDateTime, Double> dtm = getDataMap(mode);
         double actualPowerValue = 0;
@@ -257,7 +256,7 @@ public class SolcastObject implements SolarForecast {
         ZonedDateTime iterationDateTime = query.atStartOfDay(timeZoneProvider.getTimeZone());
         Entry<ZonedDateTime, Double> nextEntry = dtm.higherEntry(iterationDateTime);
         if (nextEntry == null) {
-            return UNDEF;
+            return -1;
         }
         ZonedDateTime endDateTime = query.atTime(23, 59, 59).atZone(timeZoneProvider.getTimeZone());
         double forecastValue = 0;
@@ -328,14 +327,18 @@ public class SolcastObject implements SolarForecast {
      * SolarForecast Interface
      */
     @Override
-    public QuantityType<Energy> getDay(LocalDate date, String... args) {
+    public QuantityType<Energy> getDay(LocalDate date, String... args) throws IllegalArgumentException {
         QueryMode mode = evalArguments(args);
         if (mode.equals(QueryMode.Error)) {
-            return Utils.getEnergyState(-1);
+            if (args.length > 1) {
+                throw new IllegalArgumentException("Solcast doesn't support " + args.length + " arguments");
+            } else {
+                throw new IllegalArgumentException("Solcast doesn't support argument " + args[0]);
+            }
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
             if (date.isBefore(LocalDate.now())) {
-                logger.info("{} forecasts only available for future", mode);
-                return Utils.getEnergyState(-1);
+                throw new IllegalArgumentException(
+                        "Solcast argument " + mode.toString() + " only available for future values");
             }
         }
         double measure = getDayTotal(date, mode);
@@ -343,23 +346,26 @@ public class SolcastObject implements SolarForecast {
     }
 
     @Override
-    public QuantityType<Energy> getEnergy(Instant start, Instant end, String... args) {
+    public QuantityType<Energy> getEnergy(Instant start, Instant end, String... args) throws IllegalArgumentException {
         if (end.isBefore(start)) {
-            logger.info("End {} defined before Start {}", end, start);
-            return Utils.getEnergyState(-1);
+            if (args.length > 1) {
+                throw new IllegalArgumentException("Solcast doesn't support " + args.length + " arguments");
+            } else {
+                throw new IllegalArgumentException("Solcast doesn't support argument " + args[0]);
+            }
         }
         QueryMode mode = evalArguments(args);
         if (mode.equals(QueryMode.Error)) {
             return Utils.getEnergyState(-1);
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
             if (end.isBefore(Instant.now())) {
-                logger.info("{} forecasts only available for future", mode);
-                return Utils.getEnergyState(-1);
+                throw new IllegalArgumentException(
+                        "Solcast argument " + mode.toString() + " only available for future values");
             }
         }
         LocalDate beginDate = start.atZone(timeZoneProvider.getTimeZone()).toLocalDate();
         LocalDate endDate = end.atZone(timeZoneProvider.getTimeZone()).toLocalDate();
-        double measure = UNDEF;
+        double measure = -1;
         if (beginDate.isEqual(endDate)) {
             measure = getDayTotal(beginDate, mode)
                     - getActualEnergyValue(start.atZone(timeZoneProvider.getTimeZone()), mode)
@@ -383,15 +389,19 @@ public class SolcastObject implements SolarForecast {
     }
 
     @Override
-    public QuantityType<Power> getPower(Instant timestamp, String... args) {
+    public QuantityType<Power> getPower(Instant timestamp, String... args) throws IllegalArgumentException {
         // eliminate error cases and return immediately
         QueryMode mode = evalArguments(args);
         if (mode.equals(QueryMode.Error)) {
-            return Utils.getPowerState(-1);
+            if (args.length > 1) {
+                throw new IllegalArgumentException("Solcast doesn't support " + args.length + " arguments");
+            } else {
+                throw new IllegalArgumentException("Solcast doesn't support argument " + args[0]);
+            }
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
             if (timestamp.isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))) {
-                logger.info("{} forecasts only available for future", mode);
-                return Utils.getPowerState(-1);
+                throw new IllegalArgumentException(
+                        "Solcast argument " + mode.toString() + " only available for future values");
             }
         }
         double measure = getActualPowerValue(ZonedDateTime.ofInstant(timestamp, timeZoneProvider.getTimeZone()), mode);

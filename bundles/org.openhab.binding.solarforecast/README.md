@@ -60,7 +60,6 @@ After measurement is sent the `raw-tuning` channel is reporting the result.
 | Name                   | Type    | Description                           | Default     | Required | Advanced |
 |------------------------|---------|---------------------------------------|-------------|----------|----------|
 | apiKey                 | text    | API Key                               | N/A         | yes      | no       |
-| channelRefreshInterval | integer | Channel Refresh Interval in minutes   | 1           | yes      | no       |
 | timeZone               | text    | Time Zone of forecast location        | empty       | no       | yes      |
 
 `apiKey` can be obtained in your [Account Settings](https://toolkit.solcast.com.au/account)
@@ -117,7 +116,6 @@ You can try it without any registration or other preconditions.
 | Name                   | Type    | Description                           | Default      | Required |
 |------------------------|---------|---------------------------------------|--------------|----------|
 | location               | text    | Location of Photovoltaic system       | empty        | yes      |
-| channelRefreshInterval | integer | Channel Refresh Interval in minutes   | 1            | yes      |
 | apiKey                 | text    | API Key                               | N/A          | no       |
 
 `location` defines latitude, longitude values of your PV system.

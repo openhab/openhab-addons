@@ -77,18 +77,15 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             if (!configuration.get().timeZone.isEmpty()) {
                 try {
                     timeZone = ZoneId.of(configuration.get().timeZone);
-                    updateStatus(ThingStatus.ONLINE);
-                    refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL,
-                            TimeUnit.MINUTES));
                 } catch (DateTimeException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.site.status.timezone" + " [\"" + configuration.get().timeZone + "\"]");
+                    return;
                 }
-            } else {
-                updateStatus(ThingStatus.ONLINE);
-                refreshJob = Optional.of(
-                        scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL, TimeUnit.MINUTES));
             }
+            updateStatus(ThingStatus.ONLINE);
+            refreshJob = Optional
+                    .of(scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL, TimeUnit.MINUTES));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/solarforecast.site.status.api-key-missing");

@@ -17,7 +17,6 @@ import static org.openhab.binding.solarforecast.internal.SolarForecastBindingCon
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +59,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SolarForecastActions.class);
+        return List.of(SolarForecastActions.class);
     }
 
     @Override
