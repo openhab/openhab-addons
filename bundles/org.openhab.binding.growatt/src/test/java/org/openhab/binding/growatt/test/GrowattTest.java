@@ -13,7 +13,7 @@
 package org.openhab.binding.growatt.test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.io.BufferedReader;
@@ -28,7 +28,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import javax.net.ssl.SSLSession;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
@@ -287,7 +290,6 @@ public class GrowattTest {
          *
          * configuration.userName = "aa";
          * configuration.password ="bb";
-         *
          * deviceId = "cc";
          *
          */
@@ -296,9 +298,12 @@ public class GrowattTest {
             return;
         }
 
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client.Client();
+        sslContextFactory.setHostnameVerifier((@Nullable String host, @Nullable SSLSession session) -> true);
+        sslContextFactory.setValidatePeerCerts(false);
+
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
-        when(httpClientFactory.createHttpClient(anyString(), any(SslContextFactory.Client.class)))
-                .thenReturn(new HttpClient(GrowattCloud.createSslContextFactory()));
+        when(httpClientFactory.createHttpClient(anyString())).thenReturn(new HttpClient(sslContextFactory));
 
         try (GrowattCloud api = new GrowattCloud(configuration, httpClientFactory)) {
             Integer programMode = GrowattCloud.ProgramMode.BATTERY_FIRST.ordinal();

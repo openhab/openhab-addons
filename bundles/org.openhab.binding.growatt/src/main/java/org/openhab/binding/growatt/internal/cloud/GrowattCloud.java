@@ -30,8 +30,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.net.ssl.SSLSession;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -41,7 +39,7 @@ import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.growatt.internal.GrowattBindingConstants;
 import org.openhab.binding.growatt.internal.config.GrowattBridgeConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrowattDevice;
 import org.openhab.binding.growatt.internal.dto.GrowattPlant;
@@ -88,8 +86,7 @@ public class GrowattCloud implements AutoCloseable {
     public static final String DISCHARGE_PROGRAM_ENABLE = "forcedDischargeStopSwitch1";
 
     // API server URL
-    private static final String SERVER_DOMAIN = "growatt.com";
-    private static final String SERVER_URL = String.format("https://server-api.%s/", SERVER_DOMAIN);
+    private static final String SERVER_URL = "https://server-api.growatt.com/";
 
     // API end points
     private static final String LOGIN_API_ENDPOINT = "newTwoLoginAPI.do";
@@ -184,7 +181,7 @@ public class GrowattCloud implements AutoCloseable {
     public GrowattCloud(GrowattBridgeConfiguration configuration, HttpClientFactory httpClientFactory)
             throws Exception {
         this.configuration = configuration;
-        this.httpClient = httpClientFactory.createHttpClient("growatt-cloud-api", createSslContextFactory());
+        this.httpClient = httpClientFactory.createHttpClient(GrowattBindingConstants.BINDING_ID);
         this.httpClient.start();
     }
 
@@ -218,26 +215,6 @@ public class GrowattCloud implements AutoCloseable {
             }
         }
         return result.toString();
-    }
-
-    /**
-     * Create a {@link SslContextFactory} to validate the Growatt API server domain and trust its certificate.
-     *
-     * @return a new SslContextFactory.Client instance.
-     */
-    public static SslContextFactory.Client createSslContextFactory() {
-        SslContextFactory.Client result = new SslContextFactory.Client.Client();
-        result.setHostnameVerifier((@Nullable String host, @Nullable SSLSession session) -> {
-            if (session != null) {
-                String peerHost = session.getPeerHost();
-                if (peerHost != null && host != null) {
-                    return peerHost.endsWith(SERVER_DOMAIN) && host.endsWith(SERVER_DOMAIN);
-                }
-            }
-            return false;
-        });
-        result.setValidatePeerCerts(false);
-        return result;
     }
 
     /**
