@@ -15,8 +15,11 @@ package org.openhab.binding.solarforecast.internal.actions;
 import java.time.Instant;
 import java.time.LocalDate;
 
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Power;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.types.State;
+import org.openhab.core.library.types.QuantityType;
 
 /**
  * The {@link SolarForecast} Interface needed for Actions
@@ -41,7 +44,7 @@ public interface SolarForecast {
      * @param args possible arguments from this interface
      * @return QuantityType<Energy> in kW/h
      */
-    public State getDay(LocalDate date, String... args);
+    public QuantityType<Energy> getDay(LocalDate date, String... args);
 
     /**
      * Returns electric energy between two timestamps
@@ -51,7 +54,7 @@ public interface SolarForecast {
      * @param args possible arguments from this interface
      * @return QuantityType<Energy> in kW/h
      */
-    public State getEnergy(Instant start, Instant end, String... args);
+    public QuantityType<Energy> getEnergy(Instant start, Instant end, String... args);
 
     /**
      * Returns electric power at one specific point of time
@@ -60,19 +63,19 @@ public interface SolarForecast {
      * @param args possible arguments from this interface
      * @return QuantityType<Power> in kW
      */
-    public State getPower(Instant timestamp, String... args);
+    public QuantityType<Power> getPower(Instant timestamp, String... args);
 
     /**
      * Get the first date and time of forecast data
      *
-     * @return your localized date time
+     * @return date time
      */
     public Instant getForecastBegin();
 
     /**
      * Get the last date and time of forecast data
      *
-     * @return your localized date time
+     * @return date time
      */
     public Instant getForecastEnd();
 }

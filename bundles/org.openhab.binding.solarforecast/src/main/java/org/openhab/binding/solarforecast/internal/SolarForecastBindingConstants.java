@@ -48,7 +48,6 @@ public class SolarForecastBindingConstants {
     public static final String CHANNEL_RAW = "raw";
     public static final int REFRESH_ACTUAL_INTERVAL = 1;
 
-    public static final String AUTODETECT = "auto-detect";
     public static final String SLASH = "/";
     public static final String EMPTY = "";
 }

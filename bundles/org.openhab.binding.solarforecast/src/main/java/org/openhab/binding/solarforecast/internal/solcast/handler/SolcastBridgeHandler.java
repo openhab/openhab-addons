@@ -1,6 +1,4 @@
 /**
-        updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(daySum - energySum));
-        updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(daySum));
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -76,7 +74,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         SolcastBridgeConfiguration config = getConfigAs(SolcastBridgeConfiguration.class);
         configuration = Optional.of(config);
         if (!EMPTY.equals(config.apiKey)) {
-            if (!AUTODETECT.equals(configuration.get().timeZone)) {
+            if (!configuration.get().timeZone.isEmpty()) {
                 try {
                     timeZone = ZoneId.of(configuration.get().timeZone);
                     updateStatus(ThingStatus.ONLINE);

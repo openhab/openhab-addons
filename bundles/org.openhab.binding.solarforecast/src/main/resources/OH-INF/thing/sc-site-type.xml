@@ -14,8 +14,8 @@
 			<channel id="power-estimate10" typeId="power-estimate10-channel"/>
 			<channel id="power-estimate90" typeId="power-estimate90-channel"/>
 			<channel id="energy-actual" typeId="energy-actual-channel"/>
-            <channel id="energy-remain" typeId="energy-remain-channel"/>
-            <channel id="energy-today" typeId="energy-today-channel"/>
+			<channel id="energy-remain" typeId="energy-remain-channel"/>
+			<channel id="energy-today" typeId="energy-today-channel"/>
 			<channel id="energy-estimate" typeId="energy-estimate-channel"/>
 			<channel id="energy-estimate10" typeId="energy-estimate10-channel"/>
 			<channel id="energy-estimate90" typeId="energy-estimate90-channel"/>

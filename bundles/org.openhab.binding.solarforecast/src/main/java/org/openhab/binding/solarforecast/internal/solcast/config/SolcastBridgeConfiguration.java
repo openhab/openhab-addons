@@ -23,5 +23,5 @@ import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 @NonNullByDefault
 public class SolcastBridgeConfiguration {
     public String apiKey = SolarForecastBindingConstants.EMPTY;
-    public String timeZone = SolarForecastBindingConstants.AUTODETECT;
+    public String timeZone = SolarForecastBindingConstants.EMPTY;
 }

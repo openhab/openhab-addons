@@ -61,11 +61,11 @@ After measurement is sent the `raw-tuning` channel is reporting the result.
 |------------------------|---------|---------------------------------------|-------------|----------|----------|
 | apiKey                 | text    | API Key                               | N/A         | yes      | no       |
 | channelRefreshInterval | integer | Channel Refresh Interval in minutes   | 1           | yes      | no       |
-| timeZone               | text    | Time Zone of forecast location        | auto-detect | no       | yes      |
+| timeZone               | text    | Time Zone of forecast location        | empty       | no       | yes      |
 
 `apiKey` can be obtained in your [Account Settings](https://toolkit.solcast.com.au/account)
 
-`timeZone` is set to `auto-detect` to evaluate Regional Settings of your openHAB installation. 
+`timeZone` leave it empty to evaluate Regional Settings of your openHAB installation. 
 See [DateTime](#date-time) section for more information.
 
 ### Solcast Plane Configuration
@@ -116,12 +116,12 @@ You can try it without any registration or other preconditions.
 
 | Name                   | Type    | Description                           | Default      | Required |
 |------------------------|---------|---------------------------------------|--------------|----------|
-| location               | text    | Location of Photovoltaic system       | auto-detect  | yes      |
+| location               | text    | Location of Photovoltaic system       | empty        | yes      |
 | channelRefreshInterval | integer | Channel Refresh Interval in minutes   | 1            | yes      |
 | apiKey                 | text    | API Key                               | N/A          | no       |
 
 `location` defines latitude, longitude values of your PV system.
-In case of auto-detect the location configured in openHAB is obtained.
+In case of empty the location configured in openHAB is obtained.
 
 `apiKey` can be given in case you subscribed to a paid plan
 

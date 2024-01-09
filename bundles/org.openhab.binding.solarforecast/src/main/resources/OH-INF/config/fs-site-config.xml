@@ -9,7 +9,6 @@
 			<context>location</context>
 			<label>PV Location</label>
 			<description>Location of photovoltaic system</description>
-			<default>auto-detect</default>
 		</parameter>
 		<parameter name="apiKey" type="text">
 			<label>API Key</label>

@@ -13,12 +13,12 @@
 package org.openhab.binding.solarforecast.internal.utils;
 
 import javax.measure.MetricPrefix;
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link Utils} Helpers for Solcast and ForecastSolar
@@ -27,19 +27,17 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class Utils {
-    public static State getEnergyState(double d) {
+    public static QuantityType<Energy> getEnergyState(double d) {
         if (d < 0) {
-            return UnDefType.UNDEF;
-        } else {
-            return QuantityType.valueOf(Math.round(d * 1000) / 1000.0, Units.KILOWATT_HOUR);
+            return QuantityType.valueOf(-1, Units.KILOWATT_HOUR);
         }
+        return QuantityType.valueOf(Math.round(d * 1000) / 1000.0, Units.KILOWATT_HOUR);
     }
 
-    public static State getPowerState(double d) {
+    public static QuantityType<Power> getPowerState(double d) {
         if (d < 0) {
-            return UnDefType.UNDEF;
-        } else {
-            return QuantityType.valueOf(Math.round(d * 1000) / 1000.0, MetricPrefix.KILO(Units.WATT));
+            return QuantityType.valueOf(-1, MetricPrefix.KILO(Units.WATT));
         }
+        return QuantityType.valueOf(Math.round(d * 1000) / 1000.0, MetricPrefix.KILO(Units.WATT));
     }
 }

@@ -12,7 +12,6 @@
 		<parameter name="timeZone" type="text" required="false">
 			<label>Time Zone</label>
 			<description>Time zone of forecast location</description>
-			<default>auto-detect</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

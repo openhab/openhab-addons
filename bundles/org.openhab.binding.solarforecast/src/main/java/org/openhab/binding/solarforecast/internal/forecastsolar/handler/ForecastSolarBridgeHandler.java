@@ -66,7 +66,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     @Override
     public void initialize() {
         ForecastSolarBridgeConfiguration config = getConfigAs(ForecastSolarBridgeConfiguration.class);
-        if (config.location.equals(AUTODETECT)) {
+        if (config.location.isEmpty()) {
             Configuration editConfig = editConfiguration();
             editConfig.put("location", homeLocation.toString());
             updateConfiguration(editConfig);

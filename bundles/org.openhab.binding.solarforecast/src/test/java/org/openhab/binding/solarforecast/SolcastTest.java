@@ -23,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,11 +33,11 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
+import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
-import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link SolcastTest} tests responses from forecast solar website
@@ -49,6 +50,8 @@ class SolcastTest {
     private static final TimeZP TIMEZONEPROVIDER = new TimeZP();
     // double comparison tolerance = 1 Watt
     private static final double TOLERANCE = 0.001;
+    public static final QuantityType<Power> POWER_UNDEF = Utils.getPowerState(-1);;
+    public static final QuantityType<Energy> ENERGY_UNDEF = Utils.getEnergyState(-1);;
 
     /**
      * "2022-07-18T00:00+02:00[Europe/Berlin]": 0,
@@ -277,9 +280,8 @@ class SolcastTest {
         double totalEnergy = 0;
         ZonedDateTime start = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
         for (int i = 0; i < 7; i++) {
-            QuantityType qt = (QuantityType<?>) scfo.getDay(start.toLocalDate().plusDays(i));
-            QuantityType eqt = (QuantityType<?>) scfo.getEnergy(start.plusDays(i).toInstant(),
-                    start.plusDays(i + 1).toInstant());
+            QuantityType qt = scfo.getDay(start.toLocalDate().plusDays(i));
+            QuantityType eqt = scfo.getEnergy(start.plusDays(i).toInstant(), start.plusDays(i + 1).toInstant());
 
             // check if energy calculation fits to daily query
             assertEquals(qt.doubleValue(), eqt.doubleValue(), TOLERANCE, "Total " + i + " days forecast");
@@ -287,7 +289,7 @@ class SolcastTest {
             totalEnergy += qt.doubleValue();
 
             // check if sum is fitting to total energy query
-            qt = (QuantityType<?>) scfo.getEnergy(start.toInstant(), start.plusDays(i + 1).toInstant());
+            qt = scfo.getEnergy(start.toInstant(), start.plusDays(i + 1).toInstant());
             // System.out.println("Total: " + qt.doubleValue());
             assertEquals(totalEnergy, qt.doubleValue(), TOLERANCE * 2, "Total " + i + " days forecast");
         }
@@ -315,12 +317,12 @@ class SolcastTest {
 
         // access in past shall be rejected
         Instant past = Instant.now().minus(5, ChronoUnit.MINUTES);
-        assertEquals(UnDefType.UNDEF, scfo.getPower(past, SolarForecast.OPTIMISTIC), "Optimistic Power");
-        assertEquals(UnDefType.UNDEF, scfo.getPower(past, SolarForecast.PESSIMISTIC), "Pessimistic Power");
-        assertEquals(UnDefType.UNDEF, scfo.getPower(past, "total", "rubbish"), "Rubbish arguments");
-        assertEquals(UnDefType.UNDEF, scfo.getPower(past.plus(2, ChronoUnit.HOURS), "total", "rubbish"),
+        assertEquals(POWER_UNDEF, scfo.getPower(past, SolarForecast.OPTIMISTIC), "Optimistic Power");
+        assertEquals(POWER_UNDEF, scfo.getPower(past, SolarForecast.PESSIMISTIC), "Pessimistic Power");
+        assertEquals(POWER_UNDEF, scfo.getPower(past, "total", "rubbish"), "Rubbish arguments");
+        assertEquals(POWER_UNDEF, scfo.getPower(past.plus(2, ChronoUnit.HOURS), "total", "rubbish"),
                 "Rubbish arguments");
-        assertEquals(UnDefType.UNDEF, scfo.getPower(past), "Normal Power");
+        assertEquals(POWER_UNDEF, scfo.getPower(past), "Normal Power");
     }
 
     @Test

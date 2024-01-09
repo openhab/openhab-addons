@@ -30,7 +30,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
-import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link ForecastSolarTest} tests responses from forecast solar object
@@ -41,6 +40,8 @@ import org.openhab.core.types.UnDefType;
 class ForecastSolarTest {
     private static final double TOLERANCE = 0.001;
     public static final ZoneId TEST_ZONE = ZoneId.of("Europe/Berlin");
+    public static final QuantityType<Power> POWER_UNDEF = Utils.getPowerState(-1);;
+    public static final QuantityType<Energy> ENERGY_UNDEF = Utils.getEnergyState(-1);;
 
     @Test
     void testForecastObject() {
@@ -189,9 +190,9 @@ class ForecastSolarTest {
                 fo.getEnergy(queryDateTime.toInstant(), queryDateTime.plusDays(2).toInstant()).toFullString(),
                 "Actual out of scope");
 
-        assertEquals(UnDefType.UNDEF, fo.getDay(queryDateTime.toLocalDate(), "optimistic"));
-        assertEquals(UnDefType.UNDEF, fo.getDay(queryDateTime.toLocalDate(), "pessimistic"));
-        assertEquals(UnDefType.UNDEF, fo.getDay(queryDateTime.toLocalDate(), "total", "rubbish"));
+        assertEquals(ENERGY_UNDEF, fo.getDay(queryDateTime.toLocalDate(), "optimistic"));
+        assertEquals(ENERGY_UNDEF, fo.getDay(queryDateTime.toLocalDate(), "pessimistic"));
+        assertEquals(ENERGY_UNDEF, fo.getDay(queryDateTime.toLocalDate(), "total", "rubbish"));
     }
 
     @Test

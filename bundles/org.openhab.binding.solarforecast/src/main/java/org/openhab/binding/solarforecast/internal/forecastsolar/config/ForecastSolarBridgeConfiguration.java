@@ -22,7 +22,7 @@ import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
  */
 @NonNullByDefault
 public class ForecastSolarBridgeConfiguration {
-    public String location = "auto-detect";
+    public String location = "";
     public String apiKey = SolarForecastBindingConstants.EMPTY;
     public double inverterKwp = Double.MAX_VALUE;
 }

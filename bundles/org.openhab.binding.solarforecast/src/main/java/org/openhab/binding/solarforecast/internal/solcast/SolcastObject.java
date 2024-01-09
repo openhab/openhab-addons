@@ -22,18 +22,19 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
 
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Power;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.types.State;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +93,7 @@ public class SolcastObject implements SolarForecast {
     }
 
     private void add(String content) {
-        if (!content.equals(SolarForecastBindingConstants.EMPTY)) {
+        if (!content.isEmpty()) {
             valid = true;
             JSONObject contentJson = new JSONObject(content);
             JSONArray resultJsonArray;
@@ -327,14 +328,14 @@ public class SolcastObject implements SolarForecast {
      * SolarForecast Interface
      */
     @Override
-    public State getDay(LocalDate date, String... args) {
+    public QuantityType<Energy> getDay(LocalDate date, String... args) {
         QueryMode mode = evalArguments(args);
         if (mode.equals(QueryMode.Error)) {
-            return UnDefType.UNDEF;
+            return Utils.getEnergyState(-1);
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
             if (date.isBefore(LocalDate.now())) {
                 logger.info("{} forecasts only available for future", mode);
-                return UnDefType.UNDEF;
+                return Utils.getEnergyState(-1);
             }
         }
         double measure = getDayTotal(date, mode);
@@ -342,18 +343,18 @@ public class SolcastObject implements SolarForecast {
     }
 
     @Override
-    public State getEnergy(Instant start, Instant end, String... args) {
+    public QuantityType<Energy> getEnergy(Instant start, Instant end, String... args) {
         if (end.isBefore(start)) {
             logger.info("End {} defined before Start {}", end, start);
-            return UnDefType.UNDEF;
+            return Utils.getEnergyState(-1);
         }
         QueryMode mode = evalArguments(args);
         if (mode.equals(QueryMode.Error)) {
-            return UnDefType.UNDEF;
+            return Utils.getEnergyState(-1);
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
             if (end.isBefore(Instant.now())) {
                 logger.info("{} forecasts only available for future", mode);
-                return UnDefType.UNDEF;
+                return Utils.getEnergyState(-1);
             }
         }
         LocalDate beginDate = start.atZone(timeZoneProvider.getTimeZone()).toLocalDate();
@@ -382,15 +383,15 @@ public class SolcastObject implements SolarForecast {
     }
 
     @Override
-    public State getPower(Instant timestamp, String... args) {
+    public QuantityType<Power> getPower(Instant timestamp, String... args) {
         // eliminate error cases and return immediately
         QueryMode mode = evalArguments(args);
         if (mode.equals(QueryMode.Error)) {
-            return UnDefType.UNDEF;
+            return Utils.getPowerState(-1);
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
             if (timestamp.isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))) {
                 logger.info("{} forecasts only available for future", mode);
-                return UnDefType.UNDEF;
+                return Utils.getPowerState(-1);
             }
         }
         double measure = getActualPowerValue(ZonedDateTime.ofInstant(timestamp, timeZoneProvider.getTimeZone()), mode);

@@ -24,15 +24,17 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
 
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Power;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
-import org.openhab.core.types.State;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -239,20 +241,20 @@ public class ForecastSolarObject implements SolarForecast {
      * SolarForecast Interface
      */
     @Override
-    public State getDay(LocalDate localDate, String... args) {
+    public QuantityType<Energy> getDay(LocalDate localDate, String... args) {
         if (args.length > 0) {
             logger.info("ForecastSolar doesn't accept arguments");
-            return UnDefType.UNDEF;
+            return Utils.getEnergyState(-1);
         }
         double measure = getDayTotal(localDate);
         return Utils.getEnergyState(measure);
     }
 
     @Override
-    public State getEnergy(Instant start, Instant end, String... args) {
+    public QuantityType<Energy> getEnergy(Instant start, Instant end, String... args) {
         if (args.length > 0) {
             logger.info("ForecastSolar doesn't accept arguments");
-            return UnDefType.UNDEF;
+            return Utils.getEnergyState(-1);
         }
         LocalDate beginDate = start.atZone(zone).toLocalDate();
         LocalDate endDate = end.atZone(zone).toLocalDate();
@@ -279,10 +281,10 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     @Override
-    public State getPower(Instant timestamp, String... args) {
+    public QuantityType<Power> getPower(Instant timestamp, String... args) {
         if (args.length > 0) {
             logger.info("ForecastSolar doesn't accept arguments");
-            return UnDefType.UNDEF;
+            return Utils.getPowerState(-1);
         }
         double measure = getActualPowerValue(timestamp.atZone(zone));
         return Utils.getPowerState(measure);
