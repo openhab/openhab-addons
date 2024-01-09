@@ -30,6 +30,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +52,19 @@ public class AirGradientLocationHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // This is read only
-        logger.debug("Received command {} for channel {}, but air gradient locations are read only", command.toString(),
-                channelUID.getId());
+        if (command instanceof RefreshType) {
+            Bridge bridge = getBridge();
+            if (bridge != null) {
+                AirGradientAPIHandler handler = (AirGradientAPIHandler) bridge.getHandler();
+                if (handler != null) {
+                    handler.pollingCode();
+                }
+            }
+        } else {
+            // This is read only
+            logger.debug("Received command {} for channel {}, but air gradient locations are read only",
+                    command.toString(), channelUID.getId());
+        }
     }
 
     @Override

@@ -39,6 +39,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +69,13 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // This is read only
-        logger.debug("Received command {} for channel {}, but the API is read only", command.toString(),
-                channelUID.getId());
+        if (command instanceof RefreshType) {
+            pollingCode();
+        } else {
+            // This is read only
+            logger.debug("Received command {} for channel {}, but the API is read only", command.toString(),
+                    channelUID.getId());
+        }
     }
 
     @Override
@@ -160,14 +165,14 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
                     Type measureType = new TypeToken<Measure>() {
                     }.getType();
                     Measure measure = gson.fromJson(stringResponse, measureType);
-                    measures = new ArrayList(1);
+                    measures = new ArrayList<@Nullable Measure>(1);
                     measures.add(measure);
                 }
 
                 if (measures != null) {
                     List<@Nullable Measure> nullableMeasuresWithoutNulls = measures.stream().filter(Objects::nonNull)
                             .toList();
-                    List<Measure> measuresWithoutNulls = new ArrayList<>(nullableMeasuresWithoutNulls.size());
+                    List<Measure> measuresWithoutNulls = new ArrayList<Measure>(nullableMeasuresWithoutNulls.size());
                     for (@Nullable
                     Measure m : nullableMeasuresWithoutNulls) {
                         if (m != null) {
