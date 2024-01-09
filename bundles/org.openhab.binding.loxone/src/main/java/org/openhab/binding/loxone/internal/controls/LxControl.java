@@ -206,7 +206,7 @@ public class LxControl {
     /*
      * JSON deserialization routine, called during parsing configuration by the GSON library
      */
-    public static final JsonDeserializer<LxControl> DESERIALIZER = new JsonDeserializer<LxControl>() {
+    public static final JsonDeserializer<LxControl> DESERIALIZER = new JsonDeserializer<>() {
         @Override
         public LxControl deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {

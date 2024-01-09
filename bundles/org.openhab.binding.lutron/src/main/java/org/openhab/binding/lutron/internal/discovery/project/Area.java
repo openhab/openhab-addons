@@ -38,14 +38,14 @@ public class Area {
     }
 
     public List<DeviceNode> getDeviceNodes() {
-        return deviceNodes != null ? deviceNodes : Collections.<DeviceNode> emptyList();
+        return deviceNodes != null ? deviceNodes : Collections.emptyList();
     }
 
     public List<Output> getOutputs() {
-        return outputs != null ? outputs : Collections.<Output> emptyList();
+        return outputs != null ? outputs : Collections.emptyList();
     }
 
     public List<Area> getAreas() {
-        return areas != null ? areas : Collections.<Area> emptyList();
+        return areas != null ? areas : Collections.emptyList();
     }
 }

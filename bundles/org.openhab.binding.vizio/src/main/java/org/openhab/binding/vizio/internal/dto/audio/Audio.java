@@ -30,7 +30,7 @@ public class Audio {
     @SerializedName("STATUS")
     private Status status;
     @SerializedName("HASHLIST")
-    private List<Long> hashlist = new ArrayList<Long>();
+    private List<Long> hashlist = new ArrayList<>();
     @SerializedName("GROUP")
     private String group;
     @SerializedName("NAME")
@@ -38,7 +38,7 @@ public class Audio {
     @SerializedName("PARAMETERS")
     private Parameters parameters;
     @SerializedName("ITEMS")
-    private List<ItemAudio> items = new ArrayList<ItemAudio>();
+    private List<ItemAudio> items = new ArrayList<>();
     @SerializedName("URI")
     private String uri;
     @SerializedName("CNAME")

@@ -16,8 +16,6 @@ import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConst
 
 import java.util.List;
 
-import javax.measure.quantity.Time;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
@@ -132,10 +130,10 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
             final Integer overrideTimeout = firstChannel.getOverrideTimeoutUnixTime();
 
             if (overrideTimeout != null && !"NONE".equalsIgnoreCase(firstChannel.getOverrideType())) {
-                return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), Units.SECOND);
+                return new QuantityType<>(overrideTimeout - (System.currentTimeMillis() / 1000L), Units.SECOND);
             }
         }
-        return new QuantityType<Time>(0, Units.SECOND);
+        return new QuantityType<>(0, Units.SECOND);
     }
 
     static class HotWaterData {

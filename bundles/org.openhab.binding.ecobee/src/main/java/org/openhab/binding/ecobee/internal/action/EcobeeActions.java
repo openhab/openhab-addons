@@ -281,7 +281,7 @@ public class EcobeeActions implements ThingActions {
         if (coolHoldTemp == null || heatHoldTemp == null) {
             throw new IllegalArgumentException("hold temperatures cannot be null");
         }
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("coolHoldTemp", coolHoldTemp);
         params.put("heatHoldTemp", heatHoldTemp);
         return setHold(params, null, null, null, null);
@@ -306,7 +306,7 @@ public class EcobeeActions implements ThingActions {
         if (holdHours == null) {
             throw new IllegalArgumentException("number of hold hours is missing");
         }
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("coolHoldTemp", coolHoldTemp);
         params.put("heatHoldTemp", heatHoldTemp);
         return setHold(params, HoldType.HOLD_HOURS.toString(), holdHours, null, null);
@@ -331,7 +331,7 @@ public class EcobeeActions implements ThingActions {
         if (holdClimateRef == null || !localHandler.isValidClimateRef(holdClimateRef)) {
             throw new IllegalArgumentException("hold climate ref is missing or invalid");
         }
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("holdClimateRef", holdClimateRef);
         return setHold(params, null, null, null, null);
     }
@@ -358,7 +358,7 @@ public class EcobeeActions implements ThingActions {
         if (holdClimateRef == null || !localHandler.isValidClimateRef(holdClimateRef)) {
             throw new IllegalArgumentException("hold climate ref is missing or invalid");
         }
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("holdClimateRef", holdClimateRef);
         return setHold(params, HoldType.HOLD_HOURS.toString(), holdHours, null, null);
     }
@@ -379,7 +379,7 @@ public class EcobeeActions implements ThingActions {
             @ActionInput(name = "endDateTime", description = "(opt) The end date in thermostat time.") @Nullable Date endDateTime,
             @ActionInput(name = "holdType", description = "(opt) The hold duration type. Valid values: dateTime, nextTransition, indefinite, holdHours.") @Nullable String holdType,
             @ActionInput(name = "holdHours", description = "(opt) The number of hours to hold for, used and required if holdType='holdHours'.") @Nullable Number holdHours) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         if (coolHoldTemp != null) {
             params.put("coolHoldTemp", coolHoldTemp);
         }

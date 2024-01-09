@@ -162,7 +162,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private String mp4Filename = "ipcamera";
     private int mp4RecordTime;
     private int gifRecordTime = 5;
-    private LinkedList<byte[]> fifoSnapshotBuffer = new LinkedList<byte[]>();
+    private LinkedList<byte[]> fifoSnapshotBuffer = new LinkedList<>();
     private int snapCount;
     private boolean updateImageChannel = false;
     private byte lowPriorityCounter = 0;

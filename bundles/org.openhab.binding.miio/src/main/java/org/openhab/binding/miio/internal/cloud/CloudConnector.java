@@ -75,11 +75,11 @@ public class CloudConnector {
     private ConcurrentHashMap<@NonNull String, @NonNull HomeListDTO> homeLists = new ConcurrentHashMap<>();
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
-    private ExpiringCache<Boolean> logonCache = new ExpiringCache<Boolean>(CACHE_EXPIRY, () -> {
+    private ExpiringCache<Boolean> logonCache = new ExpiringCache<>(CACHE_EXPIRY, () -> {
         return logon();
     });
 
-    private ExpiringCache<String> refreshDeviceList = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+    private ExpiringCache<String> refreshDeviceList = new ExpiringCache<>(CACHE_EXPIRY, () -> {
         if (deviceListState == CloudListState.FAILED && !isConnected()) {
             return ("Could not connect to Xiaomi cloud");
         }
@@ -100,7 +100,7 @@ public class CloudConnector {
         return "done";// deviceList;
     });
 
-    private ExpiringCache<String> refreshHomeList = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+    private ExpiringCache<String> refreshHomeList = new ExpiringCache<>(CACHE_EXPIRY, () -> {
         if (homeListState == CloudListState.FAILED && !isConnected()) {
             return ("Could not connect to Xiaomi cloud");
         }

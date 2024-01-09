@@ -69,8 +69,7 @@ public class DatahubPriceConfiguration {
      */
     public Set<ChargeTypeCode> getChargeTypeCodes() {
         return chargeTypeCodes.isBlank() ? new HashSet<>()
-                : new HashSet<ChargeTypeCode>(
-                        Arrays.stream(chargeTypeCodes.split(",")).map(ChargeTypeCode::new).toList());
+                : new HashSet<>(Arrays.stream(chargeTypeCodes.split(",")).map(ChargeTypeCode::new).toList());
     }
 
     /**
@@ -79,7 +78,7 @@ public class DatahubPriceConfiguration {
      * @return Set of notes.
      */
     public Set<String> getNotes() {
-        return notes.isBlank() ? new HashSet<>() : new HashSet<String>(Arrays.asList(notes.split(",")));
+        return notes.isBlank() ? new HashSet<>() : new HashSet<>(Arrays.asList(notes.split(",")));
     }
 
     /**

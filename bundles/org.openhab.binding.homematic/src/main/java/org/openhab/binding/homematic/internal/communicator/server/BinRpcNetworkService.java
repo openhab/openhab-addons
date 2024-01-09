@@ -49,7 +49,7 @@ public class BinRpcNetworkService implements Runnable {
         serverSocket.setReuseAddress(true);
         serverSocket.bind(new InetSocketAddress(config.getBinCallbackPort()));
 
-        this.rpcResponseHandler = new RpcResponseHandler<byte[]>(listener) {
+        this.rpcResponseHandler = new RpcResponseHandler<>(listener) {
 
             @Override
             protected byte[] getEmptyStringResult() {

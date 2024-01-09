@@ -425,7 +425,7 @@ public class P1TelegramParser implements TelegramParser {
         final String obisIdString = obisId.toString();
 
         if (!obisIdString.isEmpty()) {
-            cosemObjects.add(new SimpleEntry<String, String>(obisIdString, obisValue.toString()));
+            cosemObjects.add(new SimpleEntry<>(obisIdString, obisValue.toString()));
         }
         clearObisData();
     }

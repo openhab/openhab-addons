@@ -148,7 +148,7 @@ public class MagentaTVGsonDTO {
      */
     public static class OauthCredentials {
         public String epghttpsurl = "";
-        public ArrayList<OauthKeyValue> sam3Para = new ArrayList<OauthKeyValue>();
+        public ArrayList<OauthKeyValue> sam3Para = new ArrayList<>();
     }
 
     public static class OauthCredentialsInstanceCreator implements InstanceCreator<OauthCredentials> {

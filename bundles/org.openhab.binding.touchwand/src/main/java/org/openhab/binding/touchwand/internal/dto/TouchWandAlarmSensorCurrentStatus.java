@@ -28,9 +28,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TouchWandAlarmSensorCurrentStatus {
 
     private int batt;
-    private List<Sensor> sensorsStatus = new ArrayList<Sensor>();
-    private List<AlarmEvent> alarmsStatus = new ArrayList<AlarmEvent>();
-    private List<BinarySensorEvent> bSensorsStatus = new ArrayList<BinarySensorEvent>();
+    private List<Sensor> sensorsStatus = new ArrayList<>();
+    private List<AlarmEvent> alarmsStatus = new ArrayList<>();
+    private List<BinarySensorEvent> bSensorsStatus = new ArrayList<>();
 
     public void setBatt(Integer batt) {
         this.batt = batt;

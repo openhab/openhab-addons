@@ -277,7 +277,7 @@ public class ActionsStateTest {
     public void testCanControlLightReturnsFalseWhenNoLightOptionIsAvailable() {
         // given:
         Actions actions = mock(Actions.class);
-        when(actions.getLight()).thenReturn(new LinkedList<Light>());
+        when(actions.getLight()).thenReturn(new LinkedList<>());
 
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
 

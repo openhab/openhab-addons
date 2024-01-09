@@ -126,7 +126,7 @@ public class ServerConnection {
     public static Observable<ServerConnection> create(final ThingUID thingUID, final String host, final int port) {
         final String serverUrl = String.format("ws://%s:%d/stream", host, port);
 
-        return Observable.<ServerConnection> create(new OnSubscribe<ServerConnection>() {
+        return Observable.create(new OnSubscribe<>() {
 
             private final Logger logger = LoggerFactory.getLogger(ServerConnection.class);
 

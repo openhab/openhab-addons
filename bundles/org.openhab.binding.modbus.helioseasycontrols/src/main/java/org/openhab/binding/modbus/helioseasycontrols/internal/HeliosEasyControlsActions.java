@@ -159,7 +159,7 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getErrorMessages.label", description = "@text/action.getErrorMessages.description")
     public @ActionOutput(name = "errorMessages", type = "java.util.List<String>") List<String> getErrorMessages() {
-        return (handler != null) ? handler.getErrorMessages() : new ArrayList<String>();
+        return (handler != null) ? handler.getErrorMessages() : new ArrayList<>();
     }
 
     public static List<String> getErrorMessages(ThingActions actions) {
@@ -168,7 +168,7 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getWarningMessages.label", description = "@text/action.getWarningMessages.description")
     public @ActionOutput(name = "warningMessages", type = "java.util.List<String>") List<String> getWarningMessages() {
-        return (handler != null) ? handler.getWarningMessages() : new ArrayList<String>();
+        return (handler != null) ? handler.getWarningMessages() : new ArrayList<>();
     }
 
     public static List<String> getWarningMessages(ThingActions actions) {
@@ -177,7 +177,7 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getInfoMessages.label", description = "@text/action.getInfoMessages.description")
     public @ActionOutput(name = "infoMessages", type = "java.util.List<String>") List<String> getInfoMessages() {
-        return (handler != null) ? handler.getInfoMessages() : new ArrayList<String>();
+        return (handler != null) ? handler.getInfoMessages() : new ArrayList<>();
     }
 
     public static List<String> getInfoMessages(ThingActions actions) {
@@ -186,7 +186,7 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getStatusMessages.label", description = "@text/action.getStatusMessages.description")
     public @ActionOutput(name = "statusMessages", type = "java.util.List<String>") List<String> getStatusMessages() {
-        return (handler != null) ? handler.getStatusMessages() : new ArrayList<String>();
+        return (handler != null) ? handler.getStatusMessages() : new ArrayList<>();
     }
 
     public static List<String> getStatusMessages(ThingActions actions) {

@@ -83,7 +83,7 @@ public class VizioHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> metadataRefreshJob;
 
     private VizioCommunicator communicator;
-    private List<VizioApp> userConfigApps = new ArrayList<VizioApp>();
+    private List<VizioApp> userConfigApps = new ArrayList<>();
     private Object sequenceLock = new Object();
 
     private int pairingDeviceId = -1;

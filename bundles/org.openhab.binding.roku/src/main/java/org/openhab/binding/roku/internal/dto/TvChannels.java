@@ -33,7 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @XmlRootElement(name = "tv-channels")
 public class TvChannels {
     @XmlElement
-    private List<TvChannels.Channel> channel = new ArrayList<TvChannels.Channel>();
+    private List<TvChannels.Channel> channel = new ArrayList<>();
 
     public List<TvChannels.Channel> getChannel() {
         return this.channel;

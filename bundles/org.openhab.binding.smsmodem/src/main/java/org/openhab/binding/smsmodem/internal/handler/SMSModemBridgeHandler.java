@@ -91,7 +91,7 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
     private @Nullable ScheduledFuture<?> checkScheduled;
 
     // we keep a list of msisdn sender for autodiscovery
-    private Set<String> senderMsisdn = new HashSet<String>();
+    private Set<String> senderMsisdn = new HashSet<>();
     private @Nullable SMSConversationDiscoveryService discoveryService;
 
     private boolean shouldRun = false;

@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class WemoMotionHandler extends WemoHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoMotionHandler.class);
-    private final Map<String, String> stateMap = new ConcurrentHashMap<String, String>();
+    private final Map<String, String> stateMap = new ConcurrentHashMap<>();
 
     public WemoMotionHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing, upnpIOService, wemoHttpCaller);

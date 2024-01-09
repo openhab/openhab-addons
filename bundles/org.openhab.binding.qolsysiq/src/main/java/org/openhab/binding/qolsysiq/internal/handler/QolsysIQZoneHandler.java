@@ -78,7 +78,7 @@ public class QolsysIQZoneHandler extends BaseThingHandler {
         logger.debug("updateZone {}", zone.zoneId);
         updateState(QolsysIQBindingConstants.CHANNEL_ZONE_STATE, new DecimalType(zone.state));
         updateZoneStatus(zone.status);
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("type", zone.type);
         props.put("name", zone.name);
         props.put("group", zone.group);

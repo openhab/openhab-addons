@@ -123,7 +123,7 @@ public class RRMapDraw {
      */
     private void drawMap(Graphics2D g2d, float scale) {
         Stroke stroke = new BasicStroke(1.1f * scale);
-        Set<Integer> roomIds = new HashSet<Integer>();
+        Set<Integer> roomIds = new HashSet<>();
         g2d.setStroke(stroke);
         for (int y = 0; y < rmfp.getImgHeight() - 1; y++) {
             for (int x = 0; x < rmfp.getImgWidth() + 1; x++) {

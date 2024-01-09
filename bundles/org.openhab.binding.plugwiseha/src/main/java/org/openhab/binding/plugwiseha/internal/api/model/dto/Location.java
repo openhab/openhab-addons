@@ -39,7 +39,7 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
     private String preset;
 
     @XStreamImplicit(itemFieldName = "appliance")
-    private List<String> locationAppliances = new ArrayList<String>();
+    private List<String> locationAppliances = new ArrayList<>();
 
     @XStreamImplicit(itemFieldName = "point_log", keyFieldName = "type")
     private Logs pointLogs;

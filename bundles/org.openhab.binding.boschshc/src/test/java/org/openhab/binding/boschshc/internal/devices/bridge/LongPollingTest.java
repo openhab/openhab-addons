@@ -165,12 +165,12 @@ class LongPollingTest {
         @Override
         public ScheduledFuture<?> schedule(@Nullable Runnable command, long delay, @Nullable TimeUnit unit) {
             // not used in this tests
-            return new NullScheduledFuture<Object>();
+            return new NullScheduledFuture<>();
         }
 
         @Override
         public <V> ScheduledFuture<V> schedule(@Nullable Callable<V> callable, long delay, @Nullable TimeUnit unit) {
-            return new NullScheduledFuture<V>();
+            return new NullScheduledFuture<>();
         }
 
         @Override
@@ -179,7 +179,7 @@ class LongPollingTest {
             if (command != null) {
                 command.run();
             }
-            return new NullScheduledFuture<Object>();
+            return new NullScheduledFuture<>();
         }
 
         @Override
@@ -188,7 +188,7 @@ class LongPollingTest {
             if (command != null) {
                 command.run();
             }
-            return new NullScheduledFuture<Object>();
+            return new NullScheduledFuture<>();
         }
     }
 

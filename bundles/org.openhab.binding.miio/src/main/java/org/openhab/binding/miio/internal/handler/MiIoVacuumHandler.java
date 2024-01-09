@@ -171,7 +171,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             return null;
         });
-        map = new ExpiringCache<String>(CACHE_EXPIRY, () -> {
+        map = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
                 int ret = sendCommand(MiIoCommand.GET_MAP);
                 if (ret != 0) {

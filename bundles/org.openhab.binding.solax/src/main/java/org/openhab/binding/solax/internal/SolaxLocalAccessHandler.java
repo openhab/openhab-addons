@@ -69,7 +69,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
     private boolean alreadyRemovedUnsupportedChannels;
 
-    private final Set<String> unsupportedExistingChannels = new HashSet<String>();
+    private final Set<String> unsupportedExistingChannels = new HashSet<>();
 
     private final ReentrantLock retrieveDataCallLock = new ReentrantLock();
 

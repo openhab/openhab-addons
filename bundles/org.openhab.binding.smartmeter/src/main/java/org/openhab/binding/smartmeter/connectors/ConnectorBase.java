@@ -119,7 +119,7 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
 
     @Override
     public Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period, ExecutorService executor) {
-        Flowable<T> itemPublisher = Flowable.<T> create((emitter) -> {
+        Flowable<T> itemPublisher = Flowable.create((emitter) -> {
             emitValues(initMessage, emitter);
         }, BackpressureStrategy.DROP);
 

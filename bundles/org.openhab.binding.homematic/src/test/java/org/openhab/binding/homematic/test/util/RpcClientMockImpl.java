@@ -67,7 +67,7 @@ public class RpcClientMockImpl extends RpcClient<String> {
 
     @Override
     protected RpcRequest<String> createRpcRequest(String methodName) {
-        return new RpcRequest<String>() {
+        return new RpcRequest<>() {
 
             @Override
             public void addArg(Object arg) {

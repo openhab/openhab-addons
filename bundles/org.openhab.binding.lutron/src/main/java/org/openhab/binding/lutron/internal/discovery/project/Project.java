@@ -38,14 +38,14 @@ public class Project {
     }
 
     public List<Area> getAreas() {
-        return areas != null ? areas : Collections.<Area> emptyList();
+        return areas != null ? areas : Collections.emptyList();
     }
 
     public List<Timeclock> getTimeclocks() {
-        return timeclocks != null ? timeclocks : Collections.<Timeclock> emptyList();
+        return timeclocks != null ? timeclocks : Collections.emptyList();
     }
 
     public List<GreenMode> getGreenModes() {
-        return greenmodes != null ? greenmodes : Collections.<GreenMode> emptyList();
+        return greenmodes != null ? greenmodes : Collections.emptyList();
     }
 }
