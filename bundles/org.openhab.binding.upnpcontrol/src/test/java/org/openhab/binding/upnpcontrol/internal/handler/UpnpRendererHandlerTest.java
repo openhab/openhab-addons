@@ -365,7 +365,7 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
 
         // Register a media queue
         expectLastChangeOnSetAVTransportURI(true, 2);
-        List<UpnpEntry> startList = new ArrayList<UpnpEntry>();
+        List<UpnpEntry> startList = new ArrayList<>();
         startList.add(requireNonNull(upnpEntryQueue.get(2)));
         UpnpEntryQueue startQueue = new UpnpEntryQueue(startList, "54321");
         handler.registerQueue(requireNonNull(startQueue));

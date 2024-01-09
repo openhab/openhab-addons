@@ -636,7 +636,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     }
 
     public void updateThingProperties() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(PROPERTY_FRIENDLYNAME, config.getFriendlyName());
         properties.put(PROPERTY_MODEL_NUMBER, config.getModel());
         properties.put(PROPERTY_DESC_URL, config.getDescriptionUrl());

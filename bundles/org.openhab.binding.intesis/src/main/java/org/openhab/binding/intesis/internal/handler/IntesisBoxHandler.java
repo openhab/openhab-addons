@@ -25,8 +25,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.intesis.internal.IntesisDynamicStateDescriptionProvider;
@@ -238,14 +236,14 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                     value = "0";
                 }
                 updateState(CHANNEL_TYPE_TARGETTEMP,
-                        new QuantityType<Temperature>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
+                        new QuantityType<>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
                 break;
             case "AMBTEMP":
                 if (Double.valueOf(value).isNaN()) {
                     value = "0";
                 }
                 updateState(CHANNEL_TYPE_AMBIENTTEMP,
-                        new QuantityType<Temperature>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
+                        new QuantityType<>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
                 break;
             case "MODE":
                 updateState(CHANNEL_TYPE_MODE, new StringType(value));

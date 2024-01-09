@@ -33,7 +33,7 @@ public class GroupContentModel {
 
     public String groupName = "";
 
-    public List<ThermostatModel> thermostats = new ArrayList<ThermostatModel>();
+    public List<ThermostatModel> thermostats = new ArrayList<>();
 
     public int regulationMode;
 
