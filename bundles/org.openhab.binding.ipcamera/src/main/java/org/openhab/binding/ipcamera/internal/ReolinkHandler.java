@@ -121,24 +121,24 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportAiDogCat == null
-                                || getAbilityResponse[0].value.ability.supportAiDogCat.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.abilityChn[0].supportAiDogCat == null
+                                || getAbilityResponse[0].value.ability.abilityChn[0].supportAiDogCat.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no AiDogCat support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_ANIMAL_ALARM);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportAiPeople == null
-                                || getAbilityResponse[0].value.ability.supportAiPeople.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.abilityChn[0].supportAiPeople == null
+                                || getAbilityResponse[0].value.ability.abilityChn[0].supportAiPeople.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no AiPeople support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_HUMAN_ALARM);
                             if (channel != null) {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportAiVehicle == null
-                                || getAbilityResponse[0].value.ability.supportAiVehicle.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.abilityChn[0].supportAiVehicle == null
+                                || getAbilityResponse[0].value.ability.abilityChn[0].supportAiVehicle.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no AiVehicle support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_CAR_ALARM);
                             if (channel != null) {
@@ -181,8 +181,8 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                 removeChannels.add(channel);
                             }
                         }
-                        if (getAbilityResponse[0].value.ability.supportAiFace == null
-                                || getAbilityResponse[0].value.ability.supportAiFace.permit == 0) {
+                        if (getAbilityResponse[0].value.ability.abilityChn[0].supportAiFace == null
+                                || getAbilityResponse[0].value.ability.abilityChn[0].supportAiFace.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no AiFace support.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_FACE_DETECTED);
                             if (channel != null) {
@@ -190,7 +190,8 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                             }
                         }
                     } catch (JsonParseException e) {
-                        ipCameraHandler.logger.warn("API command GetAbility may not be supported by the camera.");
+                        ipCameraHandler.logger.warn("API command GetAbility may not be supported by the camera:{}",
+                                e.getMessage());
                     }
                     if (channel != null) {
                         ipCameraHandler.removeChannels(removeChannels);
