@@ -298,7 +298,7 @@ public class GrowattTest {
 
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
         when(httpClientFactory.createHttpClient(anyString(), any(SslContextFactory.Client.class)))
-                .thenReturn(new HttpClient(new SslContextFactory.Client(true)));
+                .thenReturn(new HttpClient(GrowattCloud.createSslContextFactory()));
 
         try (GrowattCloud api = new GrowattCloud(configuration, httpClientFactory)) {
             Integer programMode = GrowattCloud.ProgramMode.BATTERY_FIRST.ordinal();
