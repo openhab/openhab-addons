@@ -28,7 +28,6 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
-import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.UnDefType;
@@ -330,28 +329,6 @@ class SolcastTest {
                 "Data available after merge - day not in");
         assertEquals(-1.0, scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation), 0.01,
                 "Data available after merge - day not in");
-    }
-
-    @Test
-    void testTimeframes() {
-        ZonedDateTime zdt = ZonedDateTime.of(2022, 7, 22, 17, 3, 10, 345, TEST_ZONE);
-        assertEquals("17:15", Utils.getNextTimeframe(zdt.toInstant(), TIMEZONEPROVIDER)
-                .atZone(TIMEZONEPROVIDER.getTimeZone()).toLocalTime().toString(), "Q1");
-        zdt = zdt.plusMinutes(20);
-        assertEquals("17:30", Utils.getNextTimeframe(zdt.toInstant(), TIMEZONEPROVIDER)
-                .atZone(TIMEZONEPROVIDER.getTimeZone()).toLocalTime().toString(), "Q2");
-        zdt = zdt.plusMinutes(3);
-        assertEquals("17:30", Utils.getNextTimeframe(zdt.toInstant(), TIMEZONEPROVIDER)
-                .atZone(TIMEZONEPROVIDER.getTimeZone()).toLocalTime().toString(), "Q2");
-        zdt = zdt.plusMinutes(5);
-        assertEquals("17:45", Utils.getNextTimeframe(zdt.toInstant(), TIMEZONEPROVIDER)
-                .atZone(TIMEZONEPROVIDER.getTimeZone()).toLocalTime().toString(), "Q3");
-        zdt = zdt.plusMinutes(25);
-        assertEquals("18:00", Utils.getNextTimeframe(zdt.toInstant(), TIMEZONEPROVIDER)
-                .atZone(TIMEZONEPROVIDER.getTimeZone()).toLocalTime().toString(), "Q4");
-        zdt = zdt.plusMinutes(6);
-        assertEquals("18:15", Utils.getNextTimeframe(zdt.toInstant(), TIMEZONEPROVIDER)
-                .atZone(TIMEZONEPROVIDER.getTimeZone()).toLocalTime().toString(), "Q4");
     }
 
     @Test

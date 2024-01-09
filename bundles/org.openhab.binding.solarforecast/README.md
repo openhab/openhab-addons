@@ -74,8 +74,6 @@ See [DateTime](#date-time) section for more information.
 |-----------------|---------|--------------------------------------------------------|-----------------|----------|----------|
 | resourceId      | text    | Resource Id of Solcast rooftop site                    | N/A             | yes      | no       |
 | refreshInterval | integer | Forecast Refresh Interval in minutes                   | 120             | yes      | no       |
-| powerItem       | text    | Power item from your solar inverter for this rooftop   | N/A             | no       | yes      |
-| powerUnit       | text    | Unit selection of the powerItem                        | auto-detect     | no       | yes      |
 
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
@@ -83,14 +81,6 @@ See [DateTime](#date-time) section for more information.
 If you have 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 calls per day.
 
 Note: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-configuration) will calculate intermediate values without requesting new forecast data.
-
-`powerItem` shall reflect the power for this specific rooftop. 
-It's an optional setting and the [measure is sent to Solcast API in order to tune the forecast](https://legacy-docs.solcast.com.au/#measurements-rooftop-site) in the future.
-If you don't want to send measures to Solcast, leave this configuration item empty.
-
-`powerUnit` is set to `auto-detect`. 
-In case the `powerItem` is delivering a valid `QuantityType<Power>` state, this setting is fine.
-If the item delivers a raw number without unit, please select `powerUnit` accordingly if item state, is Watt or Kilowatt unit. 
 
 ## Solcast Channels
 

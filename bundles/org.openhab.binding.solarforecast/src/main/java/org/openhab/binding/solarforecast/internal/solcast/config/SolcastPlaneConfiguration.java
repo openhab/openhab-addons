@@ -23,7 +23,5 @@ import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 @NonNullByDefault
 public class SolcastPlaneConfiguration {
     public String resourceId = SolarForecastBindingConstants.EMPTY;
-    public String powerItem = SolarForecastBindingConstants.EMPTY;
     public long refreshInterval = 120;
-    public String powerUnit = SolarForecastBindingConstants.AUTODETECT;
 }

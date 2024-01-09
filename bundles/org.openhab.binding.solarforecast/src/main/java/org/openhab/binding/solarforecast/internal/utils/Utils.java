@@ -12,13 +12,9 @@
  */
 package org.openhab.binding.solarforecast.internal.utils;
 
-import java.time.Instant;
-import java.time.ZonedDateTime;
-
 import javax.measure.MetricPrefix;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
@@ -45,34 +41,5 @@ public class Utils {
         } else {
             return QuantityType.valueOf(Math.round(d * 1000) / 1000.0, MetricPrefix.KILO(Units.WATT));
         }
-    }
-
-    /**
-     * Get time frames in 15 minutes intervals
-     *
-     * @return
-     */
-    public static Instant getNextTimeframe(Instant timeStamp, TimeZoneProvider tzp) {
-        ZonedDateTime now = timeStamp.atZone(tzp.getTimeZone());
-        ZonedDateTime nextTime;
-        int quarter = now.getMinute() / 15;
-        switch (quarter) {
-            case 0:
-                nextTime = now.withMinute(15).withSecond(0).withNano(0);
-                break;
-            case 1:
-                nextTime = now.withMinute(30).withSecond(0).withNano(0);
-                break;
-            case 2:
-                nextTime = now.withMinute(45).withSecond(0).withNano(0);
-                break;
-            case 3:
-                nextTime = now.withMinute(0).withSecond(0).withNano(0).plusHours(1);
-                break;
-            default:
-                nextTime = now;
-                break;
-        }
-        return nextTime.toInstant();
     }
 }
