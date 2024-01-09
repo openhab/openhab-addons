@@ -21,7 +21,7 @@ import java.util.List;
  * @author Gregory Moyer - Initial contribution
  */
 public class Failure {
-    private List<Error> errors = new ArrayList<Error>();
+    private List<Error> errors = new ArrayList<>();
 
     public List<Error> getErrors() {
         return errors;

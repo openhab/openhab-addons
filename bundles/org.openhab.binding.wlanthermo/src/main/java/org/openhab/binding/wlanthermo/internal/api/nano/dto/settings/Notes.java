@@ -28,7 +28,7 @@ public class Notes {
 
     @SerializedName("fcm")
     @Expose
-    public List<Object> fcm = new ArrayList<Object>();
+    public List<Object> fcm = new ArrayList<>();
     @SerializedName("ext")
     @Expose
     public Ext ext;

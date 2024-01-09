@@ -96,7 +96,7 @@ public class Pca301SensorHandler extends JeeLinkSensorHandler<Pca301Reading> {
 
     @Override
     public ReadingPublisher<Pca301Reading> createPublisher() {
-        return new ReadingPublisher<Pca301Reading>() {
+        return new ReadingPublisher<>() {
             @Override
             public void publish(Pca301Reading reading) {
                 if (reading != null) {

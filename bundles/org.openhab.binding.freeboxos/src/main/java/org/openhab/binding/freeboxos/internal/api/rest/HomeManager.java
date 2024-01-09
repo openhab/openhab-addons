@@ -167,7 +167,7 @@ public class HomeManager extends RestManager {
     }
 
     public <T> boolean putCommand(int nodeId, int stateSignalId, T value) throws FreeboxException {
-        put(new EndpointValue<T>(value), ENDPOINTS_PATH, String.valueOf(nodeId), String.valueOf(stateSignalId));
+        put(new EndpointValue<>(value), ENDPOINTS_PATH, String.valueOf(nodeId), String.valueOf(stateSignalId));
         return true;
     }
 }

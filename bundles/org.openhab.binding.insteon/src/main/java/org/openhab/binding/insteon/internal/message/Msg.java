@@ -457,7 +457,7 @@ public class Msg {
     public String toString() {
         String s = (direction == Direction.TO_MODEM) ? "OUT:" : "IN:";
         // need to first sort the fields by offset
-        Comparator<Field> cmp = new Comparator<Field>() {
+        Comparator<Field> cmp = new Comparator<>() {
             @Override
             public int compare(Field f1, Field f2) {
                 return f1.getOffset() - f2.getOffset();

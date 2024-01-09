@@ -56,7 +56,7 @@ public class SetDynamicCircuitCurrents extends AbstractWriteCommand {
      */
     @Override
     protected String getJsonContent() throws ValidationException {
-        Map<String, String> content = new HashMap<String, String>(3);
+        Map<String, String> content = new HashMap<>(3);
         String rawCommand = getCommandValue();
         String[] tokens = rawCommand.split(";");
         if (tokens.length == 3) {

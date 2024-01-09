@@ -79,7 +79,7 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
     }
 
     private ResponseListener<Float> createResponseListener(String channelUID, LGWebOSHandler handler) {
-        return new ResponseListener<Float>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(@Nullable String error) {

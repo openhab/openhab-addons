@@ -316,7 +316,7 @@ public class LGWebOSTVSocket {
         payload.addProperty("pairingType", "PROMPT"); // PIN, COMBINED
         payload.add("manifest", manifest);
         packet.add("payload", payload);
-        ResponseListener<JsonObject> dummyListener = new ResponseListener<JsonObject>() {
+        ResponseListener<JsonObject> dummyListener = new ResponseListener<>() {
 
             @Override
             public void onSuccess(@Nullable JsonObject payload) {
@@ -672,7 +672,7 @@ public class LGWebOSTVSocket {
     public void powerOff(ResponseListener<CommandConfirmation> listener) {
         String uri = "ssap://system/turnOff";
 
-        ResponseListener<CommandConfirmation> interceptor = new ResponseListener<CommandConfirmation>() {
+        ResponseListener<CommandConfirmation> interceptor = new ResponseListener<>() {
 
             @Override
             public void onSuccess(CommandConfirmation confirmation) {
@@ -848,7 +848,7 @@ public class LGWebOSTVSocket {
     }
 
     public ServiceSubscription<AppInfo> subscribeRunningApp(ResponseListener<AppInfo> listener) {
-        ResponseListener<AppInfo> interceptor = new ResponseListener<AppInfo>() {
+        ResponseListener<AppInfo> interceptor = new ResponseListener<>() {
 
             @Override
             public void onSuccess(AppInfo appInfo) {
@@ -926,7 +926,7 @@ public class LGWebOSTVSocket {
 
         String uri = "ssap://com.webos.service.networkinput/getPointerInputSocket";
 
-        ResponseListener<JsonObject> listener = new ResponseListener<JsonObject>() {
+        ResponseListener<JsonObject> listener = new ResponseListener<>() {
 
             @Override
             public void onSuccess(@Nullable JsonObject jsonObj) {

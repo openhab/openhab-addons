@@ -75,7 +75,7 @@ public class SerialClient extends AbstractKNXClient {
         logger.trace("Checking for cEMI support");
 
         try (FT12Connection serialConnection = new FT12Connection(serialPort)) {
-            final CompletableFuture<byte[]> frameListener = new CompletableFuture<byte[]>();
+            final CompletableFuture<byte[]> frameListener = new CompletableFuture<>();
             serialConnection.addConnectionListener(frameReceived -> {
                 final byte[] content = frameReceived.getFrameBytes();
                 if ((content.length > 0) && (content[0] == peiIdentifyCon)) {

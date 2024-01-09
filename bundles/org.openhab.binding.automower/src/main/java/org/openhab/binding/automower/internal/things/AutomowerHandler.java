@@ -25,8 +25,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.measure.quantity.Dimensionless;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.automower.internal.AutomowerBindingConstants;
@@ -80,7 +78,7 @@ public class AutomowerHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AutomowerHandler.class);
     private final TimeZoneProvider timeZoneProvider;
 
-    private AtomicReference<String> automowerId = new AtomicReference<String>(NO_ID);
+    private AtomicReference<String> automowerId = new AtomicReference<>(NO_ID);
     private long lastQueryTimeMs = 0L;
 
     private @Nullable ScheduledFuture<?> automowerPollingJob;
@@ -290,8 +288,8 @@ public class AutomowerHandler extends BaseThingHandler {
 
             updateState(CHANNEL_STATUS_LAST_UPDATE,
                     new DateTimeType(toZonedDateTime(mower.getAttributes().getMetadata().getStatusTimestamp())));
-            updateState(CHANNEL_STATUS_BATTERY, new QuantityType<Dimensionless>(
-                    mower.getAttributes().getBattery().getBatteryPercent(), Units.PERCENT));
+            updateState(CHANNEL_STATUS_BATTERY,
+                    new QuantityType<>(mower.getAttributes().getBattery().getBatteryPercent(), Units.PERCENT));
 
             updateState(CHANNEL_STATUS_ERROR_CODE, new DecimalType(mower.getAttributes().getMower().getErrorCode()));
 

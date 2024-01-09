@@ -197,7 +197,7 @@ public class TransmitterStick {
         private final int updateInterval;
         private final SerialConnection connection;
 
-        private final BlockingQueue<Command> cmdQueue = new DelayQueue<Command>() {
+        private final BlockingQueue<Command> cmdQueue = new DelayQueue<>() {
             @Override
             public boolean add(Command e) {
                 if (TransmitterStick.prepareAddition(e, this)) {

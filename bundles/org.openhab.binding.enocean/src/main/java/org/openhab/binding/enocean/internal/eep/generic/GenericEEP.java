@@ -53,25 +53,24 @@ import org.openhab.core.util.HexUtils;
 @NonNullByDefault
 public class GenericEEP extends EEP {
 
-    final List<Class<? extends State>> supportedStates = Collections
-            .unmodifiableList(new LinkedList<Class<? extends State>>() {
-                private static final long serialVersionUID = 1L;
+    final List<Class<? extends State>> supportedStates = Collections.unmodifiableList(new LinkedList<>() {
+        private static final long serialVersionUID = 1L;
 
-                {
-                    add(DateTimeType.class);
-                    add(DecimalType.class);
-                    add(HSBType.class);
-                    add(OnOffType.class);
-                    add(OpenClosedType.class);
-                    add(PercentType.class);
-                    add(PlayPauseType.class);
-                    add(PointType.class);
-                    add(RewindFastforwardType.class);
-                    add(StringListType.class);
-                    add(StringType.class);
-                    add(UpDownType.class);
-                }
-            });
+        {
+            add(DateTimeType.class);
+            add(DecimalType.class);
+            add(HSBType.class);
+            add(OnOffType.class);
+            add(OpenClosedType.class);
+            add(PercentType.class);
+            add(PlayPauseType.class);
+            add(PointType.class);
+            add(RewindFastforwardType.class);
+            add(StringListType.class);
+            add(StringType.class);
+            add(UpDownType.class);
+        }
+    });
 
     public GenericEEP() {
         super();

@@ -67,7 +67,7 @@ public class OnvifDiscovery {
     private IpCameraDiscoveryService ipCameraDiscoveryService;
     private final Logger logger = LoggerFactory.getLogger(OnvifDiscovery.class);
     private final NetworkAddressService networkAddressService;
-    public ArrayList<DatagramPacket> listOfReplys = new ArrayList<DatagramPacket>(10);
+    public ArrayList<DatagramPacket> listOfReplys = new ArrayList<>(10);
 
     public OnvifDiscovery(NetworkAddressService networkAddressService,
             IpCameraDiscoveryService ipCameraDiscoveryService) {

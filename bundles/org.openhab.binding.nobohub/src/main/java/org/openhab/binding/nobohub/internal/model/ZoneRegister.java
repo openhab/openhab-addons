@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public final class ZoneRegister {
 
-    private final @NotNull Map<Integer, Zone> register = new HashMap<Integer, Zone>();
+    private final @NotNull Map<Integer, Zone> register = new HashMap<>();
 
     /**
      * Stores a new Zone in the register. If a zone exists with the same id, that value is overwritten.

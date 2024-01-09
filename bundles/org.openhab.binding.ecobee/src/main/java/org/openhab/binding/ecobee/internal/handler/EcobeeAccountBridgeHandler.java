@@ -188,8 +188,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     public SelectionDTO getSelection() {
         SelectionDTO mergedSelection = new SelectionDTO();
-        for (EcobeeThermostatBridgeHandler handler : new ArrayList<EcobeeThermostatBridgeHandler>(
-                thermostatHandlers.values())) {
+        for (EcobeeThermostatBridgeHandler handler : new ArrayList<>(thermostatHandlers.values())) {
             SelectionDTO selection = handler.getSelection();
             logger.trace("AccountBridge: Thermostat {} selection: {}", handler.getThing().getUID(), selection);
             mergedSelection.mergeSelection(selection);

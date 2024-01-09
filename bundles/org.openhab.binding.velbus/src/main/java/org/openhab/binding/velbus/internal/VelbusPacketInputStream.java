@@ -34,7 +34,7 @@ public class VelbusPacketInputStream {
 
     public InputStream inputStream;
 
-    private ArrayList<Byte> currentData = new ArrayList<Byte>();
+    private ArrayList<Byte> currentData = new ArrayList<>();
     private @Nullable Byte currentSTX = null;
     private @Nullable Byte currentPriority = null;
     private @Nullable Byte currentAddress = null;

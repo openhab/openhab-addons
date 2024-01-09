@@ -69,7 +69,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
     private static final String CLIENT_ID = "hydrawise_app";
     private static final String SCOPE = "all";
     private final List<HydrawiseControllerListener> controllerListeners = Collections
-            .synchronizedList(new ArrayList<HydrawiseControllerListener>());
+            .synchronizedList(new ArrayList<>());
     private final HttpClient httpClient;
     private final OAuthFactory oAuthFactory;
     private @Nullable OAuthClientService oAuthService;

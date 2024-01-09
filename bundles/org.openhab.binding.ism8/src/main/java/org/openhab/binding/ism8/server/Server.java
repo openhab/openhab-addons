@@ -238,7 +238,7 @@ public class Server extends Thread {
     }
 
     private ArrayList<byte[]> getPackages(byte[] data) {
-        ArrayList<byte[]> result = new ArrayList<byte[]>();
+        ArrayList<byte[]> result = new ArrayList<>();
         if (data.length >= 0) {
             ByteBuffer list = ByteBuffer.allocate(data.length);
             list.put(data);

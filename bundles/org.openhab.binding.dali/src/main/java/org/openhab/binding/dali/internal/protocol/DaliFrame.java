@@ -57,7 +57,7 @@ public class DaliFrame {
 
     public byte[] pack() {
         int remaining = length();
-        List<Byte> bytesList = new ArrayList<Byte>();
+        List<Byte> bytesList = new ArrayList<>();
         int tmp = this.data;
         while (remaining > 0) {
             bytesList.add((byte) (tmp & 0xff));

@@ -66,7 +66,7 @@ public class HomekitAccessoryFactory {
     public static final String METADATA_KEY = "homekit"; // prefix for HomeKit meta information in items.xml
 
     /** List of mandatory attributes for each accessory type. **/
-    private static final Map<HomekitAccessoryType, HomekitCharacteristicType[]> MANDATORY_CHARACTERISTICS = new HashMap<HomekitAccessoryType, HomekitCharacteristicType[]>() {
+    private static final Map<HomekitAccessoryType, HomekitCharacteristicType[]> MANDATORY_CHARACTERISTICS = new HashMap<>() {
         {
             put(ACCESSORY_GROUP, new HomekitCharacteristicType[] {});
             put(LEAK_SENSOR, new HomekitCharacteristicType[] { LEAK_DETECTED_STATE });
@@ -113,7 +113,7 @@ public class HomekitAccessoryFactory {
     };
 
     /** List of service implementation for each accessory type. **/
-    private static final Map<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>> SERVICE_IMPL_MAP = new HashMap<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>>() {
+    private static final Map<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>> SERVICE_IMPL_MAP = new HashMap<>() {
         {
             put(ACCESSORY_GROUP, HomekitAccessoryGroupImpl.class);
             put(LEAK_SENSOR, HomekitLeakSensorImpl.class);

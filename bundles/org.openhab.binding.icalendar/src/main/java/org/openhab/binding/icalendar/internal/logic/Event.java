@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Event implements Comparable<Event> {
-    public final List<CommandTag> commandTags = new ArrayList<CommandTag>();
+    public final List<CommandTag> commandTags = new ArrayList<>();
     public final Instant end;
     public final Instant start;
     public final String title;

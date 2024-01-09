@@ -208,7 +208,7 @@ public class MimicTTSService extends AbstractCachedTTSService {
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return Set.<AudioFormat> of(AUDIO_FORMAT);
+        return Set.of(AUDIO_FORMAT);
     }
 
     /**

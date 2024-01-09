@@ -105,7 +105,7 @@ public class DynamoDBTableNameResolver {
      */
     private String getTableNameAccordingToLegacySchema(DynamoDBItem<?> item) {
         // Use the visitor pattern to deduce the table name
-        return item.accept(new DynamoDBItemVisitor<String>() {
+        return item.accept(new DynamoDBItemVisitor<>() {
 
             @Override
             public String visit(DynamoDBBigDecimalItem dynamoBigDecimalItem) {

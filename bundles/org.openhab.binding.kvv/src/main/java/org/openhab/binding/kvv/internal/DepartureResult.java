@@ -29,7 +29,7 @@ import com.google.gson.annotations.SerializedName;
 public class DepartureResult {
 
     @SerializedName(value = "departureList")
-    public List<Departure> departures = new ArrayList<Departure>();
+    public List<Departure> departures = new ArrayList<>();
 
     @Override
     public String toString() {

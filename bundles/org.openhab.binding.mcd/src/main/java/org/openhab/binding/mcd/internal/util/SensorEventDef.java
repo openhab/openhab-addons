@@ -35,8 +35,7 @@ public class SensorEventDef {
             "TURNAROUND", "HOMEEMERGENCY", "TOILETFLUSH", "DORSALPOSITION", "ABDOMINALPOSITION", "LYINGLEFT",
             "LYINGRIGHT", "LYINGHALFLEFT", "LYINGHALFRIGHT", "MOVEMENT", "PRESENCE", "NUMBERPERSONS",
             "BRIGHTNESSZONE" };
-    private static ArrayList<String> sensorEventDefinition = new ArrayList<String>(
-            Arrays.asList(EVENT_DEFINITION_ARRAY));
+    private static ArrayList<String> sensorEventDefinition = new ArrayList<>(Arrays.asList(EVENT_DEFINITION_ARRAY));
 
     public static ArrayList<String> getSensorEventDefinition() {
         return sensorEventDefinition;

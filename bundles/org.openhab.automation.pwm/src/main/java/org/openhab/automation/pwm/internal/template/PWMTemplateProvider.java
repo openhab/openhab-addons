@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 @Component
 @NonNullByDefault
 public class PWMTemplateProvider implements RuleTemplateProvider {
-    private final Map<String, RuleTemplate> providedRuleTemplates = new HashMap<String, RuleTemplate>();
+    private final Map<String, RuleTemplate> providedRuleTemplates = new HashMap<>();
 
     public PWMTemplateProvider() {
         providedRuleTemplates.put(PWMRuleTemplate.UID, PWMRuleTemplate.initialize());

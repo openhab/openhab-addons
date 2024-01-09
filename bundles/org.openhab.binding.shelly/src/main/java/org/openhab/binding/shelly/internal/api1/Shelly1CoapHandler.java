@@ -448,7 +448,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         }
 
         List<CoIotSensor> sensorUpdates = list.generic;
-        Map<String, State> updates = new TreeMap<String, State>();
+        Map<String, State> updates = new TreeMap<>();
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
         ShellyColorUtils col = new ShellyColorUtils();

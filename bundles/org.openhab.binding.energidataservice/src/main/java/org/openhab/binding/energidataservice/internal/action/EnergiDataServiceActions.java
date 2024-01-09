@@ -128,7 +128,7 @@ public class EnergiDataServiceActions implements ThingActions {
 
         Set<PriceComponent> priceComponentsSet;
         try {
-            priceComponentsSet = new HashSet<PriceComponent>(
+            priceComponentsSet = new HashSet<>(
                     Arrays.stream(priceComponents.split(",")).map(PriceComponent::fromString).toList());
         } catch (IllegalArgumentException e) {
             logger.warn("{}", e.getMessage());

@@ -163,7 +163,7 @@ public class CacheManager {
      * @return spot prices currently available, {@link #NUMBER_OF_HISTORIC_HOURS} back
      */
     public Map<Instant, BigDecimal> getSpotPrices() {
-        return new HashMap<Instant, BigDecimal>(spotPriceMap);
+        return new HashMap<>(spotPriceMap);
     }
 
     /**
@@ -199,7 +199,7 @@ public class CacheManager {
         if (tariffs == null) {
             throw new IllegalStateException("Tariffs not initialized");
         }
-        return new HashMap<Instant, BigDecimal>(tariffs);
+        return new HashMap<>(tariffs);
     }
 
     /**

@@ -56,7 +56,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     private final HttpService httpService;
     public GroupConfig groupConfig;
     private BigDecimal pollTimeInSeconds = new BigDecimal(2);
-    public ArrayList<IpCameraHandler> cameraOrder = new ArrayList<IpCameraHandler>(2);
+    public ArrayList<IpCameraHandler> cameraOrder = new ArrayList<>(2);
     private final ScheduledExecutorService pollCameraGroup = Executors.newSingleThreadScheduledExecutor();
     private @Nullable ScheduledFuture<?> pollCameraGroupJob = null;
     private @Nullable GroupServlet servlet;
