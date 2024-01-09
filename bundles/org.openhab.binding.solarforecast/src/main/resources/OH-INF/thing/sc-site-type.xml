@@ -9,28 +9,16 @@
 		<description>Solcast service site definition</description>
 
 		<channels>
-			<channel id="actual" typeId="actual-channel"/>
-			<channel id="actual-power" typeId="actual-power-channel"/>
-			<channel id="remaining" typeId="remaining-channel"/>
-			<channel id="today" typeId="today-channel"/>
-			<channel id="day1" typeId="day1-channel"/>
-			<channel id="day1-low" typeId="day1-low-channel"/>
-			<channel id="day1-high" typeId="day1-high-channel"/>
-			<channel id="day2" typeId="day2-channel"/>
-			<channel id="day2-low" typeId="day2-low-channel"/>
-			<channel id="day2-high" typeId="day2-high-channel"/>
-			<channel id="day3" typeId="day3-channel"/>
-			<channel id="day3-low" typeId="day3-low-channel"/>
-			<channel id="day3-high" typeId="day3-high-channel"/>
-			<channel id="day4" typeId="day4-channel"/>
-			<channel id="day4-low" typeId="day4-low-channel"/>
-			<channel id="day4-high" typeId="day4-high-channel"/>
-			<channel id="day5" typeId="day5-channel"/>
-			<channel id="day5-low" typeId="day5-low-channel"/>
-			<channel id="day5-high" typeId="day5-high-channel"/>
-			<channel id="day6" typeId="day6-channel"/>
-			<channel id="day6-low" typeId="day6-low-channel"/>
-			<channel id="day6-high" typeId="day6-high-channel"/>
+			<channel id="power-actual" typeId="power-actual-channel"/>
+			<channel id="power-estimate" typeId="power-estimate-channel"/>
+			<channel id="power-estimate10" typeId="power-estimate10-channel"/>
+			<channel id="power-estimate90" typeId="power-estimate90-channel"/>
+			<channel id="energy-actual" typeId="energy-actual-channel"/>
+            <channel id="energy-remain" typeId="energy-remain-channel"/>
+            <channel id="energy-today" typeId="energy-today-channel"/>
+			<channel id="energy-estimate" typeId="energy-estimate-channel"/>
+			<channel id="energy-estimate10" typeId="energy-estimate10-channel"/>
+			<channel id="energy-estimate90" typeId="energy-estimate90-channel"/>
 		</channels>
 		<config-description-ref uri="thing-type:solarforecast:sc-site"/>
 	</bridge-type>

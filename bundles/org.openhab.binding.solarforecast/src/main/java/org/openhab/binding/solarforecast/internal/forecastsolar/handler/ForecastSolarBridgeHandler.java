@@ -25,7 +25,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
@@ -67,7 +66,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     @Override
     public void initialize() {
         ForecastSolarBridgeConfiguration config = getConfigAs(ForecastSolarBridgeConfiguration.class);
-        if (config.location.equals(SolarForecastBindingConstants.AUTODETECT)) {
+        if (config.location.equals(AUTODETECT)) {
             Configuration editConfig = editConfiguration();
             editConfig.put("location", homeLocation.toString());
             updateConfiguration(editConfig);
@@ -75,8 +74,8 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         }
         configuration = Optional.of(config);
         updateStatus(ThingStatus.ONLINE);
-        refreshJob = Optional.of(
-                scheduler.scheduleWithFixedDelay(this::getData, 0, config.channelRefreshInterval, TimeUnit.MINUTES));
+        refreshJob = Optional
+                .of(scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL, TimeUnit.MINUTES));
     }
 
     @Override
@@ -90,32 +89,21 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         if (parts.isEmpty()) {
             return;
         }
-        double actualSum = 0;
-        double actualPowerSum = 0;
-        double remainSum = 0;
-        double todaySum = 0;
-        double day1Sum = 0;
-        double day2Sum = 0;
-        double day3Sum = 0;
+        double energySum = 0;
+        double powerSum = 0;
+        double daySum = 0;
         for (Iterator<ForecastSolarPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
             ForecastSolarPlaneHandler sfph = iterator.next();
             ForecastSolarObject fo = sfph.fetchData();
             ZonedDateTime now = ZonedDateTime.now(fo.getZone());
-            actualSum += fo.getActualValue(now);
-            actualPowerSum += fo.getActualPowerValue(now);
-            remainSum += fo.getRemainingProduction(now);
-            todaySum += fo.getDayTotal(now.toLocalDate());
-            day1Sum += fo.getDayTotal(now.plusDays(1).toLocalDate());
-            day2Sum += fo.getDayTotal(now.plusDays(2).toLocalDate());
-            day3Sum += fo.getDayTotal(now.plusDays(3).toLocalDate());
+            energySum += fo.getActualEnergyValue(now);
+            powerSum += fo.getActualPowerValue(now);
+            daySum += fo.getDayTotal(now.toLocalDate());
         }
-        updateState(CHANNEL_ACTUAL, Utils.getEnergyState(actualSum));
-        updateState(CHANNEL_ACTUAL_POWER, Utils.getPowerState(actualPowerSum));
-        updateState(CHANNEL_REMAINING, Utils.getEnergyState(remainSum));
-        updateState(CHANNEL_TODAY, Utils.getEnergyState(todaySum));
-        updateState(CHANNEL_DAY1, Utils.getEnergyState(day1Sum));
-        updateState(CHANNEL_DAY2, Utils.getEnergyState(day2Sum));
-        updateState(CHANNEL_DAY3, Utils.getEnergyState(day3Sum));
+        updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energySum));
+        updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(daySum - energySum));
+        updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(daySum));
+        updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(powerSum));
     }
 
     @Override

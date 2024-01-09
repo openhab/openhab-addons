@@ -15,11 +15,6 @@
 			<label>API Key</label>
 			<description>If you have a paid subscription plan</description>
 		</parameter>
-		<parameter name="channelRefreshInterval" type="integer" min="1" unit="min" required="true">
-			<label>Channel Refresh Interval</label>
-			<description>Refresh rate of channel data</description>
-			<default>1</default>
-		</parameter>
 		<parameter name="inverterKwp" type="decimal" step="0.1">
 			<label>Inverter Kilowatt Peak</label>
 			<description>Inverter maximum kilowatt peak capability</description>

@@ -1,4 +1,6 @@
 /**
+        updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(daySum - energySum));
+        updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(daySum));
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -15,7 +17,6 @@ package org.openhab.binding.solarforecast.internal.solcast.handler;
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
 import java.time.DateTimeException;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -79,16 +80,16 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                 try {
                     timeZone = ZoneId.of(configuration.get().timeZone);
                     updateStatus(ThingStatus.ONLINE);
-                    refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0,
-                            configuration.get().channelRefreshInterval, TimeUnit.MINUTES));
+                    refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL,
+                            TimeUnit.MINUTES));
                 } catch (DateTimeException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.site.status.timezone" + " [\"" + configuration.get().timeZone + "\"]");
                 }
             } else {
                 updateStatus(ThingStatus.ONLINE);
-                refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0,
-                        configuration.get().channelRefreshInterval, TimeUnit.MINUTES));
+                refreshJob = Optional.of(
+                        scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL, TimeUnit.MINUTES));
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -117,78 +118,20 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             return;
         }
         ZonedDateTime now = ZonedDateTime.now(getTimeZone());
-        double actualSum = 0;
-        double actualPowerSum = 0;
-        double remainSum = 0;
-        double todaySum = 0;
-        double day1Sum = 0;
-        double day1SumLow = 0;
-        double day1SumHigh = 0;
-        double day2Sum = 0;
-        double day2SumLow = 0;
-        double day2SumHigh = 0;
-        double day3Sum = 0;
-        double day3SumLow = 0;
-        double day3SumHigh = 0;
-        double day4Sum = 0;
-        double day4SumLow = 0;
-        double day4SumHigh = 0;
-        double day5Sum = 0;
-        double day5SumLow = 0;
-        double day5SumHigh = 0;
-        double day6Sum = 0;
-        double day6SumLow = 0;
-        double day6SumHigh = 0;
-
+        double energySum = 0;
+        double powerSum = 0;
+        double daySum = 0;
         for (Iterator<SolcastPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
             SolcastPlaneHandler sfph = iterator.next();
             SolcastObject fo = sfph.fetchData();
-            actualSum += fo.getActualValue(now, QueryMode.Estimation);
-            actualPowerSum += fo.getActualPowerValue(now, QueryMode.Estimation);
-            remainSum += fo.getRemainingProduction(now, QueryMode.Estimation);
-            LocalDate nowDate = now.toLocalDate();
-            todaySum += fo.getDayTotal(nowDate, QueryMode.Estimation);
-            day1Sum += fo.getDayTotal(nowDate.plusDays(1), QueryMode.Estimation);
-            day1SumLow += fo.getDayTotal(nowDate.plusDays(1), QueryMode.Pessimistic);
-            day1SumHigh += fo.getDayTotal(nowDate.plusDays(1), QueryMode.Optimistic);
-            day2Sum += fo.getDayTotal(nowDate.plusDays(2), QueryMode.Estimation);
-            day2SumLow += fo.getDayTotal(nowDate.plusDays(2), QueryMode.Pessimistic);
-            day2SumHigh += fo.getDayTotal(nowDate.plusDays(2), QueryMode.Optimistic);
-            day3Sum += fo.getDayTotal(nowDate.plusDays(3), QueryMode.Estimation);
-            day3SumLow += fo.getDayTotal(nowDate.plusDays(3), QueryMode.Pessimistic);
-            day3SumHigh += fo.getDayTotal(nowDate.plusDays(3), QueryMode.Optimistic);
-            day4Sum += fo.getDayTotal(nowDate.plusDays(4), QueryMode.Estimation);
-            day4SumLow += fo.getDayTotal(nowDate.plusDays(4), QueryMode.Pessimistic);
-            day4SumHigh += fo.getDayTotal(nowDate.plusDays(4), QueryMode.Optimistic);
-            day5Sum += fo.getDayTotal(nowDate.plusDays(5), QueryMode.Estimation);
-            day5SumLow += fo.getDayTotal(nowDate.plusDays(5), QueryMode.Pessimistic);
-            day5SumHigh += fo.getDayTotal(nowDate.plusDays(5), QueryMode.Optimistic);
-            day6Sum += fo.getDayTotal(nowDate.plusDays(6), QueryMode.Estimation);
-            day6SumLow += fo.getDayTotal(nowDate.plusDays(6), QueryMode.Pessimistic);
-            day6SumHigh += fo.getDayTotal(nowDate.plusDays(6), QueryMode.Optimistic);
+            energySum += fo.getActualEnergyValue(now, QueryMode.Estimation);
+            powerSum += fo.getActualPowerValue(now, QueryMode.Estimation);
+            daySum += fo.getDayTotal(now.toLocalDate(), QueryMode.Estimation);
         }
-        updateState(CHANNEL_ACTUAL, Utils.getEnergyState(actualSum));
-        updateState(CHANNEL_ACTUAL_POWER, Utils.getPowerState(actualPowerSum));
-        updateState(CHANNEL_REMAINING, Utils.getEnergyState(remainSum));
-        updateState(CHANNEL_TODAY, Utils.getEnergyState(todaySum));
-        updateState(CHANNEL_DAY1, Utils.getEnergyState(day1Sum));
-        updateState(CHANNEL_DAY1_HIGH, Utils.getEnergyState(day1SumHigh));
-        updateState(CHANNEL_DAY1_LOW, Utils.getEnergyState(day1SumLow));
-        updateState(CHANNEL_DAY2, Utils.getEnergyState(day2Sum));
-        updateState(CHANNEL_DAY2_HIGH, Utils.getEnergyState(day2SumHigh));
-        updateState(CHANNEL_DAY2_LOW, Utils.getEnergyState(day2SumLow));
-        updateState(CHANNEL_DAY3, Utils.getEnergyState(day3Sum));
-        updateState(CHANNEL_DAY3_HIGH, Utils.getEnergyState(day3SumHigh));
-        updateState(CHANNEL_DAY3_LOW, Utils.getEnergyState(day3SumLow));
-        updateState(CHANNEL_DAY4, Utils.getEnergyState(day4Sum));
-        updateState(CHANNEL_DAY4_HIGH, Utils.getEnergyState(day4SumHigh));
-        updateState(CHANNEL_DAY4_LOW, Utils.getEnergyState(day4SumLow));
-        updateState(CHANNEL_DAY5, Utils.getEnergyState(day5Sum));
-        updateState(CHANNEL_DAY5_HIGH, Utils.getEnergyState(day5SumHigh));
-        updateState(CHANNEL_DAY5_LOW, Utils.getEnergyState(day5SumLow));
-        updateState(CHANNEL_DAY6, Utils.getEnergyState(day6Sum));
-        updateState(CHANNEL_DAY6_HIGH, Utils.getEnergyState(day6SumHigh));
-        updateState(CHANNEL_DAY6_LOW, Utils.getEnergyState(day6SumLow));
+        updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energySum));
+        updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(daySum - energySum));
+        updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(daySum));
+        updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(powerSum));
     }
 
     synchronized void addPlane(SolcastPlaneHandler sph) {

@@ -23,12 +23,6 @@ import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 @NonNullByDefault
 public class ForecastSolarBridgeConfiguration {
     public String location = "auto-detect";
-    public int channelRefreshInterval = 1;
     public String apiKey = SolarForecastBindingConstants.EMPTY;
     public double inverterKwp = Double.MAX_VALUE;
-
-    @Override
-    public String toString() {
-        return "Loc " + location + " Ref " + channelRefreshInterval;
-    }
 }

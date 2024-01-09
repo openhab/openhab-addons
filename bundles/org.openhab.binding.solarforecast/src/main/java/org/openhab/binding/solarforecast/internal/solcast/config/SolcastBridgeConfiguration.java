@@ -22,7 +22,6 @@ import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
  */
 @NonNullByDefault
 public class SolcastBridgeConfiguration {
-    public int channelRefreshInterval = 1;
     public String apiKey = SolarForecastBindingConstants.EMPTY;
     public String timeZone = SolarForecastBindingConstants.AUTODETECT;
 }

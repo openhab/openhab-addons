@@ -170,13 +170,12 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     private void updateChannels(ForecastSolarObject f) {
         ZonedDateTime now = ZonedDateTime.now(f.getZone());
-        updateState(CHANNEL_ACTUAL, Utils.getEnergyState(f.getActualValue(now)));
-        updateState(CHANNEL_ACTUAL_POWER, Utils.getPowerState(f.getActualPowerValue(now)));
-        updateState(CHANNEL_REMAINING, Utils.getEnergyState(f.getRemainingProduction(now)));
-        updateState(CHANNEL_TODAY, Utils.getEnergyState(f.getDayTotal(now.toLocalDate())));
-        updateState(CHANNEL_DAY1, Utils.getEnergyState(f.getDayTotal(now.plusDays(1).toLocalDate())));
-        updateState(CHANNEL_DAY2, Utils.getEnergyState(f.getDayTotal(now.plusDays(2).toLocalDate())));
-        updateState(CHANNEL_DAY3, Utils.getEnergyState(f.getDayTotal(now.plusDays(3).toLocalDate())));
+        double energyDay = f.getDayTotal(now.toLocalDate());
+        double energyProduced = f.getActualEnergyValue(now);
+        updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energyProduced));
+        updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(energyDay - energyProduced));
+        updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(energyDay));
+        updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(f.getActualPowerValue(now)));
     }
 
     /**
@@ -194,6 +193,8 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     private synchronized void setForecast(ForecastSolarObject f) {
         forecast = f;
+        sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries());
+        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries());
     }
 
     @Override

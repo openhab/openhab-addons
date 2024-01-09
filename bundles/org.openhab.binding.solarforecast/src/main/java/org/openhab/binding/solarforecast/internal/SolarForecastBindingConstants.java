@@ -35,31 +35,18 @@ public class SolarForecastBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(FORECAST_SOLAR_MULTI_STRING,
             FORECAST_SOLAR_PART_STRING, SOLCAST_BRIDGE_STRING, SOLCAST_PART_STRING);
 
-    public static final String CHANNEL_TODAY = "today";
-    public static final String CHANNEL_ACTUAL = "actual";
-    public static final String CHANNEL_ACTUAL_POWER = "actual-power";
-    public static final String CHANNEL_REMAINING = "remaining";
-    public static final String CHANNEL_DAY1 = "day1";
-    public static final String CHANNEL_DAY1_LOW = "day1-low";
-    public static final String CHANNEL_DAY1_HIGH = "day1-high";
-    public static final String CHANNEL_DAY2 = "day2";
-    public static final String CHANNEL_DAY2_LOW = "day2-low";
-    public static final String CHANNEL_DAY2_HIGH = "day2-high";
-    public static final String CHANNEL_DAY3 = "day3";
-    public static final String CHANNEL_DAY3_LOW = "day3-low";
-    public static final String CHANNEL_DAY3_HIGH = "day3-high";
-    public static final String CHANNEL_DAY4 = "day4";
-    public static final String CHANNEL_DAY4_LOW = "day4-low";
-    public static final String CHANNEL_DAY4_HIGH = "day4-high";
-    public static final String CHANNEL_DAY5 = "day5";
-    public static final String CHANNEL_DAY5_LOW = "day5-low";
-    public static final String CHANNEL_DAY5_HIGH = "day5-high";
-    public static final String CHANNEL_DAY6 = "day6";
-    public static final String CHANNEL_DAY6_LOW = "day6-low";
-    public static final String CHANNEL_DAY6_HIGH = "day6-high";
-
+    public static final String CHANNEL_POWER_ACTUAL = "power-actual";
+    public static final String CHANNEL_POWER_ESTIMATE = "power-estimate";
+    public static final String CHANNEL_POWER_ESTIMATE10 = "power-estimate10";
+    public static final String CHANNEL_POWER_ESTIMATE90 = "power-estimate90";
+    public static final String CHANNEL_ENERGY_ACTUAL = "energy-actual";
+    public static final String CHANNEL_ENERGY_REMAIN = "energy-remain";
+    public static final String CHANNEL_ENERGY_TODAY = "energy-today";
+    public static final String CHANNEL_ENERGY_ESTIMATE = "energy-estimate";
+    public static final String CHANNEL_ENERGY_ESTIMATE10 = "energy-estimate10";
+    public static final String CHANNEL_ENERGY_ESTIMATE90 = "energy-estimate90";
     public static final String CHANNEL_RAW = "raw";
-    public static final String CHANNEL_RAW_TUNING = "raw-tuning";
+    public static final int REFRESH_ACTUAL_INTERVAL = 1;
 
     public static final String AUTODETECT = "auto-detect";
     public static final String SLASH = "/";

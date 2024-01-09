@@ -9,11 +9,6 @@
 			<label>API Key</label>
 			<description>API key from your subscription</description>
 		</parameter>
-		<parameter name="channelRefreshInterval" type="integer" min="1" unit="min" required="true">
-			<label>Channel Refresh Interval</label>
-			<description>Refresh rate of channel data</description>
-			<default>1</default>
-		</parameter>
 		<parameter name="timeZone" type="text" required="false">
 			<label>Time Zone</label>
 			<description>Time zone of forecast location</description>

@@ -30,6 +30,8 @@ import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.TimeSeries.Policy;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +102,7 @@ public class ForecastSolarObject implements SolarForecast {
         return false;
     }
 
-    public double getActualValue(ZonedDateTime queryDateTime) {
+    public double getActualEnergyValue(ZonedDateTime queryDateTime) {
         if (wattHourMap.isEmpty()) {
             return UNDEF;
         }
@@ -141,8 +143,16 @@ public class ForecastSolarObject implements SolarForecast {
                 // floor invalid - ceiling not reached
                 return 0;
             }
-        } // else both null - this shall not happen
+        } // else both null - date time doesn't fit to forecast data
         return UNDEF;
+    }
+
+    public TimeSeries getEnergyTimeSeries() {
+        TimeSeries ts = new TimeSeries(Policy.REPLACE);
+        wattHourMap.forEach((timestamp, energy) -> {
+            ts.add(timestamp.toInstant(), Utils.getEnergyState(energy / 1000.0));
+        });
+        return ts;
     }
 
     public double getActualPowerValue(ZonedDateTime queryDateTime) {
@@ -182,6 +192,14 @@ public class ForecastSolarObject implements SolarForecast {
         return UNDEF;
     }
 
+    public TimeSeries getPowerTimeSeries() {
+        TimeSeries ts = new TimeSeries(Policy.REPLACE);
+        wattMap.forEach((timestamp, power) -> {
+            ts.add(timestamp.toInstant(), Utils.getPowerState(power / 1000.0));
+        });
+        return ts;
+    }
+
     public double getDayTotal(LocalDate queryDate) {
         if (rawData.isEmpty()) {
             return UNDEF;
@@ -201,7 +219,7 @@ public class ForecastSolarObject implements SolarForecast {
             return UNDEF;
         }
         double daily = getDayTotal(queryDateTime.toLocalDate());
-        double actual = getActualValue(queryDateTime);
+        double actual = getActualEnergyValue(queryDateTime);
         if (daily < 0 || actual < 0) {
             return UNDEF;
         }
@@ -240,7 +258,7 @@ public class ForecastSolarObject implements SolarForecast {
         LocalDate endDate = end.atZone(zone).toLocalDate();
         double measure = UNDEF;
         if (beginDate.equals(endDate)) {
-            measure = getDayTotal(beginDate) - getActualValue(start.atZone(zone))
+            measure = getDayTotal(beginDate) - getActualEnergyValue(start.atZone(zone))
                     - getRemainingProduction(end.atZone(zone));
         } else {
             measure = getRemainingProduction(start.atZone(zone));
@@ -252,7 +270,7 @@ public class ForecastSolarObject implements SolarForecast {
                 }
                 beginDate = beginDate.plusDays(1);
             }
-            double lastDay = getActualValue(end.atZone(zone));
+            double lastDay = getActualEnergyValue(end.atZone(zone));
             if (lastDay >= 0) {
                 measure += lastDay;
             }
