@@ -13,6 +13,7 @@
 package org.openhab.binding.airgradient.internal.handler;
 
 import static org.eclipse.jdt.annotation.Checks.requireNonNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.*;
 
@@ -46,8 +47,8 @@ public class AirGradientLocationHandlerTest {
             pm003Count = 636d;
             atmp = 19.63;
             rhum = null;
-            rco2 = 20.63;
-            tvoc = 21.63;
+            rco2 = 455d;
+            tvoc = 51.644928;
             wifi = -59d;
             timestamp = "2024-01-07T11:28:56.000Z";
             serialno = "ecda3b1a2a50";
@@ -69,6 +70,7 @@ public class AirGradientLocationHandlerTest {
     @BeforeEach
     public void setUp() {
         callbackMock = Mockito.mock(ThingHandlerCallback.class);
+        Mockito.when(callbackMock.isChannelLinked(any(ChannelUID.class))).thenReturn(true);
         thing = Mockito.mock(Thing.class);
 
         sut = new AirGradientLocationHandler(requireNonNull(thing));
@@ -81,6 +83,7 @@ public class AirGradientLocationHandlerTest {
     public void testSetMeasure() {
         sut.setCallback(callbackMock);
         sut.setMeasurment("test123", measure);
+
         verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_WIFI),
                 new QuantityType<>("-59 dBm"));
         verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_PM_01),
@@ -95,8 +98,8 @@ public class AirGradientLocationHandlerTest {
                 new QuantityType<>("19.63 °C"));
         verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_RHUM), UnDefType.NULL);
         verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_RCO2),
-                new QuantityType<>("20.63 ppm"));
+                new QuantityType<>("455 ppm"));
         verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_TVOC),
-                new QuantityType<>("21.63 ppb"));
+                new QuantityType<>("51 ppb"));
     }
 }

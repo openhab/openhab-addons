@@ -89,18 +89,26 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         updateStateNullSafe(CHANNEL_PM_01, measure.pm01, (d) -> new QuantityType<>(d, Units.MICROGRAM_PER_CUBICMETRE));
         updateStateNullSafe(CHANNEL_PM_02, measure.pm02, (d) -> new QuantityType<>(d, Units.MICROGRAM_PER_CUBICMETRE));
         updateStateNullSafe(CHANNEL_PM_10, measure.pm10, (d) -> new QuantityType<>(d, Units.MICROGRAM_PER_CUBICMETRE));
-        updateStateNullSafe(CHANNEL_RCO2, measure.rco2, (d) -> new QuantityType<>(d, Units.PARTS_PER_MILLION));
+        updateStateNullSafe(CHANNEL_RCO2, measure.rco2,
+                (d) -> new QuantityType<>(d.longValue(), Units.PARTS_PER_MILLION));
         updateStateNullSafe(CHANNEL_RHUM, measure.rhum, (d) -> new QuantityType<>(d, Units.PERCENT));
-        updateStateNullSafe(CHANNEL_TVOC, measure.tvoc, (d) -> new QuantityType<>(d, Units.PARTS_PER_BILLION));
+        updateStateNullSafe(CHANNEL_TVOC, measure.tvoc,
+                (d) -> new QuantityType<>(d.longValue(), Units.PARTS_PER_BILLION));
         updateStateNullSafe(CHANNEL_WIFI, measure.wifi, (d) -> new QuantityType<>(d, Units.DECIBEL_MILLIWATTS));
     }
 
     private void updateStateNullSafe(String channelName, @Nullable Double measure,
             Function<Double, QuantityType<?>> value) {
         if (measure == null) {
+            logger.debug("Channel name {} is {}", channelName, measure);
             updateState(channelName, UnDefType.NULL);
         } else {
-            updateState(channelName, value.apply(measure));
+            ChannelUID channelUid = new ChannelUID(thing.getUID(), channelName);
+            if (isLinked(channelUid)) {
+                QuantityType<?> v = value.apply(measure);
+                logger.debug("Setting Channel {} to: {}", channelUid, v);
+                updateState(channelName, v);
+            }
         }
     }
 }
