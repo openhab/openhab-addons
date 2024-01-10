@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * The {@link OpenWebNetDeviceDiscoveryService} is responsible for discovering
  * OpenWebNet devices connected to a bridge/gateway
  *
- * @author Massimo Valla - Initial contribution
+ * @author Massimo Valla - Initial contribution. Discovery of BUS light Group
  * @author Andrea Conte - Energy management, Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
  * @author Giovanni Fabiani - Aux support
@@ -95,10 +95,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscov
      * Create and notify to Inbox a new DiscoveryResult based on WHERE,
      * OpenDeviceType and BaseOpenMessage
      *
-     * @param where      the discovered device's address (WHERE)
+     * @param where the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param baseMsg    the OWN message received that identified the device
-     *                   (optional)
+     * @param baseMsg the OWN message received that identified the device
+     *            (optional)
      */
     public void newDiscoveryResult(@Nullable Where where, OpenDeviceType deviceType,
             @Nullable BaseOpenMessage baseMsg) {
@@ -316,24 +316,12 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscov
 
     private void createGroupDiscoveryResult(Who deviceWho, WhereLightAutom where) {
         Map<String, Object> properties = new HashMap<>(2);
-        String ownId = bridgeHandler.ownIdFromWhoWhere(deviceWho, where);
-        String tId = bridgeHandler.thingIdFromWhoWhere(deviceWho, where);
+        String ownId = thingHandler.ownIdFromWhoWhere(deviceWho, where);
+        String tId = thingHandler.thingIdFromWhoWhere(deviceWho, where);
 
         ThingTypeUID thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_LIGHT_GROUP;
         String thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_LIGHT_GROUP;
 
-        /* @formatter:off
-         *
-          Interruttore Generale         General Switch Group
-          Area 5                        Area 5 Switch Group
-          Gruppo 26                     Switch Group 26
-
-          Automazione Generale          General Automation
-          Automazione Area 6            Area 6 Automation
-          Gruppo Automazione 26         Automation Group 26
-
-          @formatter:on
-        */
         if (where.isGeneral()) {
             thingLabel = "General " + thingLabel;
         } else if (where.isArea()) {
