@@ -190,8 +190,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                             }
                         }
                     } catch (JsonParseException e) {
-                        ipCameraHandler.logger.warn("API command GetAbility may not be supported by the camera:{}",
-                                e.getMessage());
+                        ipCameraHandler.logger.warn("API command GetAbility may not be supported by the camera");
                     }
                     if (channel != null) {
                         ipCameraHandler.removeChannels(removeChannels);
