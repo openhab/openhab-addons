@@ -15,8 +15,6 @@ package org.openhab.binding.boschshc.internal.discovery;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.BINDING_ID;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -33,6 +31,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschHttpClient;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.PublicInformation;
+import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -58,23 +57,22 @@ import com.google.gson.Gson;
 @Component(configurationPid = "discovery.boschsmarthomebridge")
 public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private static final String NAME_PREFIX_BOSCH_SHC = "Bosch SHC";
-    private static final long TTL_SECONDS = Duration.ofHours(1).toSeconds();
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BoschSHCBindingConstants.THING_TYPE_SHC);
+    private static final Duration TTL_MINUTES = Duration.ofMinutes(10);
+    private static final long TTL_SECONDS = TTL_MINUTES.toSeconds();
 
-    /**
-     * Special object instance representing the result that no bridge could be found
-     * for a specific IP address
-     */
-    private static final PublicInformation NO_BRIDGE_FOUND = new PublicInformation();
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BoschSHCBindingConstants.THING_TYPE_SHC);
 
     private final Logger logger = LoggerFactory.getLogger(BridgeDiscoveryParticipant.class);
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
 
     /**
-     * Cache for bridge discovery results.
+     * Cache for bridge discovery results. Uses the IP address of mDNS events as
+     * key. If the value is <code>null</code>, no Bosch SHC controller could be
+     * identified at the corresponding IP address.
      */
-    private Map<String, PublicInformation> discoveryResultCache = new HashMap<>();
+    private ExpiringCacheMap<String, @Nullable PublicInformation> discoveryResultCache = new ExpiringCacheMap<>(
+            TTL_MINUTES);
 
     @Activate
     public BridgeDiscoveryParticipant(@Reference HttpClientFactory httpClientFactory) {
@@ -134,7 +132,7 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
             return null;
         }
 
-        PublicInformation publicInformation = getOrComputePublicInformation(serviceInfo, ipAddress);
+        PublicInformation publicInformation = getOrComputePublicInformation(ipAddress);
         if (publicInformation == null) {
             return null;
         }
@@ -169,30 +167,16 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
      * results concurrently. We only want one thread to "win" and to invoke the
      * actual HTTP communication.
      * 
-     * @param serviceInfo mDNS service info
      * @param ipAddress IP address to contact if no cached result is available
-     * @return the discovery result or <code>null</code> if the device with the
-     *         given IP address could not be identified as Bosch Smart Home
-     *         Controller
+     * @return the {@link PublicInformation} of the Bosch Smart Home Controller or
+     *         <code>null</code> if the device with the given IP address could not
+     *         be identified as Bosch Smart Home Controller
      */
-    protected synchronized @Nullable PublicInformation getOrComputePublicInformation(ServiceInfo serviceInfo,
-            String ipAddress) {
-        if (discoveryResultCache.containsKey(ipAddress)) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("Providing cached bridge discovery result for IP {}", ipAddress);
-            }
-
-            PublicInformation cachedInstance = discoveryResultCache.get(ipAddress);
-            return cachedInstance == NO_BRIDGE_FOUND ? null : cachedInstance;
-        } else {
-            if (logger.isTraceEnabled()) {
-                logger.trace("No cached bridge discovery result available for IP {}, trying to contact SHC", ipAddress);
-            }
-            @Nullable
-            PublicInformation publicInformation = discoverBridge(ipAddress);
-            discoveryResultCache.put(ipAddress, publicInformation != null ? publicInformation : NO_BRIDGE_FOUND);
-            return publicInformation;
-        }
+    protected synchronized @Nullable PublicInformation getOrComputePublicInformation(String ipAddress) {
+        return discoveryResultCache.putIfAbsentAndGet(ipAddress, () -> {
+            logger.trace("No cached bridge discovery result available for IP {}, trying to contact SHC", ipAddress);
+            return discoverBridge(ipAddress);
+        });
     }
 
     @Override
@@ -200,7 +184,7 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
         String ipAddress = getFirstIPAddress(serviceInfo);
         if (ipAddress != null) {
             @Nullable
-            PublicInformation publicInformation = getOrComputePublicInformation(serviceInfo, ipAddress);
+            PublicInformation publicInformation = getOrComputePublicInformation(ipAddress);
             if (publicInformation != null) {
                 String resolvedIpAddress = publicInformation.shcIpAddress;
                 return new ThingUID(BoschSHCBindingConstants.THING_TYPE_SHC, resolvedIpAddress.replace('.', '-'));

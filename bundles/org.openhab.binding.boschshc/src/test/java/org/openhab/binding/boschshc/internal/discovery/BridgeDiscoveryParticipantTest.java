@@ -13,6 +13,7 @@
 package org.openhab.binding.boschshc.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -162,7 +163,10 @@ class BridgeDiscoveryParticipantTest {
 
     @Test
     void testGetBridgeAddress() throws Exception {
-        assertThat(fixture.discoverBridge("192.168.0.123").shcIpAddress, is("192.168.0.123"));
+        @Nullable
+        PublicInformation bridgeInformation = fixture.discoverBridge("192.168.0.123");
+        assertThat(bridgeInformation, not(nullValue()));
+        assertThat(bridgeInformation.shcIpAddress, is("192.168.0.123"));
     }
 
     @Test
@@ -172,8 +176,10 @@ class BridgeDiscoveryParticipantTest {
 
     @Test
     void testGetPublicInformationFromPossibleBridgeAddress() throws Exception {
-        assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("192.168.0.123").shcIpAddress,
-                is("192.168.0.123"));
+        @Nullable
+        PublicInformation bridgeInformation = fixture.getPublicInformationFromPossibleBridgeAddress("192.168.0.123");
+        assertThat(bridgeInformation, not(nullValue()));
+        assertThat(bridgeInformation.shcIpAddress, is("192.168.0.123"));
     }
 
     @Test
@@ -195,10 +201,10 @@ class BridgeDiscoveryParticipantTest {
     @Test
     void testGetOrComputePublicInformation() throws Exception {
         @Nullable
-        PublicInformation result = fixture.getOrComputePublicInformation(shcBridge, "192.168.0.123");
+        PublicInformation result = fixture.getOrComputePublicInformation("192.168.0.123");
         assertNotNull(result);
         @Nullable
-        PublicInformation result2 = fixture.getOrComputePublicInformation(shcBridge, "192.168.0.123");
+        PublicInformation result2 = fixture.getOrComputePublicInformation("192.168.0.123");
         assertSame(result, result2);
     }
 }
