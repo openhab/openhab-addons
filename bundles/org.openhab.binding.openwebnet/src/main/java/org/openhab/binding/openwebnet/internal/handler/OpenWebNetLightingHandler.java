@@ -84,7 +84,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         super.initialize();
         Where w = deviceWhere;
         OpenWebNetBridgeHandler bridge = bridgeHandler;
-        if (w != null && bridge != null) {
+        if (w != null && bridge != null && bridge.isBusGateway()) {
             area = ((WhereLightAutom) w).getArea();
             if (area > 0) {
                 areaOwnId = this.getManagedWho().value() + "." + area;
@@ -260,8 +260,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         logger.debug("handleMessage({}) for thing: {}", msg, thing.getUID());
         super.handleMessage(msg);
 
-        WhereLightAutom dw = (WhereLightAutom) deviceWhere;
-
         ThingTypeUID thingType = thing.getThingTypeUID();
         if (THING_TYPE_ZB_DIMMER.equals(thingType) || THING_TYPE_BUS_DIMMER.equals(thingType)) {
             updateBrightness((Lighting) msg);
@@ -270,22 +268,25 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         }
 
         OpenWebNetBridgeHandler brH = this.bridgeHandler;
-        if (brH != null && dw != null && ownId != null && dw.isAPL()) {
-            // Propagate APL msg to AREA handler, if exists
-            OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
-                    .getRegisteredDevice(areaOwnId);
-            if (areaHandler != null) {
-                logger.debug("//////////////////// Light {} is propagating msg {} to AREA handler {}", dw, msg,
-                        areaOwnId);
-                areaHandler.handlePropagatedMessage((Lighting) msg, this.ownId);
-            } else {
-                // Propagate APL msg to GEN handler, if exists
-                String genOwnId = this.getManagedWho().value() + ".0";
-                OpenWebNetLightingGroupHandler genHandler = (OpenWebNetLightingGroupHandler) brH
-                        .getRegisteredDevice(genOwnId);
-                if (genHandler != null) {
-                    logger.debug("////////////////////  Light {} is propagating msg {} to GEN handler", dw, msg);
-                    genHandler.handlePropagatedMessage((Lighting) msg, this.ownId);
+        if (brH != null && brH.isBusGateway()) {
+            WhereLightAutom dw = (WhereLightAutom) deviceWhere;
+            if (dw != null && ownId != null && dw.isAPL()) {
+                // Propagate APL msg to AREA handler, if exists
+                OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
+                        .getRegisteredDevice(areaOwnId);
+                if (areaHandler != null) {
+                    logger.debug("//////////////////// Light {} is propagating msg {} to AREA handler {}", dw, msg,
+                            areaOwnId);
+                    areaHandler.handlePropagatedMessage((Lighting) msg, this.ownId);
+                } else {
+                    // Propagate APL msg to GEN handler, if exists
+                    String genOwnId = this.getManagedWho().value() + ".0";
+                    OpenWebNetLightingGroupHandler genHandler = (OpenWebNetLightingGroupHandler) brH
+                            .getRegisteredDevice(genOwnId);
+                    if (genHandler != null) {
+                        logger.debug("////////////////////  Light {} is propagating msg {} to GEN handler", dw, msg);
+                        genHandler.handlePropagatedMessage((Lighting) msg, this.ownId);
+                    }
                 }
             }
         }
@@ -465,23 +466,21 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     @Override
     public void dispose() {
         Where w = deviceWhere;
-        if (w != null) {
+        OpenWebNetBridgeHandler brH = bridgeHandler;
+        if (w != null && brH != null && brH.isBusGateway()) {
             int area = ((WhereLightAutom) w).getArea();
-            OpenWebNetBridgeHandler brH = this.bridgeHandler;
-            if (brH != null) {
-                if (areaOwnId != null) {
-                    // remove light from listOn for Area
-                    OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
-                            .getRegisteredDevice(areaOwnId);
-                    if (areaHandler != null) {
-                        if (areaHandler.listOn.remove(ownId)) {
-                            logger.debug("//////////////////// Removed {} from listOn for {}", ownId, areaOwnId);
-                        }
+            if (areaOwnId != null) {
+                // remove light from listOn for Area
+                OpenWebNetLightingGroupHandler areaHandler = (OpenWebNetLightingGroupHandler) brH
+                        .getRegisteredDevice(areaOwnId);
+                if (areaHandler != null) {
+                    if (areaHandler.listOn.remove(ownId)) {
+                        logger.debug("//////////////////// Removed {} from listOn for {}", ownId, areaOwnId);
                     }
                 }
-                // remove light from lightsMap
-                brH.removeLight(area, this);
             }
+            // remove light from lightsMap
+            brH.removeLight(area, this);
         }
         super.dispose();
     }
