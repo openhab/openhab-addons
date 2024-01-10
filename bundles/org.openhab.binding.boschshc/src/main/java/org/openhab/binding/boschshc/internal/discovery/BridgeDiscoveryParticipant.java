@@ -57,8 +57,8 @@ import com.google.gson.Gson;
 @Component(configurationPid = "discovery.boschsmarthomebridge")
 public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private static final String NAME_PREFIX_BOSCH_SHC = "Bosch SHC";
-    private static final Duration TTL_MINUTES = Duration.ofMinutes(10);
-    private static final long TTL_SECONDS = TTL_MINUTES.toSeconds();
+    private static final Duration TTL_DURATION = Duration.ofMinutes(10);
+    private static final long TTL_SECONDS = TTL_DURATION.toSeconds();
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BoschSHCBindingConstants.THING_TYPE_SHC);
 
@@ -72,7 +72,7 @@ public class BridgeDiscoveryParticipant implements MDNSDiscoveryParticipant {
      * identified at the corresponding IP address.
      */
     private ExpiringCacheMap<String, @Nullable PublicInformation> discoveryResultCache = new ExpiringCacheMap<>(
-            TTL_MINUTES);
+            TTL_DURATION);
 
     @Activate
     public BridgeDiscoveryParticipant(@Reference HttpClientFactory httpClientFactory) {
