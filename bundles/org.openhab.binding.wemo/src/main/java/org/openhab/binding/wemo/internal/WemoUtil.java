@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,7 +121,7 @@ public class WemoUtil {
     }
 
     private static Map<String, String> buildBuiltinXMLEntityMap() {
-        Map<String, String> entities = new HashMap<String, String>(10);
+        Map<String, String> entities = new HashMap<>(10);
         entities.put("lt", "<");
         entities.put("gt", ">");
         entities.put("amp", "&");

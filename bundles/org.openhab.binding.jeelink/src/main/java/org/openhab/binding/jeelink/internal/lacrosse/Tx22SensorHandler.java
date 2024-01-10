@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class Tx22SensorHandler extends JeeLinkSensorHandler<Tx22Reading> {
 
     @Override
     public ReadingPublisher<Tx22Reading> createPublisher() {
-        return new ReadingPublisher<Tx22Reading>() {
+        return new ReadingPublisher<>() {
             @Override
             public void publish(Tx22Reading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {

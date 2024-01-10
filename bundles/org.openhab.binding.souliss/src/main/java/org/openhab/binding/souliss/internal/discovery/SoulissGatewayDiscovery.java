@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,13 +23,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.souliss.internal.SoulissBindingConstants;
 import org.openhab.binding.souliss.internal.SoulissProtocolConstants;
 import org.openhab.binding.souliss.internal.handler.SoulissGatewayHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,27 +39,22 @@ import org.slf4j.LoggerFactory;
  * @author Tonino Fazio - Initial contribution
  * @author Luca Calcaterra - Refactor for OH3
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = SoulissGatewayDiscovery.class)
 @NonNullByDefault
-public class SoulissGatewayDiscovery extends AbstractDiscoveryService
-        implements DiscoverResult, DiscoveryService, ThingHandlerService {
+public class SoulissGatewayDiscovery extends AbstractThingHandlerDiscoveryService<SoulissGatewayHandler>
+        implements DiscoverResult {
     private @Nullable ScheduledFuture<?> discoveryJob = null;
     private final Logger logger = LoggerFactory.getLogger(SoulissGatewayDiscovery.class);
 
     private @Nullable SoulissDiscoverJob soulissDiscoverRunnableClass;
-    private @Nullable SoulissGatewayHandler soulissGwHandler;
 
     public SoulissGatewayDiscovery() {
-        super(SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS, SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS,
-                false);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(SoulissGatewayHandler.class, SoulissBindingConstants.SUPPORTED_THING_TYPES_UIDS,
+                SoulissBindingConstants.DISCOVERY_TIMEOUT_IN_SECONDS, false);
     }
 
     /**
-     * The {@link gatewayDetected} callback used to create the Gateway
+     * This callback used to create the Gateway
      */
     @Override
     public void gatewayDetected(InetAddress addr, String id) {
@@ -83,7 +77,7 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
 
         // create discovery class
         if (soulissDiscoverRunnableClass == null) {
-            soulissDiscoverRunnableClass = new SoulissDiscoverJob(this.soulissGwHandler);
+            soulissDiscoverRunnableClass = new SoulissDiscoverJob(thingHandler);
 
             // send command for gw struct (typicals).. must be not soo much quick..
             discoveryJob = scheduler.scheduleWithFixedDelay(soulissDiscoverRunnableClass, 2,
@@ -110,17 +104,14 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
         DiscoveryResult discoveryResult;
         String sNodeID = topicNumber + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + sTopicVariant;
 
-        var localGwHandler = this.soulissGwHandler;
-        if (localGwHandler != null) {
-            var gatewayUID = localGwHandler.getThing().getUID();
-            thingUID = new ThingUID(SoulissBindingConstants.TOPICS_THING_TYPE, gatewayUID, sNodeID);
-            label = "Topic. Number: " + topicNumber + ", Variant: " + sTopicVariant;
+        var gatewayUID = thingHandler.getThing().getUID();
+        thingUID = new ThingUID(SoulissBindingConstants.TOPICS_THING_TYPE, gatewayUID, sNodeID);
+        label = "Topic. Number: " + topicNumber + ", Variant: " + sTopicVariant;
 
-            discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label)
-                    .withProperty("number", topicNumber).withProperty("variant", sTopicVariant)
-                    .withRepresentationProperty("number").withBridge(gatewayUID).build();
-            thingDiscovered(discoveryResult);
-        }
+        discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label).withProperty("number", topicNumber)
+                .withProperty("variant", sTopicVariant).withRepresentationProperty("number").withBridge(gatewayUID)
+                .build();
+        thingDiscovered(discoveryResult);
     }
 
     @Override
@@ -128,12 +119,11 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
         ThingUID thingUID = null;
         var label = "";
         DiscoveryResult discoveryResult;
-        var gwHandler = this.soulissGwHandler;
-        if ((gwHandler != null) && (lastByteGatewayIP == (byte) Integer
-                .parseInt(gwHandler.getGwConfig().gatewayLanAddress.split("\\.")[3]))) {
+        if (lastByteGatewayIP == (byte) Integer
+                .parseInt(thingHandler.getGwConfig().gatewayLanAddress.split("\\.")[3])) {
             String sNodeId = node + SoulissBindingConstants.UUID_NODE_SLOT_SEPARATOR + slot;
 
-            ThingUID gatewayUID = gwHandler.getThing().getUID();
+            ThingUID gatewayUID = thingHandler.getThing().getUID();
             var nodeLabel = "node";
             var slotLabel = "slot";
 
@@ -247,30 +237,23 @@ public class SoulissGatewayDiscovery extends AbstractDiscoveryService
                 }
             }
             if (thingUID != null) {
-                label = "[" + gwHandler.getThing().getUID().getAsString() + "] " + label;
+                label = "[" + thingHandler.getThing().getUID().getAsString() + "] " + label;
                 var uniqueId = "N" + Byte.toString(node) + "S" + Byte.toString(slot);
                 discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(label)
                         .withProperty(SoulissBindingConstants.PROPERTY_NODE, node)
                         .withProperty(SoulissBindingConstants.PROPERTY_SLOT, slot)
                         .withProperty(SoulissBindingConstants.PROPERTY_UNIQUEID, uniqueId)
                         .withRepresentationProperty(SoulissBindingConstants.PROPERTY_UNIQUEID)
-                        .withBridge(gwHandler.getThing().getUID()).build();
+                        .withBridge(thingHandler.getThing().getUID()).build();
                 thingDiscovered(discoveryResult);
-                gwHandler.setThereIsAThingDetection();
+                thingHandler.setThereIsAThingDetection();
             }
         }
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof SoulissGatewayHandler localGwHandler) {
-            this.soulissGwHandler = localGwHandler;
-            localGwHandler.discoverResult = this;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return soulissGwHandler;
+    public void initialize() {
+        thingHandler.discoverResult = this;
+        super.initialize();
     }
 }

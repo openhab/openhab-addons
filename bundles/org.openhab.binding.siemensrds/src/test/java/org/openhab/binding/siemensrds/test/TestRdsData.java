@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.measure.quantity.ElectricCurrent;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -269,8 +267,7 @@ public class TestRdsData {
             assertNotNull(celsius);
             assertEquals(18.55, celsius.floatValue(), 0.01);
 
-            assertEquals(new QuantityType<ElectricCurrent>(0, Units.AMPERE),
-                    dataPoints.getPointByClass("'HDevElLd").getState());
+            assertEquals(new QuantityType<>(0, Units.AMPERE), dataPoints.getPointByClass("'HDevElLd").getState());
 
             state = dataPoints.getPointByClass("'SpHPcf").getState();
             assertTrue(state instanceof QuantityType<?>);

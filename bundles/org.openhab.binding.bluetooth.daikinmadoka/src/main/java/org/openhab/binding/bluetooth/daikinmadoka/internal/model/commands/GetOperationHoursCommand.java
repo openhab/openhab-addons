@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,9 +79,9 @@ public class GetOperationHoursCommand extends BRC1HCommand {
         Integer iIndoorFanHours = (int) (fanHours.getComputedValue(ByteOrder.LITTLE_ENDIAN));
         Integer iIndoorPowerHours = (int) (powerHours.getComputedValue(ByteOrder.LITTLE_ENDIAN));
 
-        this.indoorOperationHours = new QuantityType<Time>(iIndoorOperationHours, Units.HOUR);
-        this.indoorFanHours = new QuantityType<Time>(iIndoorFanHours, Units.HOUR);
-        this.indoorPowerHours = new QuantityType<Time>(iIndoorPowerHours, Units.HOUR);
+        this.indoorOperationHours = new QuantityType<>(iIndoorOperationHours, Units.HOUR);
+        this.indoorFanHours = new QuantityType<>(iIndoorFanHours, Units.HOUR);
+        this.indoorPowerHours = new QuantityType<>(iIndoorPowerHours, Units.HOUR);
 
         logger.debug("indoorOperationHours: {}", indoorOperationHours);
         logger.debug("indoorFanHours: {}", indoorFanHours);

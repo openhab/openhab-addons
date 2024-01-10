@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -140,6 +140,16 @@ public class ValueTests {
     }
 
     @Test
+    public void onoffMultiStates() {
+        OnOffValue v = new OnOffValue(new String[] { "LOCKED" }, new String[] { "UNLOCKED", "JAMMED" }, "LOCK",
+                "UNLOCK");
+
+        assertThat(v.parseCommand(new StringType("LOCKED")), is(OnOffType.ON));
+        assertThat(v.parseCommand(new StringType("UNLOCKED")), is(OnOffType.OFF));
+        assertThat(v.parseCommand(new StringType("JAMMED")), is(OnOffType.OFF));
+    }
+
+    @Test
     public void openCloseUpdate() {
         OpenCloseValue v = new OpenCloseValue("fancyON", "fancyOff");
 
@@ -179,6 +189,8 @@ public class ValueTests {
 
         assertThat(v.parseMessage(new StringType("NaN")), is(UnDefType.UNDEF));
         assertThat(v.parseMessage(new StringType("nan")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("-NaN")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("-nan")), is(UnDefType.UNDEF));
     }
 
     @Test

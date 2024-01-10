@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import de.resol.vbus.SpecificationFile.Unit;
 @Component(service = { ChannelTypeProvider.class, ResolChannelTypeProvider.class })
 @NonNullByDefault
 public class ResolChannelTypeProvider implements ChannelTypeProvider {
-    private Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<ChannelTypeUID, ChannelType>();
+    private Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<>();
 
     public ResolChannelTypeProvider() {
         // let's add all channel types from known by the resol-vbus java library

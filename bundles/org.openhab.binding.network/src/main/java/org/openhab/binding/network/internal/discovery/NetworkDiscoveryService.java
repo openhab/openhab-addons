@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -185,7 +185,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     }
 
     /**
-     * Submit newly discovered devices. This method is called by the spawned threads in {@link startScan}.
+     * Submit newly discovered devices. This method is called by the spawned threads in {@link #startScan()}.
      *
      * @param ip The device IP
      * @param tcpPort The TCP port
@@ -228,7 +228,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     }
 
     /**
-     * Submit newly discovered devices. This method is called by the spawned threads in {@link startScan}.
+     * Submit newly discovered devices. This method is called by the spawned threads in {@link #startScan()}.
      *
      * @param ip The device IP
      */

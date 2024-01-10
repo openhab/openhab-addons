@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,7 +119,7 @@ public class StatusWrapper {
     private boolean hasFuel;
     private boolean isHybrid;
 
-    private Map<String, State> specialHandlingMap = new HashMap<String, State>();
+    private Map<String, State> specialHandlingMap = new HashMap<>();
 
     public StatusWrapper(String type, String statusJson) {
         hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())

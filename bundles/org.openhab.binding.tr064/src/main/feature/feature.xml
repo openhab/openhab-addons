@@ -4,8 +4,6 @@
 
 	<feature name="openhab-binding-tr064" description="TR-064 Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<requirement>openhab.tp;filter:="(feature=jaxb)"</requirement>
-		<feature dependency="true">openhab.tp-jaxb</feature>
 		<requirement>openhab.tp;filter:="(feature=jax-ws)"</requirement>
 		<feature dependency="true">openhab.tp-jaxws</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.tr064/${project.version}</bundle>

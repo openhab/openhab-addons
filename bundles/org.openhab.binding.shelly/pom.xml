@@ -10,6 +10,9 @@
     <version>4.2.0-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <bnd.importpackage>org.eclipse.jetty.websocket.server</bnd.importpackage>
+  </properties>
 
   <artifactId>org.openhab.binding.shelly</artifactId>
   <name>openHAB Add-ons :: Bundles :: Shelly Binding Gen1+2</name>

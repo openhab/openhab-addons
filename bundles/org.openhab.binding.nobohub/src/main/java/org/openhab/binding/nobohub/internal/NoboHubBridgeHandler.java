@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,11 +21,13 @@ import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.RECOM
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nobohub.internal.connection.HubCommunicationThread;
 import org.openhab.binding.nobohub.internal.connection.HubConnection;
+import org.openhab.binding.nobohub.internal.discovery.NoboHubDiscoveryService;
 import org.openhab.binding.nobohub.internal.discovery.NoboThingDiscoveryService;
 import org.openhab.binding.nobohub.internal.model.Component;
 import org.openhab.binding.nobohub.internal.model.ComponentRegister;
@@ -49,6 +51,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -413,5 +416,10 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
 
     public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         updateStatus(status, statusDetail, description);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(NoboHubDiscoveryService.class);
     }
 }

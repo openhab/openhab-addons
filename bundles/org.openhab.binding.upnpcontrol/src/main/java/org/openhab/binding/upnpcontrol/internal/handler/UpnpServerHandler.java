@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -216,7 +216,7 @@ public class UpnpServerHandler extends UpnpHandler {
         }
 
         if (browsed) {
-            isBrowsing = new CompletableFuture<Boolean>();
+            isBrowsing = new CompletableFuture<>();
 
             Map<String, String> inputs = new HashMap<>();
             inputs.put("ObjectID", objectID);
@@ -262,7 +262,7 @@ public class UpnpServerHandler extends UpnpHandler {
         }
 
         if (browsed) {
-            isBrowsing = new CompletableFuture<Boolean>();
+            isBrowsing = new CompletableFuture<>();
 
             Map<String, String> inputs = new HashMap<>();
             inputs.put("ContainerID", containerID);
@@ -687,7 +687,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 updateTitleSelection(removeDuplicates(list));
             }
         } else {
-            updateTitleSelection(new ArrayList<UpnpEntry>());
+            updateTitleSelection(new ArrayList<>());
         }
         browseUp = false;
         if (browsing != null) {

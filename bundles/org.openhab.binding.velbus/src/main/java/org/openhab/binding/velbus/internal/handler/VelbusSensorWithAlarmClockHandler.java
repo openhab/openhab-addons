@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB2PBN,
             THING_TYPE_VMB6PBN, THING_TYPE_VMB8PBU, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM, THING_TYPE_VMBRFR8S,
             THING_TYPE_VMBVP1, THING_TYPE_VMBKP, THING_TYPE_VMBIN, THING_TYPE_VMB4PB));
-    private static final HashMap<ThingTypeUID, Integer> ALARM_CONFIGURATION_MEMORY_ADDRESSES = new HashMap<ThingTypeUID, Integer>();
+    private static final HashMap<ThingTypeUID, Integer> ALARM_CONFIGURATION_MEMORY_ADDRESSES = new HashMap<>();
 
     static {
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMB2PBN, 0x0093);

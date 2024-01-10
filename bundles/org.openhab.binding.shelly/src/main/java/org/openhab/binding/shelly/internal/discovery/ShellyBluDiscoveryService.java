@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,8 +57,7 @@ public class ShellyBluDiscoveryService extends AbstractDiscoveryService {
     @SuppressWarnings("null")
     public void registerDeviceDiscoveryService() {
         if (discoveryService == null) {
-            discoveryService = bundleContext.registerService(DiscoveryService.class.getName(), this,
-                    new Hashtable<String, Object>());
+            discoveryService = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<>());
         }
     }
 

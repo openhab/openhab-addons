@@ -224,6 +224,7 @@ String z1_Detail_ColorDescription "Color Description: [%s]" { channel="kaleidesc
 String z1_Detail_Country "Country: [%s]" { channel="kaleidescape:player:myzone1:detail#country" }
 String z1_Detail_AspectRatio "Aspect Ratio: [%s]" { channel="kaleidescape:player:myzone1:detail#aspect_ratio" }
 String z1_Detail_DiscLocation "Disc Location: [%s]" { channel="kaleidescape:player:myzone1:detail#disc_location" }
+String z1_MovieSearch "Movie Search"
 ```
 
 ksecondsformat.js:
@@ -272,6 +273,7 @@ sitemap kaleidescape label="Kaleidescape" {
         Text item=z1_Detail_Country visibility=[z1_Detail_Type=="movie"] icon="none"
         Text item=z1_Detail_AspectRatio visibility=[z1_Detail_Type=="movie"] icon="none"
         Text item=z1_Detail_DiscLocation visibility=[z1_Detail_Type=="movie", z1_Detail_Type=="album"] icon="player"
+        Input item=z1_MovieSearch label="Movie Search" staticIcon=zoom inputHint="text"
 
         Text label="Now Playing - Movie" icon="screen" {
             Switch item=z1_Ui_Power
@@ -429,5 +431,27 @@ then
       return
     }
     kactions.sendKCommand("GET_CONTENT_DETAILS:" + z1_Music_AlbumHandle.state.toString + ":")
+end
+
+rule "Movie Search"
+when
+    Item z1_MovieSearch received update
+then
+    if (newState != NULL && newState.toString.length > 0) {
+        kactions.sendKCommand("GO_MOVIE_LIST")
+        Thread::sleep(1000)
+        kactions.sendKCommand("FILTER_LIST")
+        Thread::sleep(300)
+
+        var i = 0
+        var srch = newState.toString.toUpperCase
+        logInfo("kaleidescape.search","Searching for: " + srch)
+
+        while (i < (srch.length)) {
+            kactions.sendKCommand("KEYBOARD_CHARACTER:" + srch.charAt(i).toString)
+            Thread::sleep(100)
+            i++
+        }
+    }
 end
 ```

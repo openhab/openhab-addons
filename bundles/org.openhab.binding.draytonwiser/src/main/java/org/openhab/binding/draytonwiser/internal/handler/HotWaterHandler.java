@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.draytonwiser.internal.handler;
 import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.*;
 
 import java.util.List;
-
-import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -132,10 +130,10 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
             final Integer overrideTimeout = firstChannel.getOverrideTimeoutUnixTime();
 
             if (overrideTimeout != null && !"NONE".equalsIgnoreCase(firstChannel.getOverrideType())) {
-                return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), Units.SECOND);
+                return new QuantityType<>(overrideTimeout - (System.currentTimeMillis() / 1000L), Units.SECOND);
             }
         }
-        return new QuantityType<Time>(0, Units.SECOND);
+        return new QuantityType<>(0, Units.SECOND);
     }
 
     static class HotWaterData {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     private static final String JINJA_PREFIX = "JINJA:";
 
     // Component location fields
-    private final ComponentConfiguration componentConfiguration;
+    protected final ComponentConfiguration componentConfiguration;
     protected final @Nullable ChannelGroupTypeUID channelGroupTypeUID;
     protected final @Nullable ChannelGroupUID channelGroupUID;
     protected final HaID haID;
