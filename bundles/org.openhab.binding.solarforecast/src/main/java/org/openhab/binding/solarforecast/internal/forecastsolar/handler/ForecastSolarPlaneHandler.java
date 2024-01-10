@@ -114,7 +114,17 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            fetchData();
+            if (forecast.isValid()) {
+                if (CHANNEL_POWER_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
+                    sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries());
+                } else if (CHANNEL_ENERGY_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
+                    sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries());
+                } else if (CHANNEL_RAW.equals(channelUID.getIdWithoutGroup())) {
+                    updateState(CHANNEL_RAW, StringType.valueOf(forecast.getRaw()));
+                } else {
+                    fetchData();
+                }
+            }
         }
     }
 
@@ -166,8 +176,10 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     Thread.currentThread().interrupt();
                 }
-            } // else use available forecast
-            updateChannels(forecast);
+            } else {
+                // else use available forecast
+                updateChannels(forecast);
+            }
         } else {
             logger.warn("{} Location not present", thing.getLabel());
         }

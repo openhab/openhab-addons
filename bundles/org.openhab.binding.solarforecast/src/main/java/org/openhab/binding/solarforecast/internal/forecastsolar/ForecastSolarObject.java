@@ -226,6 +226,13 @@ public class ForecastSolarObject implements SolarForecast {
         return daily - actual;
     }
 
+    public String getRaw() {
+        if (valid && rawData.isPresent()) {
+            return rawData.get();
+        }
+        return "{}";
+    }
+
     public ZoneId getZone() {
         return zone;
     }

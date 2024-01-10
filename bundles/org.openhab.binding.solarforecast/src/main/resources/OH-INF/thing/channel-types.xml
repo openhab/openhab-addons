@@ -6,26 +6,26 @@
 
 	<channel-type id="power-actual-channel">
 		<item-type>Number:Power</item-type>
-		<label>Actual Power Forecast</label>
+		<label>Actual Power</label>
 		<description>Predicted power in this moment</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-estimate-channel">
 		<item-type>Number:Power</item-type>
-		<label>Actual Power Forecast</label>
-		<description>Predicted power in this moment</description>
+		<label>Power Forecast</label>
+		<description>Power forecast for next hours / days</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-estimate10-channel">
 		<item-type>Number:Power</item-type>
-		<label>Actual Power Forecast</label>
-		<description>Predicted power in this moment</description>
+		<label>Pessimistic Power Forecast</label>
+		<description>Pessimistic power forecast for next hours / days</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-estimate90-channel">
 		<item-type>Number:Power</item-type>
-		<label>Actual Power Forecast</label>
-		<description>Predicted power in this moment</description>
+		<label>Optimistic Power Forecast</label>
+		<description>Optimistic power forecast for next hours / days</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energy-actual-channel">
@@ -34,22 +34,34 @@
 		<description>Todays production forecast till now</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="energy-remain-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Remaining Energy Forecast</label>
+		<description>Todays remaining production forecast till sunset</description>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energy-today-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Todays Energy Forecast</label>
+		<description>Todays total energy forecast</description>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="energy-estimate-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Actual Energy Forecast</label>
-		<description>Todays production forecast till now</description>
+		<label>Energy Forecast</label>
+		<description>Energy forecast for next hours / days</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energy-estimate10-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Actual Energy Forecast</label>
-		<description>Todays production forecast till now</description>
+		<label>Pessimistic Energy Forecast</label>
+		<description>Pessimistic energy forecast for next hours / days</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energy-estimate90-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Actual Energy Forecast</label>
-		<description>Todays production forecast till now</description>
+		<label>Optimistic Energy Forecast</label>
+		<description>Optimistic energy forecast for next hours / days</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="raw-channel" advanced="true">

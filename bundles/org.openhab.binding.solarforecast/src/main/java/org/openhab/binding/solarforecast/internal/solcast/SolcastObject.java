@@ -93,7 +93,6 @@ public class SolcastObject implements SolarForecast {
 
     private void add(String content) {
         if (!content.isEmpty()) {
-            valid = true;
             JSONObject contentJson = new JSONObject(content);
             JSONArray resultJsonArray;
 
@@ -102,11 +101,13 @@ public class SolcastObject implements SolarForecast {
                 resultJsonArray = contentJson.getJSONArray("forecasts");
                 addJSONArray(resultJsonArray);
                 rawData.get().put("forecasts", resultJsonArray);
+                valid = true;
             }
             if (contentJson.has("estimated_actuals")) {
                 resultJsonArray = contentJson.getJSONArray("estimated_actuals");
                 addJSONArray(resultJsonArray);
                 rawData.get().put("estimated_actuals", resultJsonArray);
+                valid = true;
             }
         }
     }
@@ -288,7 +289,10 @@ public class SolcastObject implements SolarForecast {
     }
 
     public String getRaw() {
-        return rawData.get().toString();
+        if (valid && rawData.isPresent()) {
+            return rawData.get().toString();
+        }
+        return "{}";
     }
 
     private TreeMap<ZonedDateTime, Double> getDataMap(QueryMode mode) {

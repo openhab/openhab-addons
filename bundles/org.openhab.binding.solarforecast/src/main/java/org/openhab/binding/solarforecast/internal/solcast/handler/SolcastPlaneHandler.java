@@ -112,52 +112,82 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            fetchData();
+            forecast.ifPresent(forecastObject -> {
+                if (forecastObject.isValid()) {
+                    if (CHANNEL_POWER_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
+                        sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecastObject.getPowerTimeSeries(QueryMode.Estimation));
+                    } else if (CHANNEL_POWER_ESTIMATE10.equals(channelUID.getIdWithoutGroup())) {
+                        sendTimeSeries(CHANNEL_POWER_ESTIMATE10,
+                                forecastObject.getPowerTimeSeries(QueryMode.Pessimistic));
+                    } else if (CHANNEL_POWER_ESTIMATE90.equals(channelUID.getIdWithoutGroup())) {
+                        sendTimeSeries(CHANNEL_POWER_ESTIMATE90,
+                                forecastObject.getPowerTimeSeries(QueryMode.Optimistic));
+                    } else if (CHANNEL_ENERGY_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
+                        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE,
+                                forecastObject.getEnergyTimeSeries(QueryMode.Estimation));
+                    } else if (CHANNEL_ENERGY_ESTIMATE10.equals(channelUID.getIdWithoutGroup())) {
+                        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE10,
+                                forecastObject.getEnergyTimeSeries(QueryMode.Pessimistic));
+                    } else if (CHANNEL_ENERGY_ESTIMATE90.equals(channelUID.getIdWithoutGroup())) {
+                        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE90,
+                                forecastObject.getEnergyTimeSeries(QueryMode.Optimistic));
+                    } else if (CHANNEL_RAW.equals(channelUID.getIdWithoutGroup())) {
+                        updateState(CHANNEL_RAW, StringType.valueOf(forecastObject.getRaw()));
+                    } else {
+                        fetchData();
+                    }
+                }
+            });
         }
     }
 
     protected SolcastObject fetchData() {
-        if (!forecast.get().isValid()) {
-            String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
-            String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);
-            try {
-                // get actual estimate
-                Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
-                estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
-                ContentResponse crEstimate = estimateRequest.send();
-                if (crEstimate.getStatus() == 200) {
-                    SolcastObject localForecast = new SolcastObject(crEstimate.getContentAsString(),
-                            Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES),
-                            bridgeHandler.get());
+        forecast.ifPresent(forecastObject -> {
+            if (!forecastObject.isValid()) {
+                String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
+                String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);
+                try {
+                    // get actual estimate
+                    Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
+                    estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
+                    ContentResponse crEstimate = estimateRequest.send();
+                    if (crEstimate.getStatus() == 200) {
+                        SolcastObject localForecast = new SolcastObject(crEstimate.getContentAsString(),
+                                Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES),
+                                bridgeHandler.get());
 
-                    // get forecast
-                    Request forecastRequest = httpClient.newRequest(forecastUrl);
-                    forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
-                    ContentResponse crForecast = forecastRequest.send();
+                        // get forecast
+                        Request forecastRequest = httpClient.newRequest(forecastUrl);
+                        forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
+                        ContentResponse crForecast = forecastRequest.send();
 
-                    if (crForecast.getStatus() == 200) {
-                        localForecast.join(crForecast.getContentAsString());
-                        setForecast(localForecast);
-                        updateState(CHANNEL_RAW, StringType.valueOf(forecast.get().getRaw()));
-                        updateStatus(ThingStatus.ONLINE);
+                        if (crForecast.getStatus() == 200) {
+                            localForecast.join(crForecast.getContentAsString());
+                            setForecast(localForecast);
+                            updateState(CHANNEL_RAW, StringType.valueOf(forecast.get().getRaw()));
+                            updateStatus(ThingStatus.ONLINE);
+                        } else {
+                            logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl, crForecast.getStatus());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "@text/solarforecast.plane.status.http-status [\"" + crForecast.getStatus()
+                                            + "\"]");
+                        }
                     } else {
-                        logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl, crForecast.getStatus());
+                        logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl,
+                                crEstimate.getStatus());
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/solarforecast.plane.status.http-status [\"" + crForecast.getStatus() + "\"]");
+                                "@text/solarforecast.plane.status.http-status [\"" + crEstimate.getStatus() + "\"]");
                     }
-                } else {
-                    logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, crEstimate.getStatus());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/solarforecast.plane.status.http-status [\"" + crEstimate.getStatus() + "\"]");
+                } catch (ExecutionException | TimeoutException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                } catch (InterruptedException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
-            } catch (ExecutionException | TimeoutException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (InterruptedException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                Thread.currentThread().interrupt();
+            } else {
+                updateChannels(forecastObject);
             }
-        } // else use available forecast
-        updateChannels(forecast.get());
+        });
         return forecast.get();
     }
 
