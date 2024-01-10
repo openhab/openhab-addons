@@ -92,19 +92,20 @@ Forecasts are delivered up to 6 days in advance including
 - a pessimistic scenario: 10th percentile 
 - an optimistic scenario: 90th percentile
 
-Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day after tomorrow, ...
 
-| Channel                 | Type          | Unit | Description                              | Advanced |
-|-------------------------|---------------|------|------------------------------------------|----------|
-| actual                  | Number:Energy | kWh  | Today's forecast till now                | no       |
-| actual-power            | Number:Power  | W    | Predicted power in this moment           | no       |
-| remaining               | Number:Energy | kWh  | Forecast of today's remaining production | no       |
-| today                   | Number:Energy | kWh  | Today's forecast in total                | no       |
-| day*X*                  | Number:Energy | kWh  | Day *X* forecast in total                | no       |
-| day*X*-low              | Number:Energy | kWh  | Day *X* pessimistic forecast             | no       |
-| day*X*-high             | Number:Energy | kWh  | Day *X* optimistic forecast              | no       |
-| raw                     | String        | -    | Plain JSON response without conversions  | yes      |
-| raw-tuning              | String        | -    | JSON response from tuning call           | yes      |
+| Channel                 | Type          | Unit | Description                                     | Advanced |
+|-------------------------|---------------|------|-------------------------------------------------|----------|
+| power-actual            | Number:Power  | W    | Power prediction for this moment                | no       |
+| power-estimate          | Number:Power  | W    | Power forecast for next hours/days              | no       |
+| power-estimate10        | Number:Power  | W    | Pessimistic power forecast for next hours/days  | no       |
+| power-estimate90        | Number:Power  | W    | Optimistic power forecast for next hours/days   | no       |
+| energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             | no       |
+| energy-estimate10       | Number:Energy | kWh  | Pessimistic energy forecast for next hours/days | no       |
+| energy-estimate90       | Number:Energy | kWh  | Optimistic energy forecast for next hours/days  | no       |
+| energy-actual           | Number:Energy | kWh  | Today's forecast till now                       | no       |
+| energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          | no       |
+| energy-today            | Number:Energy | kWh  | Today's forecast in total                       | no       |
+| raw                     | String        | -    | Plain JSON response without conversions         | yes      |
 
 ## ForecastSolar Configuration
 
@@ -164,16 +165,17 @@ The `fs-site` bridge sums up all attached `fs-plane` values and provides the tot
 Channels are covering today's actual data with current, remaining and total prediction.
 Forecasts are delivered up to 3 days for paid personal plans.
 
-Day*X* channels are referring to forecasts plus *X* days: 1 = tomorrow, 2 = day after tomorrow, ...
 
-| Channel                 | Type          | Unit | Description                              | Advanced |
-|-------------------------|---------------|------|------------------------------------------|----------|
-| actual                  | Number:Energy | kWh  | Today's forecast till now                | no       |
-| actual-power            | Number:Power  | W    | Predicted power in this moment           | no       |
-| remaining               | Number:Energy | kWh  | Forecast of today's remaining production | no       |
-| today                   | Number:Energy | kWh  | Today's forecast in total                | no       |
-| day*X*                  | Number:Energy | kWh  | Day *X* forecast in total                | no       |
-| raw                     | String        | -    | Plain JSON response without conversions  | yes      |
+| Channel                 | Type          | Unit | Description                                     | Advanced |
+|-------------------------|---------------|------|-------------------------------------------------|----------|
+| power-actual            | Number:Power  | W    | Power prediction for this moment                | no       |
+| power-estimate          | Number:Power  | W    | Power forecast for next hours/days              | no       |
+| energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             | no       |
+| energy-actual           | Number:Energy | kWh  | Today's forecast till now                       | no       |
+| energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          | no       |
+| energy-today            | Number:Energy | kWh  | Today's forecast in total                       | no       |
+| raw                     | String        | -    | Plain JSON response without conversions         | yes      |
+
 
 ## Thing Actions
 
@@ -250,32 +252,29 @@ Exchange the configuration data in [thing file](#thing-file) and you're ready to
 ### Thing file
 
 ```java
-Bridge solarforecast:fs-site:homeSite   "ForecastSolar Home" [ location="54.321,8.976", channelRefreshInterval=1] {
-         Thing fs-plane homeSouthWest   "ForecastSolar Home South-West" [ refreshInterval=10, azimuth=45, declination=35, kwp=5.5]
-         Thing fs-plane homeNorthEast   "ForecastSolar Home North-East" [ refreshInterval=10, azimuth=-145, declination=35, kwp=4.425]
+Bridge solarforecast:fs-site:homeSite   "ForecastSolar Home" [ location="54.321,8.976"] {
+         Thing fs-plane homeSouthWest   "ForecastSolar Home South-West" [ refreshInterval=30, azimuth=45, declination=35, kwp=5.5]
+         Thing fs-plane homeNorthEast   "ForecastSolar Home North-East" [ refreshInterval=30, azimuth=-145, declination=35, kwp=4.425]
 }
 ```
 
 ### Items file
 
 ```java
-Number:Energy           ForecastSolarHome_Actual           "Actual Forecast Today [%.3f %unit%]"             {channel="solarforecast:fs-site:homeSite:actual" }                                                                           
-Number:Power            ForecastSolarHome_Actual_Power     "Actual Power Forecast [%.3f %unit%]"             {channel="solarforecast:fs-site:homeSite:actual-power" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining        "Remaining Forecast Today [%.3f %unit%]"          {channel="solarforecast:fs-site:homeSite:remaining" }                                                                           
-Number:Energy           ForecastSolarHome_Today            "Today Total Forecast [%.3f %unit%]"              {channel="solarforecast:fs-site:homeSite:today" }                                                                           
-Number:Energy           ForecastSolarHome_Day1             "Tomorrow Total Forecast [%.3f %unit%]"           {channel="solarforecast:fs-site:homeSite:day1" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power      "Power prediction for this moment"              {channel="solarforecast:fs-site:homeSite:power-actual" }                                                                           
+Number:Energy           ForecastSolarHome_Actual            "Today's forecast till now"                     {channel="solarforecast:fs-site:homeSite:energy-actual" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining         "Today's remaining forecast till sunset"        {channel="solarforecast:fs-site:homeSite:energy-remain" }                                                                           
+Number:Energy           ForecastSolarHome_Today             "Today's total energy forecast"                 {channel="solarforecast:fs-site:homeSite:energy-today" }                                                                           
 
-Number:Energy           ForecastSolarHome_Actual_NE        "Actual NE Forecast Today [%.3f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeNorthEast:actual" }                                                                           
-Number:Power            ForecastSolarHome_Actual_Power_NE  "Actual NE Power Forecast [%.3f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeNorthEast:actual-power" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining_NE     "Remaining NE Forecast Today [%.3f %unit%]"       {channel="solarforecast:fs-plane:homeSite:homeNorthEast:remaining" }                                                                           
-Number:Energy           ForecastSolarHome_Today_NE         "Total NE Forecast Today [%.3f %unit%]"           {channel="solarforecast:fs-plane:homeSite:homeNorthEast:today" }                                                                           
-Number:Energy           ForecastSolarHome_Day_NE           "Tomorrow NE Forecast [%.3f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeNorthEast:day1" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power_NE   "NE Power prediction for this moment"           {channel="solarforecast:fs-site:homeSite:homeNorthEast:power-actual" }                                                                           
+Number:Energy           ForecastSolarHome_Actual_NE         "NE Today's forecast till now"                  {channel="solarforecast:fs-site:homeSite:homeNorthEast:energy-actual" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining_NE      "NE Today's remaining forecast till sunset"     {channel="solarforecast:fs-site:homeSite:homeNorthEast:energy-remain" }                                                                           
+Number:Energy           ForecastSolarHome_Today_NE          "NE Today's total energy forecast"              {channel="solarforecast:fs-site:homeSite:homeNorthEast:energy-today" }                                                                           
 
-Number:Energy           ForecastSolarHome_Actual_SW        "Actual SW Forecast Today [%.3f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeSouthWest:actual" }                                                                           
-Number:Power            ForecastSolarHome_Actual_Power_SW  "Actual SW Power Forecast [%.3f %unit%]"          {channel="solarforecast:fs-plane:homeSite:homeSouthWest:actual-power" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining_SW     "Remaining SW Forecast Today [%.3f %unit%]"       {channel="solarforecast:fs-plane:homeSite:homeSouthWest:remaining" }                                                                           
-Number:Energy           ForecastSolarHome_Today_SW         "Total SW Forecast Today [%.3f %unit%]"           {channel="solarforecast:fs-plane:homeSite:homeSouthWest:today" }                                                                           
-Number:Energy           ForecastSolarHome_Day_SW           "Tomorrow SW Forecast [%.3f %unit%]"              {channel="solarforecast:fs-plane:homeSite:homeSouthWest:day1" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power_SW   "SW Power prediction for this moment"           {channel="solarforecast:fs-site:homeSite:homeSouthWest:power-actual" }                                                                           
+Number:Energy           ForecastSolarHome_Actual_SW         "SW Today's forecast till now"                  {channel="solarforecast:fs-site:homeSite:homeSouthWest:energy-actual" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining_SW      "SW Today's remaining forecast till sunset"     {channel="solarforecast:fs-site:homeSite:homeSouthWest:energy-remain" }                                                                           
+Number:Energy           ForecastSolarHome_Today_SW          "SW Today's total energy forecast"              {channel="solarforecast:fs-site:homeSite:homeSouthWest:energy-today" }                                                                           
 ```
 
 ### Actions rule

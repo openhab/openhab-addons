@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider, TimeZoneProvider {
     private final Logger logger = LoggerFactory.getLogger(SolcastBridgeHandler.class);
 
-    private List<SolcastPlaneHandler> parts = new ArrayList<SolcastPlaneHandler>();
+    private List<SolcastPlaneHandler> planes = new ArrayList<SolcastPlaneHandler>();
     private Optional<SolcastBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private ZoneId timeZone;
@@ -108,7 +108,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
      * Get data for all planes. Protect parts map from being modified during update
      */
     private synchronized void getData() {
-        if (parts.isEmpty()) {
+        if (planes.isEmpty()) {
             logger.debug("No PV plane defined yet");
             return;
         }
@@ -116,7 +116,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         double energySum = 0;
         double powerSum = 0;
         double daySum = 0;
-        for (Iterator<SolcastPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
+        for (Iterator<SolcastPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
             SolcastPlaneHandler sfph = iterator.next();
             SolcastObject fo = sfph.fetchData();
             energySum += fo.getActualEnergyValue(now, QueryMode.Estimation);
@@ -130,11 +130,11 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     }
 
     synchronized void addPlane(SolcastPlaneHandler sph) {
-        parts.add(sph);
+        planes.add(sph);
     }
 
     synchronized void removePlane(SolcastPlaneHandler sph) {
-        parts.remove(sph);
+        planes.remove(sph);
     }
 
     String getApiKey() {
@@ -147,7 +147,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     @Override
     public synchronized List<SolarForecast> getSolarForecasts() {
         List<SolarForecast> l = new ArrayList<SolarForecast>();
-        parts.forEach(entry -> {
+        planes.forEach(entry -> {
             l.addAll(entry.getSolarForecasts());
         });
         return l;

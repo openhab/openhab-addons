@@ -48,7 +48,7 @@ import org.openhab.core.types.Command;
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
     private final PointType homeLocation;
 
-    private List<ForecastSolarPlaneHandler> parts = new ArrayList<ForecastSolarPlaneHandler>();
+    private List<ForecastSolarPlaneHandler> planes = new ArrayList<ForecastSolarPlaneHandler>();
     private Optional<ForecastSolarBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
@@ -85,13 +85,13 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
      * Get data for all planes. Synchronized to protect parts map from being modified during update
      */
     private synchronized void getData() {
-        if (parts.isEmpty()) {
+        if (planes.isEmpty()) {
             return;
         }
         double energySum = 0;
         double powerSum = 0;
         double daySum = 0;
-        for (Iterator<ForecastSolarPlaneHandler> iterator = parts.iterator(); iterator.hasNext();) {
+        for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
             ForecastSolarPlaneHandler sfph = iterator.next();
             ForecastSolarObject fo = sfph.fetchData();
             ZonedDateTime now = ZonedDateTime.now(fo.getZone());
@@ -111,7 +111,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     }
 
     synchronized void addPlane(ForecastSolarPlaneHandler sfph) {
-        parts.add(sfph);
+        planes.add(sfph);
         // update passive PV plane with necessary data
         if (configuration.isPresent()) {
             sfph.setLocation(new PointType(configuration.get().location));
@@ -123,13 +123,13 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     }
 
     synchronized void removePlane(ForecastSolarPlaneHandler sfph) {
-        parts.remove(sfph);
+        planes.remove(sfph);
     }
 
     @Override
     public synchronized List<SolarForecast> getSolarForecasts() {
         List<SolarForecast> l = new ArrayList<SolarForecast>();
-        parts.forEach(entry -> {
+        planes.forEach(entry -> {
             l.addAll(entry.getSolarForecasts());
         });
         return l;

@@ -28,13 +28,15 @@ public class SolarForecastBindingConstants {
 
     private static final String BINDING_ID = "solarforecast";
 
-    public static final ThingTypeUID FORECAST_SOLAR_MULTI_STRING = new ThingTypeUID(BINDING_ID, "fs-site");
-    public static final ThingTypeUID FORECAST_SOLAR_PART_STRING = new ThingTypeUID(BINDING_ID, "fs-plane");
-    public static final ThingTypeUID SOLCAST_BRIDGE_STRING = new ThingTypeUID(BINDING_ID, "sc-site");
-    public static final ThingTypeUID SOLCAST_PART_STRING = new ThingTypeUID(BINDING_ID, "sc-plane");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(FORECAST_SOLAR_MULTI_STRING,
-            FORECAST_SOLAR_PART_STRING, SOLCAST_BRIDGE_STRING, SOLCAST_PART_STRING);
+    // Things
+    public static final ThingTypeUID FORECAST_SOLAR_SITE = new ThingTypeUID(BINDING_ID, "fs-site");
+    public static final ThingTypeUID FORECAST_SOLAR_PLANE = new ThingTypeUID(BINDING_ID, "fs-plane");
+    public static final ThingTypeUID SOLCAST_SITGE = new ThingTypeUID(BINDING_ID, "sc-site");
+    public static final ThingTypeUID SOLCAST_PLANE = new ThingTypeUID(BINDING_ID, "sc-plane");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(FORECAST_SOLAR_SITE,
+            FORECAST_SOLAR_PLANE, SOLCAST_SITGE, SOLCAST_PLANE);
 
+    // Channels
     public static final String CHANNEL_POWER_ACTUAL = "power-actual";
     public static final String CHANNEL_POWER_ESTIMATE = "power-estimate";
     public static final String CHANNEL_POWER_ESTIMATE10 = "power-estimate10";
@@ -46,8 +48,9 @@ public class SolarForecastBindingConstants {
     public static final String CHANNEL_ENERGY_ESTIMATE10 = "energy-estimate10";
     public static final String CHANNEL_ENERGY_ESTIMATE90 = "energy-estimate90";
     public static final String CHANNEL_RAW = "raw";
-    public static final int REFRESH_ACTUAL_INTERVAL = 1;
 
+    // Other
+    public static final int REFRESH_ACTUAL_INTERVAL = 1;
     public static final String SLASH = "/";
     public static final String EMPTY = "";
 }
