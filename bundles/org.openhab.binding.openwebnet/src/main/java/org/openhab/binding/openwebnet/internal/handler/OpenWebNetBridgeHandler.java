@@ -706,8 +706,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return;
         }
 
-        // LIGHTING multiple messages
-        if (msg instanceof Lighting lmsg) {
+        // LIGHTING multiple messages for BUS
+        if (msg instanceof Lighting lmsg && isBusGateway) {
             WhereLightAutom w = (WhereLightAutom) lmsg.getWhere();
             if (w.isGeneral() || w.isArea()) {
                 LightAutomHandlersMap lm = lightsMap;
