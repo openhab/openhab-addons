@@ -31,6 +31,8 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentSettings;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
@@ -94,6 +96,7 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_LIGHTCH = CHANNEL_GROUP_LIGHT_CHANNEL;
     private static final String CHGR_STATUS = CHANNEL_GROUP_STATUS;
     private static final String CHGR_METER = CHANNEL_GROUP_METER;
+    private static final String CHGR_EMN = CHANNEL_GROUP_NMETER;
     private static final String CHGR_SENSOR = CHANNEL_GROUP_SENSOR;
     private static final String CHGR_CONTROL = CHANNEL_GROUP_CONTROL;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
@@ -202,6 +205,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_CURRENT, "meterCurrent", ITEMT_AMP))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_PFACTOR, "meterPowerFactor", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
+
+                // 3EM: neutral current (emeter_n)
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_CURRENT, "system:electric-current", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_IXSUM, "system:electric-current", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_MTRESHHOLD, "system:electric-current", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_MISMATCH, "ncurrentMismatch", ITEMT_SWITCH))
 
                 // Sensors
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TEMP, "sensorTemp", ITEMT_TEMP))
@@ -488,6 +497,18 @@ public class ShellyChannelDefinitions {
         if (handler != null) {
             addChannel(thing, newChannels, handler.getProfile().isEM50, group, CHANNEL_DEVST_RESETTOTAL); // 3EM
         }
+        return newChannels;
+    }
+
+    public static Map<String, Channel> createEMNCurrentChannels(final Thing thing, ShellyEMNCurrentSettings settings,
+            ShellyEMNCurrentStatus status) {
+        String group = CHANNEL_GROUP_NMETER;
+        Map<String, Channel> newChannels = new LinkedHashMap<>();
+        ShellyThingInterface handler = (ShellyThingInterface) thing.getHandler();
+        addChannel(thing, newChannels, status.current != null, group, CHANNEL_NMETER_CURRENT);
+        addChannel(thing, newChannels, status.ixsum != null, group, CHANNEL_NMETER_IXSUM);
+        addChannel(thing, newChannels, status.mismatch != null, group, CHANNEL_NMETER_MISMATCH);
+        addChannel(thing, newChannels, settings.mismatchThreshold != null, group, CHANNEL_NMETER_MTRESHHOLD);
         return newChannels;
     }
 

@@ -77,6 +77,7 @@
 			<channel-group id="meter3" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter3.label</label>
 			</channel-group>
+			<channel-group id="nmeter" typeId="nmeter"/>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -326,6 +327,11 @@
 	<channel-group-type id="meter">
 		<label>@text/channel-group-type.shelly.meter.label</label>
 		<description>@text/channel-group-type.shelly.meter.description</description>
+	</channel-group-type>
+
+	<channel-group-type id="nmeter">
+		<label>@text/channel-group-type.shelly.nmeter.label</label>
+		<description>@text/channel-group-type.shelly.nmeter.description</description>
 	</channel-group-type>
 
 	<channel-group-type id="externalSensors">
@@ -602,6 +608,12 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.meterResetTotals.label</label>
 		<description>@text/channel-type.shelly.meterResetTotals.description</description>
+	</channel-type>
+
+	<channel-type id="ncurrentMismatch">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.ncurrentMismatch.label</label>
+		<description>@text/channel-type.shelly.ncurrentMismatch.description</description>
 	</channel-type>
 
 	<channel-type id="timestamp">

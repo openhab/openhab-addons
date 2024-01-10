@@ -362,6 +362,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             if (!valid) {
                 logger.debug("{}: WARNING: Incompatible device description detected for CoIoT version {}!", thingName,
                         coiot.getVersion());
+                return;
             }
 
             coiot.completeMissingSensorDefinition(sensorMap); // fix incomplete format
