@@ -59,10 +59,27 @@ public class NetworkUtils {
      */
     private static final long NANOS_PER_MILLI = 1000_000L;
 
+    /**
+     * Converts a {@link Duration} to milliseconds.
+     * <p>
+     * The result has a greater than millisecond precision compared to {@link Duration#toMillis()} which drops excess
+     * precision information.
+     *
+     * @param duration the {@link Duration} to be converted
+     * @return the equivalent milliseconds of the given {@link Duration}
+     */
     public static double durationToMillis(Duration duration) {
         return (double) duration.toNanos() / NANOS_PER_MILLI;
     }
 
+    /**
+     * Converts a double representing milliseconds to a {@link Duration} instance.
+     * <p>
+     * The result has a greater than millisecond precision compared to {@link Duration#ofMillis(long)}.
+     *
+     * @param millis the milliseconds to be converted
+     * @return a {@link Duration} instance representing the given milliseconds
+     */
     public static Duration millisToDuration(double millis) {
         return Duration.ofNanos((long) (millis * NANOS_PER_MILLI));
     }

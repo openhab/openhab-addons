@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DHCPListenService {
     static @Nullable DHCPPacketListenerServer instance;
-    private static Map<String, IPRequestReceivedCallback> registeredListeners = new TreeMap<>();
+    private static final Map<String, IPRequestReceivedCallback> registeredListeners = new TreeMap<>();
     private static Logger logger = LoggerFactory.getLogger(DHCPListenService.class);
 
     public static synchronized DHCPPacketListenerServer register(String hostAddress,

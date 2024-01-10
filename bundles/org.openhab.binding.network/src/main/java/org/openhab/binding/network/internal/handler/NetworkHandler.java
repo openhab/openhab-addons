@@ -35,7 +35,6 @@ import org.openhab.binding.network.internal.PresenceDetectionValue;
 import org.openhab.binding.network.internal.WakeOnLanPacketSender;
 import org.openhab.binding.network.internal.action.NetworkActions;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -97,11 +96,9 @@ public class NetworkHandler extends BaseThingHandler
                 presenceDetection.getValue(value -> updateState(CHANNEL_ONLINE, OnOffType.from(value.isReachable())));
                 break;
             case CHANNEL_LATENCY:
-            case CHANNEL_DEPRECATED_TIME:
                 presenceDetection.getValue(value -> {
                     double latencyMs = durationToMillis(value.getLowestLatency());
                     updateState(CHANNEL_LATENCY, new QuantityType<>(latencyMs, MetricPrefix.MILLI(Units.SECOND)));
-                    updateState(CHANNEL_DEPRECATED_TIME, new DecimalType(latencyMs));
                 });
                 break;
             case CHANNEL_LASTSEEN:
@@ -133,7 +130,6 @@ public class NetworkHandler extends BaseThingHandler
         double latencyMs = durationToMillis(value.getLowestLatency());
         updateState(CHANNEL_ONLINE, OnOffType.ON);
         updateState(CHANNEL_LATENCY, new QuantityType<>(latencyMs, MetricPrefix.MILLI(Units.SECOND)));
-        updateState(CHANNEL_DEPRECATED_TIME, new DecimalType(latencyMs));
     }
 
     @Override
@@ -142,10 +138,9 @@ public class NetworkHandler extends BaseThingHandler
         // the user configured retries to be > 1.
         retryCounter = value.isReachable() ? 0 : retryCounter + 1;
 
-        if (retryCounter >= this.retries) {
+        if (retryCounter >= retries) {
             updateState(CHANNEL_ONLINE, OnOffType.OFF);
             updateState(CHANNEL_LATENCY, UnDefType.UNDEF);
-            updateState(CHANNEL_DEPRECATED_TIME, UnDefType.UNDEF);
             retryCounter = 0;
         }
 
@@ -153,6 +148,8 @@ public class NetworkHandler extends BaseThingHandler
         if (value.isReachable() && lastSeen != null) {
             updateState(CHANNEL_LASTSEEN, new DateTimeType(
                     ZonedDateTime.ofInstant(lastSeen, TimeZone.getDefault().toZoneId()).withFixedOffsetZone()));
+        } else if (!value.isReachable() && lastSeen == null) {
+            updateState(CHANNEL_LASTSEEN, UnDefType.UNDEF);
         }
 
         updateNetworkProperties();

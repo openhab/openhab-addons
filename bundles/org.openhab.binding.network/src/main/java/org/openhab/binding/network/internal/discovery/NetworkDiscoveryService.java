@@ -229,8 +229,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     public void newPingDevice(String ip) {
         logger.trace("Found pingable network device with IP address {}", ip);
 
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(PARAMETER_HOSTNAME, ip);
+        Map<String, Object> properties = Map.of(PARAMETER_HOSTNAME, ip);
         thingDiscovered(DiscoveryResultBuilder.create(createPingUID(ip)).withTTL(DISCOVERY_RESULT_TTL)
                 .withProperties(properties).withLabel("Network Device (" + ip + ")").build());
     }

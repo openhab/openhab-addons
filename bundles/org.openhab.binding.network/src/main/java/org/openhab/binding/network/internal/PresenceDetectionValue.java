@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PresenceDetectionValue {
 
-    public static final Duration UNREACHABLE = Duration.ofMillis(1).negated();
+    public static final Duration UNREACHABLE = Duration.ofMillis(-1);
 
     private final String hostAddress;
     private Duration latency;
@@ -118,7 +118,7 @@ public class PresenceDetectionValue {
     }
 
     /**
-     * Return a string of comma separated successful presence detection types.
+     * Return a string of comma-separated successful presence detection types.
      */
     public String getSuccessfulDetectionTypes() {
         return reachableDetectionTypes.stream().map(PresenceDetectionType::name).collect(Collectors.joining(", "));
