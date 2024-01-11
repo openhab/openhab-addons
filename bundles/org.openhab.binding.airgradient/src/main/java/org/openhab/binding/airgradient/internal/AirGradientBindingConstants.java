@@ -49,4 +49,7 @@ public class AirGradientBindingConstants {
     // URLs for API
     public static final String PING_PATH = "/public/api/v1/ping";
     public static final String CURRENT_MEASURES_PATH = "/public/api/v1/locations/measures/current?token=%s";
+
+    // Discovery
+    public static final int SEARCH_TIME = 15;
 }

@@ -16,10 +16,12 @@ import static org.openhab.binding.airgradient.internal.AirGradientBindingConstan
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfiguration;
+import org.openhab.binding.airgradient.internal.discovery.AirGradientLocationDiscoveryService;
 import org.openhab.binding.airgradient.internal.model.Measure;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -38,6 +41,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -212,5 +216,13 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     private AirGradientAPIConfiguration getConfiguration() {
         return getConfigAs(AirGradientAPIConfiguration.class);
+    }
+
+    // Discovery
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        logger.debug("Getting supported services");
+        return Set.of(AirGradientLocationDiscoveryService.class);
     }
 }
