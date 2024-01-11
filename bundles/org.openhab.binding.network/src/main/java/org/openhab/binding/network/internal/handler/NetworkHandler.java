@@ -184,11 +184,7 @@ public class NetworkHandler extends BaseThingHandler
             }
             presenceDetection.setServicePorts(Set.of(port));
         } else {
-            // It does not harm to send an additional UDP packet to a device,
-            // therefore we assume all ping devices are iOS devices. If this
-            // does not work for all users for some obscure reason, we can make
-            // this a thing configuration variable.
-            presenceDetection.setIOSDevice(true);
+            presenceDetection.setIOSDevice(handlerConfiguration.assumeiOsDevice);
             // Hand over binding configurations to the network service
             presenceDetection.setUseDhcpSniffing(configuration.allowDHCPlisten);
             presenceDetection.setUseIcmpPing(configuration.allowSystemPings);

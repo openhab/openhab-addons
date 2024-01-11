@@ -62,6 +62,15 @@
 					reduces the load when arping and Wake-on-LAN are used. All interfaces are used when left empty.</description>
 				<advanced>true</advanced>
 			</parameter>
+
+			<parameter name="assumeiOsDevice" type="boolean" required="true">
+				<label>Assume iOs Device</label>
+				<default>true</default>
+				<description>Set to true if the device presence detection should be performed for an iOS device like iPhone or
+					iPads. An additional port knock is performed before a ping.</description>
+				<advanced>true</advanced>
+			</parameter>
+
 		</config-description>
 	</thing-type>
 
