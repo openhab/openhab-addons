@@ -27,8 +27,6 @@ import org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVConfigur
 import org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.shieldtv.ShieldTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.shieldtv.ShieldTVConnectionManager;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.DiscoveryServiceRegistry;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -71,19 +69,16 @@ public class AndroidTVHandler extends BaseThingHandler {
     private String currentThingStatus = "";
     private boolean currentThingFailed = false;
 
-    private DiscoveryServiceRegistry discoveryServiceRegistry;
-
     private AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider;
 
     public AndroidTVHandler(Thing thing, AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
-            AndroidTVTranslationProvider translationProvider, DiscoveryServiceRegistry discoveryServiceRegistry,
+            AndroidTVTranslationProvider translationProvider,
             AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider, ThingTypeUID thingTypeUID) {
         super(thing);
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.translationProvider = translationProvider;
         this.thingTypeUID = thingTypeUID;
         this.thingID = this.getThing().getUID().getId();
-        this.discoveryServiceRegistry = discoveryServiceRegistry;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -97,14 +92,6 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     public String getThingID() {
         return this.thingID;
-    }
-
-    public Configuration getThingConfig() {
-        return getConfig();
-    }
-
-    public DiscoveryServiceRegistry getDiscoveryServiceRegistry() {
-        return discoveryServiceRegistry;
     }
 
     public AndroidTVDynamicStateDescriptionProvider getStateDescriptionProvider() {
