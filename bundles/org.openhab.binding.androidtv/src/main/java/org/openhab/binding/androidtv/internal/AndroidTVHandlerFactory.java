@@ -44,16 +44,13 @@ public class AndroidTVHandlerFactory extends BaseThingHandlerFactory {
 
     private final AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider;
     private final AndroidTVTranslationProvider translationProvider;
-    private final AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
     public AndroidTVHandlerFactory(
             final @Reference AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
-            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
-            final @Reference AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider) {
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.translationProvider = new AndroidTVTranslationProvider(i18nProvider, localeProvider);
-        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -64,7 +61,6 @@ public class AndroidTVHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        return new AndroidTVHandler(thing, commandDescriptionProvider, translationProvider, stateDescriptionProvider,
-                thingTypeUID);
+        return new AndroidTVHandler(thing, commandDescriptionProvider, translationProvider, thingTypeUID);
     }
 }

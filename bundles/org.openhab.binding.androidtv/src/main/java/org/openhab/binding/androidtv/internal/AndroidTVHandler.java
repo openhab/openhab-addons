@@ -33,7 +33,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
@@ -69,17 +68,13 @@ public class AndroidTVHandler extends BaseThingHandler {
     private String currentThingStatus = "";
     private boolean currentThingFailed = false;
 
-    private AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider;
-
     public AndroidTVHandler(Thing thing, AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
-            AndroidTVTranslationProvider translationProvider,
-            AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider, ThingTypeUID thingTypeUID) {
+            AndroidTVTranslationProvider translationProvider, ThingTypeUID thingTypeUID) {
         super(thing);
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.translationProvider = translationProvider;
         this.thingTypeUID = thingTypeUID;
         this.thingID = this.getThing().getUID().getId();
-        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     public void setThingProperty(String property, String value) {
@@ -92,14 +87,6 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     public String getThingID() {
         return this.thingID;
-    }
-
-    public AndroidTVDynamicStateDescriptionProvider getStateDescriptionProvider() {
-        return stateDescriptionProvider;
-    }
-
-    public ThingUID getThingUID() {
-        return getThing().getUID();
     }
 
     public void updateChannelState(String channel, State state) {
