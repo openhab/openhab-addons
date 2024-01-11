@@ -79,7 +79,7 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 final String id = uid.getId();
                 final String label = service.getName() + " (" + id + ")";
                 return DiscoveryResultBuilder.create(uid).withLabel(label)
-                        .withRepresentationProperty(PROPERTY_IP_ADDRESS).withProperty(PROPERTY_IP_ADDRESS, ipAddress)
+                        .withRepresentationProperty(PARAMETER_IP_ADDRESS).withProperty(PARAMETER_IP_ADDRESS, ipAddress)
                         .build();
             } else {
                 return null;

@@ -49,10 +49,10 @@ public class AndroidTVBindingConstants {
     public static final String CHANNEL_PLAYER = "player";
 
     // List of all config properties
-    public static final String PROPERTY_IP_ADDRESS = "ipAddress";
-    public static final String PROPERTY_GOOGLETVPORT = "googletvPort";
-    public static final String PROPERTY_SHIELDTVPORT = "shieldtvPort";
-    public static final String PROPERTY_GTV_ENABLED = "gtvEnabled";
+    public static final String PARAMETER_IP_ADDRESS = "ipAddress";
+    public static final String PARAMETER_GOOGLETVPORT = "googletvPort";
+    public static final String PARAMETER_SHIELDTVPORT = "shieldtvPort";
+    public static final String PARAMETER_GTV_ENABLED = "gtvEnabled";
 
     // List of all static String literals
     public static final String PIN_REQUEST = "REQUEST";

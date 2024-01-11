@@ -47,11 +47,13 @@
 				<label>GoogleTV Port</label>
 				<description>Port to connect to</description>
 				<default>6466</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="shieldtvPort" type="integer">
 				<label>ShieldTV Port</label>
 				<description>Port to connect to</description>
 				<default>8987</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="keystoreFileName" type="text">
 				<label>Keystore File Name</label>
@@ -124,6 +126,7 @@
 				<label>GoogleTV Port</label>
 				<description>Port to connect to</description>
 				<default>6466</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="keystoreFileName" type="text">
 				<label>Keystore File Name</label>
