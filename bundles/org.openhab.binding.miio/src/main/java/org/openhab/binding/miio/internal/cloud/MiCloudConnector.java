@@ -149,7 +149,7 @@ public class MiCloudConnector {
 
     public String getMapUrl(String vacuumMap, String country) throws MiCloudException {
         String url = getApiUrl(country) + "/home/getmapfileurl";
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("data", "{\"obj_name\":\"" + vacuumMap + "\"}");
         String mapResponse = request(url, map);
         logger.trace("Response: {}", mapResponse);
@@ -266,7 +266,7 @@ public class MiCloudConnector {
     }
 
     public String request(String urlPart, String country, String params) throws MiCloudException {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("data", params);
         return request(urlPart, country, map);
     }

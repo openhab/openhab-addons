@@ -31,7 +31,7 @@ public class InputList {
     @SerializedName("STATUS")
     private Status status;
     @SerializedName("HASHLIST")
-    private List<Long> hashlist = new ArrayList<Long>();
+    private List<Long> hashlist = new ArrayList<>();
     @SerializedName("GROUP")
     private String group;
     @SerializedName("NAME")
@@ -39,7 +39,7 @@ public class InputList {
     @SerializedName("PARAMETERS")
     private Parameters parameters;
     @SerializedName("ITEMS")
-    private List<Item> items = new ArrayList<Item>();
+    private List<Item> items = new ArrayList<>();
     @SerializedName("URI")
     private String uri;
     @SerializedName("CNAME")

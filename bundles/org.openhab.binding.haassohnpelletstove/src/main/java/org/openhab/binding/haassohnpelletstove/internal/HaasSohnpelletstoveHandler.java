@@ -61,7 +61,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
 
     private boolean automaticRefreshing = false;
 
-    private Map<String, Boolean> linkedChannels = new HashMap<String, Boolean>();
+    private Map<String, Boolean> linkedChannels = new HashMap<>();
 
     public HaasSohnpelletstoveHandler(Thing thing) {
         super(thing);
@@ -251,7 +251,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             if (data != null) {
                 switch (channelId) {
                     case CHANNELISTEMP:
-                        state = new QuantityType<Temperature>(Double.valueOf(data.getisTemp()), SIUnits.CELSIUS);
+                        state = new QuantityType<>(Double.valueOf(data.getisTemp()), SIUnits.CELSIUS);
                         update(state, channelId);
                         break;
                     case CHANNELMODE:
@@ -265,7 +265,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
                         update(OnOffType.from(data.getEcoMode()), channelId);
                         break;
                     case CHANNELSPTEMP:
-                        state = new QuantityType<Temperature>(Double.valueOf(data.getspTemp()), SIUnits.CELSIUS);
+                        state = new QuantityType<>(Double.valueOf(data.getspTemp()), SIUnits.CELSIUS);
                         update(state, channelId);
                         break;
                     case CHANNELCLEANINGIN:

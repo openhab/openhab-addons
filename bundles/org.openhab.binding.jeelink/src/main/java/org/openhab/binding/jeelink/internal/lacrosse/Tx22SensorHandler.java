@@ -48,7 +48,7 @@ public class Tx22SensorHandler extends JeeLinkSensorHandler<Tx22Reading> {
 
     @Override
     public ReadingPublisher<Tx22Reading> createPublisher() {
-        return new ReadingPublisher<Tx22Reading>() {
+        return new ReadingPublisher<>() {
             @Override
             public void publish(Tx22Reading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {

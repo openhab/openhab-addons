@@ -72,7 +72,7 @@ public class SncfDiscoveryService extends AbstractThingHandlerDiscoveryService<S
                 if (places != null && !places.isEmpty()) {
                     places.forEach(place -> {
                         // stop_point:SNCF:87386573:Bus
-                        List<String> idElts = new LinkedList<String>(Arrays.asList(place.id.split(":")));
+                        List<String> idElts = new LinkedList<>(Arrays.asList(place.id.split(":")));
                         idElts.remove(0);
                         idElts.remove(0);
                         thingDiscovered(DiscoveryResultBuilder

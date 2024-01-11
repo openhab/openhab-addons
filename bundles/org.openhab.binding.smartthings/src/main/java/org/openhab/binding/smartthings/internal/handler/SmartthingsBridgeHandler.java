@@ -106,7 +106,7 @@ public class SmartthingsBridgeHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
-        Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<ConfigStatusMessage>();
+        Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<>();
 
         // The IP must be provided
         String ip = config.smartthingsIp;

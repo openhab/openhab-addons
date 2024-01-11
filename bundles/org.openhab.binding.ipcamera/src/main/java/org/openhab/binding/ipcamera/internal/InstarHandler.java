@@ -381,7 +381,7 @@ public class InstarHandler extends ChannelDuplexHandler {
     // If a camera does not need to poll a request as often as snapshots, it can be
     // added here. Binding steps through the list.
     public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<String>(7);
+        ArrayList<String> lowPriorityRequests = new ArrayList<>(7);
         lowPriorityRequests.add("/param.cgi?cmd=getaudioalarmattr");
         lowPriorityRequests.add("/cgi-bin/hi3510/param.cgi?cmd=getmdattr");
         if (ipCameraHandler.newInstarApi) {// old API cameras get a error 404 response to this

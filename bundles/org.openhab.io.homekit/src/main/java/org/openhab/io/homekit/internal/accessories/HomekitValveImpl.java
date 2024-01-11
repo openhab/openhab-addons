@@ -59,7 +59,7 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     public static final String CONFIG_DEFAULT_DURATION = "homekitDefaultDuration";
     private static final String CONFIG_TIMER = "homekitTimer";
 
-    private static final Map<String, ValveTypeEnum> CONFIG_VALVE_TYPE_MAPPING = new HashMap<String, ValveTypeEnum>() {
+    private static final Map<String, ValveTypeEnum> CONFIG_VALVE_TYPE_MAPPING = new HashMap<>() {
         {
             put("GENERIC", ValveTypeEnum.GENERIC);
             put("IRRIGATION", ValveTypeEnum.IRRIGATION);

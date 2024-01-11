@@ -86,7 +86,7 @@ public class FlicButtonHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDiscoveryService(FlicButtonDiscoveryService discoveryService,
             ThingUID bridgeUID) {
         this.discoveryServiceRegs.put(bridgeUID, getBundleContext().registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<String, Object>()));
+                discoveryService, new Hashtable<>()));
     }
 
     private synchronized void unregisterDiscoveryService(ThingUID bridgeUID) {

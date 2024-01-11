@@ -43,7 +43,7 @@ public class ActionTest extends AbstractTest {
     @SuppressWarnings("serial")
     public void testSerialize() throws Exception {
         // @formatter:off
-        Action action = new Action().withParameters(new TreeMap<String, Parameter>(){{put("enabled", new BooleanParameter());
+        Action action = new Action().withParameters(new TreeMap<>(){{put("enabled", new BooleanParameter());
                                                                                       put("time", new StringParameter());}});
         // @formatter:on
         assertEquals(readJson("action.json"), gson.toJson(action));
