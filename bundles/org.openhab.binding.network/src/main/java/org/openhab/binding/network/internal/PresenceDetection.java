@@ -351,13 +351,13 @@ public class PresenceDetection implements IPRequestReceivedCallback {
             completableFutures.add(CompletableFuture.runAsync(() -> {
                 Thread.currentThread().setName("presenceDetectionARP_" + hostname + " ");
                 // arp-ping.exe tool capable of handling multiple interfaces by itself
-                performARPping(pdv, "");
+                performArpPing(pdv, "");
             }, detectionExecutorService));
         } else if (interfaceNames != null) {
             for (final String interfaceName : interfaceNames) {
                 completableFutures.add(CompletableFuture.runAsync(() -> {
                     Thread.currentThread().setName("presenceDetectionARP_" + hostname + " " + interfaceName);
-                    performARPping(pdv, interfaceName);
+                    performArpPing(pdv, interfaceName);
                 }, detectionExecutorService));
             }
         }
@@ -461,7 +461,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
      * @param interfaceName the interface name. You can request a list of interface names
      *            from {@link NetworkUtils#getInterfaceNames()} for example.
      */
-    protected void performARPping(PresenceDetectionValue pdv, String interfaceName) {
+    protected void performArpPing(PresenceDetectionValue pdv, String interfaceName) {
         logger.trace("Perform ARP ping presence detection for {} on interface: {}", hostname, interfaceName);
 
         withDestinationAddress(destinationAddress -> {
@@ -471,7 +471,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                     Thread.sleep(50);
                 }
 
-                PingResult pingResult = networkUtils.nativeARPPing(arpPingMethod, arpPingUtilPath, interfaceName,
+                PingResult pingResult = networkUtils.nativeArpPing(arpPingMethod, arpPingUtilPath, interfaceName,
                         destinationAddress.getHostAddress(), timeout);
                 if (pingResult != null) {
                     if (pingResult.isSuccess()) {

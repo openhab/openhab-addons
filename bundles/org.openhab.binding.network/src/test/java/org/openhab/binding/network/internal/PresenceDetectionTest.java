@@ -61,7 +61,7 @@ public class PresenceDetectionTest {
     public void setUp() {
         // Mock an interface
         when(networkUtils.getInterfaceNames()).thenReturn(Set.of("TESTinterface"));
-        doReturn(ArpPingUtilEnum.IPUTILS_ARPING).when(networkUtils).determineNativeARPpingMethod(anyString());
+        doReturn(ArpPingUtilEnum.IPUTILS_ARPING).when(networkUtils).determineNativeArpPingMethod(anyString());
         doReturn(IpPingMethodEnum.WINDOWS_PING).when(networkUtils).determinePingMethod();
 
         subject = spy(new PresenceDetection(listener, scheduledExecutorService, Duration.ofSeconds(2)));
@@ -85,7 +85,7 @@ public class PresenceDetectionTest {
     public void threadCountTest() {
         assertNull(subject.detectionExecutorService);
 
-        doNothing().when(subject).performARPping(any(), any());
+        doNothing().when(subject).performArpPing(any(), any());
         doNothing().when(subject).performJavaPing(any());
         doNothing().when(subject).performSystemPing(any());
         doNothing().when(subject).performServicePing(any(), anyInt());
@@ -110,7 +110,7 @@ public class PresenceDetectionTest {
     public void partialAndFinalCallbackTests() throws InterruptedException, IOException {
         PingResult pingResult = new PingResult(true, Duration.ofMillis(10));
         doReturn(pingResult).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING), anyString(), any());
-        doReturn(pingResult).when(networkUtils).nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(),
+        doReturn(pingResult).when(networkUtils).nativeArpPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(),
                 anyString(), any(), any());
         doReturn(pingResult).when(networkUtils).servicePing(anyString(), anyInt(), any());
 
@@ -136,7 +136,7 @@ public class PresenceDetectionTest {
 
         verify(subject, times(0)).performJavaPing(any());
         verify(subject).performSystemPing(any());
-        verify(subject).performARPping(any(), any());
+        verify(subject).performArpPing(any(), any());
         verify(subject).performServicePing(any(), anyInt());
 
         verify(listener, times(3)).partialDetectionResult(any());
@@ -150,7 +150,7 @@ public class PresenceDetectionTest {
     public void cacheTest() throws InterruptedException, IOException {
         PingResult pingResult = new PingResult(true, Duration.ofMillis(10));
         doReturn(pingResult).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING), anyString(), any());
-        doReturn(pingResult).when(networkUtils).nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(),
+        doReturn(pingResult).when(networkUtils).nativeArpPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(),
                 anyString(), any(), any());
         doReturn(pingResult).when(networkUtils).servicePing(anyString(), anyInt(), any());
 

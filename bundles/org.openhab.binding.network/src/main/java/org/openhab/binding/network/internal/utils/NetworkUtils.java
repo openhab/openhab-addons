@@ -264,9 +264,11 @@ public class NetworkUtils {
     /**
      * Return true if the external ARP ping utility (arping) is available and executable on the given path.
      */
-    public ArpPingUtilEnum determineNativeARPpingMethod(String arpToolPath) {
+    public ArpPingUtilEnum determineNativeArpPingMethod(String arpToolPath) {
         String result = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofMillis(100), arpToolPath, "--help");
         if (result == null || result.isBlank()) {
+            logger.trace("The command did not return a response due to an error or timeout");
+            return ArpPingUtilEnum.DISABLED_UNKNOWN_TOOL;
         } else if (result.contains("Thomas Habets")) {
             if (result.matches("(?s)(.*)w sec Specify a timeout(.*)")) {
                 return ArpPingUtilEnum.THOMAS_HABERT_ARPING;
@@ -277,8 +279,10 @@ public class NetworkUtils {
             return ArpPingUtilEnum.IPUTILS_ARPING;
         } else if (result.contains("Usage: arp-ping.exe")) {
             return ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS;
+        } else {
+            logger.trace("The command output did not match any known output");
+            return ArpPingUtilEnum.DISABLED_UNKNOWN_TOOL;
         }
-        return ArpPingUtilEnum.DISABLED_UNKNOWN_TOOL;
     }
 
     public enum IpPingMethodEnum {
@@ -389,7 +393,7 @@ public class NetworkUtils {
      * @return Ping result information. <code>null</code> if ping command was not executed.
      * @throws IOException The ping command could probably not be found
      */
-    public @Nullable PingResult nativeARPPing(@Nullable ArpPingUtilEnum arpingTool, @Nullable String arpUtilPath,
+    public @Nullable PingResult nativeArpPing(@Nullable ArpPingUtilEnum arpingTool, @Nullable String arpUtilPath,
             String interfaceName, String ipV4address, Duration timeout) throws IOException, InterruptedException {
         if (arpUtilPath == null || arpingTool == null || !arpingTool.canProceed) {
             return null;
