@@ -120,25 +120,33 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     private void refreshCloudDevices() {
         logger.debug("Refreshing devices from CloudBridgeHandler");
 
-        if (!(thing instanceof Bridge bridge)) {
-            logger.debug("No bridge, refresh cancelled");
-            return;
-        }
-        var things = bridge.getThings();
-        for (var thing : things) {
-            if (!thing.isEnabled()) {
-                logger.debug("Thing {} is disabled, refresh cancelled", thing.getUID());
-                continue;
+        try {
+            if (!(thing instanceof Bridge bridge)) {
+                logger.debug("No bridge, refresh cancelled");
+                return;
             }
-            var handler = thing.getHandler();
-            if (handler == null) {
-                logger.debug("No handler for thing {} refresh cancelled", thing.getUID());
-                continue;
+            var things = bridge.getThings();
+            for (var thing : things) {
+                try {
+                    if (!thing.isEnabled()) {
+                        logger.debug("Thing {} is disabled, refresh cancelled", thing.getUID());
+                        continue;
+                    }
+                    var handler = thing.getHandler();
+                    if (handler == null) {
+                        logger.debug("No handler for thing {} refresh cancelled", thing.getUID());
+                        continue;
+                    }
+                    var channels = thing.getChannels();
+                    for (var channel : channels) {
+                        handler.handleCommand(channel.getUID(), REFRESH);
+                    }
+                } catch (Exception ex) {
+                    logger.error("Cannot refresh thing {} from CloudBridgeHandler", thing.getUID(), ex);
+                }
             }
-            var channels = thing.getChannels();
-            for (var channel : channels) {
-                handler.handleCommand(channel.getUID(), REFRESH);
-            }
+        } catch (Exception ex) {
+            logger.error("Cannot refresh devices from CloudBridgeHandler", ex);
         }
     }
 
