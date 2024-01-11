@@ -143,7 +143,7 @@ public class GsonMapper {
         try {
             return gson.fromJson(body, typeToken);
         } catch (JsonSyntaxException e) {
-            logger.warn("Error when parsing body!\n{}", body);
+            logger.warn("Error when parsing body!\n{}", body, e);
             return defaultValue;
         }
     }
