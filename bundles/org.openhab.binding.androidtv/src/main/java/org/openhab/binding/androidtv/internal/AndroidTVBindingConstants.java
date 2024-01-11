@@ -50,8 +50,8 @@ public class AndroidTVBindingConstants {
 
     // List of all config properties
     public static final String PARAMETER_IP_ADDRESS = "ipAddress";
-    public static final String PARAMETER_GOOGLETVPORT = "googletvPort";
-    public static final String PARAMETER_SHIELDTVPORT = "shieldtvPort";
+    public static final String PARAMETER_GOOGLETV_PORT = "googletvPort";
+    public static final String PARAMETER_SHIELDTV_PORT = "shieldtvPort";
     public static final String PARAMETER_GTV_ENABLED = "gtvEnabled";
 
     // List of all static String literals
