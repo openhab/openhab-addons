@@ -119,9 +119,6 @@ public class PilightGenericHandler extends PilightBaseHandler {
 
                 if (channelType != null) {
                     logger.debug("initializeReadOnly {} {}", channelType, channelType.getState());
-                }
-
-                if (channelType != null) {
                     final @Nullable StateDescription state = channelType.getState();
                     if (state != null) {
                         channelReadOnlyMap.putIfAbsent(channel.getUID(), state.isReadOnly());

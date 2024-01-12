@@ -29,7 +29,7 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
 
     private static final long serialVersionUID = 1L;
 
-    private Map<K, Long> timeMap = new ConcurrentHashMap<K, Long>();
+    private Map<K, Long> timeMap = new ConcurrentHashMap<>();
     private long expiryInMillis = ShellyManagerConstants.CACHE_TIMEOUT_DEF_MIN * 60 * 1000; // Default 1h
 
     public ShellyManagerCache() {

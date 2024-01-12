@@ -526,7 +526,7 @@ public class BondDeviceHandler extends BaseThingHandler {
 
     private void updateDevicePropertiesFromBond(BondDevice devInfo, BondDeviceProperties devProperties) {
         // Update all the thing properties based on the result
-        Map<String, String> thingProperties = new HashMap<String, String>();
+        Map<String, String> thingProperties = new HashMap<>();
         updateProperty(thingProperties, CONFIG_DEVICE_ID, config.deviceId);
         logger.trace("Updating device name to {}", devInfo.name);
         updateProperty(thingProperties, PROPERTIES_DEVICE_NAME, devInfo.name);

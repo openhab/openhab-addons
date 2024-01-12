@@ -45,7 +45,7 @@ public class FoobotDeviceHandlerTest {
             } catch (IOException e) {
                 throw new AssertionError(e.getMessage());
             }
-        };
+        }
     };
     private final FoobotDeviceHandler handler = new FoobotDeviceHandler(thing, connector);
 

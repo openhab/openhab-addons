@@ -252,7 +252,7 @@ public class TelnetSession implements Closeable {
             this.charBuffer.clear();
             this.charBuffer.put(leftover);
 
-            return lines == null ? Collections.<String> emptyList() : Arrays.asList(lines);
+            return lines == null ? Collections.emptyList() : Arrays.asList(lines);
         }
     }
 

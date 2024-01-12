@@ -57,8 +57,7 @@ public class ShellyBluDiscoveryService extends AbstractDiscoveryService {
     @SuppressWarnings("null")
     public void registerDeviceDiscoveryService() {
         if (discoveryService == null) {
-            discoveryService = bundleContext.registerService(DiscoveryService.class.getName(), this,
-                    new Hashtable<String, Object>());
+            discoveryService = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<>());
         }
     }
 

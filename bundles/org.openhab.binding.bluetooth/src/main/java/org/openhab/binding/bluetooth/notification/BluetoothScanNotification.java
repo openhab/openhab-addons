@@ -45,7 +45,7 @@ public class BluetoothScanNotification extends BluetoothNotification {
      * Key: UUID of the service
      * Value: Data of the characteristic
      */
-    private Map<String, byte[]> serviceData = new HashMap<String, byte[]>();
+    private Map<String, byte[]> serviceData = new HashMap<>();
 
     /**
      * The beacon type

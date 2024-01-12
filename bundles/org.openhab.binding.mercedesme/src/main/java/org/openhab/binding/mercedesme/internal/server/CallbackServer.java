@@ -42,8 +42,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CallbackServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(CallbackServer.class);
-    private static final Map<Integer, OAuthClientService> AUTH_MAP = new HashMap<Integer, OAuthClientService>();
-    private static final Map<Integer, CallbackServer> SERVER_MAP = new HashMap<Integer, CallbackServer>();
+    private static final Map<Integer, OAuthClientService> AUTH_MAP = new HashMap<>();
+    private static final Map<Integer, CallbackServer> SERVER_MAP = new HashMap<>();
     private static final AccessTokenResponse INVALID_ACCESS_TOKEN = new AccessTokenResponse();
 
     private final OAuthFactory oAuthFactory;

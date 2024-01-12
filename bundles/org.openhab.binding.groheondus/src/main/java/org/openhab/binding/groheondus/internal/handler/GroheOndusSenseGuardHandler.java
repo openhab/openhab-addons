@@ -131,7 +131,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
     private QuantityType<Volume> sumWaterConsumption(Data dataPoint) {
         Double waterConsumption = dataPoint.getWithdrawals().stream()
                 .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
-        return new QuantityType<Volume>(waterConsumption, Units.LITRE);
+        return new QuantityType<>(waterConsumption, Units.LITRE);
     }
 
     private Measurement getLastMeasurement(Data dataPoint) {

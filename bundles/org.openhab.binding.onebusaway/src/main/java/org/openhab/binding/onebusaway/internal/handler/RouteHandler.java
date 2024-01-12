@@ -226,7 +226,7 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
         scheduleTriggerEvents(channelUID, now, arrivalAndDepartures,
                 (ArrivalAndDeparture data) -> data.predicted ? data.predictedArrivalTime : data.scheduledArrivalTime,
                 EVENT_ARRIVAL);
-        scheduleTriggerEvents(channelUID, now, arrivalAndDepartures, new Function<ArrivalAndDeparture, Long>() {
+        scheduleTriggerEvents(channelUID, now, arrivalAndDepartures, new Function<>() {
             @Override
             public Long apply(ArrivalAndDeparture data) {
                 return data.predicted ? data.predictedDepartureTime : data.scheduledDepartureTime;

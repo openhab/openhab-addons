@@ -14,7 +14,7 @@ Fragment-Host: org.openhab.binding.tradfri
 # done
 #
 -runbundles: \
-	javax.jmdns;version='[3.5.8,3.5.9)',\
+	javax.jmdns;version='[3.5.9,3.5.10)',\
 	org.hamcrest;version='[2.2.0,2.2.1)',\
 	jakarta.xml.bind-api;version='[2.3.3,2.3.4)',\
 	org.apache.servicemix.specs.activation-api-1.2.1;version='[1.2.1,1.2.2)',\
@@ -84,4 +84,5 @@ Fragment-Host: org.openhab.binding.tradfri
 	org.openhab.core.io.transport.mdns;version='[4.2.0,4.2.1)',\
 	org.openhab.core.test;version='[4.2.0,4.2.1)',\
 	org.openhab.core.thing;version='[4.2.0,4.2.1)',\
-	org.openhab.core.transform;version='[4.2.0,4.2.1)'
+	org.openhab.core.transform;version='[4.2.0,4.2.1)',\
+	org.osgi.service.component.annotations;version='[1.5.0,1.5.1)'

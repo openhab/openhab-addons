@@ -190,7 +190,7 @@ public class Generation3DtoTest {
         ThingTypeUID thingTypeUID = new ThingTypeUID("hdpowerview:shade");
         ThingUID thingUID = new ThingUID(thingTypeUID, "test");
 
-        List<Channel> channels = new ArrayList<Channel>();
+        List<Channel> channels = new ArrayList<>();
         for (String channelId : Set.of(CHANNEL_SHADE_POSITION, CHANNEL_SHADE_SECONDARY_POSITION, CHANNEL_SHADE_VANE,
                 CHANNEL_SHADE_BATTERY_LEVEL, CHANNEL_SHADE_LOW_BATTERY, CHANNEL_SHADE_SIGNAL_STRENGTH)) {
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);
@@ -247,7 +247,7 @@ public class Generation3DtoTest {
         ThingTypeUID thingTypeUID = new ThingTypeUID("hdpowerview:shade");
         ThingUID thingUID = new ThingUID(thingTypeUID, "test");
 
-        List<Channel> channels = new ArrayList<Channel>();
+        List<Channel> channels = new ArrayList<>();
         for (String channelId : Set.of(CHANNEL_SHADE_POSITION, CHANNEL_SHADE_SECONDARY_POSITION, CHANNEL_SHADE_VANE,
                 CHANNEL_SHADE_BATTERY_LEVEL, CHANNEL_SHADE_LOW_BATTERY, CHANNEL_SHADE_SIGNAL_STRENGTH)) {
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);

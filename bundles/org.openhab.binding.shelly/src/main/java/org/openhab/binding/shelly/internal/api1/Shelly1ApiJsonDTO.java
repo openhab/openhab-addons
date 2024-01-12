@@ -954,7 +954,7 @@ public class Shelly1ApiJsonDTO {
         public static class ShellySensorBat {
             public Double value; // estimated remaining battery capacity in %
             public Double voltage; // battery voltage
-        };
+        }
 
         // Door/Window sensor
         public static class ShellySensorState {

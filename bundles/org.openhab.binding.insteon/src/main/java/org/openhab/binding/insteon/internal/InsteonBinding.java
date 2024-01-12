@@ -421,7 +421,7 @@ public class InsteonBinding {
 
     private String toGroupString(List<Byte> group) {
         List<Byte> sorted = new ArrayList<>(group);
-        Collections.sort(sorted, new Comparator<Byte>() {
+        Collections.sort(sorted, new Comparator<>() {
             @Override
             public int compare(Byte b1, Byte b2) {
                 int i1 = b1 & 0xFF;
