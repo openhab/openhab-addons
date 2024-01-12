@@ -210,7 +210,6 @@ public class NetworkHandler extends BaseThingHandler
         properties.put(NetworkBindingConstants.PROPERTY_ARP_STATE, presenceDetection.getArpPingState());
         properties.put(NetworkBindingConstants.PROPERTY_ICMP_STATE, presenceDetection.getIPPingState());
         properties.put(NetworkBindingConstants.PROPERTY_PRESENCE_DETECTION_TYPE, "");
-        properties.put(NetworkBindingConstants.PROPERTY_IOS_WAKEUP, presenceDetection.isIOSdevice() ? "Yes" : "No");
         properties.put(NetworkBindingConstants.PROPERTY_DHCP_STATE, presenceDetection.getDhcpState());
         updateProperties(properties);
     }

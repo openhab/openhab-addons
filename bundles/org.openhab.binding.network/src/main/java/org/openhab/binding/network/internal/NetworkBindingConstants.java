@@ -59,7 +59,6 @@ public class NetworkBindingConstants {
     public static final String PROPERTY_ARP_STATE = "arp_state";
     public static final String PROPERTY_ICMP_STATE = "icmp_state";
     public static final String PROPERTY_PRESENCE_DETECTION_TYPE = "presence_detection_type";
-    public static final String PROPERTY_IOS_WAKEUP = "uses_ios_wakeup";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
 

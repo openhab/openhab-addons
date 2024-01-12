@@ -21,7 +21,6 @@
 			<property name="dhcp_state">-</property>
 			<property name="icmp_state">-</property>
 			<property name="presence_detection_type">-</property>
-			<property name="uses_ios_wakeup">-</property>
 		</properties>
 
 		<config-description>
@@ -64,7 +63,7 @@
 			</parameter>
 
 			<parameter name="assumeiOsDevice" type="boolean" required="true">
-				<label>Assume iOs Device</label>
+				<label>Assume iOS Device</label>
 				<default>true</default>
 				<description>Set to true if the device presence detection should be performed for an iOS device like iPhone or
 					iPads. An additional port knock is performed before a ping.</description>
@@ -91,7 +90,6 @@
 			<property name="dhcp_state">-</property>
 			<property name="icmp_state">-</property>
 			<property name="presence_detection_type">-</property>
-			<property name="uses_ios_wakeup">-</property>
 		</properties>
 
 		<config-description>
