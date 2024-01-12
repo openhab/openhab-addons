@@ -1495,6 +1495,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 case "84934721":
                     codec = "DTS51";
                     break;
+                case "118489148":
+                    codec = "TrueHD71";
+                    break;
                 default:
                     codec = "Unknown - " + codec;
             }
