@@ -82,7 +82,7 @@ public class SerialDeviceHandler extends BaseThingHandler {
                 if (bridge != null) {
                     final CommonBridgeHandler handler = (CommonBridgeHandler) bridge.getHandler();
                     if (handler != null) {
-                        channel.mapCommand(command).ifPresent(value -> handler.writeString(value));
+                        channel.mapCommand(command).ifPresent(handler::writeString);
                     }
                 }
             }

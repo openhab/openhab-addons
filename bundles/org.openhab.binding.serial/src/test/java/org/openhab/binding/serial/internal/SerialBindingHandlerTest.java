@@ -21,13 +21,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.HexFormat;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 import org.openhab.binding.serial.internal.handler.SerialBridgeConfiguration;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
@@ -44,42 +44,46 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  *
  * @author Roland Tapken - Initial contribution
  */
-@ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 public class SerialBindingHandlerTest {
 
-    private MockupBridgeHandler handler;
+    private @Nullable MockupBridgeHandler handler;
 
-    private SerialBridgeConfiguration config;
+    private @Nullable SerialBridgeConfiguration config;
 
-    private @Mock ThingHandlerCallback callbackMock;
+    private @Nullable ByteBufferInputStream bin;
 
-    ByteBufferInputStream bin;
+    private @Nullable ByteArrayOutputStream bos;
 
-    ByteArrayOutputStream bos;
+    private final ThingHandlerCallback callbackMock = Mockito.mock(ThingHandlerCallback.class);
 
-    private @Mock Bridge bridgeMock;
+    private final Bridge bridgeMock = Mockito.mock(Bridge.class);
 
-    private @Mock SerialPortIdentifier mockIdentifier;
+    private final SerialPortIdentifier mockIdentifier = Mockito.mock(SerialPortIdentifier.class);
 
-    private @Mock SerialPort mockSerialPort;
+    private final SerialPort mockSerialPort = Mockito.mock(SerialPort.class);
 
     private final SerialPortManager serialPortManager = new SerialPortManager() {
         @Override
-        public @Nullable SerialPortIdentifier getIdentifier(final String name) {
+        public @NonNull SerialPortIdentifier getIdentifier(final String name) {
             assertEquals("/dev/dummy-serial", name, "Expect the passed serial port name");
             return mockIdentifier;
         }
 
         @Override
-        public Stream<SerialPortIdentifier> getIdentifiers() {
-            return Stream.empty();
+        public @NonNull Stream<SerialPortIdentifier> getIdentifiers() {
+            Stream<SerialPortIdentifier> stream = Stream.empty();
+            assertNotNull(stream);
+            return stream;
         }
     };
 
     @BeforeEach
-    public void setUp() throws Throwable {
-        this.config = new SerialBridgeConfiguration();
-        this.config.serialPort = "/dev/dummy-serial";
+    @SuppressWarnings("null")
+    public void setUp() throws PortInUseException, IOException {
+        SerialBridgeConfiguration config = new SerialBridgeConfiguration();
+        config.serialPort = "/dev/dummy-serial";
+        this.config = config;
         this.handler = new MockupBridgeHandler(bridgeMock, serialPortManager, config);
         this.handler.setCallback(callbackMock);
         this.bin = new ByteBufferInputStream();
@@ -89,8 +93,11 @@ public class SerialBindingHandlerTest {
 
     @AfterEach
     public void tearDown() {
-        this.handler.dispose();
+        MockupBridgeHandler handler = this.handler;
         this.handler = null;
+        if (handler != null) {
+            handler.dispose();
+        }
     }
 
     private void resetMock() throws IOException, PortInUseException {
@@ -102,44 +109,60 @@ public class SerialBindingHandlerTest {
     }
 
     @Test
-    public void initializeShouldCallTheCallback() throws Throwable {
+    public void initializeShouldCallTheCallback() throws PortInUseException, IOException {
+        MockupBridgeHandler handler = this.handler;
+        ThingHandlerCallback callbackMock = this.callbackMock;
+        Bridge bridgeMock = this.bridgeMock;
+        SerialBridgeConfiguration config = this.config;
+        assertNotNull(handler);
+        assertNotNull(callbackMock);
+        assertNotNull(bridgeMock);
+        assertNotNull(config);
+
         handler.initialize();
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
         resetMock();
-        this.config.charset = "UTF-8";
+        config.charset = "UTF-8";
         handler.initialize();
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
         resetMock();
-        this.config.charset = "foobar";
+        config.charset = "foobar";
         handler.initialize();
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
         verify(callbackMock).statusUpdated(eq(bridgeMock),
                 argThat(arg -> arg.getStatusDetail().equals(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR)));
 
         resetMock();
-        this.config.charset = "HEX";
+        config.charset = "HEX";
         handler.initialize();
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
         verify(callbackMock).statusUpdated(eq(bridgeMock),
                 argThat(arg -> arg.getStatusDetail().equals(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR)));
 
         resetMock();
-        this.config.eolPattern = "Invalid(Pattern";
+        config.eolPattern = "Invalid(Pattern";
         handler.initialize();
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
         verify(callbackMock).statusUpdated(eq(bridgeMock),
                 argThat(arg -> arg.getStatusDetail().equals(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR)));
 
         resetMock();
-        this.config.eolPattern = "ValidPattern";
+        config.eolPattern = "ValidPattern";
         handler.initialize();
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
     }
 
     @Test
     void testWriteUtf8String() {
+        MockupBridgeHandler handler = this.handler;
+        SerialBridgeConfiguration config = this.config;
+        ByteArrayOutputStream bos = this.bos;
+        assertNotNull(config);
+        assertNotNull(handler);
+        assertNotNull(bos);
+
         config.charset = "UTF-8";
         handler.initialize();
         handler.writeString("föö");
@@ -148,6 +171,13 @@ public class SerialBindingHandlerTest {
 
     @Test
     void testWriteLatin1String() {
+        MockupBridgeHandler handler = this.handler;
+        SerialBridgeConfiguration config = this.config;
+        ByteArrayOutputStream bos = this.bos;
+        assertNotNull(config);
+        assertNotNull(handler);
+        assertNotNull(bos);
+
         config.charset = "ISO-8859-1";
         handler.initialize();
         handler.writeString("föö");
@@ -156,6 +186,13 @@ public class SerialBindingHandlerTest {
 
     @Test
     void testWriteHexString() {
+        MockupBridgeHandler handler = this.handler;
+        SerialBridgeConfiguration config = this.config;
+        ByteArrayOutputStream bos = this.bos;
+        assertNotNull(config);
+        assertNotNull(handler);
+        assertNotNull(bos);
+
         config.charset = "HEX";
         config.eolPattern = "\\b0A";
         handler.initialize();
@@ -169,6 +206,13 @@ public class SerialBindingHandlerTest {
 
     @Test
     void testReadUtf8String() {
+        MockupBridgeHandler handler = this.handler;
+        SerialBridgeConfiguration config = this.config;
+        ByteBufferInputStream bin = this.bin;
+        assertNotNull(config);
+        assertNotNull(handler);
+        assertNotNull(bin);
+
         config.charset = "UTF-8";
         handler.initialize();
         bin.appendString("föö", StandardCharsets.UTF_8);
@@ -180,6 +224,13 @@ public class SerialBindingHandlerTest {
 
     @Test
     void testReadLatin1String() {
+        MockupBridgeHandler handler = this.handler;
+        SerialBridgeConfiguration config = this.config;
+        ByteBufferInputStream bin = this.bin;
+        assertNotNull(config);
+        assertNotNull(handler);
+        assertNotNull(bin);
+
         config.charset = "ISO-8859-1";
         handler.initialize();
         bin.appendString("föö", StandardCharsets.ISO_8859_1);
@@ -191,6 +242,15 @@ public class SerialBindingHandlerTest {
 
     @Test
     void testReadHexString() {
+        MockupBridgeHandler handler = this.handler;
+        SerialBridgeConfiguration config = this.config;
+        ByteArrayOutputStream bos = this.bos;
+        ByteBufferInputStream bin = this.bin;
+        assertNotNull(config);
+        assertNotNull(handler);
+        assertNotNull(bos);
+        assertNotNull(bin);
+
         config.charset = "HEX";
         config.eolPattern = "\\b0A";
         handler.initialize();

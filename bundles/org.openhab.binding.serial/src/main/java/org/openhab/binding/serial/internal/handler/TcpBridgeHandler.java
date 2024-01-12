@@ -60,6 +60,12 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
             return;
         }
 
+        final String address = config.address;
+        if (address == null || address.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Address must be set");
+            return;
+        }
+
         final int port = config.port;
         if (port <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set");
@@ -69,7 +75,7 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
         // initialize serial port
         try {
             Socket socket = new Socket();
-            socket.connect(new InetSocketAddress(config.address, config.port), config.timeout * 1000);
+            socket.connect(new InetSocketAddress(address, port), config.timeout * 1000);
             if (config.timeout > 0) {
                 socket.setSoTimeout(config.timeout * 1000);
             }
@@ -120,8 +126,7 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
                                 // InputStream.available() does not recognise when a client has disconnected,
                                 // so we will use BufferedInputStream and cache one byte.
                                 if (inputStream.read() < 0) {
-                                    throw new SocketException(String.format("Connection lost", socket.getInetAddress(),
-                                            socket.getPort()));
+                                    throw new SocketException("Connection lost");
                                 }
                                 inputStream.reset();
                                 receiveAndProcessNow();
@@ -150,7 +155,7 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
         if (socket != null) {
             try {
                 socket.close();
-            } catch (IOException e) {
+            } catch (IOException ignore) {
             }
         }
 

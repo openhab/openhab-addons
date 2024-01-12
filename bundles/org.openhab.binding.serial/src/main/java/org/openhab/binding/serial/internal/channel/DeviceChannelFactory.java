@@ -41,28 +41,15 @@ public class DeviceChannelFactory {
     public static @Nullable DeviceChannel createDeviceChannel(
             final ValueTransformationProvider valueTransformationProvider, final ChannelConfig channelConfig,
             final String channelTypeID) {
-        DeviceChannel deviceChannel;
 
-        switch (channelTypeID) {
-            case DEVICE_STRING_CHANNEL:
-                deviceChannel = new StringChannel(valueTransformationProvider, channelConfig);
-                break;
-            case DEVICE_NUMBER_CHANNEL:
-                deviceChannel = new NumberChannel(valueTransformationProvider, channelConfig);
-                break;
-            case DEVICE_DIMMER_CHANNEL:
-                deviceChannel = new DimmerChannel(valueTransformationProvider, channelConfig);
-                break;
-            case DEVICE_SWITCH_CHANNEL:
-                deviceChannel = new SwitchChannel(valueTransformationProvider, channelConfig);
-                break;
-            case DEVICE_ROLLERSHUTTER_CHANNEL:
-                deviceChannel = new RollershutterChannel(valueTransformationProvider, channelConfig);
-                break;
-            default:
-                deviceChannel = null;
-                break;
-        }
+        DeviceChannel deviceChannel = switch (channelTypeID) {
+            case DEVICE_STRING_CHANNEL -> new StringChannel(valueTransformationProvider, channelConfig);
+            case DEVICE_NUMBER_CHANNEL -> new NumberChannel(valueTransformationProvider, channelConfig);
+            case DEVICE_DIMMER_CHANNEL -> new DimmerChannel(valueTransformationProvider, channelConfig);
+            case DEVICE_SWITCH_CHANNEL -> new SwitchChannel(valueTransformationProvider, channelConfig);
+            case DEVICE_ROLLERSHUTTER_CHANNEL -> new RollershutterChannel(valueTransformationProvider, channelConfig);
+            default -> null;
+        };
 
         return deviceChannel;
     }

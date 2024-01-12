@@ -83,16 +83,10 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
             }
         } else {
             switch (channelUID.getId()) {
-                case STRING_CHANNEL:
-                case STRING_TCP_CHANNEL:
-                    writeString(command.toFullString(), false);
-                    break;
-                case BINARY_CHANNEL:
-                case BINARY_TCP_CHANNEL:
-                    writeString(command.toFullString(), true);
-                    break;
-                default:
-                    break;
+                case STRING_CHANNEL, STRING_TCP_CHANNEL -> writeString(command.toFullString(), false);
+                case BINARY_CHANNEL, BINARY_TCP_CHANNEL -> writeString(command.toFullString(), true);
+                default -> {
+                }
             }
 
         }
@@ -104,7 +98,7 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
         try {
             String strCharset = config.charset;
             if (strCharset != null) {
-                if (strCharset.equalsIgnoreCase("hex")) {
+                if ("hex".equalsIgnoreCase(strCharset)) {
                     binaryHexData = true;
                     logger.debug("{} converting to hex", getLogPrefix());
                 } else {
@@ -125,7 +119,7 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
             try {
                 Pattern eolPattern = Pattern.compile(eolPatternStr, Pattern.CASE_INSENSITIVE);
                 this.eolPattern = eolPattern;
-                logger.debug("{} eolPattern '{}' set", getLogPrefix(), eolPattern.toString());
+                logger.debug("{} eolPattern '{}' set", getLogPrefix(), eolPattern);
             } catch (IllegalArgumentException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Invalid EOL sequence");
@@ -188,7 +182,7 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
      * Refreshes the channel with the last received data
      *
      * @param channelId the channel to refresh
-     * @param channelId the data to use
+     * @param data the data to use
      */
     private void refresh(final String channelId, final String data) {
         if (!isLinked(channelId)) {
@@ -196,17 +190,14 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
         }
 
         switch (channelId) {
-            case STRING_CHANNEL:
-                updateState(channelId, new StringType(data));
-                break;
-            case BINARY_CHANNEL:
-                final StringBuilder sb = new StringBuilder("data:");
-                sb.append(RawType.DEFAULT_MIME_TYPE).append(";base64,")
-                        .append(Base64.getEncoder().encodeToString(data.getBytes(charset)));
-                updateState(channelId, new StringType(sb.toString()));
-                break;
-            default:
-                break;
+            case STRING_CHANNEL -> updateState(channelId, new StringType(data));
+            case BINARY_CHANNEL -> {
+                String sb = "data:" + RawType.DEFAULT_MIME_TYPE + ";base64,"
+                        + Base64.getEncoder().encodeToString(data.getBytes(charset));
+                updateState(channelId, new StringType(sb));
+            }
+            default -> {
+            }
         }
     }
 

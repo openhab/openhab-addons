@@ -18,11 +18,14 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.LinkedList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Provides an InputStream implementation that reads from a list of byte arrays.
  *
  * @author Roland Tapken - Initial contribution
  */
+@NonNullByDefault
 public class ByteBufferInputStream extends InputStream {
 
     private final LinkedList<byte[]> bufferQueue = new LinkedList<>();
@@ -36,6 +39,7 @@ public class ByteBufferInputStream extends InputStream {
         available += bytes.length;
     }
 
+    @SuppressWarnings("unused")
     public void appendBuffer(byte[] bytes, int from, int to) {
         appendBuffer(Arrays.copyOfRange(bytes, from, to));
     }
@@ -61,7 +65,7 @@ public class ByteBufferInputStream extends InputStream {
     }
 
     @Override
-    public int available() throws IOException {
+    public int available() {
         return available;
     }
 }

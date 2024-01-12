@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.serial.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.serial.internal.handler.SerialBridgeConfiguration;
 import org.openhab.binding.serial.internal.handler.SerialBridgeHandler;
 import org.openhab.core.io.transport.serial.SerialPortManager;
@@ -24,6 +25,7 @@ import org.openhab.core.thing.Bridge;
  *
  * @author Roland Tapken - Initial contribution
  */
+@NonNullByDefault
 public class MockupBridgeHandler extends SerialBridgeHandler {
 
     private final SerialBridgeConfiguration config;
@@ -33,6 +35,7 @@ public class MockupBridgeHandler extends SerialBridgeHandler {
         this.config = config;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected <T> T getConfigAs(Class<T> configurationClass) {
         return (T) this.config;

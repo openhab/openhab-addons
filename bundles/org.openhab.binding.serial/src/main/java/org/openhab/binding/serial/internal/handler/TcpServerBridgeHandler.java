@@ -79,13 +79,19 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
             return;
         }
 
+        final String bindAddress = config.bindAddress;
+        if (bindAddress == null || bindAddress.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "BindAddress must be set");
+            return;
+        }
+
         // initialize serial port
         try {
             ServerSocket server = new ServerSocket();
             if (config.timeout > 0) {
                 server.setSoTimeout(config.timeout * 1000);
             }
-            server.bind(new InetSocketAddress(config.bindAddress, config.port), 1);
+            server.bind(new InetSocketAddress(bindAddress, port), 1);
             this.server = server;
 
             updateStatus(ThingStatus.ONLINE);
@@ -110,11 +116,11 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
             }
 
             this.connectionScheduler = connectionSchedulerExcecutor.schedule(() -> {
-                if (getThing().getStatus() == ThingStatus.ONLINE && server == this.server) {
+                if (getThing().getStatus() == ThingStatus.ONLINE && server.equals(this.server)) {
                     try {
                         synchronized (server) {
                             Socket socket = server.accept();
-                            if (this.server != server) {
+                            if (!server.equals(this.server)) {
                                 // Drop this connection, it is not valid anymore
                                 logger.warn("Rejecting incoming connection from {}:{} (invalid)",
                                         socket.getInetAddress(), socket.getPort());
@@ -213,7 +219,7 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
         if (socket != null) {
             try {
                 socket.close();
-            } catch (IOException e) {
+            } catch (IOException ignore) {
             }
         }
     }
@@ -234,7 +240,7 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
         if (server != null) {
             try {
                 server.close();
-            } catch (IOException e) {
+            } catch (IOException ignore) {
             }
         }
     }

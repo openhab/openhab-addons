@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Class describing the serial bridge user configuration
  *
- * @author Roland Tapken - Refactored from SerialBridgeConfiguration
+ * @author Roland Tapken - Initial contribution
  */
 @NonNullByDefault
 public class CommonBridgeConfiguration {
