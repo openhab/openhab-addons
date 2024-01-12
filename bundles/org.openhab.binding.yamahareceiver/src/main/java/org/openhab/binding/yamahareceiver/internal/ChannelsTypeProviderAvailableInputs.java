@@ -34,6 +34,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * Provide a custom channel type for available inputs
@@ -41,6 +43,8 @@ import org.openhab.core.types.StateOption;
  * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Refactoring the input source names.
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { ChannelsTypeProviderAvailableInputs.class,
+        ChannelTypeProvider.class })
 @NonNullByDefault
 public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider, ThingHandlerService {
     private @NonNullByDefault({}) ChannelType channelType;

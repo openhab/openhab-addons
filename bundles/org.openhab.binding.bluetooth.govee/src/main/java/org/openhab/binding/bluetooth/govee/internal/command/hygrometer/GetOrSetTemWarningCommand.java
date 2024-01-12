@@ -81,12 +81,12 @@ public class GetOrSetTemWarningCommand extends GoveeCommand {
             resultHandler.completeExceptionally(th);
         }
         if (data != null) {
-            WarningSettingsDTO<Temperature> result = new WarningSettingsDTO<Temperature>();
+            WarningSettingsDTO<Temperature> result = new WarningSettingsDTO<>();
 
             ByteBuffer buffer = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
             result.enableAlarm = OnOffType.from(buffer.get() == 1);
-            result.min = new QuantityType<Temperature>(buffer.getShort() / 100.0, SIUnits.CELSIUS);
-            result.max = new QuantityType<Temperature>(buffer.getShort() / 100.0, SIUnits.CELSIUS);
+            result.min = new QuantityType<>(buffer.getShort() / 100.0, SIUnits.CELSIUS);
+            result.max = new QuantityType<>(buffer.getShort() / 100.0, SIUnits.CELSIUS);
 
             resultHandler.complete(result);
         } else {

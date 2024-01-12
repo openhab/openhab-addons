@@ -191,7 +191,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
                     itemChannelLinkRegistry);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new HueBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
-                    stateDescriptionProvider, i18nProvider, localeProvider);
+                    stateDescriptionProvider);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new HueLightHandler(thing, stateDescriptionProvider);
         } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {

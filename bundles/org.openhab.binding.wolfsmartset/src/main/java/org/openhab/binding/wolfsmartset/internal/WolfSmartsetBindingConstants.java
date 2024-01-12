@@ -85,7 +85,6 @@ public class WolfSmartsetBindingConstants {
     public static final String CONFIG_SYSTEM_ID = "systemId";
     public static final String CONFIG_UNIT_ID = "unitId";
 
-    public static final List<SubMenuEntryWithMenuItemTabView> EMPTY_UNITS = Collections
-            .<SubMenuEntryWithMenuItemTabView> emptyList();
-    public static final List<GetSystemListDTO> EMPTY_SYSTEMS = Collections.<GetSystemListDTO> emptyList();
+    public static final List<SubMenuEntryWithMenuItemTabView> EMPTY_UNITS = Collections.emptyList();
+    public static final List<GetSystemListDTO> EMPTY_SYSTEMS = Collections.emptyList();
 }

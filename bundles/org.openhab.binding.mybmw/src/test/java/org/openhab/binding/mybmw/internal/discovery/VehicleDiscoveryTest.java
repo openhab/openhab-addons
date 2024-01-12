@@ -83,6 +83,7 @@ public class VehicleDiscoveryTest {
         when(bridgeHandler.getMyBmwProxy()).thenReturn(Optional.of(myBMWProxy));
 
         vehicleDiscovery.setThingHandler(bridgeHandler);
+        vehicleDiscovery.initialize();
         assertNotNull(vehicleDiscovery.getThingHandler());
 
         DiscoveryListener listener = mock(DiscoveryListener.class);

@@ -90,7 +90,7 @@ public class GroupMessageStateMachine {
         BCAST,
         CLEAN,
         SUCCESS
-    };
+    }
 
     /**
      * The state of the machine (i.e. what message we are expecting next).
@@ -100,7 +100,7 @@ public class GroupMessageStateMachine {
         EXPECT_BCAST,
         EXPECT_CLEAN,
         EXPECT_SUCCESS
-    };
+    }
 
     private State state = State.EXPECT_BCAST;
     private long lastUpdated = 0;

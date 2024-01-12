@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class VizioApps {
     @SerializedName("Apps")
-    private List<VizioApp> apps = new ArrayList<VizioApp>();
+    private List<VizioApp> apps = new ArrayList<>();
 
     public List<VizioApp> getApps() {
         return apps;

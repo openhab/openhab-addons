@@ -130,7 +130,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
          */
         public Cache() {
             this.updateInterval = KVVBindingConstants.CACHE_DEFAULT_UPDATEINTERVAL;
-            this.cache = new HashMap<String, CacheLine>();
+            this.cache = new HashMap<>();
         }
 
         /*

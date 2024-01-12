@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public final class WeekProfileRegister {
 
-    private @NotNull Map<Integer, WeekProfile> register = new HashMap<Integer, WeekProfile>();
+    private @NotNull Map<Integer, WeekProfile> register = new HashMap<>();
 
     /**
      * Stores a new week profile in the register. If a week profile exists with the same id, that value is overwritten.

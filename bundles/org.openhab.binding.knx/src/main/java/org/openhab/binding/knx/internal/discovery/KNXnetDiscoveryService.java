@@ -95,9 +95,6 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
             for (Result<SearchResponse> r : responses) {
                 @Nullable
                 SearchResponse response = r.getResponse();
-                if (response == null) {
-                    continue;
-                }
                 Map<ServiceFamily, Integer> services = response.getServiceFamilies().families();
 
                 if (services.containsKey(ServiceFamiliesDIB.ServiceFamily.Tunneling)

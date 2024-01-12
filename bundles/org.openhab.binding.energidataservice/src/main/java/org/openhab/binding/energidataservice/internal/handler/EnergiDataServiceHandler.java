@@ -340,17 +340,14 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     }
 
     private State getEnergyPrice(BigDecimal price, Currency currency) {
-        Unit<?> unit = CurrencyUnits.getInstance().getUnit(currency.getCurrencyCode());
+        String currencyCode = currency.getCurrencyCode();
+        Unit<?> unit = CurrencyUnits.getInstance().getUnit(currencyCode);
         if (unit == null) {
             logger.trace("Currency {} is unknown, falling back to DecimalType", currency.getCurrencyCode());
             return new DecimalType(price);
         }
         try {
-            String currencyUnit = unit.getSymbol();
-            if (currencyUnit == null) {
-                currencyUnit = unit.getName();
-            }
-            return new QuantityType<>(price + " " + currencyUnit + "/kWh");
+            return new QuantityType<>(price + " " + currencyCode + "/kWh");
         } catch (IllegalArgumentException e) {
             logger.debug("Unable to create QuantityType, falling back to DecimalType", e);
             return new DecimalType(price);
@@ -384,6 +381,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     private void updateTimeSeries() {
         TimeSeries spotPriceTimeSeries = new TimeSeries(REPLACE);
         Map<DatahubTariff, TimeSeries> datahubTimeSeriesMap = new HashMap<>();
+        Map<DatahubTariff, BigDecimal> datahubPreviousTariff = new HashMap<>();
         for (DatahubTariff datahubTariff : DatahubTariff.values()) {
             datahubTimeSeriesMap.put(datahubTariff, new TimeSeries(REPLACE));
         }
@@ -404,8 +402,14 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
                 }
                 BigDecimal tariff = cacheManager.getTariff(datahubTariff, hourStart);
                 if (tariff != null) {
+                    BigDecimal previousTariff = datahubPreviousTariff.get(datahubTariff);
+                    if (previousTariff != null && tariff.equals(previousTariff)) {
+                        // Skip redundant states.
+                        continue;
+                    }
                     TimeSeries timeSeries = entry.getValue();
                     timeSeries.add(hourStart, getEnergyPrice(tariff, CURRENCY_DKK));
+                    datahubPreviousTariff.put(datahubTariff, tariff);
                 }
             }
         }

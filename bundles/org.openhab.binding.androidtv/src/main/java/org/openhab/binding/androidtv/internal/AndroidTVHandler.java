@@ -128,7 +128,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     public void updateCDP(String channelName, Map<String, String> cdpMap) {
         logger.trace("{} - Updating CDP for {}", this.thingID, channelName);
-        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
+        List<CommandOption> commandOptions = new ArrayList<>();
         cdpMap.forEach((key, value) -> commandOptions.add(new CommandOption(key, value)));
         logger.trace("{} - CDP List: {}", this.thingID, commandOptions);
         commandDescriptionProvider.setCommandOptions(new ChannelUID(getThing().getUID(), channelName), commandOptions);
@@ -243,6 +243,8 @@ public class AndroidTVHandler extends BaseThingHandler {
     }
 
     public void sendCommandToProtocol(ChannelUID channelUID, Command command) {
+        ShieldTVConnectionManager shieldtvConnectionManager = this.shieldtvConnectionManager;
+        PhilipsTVConnectionManager philipstvConnectionManager = this.philipstvConnectionManager;
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID) && (shieldtvConnectionManager != null)) {
             shieldtvConnectionManager.handleCommand(channelUID, command);
         } else if (THING_TYPE_PHILIPSTV.equals(thingTypeUID) && (philipstvConnectionManager != null)) {

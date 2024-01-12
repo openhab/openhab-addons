@@ -26,4 +26,4 @@ public enum CaddxSource {
     KEYPAD,
     PARTITION,
     ZONE
-};
+}

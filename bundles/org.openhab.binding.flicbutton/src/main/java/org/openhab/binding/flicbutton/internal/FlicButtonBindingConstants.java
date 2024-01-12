@@ -53,7 +53,7 @@ public class FlicButtonBindingConstants {
     public static final int BUTTON_OFFLINE_GRACE_PERIOD_SECONDS = 60;
 
     public static final Map<String, String> FLIC_OPENHAB_TRIGGER_EVENT_MAP = Collections
-            .unmodifiableMap(new HashMap<String, String>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
                     put("ButtonSingleClick", CommonTriggerEvents.SHORT_PRESSED);
                     put("ButtonDoubleClick", CommonTriggerEvents.DOUBLE_PRESSED);

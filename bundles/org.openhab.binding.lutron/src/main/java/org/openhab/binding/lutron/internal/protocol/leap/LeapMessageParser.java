@@ -238,7 +238,7 @@ public class LeapMessageParser {
 
     private <T extends AbstractMessageBody> List<T> parseBodyMultiple(JsonObject messageBody, String memberName,
             Class<T> type) {
-        List<T> objList = new LinkedList<T>();
+        List<T> objList = new LinkedList<>();
         try {
             if (messageBody.has(memberName)) {
                 JsonArray jsonArray = messageBody.get(memberName).getAsJsonArray();

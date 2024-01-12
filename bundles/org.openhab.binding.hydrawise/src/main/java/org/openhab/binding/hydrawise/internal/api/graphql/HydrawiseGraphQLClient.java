@@ -324,6 +324,8 @@ public class HydrawiseGraphQLClient {
         } catch (ExecutionException e) {
             // Hydrawise returns back a 40x status, but without a valid Realm , so jetty throws an exception,
             // this allows us to catch this in a callback and handle accordingly
+            logger.debug("ExecutionException", e);
+            logger.debug("ExecutionException {} {}", responseCode.get(), responseMessage);
             switch (responseCode.get()) {
                 case 401:
                 case 403:

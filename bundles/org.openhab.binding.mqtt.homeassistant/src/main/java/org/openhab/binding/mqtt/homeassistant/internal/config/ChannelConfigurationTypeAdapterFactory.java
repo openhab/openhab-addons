@@ -78,7 +78,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
         /* The delegate is the 'default' adapter */
         final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
 
-        return new TypeAdapter<T>() {
+        return new TypeAdapter<>() {
             @Override
             public @Nullable T read(JsonReader in) throws IOException {
                 /* read the object using the default adapter, but translate the names in the reader */
@@ -99,7 +99,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
         /* The delegate is the 'default' adapter */
         final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
 
-        return new TypeAdapter<T>() {
+        return new TypeAdapter<>() {
             @Override
             public @Nullable T read(JsonReader in) throws IOException {
                 /* read the object using the default adapter, but translate the names in the reader */

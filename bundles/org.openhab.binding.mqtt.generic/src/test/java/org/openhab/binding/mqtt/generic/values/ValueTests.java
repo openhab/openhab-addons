@@ -189,6 +189,8 @@ public class ValueTests {
 
         assertThat(v.parseMessage(new StringType("NaN")), is(UnDefType.UNDEF));
         assertThat(v.parseMessage(new StringType("nan")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("-NaN")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("-nan")), is(UnDefType.UNDEF));
     }
 
     @Test

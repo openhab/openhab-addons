@@ -17,8 +17,6 @@ import static org.openhab.binding.coronastats.internal.CoronaStatsBindingConstan
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.measure.quantity.Dimensionless;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -58,7 +56,7 @@ public class CoronaStatsCases {
         if (count == -1) {
             return UnDefType.NULL;
         } else {
-            return new QuantityType<Dimensionless>(count, Units.ONE);
+            return new QuantityType<>(count, Units.ONE);
         }
     }
 }

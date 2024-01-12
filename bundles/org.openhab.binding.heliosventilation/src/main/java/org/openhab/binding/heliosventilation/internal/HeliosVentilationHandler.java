@@ -66,7 +66,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     /**
      * store received data for read-modify-write operations on bitlevel
      */
-    private final Map<Byte, Byte> memory = new HashMap<Byte, Byte>();
+    private final Map<Byte, Byte> memory = new HashMap<>();
 
     private final SerialPortManager serialPortManager;
 

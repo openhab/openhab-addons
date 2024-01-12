@@ -17,9 +17,6 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 import java.util.List;
 import java.util.Set;
 
-import javax.measure.quantity.Temperature;
-import javax.measure.quantity.Time;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureMiceDetectionDTO.Detection;
@@ -98,15 +95,15 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
                 }
             case CHANNEL_DURATION_LATEST_DETECTION:
                 if (mouse.getDetections().isEmpty()) {
-                    return new QuantityType<Time>(0, Units.SECOND);
+                    return new QuantityType<>(0, Units.SECOND);
                 } else {
-                    return new QuantityType<Time>(mouse.getDetections().get(0).getDuration(), Units.SECOND);
+                    return new QuantityType<>(mouse.getDetections().get(0).getDuration(), Units.SECOND);
                 }
             case CHANNEL_DURATION_LAST_24_HOURS:
                 if (mouse.getDetections().isEmpty()) {
-                    return new QuantityType<Time>(0, Units.SECOND);
+                    return new QuantityType<>(0, Units.SECOND);
                 } else {
-                    return new QuantityType<Time>(mouse.getDetections().stream().mapToInt(Detection::getDuration).sum(),
+                    return new QuantityType<>(mouse.getDetections().stream().mapToInt(Detection::getDuration).sum(),
                             Units.SECOND);
                 }
             case CHANNEL_LOCATION:
@@ -115,7 +112,7 @@ public class VerisureMiceDetectionThingHandler extends VerisureThingHandler<Veri
             case CHANNEL_TEMPERATURE:
                 double temperature = miceDetectionJSON.getTemperatureValue();
                 return temperature != VerisureMiceDetectionDTO.UNDEFINED
-                        ? new QuantityType<Temperature>(temperature, SIUnits.CELSIUS)
+                        ? new QuantityType<>(temperature, SIUnits.CELSIUS)
                         : UnDefType.UNDEF;
         }
         return UnDefType.UNDEF;

@@ -75,7 +75,7 @@ public class RequestFactoryImplTest {
         when(requestMock.param(anyString(), anyString())).thenReturn(requestMock);
         when(requestMock.content(any())).thenAnswer(i -> {
             StringContentProvider provider = i.getArgument(0);
-            List<Byte> rawData = new ArrayList<Byte>();
+            List<Byte> rawData = new ArrayList<>();
             provider.forEach(b -> {
                 b.rewind();
                 while (b.hasRemaining()) {

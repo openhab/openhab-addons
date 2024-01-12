@@ -66,11 +66,11 @@ public class AndroidTVBindingConstants {
     public static final String CHANNEL_AMBILIGHT_BOTTOM_COLOR = "ambilightBottomColor";
 
     // List of all config properties
-    public static final String PROPERTY_IP_ADDRESS = "ipAddress";
-    public static final String PROPERTY_GOOGLETVPORT = "googletvPort";
-    public static final String PROPERTY_SHIELDTVPORT = "shieldtvPort";
-    public static final String PROPERTY_PHILIPSTVPORT = "philipstvPort";
-    public static final String PROPERTY_GTV_ENABLED = "gtvEnabled";
+    public static final String PARAMETER_IP_ADDRESS = "ipAddress";
+    public static final String PARAMETER_GOOGLETV_PORT = "googletvPort";
+    public static final String PARAMETER_SHIELDTV_PORT = "shieldtvPort";
+    public static final String PARAMETER_PHILIPSTV_PORT = "philipstvPort";
+    public static final String PARAMETER_GTV_ENABLED = "gtvEnabled";
 
     // List of all static String literals
     public static final String PIN_REQUEST = "REQUEST";

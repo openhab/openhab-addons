@@ -50,12 +50,12 @@ public class ThingMock implements Thing {
 
     @Override
     public List<Channel> getChannels() {
-        return new ArrayList<Channel>();
+        return new ArrayList<>();
     }
 
     @Override
     public List<Channel> getChannelsOfGroup(String channelGroupId) {
-        return new ArrayList<Channel>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -121,7 +121,7 @@ public class ThingMock implements Thing {
 
     @Override
     public Map<String, String> getProperties() {
-        return new HashMap<String, String>();
+        return new HashMap<>();
     }
 
     @Override
