@@ -43,38 +43,52 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="port" type="integer">
-				<label>Port</label>
+			<parameter name="googletvPort" type="integer">
+				<label>GoogleTV Port</label>
 				<description>Port to connect to</description>
+				<default>6466</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="shieldtvPort" type="integer">
+				<label>ShieldTV Port</label>
+				<description>Port to connect to</description>
+				<default>8987</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="keystoreFileName" type="text">
 				<label>Keystore File Name</label>
 				<description>Java keystore containing key and certs</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="keystorePassword" type="text">
 				<context>password</context>
 				<label>Keystore Password</label>
 				<description>Password for the keystore file</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="reconnect" type="integer" min="0">
 				<label>Reconnect Delay</label>
 				<description>Delay between reconnection attempts</description>
 				<default>60</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="heartbeat" type="integer" min="0">
 				<label>Heartbeat Frequency</label>
 				<description>Frequency of heartbeats</description>
 				<default>5</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="delay" type="integer" min="0">
 				<label>Delay</label>
 				<description>Delay between messages</description>
 				<default>0</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="gtvEnabled" type="boolean">
 				<label>Enable GoogleTV</label>
 				<description>Enable the GoogleTV Protocol</description>
 				<default>true</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
@@ -114,38 +128,46 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="port" type="integer">
-				<label>Port</label>
+			<parameter name="googletvPort" type="integer">
+				<label>GoogleTV Port</label>
 				<description>Port to connect to</description>
+				<default>6466</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="keystoreFileName" type="text">
 				<label>Keystore File Name</label>
 				<description>Java keystore containing key and certs</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="keystorePassword" type="text">
 				<context>password</context>
 				<label>Keystore Password</label>
 				<description>Password for the keystore file</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="reconnect" type="integer" min="0">
 				<label>Reconnect Delay</label>
 				<description>Delay between reconnection attempts</description>
 				<default>60</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="heartbeat" type="integer" min="0">
 				<label>Heartbeat Frequency</label>
 				<description>Frequency of heartbeats</description>
 				<default>5</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="delay" type="integer" min="0">
 				<label>Delay</label>
 				<description>Delay between messages</description>
 				<default>0</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="gtvEnabled" type="boolean">
 				<label>Enable GoogleTV</label>
 				<description>Enable the GoogleTV Protocol</description>
 				<default>true</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 

@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ShieldTVConfiguration {
 
     public String ipAddress = "";
-    public int port = 8987;
+    public int shieldtvPort = 8987;
     public int reconnect;
     public int heartbeat;
     public String keystoreFileName = "";

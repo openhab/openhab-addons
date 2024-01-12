@@ -128,6 +128,10 @@ public class AndroidTVHandler extends BaseThingHandler {
                 failed = true;
             }
             statusMessage = "GoogleTV: " + googletvConnectionManager.getStatusMessage();
+
+            if (!THING_TYPE_GOOGLETV.equals(thingTypeUID)) {
+                statusMessage = statusMessage + " | ";
+            }
         }
 
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
@@ -135,7 +139,7 @@ public class AndroidTVHandler extends BaseThingHandler {
                 if (!shieldtvConnectionManager.getLoggedIn()) {
                     failed = true;
                 }
-                statusMessage = statusMessage + " | ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
+                statusMessage = statusMessage + "ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
             }
         }
 
@@ -159,13 +163,13 @@ public class AndroidTVHandler extends BaseThingHandler {
         String ipAddress = googletvConfig.ipAddress;
         boolean gtvEnabled = googletvConfig.gtvEnabled;
 
-        if (ipAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.googletv-address-not-specified");
-            return;
-        }
-
         if (THING_TYPE_GOOGLETV.equals(thingTypeUID) || gtvEnabled) {
+            if (ipAddress.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.googletv-address-not-specified");
+                return;
+            }
+
             googletvConnectionManager = new GoogleTVConnectionManager(this, googletvConfig);
         }
 
@@ -184,6 +188,13 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         monitorThingStatusJob = scheduler.schedule(this::monitorThingStatus, THING_STATUS_FREQUENCY,
                 TimeUnit.MILLISECONDS);
+    }
+
+    public void sendCommandToProtocol(ChannelUID channelUID, Command command) {
+        ShieldTVConnectionManager shieldtvConnectionManager = this.shieldtvConnectionManager;
+        if (THING_TYPE_SHIELDTV.equals(thingTypeUID) && (shieldtvConnectionManager != null)) {
+            shieldtvConnectionManager.handleCommand(channelUID, command);
+        }
     }
 
     @Override
