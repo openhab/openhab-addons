@@ -113,7 +113,8 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     try {
                         InputStream inputStream = this.inputStream;
-                        if (inputStream != null) {
+                        Socket socket = this.socket;
+                        if (inputStream != null && socket != null) {
                             synchronized (inputStream) {
                                 inputStream.mark(1);
                                 // InputStream.available() does not recognise when a client has disconnected,
