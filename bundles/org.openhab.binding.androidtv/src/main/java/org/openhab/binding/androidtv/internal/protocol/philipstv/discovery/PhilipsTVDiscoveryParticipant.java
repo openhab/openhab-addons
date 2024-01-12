@@ -60,8 +60,8 @@ public class PhilipsTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
         final Map<String, Object> properties = new HashMap<>(2);
         String ipAddress = device.getIdentity().getDescriptorURL().getHost();
-        properties.put(PROPERTY_IP_ADDRESS, ipAddress);
-        properties.put(PROPERTY_PHILIPSTVPORT, DEFAULT_PORT);
+        properties.put(PARAMETER_IP_ADDRESS, ipAddress);
+        properties.put(PARAMETER_PHILIPSTV_PORT, DEFAULT_PORT);
         logger.debug("Philips TV Found: {}, using default port {}", ipAddress, DEFAULT_PORT);
         String friendlyName = device.getDetails().getFriendlyName();
         if (friendlyName.length() > 0 && Character.isDigit(friendlyName.charAt(0))) {

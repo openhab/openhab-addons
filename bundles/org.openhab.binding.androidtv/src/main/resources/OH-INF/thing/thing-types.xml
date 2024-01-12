@@ -130,10 +130,10 @@
 			</parameter>
 			<parameter name="googletvPort" type="integer">
 				<label>GoogleTV Port</label>
-        <description>Port to connect to</description>
+				<description>Port to connect to</description>
 				<default>6466</default>
 				<advanced>true</advanced>
-      </parameter>
+			</parameter>
 			<parameter name="keystoreFileName" type="text">
 				<label>Keystore File Name</label>
 				<description>Java keystore containing key and certs</description>
