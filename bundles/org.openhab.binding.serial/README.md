@@ -32,6 +32,11 @@ A trigger channel is also provided which triggers when data is received.
 
 The TCP bridge is an alternative implementation of the Serial Bridge that uses TCP sockets instead of serial ports.
 
+### TCP Server bridge
+
+The TCP Server Bridge is similar to the _TCP Bridge_ but waits for an incoming connection on a given port.
+Currently, only one connection per bridge is allowed.
+
 ### Serial Device
 
 A Serial Device thing (`serialDevice`) can be used to represent data matching a defined pattern as a device.
@@ -73,6 +78,17 @@ The configuration for the `tcpBridge` consists of the following parameters:
 | reconnectInterval | Interval in seconds for automatic reconnect after connection failure                                                                                                                                      |
 | charset           | The charset to use for converting between bytes and string (e.g. UTF-8,ISO-8859-1). Enter 'HEX' to convert binary data into hexadecimal strings separated by space.                                       |
 | eolPattern        | In charset=HEX mode, a regular expression is required to match the binaries equivalent of an 'End of line' character. For example, '\bFF' would match a byte value of 255 as end of the current response. |
+
+The configuration for the `tcpServerBridge` consists of the following parameters:
+
+| Parameter   | Description                                                                                                                                                                                               |
+|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| port        | The number of the TCP port to listen to                                                                                                                                                                   |
+| bindAddress | The IP to bind to.                                                                                                                                                                                        |
+| timeout     | Socket timeout in seconds (0 = no timeout)                                                                                                                                                                |
+| keepAlive   | Enable socket keep-alive                                                                                                                                                                                  |
+| charset     | The charset to use for converting between bytes and string (e.g. UTF-8,ISO-8859-1). Enter 'HEX' to convert binary data into hexadecimal strings separated by space.                                       |
+| eolPattern  | In charset=HEX mode, a regular expression is required to match the binaries equivalent of an 'End of line' character. For example, '\bFF' would match a byte value of 255 as end of the current response. |
 
 The configuration for the `serialDevice` consists of the following parameters:
 

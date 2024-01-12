@@ -142,10 +142,53 @@
 		</config-description>
 	</bridge-type>
 
+	<bridge-type id="tcpServerBridge">
+		<label>TCP Server Bridge</label>
+		<description>Like TCP bridge, but listens on a local port for incoming connections</description>
+
+		<config-description>
+			<parameter name="port" type="integer" min="1" max="65535" required="true">
+				<label>Port</label>
+				<description>Listening TCP port</description>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
+			<parameter name="bindAddress" type="text">
+				<context>network-address</context>
+				<limitToOptions>false</limitToOptions>
+				<label>Address</label>
+				<default>0.0.0.0</default>
+				<description>The IP address to bind to (default: 0.0.0.0)</description>
+			</parameter>
+			<parameter name="timeout" type="integer" min="0">
+				<advanced>true</advanced>
+				<label>Socket Timeout</label>
+				<description>Timeout in seconds</description>
+			</parameter>
+			<parameter name="keepAlive" type="boolean" min="0">
+				<advanced>true</advanced>
+				<label>Keep-Alive</label>
+				<description>Send keep-alive</description>
+			</parameter>
+			<parameter name="charset" type="text">
+				<advanced>true</advanced>
+				<label>Charset or HEX</label>
+				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1). Enter 'HEX' to
+					convert binary data into hexadecimal strings, seperated by space.</description>
+			</parameter>
+			<parameter name="eolPattern" type="text">
+				<advanced>true</advanced>
+				<label>EOL pattern</label>
+				<description>Only for Charset = HEX: 'End of line' pattern as regular expression. For example, "0D 10" matches \r\n,
+					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.".</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 	<thing-type id="serialDevice" extensible="string, number, dimmer, switch, rollershutter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serialBridge"/>
 			<bridge-type-ref id="tcpBridge"/>
+			<bridge-type-ref id="tcpServerBridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Serial Device</label>

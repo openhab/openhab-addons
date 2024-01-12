@@ -29,6 +29,7 @@ public class SerialBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SERIAL_BRIDGE = new ThingTypeUID(BINDING_ID, "serialBridge");
     public static final ThingTypeUID THING_TYPE_TCP_BRIDGE = new ThingTypeUID(BINDING_ID, "tcpBridge");
+    public static final ThingTypeUID THING_TYPE_TCP_SERVER_BRIDGE = new ThingTypeUID(BINDING_ID, "tcpServerBridge");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "serialDevice");
 
     // List of all Channel ids

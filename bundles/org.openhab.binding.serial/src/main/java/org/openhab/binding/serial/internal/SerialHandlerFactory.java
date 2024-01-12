@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.handler.SerialBridgeHandler;
 import org.openhab.binding.serial.internal.handler.SerialDeviceHandler;
 import org.openhab.binding.serial.internal.handler.TcpBridgeHandler;
+import org.openhab.binding.serial.internal.handler.TcpServerBridgeHandler;
 import org.openhab.binding.serial.internal.transform.CascadedValueTransformationImpl;
 import org.openhab.binding.serial.internal.transform.NoOpValueTransformation;
 import org.openhab.binding.serial.internal.transform.ValueTransformation;
@@ -48,7 +49,7 @@ import org.osgi.service.component.annotations.Reference;
 public class SerialHandlerFactory extends BaseThingHandlerFactory implements ValueTransformationProvider {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SERIAL_BRIDGE,
-            THING_TYPE_TCP_BRIDGE, THING_TYPE_DEVICE);
+            THING_TYPE_TCP_BRIDGE, THING_TYPE_TCP_SERVER_BRIDGE, THING_TYPE_DEVICE);
 
     private final SerialPortManager serialPortManager;
 
@@ -70,6 +71,8 @@ public class SerialHandlerFactory extends BaseThingHandlerFactory implements Val
             return new SerialBridgeHandler((Bridge) thing, serialPortManager);
         } else if (THING_TYPE_TCP_BRIDGE.equals(thingTypeUID)) {
             return new TcpBridgeHandler((Bridge) thing);
+        } else if (THING_TYPE_TCP_SERVER_BRIDGE.equals(thingTypeUID)) {
+            return new TcpServerBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return new SerialDeviceHandler(thing, this);
         }
