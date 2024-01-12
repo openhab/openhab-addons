@@ -140,8 +140,7 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
-    @Override
-    public void dispose() {
+    protected void disposeReader() {
         final InputStream inputStream = this.inputStream;
         this.inputStream = null;
         if (inputStream != null) {
@@ -168,7 +167,11 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
         if (reader != null) {
             reader.cancel(false);
         }
+    }
 
+    @Override
+    public void dispose() {
+        disposeReader();
         lastValue = null;
     }
 
@@ -278,7 +281,7 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
                         triggerChannel(TRIGGER_TCP_CHANNEL, CommonTriggerEvents.PRESSED);
                         refresh(STRING_TCP_CHANNEL, result);
                         refresh(BINARY_TCP_CHANNEL, result);
-                    } else {
+                    } else if (this instanceof SerialBridgeHandler) {
                         triggerChannel(TRIGGER_CHANNEL, CommonTriggerEvents.PRESSED);
                         refresh(STRING_CHANNEL, result);
                         refresh(BINARY_CHANNEL, result);
