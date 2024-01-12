@@ -35,6 +35,8 @@ There are three required fields to connect successfully to a ShieldTV.
 | Name             | Type    | Description                           | Default | Required | Advanced |
 |------------------|---------|---------------------------------------|---------|----------|----------|
 | ipAddress        | text    | IP address of the device              | N/A     | yes      | no       |
+| googletvPort     | text    | TCP Port for GoogleTV                 | 6466    | no       | no       |
+| shieldtvPort     | text    | TCP Port for ShieldTV                 | 8987    | no       | no       |
 | keystore         | text    | Location of the Java Keystore         | N/A     | no       | no       |
 | keystorePassword | text    | Password of the Java Keystore         | N/A     | no       | no       |
 | gtvEnabled       | boolean | Enable/Disable the GoogleTV protocol  | true    | no       | no       |

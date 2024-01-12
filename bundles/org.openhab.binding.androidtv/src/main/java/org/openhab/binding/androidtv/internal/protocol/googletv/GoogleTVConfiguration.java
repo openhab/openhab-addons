@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class GoogleTVConfiguration {
 
     public String ipAddress = "";
-    public int port = 6466;
+    public int googletvPort = 6466;
     public int reconnect;
     public int heartbeat;
     public String keystoreFileName = "";
