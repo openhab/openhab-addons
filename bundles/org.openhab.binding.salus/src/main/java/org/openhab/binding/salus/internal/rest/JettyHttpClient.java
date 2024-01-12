@@ -13,6 +13,7 @@
 package org.openhab.binding.salus.internal.rest;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,6 +27,8 @@ import org.eclipse.jetty.client.util.StringContentProvider;
  */
 @NonNullByDefault
 public class JettyHttpClient implements RestClient {
+    private static final int TIMEOUT = 10;
+    private static final int IDLE_TIMEOUT = TIMEOUT;
     private final HttpClient client;
 
     public JettyHttpClient(HttpClient client) {
@@ -63,6 +66,8 @@ public class JettyHttpClient implements RestClient {
                     }
                 }
             }
+            request.timeout(TIMEOUT, SECONDS);
+            request.idleTimeout(IDLE_TIMEOUT, SECONDS);
             var response = request.send();
             return new Response<>(response.getStatus(), response.getContentAsString());
         } catch (Exception ex) {
