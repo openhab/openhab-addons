@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.serial.internal.handler;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,6 +36,12 @@ import org.openhab.core.thing.ThingStatusDetail;
  */
 @NonNullByDefault
 public class TcpBridgeHandler extends CommonBridgeHandler {
+
+    /**
+     * Since InputStream#read will block, we use our own instance of ScheduledThreadPoolExecutor
+     * instead of OpenHab's default one to not block a background thread.
+     */
+    private final ScheduledThreadPoolExecutor readSchedulerExcecutor = new ScheduledThreadPoolExecutor(1);
 
     private TcpBridgeConfiguration config = new TcpBridgeConfiguration();
 
@@ -69,7 +78,7 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
             }
 
             this.socket = socket;
-            inputStream = socket.getInputStream();
+            inputStream = new BufferedInputStream(socket.getInputStream());
             outputStream = socket.getOutputStream();
 
             updateStatus(ThingStatus.ONLINE);
@@ -100,15 +109,21 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
                 readScheduler.cancel(false);
             }
 
-            this.readScheduler = scheduler.schedule(() -> {
+            this.readScheduler = readSchedulerExcecutor.schedule(() -> {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     try {
                         InputStream inputStream = this.inputStream;
                         if (inputStream != null) {
                             synchronized (inputStream) {
-                                if (inputStream.available() > 0) {
-                                    receiveAndProcessNow();
+                                inputStream.mark(1);
+                                // InputStream.available() does not recognise when a client has disconnected,
+                                // so we will use BufferedInputStream and cache one byte.
+                                if (inputStream.read() < 0) {
+                                    throw new SocketException(String.format("Connection lost", socket.getInetAddress(),
+                                            socket.getPort()));
                                 }
+                                inputStream.reset();
+                                receiveAndProcessNow();
                             }
                         }
 
@@ -126,10 +141,7 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
         ScheduledFuture<?> readScheduler = this.readScheduler;
         this.readScheduler = null;
         if (readScheduler != null) {
-            try {
-                readScheduler.cancel(true);
-            } catch (Exception ignore) {
-            }
+            readScheduler.cancel(true);
         }
 
         Socket socket = this.socket;
