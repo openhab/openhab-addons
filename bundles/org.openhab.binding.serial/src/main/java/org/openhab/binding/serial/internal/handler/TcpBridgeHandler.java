@@ -95,7 +95,8 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
         // some kind of locking is required.
         int interval = 250;
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            scheduler.schedule(() -> {
+            this.readScheduler.cancel(true);
+            this.readScheduler = scheduler.schedule(() -> {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     try {
                         InputStream inputStream = this.inputStream;
