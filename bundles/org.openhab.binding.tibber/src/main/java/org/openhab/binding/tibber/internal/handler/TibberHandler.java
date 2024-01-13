@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -52,6 +53,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.TimeSeries;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,6 +205,10 @@ public class TibberHandler extends BaseThingHandler {
                             .getAsJsonObject("home").getAsJsonObject("currentSubscription").getAsJsonObject("priceInfo")
                             .getAsJsonArray("today");
                     updateState(TODAY_PRICES, new StringType(today.toString()));
+
+                    TimeSeries timeSeries = buildTimeSeries(today, tomorrow);
+                    sendTimeSeries(CURRENT_TOTAL, timeSeries);
+
                 } catch (JsonSyntaxException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error communicating with Tibber API: " + e.getMessage());
@@ -265,6 +271,49 @@ public class TibberHandler extends BaseThingHandler {
                 logger.debug("Tibber OFFLINE, attempting thread sleep: {}", e.getMessage());
             }
         }
+    }
+
+    /**
+     * Builds the {@link TimeSeries} that represents the future tibber prices.
+     * As they are valid for one hour every entry is represented by two time series entries.
+     * 
+     * @param today The prices for today
+     * @param tomorrow The prices for tomorrow.
+     * @return The {@link TimeSeries} with future values.
+     */
+    private TimeSeries buildTimeSeries(JsonArray today, JsonArray tomorrow) {
+        final TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
+
+        for (JsonElement entry : today) {
+            DateTimeType startsAt = parseDateTime(entry.getAsJsonObject().get("startsAt"));
+            timeSeries.add( //
+                    startsAt.getInstant(), //
+                    new DecimalType(entry.getAsJsonObject().get("total").getAsString()) //
+            );
+            timeSeries.add( //
+                    startsAt.getInstant().plus(1, ChronoUnit.HOURS).minus(1, ChronoUnit.MICROS), //
+                    new DecimalType(entry.getAsJsonObject().get("total").getAsString()) //
+            );
+        }
+
+        for (JsonElement entry : tomorrow) {
+            DateTimeType startsAt = parseDateTime(entry.getAsJsonObject().get("startsAt"));
+            timeSeries.add( //
+                    startsAt.getInstant(), //
+                    new DecimalType(entry.getAsJsonObject().get("total").getAsString()) //
+            );
+            timeSeries.add( //
+                    startsAt.getInstant().plus(1, ChronoUnit.HOURS).minus(1, ChronoUnit.MICROS), //
+                    new DecimalType(entry.getAsJsonObject().get("total").getAsString()) //
+            );
+        }
+
+        return timeSeries;
+    }
+
+    private static DateTimeType parseDateTime(JsonElement element) {
+        String value = element.getAsString();
+        return new DateTimeType(value);
     }
 
     public void startRefresh(int refresh) {
