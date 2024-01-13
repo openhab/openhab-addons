@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hydrawise.internal.discovery;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -56,7 +56,7 @@ public class HydrawiseCloudControllerDiscoveryService
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
     }
 
     @Override

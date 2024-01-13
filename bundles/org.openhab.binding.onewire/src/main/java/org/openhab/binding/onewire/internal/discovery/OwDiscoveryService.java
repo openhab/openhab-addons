@@ -14,7 +14,7 @@ package org.openhab.binding.onewire.internal.discovery;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -134,6 +134,6 @@ public class OwDiscoveryService extends AbstractThingHandlerDiscoveryService<Ows
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 }

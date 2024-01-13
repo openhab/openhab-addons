@@ -14,8 +14,8 @@ package org.openhab.binding.velbus.internal.discovery;
 
 import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +61,7 @@ public class VelbusThingDiscoveryService extends AbstractThingHandlerDiscoverySe
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
         thingHandler.clearDefaultPacketListener();
     }
 

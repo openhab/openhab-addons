@@ -14,7 +14,7 @@ package org.openhab.binding.livisismarthome.internal.discovery;
 
 import static org.openhab.binding.livisismarthome.internal.LivisiBindingConstants.PROPERTY_ID;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -65,7 +65,7 @@ public class LivisiDeviceDiscoveryService extends AbstractThingHandlerDiscoveryS
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     @Override
