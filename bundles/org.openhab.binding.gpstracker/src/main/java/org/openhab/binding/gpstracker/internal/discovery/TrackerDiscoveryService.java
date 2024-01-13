@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.gpstracker.internal.discovery;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -117,7 +117,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
     @Override
     @Deactivate
     protected void deactivate() {
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
         super.deactivate();
     }
 
