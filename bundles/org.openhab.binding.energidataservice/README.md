@@ -55,7 +55,6 @@ It will not impact channels, see [Electricity Tax](#electricity-tax) for further
 | transmission-grid-tariff | Number:EnergyPrice | Transmission grid tariff in DKK per kWh                                        | no       |
 | electricity-tax          | Number:EnergyPrice | Electricity tax in DKK per kWh                                                 | no       |
 | reduced-electricity-tax  | Number:EnergyPrice | Reduced electricity tax in DKK per kWh. For electric heating customers only    | no       |
-| hourly-prices            | String             | JSON array with hourly prices from 24 hours ago and onward                     | yes      |
 
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
@@ -142,48 +141,16 @@ This reduced rate is made available through channel `reduced-electricity-tax`.
 The binding cannot determine or manage rate variations as they depend on metering data.
 Usually `reduced-electricity-tax` is preferred when using electricity for heating.
 
-#### Hourly Prices
-
-The format of the `hourly-prices` JSON array is as follows:
-
-```json
-[
-	{
-		"hourStart": "2023-09-19T18:00:00Z",
-		"spotPrice": 0.0,
-		"spotPriceCurrency": "DKK",
-		"gridTariff": 0.0,
-		"systemTariff": 0.054,
-		"transmissionGridTariff": 0.058,
-		"electricityTax": 0.697,
-		"reducedElectricityTax": 0.008
-	},
-	{
-		"hourStart": "2023-09-19T19:00:00Z",
-		"spotPrice": -0.00052,
-		"spotPriceCurrency": "DKK",
-		"gridTariff": 0.0,
-		"systemTariff": 0.054,
-		"transmissionGridTariff": 0.058,
-		"electricityTax": 0.697,
-		"reducedElectricityTax": 0.008
-	}
-]
-```
-
-Future spot prices for the next day are usually available around 13:00 CET and are fetched around that time.
-Historic prices older than 24 hours are removed from the JSON array each hour.
-
 ## Thing Actions
 
-Thing actions can be used to perform calculations as well as import prices directly into rules without deserializing JSON from the [hourly-prices](#hourly-prices) channel.
-This is more convenient, much faster, and provides automatic summation of the price components of interest.
+Thing actions can be used to perform calculations as well as import prices directly into rules without relying on persistence.
+This is convenient, fast, and provides automatic summation of the price components of interest.
 
 Actions use cached data for performing operations.
 Since data is only fetched when an item is linked to a channel, there might not be any cached data available.
 In this case the data will be fetched on demand and cached afterwards.
 The first action triggered on a given day may therefore be a bit slower, and is also prone to failing if the server call fails for any reason.
-This potential problem can be prevented by linking the individual channels to items, or by linking the `hourly-prices` channel to an item.
+This potential problem can be prevented by linking the individual channels to items.
 
 ### `calculateCheapestPeriod`
 
@@ -341,8 +308,8 @@ var price = actions.calculatePrice(now.toInstant(), now.plusHours(4).toInstant, 
 The parameter `priceComponents` is a case-insensitive comma-separated list of price components to include in the returned hourly prices.
 These components can be requested:
 
-| Price component        | Description             |
-|------------------------|-------------------------|
+| Price component        | Description              |
+|------------------------|--------------------------|
 | SpotPrice              | Spot price               |
 | GridTariff             | Grid tariff              |
 | SystemTariff           | System tariff            |
@@ -380,8 +347,25 @@ Number GridTariff "Current Grid Tariff" <price> (TotalPrice) { channel="energida
 Number SystemTariff "Current System Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#system-tariff" [profile="transform:VAT"] }
 Number TransmissionGridTariff "Current Transmission Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#transmission-grid-tariff" [profile="transform:VAT"] }
 Number ElectricityTax "Current Electricity Tax" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#electricity-tax" [profile="transform:VAT"] }
-String HourlyPrices "Hourly Prices" <price> { channel="energidataservice:service:energidataservice:electricity#hourly-prices" }
 ```
+
+### Persistence Configuration
+
+```java
+Strategies {
+    default = everyChange
+}
+
+Items {
+    SpotPrice,
+    GridTariff,
+    SystemTariff,
+    TransmissionGridTariff,
+    ElectricityTax: strategy = forecast
+}
+```
+
+In case persistence is only needed for charts and/or accessing prices from rules, [InMemory Persistence](https://www.openhab.org/addons/persistence/inmemory/) can be used.
 
 ### Thing Actions Example
 
@@ -512,6 +496,32 @@ durationPhases.push(time.Duration.ofMinutes(36));
 durationPhases.push(time.Duration.ofMinutes(41));
 
 var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(24*60*60), time.Duration.ofMinutes(236), durationPhases, Quantity("0.1 kWh"));
+```
+
+:::
+
+::::
+
+### Persistence Rule Example
+
+:::: tabs
+
+::: tab DSL
+
+```javascript
+var hourStart = now.plusHours(2).truncatedTo(ChronoUnit.HOURS)
+var price = SpotPrice.historicState(hourStart).state
+logInfo("Spot price two hours from now", price.toString)
+```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var hourStart = time.toZDT().plusHours(2).truncatedTo(time.ChronoUnit.HOURS);
+var price = items.SpotPrice.history.historicState(hourStart).quantityState;
+console.log("Spot price two hours from now: " + price);
 ```
 
 :::
