@@ -187,21 +187,36 @@ public enum SungrowInverterRegisters {
 
     /**
      * Creates a Function that creates {@link QuantityType} states with the given {@link Unit}.
+     *
+     * @param unit {@link Unit} to be used for the value.
+     * @return Function for value creation.
      */
     private static Function<BigDecimal, State> quantityFactory(Unit<?> unit) {
         return (BigDecimal value) -> new QuantityType<>(value, unit);
     }
 
+    /**
+     * Returns the modbus register number.
+     *
+     * @return modbus register number.
+     */
     public int getRegisterNumber() {
         return registerNumber;
     }
 
+    /**
+     * Returns the {@link ValueType} for the channel.
+     * 
+     * @return {@link ValueType} for the channel.
+     */
     public ValueType getType() {
         return type;
     }
 
     /**
      * Returns the count of registers read to return the value of this register.
+     * 
+     * @return register count.
      */
     public int getRegisterCount() {
         return this.type.getBits() / 16;
@@ -209,6 +224,8 @@ public enum SungrowInverterRegisters {
 
     /**
      * Returns the channel group.
+     * 
+     * @return channel group id.
      */
     public String getChannelGroup() {
         return channelGroup;
@@ -216,6 +233,8 @@ public enum SungrowInverterRegisters {
 
     /**
      * Returns the channel name.
+     * 
+     * @return the channel name.
      */
     public String getChannelName() {
         return this.name().toLowerCase().replace('_', '-');
@@ -223,6 +242,9 @@ public enum SungrowInverterRegisters {
 
     /**
      * Creates the {@link State} for the given register value.
+     *
+     * @param registerValue the value for the channel.
+     * @return {@link State] for the given value.
      */
     public State createState(DecimalType registerValue) {
         final BigDecimal scaledValue = registerValue.toBigDecimal().multiply(this.multiplier);

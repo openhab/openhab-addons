@@ -107,7 +107,7 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
             }
         }
 
-        if (currentRequest.size() > 0) {
+        if (!currentRequest.isEmpty()) {
             requests.add(new ModbusRequest(currentRequest, getSlaveId()));
         }
         logger.debug("Created {} modbus request templates.", requests.size());
