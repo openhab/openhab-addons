@@ -24,6 +24,14 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.internal.ThingImpl;
 
+
+/**
+ * Testcode for TACMI Handler
+ * 
+ *
+ * @author Martin Schafföner
+ *
+ */
 public class TACmiHandlerTest {
 
     public static Stream<Arguments> provideOutputIndices() {
