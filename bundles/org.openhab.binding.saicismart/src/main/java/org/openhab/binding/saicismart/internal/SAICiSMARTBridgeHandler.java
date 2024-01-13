@@ -97,7 +97,6 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-
         config = getConfigAs(SAICiSMARTBridgeConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
 

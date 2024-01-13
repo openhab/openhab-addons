@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.saicismart.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import net.heberling.ismart.asn1.v3_0.MP_DispatcherBody;
 
 /**
- * @author Doug Culnane
+ * @author Doug Culnane - Initial contribution
  */
+@NonNullByDefault
 public class ChargingStatusAPIException extends Exception {
 
     public ChargingStatusAPIException(MP_DispatcherBody body) {

@@ -204,7 +204,6 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                 OTA_RVCStatus25857.class).decodeResponse(enableACResponseMessage);
 
         // ... use that to request the data again, until we have it
-        // TODO: check for real errors (result!=0 and/or errorMessagePresent)
         while (enableACResponse.getApplicationData() == null) {
             if (enableACResponse.getBody().isErrorMessagePresent()) {
                 if (enableACResponse.getBody().getResult() == 2) {
