@@ -108,7 +108,7 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
     private void waitForConnection() {
         ServerSocket server = this.server;
         TcpServerBridgeConfiguration config = this.config;
-        if (getThing().getStatus() == ThingStatus.ONLINE && server != null && config != null) {
+        if (getThing().getStatus() == ThingStatus.ONLINE && server != null) {
             ScheduledFuture<?> acceptScheduler = this.connectionScheduler;
             if (acceptScheduler != null) {
                 acceptScheduler.cancel(true);
