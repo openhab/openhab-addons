@@ -14,8 +14,8 @@ package org.openhab.binding.hue.internal.discovery;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
+import java.time.Instant;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,7 +127,7 @@ public class HueDeviceDiscoveryService extends AbstractThingHandlerDiscoveryServ
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime(), bridgeUID);
+        removeOlderResults(Instant.now().toEpochMilli(), bridgeUID);
         thingHandler.unregisterDiscoveryListener();
     }
 

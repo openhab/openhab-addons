@@ -14,7 +14,7 @@ package org.openhab.binding.openweathermap.internal.discovery;
 
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
@@ -72,7 +72,7 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void deactivate() {
-        removeOlderResults(new Date().getTime(), bridgeHandler.getThing().getUID());
+        removeOlderResults(Instant.now().toEpochMilli(), bridgeHandler.getThing().getUID());
         super.deactivate();
     }
 
