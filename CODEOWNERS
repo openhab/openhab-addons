@@ -46,6 +46,7 @@
 /bundles/org.openhab.binding.bluetooth.enoceanble/ @pfink
 /bundles/org.openhab.binding.bluetooth.generic/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.govee/ @cpmeister
+/bundles/org.openhab.binding.bluetooth.grundfosalpha/ @tisoft
 /bundles/org.openhab.binding.bluetooth.radoneye/ @petero-dk
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
@@ -122,6 +123,7 @@
 /bundles/org.openhab.binding.generacmobilelink/ @digitaldan
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.goecharger/ @SamuelBrucksch
+/bundles/org.openhab.binding.govee/ @stefan-hoehn
 /bundles/org.openhab.binding.gpio/ @nils-bauer
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
 /bundles/org.openhab.binding.gree/ @markus7017
@@ -224,7 +226,7 @@
 /bundles/org.openhab.binding.mqtt.homie/ @ccutrer
 /bundles/org.openhab.binding.mqtt.ruuvigateway/ @ssalonen
 /bundles/org.openhab.binding.mycroft/ @dalgwen
-/bundles/org.openhab.binding.mybmw/ @weymann @ntruchsess
+/bundles/org.openhab.binding.mybmw/ @ntruchsess @mherwege @martingrassl
 /bundles/org.openhab.binding.mynice/ @clinique
 /bundles/org.openhab.binding.mystrom/ @pail23
 /bundles/org.openhab.binding.nanoleaf/ @stefan-hoehn
@@ -262,6 +264,7 @@
 /bundles/org.openhab.binding.oppo/ @mlobstein
 /bundles/org.openhab.binding.orbitbhyve/ @octa22
 /bundles/org.openhab.binding.orvibo/ @tavalin
+/bundles/org.openhab.binding.panasonicbdp/ @mlobstein
 /bundles/org.openhab.binding.paradoxalarm/ @theater
 /bundles/org.openhab.binding.pentair/ @jsjames
 /bundles/org.openhab.binding.phc/ @gnlpfjh
@@ -315,6 +318,7 @@
 /bundles/org.openhab.binding.smaenergymeter/ @monnimeter
 /bundles/org.openhab.binding.smartmeter/ @msteigenberger
 /bundles/org.openhab.binding.smartthings/ @BobRak
+/bundles/org.openhab.binding.smgw/ @J-N-K
 /bundles/org.openhab.binding.smhi/ @pacive
 /bundles/org.openhab.binding.smsmodem/ @dalgwen
 /bundles/org.openhab.binding.sncf/ @clinique
@@ -423,10 +427,8 @@
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.marytts/ @kaikreuzer
 /bundles/org.openhab.voice.mimictts/ @dalgwen
-/bundles/org.openhab.voice.actiontemplatehli/ @GiviMAD
 /bundles/org.openhab.voice.picotts/ @FlorianSW
 /bundles/org.openhab.voice.pollytts/ @openhab/add-ons-maintainers
-/bundles/org.openhab.voice.porcupineks/ @GiviMAD
 /bundles/org.openhab.voice.rustpotterks/ @GiviMAD
 /bundles/org.openhab.voice.voicerss/ @lolodomo
 /bundles/org.openhab.voice.voskstt/ @GiviMAD

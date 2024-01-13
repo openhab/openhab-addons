@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,10 @@ import tuwien.auto.calimero.KNXFormatException;
 import tuwien.auto.calimero.KNXIllegalArgumentException;
 import tuwien.auto.calimero.dptxlator.DPTXlator;
 import tuwien.auto.calimero.dptxlator.DPTXlator1BitControlled;
+import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
+import tuwien.auto.calimero.dptxlator.DPTXlator64BitSigned;
+import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
 import tuwien.auto.calimero.dptxlator.DPTXlatorSceneControl;
@@ -134,13 +137,22 @@ public class ValueDecoder {
                     }
                     return new DecimalType(decimalValue);
                 case "19":
-                    return handleDpt19(translator);
-                case "16":
+                    return handleDpt19(translator, data);
                 case "20":
                 case "21":
+                    return handleStringOrDecimal(data, value, preferredType, 8);
                 case "22":
+                    return handleStringOrDecimal(data, value, preferredType, 16);
+                case "16":
                 case "28":
+                case "250": // Map all combined color transitions to String,
+                case "252": // as no native support is planned.
+                case "253": // Currently only one subtype 2xx.600
+                case "254": // is defined for those DPTs.
                     return StringType.valueOf(value);
+                case "243": // color translation, fix regional
+                case "249": // settings
+                    return StringType.valueOf(value.replace(',', '.').replace(". ", ", "));
                 case "232":
                     return handleDpt232(value, subType);
                 case "242":
@@ -149,6 +161,7 @@ public class ValueDecoder {
                     return handleDpt251(value, preferredType);
                 default:
                     return handleNumericDpt(id, translator, preferredType);
+                // TODO 6.001 is mapped to PercentType, which can only cover 0-100%, not -128..127%
             }
         } catch (NumberFormatException | KNXFormatException | KNXIllegalArgumentException | ParseException e) {
             LOGGER.info("Translator couldn't parse data '{}' for datapoint type '{}' ({}).", data, dptId, e.getClass());
@@ -198,19 +211,10 @@ public class ValueDecoder {
     }
 
     private static Type handleDpt10(String value) throws ParseException {
-        if (value.contains("no-day")) {
-            /*
-             * KNX "no-day" needs special treatment since openHAB's DateTimeType doesn't support "no-day".
-             * Workaround: remove the "no-day" String, parse the remaining time string, which will result in a
-             * date of "1970-01-01".
-             * Replace "no-day" with the current day name
-             */
-            StringBuilder stb = new StringBuilder(value);
-            int start = stb.indexOf("no-day");
-            int end = start + "no-day".length();
-            stb.replace(start, end, String.format(Locale.US, "%1$ta", Calendar.getInstance()));
-            value = stb.toString();
-        }
+        // TODO check handling of DPT10: date is not set to current date, but 1970-01-01 + offset if day is given
+        // maybe we should change the semantics and use current date + offset if day is given
+
+        // Calimero will provide either TIME_DAY_FORMAT or TIME_FORMAT, no-day is not printed
         Date date = null;
         try {
             date = new SimpleDateFormat(TIME_DAY_FORMAT, Locale.US).parse(value);
@@ -220,7 +224,7 @@ public class ValueDecoder {
         return DateTimeType.valueOf(new SimpleDateFormat(DateTimeType.DATE_PATTERN).format(date));
     }
 
-    private static @Nullable Type handleDpt19(DPTXlator translator) throws KNXFormatException {
+    private static @Nullable Type handleDpt19(DPTXlator translator, byte[] data) throws KNXFormatException {
         DPTXlatorDateTime translatorDateTime = (DPTXlatorDateTime) translator;
         if (translatorDateTime.isFaultyClock()) {
             // Not supported: faulty clock
@@ -263,12 +267,47 @@ public class ValueDecoder {
         } else if (translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
                 && translatorDateTime.isValidField(DPTXlatorDateTime.TIME)) {
             // Date format and time information
-            cal.setTimeInMillis(translatorDateTime.getValueMilliseconds());
+            try {
+                cal.setTimeInMillis(translatorDateTime.getValueMilliseconds());
+            } catch (KNXFormatException ignore) {
+                // throws KNXFormatException in case DST (SUTI) flag does not match calendar
+                // As the spec regards the SUTI flag as purely informative, flip it and try again.
+                if (data.length < 8) {
+                    return null;
+                }
+                data[6] = (byte) (data[6] ^ 0x01);
+                translator.setData(data, 0);
+                cal.setTimeInMillis(translatorDateTime.getValueMilliseconds());
+            }
             String value = new SimpleDateFormat(DateTimeType.DATE_PATTERN).format(cal.getTime());
             return DateTimeType.valueOf(value);
         } else {
             LOGGER.warn("Failed to convert '{}'", translator.getValue());
             return null;
+        }
+    }
+
+    private static @Nullable Type handleStringOrDecimal(byte[] data, String value, Class<? extends Type> preferredType,
+            int bits) {
+        if (DecimalType.class.equals(preferredType)) {
+            try {
+                // need a new translator for 8 bit unsigned, as Calimero handles only the string type
+                if (bits == 8) {
+                    DPTXlator8BitUnsigned translator = new DPTXlator8BitUnsigned("5.010");
+                    translator.setData(data);
+                    return new DecimalType(translator.getValueUnsigned());
+                } else if (bits == 16) {
+                    DPTXlator2ByteUnsigned translator = new DPTXlator2ByteUnsigned("7.001");
+                    translator.setData(data);
+                    return new DecimalType(translator.getValueUnsigned());
+                } else {
+                    return null;
+                }
+            } catch (KNXFormatException e) {
+                return null;
+            }
+        } else {
+            return StringType.valueOf(value);
         }
     }
 
@@ -358,6 +397,10 @@ public class ValueDecoder {
         if (allowedTypes.contains(QuantityType.class) && !disableUoM) {
             String unit = DPTUnits.getUnitForDpt(id);
             if (unit != null) {
+                if (translator instanceof DPTXlator64BitSigned translatorSigned) {
+                    // prevent loss of precision, do not represent 64bit decimal using double
+                    return new QuantityType<>(translatorSigned.getValueSigned() + " " + unit);
+                }
                 return new QuantityType<>(value + " " + unit);
             } else {
                 LOGGER.trace("Could not determine unit for DPT '{}', fallback to plain decimal", id);
@@ -365,6 +408,10 @@ public class ValueDecoder {
         }
 
         if (allowedTypes.contains(DecimalType.class)) {
+            if (translator instanceof DPTXlator64BitSigned translatorSigned) {
+                // prevent loss of precision, do not represent 64bit decimal using double
+                return new DecimalType(translatorSigned.getValueSigned());
+            }
             return new DecimalType(value);
         }
 

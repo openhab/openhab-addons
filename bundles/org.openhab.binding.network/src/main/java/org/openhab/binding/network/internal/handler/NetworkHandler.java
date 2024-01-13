@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,9 @@
 package org.openhab.binding.network.internal.handler;
 
 import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
+import static org.openhab.binding.network.internal.utils.NetworkUtils.durationToMillis;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -33,7 +35,6 @@ import org.openhab.binding.network.internal.PresenceDetectionValue;
 import org.openhab.binding.network.internal.WakeOnLanPacketSender;
 import org.openhab.binding.network.internal.action.NetworkActions;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -92,22 +93,19 @@ public class NetworkHandler extends BaseThingHandler
 
         switch (channelUID.getId()) {
             case CHANNEL_ONLINE:
-                presenceDetection.getValue(
-                        value -> updateState(CHANNEL_ONLINE, value.isReachable() ? OnOffType.ON : OnOffType.OFF));
+                presenceDetection.getValue(value -> updateState(CHANNEL_ONLINE, OnOffType.from(value.isReachable())));
                 break;
             case CHANNEL_LATENCY:
-            case CHANNEL_DEPRECATED_TIME:
                 presenceDetection.getValue(value -> {
-                    updateState(CHANNEL_LATENCY,
-                            new QuantityType<>(value.getLowestLatency(), MetricPrefix.MILLI(Units.SECOND)));
-                    updateState(CHANNEL_DEPRECATED_TIME, new DecimalType(value.getLowestLatency()));
+                    double latencyMs = durationToMillis(value.getLowestLatency());
+                    updateState(CHANNEL_LATENCY, new QuantityType<>(latencyMs, MetricPrefix.MILLI(Units.SECOND)));
                 });
                 break;
             case CHANNEL_LASTSEEN:
-                if (presenceDetection.getLastSeen() > 0) {
-                    Instant instant = Instant.ofEpochMilli(presenceDetection.getLastSeen());
+                Instant lastSeen = presenceDetection.getLastSeen();
+                if (lastSeen != null) {
                     updateState(CHANNEL_LASTSEEN, new DateTimeType(
-                            ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId()).withFixedOffsetZone()));
+                            ZonedDateTime.ofInstant(lastSeen, TimeZone.getDefault().toZoneId()).withFixedOffsetZone()));
                 } else {
                     updateState(CHANNEL_LASTSEEN, UnDefType.UNDEF);
                 }
@@ -129,28 +127,29 @@ public class NetworkHandler extends BaseThingHandler
 
     @Override
     public void partialDetectionResult(PresenceDetectionValue value) {
+        double latencyMs = durationToMillis(value.getLowestLatency());
         updateState(CHANNEL_ONLINE, OnOffType.ON);
-        updateState(CHANNEL_LATENCY, new QuantityType<>(value.getLowestLatency(), MetricPrefix.MILLI(Units.SECOND)));
-        updateState(CHANNEL_DEPRECATED_TIME, new DecimalType(value.getLowestLatency()));
+        updateState(CHANNEL_LATENCY, new QuantityType<>(latencyMs, MetricPrefix.MILLI(Units.SECOND)));
     }
 
     @Override
     public void finalDetectionResult(PresenceDetectionValue value) {
         // We do not notify the framework immediately if a device presence detection failed and
         // the user configured retries to be > 1.
-        retryCounter = !value.isReachable() ? retryCounter + 1 : 0;
+        retryCounter = value.isReachable() ? 0 : retryCounter + 1;
 
-        if (retryCounter >= this.retries) {
+        if (retryCounter >= retries) {
             updateState(CHANNEL_ONLINE, OnOffType.OFF);
             updateState(CHANNEL_LATENCY, UnDefType.UNDEF);
-            updateState(CHANNEL_DEPRECATED_TIME, UnDefType.UNDEF);
             retryCounter = 0;
         }
 
-        if (value.isReachable()) {
-            Instant instant = Instant.ofEpochMilli(presenceDetection.getLastSeen());
+        Instant lastSeen = presenceDetection.getLastSeen();
+        if (value.isReachable() && lastSeen != null) {
             updateState(CHANNEL_LASTSEEN, new DateTimeType(
-                    ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId()).withFixedOffsetZone()));
+                    ZonedDateTime.ofInstant(lastSeen, TimeZone.getDefault().toZoneId()).withFixedOffsetZone()));
+        } else if (!value.isReachable() && lastSeen == null) {
+            updateState(CHANNEL_LASTSEEN, UnDefType.UNDEF);
         }
 
         updateNetworkProperties();
@@ -174,6 +173,7 @@ public class NetworkHandler extends BaseThingHandler
 
         this.presenceDetection = presenceDetection;
         presenceDetection.setHostname(handlerConfiguration.hostname);
+        presenceDetection.setNetworkInterfaceNames(handlerConfiguration.networkInterfaceNames);
         presenceDetection.setPreferResponseTimeAsLatency(configuration.preferResponseTimeAsLatency);
 
         if (isTCPServiceDevice) {
@@ -196,14 +196,14 @@ public class NetworkHandler extends BaseThingHandler
         }
 
         this.retries = handlerConfiguration.retry.intValue();
-        presenceDetection.setRefreshInterval(handlerConfiguration.refreshInterval.longValue());
-        presenceDetection.setTimeout(handlerConfiguration.timeout.intValue());
+        presenceDetection.setRefreshInterval(Duration.ofMillis(handlerConfiguration.refreshInterval));
+        presenceDetection.setTimeout(Duration.ofMillis(handlerConfiguration.timeout));
 
         wakeOnLanPacketSender = new WakeOnLanPacketSender(handlerConfiguration.macAddress,
-                handlerConfiguration.hostname, handlerConfiguration.port);
+                handlerConfiguration.hostname, handlerConfiguration.port, handlerConfiguration.networkInterfaceNames);
 
         updateStatus(ThingStatus.ONLINE);
-        presenceDetection.startAutomaticRefresh(scheduler);
+        presenceDetection.startAutomaticRefresh();
 
         updateNetworkProperties();
     }
@@ -222,7 +222,8 @@ public class NetworkHandler extends BaseThingHandler
     // Create a new network service and apply all configurations.
     @Override
     public void initialize() {
-        initialize(new PresenceDetection(this, configuration.cacheDeviceStateTimeInMS.intValue()));
+        initialize(new PresenceDetection(this, scheduler,
+                Duration.ofMillis(configuration.cacheDeviceStateTimeInMS.intValue())));
     }
 
     /**

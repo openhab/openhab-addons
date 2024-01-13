@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,8 +20,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -52,10 +50,6 @@ public class NADeserializer {
                 .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
                 .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
                 .registerTypeAdapter(ModuleType.class, new ModuleTypeDeserializer())
-                .registerTypeAdapter(HomeStatus.class,
-                        (JsonDeserializer<HomeStatus>) (json, type, context) -> context.deserialize(json,
-                                json.getAsJsonObject().has("persons") ? NAHomeStatus.Security.class
-                                        : NAHomeStatus.Energy.class))
                 .registerTypeAdapter(HomeData.class,
                         (JsonDeserializer<HomeData>) (json, type, context) -> context.deserialize(json,
                                 json.getAsJsonObject().has("therm_mode") ? HomeData.Energy.class

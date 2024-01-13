@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
     public AwattarNonConsecutiveBestPriceResult(int size, ZoneId zoneId) {
         super();
         this.zoneId = zoneId;
-        members = new ArrayList<AwattarPrice>();
+        members = new ArrayList<>();
     }
 
     public void addMember(AwattarPrice member) {
@@ -59,7 +59,7 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
 
     private void sort() {
         if (!sorted) {
-            members.sort(new Comparator<AwattarPrice>() {
+            members.sort(new Comparator<>() {
                 @Override
                 public int compare(AwattarPrice o1, AwattarPrice o2) {
                     return Long.compare(o1.getStartTimestamp(), o2.getStartTimestamp());

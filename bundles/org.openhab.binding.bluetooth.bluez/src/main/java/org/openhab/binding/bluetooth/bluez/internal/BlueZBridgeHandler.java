@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,20 @@
  */
 package org.openhab.binding.bluetooth.bluez.internal;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.bluez.exceptions.BluezFailedException;
+import org.bluez.exceptions.BluezInvalidArgumentsException;
+import org.bluez.exceptions.BluezNotReadyException;
+import org.bluez.exceptions.BluezNotSupportedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.freedesktop.dbus.types.Variant;
 import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.bluez.internal.events.AdapterDiscoveringChangedEvent;
@@ -137,6 +144,15 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                     "Adapter is not powered, attempting to turn on...");
             return null;
+        }
+
+        Map<String, Variant<?>> filter = new HashMap<>();
+        filter.put("DuplicateData", new Variant<>(true));
+        try {
+            adapter.setDiscoveryFilter(filter);
+        } catch (BluezInvalidArgumentsException | BluezFailedException | BluezNotSupportedException
+                | BluezNotReadyException e) {
+            throw new RuntimeException(e);
         }
 
         // now lets make sure that discovery is turned on

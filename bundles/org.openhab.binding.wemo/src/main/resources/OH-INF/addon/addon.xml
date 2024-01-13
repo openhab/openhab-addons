@@ -8,4 +8,20 @@
 	<description>The WeMo binding integrates Belkin WeMo devices.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i).*BELKIN.*</regex>
+				</match-property>
+				<match-property>
+					<name>modelName</name>
+					<regex>(?i)(socket|outdoorplug|insight|lightswitch|motion|sensor|bridge|maker|coffee|dimmer|crockpot|airpurifier|humidifier|heater).*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

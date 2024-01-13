@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
 public class WLedBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     public final WledDynamicStateDescriptionProvider stateDescriptionProvider;
-    private Map<Integer, WLedSegmentHandler> segmentHandlers = new HashMap<Integer, WLedSegmentHandler>();
+    private Map<Integer, WLedSegmentHandler> segmentHandlers = new HashMap<>();
     private WledApiFactory apiFactory;
     public boolean hasWhite = false;
     public @Nullable WledApi api;

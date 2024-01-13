@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,7 +91,7 @@ public class VelbusRelayHandler extends VelbusThingHandler {
                 boolean on = packet[7] != 0x00;
 
                 VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address, channel);
-                OnOffType state = on ? OnOffType.ON : OnOffType.OFF;
+                OnOffType state = OnOffType.from(on);
                 updateState(getModuleAddress().getChannelId(velbusChannelIdentifier), state);
             }
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -183,7 +183,7 @@ public abstract class SmartthingsConverter {
             case "String":
                 return new StringType((String) deviceValue);
             case "Switch":
-                return "on".equals(deviceValue) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from("on".equals(deviceValue));
 
             // Vector3 can't be triggered now but keep it to handle acceleration device
             case "Vector3":

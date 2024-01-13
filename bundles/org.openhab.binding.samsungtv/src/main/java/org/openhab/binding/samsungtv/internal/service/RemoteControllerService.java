@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -472,11 +472,11 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         for (EventListener listener : listeners) {
             // order of state updates is important to prevent extraneous transitions in overall state
             if (on) {
-                listener.valueReceived(POWER, on ? OnOffType.ON : OnOffType.OFF);
-                listener.valueReceived(ART_MODE, artmode ? OnOffType.ON : OnOffType.OFF);
+                listener.valueReceived(POWER, OnOffType.from(on));
+                listener.valueReceived(ART_MODE, OnOffType.from(artmode));
             } else {
-                listener.valueReceived(ART_MODE, artmode ? OnOffType.ON : OnOffType.OFF);
-                listener.valueReceived(POWER, on ? OnOffType.ON : OnOffType.OFF);
+                listener.valueReceived(ART_MODE, OnOffType.from(artmode));
+                listener.valueReceived(POWER, OnOffType.from(on));
             }
         }
     }

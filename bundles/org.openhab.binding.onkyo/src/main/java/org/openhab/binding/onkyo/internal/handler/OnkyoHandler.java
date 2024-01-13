@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -561,7 +561,7 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
 
             } else if (classToConvert == OnOffType.class) {
                 index = Integer.parseInt(data, 16);
-                state = index == 0 ? OnOffType.OFF : OnOffType.ON;
+                state = OnOffType.from(index != 0);
 
             } else if (classToConvert == DecimalType.class) {
                 index = Integer.parseInt(data, 16);

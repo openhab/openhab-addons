@@ -74,7 +74,7 @@
 		<parameter name="postCommand" type="boolean">
 			<label>Is Command</label>
 			<description>If the received MQTT value should not only update the state of linked items, but command them, enable
-				this option.</description>
+				this option. Note that if the value is NaN (interpreted as UNDEF), it can only update; commands are not possible.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>

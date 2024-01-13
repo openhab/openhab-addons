@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -819,7 +819,7 @@ class AtlonaPro3PortocolHandler {
      */
     private void handlePanelLockResponse(String resp) {
         callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
-                AtlonaPro3Constants.CHANNEL_PANELLOCK), RSP_LOCK.equals(resp) ? OnOffType.ON : OnOffType.OFF);
+                AtlonaPro3Constants.CHANNEL_PANELLOCK), OnOffType.from(RSP_LOCK.equals(resp)));
     }
 
     /**
@@ -1012,7 +1012,7 @@ class AtlonaPro3PortocolHandler {
      */
     private void handleIrLockResponse(String resp) {
         callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
-                AtlonaPro3Constants.CHANNEL_IRENABLE), RSP_IRON.equals(resp) ? OnOffType.ON : OnOffType.OFF);
+                AtlonaPro3Constants.CHANNEL_IRENABLE), OnOffType.from(RSP_IRON.equals(resp)));
     }
 
     /**

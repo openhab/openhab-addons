@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,10 +50,12 @@ import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceDat
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Unit tests for {@link LongPolling}.
@@ -163,12 +165,12 @@ class LongPollingTest {
         @Override
         public ScheduledFuture<?> schedule(@Nullable Runnable command, long delay, @Nullable TimeUnit unit) {
             // not used in this tests
-            return new NullScheduledFuture<Object>();
+            return new NullScheduledFuture<>();
         }
 
         @Override
         public <V> ScheduledFuture<V> schedule(@Nullable Callable<V> callable, long delay, @Nullable TimeUnit unit) {
-            return new NullScheduledFuture<V>();
+            return new NullScheduledFuture<>();
         }
 
         @Override
@@ -177,7 +179,7 @@ class LongPollingTest {
             if (command != null) {
                 command.run();
             }
-            return new NullScheduledFuture<Object>();
+            return new NullScheduledFuture<>();
         }
 
         @Override
@@ -186,7 +188,7 @@ class LongPollingTest {
             if (command != null) {
                 command.run();
             }
-            return new NullScheduledFuture<Object>();
+            return new NullScheduledFuture<>();
         }
     }
 
@@ -249,9 +251,8 @@ class LongPollingTest {
     }
 
     @Test
-    void startLongPolling_receiveScenario()
+    void startLongPollingReceiveScenario()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        // when(httpClient.getBoschSmartHomeUrl(anyString())).thenCallRealMethod();
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request subscribeRequest = mock(Request.class);
@@ -288,6 +289,47 @@ class LongPollingTest {
         assertEquals("509bd737-eed0-40b7-8caa-e8686a714399", longPollResultItem.id);
         assertEquals("My scenario", longPollResultItem.name);
         assertEquals("1693758693032", longPollResultItem.lastTimeTriggered);
+    }
+
+    @Test
+    void startLongPollingReceiveUserDefinedState()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
+
+        Request subscribeRequest = mock(Request.class);
+        when(httpClient.createRequest(anyString(), same(HttpMethod.POST),
+                argThat((JsonRpcRequest r) -> "RE/subscribe".equals(r.method)))).thenReturn(subscribeRequest);
+        SubscribeResult subscribeResult = new SubscribeResult();
+        when(httpClient.sendRequest(any(), same(SubscribeResult.class), any(), any())).thenReturn(subscribeResult);
+
+        Request longPollRequest = mock(Request.class);
+        when(httpClient.createRequest(anyString(), same(HttpMethod.POST),
+                argThat((JsonRpcRequest r) -> "RE/longPoll".equals(r.method)))).thenReturn(longPollRequest);
+
+        fixture.start(httpClient);
+
+        ArgumentCaptor<CompleteListener> completeListener = ArgumentCaptor.forClass(CompleteListener.class);
+        verify(longPollRequest).send(completeListener.capture());
+
+        BufferingResponseListener bufferingResponseListener = (BufferingResponseListener) completeListener.getValue();
+
+        String longPollResultJSON = "{\"result\":[{\"deleted\":false,\"@type\":\"userDefinedState\",\"name\":\"My User state\",\"id\":\"23d34fa6-382a-444d-8aae-89c706e22155\",\"state\":true}],\"jsonrpc\":\"2.0\"}\n";
+        Response response = mock(Response.class);
+        bufferingResponseListener.onContent(response,
+                ByteBuffer.wrap(longPollResultJSON.getBytes(StandardCharsets.UTF_8)));
+
+        Result result = mock(Result.class);
+        bufferingResponseListener.onComplete(result);
+
+        ArgumentCaptor<LongPollResult> longPollResultCaptor = ArgumentCaptor.forClass(LongPollResult.class);
+        verify(longPollHandler).accept(longPollResultCaptor.capture());
+        LongPollResult longPollResult = longPollResultCaptor.getValue();
+        assertEquals(1, longPollResult.result.size());
+        assertEquals(longPollResult.result.get(0).getClass(), UserDefinedState.class);
+        UserDefinedState longPollResultItem = (UserDefinedState) longPollResult.result.get(0);
+        assertEquals("23d34fa6-382a-444d-8aae-89c706e22155", longPollResultItem.getId());
+        assertEquals("My User state", longPollResultItem.getName());
+        assertTrue(longPollResultItem.isState());
     }
 
     @Test
@@ -362,6 +404,50 @@ class LongPollingTest {
 
         Result result = mock(Result.class);
         bufferingResponseListener.onComplete(result);
+    }
+
+    /**
+     * Tests a case in which the Smart Home Controller returns a HTML error response that is not parsable as JSON.
+     * <p>
+     * See <a href="https://github.com/openhab/openhab-addons/issues/15912">Issue 15912</a>
+     */
+    @Test
+    void startLongPollingInvalidLongPollResponse()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
+
+        Request subscribeRequest = mock(Request.class);
+        when(httpClient.createRequest(anyString(), same(HttpMethod.POST),
+                argThat((JsonRpcRequest r) -> "RE/subscribe".equals(r.method)))).thenReturn(subscribeRequest);
+        SubscribeResult subscribeResult = new SubscribeResult();
+        when(httpClient.sendRequest(any(), same(SubscribeResult.class), any(), any())).thenReturn(subscribeResult);
+
+        Request longPollRequest = mock(Request.class);
+        when(httpClient.createRequest(anyString(), same(HttpMethod.POST),
+                argThat((JsonRpcRequest r) -> "RE/longPoll".equals(r.method)))).thenReturn(longPollRequest);
+
+        fixture.start(httpClient);
+
+        ArgumentCaptor<CompleteListener> completeListener = ArgumentCaptor.forClass(CompleteListener.class);
+        verify(longPollRequest).send(completeListener.capture());
+
+        BufferingResponseListener bufferingResponseListener = (BufferingResponseListener) completeListener.getValue();
+
+        String longPollResultContent = "<HTML><HEAD><TITLE>400</TITLE></HEAD><BODY><H1>400 Unsupported HTTP Protocol Version: /remote/json-rpcHTTP/1.1</H1></BODY></HTML>";
+        Response response = mock(Response.class);
+        bufferingResponseListener.onContent(response,
+                ByteBuffer.wrap(longPollResultContent.getBytes(StandardCharsets.UTF_8)));
+
+        Result result = mock(Result.class);
+        bufferingResponseListener.onComplete(result);
+
+        ArgumentCaptor<Throwable> throwableCaptor = ArgumentCaptor.forClass(Throwable.class);
+        verify(failureHandler).accept(throwableCaptor.capture());
+        Throwable t = throwableCaptor.getValue();
+        assertEquals(
+                "Could not deserialize long poll response: '<HTML><HEAD><TITLE>400</TITLE></HEAD><BODY><H1>400 Unsupported HTTP Protocol Version: /remote/json-rpcHTTP/1.1</H1></BODY></HTML>'",
+                t.getMessage());
+        assertTrue(t.getCause() instanceof JsonSyntaxException);
     }
 
     @AfterEach

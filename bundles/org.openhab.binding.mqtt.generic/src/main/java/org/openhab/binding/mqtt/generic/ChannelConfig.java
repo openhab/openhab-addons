@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,9 @@ public class ChannelConfig {
 
     /**
      * If true, the channel state is not updated on a new message.
-     * Instead a postCommand() call is performed.
+     * Instead a postCommand() call is performed. If the message is
+     * not possible to send as a command (i.e. UNDEF), it will ignore
+     * this.
      */
     public boolean postCommand = false;
     public @Nullable Integer qos;

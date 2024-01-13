@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,7 +105,7 @@ public class InsightParser {
     }
 
     private State getOnOff(String value) {
-        return "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(!"0".equals(value));
     }
 
     private State getDateTime(String value) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ class ImageTest {
     @Test
     public void testConfig() {
         Optional<VehicleConfiguration> config = Optional.of(new VehicleConfiguration());
-        MultiMap<String> parameterMap = new MultiMap<String>();
+        MultiMap<String> parameterMap = new MultiMap<>();
         parameterMap.add("background", Boolean.toString(config.get().background));
         parameterMap.add("night", Boolean.toString(config.get().night));
         parameterMap.add("cropped", Boolean.toString(config.get().cropped));
@@ -45,7 +45,7 @@ class ImageTest {
         config.get().background = true;
         config.get().format = "png";
         config.get().cropped = true;
-        parameterMap = new MultiMap<String>();
+        parameterMap = new MultiMap<>();
         parameterMap.add("background", Boolean.toString(config.get().background));
         parameterMap.add("night", Boolean.toString(config.get().night));
         parameterMap.add("cropped", Boolean.toString(config.get().cropped));

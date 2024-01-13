@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,7 +105,7 @@ public class Resource {
     private @Nullable @SerializedName("relative_rotary") RelativeRotary relativeRotary;
     private @Nullable List<ResourceReference> children;
     private @Nullable JsonElement status;
-    private @Nullable @SuppressWarnings("unused") Dynamics dynamics;
+    private @Nullable Dynamics dynamics;
     private @Nullable @SerializedName("contact_report") ContactReport contactReport;
     private @Nullable @SerializedName("tamper_reports") List<TamperReport> tamperReports;
     private @Nullable String state;
@@ -119,6 +119,36 @@ public class Resource {
         if (Objects.nonNull(resourceType)) {
             setType(resourceType);
         }
+    }
+
+    /**
+     * Check if <code>light</code> or <code>grouped_light</code> resource contains any
+     * relevant fields to process according to its type.
+     * 
+     * As an example, {@link #colorTemperature} is relevant for a <code>light</code>
+     * resource because it's needed for updating the color-temperature channels.
+     *
+     * @return true is resource contains any relevant field
+     */
+    public boolean hasAnyRelevantField() {
+        return switch (getType()) {
+            // https://developers.meethue.com/develop/hue-api-v2/api-reference/#resource_light_get
+            case LIGHT -> hasHSBField() || colorTemperature != null || dynamics != null || effects != null
+                    || timedEffects != null;
+            // https://developers.meethue.com/develop/hue-api-v2/api-reference/#resource_grouped_light_get
+            case GROUPED_LIGHT -> on != null || dimming != null || alert != null;
+            default -> throw new IllegalStateException(type + " is not supported by hasAnyRelevantField()");
+        };
+    }
+
+    /**
+     * Check if resource contains any field which is needed to represent an HSB value
+     * (<code>on</code>, <code>dimming</code> or <code>color</code>).
+     *
+     * @return true if resource has any HSB field
+     */
+    public boolean hasHSBField() {
+        return on != null || dimming != null || color != null;
     }
 
     public @Nullable List<ActionEntry> getActions() {
@@ -175,10 +205,16 @@ public class Resource {
         Dimming dimming = this.dimming;
         if (Objects.nonNull(dimming)) {
             try {
-                // if off the brightness is 0, otherwise it is dimming value
+                // if off the brightness is 0, otherwise it is the larger of dimming value or minimum dimming level
                 OnState on = this.on;
-                double brightness = Objects.nonNull(on) && !on.isOn() ? 0f
-                        : Math.max(0f, Math.min(100f, dimming.getBrightness()));
+                double brightness;
+                if (Objects.nonNull(on) && !on.isOn()) {
+                    brightness = 0f;
+                } else {
+                    Double minimumDimmingLevel = dimming.getMinimumDimmingLevel();
+                    brightness = Math.max(Objects.nonNull(minimumDimmingLevel) ? minimumDimmingLevel
+                            : Dimming.DEFAULT_MINIMUM_DIMMIMG_LEVEL, Math.min(100f, dimming.getBrightness()));
+                }
                 return new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
             } catch (DTOPresentButEmptyException e) {
                 return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
@@ -777,7 +813,7 @@ public class Resource {
         return this;
     }
 
-    public Resource setColorXy(ColorXy color) {
+    public Resource setColorXy(@Nullable ColorXy color) {
         this.color = color;
         return this;
     }
@@ -787,7 +823,7 @@ public class Resource {
         return this;
     }
 
-    public Resource setDimming(Dimming dimming) {
+    public Resource setDimming(@Nullable Dimming dimming) {
         this.dimming = dimming;
         return this;
     }
@@ -844,8 +880,9 @@ public class Resource {
         return this;
     }
 
-    public void setOnState(OnState on) {
+    public Resource setOnState(@Nullable OnState on) {
         this.on = on;
+        return this;
     }
 
     public Resource setRecallAction(SceneRecallAction recallAction) {

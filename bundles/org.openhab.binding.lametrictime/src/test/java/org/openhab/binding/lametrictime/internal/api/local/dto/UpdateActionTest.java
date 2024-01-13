@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public class UpdateActionTest extends AbstractTest {
     public void testSerialize() throws Exception {
         UpdateAction action = new UpdateAction().withId("countdown.configure")
         // @formatter:off
-                                                .withParameters(new TreeMap<String, Parameter>(){{put("duration", new IntegerParameter().withValue(30));}});
+                                                .withParameters(new TreeMap<>(){{put("duration", new IntegerParameter().withValue(30));}});
                                                 // @formatter:on
         assertEquals(readJson("update-action.json"), gson.toJson(action));
     }

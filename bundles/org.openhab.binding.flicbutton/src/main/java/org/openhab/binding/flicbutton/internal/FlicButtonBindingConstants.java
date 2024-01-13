@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ public class FlicButtonBindingConstants {
     public static final int BUTTON_OFFLINE_GRACE_PERIOD_SECONDS = 60;
 
     public static final Map<String, String> FLIC_OPENHAB_TRIGGER_EVENT_MAP = Collections
-            .unmodifiableMap(new HashMap<String, String>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
                     put("ButtonSingleClick", CommonTriggerEvents.SHORT_PRESSED);
                     put("ButtonDoubleClick", CommonTriggerEvents.DOUBLE_PRESSED);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,9 +85,9 @@ public abstract class A5_08 extends _4BSMessage {
                             / (getUnscaledIlluminationMax() - getUnscaledIlluminationMin()));
             return new QuantityType<>(scaledIllumination, Units.LUX);
         } else if (channelId.equals(CHANNEL_MOTIONDETECTION)) {
-            return getBit(getDB0(), 1) ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(!getBit(getDB0(), 1));
         } else if (channelId.equals(CHANNEL_OCCUPANCY)) {
-            return getBit(getDB0(), 0) ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(!getBit(getDB0(), 0));
         }
 
         return UnDefType.UNDEF;

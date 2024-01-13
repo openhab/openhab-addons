@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.mqtt.espmilighthub.internal;
 
 import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
@@ -33,6 +32,8 @@ public class EspMilightHubBindingConstants {
     public static final String COMMANDS_BASE_TOPIC = "milight/commands/";
     public static final String STATUS_TOPIC = "milight/status";
     public static final BigDecimal BIG_DECIMAL_100 = new BigDecimal(100);
+    public static final BigDecimal BIG_DECIMAL_153 = new BigDecimal(153);
+    public static final BigDecimal BIG_DECIMAL_370 = new BigDecimal(370);
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RGB_CCT = new ThingTypeUID(BINDING_ID, "rgb_cct");
     public static final ThingTypeUID THING_TYPE_CCT = new ThingTypeUID(BINDING_ID, "cct");
@@ -48,6 +49,7 @@ public class EspMilightHubBindingConstants {
     public static final String CHANNEL_LEVEL = "level";
     public static final String CHANNEL_COLOUR = "colour";
     public static final String CHANNEL_COLOURTEMP = "colourTemperature";
+    public static final String CHANNEL_COLOURTEMP_ABS = "colourTemperatureAbs";
     public static final String CHANNEL_DISCO_MODE = "discoMode";
     public static final String CHANNEL_BULB_MODE = "bulbMode";
     public static final String CHANNEL_COMMAND = "command";

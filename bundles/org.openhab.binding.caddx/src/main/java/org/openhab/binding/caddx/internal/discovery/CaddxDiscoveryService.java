@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.caddx.internal.discovery;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.config.CaddxKeypadConfiguration;
@@ -23,14 +22,13 @@ import org.openhab.binding.caddx.internal.config.CaddxPartitionConfiguration;
 import org.openhab.binding.caddx.internal.config.CaddxZoneConfiguration;
 import org.openhab.binding.caddx.internal.handler.CaddxBridgeHandler;
 import org.openhab.binding.caddx.internal.handler.CaddxThingType;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,14 +37,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Georgios Moutsos - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = CaddxDiscoveryService.class)
 @NonNullByDefault
-public class CaddxDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService, DiscoveryService {
+public class CaddxDiscoveryService extends AbstractThingHandlerDiscoveryService<CaddxBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(CaddxDiscoveryService.class);
 
-    private @Nullable CaddxBridgeHandler caddxBridgeHandler = null;
-
     public CaddxDiscoveryService() {
-        super(CaddxBindingConstants.SUPPORTED_THING_TYPES_UIDS, 15, false);
+        super(CaddxBridgeHandler.class, CaddxBindingConstants.SUPPORTED_THING_TYPES_UIDS, 15, false);
     }
 
     @Override
@@ -133,33 +130,17 @@ public class CaddxDiscoveryService extends AbstractDiscoveryService implements T
      * Activates the Discovery Service.
      */
     @Override
-    public void activate() {
-        CaddxBridgeHandler handler = caddxBridgeHandler;
-        if (handler != null) {
-            handler.registerDiscoveryService(this);
-        }
+    public void initialize() {
+        thingHandler.registerDiscoveryService(this);
+        super.initialize();
     }
 
     /**
      * Deactivates the Discovery Service.
      */
     @Override
-    public void deactivate() {
-        CaddxBridgeHandler handler = caddxBridgeHandler;
-        if (handler != null) {
-            handler.unregisterDiscoveryService();
-        }
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof CaddxBridgeHandler bridgeHandler) {
-            caddxBridgeHandler = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return caddxBridgeHandler;
+    public void dispose() {
+        super.dispose();
+        thingHandler.unregisterDiscoveryService();
     }
 }
