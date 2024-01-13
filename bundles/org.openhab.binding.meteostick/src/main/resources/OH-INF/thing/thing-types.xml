@@ -79,6 +79,13 @@
 				<default>0.254</default>
 				<unitLabel>mm</unitLabel>
 			</parameter>
+
+			<parameter name="deltawinddir" type="integer" required="false" min="0" max="359">
+				<label>Wind vane direction</label>
+				<description>Specifies the direction that the wind vane's North is actually pointed towards (0 to 359)</description>
+				<default>0</default>
+				<unitLabel>°</unitLabel>
+			</parameter>
 		</config-description>
 	</thing-type>
 

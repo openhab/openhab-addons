@@ -51,6 +51,7 @@ public class MeteostickBindingConstants {
     public static final String PARAMETER_CHANNEL = "channel";
     public static final String PARAMETER_SPOON = "spoon";
     public static final String PARAMETER_SPOON_DEFAULT = "0.254";
+    public static final String PARAMETER_WINDVANE = "deltawinddir";
 
     // Miscellaneous constants
     public static final long HOUR_IN_SEC = 60 * 60;

@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial contribution
  * @author John Cocula - Added variable spoon size, UoM, wind stats, bug fixes
+ * @author Cor Hoogendoorn - Added option for wind vanes not facing North and cumulative rainfall for today
  */
 public class MeteostickSensorHandler extends BaseThingHandler implements MeteostickEventListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DAVIS);
@@ -55,6 +56,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     private final Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
 
     private int channel = 0;
+    private int deltawinddir = 0;
     private BigDecimal spoon = new BigDecimal(PARAMETER_SPOON_DEFAULT);
     private MeteostickBridgeHandler bridgeHandler;
     private RainHistory rainHistory = new RainHistory(HOUR_IN_MSEC);
@@ -79,7 +81,11 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         if (spoon == null) {
             spoon = new BigDecimal(PARAMETER_SPOON_DEFAULT);
         }
-        logger.debug("Initializing MeteoStick handler - Channel {}, Spoon size {} mm.", channel, spoon);
+
+        deltawinddir = ((BigDecimal) getConfig().get(PARAMETER_WINDVANE)).intValue();
+
+        logger.debug("Initializing MeteoStick handler - Channel {}, Spoon size {} mm, Wind vane offset {} °", channel,
+                spoon, deltawinddir);
 
         Runnable rainRunnable = () -> {
             BigDecimal rainfall = rainHistory.getTotal(spoon);
@@ -205,6 +211,13 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
                 int windDirection = Integer.parseInt(data[3]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED),
                         new QuantityType<>(windSpeed, METRE_PER_SECOND));
+                if (deltawinddir != 0) {
+                    if (windDirection < (360 - deltawinddir)) {
+                        windDirection += deltawinddir;
+                    } else {
+                        windDirection -= (360 - deltawinddir);
+                    }
+                }
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_DIRECTION),
                         new QuantityType<>(windDirection, DEGREE_ANGLE));
 
