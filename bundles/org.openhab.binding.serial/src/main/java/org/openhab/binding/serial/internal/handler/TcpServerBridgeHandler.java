@@ -88,11 +88,9 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
         // initialize serial port
         try {
             ServerSocket server = new ServerSocket();
-            if (config.timeout > 0) {
-                server.setSoTimeout(config.timeout * 1000);
-            }
             server.bind(new InetSocketAddress(bindAddress, port), 1);
             this.server = server;
+            logger.info("Listening on TCP address {} port {}", bindAddress, port);
 
             updateStatus(ThingStatus.ONLINE);
 
@@ -109,7 +107,8 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
 
     private void waitForConnection() {
         ServerSocket server = this.server;
-        if (getThing().getStatus() == ThingStatus.ONLINE && server != null) {
+        TcpServerBridgeConfiguration config = this.config;
+        if (getThing().getStatus() == ThingStatus.ONLINE && server != null && config != null) {
             ScheduledFuture<?> acceptScheduler = this.connectionScheduler;
             if (acceptScheduler != null) {
                 acceptScheduler.cancel(true);
@@ -147,6 +146,9 @@ public class TcpServerBridgeHandler extends CommonBridgeHandler {
                             logger.info("Accepting incoming connection from {}:{}", socket.getInetAddress(),
                                     socket.getPort());
                             socket.setKeepAlive(this.config.keepAlive);
+                            if (config.timeout > 0) {
+                                socket.setSoTimeout(config.timeout * 1000);
+                            }
                             this.socket = socket;
                             this.inputStream = new BufferedInputStream(socket.getInputStream());
                             this.outputStream = socket.getOutputStream();
