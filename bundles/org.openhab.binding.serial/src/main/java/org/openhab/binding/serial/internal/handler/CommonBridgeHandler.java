@@ -184,7 +184,7 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
      * @param channelId the channel to refresh
      * @param data the data to use
      */
-    private void refresh(final String channelId, final String data) {
+    protected void refresh(final String channelId, final String data) {
         if (!isLinked(channelId)) {
             return;
         }
@@ -268,16 +268,7 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
                 } else {
                     final String result = sb.toString();
 
-                    if (this instanceof TcpBridgeHandler) {
-                        triggerChannel(TRIGGER_TCP_CHANNEL, CommonTriggerEvents.PRESSED);
-                        refresh(STRING_TCP_CHANNEL, result);
-                        refresh(BINARY_TCP_CHANNEL, result);
-                    } else if (this instanceof SerialBridgeHandler) {
-                        triggerChannel(TRIGGER_CHANNEL, CommonTriggerEvents.PRESSED);
-                        refresh(STRING_CHANNEL, result);
-                        refresh(BINARY_CHANNEL, result);
-                    }
-
+                    processInput(result);
                     result.lines().forEach(l -> getThing().getThings().forEach(t -> {
                         final SerialDeviceHandler device = (SerialDeviceHandler) t.getHandler();
                         if (device != null) {
@@ -301,6 +292,9 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
             readerActive.set(false);
             handleIOException(e);
         }
+    }
+
+    protected void processInput(String result) {
     }
 
     /**

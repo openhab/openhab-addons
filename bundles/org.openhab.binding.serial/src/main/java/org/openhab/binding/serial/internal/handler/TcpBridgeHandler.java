@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.serial.internal.handler;
 
+import static org.openhab.binding.serial.internal.SerialBindingConstants.*;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
@@ -122,10 +125,11 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
                         Socket socket = this.socket;
                         if (inputStream != null && socket != null) {
                             synchronized (inputStream) {
-                                inputStream.mark(1);
+                                inputStream.mark(2);
                                 // InputStream.available() does not recognise when a client has disconnected,
                                 // so we will use BufferedInputStream and cache one byte.
-                                if (inputStream.read() < 0) {
+                                int b = inputStream.read();
+                                if (b < 0) {
                                     throw new SocketException("Connection lost");
                                 }
                                 inputStream.reset();
@@ -139,6 +143,19 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
                     }
                 }
             }, interval, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    @Override
+    protected void processInput(String result) {
+        if (isLinked(TRIGGER_TCP_CHANNEL)) {
+            triggerChannel(TRIGGER_TCP_CHANNEL, CommonTriggerEvents.PRESSED);
+        }
+        if (isLinked(STRING_TCP_CHANNEL)) {
+            refresh(STRING_TCP_CHANNEL, result);
+        }
+        if (isLinked(BINARY_TCP_CHANNEL)) {
+            refresh(BINARY_TCP_CHANNEL, result);
         }
     }
 

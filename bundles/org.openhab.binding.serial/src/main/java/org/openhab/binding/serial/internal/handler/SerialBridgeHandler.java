@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.serial.internal.handler;
 
+import static org.openhab.binding.serial.internal.SerialBindingConstants.*;
+
 import java.io.IOException;
 import java.util.TooManyListenersException;
 
@@ -27,6 +29,7 @@ import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
@@ -98,6 +101,19 @@ public class SerialBridgeHandler extends CommonBridgeHandler implements SerialPo
         } catch (final UnsupportedCommOperationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Unsupported port parameters: " + e.getMessage());
+        }
+    }
+
+    @Override
+    protected void processInput(String result) {
+        if (isLinked(TRIGGER_CHANNEL)) {
+            triggerChannel(TRIGGER_CHANNEL, CommonTriggerEvents.PRESSED);
+        }
+        if (isLinked(STRING_CHANNEL)) {
+            refresh(STRING_CHANNEL, result);
+        }
+        if (isLinked(BINARY_CHANNEL)) {
+            refresh(BINARY_CHANNEL, result);
         }
     }
 
