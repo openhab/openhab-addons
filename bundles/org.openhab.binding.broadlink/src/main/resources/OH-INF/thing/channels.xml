@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="broadlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>The IR/RF command sent to the device</description>
+		<category>Text</category>
+	</channel-type>
+	<channel-type id="learningControl">
+		<item-type>String</item-type>
+		<label>Remote Learning Control</label>
+		<description>Instructs the Broadlink device to perform tasks related to code learning</description>
+		<state readOnly="false">
+			<options>
+				<option value="LEARN">Enter infrared learn mode</option>
+				<option value="CHECK">Check last captured IR code</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<category>Humidity</category>
+		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="powerOn">
+		<item-type>Switch</item-type>
+		<label>Socket Power</label>
+		<category>PowerOutlet</category>
+	</channel-type>
+	<channel-type id="nightLight">
+		<item-type>Switch</item-type>
+		<label>Night Light</label>
+		<category>Lightbulb</category>
+	</channel-type>
+	<channel-type id="powerConsumption" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Power Consumption</label>
+		<state pattern="%.2f" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="light">
+		<item-type>String</item-type>
+		<label>Illumination</label>
+		<description>Light conditions</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="noise">
+		<item-type>String</item-type>
+		<label>Background Noise</label>
+		<description>Noise conditions</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="air">
+		<item-type>String</item-type>
+		<label>Air Quality</label>
+		<description>Air quality conditions</description>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>
