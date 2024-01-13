@@ -60,6 +60,51 @@ You just have to select the configured bridge and optional configure the polling
 The `sungrowInverter` thing has channels that serve the current state of the sungrow inverter,
 as you are used to from the iSolareCloud Website and App.
 
+| Channel Type ID                    | Item Type                | Description                           | Advanced  | Channel Group       |
+|------------------------------------|--------------------------|---------------------------------------|-----------|---------------------|
+| sg-internal-temperature            | Number:Temperature       | Internal Temperature                  | yes       | Overview            |
+| sg-total-dc-power                  | Number:Power             | Total DC Power                        | no        | Overview            |
+| sg-phase-a-voltage                 | Number:ElectricPotential | Phase A Voltage                       | yes       | Overview            |
+| sg-phase-b-voltage                 | Number:ElectricPotential | Phase B Voltage                       | yes       | Overview            |
+| sg-phase-c-voltage                 | Number:ElectricPotential | Phase C Voltage                       | yes       | Overview            |
+| sg-daily-pv-generation             | Number:Energy            | Daily PV Generation                   | no        | Overview            |
+| sg-total-pv-generation             | Number:Energy            | Total PV Generation                   | no        | Overview            |
+| sg-reactive-power                  | Number:Power             | Reactive Power                        | yes       | Overview            |
+| sg-power-factor                    | Number:Dimensionless     | Power Factor                          | yes       | Overview            |
+| sg-phase-a-current                 | Number:ElectricCurrent   | Phase A Current                       | yes       | Overview            |
+| sg-phase-b-current                 | Number:ElectricCurrent   | Phase B Current                       | yes       | Overview            |
+| sg-phase-c-current                 | Number:ElectricCurrent   | Phase C Current                       | yes       | Overview            |
+| sg-total-active-power              | Number:Power             | Total Active Power                    | no        | Overview            |
+| sg-grid-frequency                  | Number:Frequency         | Grid Frequency                        | yes       | Overview            |
+| sg-mppt1-voltage                   | Number:ElectricPotential | MPPT1 Voltage                         | yes       | MPPT Information    |
+| sg-mppt1-current                   | Number:ElectricCurrent   | MPPT1 Current                         | yes       | MPPT Information    |
+| sg-mppt2-voltage                   | Number:ElectricPotential | MPPT2 Voltage                         | yes       | MPPT Information    |
+| sg-mppt2-current                   | Number:ElectricCurrent   | MPPT2 Current                         | yes       | MPPT Information    |
+| sg-daily-battery-charge            | Number:Energy            | Daily Battery Charge                  | no        | Battery Information |
+| sg-total-battery-charge            | Number:Energy            | Total Battery Charge                  | no        | Battery Information |
+| sg-battery-voltage                 | Number:ElectricPotential | Battery Voltage                       | yes       | Battery Information |
+| sg-battery-current                 | Number:ElectricCurrent   | Battery Current                       | yes       | Battery Information |
+| sg-battery-power                   | Number:Power             | Battery Power                         | no        | Battery Information |
+| sg-battery-level                   | Number:Dimensionless     | Battery Level                         | no        | Battery Information |
+| sg-battery-healthy                 | Number:Dimensionless     | Battery Healthy                       | no        | Battery Information |
+| sg-battery-temperature             | Number:Temperature       | Battery Temperature                   | no        | Battery Information |
+| sg-daily-battery-discharge-energy  | Number:Energy            | Daily Battery Discharge Energy        | no        | Battery Information |
+| sg-total-battery-discharge-energy  | Number:Energy            | Total Battery Discharge Energy        | no        | Battery Information |
+| sg-battery-capacity                | Number:Energy            | Battery Capacity                      | no        | Battery Information |
+| sg-daily-charge-energy             | Number:Energy            | Daily Charge Energy                   | no        | Battery Information |
+| sg-total-charge-energy             | Number:Energy            | Total Charge Energy                   | no        | Battery Information |
+| sg-daily-import-energy             | Number:Energy            | Daily Import Energy                   | no        | Grid Information    |
+| sg-total-import-energy             | Number:Energy            | Total Import Energy                   | no        | Grid Information    |
+| sg-daily-export-energy             | Number:Energy            | Daily Export Energy                   | no        | Grid Information    |
+| sg-total-export-energy             | Number:Energy            | Total Export Energy                   | no        | Grid Information    |
+| sg-daily-export-power-from-pv      | Number:Power             | Daily Export Power from PV            | no        | Grid Information    |
+| sg-total-export-energy-from-pv     | Number:Energy            | Total Export Energy from PV           | no        | Grid Information    |
+| sg-export-power                    | Number:Power             | Export Power                          | no        | Grid Information    |
+| sg-load-power                      | Number:Power             | Load Power                            | no        | Load Information    |
+| sg-daily-direct-energy-consumption | Number:Energy            | Daily Direct Energy Consumption       | no        | Load Information    |
+| sg-total-direct-energy-consumption | Number:Energy            | Total Direct Energy Consumption       | no        | Load Information    |
+| sg-self-consumption-today          | Number:Dimensionless     | Self Consumption Today                | no        | Load Information    |
+
 ## Configuration Example
 
 This example shows how to configure a sungrow inverter connected via modbus and uses the most common channels.
