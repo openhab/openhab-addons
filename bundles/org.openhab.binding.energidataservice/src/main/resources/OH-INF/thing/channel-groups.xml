@@ -32,7 +32,6 @@
 				<label>Reduced Electricity Tax</label>
 				<description>Reduced electricity tax in DKK per kWh. For electric heating customers only.</description>
 			</channel>
-			<channel id="hourly-prices" typeId="hourly-prices"/>
 		</channels>
 	</channel-group-type>
 

@@ -21,12 +21,4 @@
 		<config-description-ref uri="channel-type:energidataservice:datahub-price"/>
 	</channel-type>
 
-	<channel-type id="hourly-prices" advanced="true">
-		<item-type>String</item-type>
-		<label>Hourly Prices</label>
-		<description>JSON array with hourly prices from 24 hours ago and onward.</description>
-		<category>Price</category>
-		<state readOnly="true"></state>
-	</channel-type>
-
 </thing:thing-descriptions>
