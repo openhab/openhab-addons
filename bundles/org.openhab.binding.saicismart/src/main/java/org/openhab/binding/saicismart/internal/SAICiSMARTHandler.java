@@ -17,7 +17,6 @@ import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_FORCE_REFRESH;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_LAST_ACTIVITY;
 import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_SWITCH_AC;
-import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants.CHANNEL_WINDOW_SUN_ROOF;
 
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -31,7 +30,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -104,25 +102,21 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         } else if (channelUID.getId().equals(CHANNEL_SWITCH_AC) && command == OnOffType.ON) {
             // reset channel to off
             updateState(CHANNEL_SWITCH_AC, OnOffType.ON);
-            new Thread(() -> {
-                // enable air conditioning
-                try {
-                    sendACCommand((byte) 5, (byte) 8);
-                } catch (URISyntaxException | ExecutionException | TimeoutException | InterruptedException e) {
-                    logger.warn("A/C On Command failed", e);
-                }
-            }).start();
+            // enable air conditioning
+            try {
+                sendACCommand((byte) 5, (byte) 8);
+            } catch (URISyntaxException | ExecutionException | TimeoutException | InterruptedException e) {
+                logger.warn("A/C On Command failed", e);
+            }
         } else if (channelUID.getId().equals(CHANNEL_SWITCH_AC) && command == OnOffType.OFF) {
             // reset channel to off
             updateState(CHANNEL_SWITCH_AC, OnOffType.OFF);
-            new Thread(() -> {
-                // disable air conditioning
-                try {
-                    sendACCommand((byte) 0, (byte) 0);
-                } catch (URISyntaxException | ExecutionException | TimeoutException | InterruptedException e) {
-                    logger.warn("A/C Off Command failed", e);
-                }
-            }).start();
+            // disable air conditioning
+            try {
+                sendACCommand((byte) 0, (byte) 0);
+            } catch (URISyntaxException | ExecutionException | TimeoutException | InterruptedException e) {
+                logger.warn("A/C Off Command failed", e);
+            }
         } else if (channelUID.getId().equals(CHANNEL_LAST_ACTIVITY) && command instanceof DateTimeType) {
             // update internal activity date from external date
             notifyCarActivity(((DateTimeType) command).getZonedDateTime(), true);
@@ -138,10 +132,6 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         config = getConfigAs(SAICiSMARTVehicleConfiguration.class);
 
         ThingBuilder thingBuilder = editThing();
-        thingBuilder.withChannels(thing.getChannels().stream().filter(c -> {
-            // TODO: check properties
-            return !c.getUID().getId().equals(CHANNEL_WINDOW_SUN_ROOF);
-        }).collect(Collectors.toList()));
         updateThing(thingBuilder.build());
 
         updateStatus(ThingStatus.UNKNOWN);
