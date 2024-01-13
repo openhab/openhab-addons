@@ -14,7 +14,7 @@ package org.openhab.binding.hue.internal.discovery;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -83,7 +83,7 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
     public void dispose() {
         super.dispose();
         thingHandler.unregisterDiscoveryService();
-        removeOlderResults(new Date().getTime(), thingHandler.getThing().getBridgeUID());
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getBridgeUID());
     }
 
     /**

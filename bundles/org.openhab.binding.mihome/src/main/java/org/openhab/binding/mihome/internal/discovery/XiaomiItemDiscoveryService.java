@@ -15,8 +15,8 @@ package org.openhab.binding.mihome.internal.discovery;
 import static org.openhab.binding.mihome.internal.ModelMapper.*;
 import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.*;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -86,7 +86,7 @@ public class XiaomiItemDiscoveryService extends AbstractDiscoveryService impleme
     }
 
     public void onHandlerRemoved() {
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     @Override

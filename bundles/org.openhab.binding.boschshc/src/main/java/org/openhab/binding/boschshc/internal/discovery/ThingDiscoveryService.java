@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.discovery;
 
+import java.time.Instant;
 import java.util.AbstractMap;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -112,7 +112,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
     public void dispose() {
         super.dispose();
         logger.trace("dispose");
-        removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
         thingHandler.unregisterDiscoveryListener();
 
         super.deactivate();

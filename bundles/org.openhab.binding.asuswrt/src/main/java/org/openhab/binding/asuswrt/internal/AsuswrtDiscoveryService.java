@@ -16,7 +16,7 @@ import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingConst
 import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSettings.*;
 import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,7 +95,7 @@ public class AsuswrtDiscoveryService extends AbstractThingHandlerDiscoveryServic
      * Removes all scan results.
      */
     private void removeAllResults() {
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     /**

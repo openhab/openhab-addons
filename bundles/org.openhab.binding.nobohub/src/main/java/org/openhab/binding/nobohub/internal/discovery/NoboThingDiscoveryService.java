@@ -22,8 +22,8 @@ import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.PROPE
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.THING_TYPE_COMPONENT;
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.THING_TYPE_ZONE;
 
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +71,7 @@ public class NoboThingDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void deactivate() {
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     public void detectZones(Collection<Zone> zones) {

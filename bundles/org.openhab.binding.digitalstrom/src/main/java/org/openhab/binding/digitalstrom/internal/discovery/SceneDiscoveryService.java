@@ -17,8 +17,8 @@ import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConst
 import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.SCENE_ID;
 import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.ZONE_ID;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -73,7 +73,7 @@ public class SceneDiscoveryService extends AbstractDiscoveryService {
     public void deactivate() {
         logger.debug("deactivate discovery service for scene type {} remove thing tyspes {}", sceneType,
                 super.getSupportedThingTypes());
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     @Override
