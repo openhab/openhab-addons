@@ -325,6 +325,42 @@
 		<config-description-ref uri="thing-type:boschshc:user-defined-state"/>
 	</thing-type>
 
+	<thing-type id="universal-switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Universal Switch</label>
+		<description>Universally configurable switch with two buttons.</description>
+
+		<channels>
+			<channel id="key-code" typeId="key-code"/>
+			<channel id="key-name" typeId="key-name"/>
+			<channel id="key-event-type" typeId="key-event-type"/>
+			<channel id="key-event-timestamp" typeId="key-event-timestamp"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:user-defined-state"/>
+	</thing-type>
+
+	<thing-type id="universal-switch-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Universal Switch II</label>
+		<description>Universally configurable switch with four buttons.</description>
+
+		<channels>
+			<channel id="key-code" typeId="key-code"/>
+			<channel id="key-name" typeId="key-name"/>
+			<channel id="key-event-type" typeId="key-event-type"/>
+			<channel id="key-event-timestamp" typeId="key-event-timestamp"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:user-defined-state"/>
+	</thing-type>
+
 	<!-- Channels -->
 
 	<channel-type id="system-availability">
@@ -604,6 +640,34 @@
 				<option value="ON">Device is currently bypassed</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="key-code">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Key Code</label>
+		<description>Integer code of the key that was pressed.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="key-name">
+		<item-type>String</item-type>
+		<label>Key Name</label>
+		<description>Name of the key that was pressed.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="key-event-type">
+		<item-type>String</item-type>
+		<label>Key Event Type</label>
+		<description>Indicates how the key was pressed. Possible values are PRESS_SHORT, PRESS_LONG and PRESS_LONG_RELEASED.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="key-event-timestamp">
+		<item-type>DateTime</item-type>
+		<label>Key Event Timestamp</label>
+		<description>Timestamp indicating when the key was pressed.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

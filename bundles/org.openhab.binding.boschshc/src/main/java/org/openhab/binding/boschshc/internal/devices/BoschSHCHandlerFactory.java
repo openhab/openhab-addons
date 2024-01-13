@@ -32,6 +32,8 @@ import org.openhab.binding.boschshc.internal.devices.smartbulb.SmartBulbHandler;
 import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.thermostat.ThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.twinguard.TwinguardHandler;
+import org.openhab.binding.boschshc.internal.devices.universalswitch.UniversalSwitch2Handler;
+import org.openhab.binding.boschshc.internal.devices.universalswitch.UniversalSwitchHandler;
 import org.openhab.binding.boschshc.internal.devices.userdefinedstate.UserStateHandler;
 import org.openhab.binding.boschshc.internal.devices.wallthermostat.WallThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContact2Handler;
@@ -86,7 +88,9 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_SMART_PLUG_COMPACT, PlugHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMART_BULB, SmartBulbHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR, SmokeDetectorHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_USER_DEFINED_STATE, UserStateHandler::new));
+            new ThingTypeHandlerMapping(THING_TYPE_USER_DEFINED_STATE, UserStateHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH, UniversalSwitchHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH_2, UniversalSwitch2Handler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
