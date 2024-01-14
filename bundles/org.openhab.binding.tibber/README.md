@@ -81,7 +81,7 @@ Note: Tibber HomeId is retrieved from [developer.tibber.com](https://developer.t
 - If Tibber Pulse is connected, the Tibber API Explorer will report "true" for "realTimeConsumptionEnabled"
 - Copy HomeId from Tibber API Explorer, without quotation marks, and use this in the bindings configuration.
 
-```
+```json
 {
   viewer {
     homes {
@@ -214,13 +214,13 @@ Example of tomorrow and today prices data structure - an array of tuples:
 
 ### demo.things
 
-```
+```java
 Thing tibber:tibberapi:7cfae492 [ homeid="xxx", token="xxxxxxx" ]
 ```
 
 ### demo.items:
 
-```
+```java
 Number:Dimensionless       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}
 DateTime                   TibberAPICurrentStartsAt              "Timestamp - Current Price"                 {channel="tibber:tibberapi:7cfae492:current_startsAt"}
 String                     TibberAPICurrentLevel                 "Price Level"                               {channel="tibber:tibberapi:7cfae492:current_level"}
