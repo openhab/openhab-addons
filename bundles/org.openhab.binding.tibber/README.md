@@ -102,7 +102,7 @@ Tibber API will be auto discovered if provided input is correct.
 
 ## Tomorrow and Today Prices
 
-The today and tomorrow prices are served as time series on the _Current Total_ channel and as json data on the channels _Today prices_ and _Tomorrow prices_. 
+The today and tomorrow prices are served as time series on the `current_total` channel and as JSON data on the channels `today_prices` and `tomorrow_prices`.
 Example of tomorrow and today prices data structure - an array of tuples:
 
 ```json
