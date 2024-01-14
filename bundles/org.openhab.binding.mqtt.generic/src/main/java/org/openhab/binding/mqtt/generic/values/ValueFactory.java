@@ -76,7 +76,8 @@ public class ValueFactory {
                 value = new OpenCloseValue(config.on, config.off);
                 break;
             case MqttBindingConstants.ROLLERSHUTTER:
-                value = new RollershutterValue(config.on, config.off, config.stop);
+                value = new RollershutterValue(config.on, config.off, config.stop, config.onState, config.offState,
+                        config.invert, config.transformExtentsToString);
                 break;
             case MqttBindingConstants.TRIGGER:
                 config.trigger = true;
