@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 import java.util.concurrent.Future;
@@ -289,9 +290,13 @@ public class TibberHandler extends BaseThingHandler {
         return timeSeries;
     }
 
-    private static void mapTimeSeriesEntries(JsonArray prices, TimeSeries timeSeries) {
+    private void mapTimeSeriesEntries(JsonArray prices, TimeSeries timeSeries) {
         for (JsonElement entry : prices) {
             final Instant startsAt = parseDateTime(entry.getAsJsonObject().get("startsAt"));
+            if (startsAt == null) {
+                // Skip entry, if date is invalid.
+                continue;
+            }
             final Instant endsAt = startsAt.plus(1, ChronoUnit.HOURS).minus(1, ChronoUnit.MICROS);
             final DecimalType value = new DecimalType(entry.getAsJsonObject().get("total").getAsString());
             // As the value is valid for exactly one hour and is not linear, add one entry at the beginning
@@ -301,8 +306,14 @@ public class TibberHandler extends BaseThingHandler {
         }
     }
 
-    private static Instant parseDateTime(JsonElement element) {
-        return ZonedDateTime.parse(element.getAsString()).toInstant();
+    @Nullable
+    private Instant parseDateTime(JsonElement element) {
+        try {
+            return ZonedDateTime.parse(element.getAsString()).toInstant();
+        } catch (DateTimeParseException e) {
+            logger.warn("Could not parse timestamp from response.", e);
+            return null;
+        }
     }
 
     public void startRefresh(int refresh) {
