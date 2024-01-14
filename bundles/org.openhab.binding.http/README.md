@@ -1,6 +1,6 @@
 # HTTP Binding
 
-This binding allows using HTTP to bring external data into openHAB or execute HTTP requests on commands.  
+This binding allows using HTTP to bring external data into openHAB or execute HTTP requests on commands.
 
 ## Supported Things
 
