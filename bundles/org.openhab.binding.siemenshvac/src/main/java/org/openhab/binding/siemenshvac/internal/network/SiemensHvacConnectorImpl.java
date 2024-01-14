@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -63,6 +64,9 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private Map<SiemensHvacRequestHandler, SiemensHvacRequestHandler> currentHandlerRegistry = new HashMap<SiemensHvacRequestHandler, SiemensHvacRequestHandler>();
     private Map<SiemensHvacRequestHandler, SiemensHvacRequestHandler> handlerInErrorRegistry = new HashMap<SiemensHvacRequestHandler, SiemensHvacRequestHandler>();
+
+    private ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
+
     private final Gson gson;
     private final Gson gsonWithAdapter;
 
@@ -197,15 +201,25 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     private void unregisterRequestHandler(SiemensHvacRequestHandler handler) throws SiemensHvacException {
-        if (!currentHandlerRegistry.containsKey(handler)) {
-            throw new SiemensHvacException("Internal error, try to unregister not registred handler: " + handler);
-        }
+        reentrantReadWriteLock.writeLock().lock();
+        try {
+            if (!currentHandlerRegistry.containsKey(handler)) {
+                throw new SiemensHvacException("Internal error, try to unregister not registred handler: " + handler);
+            }
 
-        currentHandlerRegistry.remove(handler);
+            currentHandlerRegistry.remove(handler);
+        } finally {
+            reentrantReadWriteLock.writeLock().unlock();
+        }
     }
 
     private void registerHandlerError(SiemensHvacRequestHandler handler) {
-        handlerInErrorRegistry.put(handler, handler);
+        reentrantReadWriteLock.writeLock().lock();
+        try {
+            handlerInErrorRegistry.put(handler, handler);
+        } finally {
+            reentrantReadWriteLock.writeLock().unlock();
+        }
     }
 
     private @Nullable ContentResponse executeRequest(final Request request,
@@ -435,8 +449,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     @Override
     public void displayRequestStats() {
         logger.debug("DisplayRequestStats : ");
-        logger.debug("    currentRuning   : {}", currentHandlerRegistry.keySet().size());
-        logger.debug("    errors          : {}", handlerInErrorRegistry.keySet().size());
+        logger.debug("    currentRuning   : {}", getCurrentHandlerRegistryCount());
+        logger.debug("    errors          : {}", getHandlerInErrorRegistryCount());
     }
 
     @Override
@@ -448,7 +462,9 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
             while (!allRequestDone) {
                 allRequestDone = false;
-                int currentRequestCount = currentHandlerRegistry.keySet().size();
+                reentrantReadWriteLock.readLock().lock();
+                int currentRequestCount = getCurrentHandlerRegistryCount();
+
                 logger.debug("WaitAllPendingRequest:waitAllRequestDone {} : {}", idx, currentRequestCount);
 
                 if (currentRequestCount == 0) {
@@ -469,29 +485,36 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     public void CheckStaleRequest() {
-        logger.debug("check stale request::begin");
-        int staleRequest = 0;
-        for (SiemensHvacRequestHandler handler : currentHandlerRegistry.keySet()) {
-            long elapseTime = handler.getElapsedTime();
-            if (elapseTime > 300) {
-                String uri = "";
-                Request request = handler.getRequest();
-                if (request != null) {
-                    uri = request.getURI().toString();
-                }
-                logger.debug("find stale request: {} {}", elapseTime, anominized(uri));
-                staleRequest++;
+        reentrantReadWriteLock.writeLock().lock();
+        try {
+            logger.debug("check stale request::begin");
+            int staleRequest = 0;
+            for (SiemensHvacRequestHandler handler : currentHandlerRegistry.keySet()) {
+                long elapseTime = handler.getElapsedTime();
+                if (elapseTime > 300) {
+                    String uri = "";
+                    Request request = handler.getRequest();
+                    if (request != null) {
+                        uri = request.getURI().toString();
+                    }
+                    logger.debug("find stale request: {} {}", elapseTime, anominized(uri));
+                    staleRequest++;
 
-                try {
-                    unregisterRequestHandler(handler);
-                    registerHandlerError(handler);
-                } catch (SiemensHvacException ex) {
-                    logger.debug("error unregistring handler: {}", handler);
-                }
+                    try {
+                        unregisterRequestHandler(handler);
+                        registerHandlerError(handler);
+                    } catch (SiemensHvacException ex) {
+                        logger.debug("error unregistring handler: {}", handler);
+                    }
 
+                }
             }
+
+            logger.debug("check stale request::end : {}", staleRequest);
+        } finally {
+            reentrantReadWriteLock.writeLock().unlock();
         }
-        logger.debug("check stale request::end : {}", staleRequest);
+
     }
 
     public String anominized(String uri) {
@@ -503,15 +526,33 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         return uri;
     }
 
+    private int getCurrentHandlerRegistryCount() {
+        reentrantReadWriteLock.readLock().lock();
+        try {
+            return currentHandlerRegistry.keySet().size();
+        } finally {
+            reentrantReadWriteLock.readLock().unlock();
+        }
+    }
+
+    private int getHandlerInErrorRegistryCount() {
+        reentrantReadWriteLock.readLock().lock();
+        try {
+            return handlerInErrorRegistry.keySet().size();
+        } finally {
+            reentrantReadWriteLock.readLock().unlock();
+        }
+    }
+
     @Override
     public void waitNoNewRequest() {
         logger.debug("WaitNoNewRequest:start");
         try {
-            int lastRequestCount = currentHandlerRegistry.keySet().size();
+            int lastRequestCount = getCurrentHandlerRegistryCount();
             boolean newRequest = true;
             while (newRequest) {
                 Thread.sleep(5000);
-                int newRequestCount = currentHandlerRegistry.keySet().size();
+                int newRequestCount = getCurrentHandlerRegistryCount();
                 if (newRequestCount != lastRequestCount) {
                     logger.debug("waitNoNewRequest  {}/{})", newRequestCount, lastRequestCount);
                     lastRequestCount = newRequestCount;
@@ -570,8 +611,15 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     public void invalidate() {
         sessionId = null;
         sessionIdHttp = null;
-        currentHandlerRegistry.clear();
-        handlerInErrorRegistry.clear();
+
+        reentrantReadWriteLock.writeLock().lock();
+        try {
+            currentHandlerRegistry.clear();
+            handlerInErrorRegistry.clear();
+        } finally {
+            reentrantReadWriteLock.writeLock().unlock();
+        }
+
     }
 
     @Override
