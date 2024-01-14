@@ -514,7 +514,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         } finally {
             reentrantReadWriteLock.writeLock().unlock();
         }
-
     }
 
     public String anominized(String uri) {
@@ -619,7 +618,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         } finally {
             reentrantReadWriteLock.writeLock().unlock();
         }
-
     }
 
     @Override
