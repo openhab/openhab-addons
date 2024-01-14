@@ -44,7 +44,7 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return SUPPORTED_THING_TYPES;
+        return Set.of(THING_TYPE_GOOGLETV);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public @Nullable DiscoveryResult createResult(@Nullable ServiceInfo service) {
-        if ((service == null) || !service.hasData()) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
+        if (!service.hasData()) {
             return null;
         }
 
@@ -90,8 +90,8 @@ public class GoogleTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public @Nullable ThingUID getThingUID(@Nullable ServiceInfo service) {
-        if ((service == null) || !service.hasData() || (service.getPropertyString("bt") == null)) {
+    public @Nullable ThingUID getThingUID(ServiceInfo service) {
+        if (!service.hasData() || (service.getPropertyString("bt") == null)) {
             return null;
         }
 

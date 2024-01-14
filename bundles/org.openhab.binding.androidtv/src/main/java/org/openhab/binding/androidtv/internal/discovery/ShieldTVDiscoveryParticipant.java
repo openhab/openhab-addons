@@ -44,7 +44,7 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return SUPPORTED_THING_TYPES;
+        return Set.of(THING_TYPE_SHIELDTV);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public @Nullable DiscoveryResult createResult(@Nullable ServiceInfo service) {
-        if (service == null || !service.hasData()) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
+        if (!service.hasData()) {
             return null;
         }
 
@@ -92,8 +92,8 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public @Nullable ThingUID getThingUID(@Nullable ServiceInfo service) {
-        if (service == null || !service.hasData() || (service.getPropertyString("SERVER") == null)) {
+    public @Nullable ThingUID getThingUID(ServiceInfo service) {
+        if (!service.hasData() || (service.getPropertyString("SERVER") == null)) {
             return null;
         }
 
