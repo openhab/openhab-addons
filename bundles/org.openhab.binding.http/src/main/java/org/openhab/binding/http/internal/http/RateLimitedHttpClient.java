@@ -169,7 +169,7 @@ public class RateLimitedHttpClient {
     }
 
     /**
-     * Gets an request from either the priority queue or tge regular queue and creates the request
+     * Gets a request from either the priority queue or tge regular queue and creates the request
      */
     private void processQueue() {
         RequestQueueEntry queueEntry = priorityRequestQueue.poll();
