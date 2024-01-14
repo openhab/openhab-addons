@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,19 +21,18 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.jellyfin.sdk.api.client.exception.ApiClientException;
 import org.jellyfin.sdk.api.client.exception.InvalidStatusException;
 import org.jellyfin.sdk.model.api.SessionInfo;
 import org.openhab.binding.jellyfin.internal.handler.JellyfinServerHandler;
 import org.openhab.binding.jellyfin.internal.util.SyncCallback;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,29 +41,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Miguel Alvarez - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = JellyfinClientDiscoveryService.class)
 @NonNullByDefault
-public class JellyfinClientDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class JellyfinClientDiscoveryService extends AbstractThingHandlerDiscoveryService<JellyfinServerHandler> {
     private final Logger logger = LoggerFactory.getLogger(JellyfinClientDiscoveryService.class);
-    private @Nullable JellyfinServerHandler bridgeHandler;
 
     public JellyfinClientDiscoveryService() throws IllegalArgumentException {
-        super(Set.of(THING_TYPE_SERVER), 60);
+        super(JellyfinServerHandler.class, Set.of(THING_TYPE_SERVER), 60);
     }
 
     @Override
     protected void startScan() {
-        var bridgeHandler = this.bridgeHandler;
-        if (bridgeHandler == null) {
-            logger.warn("missing bridge aborting");
+        if (!thingHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.warn("Server handler {} is not online.", thingHandler.getThing().getLabel());
             return;
         }
-        if (!bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            logger.warn("Server handler {} is not online.", bridgeHandler.getThing().getLabel());
-            return;
-        }
-        logger.debug("Searching devices for server {}", bridgeHandler.getThing().getLabel());
+        logger.debug("Searching devices for server {}", thingHandler.getThing().getLabel());
         try {
-            bridgeHandler.getControllableSessions().forEach(this::discoverDevice);
+            thingHandler.getControllableSessions().forEach(this::discoverDevice);
         } catch (SyncCallback.SyncCallbackError syncCallbackError) {
             logger.error("Unexpected error: {}", syncCallbackError.getMessage());
         } catch (InvalidStatusException e) {
@@ -80,13 +74,8 @@ public class JellyfinClientDiscoveryService extends AbstractDiscoveryService imp
             logger.warn("missing device id aborting");
             return;
         }
-        var bridgeHandler = this.bridgeHandler;
-        if (bridgeHandler == null) {
-            logger.warn("missing bridge aborting");
-            return;
-        }
         logger.debug("Client discovered: [{}] {}", id, info.getDeviceName());
-        var bridgeUID = bridgeHandler.getThing().getUID();
+        var bridgeUID = thingHandler.getThing().getUID();
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, id);
         var appVersion = info.getApplicationVersion();
@@ -101,27 +90,5 @@ public class JellyfinClientDiscoveryService extends AbstractDiscoveryService imp
                 DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_CLIENT, bridgeUID, id)).withBridge(bridgeUID)
                         .withTTL(DISCOVERY_RESULT_TTL_SEC).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                         .withProperties(properties).withLabel(info.getDeviceName()).build());
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof JellyfinServerHandler bridgeHandler) {
-            this.bridgeHandler = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return null;
-    }
-
-    @Override
-    public void activate() {
-        activate(new HashMap<>());
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
     }
 }

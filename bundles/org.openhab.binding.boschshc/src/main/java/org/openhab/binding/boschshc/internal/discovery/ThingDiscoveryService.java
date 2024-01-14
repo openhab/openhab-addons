@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.discovery;
 
+import java.time.Instant;
 import java.util.AbstractMap;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,12 +25,13 @@ import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +49,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerd Zanker - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ThingHandlerService.class)
 @NonNullByDefault
-public class ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<BridgeHandler> {
     private static final int SEARCH_TIME = 1;
 
     private final Logger logger = LoggerFactory.getLogger(ThingDiscoveryService.class);
-    private @Nullable BridgeHandler shcBridgeHandler;
 
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(
             BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH, BoschSHCBindingConstants.THING_TYPE_TWINGUARD,
@@ -97,37 +98,28 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     // @formatter:on
 
     public ThingDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, SEARCH_TIME);
+        super(BridgeHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME);
     }
 
     @Override
-    public void activate() {
-        logger.trace("activate");
-        final BridgeHandler handler = shcBridgeHandler;
-        if (handler != null) {
-            handler.registerDiscoveryListener(this);
-        }
+    public void initialize() {
+        logger.trace("initialize");
+        thingHandler.registerDiscoveryListener(this);
+        super.initialize();
     }
 
     @Override
-    public void deactivate() {
-        logger.trace("deactivate");
-        final BridgeHandler handler = shcBridgeHandler;
-        if (handler != null) {
-            removeOlderResults(new Date().getTime(), handler.getThing().getUID());
-            handler.unregisterDiscoveryListener();
-        }
+    public void dispose() {
+        super.dispose();
+        logger.trace("dispose");
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        thingHandler.unregisterDiscoveryListener();
 
         super.deactivate();
     }
 
     @Override
     protected void startScan() {
-        if (shcBridgeHandler == null) {
-            logger.debug("The shcBridgeHandler is empty, no manual scan is currently possible");
-            return;
-        }
-
         try {
             doScan();
         } catch (InterruptedException e) {
@@ -138,36 +130,19 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
 
     @Override
     protected synchronized void stopScan() {
-        logger.debug("Stop manual scan on bridge {}",
-                shcBridgeHandler != null ? shcBridgeHandler.getThing().getUID() : "?");
+        logger.debug("Stop manual scan on bridge {}", thingHandler.getThing().getUID());
         super.stopScan();
-        final BridgeHandler handler = shcBridgeHandler;
-        if (handler != null) {
-            removeOlderResults(getTimestampOfLastScan(), handler.getThing().getUID());
-        }
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof BridgeHandler bridgeHandler) {
-            logger.trace("Set bridge handler {}", handler);
-            shcBridgeHandler = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return shcBridgeHandler;
+        removeOlderResults(getTimestampOfLastScan(), thingHandler.getThing().getUID());
     }
 
     public void doScan() throws InterruptedException {
-        logger.debug("Start manual scan on bridge {}", shcBridgeHandler.getThing().getUID());
+        logger.debug("Start manual scan on bridge {}", thingHandler.getThing().getUID());
         // use shcBridgeHandler to getDevices()
-        List<Room> rooms = shcBridgeHandler.getRooms();
+        List<Room> rooms = thingHandler.getRooms();
         logger.debug("SHC has {} rooms", rooms.size());
-        List<Device> devices = shcBridgeHandler.getDevices();
+        List<Device> devices = thingHandler.getDevices();
         logger.debug("SHC has {} devices", devices.size());
-        List<UserDefinedState> userStates = shcBridgeHandler.getUserStates();
+        List<UserDefinedState> userStates = thingHandler.getUserStates();
         logger.debug("SHC has {} user-defined states", userStates.size());
 
         // Write found devices into openhab.log to support manual configuration
@@ -195,9 +170,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
     }
 
     private void addUserState(UserDefinedState userState) {
-        // see startScan for the runtime null check of shcBridgeHandler
-        assert shcBridgeHandler != null;
-
         logger.trace("Discovering user-defined state {}", userState.getName());
         logger.trace("- details: id {}, state {}", userState.getId(), userState.isState());
 
@@ -206,7 +178,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
 
         logger.trace("- got thingTypeID '{}' for user-defined state '{}'", thingTypeUID.getId(), userState.getName());
 
-        ThingUID thingUID = new ThingUID(thingTypeUID, shcBridgeHandler.getThing().getUID(),
+        ThingUID thingUID = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(),
                 userState.getId().replace(':', '_'));
 
         logger.trace("- got thingUID '{}' for user-defined state: '{}'", thingUID, userState);
@@ -214,7 +186,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
         DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withProperty("id", userState.getId()).withLabel(userState.getName());
 
-        discoveryResult.withBridge(shcBridgeHandler.getThing().getUID());
+        discoveryResult.withBridge(thingHandler.getThing().getUID());
 
         thingDiscovered(discoveryResult.build());
 
@@ -234,8 +206,6 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
 
     protected void addDevice(Device device, String roomName) {
         // see startScan for the runtime null check of shcBridgeHandler
-        assert shcBridgeHandler != null;
-
         logger.trace("Discovering device {}", device.name);
         logger.trace("- details: id {}, roomId {}, deviceModel {}", device.id, device.roomId, device.deviceModel);
 
@@ -246,16 +216,13 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements T
 
         logger.trace("- got thingTypeID '{}' for deviceModel '{}'", thingTypeUID.getId(), device.deviceModel);
 
-        ThingUID thingUID = new ThingUID(thingTypeUID, shcBridgeHandler.getThing().getUID(),
-                device.id.replace(':', '_'));
+        ThingUID thingUID = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(), device.id.replace(':', '_'));
 
         logger.trace("- got thingUID '{}' for device: '{}'", thingUID, device);
 
         DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withProperty("id", device.id).withLabel(getNiceName(device.name, roomName));
-        if (null != shcBridgeHandler) {
-            discoveryResult.withBridge(shcBridgeHandler.getThing().getUID());
-        }
+        discoveryResult.withBridge(thingHandler.getThing().getUID());
         if (!roomName.isEmpty()) {
             discoveryResult.withProperty("Location", roomName);
         }

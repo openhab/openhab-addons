@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,6 @@ import org.openhab.binding.energidataservice.internal.retry.RetryStrategy;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.CurrencyUnits;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -77,8 +76,6 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link EnergiDataServiceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -92,18 +89,11 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private final ApiController apiController;
     private final CacheManager cacheManager;
-    private final Gson gson = new Gson();
 
     private EnergiDataServiceConfiguration config;
     private RetryStrategy retryPolicy = RetryPolicyFactory.initial();
     private @Nullable ScheduledFuture<?> refreshFuture;
     private @Nullable ScheduledFuture<?> priceUpdateFuture;
-
-    private record Price(String hourStart, BigDecimal spotPrice, String spotPriceCurrency,
-            @Nullable BigDecimal gridTariff, @Nullable BigDecimal systemTariff,
-            @Nullable BigDecimal transmissionGridTariff, @Nullable BigDecimal electricityTax,
-            @Nullable BigDecimal reducedElectricityTax) {
-    }
 
     public EnergiDataServiceHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -177,12 +167,12 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     private void refreshElectricityPrices() {
         RetryStrategy retryPolicy;
         try {
-            if (isLinked(CHANNEL_SPOT_PRICE) || isLinked(CHANNEL_HOURLY_PRICES)) {
+            if (isLinked(CHANNEL_SPOT_PRICE)) {
                 downloadSpotPrices();
             }
 
             for (DatahubTariff datahubTariff : DatahubTariff.values()) {
-                if (isLinked(datahubTariff.getChannelId()) || isLinked(CHANNEL_HOURLY_PRICES)) {
+                if (isLinked(datahubTariff.getChannelId())) {
                     downloadTariffs(datahubTariff);
                 }
             }
@@ -191,7 +181,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             updatePrices();
             updateTimeSeries();
 
-            if (isLinked(CHANNEL_SPOT_PRICE) || isLinked(CHANNEL_HOURLY_PRICES)) {
+            if (isLinked(CHANNEL_SPOT_PRICE)) {
                 if (cacheManager.getNumberOfFutureSpotPrices() < 13) {
                     retryPolicy = RetryPolicyFactory.whenExpectedSpotPriceDataMissing(DAILY_REFRESH_TIME_CET,
                             NORD_POOL_TIMEZONE);
@@ -315,7 +305,6 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         updateCurrentSpotPrice();
         Arrays.stream(DatahubTariff.values())
                 .forEach(tariff -> updateCurrentTariff(tariff.getChannelId(), cacheManager.getTariff(tariff)));
-        updateHourlyPrices();
 
         reschedulePriceUpdateJob();
     }
@@ -340,50 +329,24 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     }
 
     private State getEnergyPrice(BigDecimal price, Currency currency) {
-        Unit<?> unit = CurrencyUnits.getInstance().getUnit(currency.getCurrencyCode());
+        String currencyCode = currency.getCurrencyCode();
+        Unit<?> unit = CurrencyUnits.getInstance().getUnit(currencyCode);
         if (unit == null) {
             logger.trace("Currency {} is unknown, falling back to DecimalType", currency.getCurrencyCode());
             return new DecimalType(price);
         }
         try {
-            String currencyUnit = unit.getSymbol();
-            if (currencyUnit == null) {
-                currencyUnit = unit.getName();
-            }
-            return new QuantityType<>(price + " " + currencyUnit + "/kWh");
+            return new QuantityType<>(price + " " + currencyCode + "/kWh");
         } catch (IllegalArgumentException e) {
             logger.debug("Unable to create QuantityType, falling back to DecimalType", e);
             return new DecimalType(price);
         }
     }
 
-    private void updateHourlyPrices() {
-        if (!isLinked(CHANNEL_HOURLY_PRICES)) {
-            return;
-        }
-        Map<Instant, BigDecimal> spotPriceMap = cacheManager.getSpotPrices();
-        Price[] targetPrices = new Price[spotPriceMap.size()];
-        List<Entry<Instant, BigDecimal>> sourcePrices = spotPriceMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey()).toList();
-
-        int i = 0;
-        for (Entry<Instant, BigDecimal> sourcePrice : sourcePrices) {
-            Instant hourStart = sourcePrice.getKey();
-            BigDecimal gridTariff = cacheManager.getTariff(DatahubTariff.GRID_TARIFF, hourStart);
-            BigDecimal systemTariff = cacheManager.getTariff(DatahubTariff.SYSTEM_TARIFF, hourStart);
-            BigDecimal transmissionGridTariff = cacheManager.getTariff(DatahubTariff.TRANSMISSION_GRID_TARIFF,
-                    hourStart);
-            BigDecimal electricityTax = cacheManager.getTariff(DatahubTariff.ELECTRICITY_TAX, hourStart);
-            BigDecimal reducedElectricityTax = cacheManager.getTariff(DatahubTariff.REDUCED_ELECTRICITY_TAX, hourStart);
-            targetPrices[i++] = new Price(hourStart.toString(), sourcePrice.getValue(), config.currencyCode, gridTariff,
-                    systemTariff, electricityTax, reducedElectricityTax, transmissionGridTariff);
-        }
-        updateState(CHANNEL_HOURLY_PRICES, new StringType(gson.toJson(targetPrices)));
-    }
-
     private void updateTimeSeries() {
         TimeSeries spotPriceTimeSeries = new TimeSeries(REPLACE);
         Map<DatahubTariff, TimeSeries> datahubTimeSeriesMap = new HashMap<>();
+        Map<DatahubTariff, BigDecimal> datahubPreviousTariff = new HashMap<>();
         for (DatahubTariff datahubTariff : DatahubTariff.values()) {
             datahubTimeSeriesMap.put(datahubTariff, new TimeSeries(REPLACE));
         }
@@ -404,8 +367,14 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
                 }
                 BigDecimal tariff = cacheManager.getTariff(datahubTariff, hourStart);
                 if (tariff != null) {
+                    BigDecimal previousTariff = datahubPreviousTariff.get(datahubTariff);
+                    if (previousTariff != null && tariff.equals(previousTariff)) {
+                        // Skip redundant states.
+                        continue;
+                    }
                     TimeSeries timeSeries = entry.getValue();
                     timeSeries.add(hourStart, getEnergyPrice(tariff, CURRENCY_DKK));
+                    datahubPreviousTariff.put(datahubTariff, tariff);
                 }
             }
         }

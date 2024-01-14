@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,9 +18,6 @@ import static org.openhab.core.library.unit.Units.PERCENT;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.ElectricCurrent;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opensprinkler.internal.OpenSprinklerStateDescriptionProvider;
@@ -82,7 +79,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 updateState(channel, QuantityType.valueOf(localAPI.waterLevel(), PERCENT));
                 break;
             case SENSOR_CURRENT_DRAW:
-                updateState(channel, new QuantityType<ElectricCurrent>(localAPI.currentDraw(), MILLI(Units.AMPERE)));
+                updateState(channel, new QuantityType<>(localAPI.currentDraw(), MILLI(Units.AMPERE)));
                 break;
             case SENSOR_SIGNAL_STRENGTH:
                 int rssiValue = localAPI.signalStrength();
@@ -99,7 +96,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                 }
                 break;
             case SENSOR_FLOW_COUNT:
-                updateState(channel, new QuantityType<Dimensionless>(localAPI.flowSensorCount(), Units.ONE));
+                updateState(channel, new QuantityType<>(localAPI.flowSensorCount(), Units.ONE));
                 break;
             case CHANNEL_PROGRAMS:
                 break;

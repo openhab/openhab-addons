@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,15 +27,15 @@ import org.openhab.binding.ecobee.internal.dto.thermostat.RemoteSensorDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.ThermostatDTO;
 import org.openhab.binding.ecobee.internal.handler.EcobeeAccountBridgeHandler;
 import org.openhab.binding.ecobee.internal.handler.EcobeeThermostatBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,39 +46,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = EcobeeDiscoveryService.class)
 @NonNullByDefault
-public class EcobeeDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class EcobeeDiscoveryService extends AbstractThingHandlerDiscoveryService<EcobeeAccountBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(EcobeeDiscoveryService.class);
-
-    private @NonNullByDefault({}) EcobeeAccountBridgeHandler bridgeHandler;
 
     private @Nullable Future<?> discoveryJob;
 
     public EcobeeDiscoveryService() {
-        super(SUPPORTED_THERMOSTAT_AND_SENSOR_THING_TYPES_UIDS, 8, true);
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof EcobeeAccountBridgeHandler accountBridgeHandler) {
-            this.bridgeHandler = accountBridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(EcobeeAccountBridgeHandler.class, SUPPORTED_THERMOSTAT_AND_SENSOR_THING_TYPES_UIDS, 8, true);
     }
 
     @Override
@@ -113,14 +90,14 @@ public class EcobeeDiscoveryService extends AbstractDiscoveryService implements 
     }
 
     private void backgroundDiscover() {
-        if (!bridgeHandler.isBackgroundDiscoveryEnabled()) {
+        if (!thingHandler.isBackgroundDiscoveryEnabled()) {
             return;
         }
         discover();
     }
 
     private void discover() {
-        if (bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("EcobeeDiscovery: Skipping discovery because Account Bridge thing is not ONLINE");
             return;
         }
@@ -131,11 +108,11 @@ public class EcobeeDiscoveryService extends AbstractDiscoveryService implements 
 
     private synchronized void discoverThermostats() {
         logger.debug("EcobeeDiscovery: Discovering thermostats");
-        for (ThermostatDTO thermostat : bridgeHandler.getRegisteredThermostats()) {
+        for (ThermostatDTO thermostat : thingHandler.getRegisteredThermostats()) {
             String name = thermostat.name;
             String identifier = thermostat.identifier;
             if (identifier != null && name != null) {
-                ThingUID thingUID = new ThingUID(UID_THERMOSTAT_BRIDGE, bridgeHandler.getThing().getUID(), identifier);
+                ThingUID thingUID = new ThingUID(UID_THERMOSTAT_BRIDGE, thingHandler.getThing().getUID(), identifier);
                 thingDiscovered(createThermostatDiscoveryResult(thingUID, identifier, name));
                 logger.debug("EcobeeDiscovery: Thermostat '{}' and name '{}' added with UID '{}'", identifier, name,
                         thingUID);
@@ -144,6 +121,10 @@ public class EcobeeDiscoveryService extends AbstractDiscoveryService implements 
     }
 
     private DiscoveryResult createThermostatDiscoveryResult(ThingUID thermostatUID, String identifier, String name) {
+        EcobeeAccountBridgeHandler bridgeHandler = thingHandler;
+        if (bridgeHandler == null) {
+            throw new IllegalStateException("thingHandler must not be null");
+        }
         Map<String, Object> properties = new HashMap<>();
         properties.put(CONFIG_THERMOSTAT_ID, identifier);
         return DiscoveryResultBuilder.create(thermostatUID).withProperties(properties)
@@ -152,7 +133,7 @@ public class EcobeeDiscoveryService extends AbstractDiscoveryService implements 
     }
 
     private synchronized void discoverSensors() {
-        List<Thing> thermostatThings = bridgeHandler.getThing().getThings();
+        List<Thing> thermostatThings = thingHandler.getThing().getThings();
         if (thermostatThings.isEmpty()) {
             logger.debug("EcobeeDiscovery: Skipping sensor discovery because there are no thermostat things");
             return;

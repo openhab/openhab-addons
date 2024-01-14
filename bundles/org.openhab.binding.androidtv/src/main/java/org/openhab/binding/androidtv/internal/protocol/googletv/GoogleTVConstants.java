@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,4 +41,5 @@ public class GoogleTVConstants {
     public static final String MESSAGE_POWERON = "c202020801";
     public static final String MESSAGE_PINSUCCESS = "080210c801ca02";
     public static final String HARD_DROP = "ffffffff";
+    public static final String VERSION_01 = "7b2270726f746f636f6c5f76657273696f6e223a312c22737461747573223a3430307d";
 }

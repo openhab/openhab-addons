@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import java.util.Hashtable;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.plex.discovery.PlexDiscoveryService;
+import org.openhab.binding.plex.internal.discovery.PlexDiscoveryService;
 import org.openhab.binding.plex.internal.handler.PlexPlayerHandler;
 import org.openhab.binding.plex.internal.handler.PlexServerHandler;
 import org.openhab.core.config.discovery.DiscoveryService;

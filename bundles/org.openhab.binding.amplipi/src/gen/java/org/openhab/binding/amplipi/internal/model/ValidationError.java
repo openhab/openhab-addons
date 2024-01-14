@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class ValidationError {
 
     @Schema(required = true)
-    private List<String> loc = new ArrayList<String>();
+    private List<String> loc = new ArrayList<>();
 
     @Schema(required = true)
     private String msg;

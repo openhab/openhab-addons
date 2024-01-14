@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public class ShieldTVDiscoveryParticipant implements MDNSDiscoveryParticipant {
             if (uid != null) {
                 final String id = uid.getId();
                 final String label = service.getName() + " (" + id + ")";
-                final Map<String, Object> properties = Map.of(PROPERTY_IP_ADDRESS, ipAddress);
+                final Map<String, Object> properties = Map.of(PARAMETER_IP_ADDRESS, ipAddress);
 
                 return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
             } else {

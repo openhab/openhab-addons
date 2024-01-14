@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class LgwSensorHandler extends JeeLinkSensorHandler<LgwReading> {
 
     @Override
     public ReadingPublisher<LgwReading> createPublisher() {
-        return new ReadingPublisher<LgwReading>() {
+        return new ReadingPublisher<>() {
             @Override
             public void publish(LgwReading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {

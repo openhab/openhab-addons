@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.pilight.internal.handler;
 
 import java.util.Collection;
@@ -78,10 +77,10 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        PilightBridgeConfiguration config = getConfigAs(PilightBridgeConfiguration.class);
+        PilightBridgeConfiguration pilightConfig = getConfigAs(PilightBridgeConfiguration.class);
 
         final @Nullable PilightDeviceDiscoveryService discoveryService = this.discoveryService;
-        PilightConnector connector = new PilightConnector(config, new IPilightCallback() {
+        PilightConnector connector = new PilightConnector(pilightConfig, new IPilightCallback() {
             @Override
             public void updateThingStatus(ThingStatus status, ThingStatusDetail statusDetail,
                     @Nullable String description) {

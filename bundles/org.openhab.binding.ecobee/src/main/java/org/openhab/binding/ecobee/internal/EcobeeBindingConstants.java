@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -402,8 +402,8 @@ public class EcobeeBindingConstants {
     public static final HouseDetailsDTO EMPTY_HOUSEDETAILS = new HouseDetailsDTO();
     public static final ManagementDTO EMPTY_MANAGEMENT = new ManagementDTO();
     public static final TechnicianDTO EMPTY_TECHNICIAN = new TechnicianDTO();
-    public static final List<RemoteSensorDTO> EMPTY_SENSORS = Collections.<RemoteSensorDTO> emptyList();
-    public static final List<ThermostatDTO> EMPTY_THERMOSTATS = Collections.<ThermostatDTO> emptyList();
+    public static final List<RemoteSensorDTO> EMPTY_SENSORS = Collections.emptyList();
+    public static final List<ThermostatDTO> EMPTY_THERMOSTATS = Collections.emptyList();
 
     public static final String ECOBEE_BASE_URL = "https://api.ecobee.com/";
     public static final String ECOBEE_AUTHORIZE_URL = ECOBEE_BASE_URL + "authorize";

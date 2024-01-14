@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,7 +69,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
     private boolean alreadyRemovedUnsupportedChannels;
 
-    private final Set<String> unsupportedExistingChannels = new HashSet<String>();
+    private final Set<String> unsupportedExistingChannels = new HashSet<>();
 
     private final ReentrantLock retrieveDataCallLock = new ReentrantLock();
 

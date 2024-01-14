@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -233,10 +233,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
     @Override
     public QuantityType<Time> getRainDelay() {
         if (state.jcReply.rdst == 0) {
-            return new QuantityType<Time>(0, Units.SECOND);
+            return new QuantityType<>(0, Units.SECOND);
         }
         long remainingTime = state.jcReply.rdst - state.jcReply.devt;
-        return new QuantityType<Time>(remainingTime, Units.SECOND);
+        return new QuantityType<>(remainingTime, Units.SECOND);
     }
 
     /**

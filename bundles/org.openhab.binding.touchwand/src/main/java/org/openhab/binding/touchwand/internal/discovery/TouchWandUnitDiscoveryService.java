@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,26 +14,25 @@ package org.openhab.binding.touchwand.internal.discovery;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.touchwand.internal.TouchWandBridgeHandler;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitFromJson;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,32 +46,32 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Roie Geron - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = TouchWandUnitDiscoveryService.class)
 @NonNullByDefault
-public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class TouchWandUnitDiscoveryService extends AbstractThingHandlerDiscoveryService<TouchWandBridgeHandler> {
 
     private static final int SEARCH_TIME_SEC = 10;
     private static final int SCAN_INTERVAL_SEC = 60;
     private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY_SEC = 5;
     private static final String[] CONNECTIVITY_OPTIONS = { CONNECTIVITY_KNX, CONNECTIVITY_ZWAVE, CONNECTIVITY_RISCO,
             CONNECTIVITY_PIMA, CONNECTIVITY_ACWAND };
-    private @NonNullByDefault({}) TouchWandBridgeHandler touchWandBridgeHandler;
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
     private @Nullable ScheduledFuture<?> scanningJob;
 
     public TouchWandUnitDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME_SEC, true);
+        super(TouchWandBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME_SEC, true);
     }
 
     @Override
     protected void startScan() {
-        if (touchWandBridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("Could not scan units while bridge offline");
             return;
         }
 
-        logger.debug("Starting TouchWand discovery on bridge {}", touchWandBridgeHandler.getThing().getUID());
-        String response = touchWandBridgeHandler.touchWandClient.cmdListUnits();
+        logger.debug("Starting TouchWand discovery on bridge {}", thingHandler.getThing().getUID());
+        String response = thingHandler.touchWandClient.cmdListUnits();
         if (response.isEmpty()) {
             return;
         }
@@ -85,7 +84,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
                         TouchWandUnitData touchWandUnit;
                         touchWandUnit = TouchWandUnitFromJson.parseResponse(unit.getAsJsonObject());
 
-                        if (!touchWandBridgeHandler.isAddSecondaryControllerUnits()) {
+                        if (!thingHandler.isAddSecondaryControllerUnits()) {
                             if (!Arrays.asList(CONNECTIVITY_OPTIONS).contains(touchWandUnit.getConnectivity())) {
                                 continue;
                             }
@@ -137,15 +136,15 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
     }
 
     @Override
-    public void activate() {
-        super.activate(null);
-        removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
+    public void initialize() {
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        super.initialize();
     }
 
     @Override
-    public void deactivate() {
-        removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
-        super.deactivate();
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
     }
 
     @Override
@@ -172,7 +171,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
     }
 
     private void addDeviceDiscoveryResult(TouchWandUnitData unit, ThingTypeUID typeUID) {
-        ThingUID bridgeUID = touchWandBridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingUID thingUID = new ThingUID(typeUID, bridgeUID, unit.getId().toString());
         Map<String, Object> properties = new HashMap<>();
         properties.put(HANDLER_PROPERTIES_ID, unit.getId().toString());
@@ -187,17 +186,5 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService impl
                 .build()
         );
         // @formatter:on
-    }
-
-    @Override
-    public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
-        if (handler instanceof TouchWandBridgeHandler touchWandBridgeHandler) {
-            this.touchWandBridgeHandler = touchWandBridgeHandler;
-        }
-    }
-
-    @Override
-    public @NonNull ThingHandler getThingHandler() {
-        return touchWandBridgeHandler;
     }
 }

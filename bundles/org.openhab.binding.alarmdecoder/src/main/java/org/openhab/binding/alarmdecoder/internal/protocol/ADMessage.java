@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public abstract class ADMessage {
 
     /** Utility routine to split an AD message into its component parts */
     protected static List<String> splitMsg(String msg) {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         Matcher regexMatcher = SPLIT_REGEX.matcher(msg);
         while (regexMatcher.find()) {
             l.add(regexMatcher.group());

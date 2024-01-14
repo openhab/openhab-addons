@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,17 +14,17 @@ package org.openhab.binding.meater.internal.discovery;
 
 import static org.openhab.binding.meater.internal.MeaterBindingConstants.*;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meater.internal.MeaterConfiguration;
 import org.openhab.binding.meater.internal.handler.MeaterBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link MeaterDiscoveryService} searches for available
@@ -32,51 +32,34 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = MeaterDiscoveryService.class)
 @NonNullByDefault
-public class MeaterDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class MeaterDiscoveryService extends AbstractThingHandlerDiscoveryService<MeaterBridgeHandler> {
     private static final int SEARCH_TIME = 2;
-    private @Nullable MeaterBridgeHandler handler;
 
     public MeaterDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
+        super(MeaterBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
     }
 
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof MeaterBridgeHandler bridgeHandler) {
-            this.handler = bridgeHandler;
-            i18nProvider = bridgeHandler.getI18nProvider();
-            localeProvider = bridgeHandler.getLocaleProvider();
-        }
+    @Reference(unbind = "-")
+    public void bindTranslationProvider(TranslationProvider translationProvider) {
+        this.i18nProvider = translationProvider;
     }
 
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
-    }
-
-    @Override
-    public void activate(@Nullable Map<String, Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+    @Reference(unbind = "-")
+    public void bindLocaleProvider(LocaleProvider localeProvider) {
+        this.localeProvider = localeProvider;
     }
 
     @Override
     protected void startScan() {
-        MeaterBridgeHandler bridgeHandler = this.handler;
-        if (bridgeHandler != null) {
-            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            bridgeHandler.getMeaterThings().entrySet().stream().forEach(thing -> {
-                thingDiscovered(
-                        DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_MEATER_PROBE, bridgeUID, thing.getKey()))
-                                .withLabel("@text/discovery.probe.label").withBridge(bridgeUID)
-                                .withProperty(MeaterConfiguration.DEVICE_ID_LABEL, thing.getKey())
-                                .withRepresentationProperty(MeaterConfiguration.DEVICE_ID_LABEL).build());
-            });
-        }
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        thingHandler.getMeaterThings().entrySet().stream().forEach(thing -> {
+            thingDiscovered(
+                    DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_MEATER_PROBE, bridgeUID, thing.getKey()))
+                            .withLabel("@text/discovery.probe.label").withBridge(bridgeUID)
+                            .withProperty(MeaterConfiguration.DEVICE_ID_LABEL, thing.getKey())
+                            .withRepresentationProperty(MeaterConfiguration.DEVICE_ID_LABEL).build());
+        });
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public class NoiseHandlerTest {
     public void testValidUpdate() {
         ThingMock t = new ThingMock();
 
-        HashMap<String, Object> properties = new HashMap<String, Object>();
+        HashMap<String, Object> properties = new HashMap<>();
         // String sensorid taken from thing-types.xml
         properties.put("sensorid", 12345);
         t.setConfiguration(properties);
@@ -59,7 +59,7 @@ public class NoiseHandlerTest {
     public void testInvalidUpdate() {
         ThingMock t = new ThingMock();
 
-        HashMap<String, Object> properties = new HashMap<String, Object>();
+        HashMap<String, Object> properties = new HashMap<>();
         // String sensorid taken from thing-types.xml
         properties.put("sensorid", 12345);
         t.setConfiguration(properties);
@@ -81,7 +81,7 @@ public class NoiseHandlerTest {
     public void testEmptyUpdate() {
         ThingMock t = new ThingMock();
 
-        HashMap<String, Object> properties = new HashMap<String, Object>();
+        HashMap<String, Object> properties = new HashMap<>();
         // String sensorid taken from thing-types.xml
         properties.put("sensorid", 12345);
         t.setConfiguration(properties);
@@ -95,7 +95,7 @@ public class NoiseHandlerTest {
     public void testNullUpdate() {
         ThingMock t = new ThingMock();
 
-        HashMap<String, Object> properties = new HashMap<String, Object>();
+        HashMap<String, Object> properties = new HashMap<>();
         // String sensorid taken from thing-types.xml
         properties.put("sensorid", 12345);
         t.setConfiguration(properties);

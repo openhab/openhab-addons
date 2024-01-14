@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.dto.vehicle.VehicleAttributes;
@@ -31,12 +30,12 @@ import org.openhab.binding.mybmw.internal.handler.enums.RemoteService;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,34 +46,26 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  * @author Martin Grassl - refactoring
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = VehicleDiscovery.class)
 @NonNullByDefault
-public class VehicleDiscovery extends AbstractDiscoveryService implements ThingHandlerService {
+public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMWBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(VehicleDiscovery.class);
 
     private static final int DISCOVERY_TIMEOUT = 10;
 
-    private Optional<MyBMWBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<MyBMWProxy> myBMWProxy = Optional.empty();
-    private Optional<ThingUID> bridgeUid = Optional.empty();
+    private @NonNullByDefault({}) ThingUID bridgeUid;
 
     public VehicleDiscovery() {
-        super(MyBMWConstants.SUPPORTED_THING_SET, DISCOVERY_TIMEOUT, false);
+        super(MyBMWBridgeHandler.class, MyBMWConstants.SUPPORTED_THING_SET, DISCOVERY_TIMEOUT, false);
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof MyBMWBridgeHandler bmwBridgeHandler) {
-            logger.trace("VehicleDiscovery.setThingHandler for MybmwBridge");
-            bridgeHandler = Optional.of(bmwBridgeHandler);
-            bridgeHandler.get().setVehicleDiscovery(this);
-            bridgeUid = Optional.of(bridgeHandler.get().getThing().getUID());
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler.orElse(null);
+    public void initialize() {
+        thingHandler.setVehicleDiscovery(this);
+        bridgeUid = thingHandler.getThing().getUID();
+        super.initialize();
     }
 
     @Override
@@ -83,17 +74,10 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
         discoverVehicles();
     }
 
-    @Override
-    public void deactivate() {
-        logger.trace("VehicleDiscovery.deactivate");
-
-        super.deactivate();
-    }
-
     public void discoverVehicles() {
         logger.trace("VehicleDiscovery.discoverVehicles");
 
-        myBMWProxy = bridgeHandler.get().getMyBmwProxy();
+        myBMWProxy = thingHandler.getMyBmwProxy();
 
         try {
             Optional<List<@NonNull Vehicle>> vehicleList = myBMWProxy.map(prox -> {
@@ -104,11 +88,11 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
                 }
             });
             vehicleList.ifPresentOrElse(vehicles -> {
-                bridgeHandler.ifPresent(bridge -> bridge.vehicleDiscoverySuccess());
+                thingHandler.vehicleDiscoverySuccess();
                 processVehicles(vehicles);
-            }, () -> bridgeHandler.ifPresent(bridge -> bridge.vehicleDiscoveryError()));
+            }, () -> thingHandler.vehicleDiscoveryError());
         } catch (IllegalStateException ex) {
-            bridgeHandler.ifPresent(bridge -> bridge.vehicleDiscoveryError());
+            thingHandler.vehicleDiscoveryError();
         }
     }
 
@@ -131,13 +115,13 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
                     .toString();
             MyBMWConstants.SUPPORTED_THING_SET.forEach(entry -> {
                 if (entry.getId().equals(vehicleType)) {
-                    ThingUID uid = new ThingUID(entry, vehicle.getVehicleBase().getVin(), bridgeUid.get().getId());
+                    ThingUID uid = new ThingUID(entry, vehicle.getVehicleBase().getVin(), bridgeUid.getId());
 
                     Map<String, String> properties = generateProperties(vehicle);
 
                     boolean thingFound = false;
                     // Update Properties for already created Things
-                    List<Thing> vehicleThings = bridgeHandler.get().getThing().getThings();
+                    List<Thing> vehicleThings = thingHandler.getThing().getThings();
                     for (Thing vehicleThing : vehicleThings) {
                         Configuration configuration = vehicleThing.getConfiguration();
 
@@ -154,14 +138,14 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements ThingH
                     if (!thingFound) {
                         // Properties needed for functional Thing
                         VehicleAttributes vehicleAttributes = vehicle.getVehicleBase().getAttributes();
-                        Map<String, Object> convertedProperties = new HashMap<String, Object>(properties);
+                        Map<String, Object> convertedProperties = new HashMap<>(properties);
                         convertedProperties.put(MyBMWConstants.VIN, vehicle.getVehicleBase().getVin());
                         convertedProperties.put(MyBMWConstants.VEHICLE_BRAND, vehicleAttributes.getBrand());
                         convertedProperties.put(MyBMWConstants.REFRESH_INTERVAL,
                                 Integer.toString(MyBMWConstants.DEFAULT_REFRESH_INTERVAL_MINUTES));
 
                         String vehicleLabel = vehicleAttributes.getBrand() + " " + vehicleAttributes.getModel();
-                        thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid.get())
+                        thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid)
                                 .withRepresentationProperty(MyBMWConstants.VIN).withLabel(vehicleLabel)
                                 .withProperties(convertedProperties).build());
                     }

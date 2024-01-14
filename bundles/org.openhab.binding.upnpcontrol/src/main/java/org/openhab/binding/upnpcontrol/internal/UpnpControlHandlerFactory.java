@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -227,7 +227,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
             UpnpAudioSink audioSink = new UpnpAudioSink(handler, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) bundleContext
-                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
             Thing thing = handler.getThing();
             audioSinkRegistrations.put(thing.getUID().toString(), reg);
             logger.debug("Audio sink added for media renderer {}", thing.getLabel());
@@ -236,7 +236,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
                     callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> notificationReg = (ServiceRegistration<AudioSink>) bundleContext
-                    .registerService(AudioSink.class.getName(), notificationAudioSink, new Hashtable<String, Object>());
+                    .registerService(AudioSink.class.getName(), notificationAudioSink, new Hashtable<>());
             audioSinkRegistrations.put(thing.getUID().toString() + NOTIFICATION_AUDIOSINK_EXTENSION, notificationReg);
             logger.debug("Notification audio sink added for media renderer {}", thing.getLabel());
         }
