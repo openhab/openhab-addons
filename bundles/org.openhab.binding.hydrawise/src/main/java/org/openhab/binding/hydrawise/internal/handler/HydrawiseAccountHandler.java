@@ -198,7 +198,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
                 OAuthClientService oAuthService = this.oAuthService;
                 if (oAuthService != null) {
                     oAuthService.refreshToken();
-                    initPolling(0, MIN_REFRESH_SECONDS);
+                    initPolling(0, refresh);
                 }
             } catch (OAuthException | IOException | OAuthResponseException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
