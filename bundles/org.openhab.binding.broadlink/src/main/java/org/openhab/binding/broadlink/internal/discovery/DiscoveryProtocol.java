@@ -42,6 +42,7 @@ public class DiscoveryProtocol {
             this.logger = logger;
         }
 
+        @Override
         public void run() {
             BroadlinkSocket.registerListener(listener, logger);
             DiscoveryProtocol.discoverDevices(logger);
@@ -76,7 +77,6 @@ public class DiscoveryProtocol {
             logger.warn("Broadlink device scan waiting for {} ms to complete ...", discoveryTimeoutMillis);
             Thread.sleep(discoveryTimeoutMillis);
             logger.warn("Device scan: wait complete ...");
-
         } catch (InterruptedException e) {
             logger.warn("problem {}", e.getMessage());
         }

@@ -1,6 +1,5 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +28,7 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
         super(thing);
     }
 
+    @Override
     protected boolean getStatusFromDevice() {
         logger.trace("A1 getStatusFromDevice");
         byte payload[];
@@ -44,11 +44,11 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
                 return false;
             }
             byte decryptResponse[] = decodeDevicePacket(response);
-            double temperature = ((double) (decryptResponse[4] * 10 + decryptResponse[5]) / 10D);
+            double temperature = ((decryptResponse[4] * 10 + decryptResponse[5]) / 10D);
             logger.trace("A1 getStatusFromDevice got temperature {}", temperature);
 
             updateTemperature(temperature);
-            updateHumidity((double) (decryptResponse[6] * 10 + decryptResponse[7]) / 10D);
+            updateHumidity((decryptResponse[6] * 10 + decryptResponse[7]) / 10D);
             updateState("light", ModelMapper.getLightValue(decryptResponse[8]));
             updateState("air", ModelMapper.getAirValue(decryptResponse[10]));
             updateState("noise", ModelMapper.getNoiseValue(decryptResponse[12]));
@@ -59,6 +59,7 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
         }
     }
 
+    @Override
     protected boolean onBroadlinkDeviceBecomingReachable() {
         return getStatusFromDevice();
     }
