@@ -62,7 +62,7 @@ public class HttpResponseListener extends BufferingResponseListener {
             logger.trace("Received from '{}': {}", result.getRequest().getURI(), responseToLogString(response));
         }
         Request request = result.getRequest();
-        if (response == null || (result.isFailed() && response.getStatus() != 401)) {
+        if (response == null || (result.isFailed() && response.getStatus() != HttpStatus.UNAUTHORIZED_401)) {
             logger.debug("Requesting '{}' (method='{}', content='{}') failed: {}", request.getURI(),
                     request.getMethod(), request.getContent(), result.getFailure().getMessage());
             future.complete(null);
