@@ -15,6 +15,7 @@ package org.openhab.binding.icalendar.internal.logic;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -23,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * A single event.
  *
  * @author Michael Wodniok - Initial contribution
- * @author Andrew Fiddian-Green - Added support for event
+ * @author Andrew Fiddian-Green - Added support for event description
  * @author Michael Wodniok - Moved CommandTag paring to separate method for doing it only on demand.
  */
 @NonNullByDefault
@@ -75,15 +76,9 @@ public class Event implements Comparable<Event> {
         final String description = this.description;
         final String location = this.location;
         return (this.start.equals(otherEvent.start) && this.end.equals(otherEvent.end)
-                && ((title == null && otherEvent.title == null) || (title != null && title.equals(otherEvent.title)))
-                && ((comment == null && otherEvent.comment == null)
-                        || (comment != null && comment.equals(otherEvent.comment)))
-                && ((contact == null && otherEvent.contact == null)
-                        || (contact != null && contact.equals(otherEvent.contact)))
-                && ((description == null && otherEvent.description == null)
-                        || (description != null && description.equals(otherEvent.description)))
-                && ((location == null && otherEvent.location == null)
-                        || (location != null && location.equals(otherEvent.location))));
+                && Objects.equals(title, otherEvent.title) && Objects.equals(comment, otherEvent.comment)
+                && Objects.equals(contact, otherEvent.contact) && Objects.equals(description, otherEvent.description)
+                && Objects.equals(location, otherEvent.location));
     }
 
     @Override
@@ -93,9 +88,7 @@ public class Event implements Comparable<Event> {
         final String contact = this.contact;
         final String description = this.description;
         final String location = this.location;
-        return this.start.hashCode() + this.end.hashCode() + (title != null ? title.hashCode() : 0)
-                + (comment != null ? comment.hashCode() : 0) + (contact != null ? contact.hashCode() : 0)
-                + (description != null ? description.hashCode() : 0) + (location != null ? location.hashCode() : 0);
+        return Objects.hash(this.start, this.end, title, comment, contact, description, location);
     }
 
     @Override

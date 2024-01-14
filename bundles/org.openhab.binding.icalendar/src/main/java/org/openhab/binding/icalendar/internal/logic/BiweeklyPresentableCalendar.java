@@ -108,21 +108,10 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     @Override
-    public @Nullable Event getNextEvent(Instant instant) {
-<<<<<<< HEAD
+    public @Nullable Event getNextEvent(Instant instant, @Nullable EventTextFilter filter) {
         final Collection<VEventWPeriod> candidates = new ArrayList<>();
         final Collection<VEvent> negativeEvents = new ArrayList<>();
         final Collection<VEvent> positiveEvents = new ArrayList<>();
-=======
-        return getNextEvent(instant, null);
-    }
-
-    @Override
-    public @Nullable Event getNextEvent(Instant instant, @Nullable EventTextFilter filter) {
-        final Collection<VEventWPeriod> candidates = new ArrayList<VEventWPeriod>();
-        final Collection<VEvent> negativeEvents = new ArrayList<VEvent>();
-        final Collection<VEvent> positiveEvents = new ArrayList<VEvent>();
->>>>>>> 7115ebe82c ([icalendar] Extended getNextEvent-Signature for filter and implemented tests)
         classifyEvents(positiveEvents, negativeEvents);
         Predicate<VEvent> matcher = (filter != null ? new TextFilterMatcher(filter) : (any) -> true);
         for (final VEvent currentEvent : positiveEvents) {
@@ -157,6 +146,11 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             return null;
         }
         return earliestNextEvent.toEvent();
+    }
+
+    @Override
+    public @Nullable Event getNextEvent(Instant instant) {
+        return getNextEvent(instant, null);
     }
 
     @Override
@@ -291,7 +285,7 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @param instant The Instant to use for finding events.
      * @return A VEventWPeriod describing the event or null if there is none.
      */
-    private @Nullable VEventWPeriod getCurrentComponentWPeriod(Instant instant) {
+    private @Nullable VEventWPeriod getCurrentComponentWPeriod(Instant instant, @Nullable EventTextFilter filter) {
         final List<VEvent> negativeEvents = new ArrayList<>();
         final List<VEvent> positiveEvents = new ArrayList<>();
         classifyEvents(positiveEvents, negativeEvents);
@@ -440,14 +434,12 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             final String description = eventDescription != null ? eventDescription.getValue() : null;
             final Location eventLocation = vEvent.getLocation();
             final String location = eventLocation != null ? eventLocation.getValue() : null;
-            final List<Contact> eventContacts = vEvent.getContacts();
-            final List<String> contactStrings = new ArrayList<>(eventContacts.size());
-            eventContacts.forEach((c) -> contactStrings.add(c.getValue()));
-            final String contact = !contactStrings.isEmpty() ? String.join("; ", contactStrings) : null;
-            final List<Comment> eventComments = vEvent.getComments();
-            final List<String> commentStrings = new ArrayList<>(eventComments.size());
-            eventComments.forEach((c) -> commentStrings.add(c.getValue()));
-            final String comment = !commentStrings.isEmpty() ? String.join("\n", commentStrings) : null;
+            final String contactsMerged = vEvent.getContacts().stream().map((c) -> c.getValue())
+                    .collect(Collectors.joining("; "));
+            final String contact = contactsMerged.isEmpty() ? null : contactsMerged;
+            final String commentMerged = vEvent.getComments().stream().map((c) -> c.getValue())
+                    .collect(Collectors.joining("\n"));
+            final String comment = commentMerged.isEmpty() ? null : commentMerged;
             return new Event(title, start, end, description, location, comment, contact);
         }
     }
