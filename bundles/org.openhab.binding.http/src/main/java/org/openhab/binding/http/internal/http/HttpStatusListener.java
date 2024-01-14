@@ -10,18 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.http.internal.config;
+package org.openhab.binding.http.internal.http;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link HttpChannelMode} enum defines control modes for channels
+ * The {@link HttpStatusListener} is an interface for reporting HTTP request states
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public enum HttpChannelMode {
-    READONLY,
-    READWRITE,
-    WRITEONLY
+public interface HttpStatusListener {
+    /**
+     * report an error
+     *
+     * @param message optional error message
+     */
+    void onHttpError(@Nullable String message);
+
+    /**
+     * report a successful request
+     */
+    void onHttpSuccess();
 }
