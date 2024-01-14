@@ -381,7 +381,7 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
                                     logger.warn(
                                             "Retry after authentication failure failed again for '{}', failing here",
                                             uri);
-                                    onHttpError("Authorization failed");
+                                    onHttpError("Authentication failed");
                                 } else {
                                     sendHttpValue(commandUrl, command, true);
                                 }
