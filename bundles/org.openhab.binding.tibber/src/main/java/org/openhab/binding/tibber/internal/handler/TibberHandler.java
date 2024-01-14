@@ -211,7 +211,6 @@ public class TibberHandler extends BaseThingHandler {
 
                     TimeSeries timeSeries = buildTimeSeries(today, tomorrow);
                     sendTimeSeries(CURRENT_TOTAL, timeSeries);
-
                 } catch (JsonSyntaxException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error communicating with Tibber API: " + e.getMessage());
