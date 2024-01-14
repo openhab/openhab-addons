@@ -289,8 +289,8 @@ public class TibberHandler extends BaseThingHandler {
         return timeSeries;
     }
 
-    private static void mapTimeSeriesEntries(JsonArray today, TimeSeries timeSeries) {
-        for (JsonElement entry : today) {
+    private static void mapTimeSeriesEntries(JsonArray prices, TimeSeries timeSeries) {
+        for (JsonElement entry : prices) {
             final Instant startsAt = parseDateTime(entry.getAsJsonObject().get("startsAt"));
             final Instant endsAt = startsAt.plus(1, ChronoUnit.HOURS).minus(1, ChronoUnit.MICROS);
             final DecimalType value = new DecimalType(entry.getAsJsonObject().get("total").getAsString());
