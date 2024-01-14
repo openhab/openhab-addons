@@ -297,7 +297,7 @@ public class TibberHandler extends BaseThingHandler {
             // As the value is valid for exactly one hour and is not linear, add one entry at the beginning
             // and one at the end of the interval, so it's a step function instead a linear one.
             timeSeries.add(startsAt, value);
-            timeSeries.add(endsAt,value);
+            timeSeries.add(endsAt, value);
         }
     }
 
