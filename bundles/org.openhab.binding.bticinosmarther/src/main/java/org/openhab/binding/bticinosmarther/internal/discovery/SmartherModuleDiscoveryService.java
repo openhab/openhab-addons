@@ -14,7 +14,7 @@ package org.openhab.binding.bticinosmarther.internal.discovery;
 
 import static org.openhab.binding.bticinosmarther.internal.SmartherBindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -86,7 +86,7 @@ public class SmartherModuleDiscoveryService extends AbstractThingHandlerDiscover
     public void dispose() {
         super.dispose();
         logger.debug("Bridge[{}] Deactivating chronothermostat discovery service", this.bridgeUID);
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     @Override
