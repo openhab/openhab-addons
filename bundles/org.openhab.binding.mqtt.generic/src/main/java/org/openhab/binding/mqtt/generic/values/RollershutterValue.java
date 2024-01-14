@@ -71,8 +71,16 @@ public class RollershutterValue extends Value {
         this.upCommandString = upCommandString;
         this.downCommandString = downCommandString;
         this.stopCommandString = stopCommandString;
-        this.upStateString = upStateString;
-        this.downStateString = downStateString;
+        if (upStateString == null) {
+            this.upStateString = upCommandString;
+        } else {
+            this.upStateString = upStateString;
+        }
+        if (downStateString == null) {
+            this.downStateString = downCommandString;
+        } else {
+            this.downStateString = downStateString;
+        }
         this.inverted = inverted;
         this.transformExtentsToString = transformExtentsToString;
     }
