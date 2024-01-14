@@ -22,7 +22,6 @@ import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -296,12 +295,8 @@ public class TibberHandler extends BaseThingHandler {
                 // Skip entry, if date is invalid.
                 continue;
             }
-            final Instant endsAt = startsAt.plus(1, ChronoUnit.HOURS).minus(1, ChronoUnit.MICROS);
             final DecimalType value = new DecimalType(entry.getAsJsonObject().get("total").getAsString());
-            // As the value is valid for exactly one hour and is not linear, add one entry at the beginning
-            // and one at the end of the interval, so it's a step function instead a linear one.
             timeSeries.add(startsAt, value);
-            timeSeries.add(endsAt, value);
         }
     }
 
