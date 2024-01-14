@@ -73,6 +73,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -755,8 +756,12 @@ public class YamahaZoneThingHandler extends BaseThingHandler
         // Remove the old channel and add the new channel. The channel will be requested from the
         // yamahaChannelTypeProvider.
         ChannelUID inputChannelUID = new ChannelUID(thing.getUID(), CHANNEL_GROUP_ZONE, CHANNEL_INPUT);
-        Channel channel = ChannelBuilder.create(inputChannelUID, "String")
-                .withType(channelsTypeProviderAvailableInputs.getChannelTypeUID()).build();
+        ChannelTypeUID channelTypeUID = channelsTypeProviderAvailableInputs.getChannelTypeUID();
+        if (channelTypeUID == null) {
+            logger.warn("ChannelTypeUID is null, this should not happen.");
+            return;
+        }
+        Channel channel = ChannelBuilder.create(inputChannelUID, "String").withType(channelTypeUID).build();
         updateThing(editThing().withoutChannel(inputChannelUID).withChannel(channel).build());
     }
 
@@ -795,11 +800,15 @@ public class YamahaZoneThingHandler extends BaseThingHandler
 
             // Remove the old channel and add the new channel. The channel will be requested from the
             // channelsTypeProviderPreset.
-            ChannelUID inputChannelUID = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PLAYBACK,
+            ChannelUID presetChannelUID = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PLAYBACK,
                     CHANNEL_PLAYBACK_PRESET);
-            Channel channel = ChannelBuilder.create(inputChannelUID, "Number")
-                    .withType(channelsTypeProviderPreset.getChannelTypeUID()).build();
-            updateThing(editThing().withoutChannel(inputChannelUID).withChannel(channel).build());
+            ChannelTypeUID channelTypeUID = channelsTypeProviderPreset.getChannelTypeUID();
+            if (channelTypeUID == null) {
+                logger.warn("ChannelTypeUID is null, this should not happen.");
+                return;
+            }
+            Channel channel = ChannelBuilder.create(presetChannelUID, "Number").withType(channelTypeUID).build();
+            updateThing(editThing().withoutChannel(presetChannelUID).withChannel(channel).build());
         }
 
         updateState(grpPlayback(CHANNEL_PLAYBACK_PRESET), new DecimalType(msg.presetChannel));
