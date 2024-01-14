@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 import java.util.concurrent.Future;
@@ -275,45 +277,32 @@ public class TibberHandler extends BaseThingHandler {
 
     /**
      * Builds the {@link TimeSeries} that represents the future tibber prices.
-     * As they are valid for one hour every entry is represented by two time series entries.
-     * 
+     *
      * @param today The prices for today
      * @param tomorrow The prices for tomorrow.
      * @return The {@link TimeSeries} with future values.
      */
     private TimeSeries buildTimeSeries(JsonArray today, JsonArray tomorrow) {
         final TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-
-        for (JsonElement entry : today) {
-            DateTimeType startsAt = parseDateTime(entry.getAsJsonObject().get("startsAt"));
-            timeSeries.add( //
-                    startsAt.getInstant(), //
-                    new DecimalType(entry.getAsJsonObject().get("total").getAsString()) //
-            );
-            timeSeries.add( //
-                    startsAt.getInstant().plus(1, ChronoUnit.HOURS).minus(1, ChronoUnit.MICROS), //
-                    new DecimalType(entry.getAsJsonObject().get("total").getAsString()) //
-            );
-        }
-
-        for (JsonElement entry : tomorrow) {
-            DateTimeType startsAt = parseDateTime(entry.getAsJsonObject().get("startsAt"));
-            timeSeries.add( //
-                    startsAt.getInstant(), //
-                    new DecimalType(entry.getAsJsonObject().get("total").getAsString()) //
-            );
-            timeSeries.add( //
-                    startsAt.getInstant().plus(1, ChronoUnit.HOURS).minus(1, ChronoUnit.MICROS), //
-                    new DecimalType(entry.getAsJsonObject().get("total").getAsString()) //
-            );
-        }
-
+        mapTimeSeriesEntries(today, timeSeries);
+        mapTimeSeriesEntries(tomorrow, timeSeries);
         return timeSeries;
     }
 
-    private static DateTimeType parseDateTime(JsonElement element) {
-        String value = element.getAsString();
-        return new DateTimeType(value);
+    private static void mapTimeSeriesEntries(JsonArray today, TimeSeries timeSeries) {
+        for (JsonElement entry : today) {
+            final Instant startsAt = parseDateTime(entry.getAsJsonObject().get("startsAt"));
+            final Instant endsAt = startsAt.plus(1, ChronoUnit.HOURS).minus(1, ChronoUnit.MICROS);
+            final DecimalType value = new DecimalType(entry.getAsJsonObject().get("total").getAsString());
+            // As the value is valid for exactly one hour and is not linear, add one entry at the beginning
+            // and one at the end of the interval, so it's a step function instead a linear one.
+            timeSeries.add(startsAt, value);
+            timeSeries.add(endsAt,value);
+        }
+    }
+
+    private static Instant parseDateTime(JsonElement element) {
+        return ZonedDateTime.parse(element.getAsString()).toInstant();
     }
 
     public void startRefresh(int refresh) {
