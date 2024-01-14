@@ -29,7 +29,7 @@ public class HttpBindingConstants {
     public static final ThingTypeUID THING_TYPE_URL = new ThingTypeUID(BINDING_ID, "url");
 
     public static final ChannelTypeUID REQUEST_DATE_TIME_CHANNELTYPE_UID = new ChannelTypeUID(BINDING_ID,
-            "requestDateTime");
-    public static final String CHANNEL_LAST_SUCCESS = "lastSuccess";
-    public static final String CHANNEL_LAST_FAILURE = "lastFailure";
+            "request-date-time");
+    public static final String CHANNEL_LAST_SUCCESS = "last-success";
+    public static final String CHANNEL_LAST_FAILURE = "last-failure";
 }
