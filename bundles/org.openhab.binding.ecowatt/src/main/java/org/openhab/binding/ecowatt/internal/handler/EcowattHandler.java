@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * The {@link EcowattHandler} is responsible for updating the state of the channels
  *
  * @author Laurent Garnier - Initial contribution
+ * @author Laurent Garnier - Add support for API version 5
  */
 @NonNullByDefault
 public class EcowattHandler extends BaseThingHandler {
@@ -100,7 +101,8 @@ public class EcowattHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-unset-parameters");
         } else {
-            api = new EcowattRestApi(oAuthFactory, httpClient, thing.getUID().getAsString(), idClient, idSecret);
+            api = new EcowattRestApi(oAuthFactory, httpClient, thing.getUID().getAsString(), idClient, idSecret,
+                    config.apiVersion);
             updateStatus(ThingStatus.UNKNOWN);
             scheduleNextUpdate(0, true);
         }
@@ -201,10 +203,10 @@ public class EcowattHandler extends BaseThingHandler {
             // Invalidate the cache to be sure the next request will trigger the API
             cachedApiResponse.invalidateValue();
 
-            if (retryIfApiLimitReached && exception instanceof EcowattApiLimitException
-                    && ((EcowattApiLimitException) exception).getRetryAfter() > 0) {
+            if (retryIfApiLimitReached && exception instanceof EcowattApiLimitException limitException
+                    && limitException.getRetryAfter() > 0) {
                 // Will retry when the API is available again (just after the limit expired)
-                retryDelay = ((EcowattApiLimitException) exception).getRetryAfter();
+                retryDelay = limitException.getRetryAfter();
             }
         } else {
             updateStatus(ThingStatus.ONLINE);
@@ -264,7 +266,7 @@ public class EcowattHandler extends BaseThingHandler {
             int hour = dateTime.withZoneSameInstant(day.getZone()).getHour();
             int value = signals.getHourSignal(hour);
             LoggerFactory.getLogger(EcowattHandler.class).debug("hour {} value {}", hour, value);
-            if (value >= 1 && value <= 3) {
+            if (value >= 0 && value <= 3) {
                 return new DecimalType(value);
             }
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.meater.internal.handler;
 import static org.openhab.binding.meater.internal.MeaterBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +29,6 @@ import org.openhab.binding.meater.internal.api.MeaterRestAPI;
 import org.openhab.binding.meater.internal.discovery.MeaterDiscoveryService;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -56,11 +54,10 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MeaterBridgeHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private final Gson gson;
     private final HttpClient httpClient;
-    private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
     private final Map<String, MeaterProbeDTO.Device> meaterProbeThings = new ConcurrentHashMap<>();
 
@@ -68,12 +65,10 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
     private @Nullable MeaterRestAPI api;
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    public MeaterBridgeHandler(Bridge bridge, HttpClient httpClient, Gson gson, TranslationProvider i18nProvider,
-            LocaleProvider localeProvider) {
+    public MeaterBridgeHandler(Bridge bridge, HttpClient httpClient, Gson gson, LocaleProvider localeProvider) {
         super(bridge);
         this.httpClient = httpClient;
         this.gson = gson;
-        this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
     }
 
@@ -101,7 +96,7 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MeaterDiscoveryService.class);
+        return Set.of(MeaterDiscoveryService.class);
     }
 
     @Override
@@ -154,13 +149,5 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
                 refreshAndUpdateStatus();
             }
         }
-    }
-
-    public TranslationProvider getI18nProvider() {
-        return i18nProvider;
-    }
-
-    public LocaleProvider getLocaleProvider() {
-        return localeProvider;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -172,7 +172,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
         List<EcovacsDevice> devices = new ArrayList<>();
         for (Device dev : getDeviceList()) {
             Optional<DeviceDescription> descOpt = Optional.ofNullable(descriptions.get(dev.getDeviceClass()));
-            if (!descOpt.isPresent()) {
+            if (descOpt.isEmpty()) {
                 if (products == null) {
                     products = getIotProductMap();
                 }
@@ -226,7 +226,7 @@ public final class EcovacsApiImpl implements EcovacsApi {
             DeviceDescription desc = descEntry.getValue();
             if (desc.deviceClassLink != null) {
                 Optional<DeviceDescription> linkedDescOpt = Optional.ofNullable(descs.get(desc.deviceClassLink));
-                if (!linkedDescOpt.isPresent()) {
+                if (linkedDescOpt.isEmpty()) {
                     logger.warn("Device description {} links unknown description {}", desc.deviceClass,
                             desc.deviceClassLink);
                 }

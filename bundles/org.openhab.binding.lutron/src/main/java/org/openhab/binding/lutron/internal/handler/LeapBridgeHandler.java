@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,6 +67,7 @@ import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
 import org.openhab.core.library.types.StringType;
@@ -94,6 +96,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private static final long KEEPALIVE_TIMEOUT_SECONDS = 30;
 
     private static final String STATUS_INITIALIZING = "Initializing";
+    private static final String LUTRON_RADIORA_3_PROJECT = "Lutron RadioRA 3 Project";
 
     private final Logger logger = LoggerFactory.getLogger(LeapBridgeHandler.class);
 
@@ -101,6 +104,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private int reconnectInterval;
     private int heartbeatInterval;
     private int sendDelay;
+    private boolean isRadioRA3 = false;
 
     private @NonNullByDefault({}) SSLSocketFactory sslsocketfactory;
     private @Nullable SSLSocket sslsocket;
@@ -305,9 +309,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         senderThread.start();
         this.senderThread = senderThread;
 
-        sendCommand(new LeapCommand(Request.getButtonGroups()));
-        queryDiscoveryData();
-        sendCommand(new LeapCommand(Request.subscribeOccupancyGroupStatus()));
+        sendCommand(new LeapCommand(Request.getProject()));
 
         logger.debug("Starting keepalive job with interval {}", heartbeatInterval);
         keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, heartbeatInterval, heartbeatInterval,
@@ -318,7 +320,11 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
      * Called by connect() and discovery service to request fresh discovery data
      */
     public void queryDiscoveryData() {
-        sendCommand(new LeapCommand(Request.getDevices()));
+        if (!isRadioRA3) {
+            sendCommand(new LeapCommand(Request.getDevices()));
+        } else {
+            sendCommand(new LeapCommand(Request.getDevices(false)));
+        }
         sendCommand(new LeapCommand(Request.getAreas()));
         sendCommand(new LeapCommand(Request.getOccupancyGroups()));
     }
@@ -591,7 +597,31 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     }
 
     @Override
-    public void handleMultipleDeviceDefintion(List<Device> deviceList) {
+    public void handleDeviceDefinition(Device device) {
+        synchronized (zoneMapsLock) {
+            int deviceId = device.getDevice();
+            int zoneId = device.getZone();
+
+            if (zoneId > 0 && deviceId > 0) {
+                zoneToDevice.put(zoneId, deviceId);
+                deviceToZone.put(deviceId, zoneId);
+            }
+
+            if (deviceId == 1 || device.isThisDevice) {
+                setBridgeProperties(device);
+            }
+        }
+
+        checkInitialized();
+
+        LeapDeviceDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            discoveryService.processDeviceDefinitions(Arrays.asList(device));
+        }
+    }
+
+    @Override
+    public void handleMultipleDeviceDefinition(List<Device> deviceList) {
         synchronized (zoneMapsLock) {
             zoneToDevice.clear();
             deviceToZone.clear();
@@ -603,7 +633,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                     zoneToDevice.put(zoneid, deviceid);
                     deviceToZone.put(deviceid, zoneid);
                 }
-                if (deviceid == 1) { // ID 1 is the bridge
+                if (deviceid == 1 || device.isThisDevice) { // ID 1 is the bridge
                     setBridgeProperties(device);
                 }
             }
@@ -634,6 +664,26 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     }
 
     @Override
+    public void handleProjectDefinition(Project project) {
+        isRadioRA3 = LUTRON_RADIORA_3_PROJECT.equals(project.productType);
+
+        if (project.masterDeviceList.devices.length > 0 && project.masterDeviceList.devices[0].href != null) {
+            sendCommand(new LeapCommand(Request.getDevices(true)));
+        }
+
+        sendCommand(new LeapCommand(Request.getButtonGroups()));
+        queryDiscoveryData();
+
+        if (!isRadioRA3) {
+            logger.debug("Caseta Bridge Detected: {}", project.productType);
+        } else {
+            logger.debug("Detected a RadioRA 3 System: {}", project.productType);
+            sendCommand(new LeapCommand(Request.subscribeZoneStatus()));
+        }
+        sendCommand(new LeapCommand(Request.subscribeOccupancyGroupStatus()));
+    }
+
+    @Override
     public void validMessageReceived(String communiqueType) {
         reconnectTaskCancel(true); // Got a good message, so cancel reconnect task.
     }
@@ -642,7 +692,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
      * Set informational bridge properties from the Device entry for the hub/repeater
      */
     private void setBridgeProperties(Device device) {
-        if (device.getDevice() == 1 && device.repeaterProperties != null) {
+        if ((device.getDevice() == 1 && device.repeaterProperties != null) || (device.isThisDevice)) {
             Map<String, String> properties = editProperties();
             if (device.name != null) {
                 properties.put(PROPERTY_PRODTYP, device.name);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,8 @@
 package org.openhab.binding.mycroft.internal.api.dto;
 
 import org.openhab.binding.mycroft.internal.api.MessageType;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * This message asks Mycroft to unmute the volume
@@ -28,6 +30,7 @@ public class MessageVolumeUnmute extends BaseMessage {
     }
 
     public static class Data {
-        public Boolean speak_message = false;
+        @SerializedName("speak_messsage")
+        public Boolean speakMessage = false;
     }
 }

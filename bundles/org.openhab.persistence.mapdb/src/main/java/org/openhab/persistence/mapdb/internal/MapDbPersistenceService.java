@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,8 +101,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
             map = db.createTreeMap("itemStore").makeOrGet();
         } catch (RuntimeException re) {
             Throwable cause = re.getCause();
-            if (cause instanceof ClassNotFoundException) {
-                ClassNotFoundException cnf = (ClassNotFoundException) cause;
+            if (cause instanceof ClassNotFoundException cnf) {
                 logger.warn(
                         "The MapDB in {} is incompatible with openHAB {}: {}. A new and empty MapDB will be used instead.",
                         dbFile, OpenHAB.getVersion(), cnf.getMessage());
@@ -208,7 +207,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
     @SuppressWarnings("null")
     private Optional<MapDbItem> deserialize(String json) {
-        MapDbItem item = mapper.<MapDbItem> fromJson(json, MapDbItem.class);
+        MapDbItem item = mapper.fromJson(json, MapDbItem.class);
         if (item == null || !item.isValid()) {
             logger.warn("Deserialized invalid item: {}", item);
             return Optional.empty();

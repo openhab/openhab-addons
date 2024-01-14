@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -151,10 +151,7 @@ public class ZWayDeviceStateConverter {
     private static State getColorState(@Nullable Color colorSwitchState) {
         if (colorSwitchState != null && colorSwitchState.getRed() != null && colorSwitchState.getGreen() != null
                 && colorSwitchState.getBlue() != null) {
-            HSBType hsbType = HSBType.fromRGB(colorSwitchState.getRed(), colorSwitchState.getGreen(),
-                    colorSwitchState.getBlue());
-
-            return hsbType;
+            return HSBType.fromRGB(colorSwitchState.getRed(), colorSwitchState.getGreen(), colorSwitchState.getBlue());
         }
 
         return UnDefType.UNDEF;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Utility class for common tasks within the MAX! binding package.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - OH2 update
  *
  */
@@ -33,7 +33,7 @@ public final class Utils {
      *            the hex value to be parsed into an integer
      * @return the given hex value as integer
      */
-    public static final int fromHex(String hex) {
+    public static int fromHex(String hex) {
         return Integer.parseInt(hex, 16);
     }
 
@@ -44,7 +44,7 @@ public final class Utils {
      *            the integer values to be converted into hexadecimal numbers
      * @return the given numbers as hexadecimal number
      */
-    public static final String toHex(int... values) {
+    public static String toHex(int... values) {
         String returnValue = "";
         for (int v : values) {
             returnValue += v < 16 ? "0" + Integer.toHexString(v).toUpperCase() : Integer.toHexString(v).toUpperCase();
@@ -60,7 +60,7 @@ public final class Utils {
      *            hexadecimal numbers
      * @return the hexadecimal number
      */
-    public static final String toHex(boolean[] bits) {
+    public static String toHex(boolean[] bits) {
         int retVal = 0;
         for (int i = 0; i < bits.length; ++i) {
             retVal |= (bits[i] ? 1 : 0) << i;
@@ -76,7 +76,7 @@ public final class Utils {
      *            the byte to be converted into its integer value
      * @return the integer value represented by the given byte
      */
-    public static final int fromByte(byte b) {
+    public static int fromByte(byte b) {
         return b & 0xFF;
     }
 

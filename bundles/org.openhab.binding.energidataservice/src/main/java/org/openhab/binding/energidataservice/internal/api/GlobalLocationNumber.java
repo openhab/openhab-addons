@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Global Location Number.
- * See {@link https://www.gs1.org/standards/id-keys/gln}}
- * The Global Location Number (GLN) can be used by companies to identify their locations.
+ * 
+ * The <a href="https://www.gs1.org/standards/id-keys/gln">Global Location Number (GLN)</a>
+ * can be used by companies to identify their locations.
  *
  * @author Jacob Laursen - Initial contribution
  */

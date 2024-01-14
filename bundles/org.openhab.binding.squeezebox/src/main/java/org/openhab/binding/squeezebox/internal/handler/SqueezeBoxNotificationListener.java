@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,12 +105,12 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
         }
         logger.trace("Mode is {} for player {}", mode, mac);
 
-        if (mode.equals("play")) {
+        if ("play".equals(mode)) {
             this.started.set(true);
-        } else if (this.started.get() && mode.equals("stop")) {
+        } else if (this.started.get() && "stop".equals(mode)) {
             this.stopped.set(true);
         }
-        if (mode.equals("pause")) {
+        if ("pause".equals(mode)) {
             this.paused.set(true);
         }
     }

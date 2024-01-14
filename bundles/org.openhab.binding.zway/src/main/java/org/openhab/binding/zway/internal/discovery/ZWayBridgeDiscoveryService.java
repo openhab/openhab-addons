@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -117,7 +117,7 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
 
                 if (connection.getResponseCode() == 401) {
                     ThingUID thingUID = new ThingUID(ZWayBindingConstants.THING_TYPE_BRIDGE,
-                            ipAddress.replaceAll("\\.", "_"));
+                            ipAddress.replace(".", "_"));
 
                     // Attention: if is already present as thing in the ThingRegistry
                     // the configuration for thing will be updated!

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class CBusGroupDiscovery extends AbstractDiscoveryService {
                 return;
             }
             try {
-                Map<Integer, ThingTypeUID> applications = new HashMap<Integer, ThingTypeUID>();
+                Map<Integer, ThingTypeUID> applications = new HashMap<>();
                 applications.put(CBusBindingConstants.CBUS_APPLICATION_LIGHTING, CBusBindingConstants.THING_TYPE_LIGHT);
                 applications.put(CBusBindingConstants.CBUS_APPLICATION_DALI, CBusBindingConstants.THING_TYPE_DALI);
                 applications.put(CBusBindingConstants.CBUS_APPLICATION_TEMPERATURE,

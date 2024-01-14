@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,12 +43,11 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
 
     /**
      * the constructor
-     *
-     * @param config
      */
     public AbstractWriteCommand(EaseeThingHandler handler, Channel channel, Command command,
-            RetryOnFailure retryOnFailure, ProcessFailureResponse processFailureResponse) {
-        super(handler, retryOnFailure, processFailureResponse);
+            RetryOnFailure retryOnFailure, ProcessFailureResponse processFailureResponse,
+            JsonResultProcessor resultProcessor) {
+        super(handler, retryOnFailure, processFailureResponse, resultProcessor);
         this.channel = channel;
         this.command = command;
     }
@@ -59,9 +58,9 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
      * @return value as String without unit.
      */
     protected String getCommandValue() {
-        if (command instanceof QuantityType<?>) {
+        if (command instanceof QuantityType<?> quantityCommand) {
             // this is necessary because we must not send the unit to the backend
-            return String.valueOf(((QuantityType<?>) command).doubleValue());
+            return String.valueOf(quantityCommand.doubleValue());
         } else if (command instanceof OnOffType) {
             // this is necessary because we must send booleans and not ON/OFF to the backend
             return String.valueOf(command.equals(OnOffType.ON));
@@ -77,7 +76,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
      * @throws ValidationException
      */
     protected String getJsonContent() throws ValidationException {
-        Map<String, String> content = new HashMap<String, String>(1);
+        Map<String, String> content = new HashMap<>(1);
         content.put(channel.getUID().getIdWithoutGroup(), getCommandValue());
 
         return gson.toJson(content);

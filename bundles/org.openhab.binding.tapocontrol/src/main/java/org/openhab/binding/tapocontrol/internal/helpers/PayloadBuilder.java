@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,10 +44,10 @@ public class PayloadBuilder {
      * @param value parameter value (typeOf Bool,Number or String)
      */
     public void addParameter(String name, Object value) {
-        if (value instanceof Boolean) {
-            this.parameters.addProperty(name, (Boolean) value);
-        } else if (value instanceof Number) {
-            this.parameters.addProperty(name, (Number) value);
+        if (value instanceof Boolean bool) {
+            this.parameters.addProperty(name, bool);
+        } else if (value instanceof Number number) {
+            this.parameters.addProperty(name, number);
         } else {
             this.parameters.addProperty(name, value.toString());
         }

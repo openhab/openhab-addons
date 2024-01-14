@@ -1,0 +1,47 @@
+[
+    {
+        "vin": "anonymousICE3",
+        "mappingInfo": {
+            "isAssociated": false,
+            "isLmmEnabled": false,
+            "mappingStatus": "CONFIRMED",
+            "isPrimaryUser": true
+        },
+        "appVehicleType": "CONNECTED",
+        "attributes": {
+            "lastFetched": "2023-01-20T10:38:06.689Z",
+            "model": "530d xDrive",
+            "year": 2015,
+            "color": 4283055410,
+            "brand": "BMW",
+            "driveTrain": "COMBUSTION",
+            "headUnitType": "NBT",
+            "headUnitRaw": "NBT",
+            "hmiVersion": "ID4",
+            "softwareVersionCurrent": {
+                "puStep": {
+                    "month": 7,
+                    "year": 15
+                },
+                "iStep": 504,
+                "seriesCluster": "F010"
+            },
+            "softwareVersionExFactory": {
+                "puStep": {
+                    "month": 7,
+                    "year": 15
+                },
+                "iStep": 504,
+                "seriesCluster": "F010"
+            },
+            "bodyType": "F11",
+            "countryOfOrigin": "DE",
+            "driverGuideInfo": {
+                "androidAppScheme": "com.bmwgroup.driversguide.row",
+                "iosAppScheme": "bmwdriversguide:///open",
+                "androidStoreUrl": "https://play.google.com/store/apps/details?id=com.bmwgroup.driversguide.row",
+                "iosStoreUrl": "https://apps.apple.com/de/app/id714042749?mt=8"
+            }
+        }
+    }
+]

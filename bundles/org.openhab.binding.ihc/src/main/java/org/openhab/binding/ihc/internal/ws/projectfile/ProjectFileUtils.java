@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,8 +60,7 @@ public class ProjectFileUtils {
             dbFactory.setXIncludeAware(false);
             dbFactory.setExpandEntityReferences(false);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
-            return doc;
+            return dBuilder.parse(fXmlFile);
         } catch (IOException | ParserConfigurationException | SAXException e) {
             throw new IhcExecption(e);
         }

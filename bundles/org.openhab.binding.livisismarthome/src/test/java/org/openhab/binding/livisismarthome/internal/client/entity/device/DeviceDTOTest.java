@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ public class DeviceDTOTest {
         assertTrue(device.isReachable());
         assertFalse(device.hasLowBattery());
 
-        device.setMessageList(Collections.singletonList(createMessage(MessageDTO.TYPE_DEVICE_LOW_BATTERY)));
+        device.setMessageList(List.of(createMessage(MessageDTO.TYPE_DEVICE_LOW_BATTERY)));
 
         assertTrue(device.isReachable());
         assertTrue(device.hasLowBattery());
@@ -52,7 +52,7 @@ public class DeviceDTOTest {
         assertTrue(device.isReachable());
         assertFalse(device.hasLowBattery());
 
-        device.setMessageList(Collections.singletonList(createMessage(MessageDTO.TYPE_DEVICE_UNREACHABLE)));
+        device.setMessageList(List.of(createMessage(MessageDTO.TYPE_DEVICE_UNREACHABLE)));
 
         assertFalse(device.isReachable());
         assertFalse(device.hasLowBattery());
@@ -126,7 +126,7 @@ public class DeviceDTOTest {
         assertFalse(device.isReachable());
         assertTrue(device.hasLowBattery());
 
-        messages = Collections.singletonList(createMessage("UNKNOWN"));
+        messages = List.of(createMessage("UNKNOWN"));
         device.setMessageList(messages);
 
         // Nothing should get changed.
@@ -144,7 +144,7 @@ public class DeviceDTOTest {
         assertTrue(device.isReachable());
         assertFalse(device.hasLowBattery());
 
-        device.setMessageList(Collections.singletonList(createMessage("UNKNOWN")));
+        device.setMessageList(List.of(createMessage("UNKNOWN")));
 
         assertTrue(device.isReachable());
         assertFalse(device.hasLowBattery());

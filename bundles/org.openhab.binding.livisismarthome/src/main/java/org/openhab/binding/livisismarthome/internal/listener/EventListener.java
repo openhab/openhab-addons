@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ public interface EventListener {
     void onError(Throwable cause);
 
     /**
-     * This method is called, when the evenRunner stops abnormally (statuscode <> 1000).
+     * This method is called, when the evenRunner stops abnormally ({@code statuscode <> 1000}).
      */
     void connectionClosed();
 }

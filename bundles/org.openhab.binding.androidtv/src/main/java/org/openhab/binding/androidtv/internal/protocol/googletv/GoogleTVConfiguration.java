@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ public class GoogleTVConfiguration {
 
     public String ipAddress = "";
     public String shimAddress = "";
-    public int port = 6466;
+    public int googletvPort = 6466;
     public int reconnect;
     public int heartbeat;
     public String keystoreFileName = "";
@@ -33,4 +33,5 @@ public class GoogleTVConfiguration {
     public boolean shim;
     public boolean shimNewKeys;
     public String mode = "";
+    public boolean gtvEnabled;
 }

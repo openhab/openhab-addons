@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,8 +98,9 @@ public class DefaultSchemaLight extends Light {
                     .build();
         }
 
-        if (channelConfiguration.effectStateTopic != null || channelConfiguration.effectCommandTopic != null) {
-            buildChannel(EFFECT_CHANNEL_ID, effectValue, "Lighting effect", this)
+        if (effectValue != null
+                && (channelConfiguration.effectStateTopic != null || channelConfiguration.effectCommandTopic != null)) {
+            buildChannel(EFFECT_CHANNEL_ID, Objects.requireNonNull(effectValue), "Lighting Effect", this)
                     .stateTopic(channelConfiguration.effectStateTopic, channelConfiguration.effectValueTemplate)
                     .commandTopic(channelConfiguration.effectCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
@@ -224,8 +225,7 @@ public class DefaultSchemaLight extends Light {
     private boolean handleColorCommand(Command command) {
         if (!handleOnOffCommand(command)) {
             return false;
-        } else if (command instanceof HSBType) {
-            HSBType color = (HSBType) command;
+        } else if (command instanceof HSBType color) {
             if (channelConfiguration.hsCommandTopic != null) {
                 // If we don't have a brightness channel, something is probably busted
                 // but don't choke
@@ -250,7 +250,7 @@ public class DefaultSchemaLight extends Light {
                 String xyString = String.format("%f,%f", xy[0].doubleValue(), xy[1].doubleValue());
                 xyChannel.getState().publishValue(new StringType(xyString));
             }
-        } else if (command instanceof PercentType) {
+        } else if (command instanceof PercentType brightness) {
             if (channelConfiguration.brightnessCommandTopic != null) {
                 brightnessChannel.getState().publishValue(command);
             } else {
@@ -261,8 +261,7 @@ public class DefaultSchemaLight extends Light {
                     color = HSBType.WHITE;
                 }
                 HSBType existingColor = (HSBType) color;
-                HSBType newCommand = new HSBType(existingColor.getHue(), existingColor.getSaturation(),
-                        (PercentType) command);
+                HSBType newCommand = new HSBType(existingColor.getHue(), existingColor.getSaturation(), brightness);
                 // re-process
                 handleColorCommand(newCommand);
             }
@@ -283,7 +282,7 @@ public class DefaultSchemaLight extends Light {
                         colorValue.update(newOnState);
                     }
 
-                    listener.updateChannelState(new ChannelUID(getGroupUID(), COLOR_CHANNEL_ID),
+                    listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID),
                             state.equals(OnOffType.ON) ? newOnState : HSBType.BLACK);
                 } else if (brightnessChannel != null) {
                     listener.updateChannelState(new ChannelUID(channel.getThingUID(), BRIGHTNESS_CHANNEL_ID),
@@ -303,8 +302,7 @@ public class DefaultSchemaLight extends Light {
                         colorValue.update(new HSBType(DecimalType.ZERO, PercentType.ZERO,
                                 (PercentType) brightnessValue.getChannelState()));
                     }
-                    listener.updateChannelState(new ChannelUID(getGroupUID(), COLOR_CHANNEL_ID),
-                            colorValue.getChannelState());
+                    listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
                 } else {
                     listener.updateChannelState(channel, state);
                 }
@@ -332,13 +330,11 @@ public class DefaultSchemaLight extends Light {
                     HSBType xyColor = HSBType.fromXY(x, y);
                     colorValue.update(new HSBType(xyColor.getHue(), xyColor.getSaturation(), brightness));
                 }
-                listener.updateChannelState(new ChannelUID(getGroupUID(), COLOR_CHANNEL_ID),
-                        colorValue.getChannelState());
+                listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
                 return;
             case RGB_CHANNEL_ID:
                 colorValue.update((HSBType) state);
-                listener.updateChannelState(new ChannelUID(getGroupUID(), COLOR_CHANNEL_ID),
-                        colorValue.getChannelState());
+                listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
                 break;
             case RGBW_CHANNEL_ID:
             case RGBWW_CHANNEL_ID:

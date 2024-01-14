@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,9 +42,8 @@ public class GetNetworkInfoCommand extends IotDeviceCommand<NetworkInfo> {
     @Override
     public NetworkInfo convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            NetworkInfoReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    NetworkInfoReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            NetworkInfoReport resp = jsonResponse.getResponsePayloadAs(gson, NetworkInfoReport.class);
             try {
                 return new NetworkInfo(resp.ip, resp.mac, resp.ssid, Integer.valueOf(resp.rssi));
             } catch (NumberFormatException e) {

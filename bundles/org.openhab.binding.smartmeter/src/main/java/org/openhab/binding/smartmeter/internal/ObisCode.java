@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,8 @@ import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 /**
  * Represents an OBIS code.
  *
- * @see For more information see https://de.wikipedia.org/wiki/OBIS-Kennzahlen
+ * @see <a href="https://de.wikipedia.org/wiki/OBIS-Kennzahlen">https://de.wikipedia.org/wiki/OBIS-Kennzahlen</a> for
+ *      more information
  * @author Matthias Steigenberger - Initial contribution
  *
  */

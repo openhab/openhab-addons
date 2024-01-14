@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,11 +83,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private static final String EXT_IMG_RES = "ExtImageResources_";
     private static final String INITIALIZE_COMMAND = "Initialze";
 
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
-    private final Map<String, Long> timeHash = new HashMap<String, Long>();
+    private final Map<String, Long> timeHash = new HashMap<>();
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final TimeZoneProvider timeZoneProvider;
@@ -155,8 +156,8 @@ public class VehicleHandler extends BaseThingHandler {
                     logger.debug("Image {} is empty", key);
                 }
             }
-        } else if (channelUID.getIdWithoutGroup().equals("clear-cache") && command.equals(OnOffType.ON)) {
-            List<String> removals = new ArrayList<String>();
+        } else if ("clear-cache".equals(channelUID.getIdWithoutGroup()) && command.equals(OnOffType.ON)) {
+            List<String> removals = new ArrayList<>();
             imageStorage.get().getKeys().forEach(entry -> {
                 if (entry.contains("_" + config.get().vin)) {
                     removals.add(entry);
@@ -308,7 +309,7 @@ public class VehicleHandler extends BaseThingHandler {
             return;
         }
         // add config parameters
-        MultiMap<String> parameterMap = new MultiMap<String>();
+        MultiMap<String> parameterMap = new MultiMap<>();
         parameterMap.add("background", Boolean.toString(config.get().background));
         parameterMap.add("night", Boolean.toString(config.get().night));
         parameterMap.add("cropped", Boolean.toString(config.get().cropped));
@@ -317,7 +318,7 @@ public class VehicleHandler extends BaseThingHandler {
         String params = UrlEncoded.encode(parameterMap, StandardCharsets.UTF_8, false);
         String url = String.format(IMAGE_EXTERIOR_RESOURCE_URL, config.get().vin) + "?" + params;
         logger.debug("Get Image resources {} {} ", accountHandler.get().getImageApiKey(), url);
-        Request req = httpClient.newRequest(url);
+        Request req = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         req.header("x-api-key", accountHandler.get().getImageApiKey());
         req.header(HttpHeader.ACCEPT, "application/json");
         try {
@@ -334,7 +335,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void setImageOtions() {
-        List<String> entries = new ArrayList<String>();
+        List<String> entries = new ArrayList<>();
         if (imageStorage.get().containsKey(EXT_IMG_RES + config.get().vin)) {
             String resources = imageStorage.get().get(EXT_IMG_RES + config.get().vin);
             JSONObject jo = new JSONObject(resources);
@@ -343,8 +344,8 @@ public class VehicleHandler extends BaseThingHandler {
             });
         }
         Collections.sort(entries);
-        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
-        List<StateOption> stateOptions = new ArrayList<StateOption>();
+        List<CommandOption> commandOptions = new ArrayList<>();
+        List<StateOption> stateOptions = new ArrayList<>();
         entries.forEach(entry -> {
             CommandOption co = new CommandOption(entry, null);
             commandOptions.add(co);
@@ -378,7 +379,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
 
         String url = IMAGE_BASE_URL + "/images/" + imageId;
-        Request req = httpClient.newRequest(url);
+        Request req = httpClient.newRequest(url).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         req.header("x-api-key", accountHandler.get().getImageApiKey());
         req.header(HttpHeader.ACCEPT, "*/*");
         ContentResponse cr;
@@ -400,7 +401,7 @@ public class VehicleHandler extends BaseThingHandler {
         // debug prefix contains Thing label and call endpoint for propper debugging
         String debugPrefix = this.getThing().getLabel() + Constants.COLON + finalEndpoint;
 
-        Request req = httpClient.newRequest(requestUrl);
+        Request req = httpClient.newRequest(requestUrl).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         req.header(HttpHeader.AUTHORIZATION, "Bearer " + accountHandler.get().getToken());
         try {
             ContentResponse cr = req.send();
@@ -541,7 +542,7 @@ public class VehicleHandler extends BaseThingHandler {
      *
      * This depends also on the roads of a concrete route but this is only a guess without any Route Navigation behind
      *
-     * @param range
+     * @param s
      * @return mapping from air-line distance to "real road" distance
      */
     public static State guessRangeRadius(QuantityType<?> s) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,15 +15,22 @@ package org.openhab.binding.easee.internal.handler;
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.easee.internal.AtomicReferenceTrait;
+import org.openhab.binding.easee.internal.EaseeBindingConstants;
 import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.site.GetSite;
+import org.openhab.binding.easee.internal.command.site.SiteState;
 import org.openhab.binding.easee.internal.config.EaseeConfiguration;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.binding.easee.internal.connector.WebInterface;
@@ -46,8 +53,13 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHandler {
+public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHandler, AtomicReferenceTrait {
     private final Logger logger = LoggerFactory.getLogger(EaseeSiteHandler.class);
+
+    /**
+     * Schedule for polling live data
+     */
+    private final AtomicReference<@Nullable Future<?>> dataPollingJobReference;
 
     private @Nullable DiscoveryService discoveryService;
 
@@ -58,6 +70,7 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
 
     public EaseeSiteHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
+        this.dataPollingJobReference = new AtomicReference<>(null);
         this.webInterface = new WebInterface(scheduler, this, httpClient, super::updateStatus);
     }
 
@@ -69,6 +82,7 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
         webInterface.start();
+        startPolling();
 
         enqueueCommand(new GetSite(this, this::updateProperties));
     }
@@ -87,11 +101,76 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
     }
 
     /**
+     * Start the polling.
+     */
+    private void startPolling() {
+        updateJobReference(dataPollingJobReference, scheduler.scheduleWithFixedDelay(this::pollingRun,
+                POLLING_INITIAL_DELAY, getBridgeConfiguration().getDataPollingInterval(), TimeUnit.SECONDS));
+    }
+
+    /**
+     * Poll the Easee Cloud API one time.
+     */
+    void pollingRun() {
+        String siteId = getConfig().get(EaseeBindingConstants.THING_CONFIG_SITE_ID).toString();
+        logger.debug("polling site data for {}", siteId);
+
+        SiteState state = new SiteState(this, siteId, getChildChargerHandlers(), this::updateOnlineStatus);
+        enqueueCommand(state);
+
+        // proceed if site is online
+        if (getThing().getStatus() == ThingStatus.ONLINE) {
+            // add further polling commands here
+        }
+    }
+
+    /**
+     * creates a map containing all child chargers/masterchargers identified by their unique id.
+     *
+     * @return the map created
+     */
+    private Map<String, EaseeChargerHandler> getChildChargerHandlers() {
+        Map<String, EaseeChargerHandler> chargerHandlers = new HashMap<>();
+
+        getThing().getThings().stream().filter(x -> x.getThingTypeUID().equals(THING_TYPE_CHARGER)
+                || x.getThingTypeUID().equals(THING_TYPE_MASTER_CHARGER)).forEach(y -> {
+                    EaseeChargerHandler handler = (EaseeChargerHandler) y.getHandler();
+                    if (handler != null) {
+                        chargerHandlers.put(handler.getId(), handler);
+                    }
+                });
+        return chargerHandlers;
+    }
+
+    /**
+     * result processor to handle online status updates
+     *
+     * @param status of command execution
+     * @param jsonObject json respone result
+     */
+    protected final void updateOnlineStatus(CommunicationStatus status, JsonObject jsonObject) {
+        String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
+        if (msg == null || msg.isBlank()) {
+            msg = status.getMessage();
+        }
+
+        switch (status.getHttpCode()) {
+            case OK:
+            case ACCEPTED:
+                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                break;
+            default:
+                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+        }
+    }
+
+    /**
      * Disposes the bridge.
      */
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
+        cancelJobReference(dataPollingJobReference);
         webInterface.dispose();
     }
 
@@ -102,7 +181,7 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(EaseeSiteDiscoveryService.class);
+        return Set.of(EaseeSiteDiscoveryService.class);
     }
 
     public void setDiscoveryService(EaseeSiteDiscoveryService discoveryService) {

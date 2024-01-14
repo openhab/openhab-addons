@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -265,8 +265,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
 
         KeyCode key = null;
 
-        if (remoteController instanceof RemoteControllerWebSocket) {
-            RemoteControllerWebSocket remoteControllerWebSocket = (RemoteControllerWebSocket) remoteController;
+        if (remoteController instanceof RemoteControllerWebSocket remoteControllerWebSocket) {
             switch (channel) {
                 case BROWSER_URL:
                     if (command instanceof StringType) {
@@ -372,8 +371,8 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
                 return;
 
             case CHANNEL:
-                if (command instanceof DecimalType) {
-                    int val = ((DecimalType) command).intValue();
+                if (command instanceof DecimalType decimalCommand) {
+                    int val = decimalCommand.intValue();
                     int num4 = val / 1000 % 10;
                     int num3 = val / 100 % 10;
                     int num2 = val / 10 % 10;
@@ -419,8 +418,8 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
 
     private void sendKeyCodePress(KeyCode key) {
         try {
-            if (remoteController != null && remoteController instanceof RemoteControllerWebSocket) {
-                ((RemoteControllerWebSocket) remoteController).sendKeyPress(key);
+            if (remoteController instanceof RemoteControllerWebSocket remoteControllerWebSocket) {
+                remoteControllerWebSocket.sendKeyPress(key);
             }
         } catch (RemoteControllerException e) {
             reportError(String.format("Could not send command to device on %s:%d", host, port), e);
@@ -473,11 +472,11 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
         for (EventListener listener : listeners) {
             // order of state updates is important to prevent extraneous transitions in overall state
             if (on) {
-                listener.valueReceived(POWER, on ? OnOffType.ON : OnOffType.OFF);
-                listener.valueReceived(ART_MODE, artmode ? OnOffType.ON : OnOffType.OFF);
+                listener.valueReceived(POWER, OnOffType.from(on));
+                listener.valueReceived(ART_MODE, OnOffType.from(artmode));
             } else {
-                listener.valueReceived(ART_MODE, artmode ? OnOffType.ON : OnOffType.OFF);
-                listener.valueReceived(POWER, on ? OnOffType.ON : OnOffType.OFF);
+                listener.valueReceived(ART_MODE, OnOffType.from(artmode));
+                listener.valueReceived(POWER, OnOffType.from(on));
             }
         }
     }

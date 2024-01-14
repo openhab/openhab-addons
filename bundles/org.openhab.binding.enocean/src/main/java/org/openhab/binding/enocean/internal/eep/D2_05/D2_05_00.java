@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,8 +75,8 @@ public class D2_05_00 extends _VLDMessage {
             if (command == StopMoveType.STOP) {
                 setData((byte) (outputChannel + CMD_ACTUATOR_STOP));
             }
-        } else if (command instanceof PercentType) {
-            setData((byte) (((PercentType) command).intValue()), (byte) 0x00, (byte) 0x00,
+        } else if (command instanceof PercentType percentCommand) {
+            setData((byte) (percentCommand.intValue()), (byte) 0x00, (byte) 0x00,
                     (byte) (outputChannel + CMD_ACTUATOR_SET_POSITION));
         }
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.openhab.binding.deconz.internal.types.ResourceType;
 /**
  * http://dresden-elektronik.github.io/deconz-rest-doc/configuration/
  * # Get full state
- * GET /api/<apikey>
+ * {@code GET /api/<apikey>}
  *
  * @author David Graeff - Initial contribution
  */

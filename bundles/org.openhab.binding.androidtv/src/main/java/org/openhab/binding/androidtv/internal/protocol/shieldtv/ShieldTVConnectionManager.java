@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,8 +76,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShieldTVConnectionManager {
-    private static final int DEFAULT_RECONNECT_SECONDS = 60;
-    private static final int DEFAULT_HEARTBEAT_SECONDS = 5;
     private static final long KEEPALIVE_TIMEOUT_SECONDS = 30;
     private static final String DEFAULT_KEYSTORE_PASSWORD = "secret";
     private static final int DEFAULT_PORT = 8987;
@@ -261,7 +259,7 @@ public class ShieldTVConnectionManager {
     private boolean servicePing() {
         int timeout = 500;
 
-        SocketAddress socketAddress = new InetSocketAddress(config.ipAddress, config.port);
+        SocketAddress socketAddress = new InetSocketAddress(config.ipAddress, config.shieldtvPort);
         try (Socket socket = new Socket()) {
             socket.connect(socketAddress, timeout);
             return true;
@@ -357,12 +355,7 @@ public class ShieldTVConnectionManager {
             folder.mkdirs();
         }
 
-        config.port = (config.port > 0) ? config.port : DEFAULT_PORT;
-        config.reconnect = (config.reconnect > 0) ? config.reconnect : DEFAULT_RECONNECT_SECONDS;
-        config.heartbeat = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_SECONDS;
-        config.delay = (config.delay < 0) ? 0 : config.delay;
-        config.shim = (config.shim) ? true : false;
-        config.shimNewKeys = (config.shimNewKeys) ? true : false;
+        config.shieldtvPort = (config.shieldtvPort > 0) ? config.shieldtvPort : DEFAULT_PORT;
 
         config.keystoreFileName = (!config.keystoreFileName.equals("")) ? config.keystoreFileName
                 : folderName + "/shieldtv." + ((config.shim) ? "shim." : "") + handler.getThing().getUID().getId()
@@ -419,8 +412,9 @@ public class ShieldTVConnectionManager {
             if (isOnline) {
                 try {
                     logger.debug("{} - Opening ShieldTV SSL connection to {}:{}", handler.getThingID(),
-                            config.ipAddress, config.port);
-                    SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress, config.port);
+                            config.ipAddress, config.shieldtvPort);
+                    SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(config.ipAddress,
+                            config.shieldtvPort);
                     sslSocket.startHandshake();
                     writer = new BufferedWriter(
                             new OutputStreamWriter(sslSocket.getOutputStream(), StandardCharsets.ISO_8859_1));
@@ -441,7 +435,7 @@ public class ShieldTVConnectionManager {
                 } catch (IOException e) {
                     setStatus(false, "offline.error-opening-ssl-connection-check-log");
                     logger.info("{} - Error opening SSL connection to {}:{} {}", handler.getThingID(), config.ipAddress,
-                            config.port, e.getMessage());
+                            config.shieldtvPort, e.getMessage());
                     disconnect(false);
                     scheduleConnectRetry(config.reconnect); // Possibly a temporary problem. Try again later.
                     return;
@@ -491,8 +485,8 @@ public class ShieldTVConnectionManager {
                 sslContext.init(kmf.getKeyManagers(), trustManagers, null);
                 this.sslServerSocketFactory = sslContext.getServerSocketFactory();
 
-                logger.debug("{} - Opening ShieldTV shim on port {}", handler.getThingID(), config.port);
-                ServerSocket sslServerSocket = this.sslServerSocketFactory.createServerSocket(config.port);
+                logger.debug("{} - Opening ShieldTV shim on port {}", handler.getThingID(), config.shieldtvPort);
+                ServerSocket sslServerSocket = this.sslServerSocketFactory.createServerSocket(config.shieldtvPort);
 
                 while (true) {
                     logger.debug("{} - Waiting for shim connection...", handler.getThingID());

@@ -30,7 +30,7 @@ To authorize, please follow these steps:
 ### `indego` Thing Configuration
 
 | Parameter          | Description                                                       | Default | Required |
-|--------------------|-------------------------------------------------------------------|---------|----------|
+| ------------------ | ----------------------------------------------------------------- | ------- | -------- |
 | serialNumber       | The serial number of the connected Indego mower                   |         | yes      |
 | refresh            | The number of seconds between refreshing device state when idle   | 180     | no       |
 | stateActiveRefresh | The number of seconds between refreshing device state when active | 30      | no       |
@@ -39,7 +39,7 @@ To authorize, please follow these steps:
 ## Channels
 
 | Channel            | Item Type                | Description                                                                                                                         | Writeable |
-|--------------------|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-----------|
+| ------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | --------- |
 | state              | Number                   | You can send commands to this channel to control the mower and read the simplified state from it (1=mow, 2=return to dock, 3=pause) | Yes       |
 | errorcode          | Number                   | Error code of the mower (0=no error)                                                                                                |           |
 | statecode          | Number                   | Detailed state of the mower                                                                                                         |           |
@@ -48,21 +48,24 @@ To authorize, please follow these steps:
 | mowed              | Dimmer                   | Cut grass in percent                                                                                                                |           |
 | lastCutting        | DateTime                 | Last cutting time                                                                                                                   |           |
 | nextCutting        | DateTime                 | Next scheduled cutting time                                                                                                         |           |
-| batteryVoltage     | Number:ElectricPotential | Battery voltage reported by the device<sup>1</sup>                                                                                  |           |
+| batteryVoltage     | Number:ElectricPotential | Battery voltage reported by the device<sup>1,2</sup>                                                                                |           |
 | batteryLevel       | Number                   | Battery level as a percentage (0-100%)<sup>1</sup>                                                                                  |           |
 | lowBattery         | Switch                   | Low battery warning with possible values on (low battery) and off (battery ok)<sup>1</sup>                                          |           |
 | batteryTemperature | Number:Temperature       | Battery temperature reported by the device<sup>1</sup>                                                                              |           |
 | gardenSize         | Number:Area              | Garden size mapped by the device                                                                                                    |           |
-| gardenMap          | Image                    | Garden map created by the device<sup>2</sup>                                                                                        |           |
+| gardenMap          | Image                    | Garden map created by the device<sup>3</sup>                                                                                        |           |
 
 <sup>1)</sup> This will be updated every six hours when the device is idle. It will wake up the device, which can include turning on its display. When the device is active or charging, this will be updated every two minutes.
 
-<sup>2)</sup> This will be updated as often as specified by the `stateActiveRefresh` thing parameter.
+<sup>2)</sup> Currently for some models the channel `batteryVoltage` is populated with the same value as `batteryLevel`.
+For these models `batteryLevel` should be used instead of `batteryVoltage`.
+
+<sup>3)</sup> This will be updated as often as specified by the `stateActiveRefresh` thing parameter.
 
 ### State Codes
 
 | Code  | Description                                 |
-|-------|---------------------------------------------|
+| ----- | ------------------------------------------- |
 | 0     | Reading status                              |
 | 257   | Charging                                    |
 | 258   | Docked                                      |

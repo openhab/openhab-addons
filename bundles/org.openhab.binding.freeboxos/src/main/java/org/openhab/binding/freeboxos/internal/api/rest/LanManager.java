@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,10 +31,10 @@ public class LanManager extends ConfigurableRest<LanManager.LanConfig, LanManage
     protected static class Config extends Response<LanConfig> {
     }
 
-    private static enum Mode {
+    private enum Mode {
         ROUTER,
         BRIDGE,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record LanConfig(IPAddress ip, String name, String nameDns, String nameMdns, String nameNetbios,

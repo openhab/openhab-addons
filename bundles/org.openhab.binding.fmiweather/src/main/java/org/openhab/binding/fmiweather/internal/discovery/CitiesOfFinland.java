@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,9 +21,9 @@ import org.openhab.binding.fmiweather.internal.client.Location;
 /**
  * Cities of Finland
  *
- * Originally parsed from (not available any more)
- * https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::hirlam::surface::cities::multipointcoverage
- * 
+ * Originally parsed from <a href=
+ * "https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::hirlam::surface::cities::multipointcoverage">
+ * (not available any more)</a>
  *
  * Using piece of code similar to below:
  *

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.tradfri.internal.model;
 
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
-import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -123,7 +122,7 @@ public class TradfriAirPurifierData extends TradfriDeviceData {
         if (airQuality != null) {
             int pm25InPpm = airQuality.getAsInt();
             if (pm25InPpm != AIR_PURIFIER_AIR_QUALITY_UNDEFINED) {
-                return new QuantityType<Dimensionless>(pm25InPpm, Units.PARTS_PER_MILLION);
+                return new QuantityType<>(pm25InPpm, Units.PARTS_PER_MILLION);
             } else {
                 return UnDefType.UNDEF;
             }
@@ -135,8 +134,8 @@ public class TradfriAirPurifierData extends TradfriDeviceData {
     public @Nullable State getAirQualityRating() {
         State pm25State = getAirQualityPM25();
         if (pm25State != null) {
-            if (pm25State instanceof Number) {
-                int pm25Value = ((Number) pm25State).intValue();
+            if (pm25State instanceof Number number) {
+                int pm25Value = number.intValue();
                 int qualityRating = 1;
 
                 if (pm25Value >= AIR_PURIFIER_AIR_QUALITY_BAD) {
@@ -157,7 +156,7 @@ public class TradfriAirPurifierData extends TradfriDeviceData {
         JsonElement nextFilterCheckTTL = attributes.get(NEXT_FILTER_CHECK);
         if (nextFilterCheckTTL != null) {
             int remainingMinutes = nextFilterCheckTTL.getAsInt();
-            return new QuantityType<Time>(remainingMinutes, Units.MINUTE);
+            return new QuantityType<>(remainingMinutes, Units.MINUTE);
         } else {
             return null;
         }
@@ -167,7 +166,7 @@ public class TradfriAirPurifierData extends TradfriDeviceData {
         QuantityType<Time> ttl = getNextFilterCheckTTL();
         if (ttl != null) {
             int ttlValue = ttl.intValue();
-            return ttlValue < 0 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(ttlValue < 0);
         } else {
             return null;
         }
@@ -177,7 +176,7 @@ public class TradfriAirPurifierData extends TradfriDeviceData {
         JsonElement filterUptime = attributes.get(FILTER_UPTIME);
         if (filterUptime != null) {
             int filterUptimeMinutes = filterUptime.getAsInt();
-            return new QuantityType<Time>(filterUptimeMinutes, Units.MINUTE);
+            return new QuantityType<>(filterUptimeMinutes, Units.MINUTE);
         } else {
             return null;
         }

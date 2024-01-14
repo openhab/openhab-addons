@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ package org.openhab.binding.freebox.internal.api.model;
  */
 public class FreeboxAuthorizationStatus {
 
-    private static enum AuthorizationStatus {
+    private enum AuthorizationStatus {
         UNKNOWN("unknown"),
         PENDING("pending"),
         TIMEOUT("timeout"),

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,10 +61,10 @@ public class DimmableUnitHandler extends UnitHandler {
 
     private void handleUnitLevel(ChannelUID channelUID, Command command) {
         logger.debug("handleUnitLevel called for channel: {}, command: {}", channelUID, command);
-        if (command instanceof PercentType) {
-            handlePercent(channelUID, (PercentType) command);
-        } else if (command instanceof IncreaseDecreaseType) {
-            handleIncreaseDecrease(channelUID, (IncreaseDecreaseType) command);
+        if (command instanceof PercentType percentCommand) {
+            handlePercent(channelUID, percentCommand);
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+            handleIncreaseDecrease(channelUID, increaseDecreaseCommand);
         } else {
             // Only handle percent or increase/decrease.
             super.handleCommand(channelUID, command);

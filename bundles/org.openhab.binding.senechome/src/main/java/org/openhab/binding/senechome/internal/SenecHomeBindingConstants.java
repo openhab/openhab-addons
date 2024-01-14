@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class SenecHomeBindingConstants {
-    private static final String BINDING_ID = "senechome";
+    protected static final String BINDING_ID = "senechome";
     private static final String THING_BASE_ID = "senechome";
     public static final ThingTypeUID THING_TYPE_SENEC_HOME_BATTERY = new ThingTypeUID(BINDING_ID, THING_BASE_ID);
 
@@ -64,15 +64,6 @@ public class SenecHomeBindingConstants {
     public static final String CHANNEL_SENEC_GRID_VOLTAGE_PH2 = "gridVoltagePhase2";
     public static final String CHANNEL_SENEC_GRID_VOLTAGE_PH3 = "gridVoltagePhase3";
     public static final String CHANNEL_SENEC_GRID_FREQUENCY = "gridFrequency";
-
-    // SenecHomeStatistics
-    public static final String CHANNEL_SENEC_LIVE_BAT_CHARGE = "liveBatCharge";
-    public static final String CHANNEL_SENEC_LIVE_BAT_DISCHARGE = "liveBatDischarge";
-    public static final String CHANNEL_SENEC_LIVE_GRID_IMPORT = "liveGridImport";
-    public static final String CHANNEL_SENEC_LIVE_GRID_EXPORT = "liveGridExport";
-    public static final String CHANNEL_SENEC_LIVE_HOUSE_CONSUMPTION = "liveHouseConsumption";
-    public static final String CHANNEL_SENEC_LIVE_POWER_GENERATOR = "livePowerGenerator";
-    public static final String CHANNEL_SENEC_LIVE_ENERGY_WALLBOX1 = "liveEnergyWallbox1";
 
     // SenecHomeBattery
     public static final String CHANNEL_SENEC_CHARGED_ENERGY_PACK1 = "chargedEnergyPack1";

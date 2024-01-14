@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,8 @@ public class SensorReply {
     }
 
     /**
-     * Gets the first byte from the data bytes (usually holds the {@link Command}) as a form of some sub command
+     * Gets the first byte from the data bytes (usually holds the
+     * {@link org.openhab.binding.novafinedust.internal.sds011protocol.Command}) as a form of some sub command
      *
      * @return first byte from the data section of a reply
      */

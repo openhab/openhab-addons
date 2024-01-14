@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ public class RouterosThingConfig implements ConfigValidation {
     public String password = "";
     public int refresh = 10;
 
+    @Override
     public boolean isValid() {
         return !host.isBlank() && !login.isBlank() && !password.isBlank() && refresh > 0 && port > 0;
     }

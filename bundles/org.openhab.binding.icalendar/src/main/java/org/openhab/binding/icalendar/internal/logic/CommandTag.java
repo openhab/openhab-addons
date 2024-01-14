@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,10 +36,14 @@ import org.slf4j.LoggerFactory;
  * This is a class that implements a Command Tag that may be embedded in an
  * Event Description. Valid Tags must follow one of the following forms..
  *
+ * <pre>
+ * {@code
  * BEGIN:<itemName>:<targetState>
  * BEGIN:<itemName>:<targetState>:<authorizationCode>
  * END:<itemName>:<targetState>
  * END:<itemName>:<targetState>:<authorizationCode>
+ * }
+ * </pre>
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */

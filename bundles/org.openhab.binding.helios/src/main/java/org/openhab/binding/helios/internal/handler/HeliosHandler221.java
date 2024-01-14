@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -209,15 +209,15 @@ public class HeliosHandler221 extends BaseThingHandler {
             if (logger.isTraceEnabled()) {
                 logger.trace("initialize() Request : {}", systemTarget.resolveTemplate("ip", ipAddress)
                         .resolveTemplate("cmd", INFO).getUri().toASCIIString());
-                if (jsonObject.get("success").toString().equals("true")) {
+                if ("true".equals(jsonObject.get("success").toString())) {
                     logger.trace("initialize() Response: {}", jsonObject.get("result"));
                 }
-                if (jsonObject.get("success").toString().equals("false")) {
+                if ("false".equals(jsonObject.get("success").toString())) {
                     logger.trace("initialize() Response: {}", jsonObject.get("error"));
                 }
             }
 
-            if (jsonObject.get("success").toString().equals("false")) {
+            if ("false".equals(jsonObject.get("success").toString())) {
                 RESTError error = gson.fromJson(jsonObject.get("error").toString(), RESTError.class);
                 logger.debug(
                         "An error occurred while communicating with the Helios IP Vario '{}': code '{}', param '{}' : '{}'",
@@ -228,7 +228,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                 return;
             }
 
-            if (jsonObject.get("success").toString().equals("true")) {
+            if ("true".equals(jsonObject.get("success").toString())) {
                 if (logJob == null || logJob.isCancelled()) {
                     logJob = scheduler.scheduleWithFixedDelay(logRunnable, 0, 1, TimeUnit.SECONDS);
                 }
@@ -316,15 +316,15 @@ public class HeliosHandler221 extends BaseThingHandler {
                             logTarget.resolveTemplate("ip", ipAddress).resolveTemplate("cmd", SUBSCRIBE)
                                     .queryParam("include", "new").queryParam("duration", HELIOS_DURATION).getUri()
                                     .toASCIIString());
-                    if (jsonObject.get("success").toString().equals("true")) {
+                    if ("true".equals(jsonObject.get("success").toString())) {
                         logger.trace("subscribe() Response: {}", jsonObject.get("result"));
                     }
-                    if (jsonObject.get("success").toString().equals("false")) {
+                    if ("false".equals(jsonObject.get("success").toString())) {
                         logger.trace("subscribe() Response: {}", jsonObject.get("error"));
                     }
                 }
 
-                if (jsonObject.get("success").toString().equals("true")) {
+                if ("true".equals(jsonObject.get("success").toString())) {
                     RESTSubscribeResponse subscribeResponse = gson.fromJson(jsonObject.get("result").toString(),
                             RESTSubscribeResponse.class);
                     logger.debug("The subscription id to pull logs from the Helios IP Vario '{}' is '{}'",
@@ -377,15 +377,15 @@ public class HeliosHandler221 extends BaseThingHandler {
                     logger.trace("unsubscribe() Request : {}",
                             logTarget.resolveTemplate("ip", ipAddress).resolveTemplate("cmd", UNSUBSCRIBE)
                                     .queryParam("id", logSubscriptionID).getUri().toASCIIString());
-                    if (jsonObject.get("success").toString().equals("true")) {
+                    if ("true".equals(jsonObject.get("success").toString())) {
                         logger.trace("unsubscribe() Response: {}", jsonObject.get("result"));
                     }
-                    if (jsonObject.get("success").toString().equals("false")) {
+                    if ("false".equals(jsonObject.get("success").toString())) {
                         logger.trace("unsubscribe() Response: {}", jsonObject.get("error"));
                     }
                 }
 
-                if (jsonObject.get("success").toString().equals("true")) {
+                if ("true".equals(jsonObject.get("success").toString())) {
                     logger.debug("Successfully unsubscribed from the log entries of the Helios IP Vario '{}'",
                             getThing().getUID().toString());
                 } else {
@@ -439,15 +439,15 @@ public class HeliosHandler221 extends BaseThingHandler {
                             logTarget.resolveTemplate("ip", ipAddress).resolveTemplate("cmd", PULL)
                                     .queryParam("id", logSubscriptionID).queryParam("timeout", HELIOS_PULL_DURATION)
                                     .getUri().toASCIIString());
-                    if (jsonObject.get("success").toString().equals("true")) {
+                    if ("true".equals(jsonObject.get("success").toString())) {
                         logger.trace("pullLog() Response: {}", jsonObject.get("result"));
                     }
-                    if (jsonObject.get("success").toString().equals("false")) {
+                    if ("false".equals(jsonObject.get("success").toString())) {
                         logger.trace("pullLog() Response: {}", jsonObject.get("error"));
                     }
                 }
 
-                if (jsonObject.get("success").toString().equals("true")) {
+                if ("true".equals(jsonObject.get("success").toString())) {
                     logger.trace("Successfully pulled log entries from the Helios IP Vario '{}'",
                             getThing().getUID().toString());
                     JsonObject js = (JsonObject) jsonObject.get("result");
@@ -499,15 +499,15 @@ public class HeliosHandler221 extends BaseThingHandler {
             if (logger.isTraceEnabled()) {
                 logger.trace("getSwitches() Request : {}", switchTarget.resolveTemplate("ip", ipAddress)
                         .resolveTemplate("cmd", CAPABILITIES).getUri().toASCIIString());
-                if (jsonObject.get("success").toString().equals("true")) {
+                if ("true".equals(jsonObject.get("success").toString())) {
                     logger.trace("getSwitches() Response: {}", jsonObject.get("result"));
                 }
-                if (jsonObject.get("success").toString().equals("false")) {
+                if ("false".equals(jsonObject.get("success").toString())) {
                     logger.trace("getSwitches() Response: {}", jsonObject.get("error"));
                 }
             }
 
-            if (jsonObject.get("success").toString().equals("true")) {
+            if ("true".equals(jsonObject.get("success").toString())) {
                 logger.debug("Successfully requested switch capabilities from the Helios IP Vario '{}'",
                         getThing().getUID().toString());
                 String result = jsonObject.get("result").toString();
@@ -566,15 +566,15 @@ public class HeliosHandler221 extends BaseThingHandler {
                     logger.trace("triggerSwitch() Request : {}",
                             switchTarget.resolveTemplate("ip", ipAddress).resolveTemplate("cmd", CONTROL)
                                     .queryParam("switch", id).queryParam("action", "trigger").getUri().toASCIIString());
-                    if (jsonObject.get("success").toString().equals("true")) {
+                    if ("true".equals(jsonObject.get("success").toString())) {
                         logger.trace("triggerSwitch() Response: {}", jsonObject.get("result"));
                     }
-                    if (jsonObject.get("success").toString().equals("false")) {
+                    if ("false".equals(jsonObject.get("success").toString())) {
                         logger.trace("triggerSwitch() Response: {}", jsonObject.get("error"));
                     }
                 }
 
-                if (jsonObject.get("success").toString().equals("true")) {
+                if ("true".equals(jsonObject.get("success").toString())) {
                     logger.debug("Successfully triggered a switch on the Helios IP Vario '{}'",
                             getThing().getUID().toString());
                 } else {
@@ -622,15 +622,15 @@ public class HeliosHandler221 extends BaseThingHandler {
                             switchTarget.resolveTemplate("ip", ipAddress).resolveTemplate("cmd", CONTROL)
                                     .queryParam("switch", id).queryParam("action", flag ? "on" : "off").getUri()
                                     .toASCIIString());
-                    if (jsonObject.get("success").toString().equals("true")) {
+                    if ("true".equals(jsonObject.get("success").toString())) {
                         logger.trace("enableSwitch() Response: {}", jsonObject.get("result"));
                     }
-                    if (jsonObject.get("success").toString().equals("false")) {
+                    if ("false".equals(jsonObject.get("success").toString())) {
                         logger.trace("enableSwitch() Response: {}", jsonObject.get("error"));
                     }
                 }
 
-                if (jsonObject.get("success").toString().equals("true")) {
+                if ("true".equals(jsonObject.get("success").toString())) {
                     logger.debug("Successfully dis/enabled a  switch on the Helios IP Vario '{}'",
                             getThing().getUID().toString());
                 } else {
@@ -675,15 +675,15 @@ public class HeliosHandler221 extends BaseThingHandler {
             if (logger.isTraceEnabled()) {
                 logger.trace("getPorts() Request : {}", portTarget.resolveTemplate("ip", ipAddress)
                         .resolveTemplate("cmd", CAPABILITIES).getUri().toASCIIString());
-                if (jsonObject.get("success").toString().equals("true")) {
+                if ("true".equals(jsonObject.get("success").toString())) {
                     logger.trace("getPorts() Response: {}", jsonObject.get("result"));
                 }
-                if (jsonObject.get("success").toString().equals("false")) {
+                if ("false".equals(jsonObject.get("success").toString())) {
                     logger.trace("getPorts() Response: {}", jsonObject.get("error"));
                 }
             }
 
-            if (jsonObject.get("success").toString().equals("true")) {
+            if ("true".equals(jsonObject.get("success").toString())) {
                 logger.debug("Successfully requested port capabilities from the Helios IP Vario '{}'",
                         getThing().getUID().toString());
                 JsonObject js = (JsonObject) jsonObject.get("result");
@@ -743,10 +743,10 @@ public class HeliosHandler221 extends BaseThingHandler {
             if (logger.isTraceEnabled()) {
                 logger.trace("configureRunnable Request : {}", systemTarget.resolveTemplate("ip", ipAddress)
                         .resolveTemplate("cmd", INFO).getUri().toASCIIString());
-                if (jsonObject.get("success").toString().equals("true")) {
+                if ("true".equals(jsonObject.get("success").toString())) {
                     logger.trace("configureRunnable Response: {}", jsonObject.get("result"));
                 }
-                if (jsonObject.get("success").toString().equals("false")) {
+                if ("false".equals(jsonObject.get("success").toString())) {
                     logger.trace("configureRunnable Response: {}", jsonObject.get("error"));
                 }
             }
@@ -767,7 +767,7 @@ public class HeliosHandler221 extends BaseThingHandler {
 
         if (switches != null) {
             for (RESTSwitch aSwitch : switches) {
-                if (aSwitch.enabled.equals("true")) {
+                if ("true".equals(aSwitch.enabled)) {
                     logger.debug("Adding a channel to the Helios IP Vario '{}' for the switch with id '{}'",
                             getThing().getUID().toString(), aSwitch.id);
                     ThingBuilder thingBuilder = editThing();
@@ -852,9 +852,9 @@ public class HeliosHandler221 extends BaseThingHandler {
                                     break;
                                 }
                                 case AUDIOLOOPTEST: {
-                                    if (event.params.get("result").getAsString().equals("passed")) {
+                                    if ("passed".equals(event.params.get("result").getAsString())) {
                                         updateState(AUDIO_LOOP_TEST, OnOffType.ON);
-                                    } else if (event.params.get("result").getAsString().equals("failed")) {
+                                    } else if ("failed".equals(event.params.get("result").getAsString())) {
                                         updateState(AUDIO_LOOP_TEST, OnOffType.OFF);
                                     } else {
                                         updateState(AUDIO_LOOP_TEST, UnDefType.UNDEF);
@@ -864,9 +864,9 @@ public class HeliosHandler221 extends BaseThingHandler {
                                     break;
                                 }
                                 case MOTIONDETECTED: {
-                                    if (event.params.get("state").getAsString().equals("in")) {
+                                    if ("in".equals(event.params.get("state").getAsString())) {
                                         updateState(MOTION, OnOffType.ON);
-                                    } else if (event.params.get("state").getAsString().equals("out")) {
+                                    } else if ("out".equals(event.params.get("state").getAsString())) {
                                         updateState(MOTION, OnOffType.OFF);
                                     } else {
                                         updateState(MOTION, UnDefType.UNDEF);
@@ -876,9 +876,9 @@ public class HeliosHandler221 extends BaseThingHandler {
                                     break;
                                 }
                                 case NOISEDETECTED: {
-                                    if (event.params.get("state").getAsString().equals("in")) {
+                                    if ("in".equals(event.params.get("state").getAsString())) {
                                         updateState(NOISE, OnOffType.ON);
-                                    } else if (event.params.get("state").getAsString().equals("out")) {
+                                    } else if ("out".equals(event.params.get("state").getAsString())) {
                                         updateState(NOISE, OnOffType.OFF);
                                     } else {
                                         updateState(NOISE, UnDefType.UNDEF);
@@ -902,9 +902,9 @@ public class HeliosHandler221 extends BaseThingHandler {
                                 case CODEENTERED: {
                                     triggerChannel(CODE, event.params.get("code").getAsString());
 
-                                    if (event.params.get("valid").getAsString().equals("true")) {
+                                    if ("true".equals(event.params.get("valid").getAsString())) {
                                         updateState(CODE_VALID, OnOffType.ON);
-                                    } else if (event.params.get("valid").getAsString().equals("false")) {
+                                    } else if ("false".equals(event.params.get("valid").getAsString())) {
                                         updateState(CODE_VALID, OnOffType.OFF);
                                     } else {
                                         updateState(CODE_VALID, UnDefType.UNDEF);
@@ -916,9 +916,9 @@ public class HeliosHandler221 extends BaseThingHandler {
                                 case CARDENTERED: {
                                     triggerChannel(CARD, event.params.get("uid").getAsString());
 
-                                    if (event.params.get("valid").getAsString().equals("true")) {
+                                    if ("true".equals(event.params.get("valid").getAsString())) {
                                         updateState(CARD_VALID, OnOffType.ON);
-                                    } else if (event.params.get("valid").getAsString().equals("false")) {
+                                    } else if ("false".equals(event.params.get("valid").getAsString())) {
                                         updateState(CARD_VALID, OnOffType.OFF);
                                     } else {
                                         updateState(CARD_VALID, UnDefType.UNDEF);
@@ -931,9 +931,9 @@ public class HeliosHandler221 extends BaseThingHandler {
                                     ChannelUID inputChannel = new ChannelUID(getThing().getUID(),
                                             "io" + event.params.get("port").getAsString());
 
-                                    if (event.params.get("state").getAsString().equals("true")) {
+                                    if ("true".equals(event.params.get("state").getAsString())) {
                                         updateState(inputChannel, OnOffType.ON);
-                                    } else if (event.params.get("state").getAsString().equals("false")) {
+                                    } else if ("false".equals(event.params.get("state").getAsString())) {
                                         updateState(inputChannel, OnOffType.OFF);
                                     } else {
                                         updateState(inputChannel, UnDefType.UNDEF);
@@ -944,9 +944,9 @@ public class HeliosHandler221 extends BaseThingHandler {
                                     ChannelUID inputChannel = new ChannelUID(getThing().getUID(),
                                             "io" + event.params.get("port").getAsString());
 
-                                    if (event.params.get("state").getAsString().equals("true")) {
+                                    if ("true".equals(event.params.get("state").getAsString())) {
                                         updateState(inputChannel, OnOffType.ON);
-                                    } else if (event.params.get("state").getAsString().equals("false")) {
+                                    } else if ("false".equals(event.params.get("state").getAsString())) {
                                         updateState(inputChannel, OnOffType.OFF);
                                     } else {
                                         updateState(inputChannel, UnDefType.UNDEF);
@@ -967,9 +967,9 @@ public class HeliosHandler221 extends BaseThingHandler {
                                     break;
                                 }
                                 case SWITCHSTATECHANGED: {
-                                    if (event.params.get("state").getAsString().equals("true")) {
+                                    if ("true".equals(event.params.get("state").getAsString())) {
                                         updateState(SWITCH_STATE, OnOffType.ON);
-                                    } else if (event.params.get("state").getAsString().equals("false")) {
+                                    } else if ("false".equals(event.params.get("state").getAsString())) {
                                         updateState(SWITCH_STATE, OnOffType.OFF);
                                     } else {
                                         updateState(SWITCH_STATE, UnDefType.UNDEF);

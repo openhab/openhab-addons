@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -377,7 +377,6 @@ public class IhcClient {
      * Enable resources runtime value notifications.
      *
      * @param resourceIdList List of resource Identifiers.
-     * @return True is connection successfully opened.
      */
     public synchronized void enableRuntimeValueNotifications(Set<Integer> resourceIdList) throws IhcExecption {
         resourceInteractionService.enableRuntimeValueNotifications(resourceIdList);
@@ -422,7 +421,7 @@ public class IhcClient {
      * Resource value's value field (e.g. floatingPointValue) could be old
      * information.
      *
-     * @param resoureId Resource Identifier.
+     * @param resourceId Resource Identifier.
      * @return Resource value.
      */
     public WSResourceValue getResourceValueInformation(int resourceId) throws IhcExecption {

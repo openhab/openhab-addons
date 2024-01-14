@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Container class for enums related to Daikin Airbase A/C systems
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
- * @author Paul Smedley <paul@smedley.id.au> - Mods for Daikin Airbase Units
+ * @author Tim Waterhouse - Initial contribution
+ * @author Paul Smedley - Mods for Daikin Airbase Units
  *
  */
 @NonNullByDefault

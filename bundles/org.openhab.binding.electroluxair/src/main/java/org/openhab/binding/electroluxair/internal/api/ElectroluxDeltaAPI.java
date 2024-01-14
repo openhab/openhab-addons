@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.electroluxair.internal.api;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,6 +56,7 @@ public class ElectroluxDeltaAPI {
 
     private static final String JSON_CONTENT_TYPE = "application/json";
     private static final int MAX_RETRIES = 3;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final Logger logger = LoggerFactory.getLogger(ElectroluxDeltaAPI.class);
     private final Gson gson;
@@ -96,7 +98,6 @@ public class ElectroluxDeltaAPI {
             }
         } catch (JsonSyntaxException | ElectroluxAirException e) {
             logger.warn("Failed to refresh! {}", e.getMessage());
-
         }
         return false;
     }
@@ -177,7 +178,7 @@ public class ElectroluxDeltaAPI {
 
     private Request createRequest(String uri, HttpMethod httpMethod) {
         Request request = httpClient.newRequest(uri).method(httpMethod);
-
+        request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
         request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
 

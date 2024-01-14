@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -180,8 +180,8 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
     }
 
     private @Nullable StringType convertToPressedCommand(Command command, SwitchMode switchMode) {
-        if (command instanceof StringType) {
-            return (StringType) command;
+        if (command instanceof StringType stringCommand) {
+            return stringCommand;
         } else if (command instanceof OnOffType) {
             switch (switchMode) {
                 case RockerSwitch:
@@ -276,13 +276,12 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
     @Override
     public void handleRemoval() {
-        ScheduledFuture<?> future = releaseFuture;
-        if (future != null && !future.isDone()) {
-            future.cancel(true);
-            future = null;
+        ScheduledFuture<?> releaseFuture = this.releaseFuture;
+        if (releaseFuture != null) {
+            releaseFuture.cancel(true);
+            this.releaseFuture = null;
         }
 
-        releaseFuture = null;
         super.handleRemoval();
     }
 }

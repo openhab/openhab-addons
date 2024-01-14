@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,8 +101,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     /**
      * Constructor, save bindingConfig (services as default for thingConfig)
      *
+     * @param manager
      * @param thing
-     * @param bindingConfig
+     * @param network
+     * @param httpClient
      */
     public MagentaTVHandler(MagentaTVDeviceManager manager, Thing thing, MagentaTVNetwork network,
             HttpClient httpClient) {
@@ -223,7 +225,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         }
 
         try {
-            if (!isOnline() || command.toString().equalsIgnoreCase("PAIR")) {
+            if (!isOnline() || "PAIR".equalsIgnoreCase(command.toString())) {
                 logger.debug("{}: Receiver {} is offline, try to (re-)connect", thingId, deviceName());
                 connectReceiver(); // reconnect to MR, throws an exception if this fails
             }
@@ -273,7 +275,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                     }
                     break;
                 case CHANNEL_KEY:
-                    if (command.toString().equalsIgnoreCase("PAIR")) { // special key to re-pair receiver (already done
+                    if ("PAIR".equalsIgnoreCase(command.toString())) { // special key to re-pair receiver (already done
                                                                        // above)
                         logger.debug("{}: PAIRing key received, reconnect receiver {}", thingId, deviceName());
                     } else {
@@ -376,8 +378,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     /**
      * Update thing status
      *
-     * @param mode new thing status
-     * @return ON = power on, OFF=power off
+     * @param newStatus new thing status
+     * @param errorMessage
      */
     public void setOnlineStatus(ThingStatus newStatus, String errorMessage) {
         ThingStatus status = this.getThing().getStatus();
@@ -634,7 +636,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     }
 
     public void updateThingProperties() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(PROPERTY_FRIENDLYNAME, config.getFriendlyName());
         properties.put(PROPERTY_MODEL_NUMBER, config.getModel());
         properties.put(PROPERTY_DESC_URL, config.getDescriptionUrl());

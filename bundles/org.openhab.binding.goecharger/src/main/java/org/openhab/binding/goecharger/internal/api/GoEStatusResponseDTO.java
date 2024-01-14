@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.goecharger.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link GoEStatusResponse} class represents a json response from the
+ * The {@link GoEStatusResponseDTO} class represents a json response from the
  * charger.
  *
  * @author Samuel Brucksch - Initial contribution

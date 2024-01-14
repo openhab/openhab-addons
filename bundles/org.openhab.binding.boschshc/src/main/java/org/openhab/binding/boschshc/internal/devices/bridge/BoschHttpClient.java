@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,13 +38,15 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
+import org.openhab.binding.boschshc.internal.services.userstate.dto.UserStateServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
 /**
- * HTTP client using own context with private & Bosch Certs
+ * HTTP client using own context with private and Bosch Certs
  * to pair and connect to the Bosch Smart Home Controller.
  *
  * @author Gerd Zanker - Initial contribution
@@ -103,7 +105,7 @@ public class BoschHttpClient extends HttpClient {
     }
 
     /**
-     * Returns a SmartHome URL for the endpoint - shortcut of {@link BoschSslUtil::getBoschShcUrl()}
+     * Returns a SmartHome URL for the endpoint - shortcut of {@link #getBoschShcUrl(String)}
      *
      * @param endpoint an endpoint, see https://apidocs.bosch-smarthome.com/local/index.html
      * @return SmartHome URL for passed endpoint
@@ -129,6 +131,15 @@ public class BoschHttpClient extends HttpClient {
      */
     public String getServiceStateUrl(String serviceName, String deviceId) {
         return this.getBoschSmartHomeUrl(String.format("devices/%s/services/%s/state", deviceId, serviceName));
+    }
+
+    public <T extends BoschSHCServiceState> String getServiceStateUrl(String serviceName, String deviceId,
+            Class<T> serviceClass) {
+        if (serviceClass.isAssignableFrom(UserStateServiceState.class)) {
+            return this.getBoschSmartHomeUrl(String.format("userdefinedstates/%s/state", deviceId));
+        } else {
+            return getServiceStateUrl(serviceName, deviceId);
+        }
     }
 
     /**
@@ -291,8 +302,13 @@ public class BoschHttpClient extends HttpClient {
                 .timeout(10, TimeUnit.SECONDS); // Set default timeout
 
         if (content != null) {
-            String body = GsonUtils.DEFAULT_GSON_INSTANCE.toJson(content);
-            logger.trace("create request for {} and content {}", url, content);
+            final String body;
+            if (content.getClass().isAssignableFrom(UserStateServiceState.class)) {
+                body = ((UserStateServiceState) content).getStateAsString();
+            } else {
+                body = GsonUtils.DEFAULT_GSON_INSTANCE.toJson(content);
+            }
+            logger.trace("create request for {} and content {}", url, body);
             request = request.content(new StringContentProvider(body));
         } else {
             logger.trace("create request for {}", url);

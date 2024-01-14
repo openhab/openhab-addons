@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,16 +90,16 @@ public class DBQueryJSONEncoder {
     }
 
     private static JsonElement convertValueToJsonPrimitive(@Nullable Object value) {
-        if (value instanceof Number) {
-            return new JsonPrimitive((Number) value);
-        } else if (value instanceof Boolean) {
-            return new JsonPrimitive((Boolean) value);
+        if (value instanceof Number number) {
+            return new JsonPrimitive(number);
+        } else if (value instanceof Boolean boolean1) {
+            return new JsonPrimitive(boolean1);
         } else if (value instanceof Character) {
             return new JsonPrimitive((Character) value);
-        } else if (value instanceof Date) {
-            return new JsonPrimitive(DateTimeFormatter.ISO_INSTANT.format(((Date) value).toInstant()));
-        } else if (value instanceof Instant) {
-            return new JsonPrimitive(DateTimeFormatter.ISO_INSTANT.format((Instant) value));
+        } else if (value instanceof Date date) {
+            return new JsonPrimitive(DateTimeFormatter.ISO_INSTANT.format(date.toInstant()));
+        } else if (value instanceof Instant instant) {
+            return new JsonPrimitive(DateTimeFormatter.ISO_INSTANT.format(instant));
         } else if (value != null) {
             return new JsonPrimitive(value.toString());
         } else {

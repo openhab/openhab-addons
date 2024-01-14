@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,8 @@ public interface OAuthAuthorizationHandler {
      *            service.
      * @return The authorization URL to which the user is redirected for the log in.
      * @throws NoOngoingAuthorizationException if there is no ongoing authorization.
-     * @throws OAuthException if the authorization URL cannot be determined. In this case the ongoing authorization is
+     * @throws org.openhab.core.auth.client.oauth2.OAuthException if the authorization URL cannot be determined. In this
+     *             case the ongoing authorization is
      *             cancelled.
      */
     String getAuthorizationUrl(String redirectUri);
@@ -65,7 +66,8 @@ public interface OAuthAuthorizationHandler {
      * @param redirectUrlWithParameters The URL the remote service redirected the user to. This is the URL our servlet
      *            was called with.
      * @throws NoOngoingAuthorizationException if there is no ongoing authorization.
-     * @throws OAuthException if the authorization failed. In this case the ongoing authorization is cancelled.
+     * @throws org.openhab.core.auth.client.oauth2.OAuthException if the authorization failed. In this case the ongoing
+     *             authorization is cancelled.
      */
     void completeAuthorization(String redirectUrlWithParameters);
 
@@ -74,7 +76,7 @@ public interface OAuthAuthorizationHandler {
      *
      * @param email E-mail address for which the access token is requested.
      * @return The access token.
-     * @throws OAuthException if the access token cannot be obtained.
+     * @throws org.openhab.core.auth.client.oauth2.OAuthException if the access token cannot be obtained.
      */
     String getAccessToken(String email);
 }

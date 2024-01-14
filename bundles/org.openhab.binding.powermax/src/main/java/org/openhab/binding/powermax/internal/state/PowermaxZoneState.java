@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,9 +39,7 @@ public class PowermaxZoneState extends PowermaxStateContainer {
     public StringValue lastMessage = new StringValue(this, ZONE_LAST_MESSAGE);
     public DateTimeValue lastMessageTime = new DateTimeValue(this, ZONE_LAST_MESSAGE_TIME);
 
-    public DynamicValue<Boolean> locked = new DynamicValue<>(this, LOCKED, () -> {
-        return armed.getValue();
-    }, () -> {
+    public DynamicValue<Boolean> locked = new DynamicValue<>(this, LOCKED, () -> armed.getValue(), () -> {
         Boolean isArmed = armed.getValue();
         if (isArmed == null) {
             return UnDefType.NULL;

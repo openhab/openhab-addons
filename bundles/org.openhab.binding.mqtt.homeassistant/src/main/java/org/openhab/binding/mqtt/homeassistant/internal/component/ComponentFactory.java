@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,6 +57,8 @@ public class ComponentFactory {
                 return new AlarmControlPanel(componentConfiguration);
             case "binary_sensor":
                 return new BinarySensor(componentConfiguration);
+            case "button":
+                return new Button(componentConfiguration);
             case "camera":
                 return new Camera(componentConfiguration);
             case "cover":
@@ -73,12 +75,16 @@ public class ComponentFactory {
                 return new Lock(componentConfiguration);
             case "number":
                 return new Number(componentConfiguration);
+            case "scene":
+                return new Scene(componentConfiguration);
             case "select":
                 return new Select(componentConfiguration);
             case "sensor":
                 return new Sensor(componentConfiguration);
             case "switch":
                 return new Switch(componentConfiguration);
+            case "update":
+                return new Update(componentConfiguration);
             case "vacuum":
                 return new Vacuum(componentConfiguration);
             default:

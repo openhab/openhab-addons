@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import java.util.List;
  * @author Gerhard Riegler - Initial contribution
  */
 public class SimplePortPool {
-    private static int START_PORT = 9125;
+    private static int startPort = 9125;
 
     private List<PortInfo> availablePorts = new ArrayList<>();
 
@@ -48,9 +48,9 @@ public class SimplePortPool {
         }
 
         PortInfo portInfo = new PortInfo();
-        while (isPortInUse(START_PORT++)) {
+        while (isPortInUse(startPort++)) {
         }
-        portInfo.port = START_PORT - 1;
+        portInfo.port = startPort - 1;
         portInfo.free = false;
         availablePorts.add(portInfo);
 

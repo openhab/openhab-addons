@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -269,12 +269,12 @@ public class SmartMeterHandler extends BaseThingHandler {
             valueString += " " + value.getUnit();
         }
         State state = TypeParser.parseState(List.of(QuantityType.class, StringType.class), valueString);
-        if (channel != null && state instanceof QuantityType) {
+        if (channel != null && state instanceof QuantityType quantityCommand) {
             state = applyConformity(channel, (QuantityType<Q>) state);
             Number conversionRatio = (Number) channel.getConfiguration()
                     .get(SmartMeterBindingConstants.CONFIGURATION_CONVERSION);
             if (conversionRatio != null) {
-                state = ((QuantityType<?>) state).divide(BigDecimal.valueOf(conversionRatio.doubleValue()));
+                state = quantityCommand.divide(BigDecimal.valueOf(conversionRatio.doubleValue()));
             }
         }
         return state;

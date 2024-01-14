@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -387,16 +387,16 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                 case GET_NOW_PLAYING_MEDIA:
                     @Nullable
                     T mediaPayload = responseObject.payload;
-                    if (mediaPayload instanceof Media) {
-                        handleThingMediaUpdate((Media) mediaPayload);
+                    if (mediaPayload instanceof Media media) {
+                        handleThingMediaUpdate(media);
                     }
                     break;
 
                 case GET_PLAYER_INFO:
                     @Nullable
                     T playerPayload = responseObject.payload;
-                    if (playerPayload instanceof Player) {
-                        handlePlayerInfo((Player) playerPayload);
+                    if (playerPayload instanceof Player player) {
+                        handlePlayerInfo(player);
                     }
                     break;
             }

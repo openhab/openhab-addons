@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,6 +58,7 @@ public class HueStateDescriptionProvider extends BaseDynamicStateDescriptionProv
         StateDescriptionFragment oldStateDescriptionFragment = stateDescriptionFragments.get(channelUID);
         if (!stateDescriptionFragment.equals(oldStateDescriptionFragment)) {
             stateDescriptionFragments.put(channelUID, stateDescriptionFragment);
+            ItemChannelLinkRegistry itemChannelLinkRegistry = this.itemChannelLinkRegistry;
             postEvent(ThingEventFactory.createChannelDescriptionChangedEvent(channelUID,
                     itemChannelLinkRegistry != null ? itemChannelLinkRegistry.getLinkedItemNames(channelUID) : Set.of(),
                     stateDescriptionFragment, oldStateDescriptionFragment));

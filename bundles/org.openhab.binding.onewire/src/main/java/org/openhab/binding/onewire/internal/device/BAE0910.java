@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -153,7 +153,7 @@ public class BAE0910 extends AbstractOwDevice {
             Channel channel = callback.getThing().getChannel(CHANNEL_DIGITAL6);
             if (channel != null) {
                 BAE091xPIOConfiguration channelConfig = channel.getConfiguration().as(BAE091xPIOConfiguration.class);
-                piocRegister.set(PIOC_DD, channelConfig.mode.equals("output"));
+                piocRegister.set(PIOC_DD, "output".equals(channelConfig.mode));
                 switch (channelConfig.pulldevice) {
                     case "pullup" -> {
                         piocRegister.set(PIOC_PE);

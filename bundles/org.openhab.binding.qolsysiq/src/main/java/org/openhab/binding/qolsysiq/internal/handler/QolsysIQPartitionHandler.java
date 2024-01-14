@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -74,7 +75,7 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     private @Nullable ScheduledFuture<?> errorFuture;
     private @Nullable String armCode;
     private @Nullable String disarmCode;
-    private List<Zone> zones = Collections.synchronizedList(new LinkedList<Zone>());
+    private List<Zone> zones = Collections.synchronizedList(new LinkedList<>());
     private int partitionId;
 
     public QolsysIQPartitionHandler(Bridge bridge) {
@@ -156,7 +157,7 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(QolsysIQChildDiscoveryService.class);
+        return Set.of(QolsysIQChildDiscoveryService.class);
     }
 
     @Override
@@ -277,7 +278,7 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     }
 
     private void setSecureArm(Boolean secure) {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("secureArm", String.valueOf(secure));
         getThing().setProperties(props);
     }
@@ -347,9 +348,9 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     private @Nullable QolsysIQZoneHandler zoneHandler(int zoneId) {
         for (Thing thing : getThing().getThings()) {
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof QolsysIQZoneHandler) {
-                if (((QolsysIQZoneHandler) handler).getZoneId() == zoneId) {
-                    return (QolsysIQZoneHandler) handler;
+            if (handler instanceof QolsysIQZoneHandler zoneHandler) {
+                if (zoneHandler.getZoneId() == zoneId) {
+                    return zoneHandler;
                 }
             }
         }
@@ -360,8 +361,8 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof QolsysIQPanelHandler) {
-                return (QolsysIQPanelHandler) handler;
+            if (handler instanceof QolsysIQPanelHandler panelHandler) {
+                return panelHandler;
             }
         }
         return null;

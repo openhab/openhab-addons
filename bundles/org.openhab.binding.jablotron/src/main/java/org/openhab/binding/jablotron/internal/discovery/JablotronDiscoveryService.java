@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,14 +25,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jablotron.internal.handler.JablotronBridgeHandler;
 import org.openhab.binding.jablotron.internal.model.JablotronDiscoveredService;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,37 +41,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = JablotronDiscoveryService.class)
 @NonNullByDefault
-public class JablotronDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class JablotronDiscoveryService extends AbstractThingHandlerDiscoveryService<JablotronBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(JablotronDiscoveryService.class);
-
-    private @Nullable JablotronBridgeHandler bridgeHandler;
 
     private @Nullable ScheduledFuture<?> discoveryJob = null;
 
     public JablotronDiscoveryService() {
-        super(DISCOVERY_TIMEOUT_SEC);
+        super(JablotronBridgeHandler.class, DISCOVERY_TIMEOUT_SEC);
         logger.debug("Creating discovery service");
     }
 
     private void startDiscovery() {
-        JablotronBridgeHandler localBridgeHandler = bridgeHandler;
+        JablotronBridgeHandler localBridgeHandler = thingHandler;
         if (localBridgeHandler != null && ThingStatus.ONLINE == localBridgeHandler.getThing().getStatus()) {
             discoverServices();
         }
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler thingHandler) {
-        if (thingHandler instanceof JablotronBridgeHandler) {
-            bridgeHandler = (JablotronBridgeHandler) thingHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
     }
 
     @Override
@@ -94,16 +79,6 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         return SUPPORTED_THING_TYPES_UIDS;
     }
@@ -115,7 +90,7 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
     }
 
     public void oasisDiscovered(String label, String serviceId) {
-        JablotronBridgeHandler localBridgeHandler = bridgeHandler;
+        JablotronBridgeHandler localBridgeHandler = thingHandler;
         if (localBridgeHandler != null) {
             ThingUID thingUID = new ThingUID(THING_TYPE_OASIS, localBridgeHandler.getThing().getUID(), serviceId);
 
@@ -130,7 +105,7 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
     }
 
     public void ja100Discovered(String label, String serviceId) {
-        JablotronBridgeHandler localBridgeHandler = bridgeHandler;
+        JablotronBridgeHandler localBridgeHandler = thingHandler;
         if (localBridgeHandler != null) {
             ThingUID thingUID = new ThingUID(THING_TYPE_JA100, localBridgeHandler.getThing().getUID(), serviceId);
             Map<String, Object> properties = new HashMap<>();
@@ -144,7 +119,7 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
     }
 
     public void ja100fDiscovered(String label, String serviceId) {
-        JablotronBridgeHandler localBridgeHandler = bridgeHandler;
+        JablotronBridgeHandler localBridgeHandler = thingHandler;
         if (localBridgeHandler != null) {
             ThingUID thingUID = new ThingUID(THING_TYPE_JA100F, localBridgeHandler.getThing().getUID(), serviceId);
             Map<String, Object> properties = new HashMap<>();
@@ -158,7 +133,7 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
     }
 
     private synchronized void discoverServices() {
-        JablotronBridgeHandler localBridgeHandler = bridgeHandler;
+        JablotronBridgeHandler localBridgeHandler = thingHandler;
         if (localBridgeHandler != null) {
             List<JablotronDiscoveredService> services = localBridgeHandler.discoverServices();
 

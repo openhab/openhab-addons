@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.OffDelayUpdateStateListener;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -72,7 +73,8 @@ public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfigur
         OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
 
         buildChannel(SENSOR_CHANNEL_ID, value, "value", getListener(componentConfiguration, value))
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate()).build();
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+                .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
     }
 
     private ChannelStateUpdateListener getListener(ComponentFactory.ComponentConfiguration componentConfiguration,

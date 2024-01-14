@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,49 +37,56 @@ public interface InputWithPlayControl extends IStateUpdatable {
      * Start the playback of the content which is usually selected by the means of the Navigation control class or
      * which has been stopped by stop().
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     void play() throws IOException, ReceivedMessageParseException;
 
     /**
      * Stop the currently playing content. Use start() to start again.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     void stop() throws IOException, ReceivedMessageParseException;
 
     /**
      * Pause the currently playing content. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     void pause() throws IOException, ReceivedMessageParseException;
 
     /**
      * Skip forward. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     void skipFF() throws IOException, ReceivedMessageParseException;
 
     /**
      * Skip reverse. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     void skipREV() throws IOException, ReceivedMessageParseException;
 
     /**
      * Next track. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     void nextTrack() throws IOException, ReceivedMessageParseException;
 
     /**
      * Previous track. This is not available for streaming content like on NET_RADIO.
      *
-     * @throws Exception
+     * @throws IOException
+     * @throws ReceivedMessageParseException
      */
     void previousTrack() throws IOException, ReceivedMessageParseException;
 }

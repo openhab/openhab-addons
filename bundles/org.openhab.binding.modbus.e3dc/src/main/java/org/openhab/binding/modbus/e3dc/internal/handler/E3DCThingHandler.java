@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,7 +115,7 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     private ChannelUID string3VoltChannel;
     private ChannelUID string3WattChannel;
 
-    private final ArrayList<E3DCWallboxThingHandler> listeners = new ArrayList<E3DCWallboxThingHandler>();
+    private final ArrayList<E3DCWallboxThingHandler> listeners = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(E3DCThingHandler.class);
     private final Parser dataParser = new Parser(DataType.DATA);
     private ReadStatus dataRead = ReadStatus.NOT_RECEIVED;
@@ -276,9 +276,8 @@ public class E3DCThingHandler extends BaseBridgeHandler {
             return null;
         }
 
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
-            return slaveEndpoint;
+        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+            return thingHandler;
         } else {
             logger.debug("Unexpected bridge handler: {}", handler);
             return null;

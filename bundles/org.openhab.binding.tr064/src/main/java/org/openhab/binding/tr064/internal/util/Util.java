@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -281,10 +281,10 @@ public class Util {
             // get parameters by reflection from thing config
             Field paramField = thingConfig.getClass().getField(parameter.getThingParameter());
             Object rawFieldValue = paramField.get(thingConfig);
-            if ((rawFieldValue instanceof List<?>)) {
-                ((List<?>) rawFieldValue).forEach(obj -> {
-                    if (obj instanceof String) {
-                        parameters.add((String) obj);
+            if ((rawFieldValue instanceof List<?> list)) {
+                list.forEach(obj -> {
+                    if (obj instanceof String string) {
+                        parameters.add(string);
                     }
                 });
             }

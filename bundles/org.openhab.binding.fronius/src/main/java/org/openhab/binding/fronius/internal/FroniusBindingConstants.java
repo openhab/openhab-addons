@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Thomas Rokohl - Initial contribution
  * @author Peter Schraffl - Added device status and error status channels
  * @author Thomas Kordelle - Added inverter power, battery state of charge and PV solar yield
- * @author Hannes Spenger - Added ohmpilot & meter power sum
+ * @author Hannes Spenger - Added ohmpilot and meter power sum
  * @author Jimmy Tanagra - Implement a common url parsing method
  */
 @NonNullByDefault
@@ -64,6 +64,10 @@ public class FroniusBindingConstants {
     public static final String POWER_FLOW_AUTONOMY = "powerflowautonomy";
     public static final String POWER_FLOW_SELF_CONSUMPTION = "powerflowselfconsumption";
 
+    public static final String POWER_FLOW_INVERTER_POWER = "powerflowinverterpower";
+    public static final String POWER_FLOW_INVERTER_SOC = "powerflowinvertersoc";
+
+    // For backwards compatibility
     public static final String POWER_FLOW_INVERTER_1_POWER = "powerflowinverter1power";
     public static final String POWER_FLOW_INVERTER_1_SOC = "powerflowinverter1soc";
 

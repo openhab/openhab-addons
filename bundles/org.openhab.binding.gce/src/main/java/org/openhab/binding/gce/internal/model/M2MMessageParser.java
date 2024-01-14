@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ public class M2MMessageParser {
             decodeDataLine(portDefinition, data);
         } else if (VALIDATION_PATTERN.matcher(data).matches()) {
             for (String status : data.split("&")) {
-                String statusPart[] = status.split("=");
+                String[] statusPart = status.split("=");
                 int portNumShift = 1;
                 PortDefinition portDefinition = PortDefinition.fromPortName(statusPart[0].substring(0, 1));
                 switch (portDefinition) {

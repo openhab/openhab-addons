@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,7 @@ public class TapoErrorHandler extends Exception {
     /**
      * Constructor
      * 
-     * @param exception Exception
+     * @param ex Exception
      */
     public TapoErrorHandler(Exception ex) {
         raiseError(ex);
@@ -71,7 +71,7 @@ public class TapoErrorHandler extends Exception {
     /**
      * Constructor
      * 
-     * @param exception Exception
+     * @param ex Exception
      * @param infoMessage optional info-message
      */
     public TapoErrorHandler(Exception ex, String infoMessage) {
@@ -142,7 +142,7 @@ public class TapoErrorHandler extends Exception {
     /**
      * Raises new error
      * 
-     * @param exception Exception
+     * @param ex Exception
      */
     public void raiseError(Exception ex) {
         raiseError(ex, "");
@@ -151,7 +151,7 @@ public class TapoErrorHandler extends Exception {
     /**
      * Raises new error
      * 
-     * @param exception Exception
+     * @param ex Exception
      * @param infoMessage optional info-message
      */
     public void raiseError(Exception ex, String infoMessage) {

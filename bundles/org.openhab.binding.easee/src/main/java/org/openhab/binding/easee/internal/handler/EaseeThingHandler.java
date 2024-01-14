@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -130,7 +130,6 @@ public interface EaseeThingHandler extends ThingHandler, ChannelProvider {
     default @Nullable Channel getChannel(String groupId, String channelId) {
         ThingUID thingUID = this.getThing().getUID();
         ChannelGroupUID channelGroupUID = new ChannelGroupUID(thingUID, groupId);
-        Channel channel = getThing().getChannel(new ChannelUID(channelGroupUID, channelId));
-        return channel;
+        return getThing().getChannel(new ChannelUID(channelGroupUID, channelId));
     }
 }

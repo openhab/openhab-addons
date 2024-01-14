@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public abstract class AbstractOmnilinkHandler extends BaseThingHandler {
     /**
      * Calculate the area filter the a supplied area
      *
-     * @param area Area to calculate filter for.
+     * @param areaProperties Area to calculate filter for.
      * @return Calculated Bit Filter for the supplied area. Bit 0 is area 1, bit 2 is area 2 and so on.
      */
     protected static int bitFilterForArea(AreaProperties areaProperties) {

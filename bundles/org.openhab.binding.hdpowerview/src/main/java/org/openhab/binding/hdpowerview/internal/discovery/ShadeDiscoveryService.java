@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hdpowerview.internal.discovery;
 
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +44,7 @@ public class ShadeDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
     public ShadeDiscoveryService(GatewayBridgeHandler hub) {
-        super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE3), 60, true);
+        super(Set.of(HDPowerViewBindingConstants.THING_TYPE_SHADE3), 60, true);
         this.hub = hub;
         this.scanner = createScanner();
     }

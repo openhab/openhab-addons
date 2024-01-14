@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,17 +21,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone;
 import org.openhab.binding.yamahareceiver.internal.handler.YamahaBridgeHandler;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * After the AVR bridge thing has been added and a connection could be established,
@@ -40,10 +38,9 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  * @author David Gräff - Initial contribution
  * @author Tomasz Maruszak - Introduced config object
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ZoneDiscoveryService.class)
 @NonNullByDefault
-public class ZoneDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
-
-    private @Nullable YamahaBridgeHandler handler;
+public class ZoneDiscoveryService extends AbstractThingHandlerDiscoveryService<YamahaBridgeHandler> {
 
     /**
      * Constructs a zone discovery service.
@@ -51,17 +48,7 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService implements Di
      * Call {@link ZoneDiscoveryService#destroy()} to unregister the service after use.
      */
     public ZoneDiscoveryService() {
-        super(ZONE_THING_TYPES_UIDS, 0, false);
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(YamahaBridgeHandler.class, ZONE_THING_TYPES_UIDS, 0, false);
     }
 
     @Override
@@ -100,15 +87,8 @@ public class ZoneDiscoveryService extends AbstractDiscoveryService implements Di
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof YamahaBridgeHandler) {
-            this.handler = (YamahaBridgeHandler) handler;
-            this.handler.setZoneDiscoveryService(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
+    public void initialize() {
+        thingHandler.setZoneDiscoveryService(this);
+        super.initialize();
     }
 }

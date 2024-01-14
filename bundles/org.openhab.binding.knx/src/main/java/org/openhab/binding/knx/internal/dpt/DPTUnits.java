@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,8 +63,8 @@ public class DPTUnits {
      *
      * @return stream of all unit strings
      */
-    static Stream<String> getAllUnitStrings() {
-        return DPT_UNIT_MAP.values().stream();
+    static Stream<Map.Entry<String, String>> getAllUnitStrings() {
+        return DPT_UNIT_MAP.entrySet().stream();
     }
 
     static {
@@ -116,7 +116,7 @@ public class DPTUnits {
         DPT_UNIT_MAP.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getID(), "ms"); // according to spec, it is ms
 
         // two byte signed (DPT 8)
-        DPT_UNIT_MAP.remove(DptXlator2ByteSigned.DptValueCount.getID()); // pulses habe no unit
+        DPT_UNIT_MAP.remove(DptXlator2ByteSigned.DptValueCount.getID()); // pulses have no unit
 
         // 4 byte unsigned (DPT 12)
         DPT_UNIT_MAP.remove(DPTXlator4ByteUnsigned.DPT_VALUE_4_UCOUNT.getID()); // counts have no unit

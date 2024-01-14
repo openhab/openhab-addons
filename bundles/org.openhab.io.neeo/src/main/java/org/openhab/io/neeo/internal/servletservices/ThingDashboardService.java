@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +53,9 @@ public class ThingDashboardService extends DefaultServletService {
     /** The logger */
     private final Logger logger = LoggerFactory.getLogger(ThingDashboardService.class);
 
+    private static final Set<String> STARTERS = Set.of("thingstatus", "getchannel", "getvirtualdevice", "restoredevice",
+            "refreshdevice", "deletedevice", "exportrules", "updatedevice");
+
     /** The gson used for json manipulation */
     private final Gson gson;
 
@@ -83,14 +88,7 @@ public class ThingDashboardService extends DefaultServletService {
      */
     @Override
     public boolean canHandleRoute(String[] paths) {
-        return paths.length >= 1 && (paths[0].equalsIgnoreCase("thingstatus") //
-                || paths[0].equalsIgnoreCase("getchannel") //
-                || paths[0].equalsIgnoreCase("getvirtualdevice") //
-                || paths[0].equalsIgnoreCase("restoredevice") //
-                || paths[0].equalsIgnoreCase("refreshdevice") //
-                || paths[0].equalsIgnoreCase("deletedevice") //
-                || paths[0].equalsIgnoreCase("exportrules") //
-                || paths[0].equalsIgnoreCase("updatedevice"));
+        return paths.length >= 1 && STARTERS.contains(paths[0].toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -105,10 +103,10 @@ public class ThingDashboardService extends DefaultServletService {
         Objects.requireNonNull(resp, "resp cannot be null");
 
         try {
-            if (paths[0].equalsIgnoreCase("thingstatus")) {
+            if ("thingstatus".equalsIgnoreCase(paths[0])) {
                 final List<NeeoDevice> devices = context.getDefinitions().getAllDevices();
                 NeeoUtil.write(resp, gson.toJson(devices));
-            } else if (paths[0].equalsIgnoreCase("getchannel")) {
+            } else if ("getchannel".equalsIgnoreCase(paths[0])) {
                 final String itemName = NeeoUtil.decodeURIComponent(req.getParameter("itemname"));
                 final List<NeeoDeviceChannel> channels = context.getDefinitions().getNeeoDeviceChannel(itemName);
                 if (channels == null) {
@@ -116,7 +114,7 @@ public class ThingDashboardService extends DefaultServletService {
                 } else {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(channels)));
                 }
-            } else if (paths[0].equalsIgnoreCase("getvirtualdevice")) {
+            } else if ("getvirtualdevice".equalsIgnoreCase(paths[0])) {
                 final NeeoThingUID uid = context.generate(NeeoConstants.VIRTUAL_THING_TYPE);
                 final NeeoDevice device = new NeeoDevice(uid, 0, NeeoDeviceType.EXCLUDE, "NEEO Integration",
                         "New Virtual Thing", new ArrayList<>(), null, null, null, null);
@@ -145,7 +143,7 @@ public class ThingDashboardService extends DefaultServletService {
         }
 
         try {
-            if (paths[0].equalsIgnoreCase("updatedevice")) {
+            if ("updatedevice".equalsIgnoreCase(paths[0])) {
                 final NeeoDevice device = gson.fromJson(req.getReader(), NeeoDevice.class);
                 context.getDefinitions().put(device);
 
@@ -154,7 +152,7 @@ public class ThingDashboardService extends DefaultServletService {
                 }
 
                 NeeoUtil.write(resp, gson.toJson(ReturnStatus.SUCCESS));
-            } else if (paths[0].equalsIgnoreCase("restoredevice")) {
+            } else if ("restoredevice".equalsIgnoreCase(paths[0])) {
                 final NeeoThingUID uid = new NeeoThingUID(
                         new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 context.getDefinitions().remove(uid);
@@ -164,7 +162,7 @@ public class ThingDashboardService extends DefaultServletService {
                 } else {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
                 }
-            } else if (paths[0].equalsIgnoreCase("refreshdevice")) {
+            } else if ("refreshdevice".equalsIgnoreCase(paths[0])) {
                 final NeeoThingUID uid = new NeeoThingUID(
                         new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 final NeeoDevice device = context.getDefinitions().getDevice(uid);
@@ -173,13 +171,13 @@ public class ThingDashboardService extends DefaultServletService {
                 } else {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus(device)));
                 }
-            } else if (paths[0].equalsIgnoreCase("deletedevice")) {
+            } else if ("deletedevice".equalsIgnoreCase(paths[0])) {
                 final NeeoThingUID uid = new NeeoThingUID(
                         new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 final boolean deleted = context.getDefinitions().remove(uid);
                 NeeoUtil.write(resp, gson.toJson(new ReturnStatus(
                         deleted ? null : "Device " + uid + " was not found (possibly already deleted?)")));
-            } else if (paths[0].equalsIgnoreCase("exportrules")) {
+            } else if ("exportrules".equalsIgnoreCase(paths[0])) {
                 final NeeoThingUID uid = new NeeoThingUID(
                         new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 final NeeoDevice device = context.getDefinitions().getDevice(uid);

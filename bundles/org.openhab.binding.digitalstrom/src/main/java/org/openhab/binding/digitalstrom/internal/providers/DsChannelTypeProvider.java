@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link DsChannelTypeProvider} implements the {@link ChannelTypeProvider}
- * generates all supported {@link Channel}'s for digitalSTROM.
+ * generates all supported {@link org.openhab.core.thing.Channel}'s for digitalSTROM.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -118,8 +118,8 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
      * channel type exists for the given {@link ApplicationGroup.Color} and
      * {@link OutputModeEnum}.
      *
-     * @param functionalGroup of the {@link Device}
-     * @param outputMode of the {@link Device}
+     * @param functionalGroup of the {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device}
+     * @param outputMode of the {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device}
      * @return the output channel type id or null
      */
     public static String getOutputChannelTypeID(ApplicationGroup.Color functionalGroup, OutputModeEnum outputMode,
@@ -541,7 +541,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
     }
 
     /**
-     * Returns the {@link ChannelGroupTypeUID} for the given {@link SensorEnum}.
+     * Returns the {@link ChannelTypeUID} for the given {@link SensorEnum}.
      *
      * @param sensorType (must not be null)
      * @return the channel type uid
@@ -551,7 +551,7 @@ public class DsChannelTypeProvider extends BaseDsI18n implements ChannelTypeProv
     }
 
     /**
-     * Returns the {@link ChannelGroupTypeUID} for the given
+     * Returns the {@link ChannelTypeUID} for the given
      * {@link DeviceBinarayInputEnum}.
      *
      * @param binaryInputType (must not be null)

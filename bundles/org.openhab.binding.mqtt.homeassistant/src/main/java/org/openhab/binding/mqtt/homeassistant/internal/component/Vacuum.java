@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -294,7 +294,7 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             ChannelStateUpdateListener channelStateUpdateListener, @Nullable String commandTemplate,
             @Nullable String commandTopic, @Nullable String stateTemplate, @Nullable String stateTopic) {
         if ((commandTopic != null && !commandTopic.isBlank()) || (stateTopic != null && !stateTopic.isBlank())) {
-            return buildChannel(channelId, valueState, channelConfiguration.getName(), channelStateUpdateListener)
+            return buildChannel(channelId, valueState, getName(), channelStateUpdateListener)
                     .stateTopic(stateTopic, stateTemplate, channelConfiguration.getValueTemplate())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos(),
                             commandTemplate)

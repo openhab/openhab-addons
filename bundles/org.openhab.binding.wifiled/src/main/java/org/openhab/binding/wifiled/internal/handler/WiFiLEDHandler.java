@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -124,8 +124,8 @@ public class WiFiLEDHandler extends BaseThingHandler {
             } else if (channelUID.getId().equals(WiFiLEDBindingConstants.CHANNEL_WHITE2)) {
                 handleWhite2Command(command);
             } else if (channelUID.getId().equals(WiFiLEDBindingConstants.CHANNEL_PROGRAM)
-                    && (command instanceof StringType)) {
-                driver.setProgram((StringType) command);
+                    && (command instanceof StringType stringCommand)) {
+                driver.setProgram(stringCommand);
             } else if (channelUID.getId().equals(WiFiLEDBindingConstants.CHANNEL_PROGRAM_SPEED)) {
                 handleProgramSpeedCommand(command);
             }
@@ -135,14 +135,13 @@ public class WiFiLEDHandler extends BaseThingHandler {
     }
 
     private void handleColorCommand(Command command) throws IOException {
-        if (command instanceof HSBType) {
-            driver.setColor((HSBType) command);
-        } else if (command instanceof PercentType) {
-            driver.setBrightness((PercentType) command);
-        } else if (command instanceof OnOffType) {
-            driver.setPower((OnOffType) command);
-        } else if (command instanceof IncreaseDecreaseType) {
-            IncreaseDecreaseType increaseDecreaseType = (IncreaseDecreaseType) command;
+        if (command instanceof HSBType hsbCommand) {
+            driver.setColor(hsbCommand);
+        } else if (command instanceof PercentType percentCommand) {
+            driver.setBrightness(percentCommand);
+        } else if (command instanceof OnOffType onOffCommand) {
+            driver.setPower(onOffCommand);
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseType) {
             if (increaseDecreaseType.equals(IncreaseDecreaseType.INCREASE)) {
                 driver.incBrightness(INC_DEC_STEP);
             } else {
@@ -152,18 +151,16 @@ public class WiFiLEDHandler extends BaseThingHandler {
     }
 
     private void handleWhiteCommand(Command command) throws IOException {
-        if (command instanceof PercentType) {
-            driver.setWhite((PercentType) command);
-        } else if (command instanceof OnOffType) {
-            OnOffType onOffCommand = (OnOffType) command;
+        if (command instanceof PercentType percentCommand) {
+            driver.setWhite(percentCommand);
+        } else if (command instanceof OnOffType onOffCommand) {
             if (onOffCommand.equals(OnOffType.ON)) {
                 driver.setWhite(PercentType.HUNDRED);
             } else {
                 driver.setWhite(PercentType.ZERO);
             }
-        } else if (command instanceof IncreaseDecreaseType) {
-            IncreaseDecreaseType increaseDecreaseType = (IncreaseDecreaseType) command;
-            if (increaseDecreaseType.equals(IncreaseDecreaseType.INCREASE)) {
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+            if (increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE)) {
                 driver.incWhite(INC_DEC_STEP);
             } else {
                 driver.decWhite(INC_DEC_STEP);
@@ -172,18 +169,16 @@ public class WiFiLEDHandler extends BaseThingHandler {
     }
 
     private void handleWhite2Command(Command command) throws IOException {
-        if (command instanceof PercentType) {
-            driver.setWhite2((PercentType) command);
-        } else if (command instanceof OnOffType) {
-            OnOffType onOffCommand = (OnOffType) command;
+        if (command instanceof PercentType percentCommand) {
+            driver.setWhite2(percentCommand);
+        } else if (command instanceof OnOffType onOffCommand) {
             if (onOffCommand.equals(OnOffType.ON)) {
                 driver.setWhite2(PercentType.HUNDRED);
             } else {
                 driver.setWhite2(PercentType.ZERO);
             }
-        } else if (command instanceof IncreaseDecreaseType) {
-            IncreaseDecreaseType increaseDecreaseType = (IncreaseDecreaseType) command;
-            if (increaseDecreaseType.equals(IncreaseDecreaseType.INCREASE)) {
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+            if (increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE)) {
                 driver.incWhite2(INC_DEC_STEP);
             } else {
                 driver.decWhite2(INC_DEC_STEP);
@@ -192,18 +187,16 @@ public class WiFiLEDHandler extends BaseThingHandler {
     }
 
     private void handleProgramSpeedCommand(Command command) throws IOException {
-        if (command instanceof PercentType) {
-            driver.setProgramSpeed((PercentType) command);
-        } else if (command instanceof OnOffType) {
-            OnOffType onOffCommand = (OnOffType) command;
+        if (command instanceof PercentType percentCommand) {
+            driver.setProgramSpeed(percentCommand);
+        } else if (command instanceof OnOffType onOffCommand) {
             if (onOffCommand.equals(OnOffType.ON)) {
                 driver.setProgramSpeed(PercentType.HUNDRED);
             } else {
                 driver.setProgramSpeed(PercentType.ZERO);
             }
-        } else if (command instanceof IncreaseDecreaseType) {
-            IncreaseDecreaseType increaseDecreaseType = (IncreaseDecreaseType) command;
-            if (increaseDecreaseType.equals(IncreaseDecreaseType.INCREASE)) {
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+            if (increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE)) {
                 driver.incProgramSpeed(INC_DEC_STEP);
             } else {
                 driver.decProgramSpeed(INC_DEC_STEP);

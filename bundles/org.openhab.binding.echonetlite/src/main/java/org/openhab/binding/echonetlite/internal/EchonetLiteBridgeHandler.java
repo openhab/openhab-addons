@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,8 +19,8 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -90,9 +90,8 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     private void newDeviceInternal(final NewDeviceMessage message) {
         final EchonetObject echonetObject = devicesByKey.get(message.instanceKey);
         if (null != echonetObject) {
-            if (echonetObject instanceof EchonetDevice) {
+            if (echonetObject instanceof EchonetDevice device) {
                 logger.debug("Update item: {} already discovered", message.instanceKey);
-                EchonetDevice device = (EchonetDevice) echonetObject;
                 device.setTimeouts(message.pollIntervalMs, message.retryTimeoutMs);
                 device.setListener(message.echonetDeviceListener);
             } else {
@@ -198,18 +197,18 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
         Message message;
         while (null != (message = requestsPoll())) {
             logger.debug("Received request: {}", message);
-            if (message instanceof NewDeviceMessage) {
-                newDeviceInternal((NewDeviceMessage) message);
-            } else if (message instanceof RefreshMessage) {
-                refreshDeviceInternal((RefreshMessage) message);
-            } else if (message instanceof RemoveDevice) {
-                removeDeviceInternal((RemoveDevice) message);
-            } else if (message instanceof UpdateDevice) {
-                updateDeviceInternal((UpdateDevice) message);
-            } else if (message instanceof StartDiscoveryMessage) {
-                startDiscoveryInternal((StartDiscoveryMessage) message);
-            } else if (message instanceof StopDiscoveryMessage) {
-                stopDiscoveryInternal((StopDiscoveryMessage) message);
+            if (message instanceof NewDeviceMessage deviceMessage) {
+                newDeviceInternal(deviceMessage);
+            } else if (message instanceof RefreshMessage refreshMessage) {
+                refreshDeviceInternal(refreshMessage);
+            } else if (message instanceof RemoveDevice device) {
+                removeDeviceInternal(device);
+            } else if (message instanceof UpdateDevice device) {
+                updateDeviceInternal(device);
+            } else if (message instanceof StartDiscoveryMessage discoveryMessage) {
+                startDiscoveryInternal(discoveryMessage);
+            } else if (message instanceof StopDiscoveryMessage discoveryMessage) {
+                stopDiscoveryInternal(discoveryMessage);
             }
         }
     }
@@ -319,7 +318,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(EchonetDiscoveryService.class);
+        return List.of(EchonetDiscoveryService.class);
     }
 
     private abstract static class Message {
@@ -390,6 +389,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
             this.state = state;
         }
 
+        @Override
         public String toString() {
             return "UpdateDevice{" + "instanceKey=" + instanceKey + ", channelId='" + channelId + '\'' + ", state="
                     + state + "} " + super.toString();

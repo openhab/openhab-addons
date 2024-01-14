@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,15 +49,35 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HomeConnectHoodHandler extends AbstractHomeConnectThingHandler {
 
-    private static final String START_VENTING_INTENSIVE_STAGE_PAYLOAD_TEMPLATE = "\n" + "{\n" + "    \"data\": {\n"
-            + "        \"key\": \"Cooking.Common.Program.Hood.Venting\",\n" + "        \"options\": [\n"
-            + "            {\n" + "                \"key\": \"Cooking.Common.Option.Hood.IntensiveLevel\",\n"
-            + "                \"value\": \"%s\"\n" + "            }\n" + "        ]\n" + "    }\n" + "}";
+    private static final String START_VENTING_INTENSIVE_STAGE_PAYLOAD_TEMPLATE = """
 
-    private static final String START_VENTING_STAGE_PAYLOAD_TEMPLATE = "\n" + "{\n" + "    \"data\": {\n"
-            + "        \"key\": \"Cooking.Common.Program.Hood.Venting\",\n" + "        \"options\": [\n"
-            + "            {\n" + "                \"key\": \"Cooking.Common.Option.Hood.VentingLevel\",\n"
-            + "                \"value\": \"%s\"\n" + "            }\n" + "        ]\n" + "    }\n" + "}";
+            {
+                "data": {
+                    "key": "Cooking.Common.Program.Hood.Venting",
+                    "options": [
+                        {
+                            "key": "Cooking.Common.Option.Hood.IntensiveLevel",
+                            "value": "%s"
+                        }
+                    ]
+                }
+            }\
+            """;
+
+    private static final String START_VENTING_STAGE_PAYLOAD_TEMPLATE = """
+
+            {
+                "data": {
+                    "key": "Cooking.Common.Program.Hood.Venting",
+                    "options": [
+                        {
+                            "key": "Cooking.Common.Option.Hood.VentingLevel",
+                            "value": "%s"
+                        }
+                    ]
+                }
+            }\
+            """;
 
     private final Logger logger = LoggerFactory.getLogger(HomeConnectHoodHandler.class);
 

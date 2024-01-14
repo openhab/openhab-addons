@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Wehrle - Initial contribution
  * @author Laurent Garnier - Refactoring to include new channels, consider serial connection and protocol depending on
  *         model
+ * @author Laurent Garnier - Allow sending any IR command
  */
 @NonNullByDefault
 public abstract class SonyProjectorConnector {
@@ -113,9 +114,9 @@ public abstract class SonyProjectorConnector {
             setSetting(SonyProjectorItem.POWER, POWER_ON);
         } else {
             logger.debug("Set Power ON using IR Power command");
-            sendIR(SonyProjectorItem.IR_POWER_ON);
+            sendIR(SonyProjectorItem.POWER_ON);
             if (status == null) {
-                sendIR(SonyProjectorItem.IR_POWER_ON);
+                sendIR(SonyProjectorItem.POWER_ON);
             }
         }
     }
@@ -139,7 +140,7 @@ public abstract class SonyProjectorConnector {
             setSetting(SonyProjectorItem.POWER, POWER_OFF);
         } else {
             logger.debug("Set Power OFF using IR Power command");
-            sendIR(SonyProjectorItem.IR_POWER_OFF);
+            sendIR(SonyProjectorItem.POWER_OFF);
         }
     }
 
@@ -162,7 +163,7 @@ public abstract class SonyProjectorConnector {
      * @throws SonyProjectorException in case of any problem
      */
     public void setCalibrationPreset(String value) throws SonyProjectorException {
-        setSetting(SonyProjectorItem.CALIBRATION_PRESET, model.getCalibrPresetDataCodeFromName(value));
+        setSetting(SonyProjectorItem.CALIBRATION_PRESET, model.getCalibrPresetFromName(value).getDataCode());
     }
 
     /**
@@ -184,7 +185,7 @@ public abstract class SonyProjectorConnector {
      * @throws SonyProjectorException in case of any problem
      */
     public void setInput(String value) throws SonyProjectorException {
-        setSetting(SonyProjectorItem.INPUT, model.getInputDataCodeFromName(value));
+        setSetting(SonyProjectorItem.INPUT, model.getInputFromName(value).getDataCode());
     }
 
     /**
@@ -398,7 +399,7 @@ public abstract class SonyProjectorConnector {
      * @throws SonyProjectorException in case of any problem
      */
     public OnOffType getPictureMuting() throws SonyProjectorException {
-        return Arrays.equals(getSetting(SonyProjectorItem.PICTURE_MUTING), PICTURE_ON) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(Arrays.equals(getSetting(SonyProjectorItem.PICTURE_MUTING), PICTURE_ON));
     }
 
     /**
@@ -461,7 +462,7 @@ public abstract class SonyProjectorConnector {
             throw new SonyProjectorException("Unavailable item " + SonyProjectorItem.OVERSCAN.getName()
                     + " for projector model " + model.getName());
         }
-        return Arrays.equals(getSetting(SonyProjectorItem.OVERSCAN), OVERSCAN_ON) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(Arrays.equals(getSetting(SonyProjectorItem.OVERSCAN), OVERSCAN_ON));
     }
 
     /**
@@ -509,7 +510,7 @@ public abstract class SonyProjectorConnector {
      * @throws SonyProjectorException in case of any problem
      */
     public void setAspect(String value) throws SonyProjectorException {
-        setSetting(SonyProjectorItem.ASPECT, model.getAspectCodeFromName(value));
+        setSetting(SonyProjectorItem.ASPECT, model.getAspectFromName(value).getDataCode());
     }
 
     /**
@@ -852,7 +853,7 @@ public abstract class SonyProjectorConnector {
             throw new SonyProjectorException("Unavailable item " + SonyProjectorItem.XVCOLOR.getName()
                     + " for projector model " + model.getName());
         }
-        return Arrays.equals(getSetting(SonyProjectorItem.XVCOLOR), XVCOLOR_ON) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(Arrays.equals(getSetting(SonyProjectorItem.XVCOLOR), XVCOLOR_ON));
     }
 
     /**
@@ -882,6 +883,64 @@ public abstract class SonyProjectorConnector {
     }
 
     /**
+     * Send an IR command to the projector
+     *
+     * @param command the IR command
+     *
+     * @throws SonyProjectorException in case this IR command is not available or any other problem
+     */
+    public void sendIrCommand(String command) throws SonyProjectorException {
+        byte @Nullable [] irCode = null;
+        boolean found = true;
+        if (command.startsWith("INPUT_")) {
+            try {
+                irCode = model.getInputFromName(command.substring(6)).getIrCode();
+            } catch (SonyProjectorException e) {
+                found = false;
+            }
+        } else if (command.startsWith("PRESET_")) {
+            try {
+                irCode = model.getCalibrPresetFromName(command.substring(7)).getIrCode();
+            } catch (SonyProjectorException e) {
+                found = false;
+            }
+        } else if (command.startsWith("ASPECT_")) {
+            try {
+                irCode = model.getAspectFromName(command.substring(7)).getIrCode();
+            } catch (SonyProjectorException e) {
+                found = false;
+            }
+        } else {
+            try {
+                irCode = SonyProjectorItem.getFromValue(command).getIrCode();
+            } catch (SonyProjectorException e) {
+                found = false;
+            }
+        }
+        if (!found) {
+            // Check if the command is a direct IR code in hexadecimal
+            // Must be 4 characters starting by either 17 or 19 or 1B
+            String cmd = command.trim();
+            if (cmd.length() != 4) {
+                throw new SonyProjectorException("Invalid IR code: " + command);
+            }
+            int hex;
+            try {
+                hex = Integer.parseInt(cmd, 16);
+            } catch (NumberFormatException e) {
+                throw new SonyProjectorException("Invalid IR code: " + command, e);
+            }
+            irCode = new byte[2];
+            irCode[0] = (byte) ((hex >> 8) & 0x000000FF);
+            irCode[1] = (byte) (hex & 0x000000FF);
+        }
+        if (irCode == null || !SonyProjectorItem.isValidIrCode(irCode)) {
+            throw new SonyProjectorException("Invalid IR code: " + command);
+        }
+        sendIR(irCode);
+    }
+
+    /**
      * Request the projector to get the current value for a setting
      *
      * @param item the projector setting to get
@@ -899,7 +958,7 @@ public abstract class SonyProjectorConnector {
             logger.debug("Get setting {} succeeded: result data: {}", item.getName(), HexUtils.bytesToHex(result));
 
             return result;
-        } catch (CommunicationException e) {
+        } catch (CommunicationException | SonyProjectorException e) {
             throw new SonyProjectorException("Get setting " + item.getName() + " failed", e);
         }
     }
@@ -917,7 +976,7 @@ public abstract class SonyProjectorConnector {
 
         try {
             executeCommand(item, false, data);
-        } catch (CommunicationException e) {
+        } catch (CommunicationException | SonyProjectorException e) {
             throw new SonyProjectorException("Set setting " + item.getName() + " failed", e);
         }
 
@@ -931,8 +990,24 @@ public abstract class SonyProjectorConnector {
      *
      * @throws SonyProjectorException in case of any problem
      */
-    private synchronized void sendIR(SonyProjectorItem item) throws SonyProjectorException {
-        logger.debug("Send IR {}", item.getName());
+    private void sendIR(SonyProjectorItem item) throws SonyProjectorException {
+        byte @Nullable [] irCode = item.getIrCode();
+        if (irCode == null || !SonyProjectorItem.isValidIrCode(irCode)) {
+            throw new SonyProjectorException("Send IR code failed, code is invalid");
+        }
+        sendIR(irCode);
+    }
+
+    /**
+     * Send an IR command to the projector
+     *
+     * @param irCode the IR code (2 bytes) to send
+     *
+     * @throws SonyProjectorException in case of any problem
+     */
+    private synchronized void sendIR(byte[] irCode) throws SonyProjectorException {
+        String codeStr = String.format("%02x%02x", irCode[0], irCode[1]);
+        logger.debug("Send IR code {}", codeStr);
 
         try {
             boolean runningSession = connected;
@@ -940,7 +1015,7 @@ public abstract class SonyProjectorConnector {
             open();
 
             // Build the message and send it
-            writeCommand(buildMessage(item, false, DUMMY_DATA));
+            writeCommand(buildMessage(irCode, false, DUMMY_DATA));
 
             // Wait at least 45 ms
             Thread.sleep(45);
@@ -951,13 +1026,13 @@ public abstract class SonyProjectorConnector {
                 close();
             }
         } catch (CommunicationException e) {
-            throw new SonyProjectorException("Send IR " + item.getName() + " failed", e);
+            throw new SonyProjectorException("Send IR code " + codeStr + " failed", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new SonyProjectorException("Send IR " + item.getName() + " interrupted", e);
+            throw new SonyProjectorException("Send IR code " + codeStr + " interrupted", e);
         }
 
-        logger.debug("Send IR {} succeeded", item.getName());
+        logger.debug("Send IR code {} succeeded", codeStr);
     }
 
     /**
@@ -971,15 +1046,21 @@ public abstract class SonyProjectorConnector {
      *
      * @throws ConnectionException in case of any connection problem
      * @throws CommunicationException in case of any communication problem
+     * @throws SonyProjectorException in case of any other problem
      */
     private synchronized byte[] executeCommand(SonyProjectorItem item, boolean getCommand, byte[] data)
-            throws ConnectionException, CommunicationException {
+            throws ConnectionException, CommunicationException, SonyProjectorException {
+        byte @Nullable [] code = item.getCode();
+        if (code == null) {
+            throw new SonyProjectorException("Undefined data code");
+        }
+
         boolean runningSession = connected;
 
         open();
 
         // Build the message and send it
-        writeCommand(buildMessage(item, getCommand, data));
+        writeCommand(buildMessage(code, getCommand, data));
 
         // Read the response
         byte[] responseMessage = readResponse();
@@ -1029,13 +1110,13 @@ public abstract class SonyProjectorConnector {
     /**
      * Build the message buffer corresponding to the request of a particular information
      *
-     * @param item the projector setting to get or set
+     * @param itemCode the code (2 bytes) of the projector setting to get or set
      * @param getCommand true for a GET command or false for a SET command
      * @param data the value to be considered in case of a SET command
      *
      * @return the message buffer
      */
-    protected abstract byte[] buildMessage(SonyProjectorItem item, boolean getCommand, byte[] data);
+    protected abstract byte[] buildMessage(byte[] itemCode, boolean getCommand, byte[] data);
 
     /**
      * Reads some number of bytes from the input stream and stores them into the buffer array b. The number of bytes
@@ -1102,7 +1183,7 @@ public abstract class SonyProjectorConnector {
      * Validate the content of a returned message
      *
      * @param responseMessage the buffer containing the returned message
-     * @param the projector setting to get or set
+     * @param item the projector setting to get or set
      *
      * @throws CommunicationException if the message has unexpected content
      */

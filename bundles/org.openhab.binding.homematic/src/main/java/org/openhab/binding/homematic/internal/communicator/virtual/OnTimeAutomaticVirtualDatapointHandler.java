@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,8 +62,8 @@ public class OnTimeAutomaticVirtualDatapointHandler extends AbstractVirtualDatap
 
     @Override
     public boolean canHandleCommand(HmDatapoint dp, Object value) {
-        boolean isLevel = DATAPOINT_NAME_LEVEL.equals(dp.getName()) && value != null && value instanceof Number
-                && ((Number) value).doubleValue() > 0.0;
+        boolean isLevel = DATAPOINT_NAME_LEVEL.equals(dp.getName()) && value != null
+                && value instanceof Number numberCommand && numberCommand.doubleValue() > 0.0;
         boolean isState = DATAPOINT_NAME_STATE.equals(dp.getName()) && MiscUtils.isTrueValue(value);
 
         return ((isLevel || isState) && getVirtualDatapointValue(dp.getChannel()) > 0.0)

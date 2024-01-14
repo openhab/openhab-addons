@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WciHandler extends BaseKeypadHandler {
 
-    private static enum Component implements KeypadComponent {
+    private enum Component implements KeypadComponent {
         BUTTON1(1, "button1", "Button 1", ComponentType.BUTTON),
         BUTTON2(2, "button2", "Button 2", ComponentType.BUTTON),
         BUTTON3(3, "button3", "Button 3", ComponentType.BUTTON),

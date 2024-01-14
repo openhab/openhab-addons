@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -165,15 +165,15 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
         } else if (id.equals(PrgConstants.CHANNEL_ZONERAISESTOP)) {
             protocolHandler.setZoneRaiseStop();
         } else if (id.equals(PrgConstants.CHANNEL_TIMECLOCK)) {
-            if (command instanceof DateTimeType) {
-                final ZonedDateTime zdt = ((DateTimeType) command).getZonedDateTime();
+            if (command instanceof DateTimeType dateTime) {
+                final ZonedDateTime zdt = dateTime.getZonedDateTime();
                 protocolHandler.setTime(GregorianCalendar.from(zdt));
             } else {
                 logger.error("Received a TIMECLOCK channel command with a non DateTimeType: {}", command);
             }
         } else if (id.startsWith(PrgConstants.CHANNEL_SCHEDULE)) {
-            if (command instanceof DecimalType) {
-                final int schedule = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType scheduleCommand) {
+                final int schedule = scheduleCommand.intValue();
                 protocolHandler.selectSchedule(schedule);
             } else {
                 logger.error("Received a SCHEDULE channel command with a non DecimalType: {}", command);

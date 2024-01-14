@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Wouter Born - Initial contribution
  *
- * @see https://developers.google.com/nest/device-access/reference/rest/v1/enterprises.structures.rooms/list
+ * @see <a href="https://developers.google.com/nest/device-access/reference/rest/v1/enterprises.structures.rooms/list">
+ *      https://developers.google.com/nest/device-access/reference/rest/v1/enterprises.structures.rooms/list</a>
  */
 @NonNullByDefault
 public class SDMListRoomsResponse {

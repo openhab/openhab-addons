@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -170,7 +170,6 @@ public class GatewayPayloadParser {
         if (payloadIntermediate == null) {
             throw new JsonSyntaxException("JSON parsing failed");
         }
-        GatewayPayload payload = new GatewayPayload(payloadIntermediate);
-        return payload;
+        return new GatewayPayload(payloadIntermediate);
     }
 }

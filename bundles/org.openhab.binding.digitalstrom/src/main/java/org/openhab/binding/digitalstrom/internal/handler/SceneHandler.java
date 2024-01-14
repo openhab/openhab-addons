@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -312,8 +312,8 @@ public class SceneHandler extends BaseThingHandler implements SceneStatusListene
             }
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof BridgeHandler) {
-                this.bridgeHandler = (BridgeHandler) handler;
+            if (handler instanceof BridgeHandler bridgeHandler) {
+                this.bridgeHandler = bridgeHandler;
             } else {
                 logger.debug("BridgeHandler cannot be found");
                 return null;

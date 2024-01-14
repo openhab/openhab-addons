@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -261,6 +261,10 @@ public class Shelly1ApiJsonDTO {
 
     public static class ShellySettingsDevice {
         public String type;
+        public String mode; // Gen 1
+        public String id; // Gen2: service name
+        public String name; // Gen2: configured device name
+        public String profile; // Gen 2
         public String mac;
         public String hostname;
         public String fw;
@@ -563,7 +567,6 @@ public class Shelly1ApiJsonDTO {
 
     public static class ShellySettingsGlobal {
         // https://shelly-api-docs.shelly.cloud/#shelly1pm-settings
-        public ShellySettingsDevice device = new ShellySettingsDevice();
         @SerializedName("wifi_ap")
         public ShellySettingsWiFiAp wifiAp = new ShellySettingsWiFiAp();
         @SerializedName("wifi_sta")
@@ -951,7 +954,7 @@ public class Shelly1ApiJsonDTO {
         public static class ShellySensorBat {
             public Double value; // estimated remaining battery capacity in %
             public Double voltage; // battery voltage
-        };
+        }
 
         // Door/Window sensor
         public static class ShellySensorState {

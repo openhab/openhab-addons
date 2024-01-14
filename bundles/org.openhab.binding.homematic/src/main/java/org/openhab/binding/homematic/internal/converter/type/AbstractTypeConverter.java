@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,15 +43,15 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
     /**
      * Defines all devices where the state datapoint must be inverted.
      */
-    private static final List<StateInvertInfo> stateInvertDevices = new ArrayList<>(3);
+    private static final List<StateInvertInfo> STATE_INVERT_INFO_LIST = new ArrayList<>(3);
 
     static {
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT));
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT_2));
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_INCLINATION_SENSOR));
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_WIRED_IO_MODULE, 15, 26));
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_MAX_WINDOW_SENSOR));
-        stateInvertDevices.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT_INTERFACE));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT_2));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_INCLINATION_SENSOR));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_WIRED_IO_MODULE, 15, 26));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_MAX_WINDOW_SENSOR));
+        STATE_INVERT_INFO_LIST.add(new StateInvertInfo(DEVICE_TYPE_SHUTTER_CONTACT_INTERFACE));
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
      */
     protected boolean isStateInvertDatapoint(HmDatapoint dp) {
         if (DATAPOINT_NAME_STATE.equals(dp.getName())) {
-            for (StateInvertInfo stateInvertInfo : stateInvertDevices) {
+            for (StateInvertInfo stateInvertInfo : STATE_INVERT_INFO_LIST) {
                 if (stateInvertInfo.isToInvert(dp)) {
                     return true;
                 }
@@ -115,9 +115,9 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
         if (dp.getValue() == null) {
             return (T) UnDefType.NULL;
         } else if (!fromBindingValidation(dp)) {
-            String errorMessage = String.format("Can't convert %s value '%s' with %s for '%s'", dp.getType(),
-                    dp.getValue(), this.getClass().getSimpleName(), new HmDatapointInfo(dp));
-            throw new ConverterTypeException(errorMessage);
+            logger.debug("Can't convert {} value '{}' with {} for '{}'", dp.getType(), dp.getValue(),
+                    this.getClass().getSimpleName(), new HmDatapointInfo(dp));
+            return (T) UnDefType.NULL;
         }
 
         return fromBinding(dp);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,9 +18,9 @@ import static org.openhab.binding.livisismarthome.internal.LivisiBindingConstant
 import static org.openhab.binding.livisismarthome.internal.client.api.entity.link.LinkDTO.LINK_TYPE_DEVICE;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -363,7 +363,7 @@ public class LivisiBridgeHandlerTest {
 
             livisiClientMock = mock(LivisiClient.class);
             fullDeviceManagerMock = mock(FullDeviceManager.class);
-            when(fullDeviceManagerMock.getFullDevices()).thenReturn(Collections.singletonList(bridgeDevice));
+            when(fullDeviceManagerMock.getFullDevices()).thenReturn(List.of(bridgeDevice));
 
             schedulerMock = mock(ScheduledExecutorService.class);
 

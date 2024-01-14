@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,15 +17,14 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.FreeplugActions;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeplugManager;
-import org.openhab.binding.freeboxos.internal.api.rest.FreeplugManager.NetRole;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -35,8 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link FreeplugHandler} is responsible for handling everything associated to a CPL gateway managed by the freebox
- * server
+ * The {@link FreeplugHandler} is responsible for handling everything associated to a
+ * powerline gateway managed by the freebox server
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -51,17 +50,16 @@ public class FreeplugHandler extends ApiConsumerHandler {
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
         getManager(FreeplugManager.class).getPlug(getMac()).ifPresent(plug -> {
-            NetRole role = plug.netRole();
             properties.put(Thing.PROPERTY_MODEL_ID, plug.model());
-            properties.put(ROLE, role.name());
+            properties.put(ROLE, plug.netRole().name());
             properties.put(NET_ID, plug.netId());
-            properties.put(ETHERNET_SPEED, String.format("%d Mb/s", plug.ethSpeed()));
-            properties.put(LOCAL, Boolean.valueOf(plug.local()).toString());
-            properties.put(FULL_DUPLEX, Boolean.valueOf(plug.ethFullDuplex()).toString());
+            properties.put(ETHERNET_SPEED, "%d Mb/s".formatted(plug.ethSpeed()));
+            properties.put(LOCAL, Boolean.toString(plug.local()));
+            properties.put(FULL_DUPLEX, Boolean.toString(plug.ethFullDuplex()));
 
-            if (role.equals(NetRole.CCO)) { // Coordinator does not provide rate up or down
+            if (plug.local()) { // Plug connected to the freebox does not provide rate up or down
                 List<Channel> channels = new ArrayList<>(getThing().getChannels());
-                channels.removeIf(channel -> channel.getUID().getId().contains("rate"));
+                channels.removeIf(channel -> channel.getUID().getId().contains(RATE));
                 updateThing(editThing().withChannels(channels).build());
             }
         });
@@ -70,8 +68,7 @@ public class FreeplugHandler extends ApiConsumerHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         getManager(FreeplugManager.class).getPlug(getMac()).ifPresent(plug -> {
-            ZonedDateTime lastSeen = ZonedDateTime.now().minusSeconds(plug.inactive());
-            updateChannelDateTimeState(LAST_SEEN, lastSeen);
+            updateChannelDateTimeState(LAST_SEEN, ZonedDateTime.now().minusSeconds(plug.inactive()));
 
             updateChannelString(LINE_STATUS, plug.ethPortStatus());
             updateChannelOnOff(REACHABLE, plug.hasNetwork());
@@ -82,8 +79,8 @@ public class FreeplugHandler extends ApiConsumerHandler {
     }
 
     private void updateRateChannel(String channel, int rate) {
-        QuantityType<?> qtty = rate != -1 ? new QuantityType<>(rate, Units.MEGABIT_PER_SECOND) : null;
-        updateChannelQuantity(channel, qtty);
+        // According to https://dev.freebox.fr/bugs/task/35895
+        updateChannelQuantity(channel, new QuantityType<>(rate > 0 ? rate : 9, Units.MEGABIT_PER_SECOND));
     }
 
     public void reset() {
@@ -91,12 +88,12 @@ public class FreeplugHandler extends ApiConsumerHandler {
             getManager(FreeplugManager.class).reboot(getMac());
             logger.debug("Freeplug {} succesfully restarted", getMac());
         } catch (FreeboxException e) {
-            logger.warn("Error restarting freeplug: {}", e.getMessage());
+            logger.warn("Error restarting freeplug {}: {}", getMac(), e.getMessage());
         }
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(FreeplugActions.class);
+        return Set.of(FreeplugActions.class);
     }
 }

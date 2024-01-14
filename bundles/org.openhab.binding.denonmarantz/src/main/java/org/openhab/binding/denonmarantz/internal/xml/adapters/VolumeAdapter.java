@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ public class VolumeAdapter extends XmlAdapter<String, BigDecimal> {
 
     @Override
     public BigDecimal unmarshal(String v) throws Exception {
-        if (v != null && !v.trim().equals("--")) {
+        if (v != null && !"--".equals(v.trim())) {
             return new BigDecimal(v.trim()).add(DB_OFFSET);
         }
 

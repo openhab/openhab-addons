@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,13 +28,12 @@ import org.openhab.binding.nest.internal.sdm.exception.FailedSendingSDMDataExcep
 import org.openhab.binding.nest.internal.sdm.exception.InvalidSDMAccessTokenException;
 import org.openhab.binding.nest.internal.sdm.handler.SDMAccountHandler;
 import org.openhab.binding.nest.internal.sdm.handler.SDMBaseHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
-import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,38 +43,23 @@ import org.slf4j.LoggerFactory;
  * @author Brian Higginbotham - Initial contribution
  * @author Wouter Born - Initial contribution
  *
- * @see https://developers.google.com/nest/device-access/reference/rest/v1/enterprises.devices/list
+ * @see <a href="https://developers.google.com/nest/device-access/reference/rest/v1/enterprises.devices/list">
+ *      https://developers.google.com/nest/device-access/reference/rest/v1/enterprises.devices/list</a>
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = SDMDiscoveryService.class)
 @NonNullByDefault
-public class SDMDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-
+public class SDMDiscoveryService extends AbstractThingHandlerDiscoveryService<SDMAccountHandler> {
     private final Logger logger = LoggerFactory.getLogger(SDMDiscoveryService.class);
-    private @NonNullByDefault({}) SDMAccountHandler accountHandler;
     private @Nullable Future<?> discoveryJob;
 
     public SDMDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, 30, false);
-    }
-
-    protected void activate(ComponentContext context) {
+        super(SDMAccountHandler.class, SUPPORTED_THING_TYPES_UIDS, 30, false);
     }
 
     @Override
-    public void deactivate() {
+    public void dispose() {
+        super.dispose();
         cancelDiscoveryJob();
-        super.deactivate();
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return accountHandler;
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof SDMAccountHandler) {
-            accountHandler = (SDMAccountHandler) handler;
-        }
     }
 
     @Override
@@ -98,10 +82,10 @@ public class SDMDiscoveryService extends AbstractDiscoveryService implements Thi
     }
 
     private void discoverDevices() {
-        ThingUID bridgeUID = accountHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         logger.debug("Starting discovery scan for {}", bridgeUID);
         try {
-            accountHandler.getAPI().listDevices().forEach(device -> addDeviceDiscoveryResult(bridgeUID, device));
+            thingHandler.getAPI().listDevices().forEach(device -> addDeviceDiscoveryResult(bridgeUID, device));
         } catch (FailedSendingSDMDataException | InvalidSDMAccessTokenException e) {
             logger.debug("Exception during discovery scan for {}", bridgeUID, e);
         }

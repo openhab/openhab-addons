@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,18 +40,18 @@ public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverMa
     protected static class ReceiverResponse extends Response<Receiver> {
     }
 
-    public static enum Action {
+    public enum Action {
         START,
         STOP,
-        UNKNOWN;
+        UNKNOWN
     }
 
-    public static enum MediaType {
+    public enum MediaType {
         VIDEO,
         PHOTO,
         AUDIO,
         SCREEN,
-        UNKNOWN;
+        UNKNOWN
     }
 
     private static record Request(String password, Action action, MediaType mediaType, @Nullable String media,

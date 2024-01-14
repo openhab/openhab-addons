@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,8 +18,10 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 /**
  * The {@link SensorJob} represents an executable job to read out digitalSTROM-Sensors or device configurations like
  * scene values.<br>
- * It can be added to an implementation of the {@link AbstractSensorJobExecutor} e.g. {@link SceneReadingJobExecutor} or
- * {@link SensorJobExecutor}.
+ * It can be added to an implementation of the
+ * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.AbstractSensorJobExecutor} e.g.
+ * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SceneReadingJobExecutor} or
+ * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SensorJobExecutor}.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -27,7 +29,8 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 public interface SensorJob {
 
     /**
-     * Returns the dSID of the {@link Device} for which this job is to be created.
+     * Returns the dSID of the {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device}
+     * for which this job is to be created.
      *
      * @return dSID from the device
      */

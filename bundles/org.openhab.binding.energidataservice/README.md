@@ -12,12 +12,13 @@ All channels are available for thing type `service`.
 
 ### `service` Thing Configuration
 
-| Name           | Type    | Description                                       | Default       | Required |
-|----------------|---------|---------------------------------------------------|---------------|----------|
-| priceArea      | text    | Price area for spot prices (same as bidding zone) |               | yes      |
-| currencyCode   | text    | Currency code in which to obtain spot prices      | DKK           | no       |
-| gridCompanyGLN | integer | Global Location Number of the Grid Company        |               | no       |
-| energinetGLN   | integer | Global Location Number of Energinet               | 5790000432752 | no       |
+| Name                  | Type    | Description                                                          | Default       | Required |
+|-----------------------|---------|----------------------------------------------------------------------|---------------|----------|
+| priceArea             | text    | Price area for spot prices (same as bidding zone)                    |               | yes      |
+| currencyCode          | text    | Currency code in which to obtain spot prices                         | DKK           | no       |
+| gridCompanyGLN        | integer | Global Location Number of the Grid Company                           |               | no       |
+| energinetGLN          | integer | Global Location Number of Energinet                                  | 5790000432752 | no       |
+| reducedElectricityTax | boolean | Reduced electricity tax applies. For electric heating customers only | false         | no       |
 
 #### Global Location Number of the Grid Company
 
@@ -35,18 +36,25 @@ To obtain the Global Location Number of your grid company:
 - In column **Owner** you can find the GLN ("Global Location Number").
 - Most rows will have this **Owner**. If in doubt, try to look for rows __not__ having 5790000432752 as owner.
 
+#### Reduced electricity tax applies
+
+For customers using electricity for heating, a reduced electricity tax rate may apply after consuming the first 4000 kWh within a year.
+When you are entitled to reduced electricity tax, this option should be set.
+This will ensure that thing action calculations use the reduced electricity tax rate when price components are not explicitly provided.
+It will not impact channels, see [Electricity Tax](#electricity-tax) for further information.
+
 ## Channels
 
 ### Channel Group `electricity`
 
-| Channel                 | Type   | Description                                                                           | Advanced |
-|-------------------------|--------|---------------------------------------------------------------------------------------|----------|
-| spot-price              | Number | Current spot price in DKK or EUR per kWh                                              | no       |
-| net-tariff              | Number | Current net tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured | no       |
-| system-tariff           | Number | Current system tariff in DKK per kWh                                                  | no       |
-| electricity-tax         | Number | Current electricity tax in DKK per kWh                                                | no       |
-| transmission-net-tariff | Number | Current transmission net tariff in DKK per kWh                                        | no       |
-| hourly-prices           | String | JSON array with hourly prices from 24 hours ago and onward                            | yes      |
+| Channel                  | Type               | Description                                                                    | Advanced |
+|--------------------------|--------------------|--------------------------------------------------------------------------------|----------|
+| spot-price               | Number:EnergyPrice | Spot price in DKK or EUR per kWh                                               | no       |
+| grid-tariff              | Number:EnergyPrice | Grid tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured | no       |
+| system-tariff            | Number:EnergyPrice | System tariff in DKK per kWh                                                   | no       |
+| transmission-grid-tariff | Number:EnergyPrice | Transmission grid tariff in DKK per kWh                                        | no       |
+| electricity-tax          | Number:EnergyPrice | Electricity tax in DKK per kWh                                                 | no       |
+| reduced-electricity-tax  | Number:EnergyPrice | Reduced electricity tax in DKK per kWh. For electric heating customers only    | no       |
 
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
@@ -56,6 +64,16 @@ This has the following advantages:
 - An additional item containing the kWh fee from your electricity supplier can be added also.
 - Spot price can be configured in EUR while tariffs are in DKK.
 
+If you want electricity tax included in your total price, please add either `electricity-tax` or `reduced-electricity-tax` to the group - depending on which one applies.
+See [Electricity Tax](#electricity-tax) for further information.
+
+#### Currencies
+
+There are some existing limitations related to currency support.
+While the binding attempts to update channels in the correct currency, such attempts may face rejection.
+In such cases, the binding will resort to omitting the currency unit.
+While this ensures correct prices, it's important to note that the currency information may be incorrect in these instances.
+
 #### Value-Added Tax
 
 VAT is not included in any of the prices.
@@ -63,13 +81,20 @@ To include VAT for items linked to the `Number` channels, the [VAT profile](http
 This must be installed separately.
 Once installed, simply select "Value-Added Tax" as Profile when linking an item.
 
-#### Net Tariff
+#### Persisting Time Series
 
-Discounts are automatically taken into account for channel `net-tariff` so that it represents the actual price.
+The binding offers support for persisting both historical and upcoming prices.
+The recommended persistence strategy is `forecast`, as it ensures a clean history without redundancy.
+Prices from the past 24 hours and all forthcoming prices will be stored.
+Any changes that impact published prices (e.g. selecting or deselecting VAT Profile) will result in the replacement of persisted prices within this period.
+
+#### Grid Tariff
+
+Discounts are automatically taken into account for channel `grid-tariff` so that it represents the actual price.
 
 The tariffs are downloaded using pre-configured filters for the different [Grid Company GLN's](#global-location-number-of-the-grid-company).
 If your company is not in the list, or the filters are not working, they can be manually overridden.
-To override filters, the channel `net-tariff` has the following configuration parameters:
+To override filters, the channel `grid-tariff` has the following configuration parameters:
 
 | Name            | Type    | Description                                                                                                                      | Default | Required | Advanced |
 |-----------------|---------|----------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
@@ -107,46 +132,25 @@ _Nord Energi Net:_
 | start           | StartOfDay |
 | offset          | -P1D       |
 
-#### Hourly Prices
+#### Electricity Tax
 
-The format of the `hourly-prices` JSON array is as follows:
+The standard channel for electricity tax is `electricity-tax`.
+For customers using electricity for heating, a reduced electricity tax rate may apply (see [Reduced electricity tax applies](#reduced-electricity-tax-applies)).
+This reduced rate is made available through channel `reduced-electricity-tax`.
 
-```json
-[
-	{
-		"hourStart": "2023-01-24T15:00:00Z",
-		"spotPrice": 1.67076001,
-		"spotPriceCurrency": "DKK",
-		"netTariff": 0.432225,
-		"systemTariff": 0.054000,
-		"electricityTax": 0.008000,
-		"transmissionNetTariff": 0.058000
-	},
-	{
-		"hourStart": "2023-01-24T16:00:00Z",
-		"spotPrice": 1.859880005,
-		"spotPriceCurrency": "DKK",
-		"netTariff": 1.05619,
-		"systemTariff": 0.054000,
-		"electricityTax": 0.008000,
-		"transmissionNetTariff": 0.058000
-	}
-]
-```
-
-Future spot prices for the next day are usually available around 13:00 CET and are fetched around that time.
-Historic prices older than 24 hours are removed from the JSON array each hour.
+The binding cannot determine or manage rate variations as they depend on metering data.
+Usually `reduced-electricity-tax` is preferred when using electricity for heating.
 
 ## Thing Actions
 
-Thing actions can be used to perform calculations as well as import prices directly into rules without deserializing JSON from the [hourly-prices](#hourly-prices) channel.
-This is more convenient, much faster, and provides automatic summation of the price elements of interest.
+Thing actions can be used to perform calculations as well as import prices directly into rules without relying on persistence.
+This is convenient, fast, and provides automatic summation of the price components of interest.
 
 Actions use cached data for performing operations.
 Since data is only fetched when an item is linked to a channel, there might not be any cached data available.
 In this case the data will be fetched on demand and cached afterwards.
 The first action triggered on a given day may therefore be a bit slower, and is also prone to failing if the server call fails for any reason.
-This potential problem can be prevented by linking the individual channels to items, or by linking the `hourly-prices` channel to an item.
+This potential problem can be prevented by linking the individual channels to items.
 
 ### `calculateCheapestPeriod`
 
@@ -297,27 +301,30 @@ var price = actions.calculatePrice(now.toInstant(), now.plusHours(4).toInstant, 
 
 | Parameter          | Type                        | Description                                            |
 |--------------------|-----------------------------|--------------------------------------------------------|
-| priceElements      | `String`                    | Comma-separated list of price elements to include      |
+| priceComponents    | `String`                    | Comma-separated list of price components to include    |
 
 **Result:** `Map<Instant, BigDecimal>`
 
-The parameter `priceElements` is a case-insensitive comma-separated list of price elements to include in the returned hourly prices.
-These elements can be requested:
+The parameter `priceComponents` is a case-insensitive comma-separated list of price components to include in the returned hourly prices.
+These components can be requested:
 
-| Price element         | Description             |
-|-----------------------|-------------------------|
-| SpotPrice             | Spot price              |
-| NetTariff             | Net tariff              |
-| SystemTariff          | System tariff           |
-| ElectricityTax        | Electricity tax         |
-| TransmissionNetTariff | Transmission net tariff |
+| Price component        | Description              |
+|------------------------|--------------------------|
+| SpotPrice              | Spot price               |
+| GridTariff             | Grid tariff              |
+| SystemTariff           | System tariff            |
+| TransmissionGridTariff | Transmission grid tariff |
+| ElectricityTax         | Electricity tax          |
+| ReducedElectricityTax  | Reduced electricity tax  |
 
-Using `null` as parameter returns the total prices including all price elements.
+Using `null` as parameter returns the total prices including all price components.
+If **Reduced Electricity Tax** is set in Thing configuration, `ElectricityTax` will be excluded, otherwise `ReducedElectricityTax`.
+This logic ensures consistent and comparable results not affected by artifical changes in the rate for electricity tax two times per year.
 
 Example:
 
 ```javascript
-var priceMap = actions.getPrices("SpotPrice,NetTariff");
+var priceMap = actions.getPrices("SpotPrice,GridTariff")
 ```
 
 ## Full Example
@@ -327,7 +334,7 @@ var priceMap = actions.getPrices("SpotPrice,NetTariff");
 ```java
 Thing energidataservice:service:energidataservice "Energi Data Service" [ priceArea="DK1", currencyCode="DKK", gridCompanyGLN="5790001089030" ] {
     Channels:
-        Number : electricity#net-tariff [ chargeTypeCodes="CD,CD R", start="StartOfYear" ]
+        Number : electricity#grid-tariff [ chargeTypeCodes="CD,CD R", start="StartOfYear" ]
 }
 ```
 
@@ -336,12 +343,29 @@ Thing energidataservice:service:energidataservice "Energi Data Service" [ priceA
 ```java
 Group:Number:SUM TotalPrice "Current Total Price" <price>
 Number SpotPrice "Current Spot Price" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#spot-price" [profile="transform:VAT"] }
-Number NetTariff "Current Net Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#net-tariff" [profile="transform:VAT"] }
+Number GridTariff "Current Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#grid-tariff" [profile="transform:VAT"] }
 Number SystemTariff "Current System Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#system-tariff" [profile="transform:VAT"] }
+Number TransmissionGridTariff "Current Transmission Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#transmission-grid-tariff" [profile="transform:VAT"] }
 Number ElectricityTax "Current Electricity Tax" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#electricity-tax" [profile="transform:VAT"] }
-Number TransmissionNetTariff "Current Transmission Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#transmission-net-tariff" [profile="transform:VAT"] }
-String HourlyPrices "Hourly Prices" <price> { channel="energidataservice:service:energidataservice:electricity#hourly-prices" }
 ```
+
+### Persistence Configuration
+
+```java
+Strategies {
+    default = everyChange
+}
+
+Items {
+    SpotPrice,
+    GridTariff,
+    SystemTariff,
+    TransmissionGridTariff,
+    ElectricityTax: strategy = forecast
+}
+```
+
+In case persistence is only needed for charts and/or accessing prices from rules, [InMemory Persistence](https://www.openhab.org/addons/persistence/inmemory/) can be used.
 
 ### Thing Actions Example
 
@@ -361,8 +385,8 @@ var priceMap = actions.getPrices(null)
 var hourStart = now.toInstant().truncatedTo(ChronoUnit.HOURS)
 logInfo("Current total price excl. VAT", priceMap.get(hourStart).toString)
 
-var priceMap = actions.getPrices("SpotPrice,NetTariff");
-logInfo("Current spot price + net tariff excl. VAT", priceMap.get(hourStart).toString)
+var priceMap = actions.getPrices("SpotPrice,GridTariff");
+logInfo("Current spot price + grid tariff excl. VAT", priceMap.get(hourStart).toString)
 
 var price = actions.calculatePrice(Instant.now, now.plusHours(1).toInstant, 150 | W)
 logInfo("Total price for using 150 W for the next hour", price.toString)
@@ -424,10 +448,10 @@ utils.javaMapToJsMap(edsActions.getPrices()).forEach((value, key) => {
 var hourStart = time.Instant.now().truncatedTo(time.ChronoUnit.HOURS);
 console.log("Current total price excl. VAT: " + priceMap.get(hourStart.toString()));
 
-utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,NetTariff")).forEach((value, key) => {
+utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,GridTariff")).forEach((value, key) => {
     priceMap.set(key.toString(), value);
 });
-console.log("Current spot price + net tariff excl. VAT: " + priceMap.get(hourStart.toString()));
+console.log("Current spot price + grid tariff excl. VAT: " + priceMap.get(hourStart.toString()));
 
 var price = edsActions.calculatePrice(time.Instant.now(), time.Instant.now().plusSeconds(3600), Quantity("150 W"));
 console.log("Total price for using 150 W for the next hour: " + price.toString());
@@ -472,6 +496,32 @@ durationPhases.push(time.Duration.ofMinutes(36));
 durationPhases.push(time.Duration.ofMinutes(41));
 
 var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(24*60*60), time.Duration.ofMinutes(236), durationPhases, Quantity("0.1 kWh"));
+```
+
+:::
+
+::::
+
+### Persistence Rule Example
+
+:::: tabs
+
+::: tab DSL
+
+```javascript
+var hourStart = now.plusHours(2).truncatedTo(ChronoUnit.HOURS)
+var price = SpotPrice.historicState(hourStart).state
+logInfo("Spot price two hours from now", price.toString)
+```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var hourStart = time.toZDT().plusHours(2).truncatedTo(time.ChronoUnit.HOURS);
+var price = items.SpotPrice.history.historicState(hourStart).quantityState;
+console.log("Spot price two hours from now: " + price);
 ```
 
 :::

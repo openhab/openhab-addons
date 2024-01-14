@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Used to unmarshall <list> items of the <functionrename> CommandRX.
+ * Used to unmarshall {@code <list>} items of the {@code <functionrename>} CommandRX.
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  */

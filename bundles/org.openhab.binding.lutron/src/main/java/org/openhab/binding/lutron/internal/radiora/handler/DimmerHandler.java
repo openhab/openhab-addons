@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,8 +65,8 @@ public class DimmerHandler extends LutronHandler {
         }
 
         if (LutronBindingConstants.CHANNEL_LIGHTLEVEL.equals(channelUID.getId())) {
-            if (command instanceof PercentType) {
-                int intensity = ((PercentType) command).intValue();
+            if (command instanceof PercentType percentCommand) {
+                int intensity = percentCommand.intValue();
 
                 SetDimmerLevelCommand cmd = new SetDimmerLevelCommand(config.getZoneNumber(), intensity, config.system);
                 bridgeHandler.sendCommand(cmd);
@@ -74,9 +74,7 @@ public class DimmerHandler extends LutronHandler {
                 updateInternalState(intensity);
             }
 
-            if (command instanceof OnOffType) {
-                OnOffType onOffCmd = (OnOffType) command;
-
+            if (command instanceof OnOffType onOffCmd) {
                 SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), onOffCmd, config.system);
                 bridgeHandler.sendCommand(cmd);
 
@@ -87,10 +85,10 @@ public class DimmerHandler extends LutronHandler {
 
     @Override
     public void handleFeedback(RadioRAFeedback feedback) {
-        if (feedback instanceof LocalZoneChangeFeedback) {
-            handleLocalZoneChangeFeedback((LocalZoneChangeFeedback) feedback);
-        } else if (feedback instanceof ZoneMapFeedback) {
-            handleZoneMapFeedback((ZoneMapFeedback) feedback);
+        if (feedback instanceof LocalZoneChangeFeedback localZoneChangeFeedback) {
+            handleLocalZoneChangeFeedback(localZoneChangeFeedback);
+        } else if (feedback instanceof ZoneMapFeedback zoneMapFeedback) {
+            handleZoneMapFeedback(zoneMapFeedback);
         }
     }
 

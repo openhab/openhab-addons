@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -204,13 +204,10 @@ public class ShieldTVMessageParser {
             } else if (APP_START_FAILED.equals(msg)) {
                 // App failed to start
                 logger.debug("{} - App failed to start", thingId);
-            } else if (msg.startsWith(MESSAGE_APPDB) && msg.startsWith(DELIMITER_0A, 18)) {
-                // Individual update?
-                // 08f10712 5808061254 0a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 300118f107
-                logger.info("{} - Individual App Update - Please Report This: {}", thingId, msg);
-            } else if (msg.startsWith(MESSAGE_APPDB) && (msg.length() > 30)) {
+            } else if (msg.startsWith(MESSAGE_APPDB) && msg.startsWith(MESSAGE_APPDB_FULL, 12)) {
                 // Massive dump of currently installed apps
-                // 08f10712 d81f080112 d31f0a540a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 30010a650a LEN
+                // 08f10712 d81f 080112 d31f0a540a LEN app.name 12 LEN app.real.name 22 LEN URL 2801 30010a650a LEN
+                // --------------08XX12 where XX is not 01 are individual updates and should be ignored
                 Map<String, String> appNameDB = new HashMap<>();
                 Map<String, String> appURLDB = new HashMap<>();
                 int appCount = 0;
@@ -353,6 +350,8 @@ public class ShieldTVMessageParser {
                     logger.warn("{} - MP empty msg: {} appDB appNameDB: {} appURLDB: {}", thingId, msg,
                             appNameDB.toString(), appURLDB.toString());
                 }
+            } else if (msg.startsWith(MESSAGE_APPDB)) {
+                logger.debug("{} - Individual app update ignored {}", thingId, msg);
             } else if (msg.startsWith(MESSAGE_GOOD_COMMAND)) {
                 // This has something to do with successful command response, maybe.
                 logger.trace("{} - Good Command Response", thingId);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,18 @@ public class ConverterTest {
                 is(equalTo(LocalDateTime.of(2021, 1, 7, 9, 14, 11, 0))));
         assertThat(Converter.fromRouterosTime("feb/13/2021 23:59:59"),
                 is(equalTo(LocalDateTime.of(2021, 2, 13, 23, 59, 59, 0))));
+
+        assertThat(Converter.fromRouterosTime("2021-02-13 23:59:59"),
+                is(equalTo(LocalDateTime.of(2021, 2, 13, 23, 59, 59, 0))));
+        assertThat(Converter.fromRouterosTime("2020-12-11 20:45:40"),
+                is(equalTo(LocalDateTime.of(2020, 12, 11, 20, 45, 40, 0))));
+        assertThat(Converter.fromRouterosTime("2021-01-07 09:14:11"),
+                is(equalTo(LocalDateTime.of(2021, 1, 7, 9, 14, 11, 0))));
+
+        assertNull(Converter.fromRouterosTime(null));
+        assertNull(Converter.fromRouterosTime(""));
+        assertNull(Converter.fromRouterosTime("2021-18-07 09:14:11"));
+        assertNull(Converter.fromRouterosTime("feb/41/2021 23:59:59"));
     }
 
     @Test

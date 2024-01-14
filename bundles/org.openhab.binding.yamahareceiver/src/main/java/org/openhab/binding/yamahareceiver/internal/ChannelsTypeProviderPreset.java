@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,9 @@ import static java.util.stream.Collectors.toList;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,6 +34,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * Provide a custom channel type for the preset channel
@@ -41,6 +43,7 @@ import org.openhab.core.types.StateOption;
  * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - RX-V3900 compatibility improvements
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { ChannelsTypeProviderPreset.class, ChannelTypeProvider.class })
 @NonNullByDefault
 public class ChannelsTypeProviderPreset implements ChannelTypeProvider, ThingHandlerService {
     private @NonNullByDefault({}) ChannelType channelType;
@@ -49,7 +52,7 @@ public class ChannelsTypeProviderPreset implements ChannelTypeProvider, ThingHan
 
     @Override
     public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return Collections.singleton(channelType);
+        return Set.of(channelType);
     }
 
     @Override

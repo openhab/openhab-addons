@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,14 +103,19 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
         }
         ZoneUpdate update = new ZoneUpdate();
         switch (channelUID.getId()) {
+            case AmpliPiBindingConstants.CHANNEL_POWER:
+                if (command instanceof OnOffType) {
+                    update.setMute(command == OnOffType.OFF);
+                }
+                break;
             case AmpliPiBindingConstants.CHANNEL_MUTE:
                 if (command instanceof OnOffType) {
                     update.setMute(command == OnOffType.ON);
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_VOLUME:
-                if (command instanceof PercentType) {
-                    update.setVol(AmpliPiUtils.percentTypeToVolume((PercentType) command));
+                if (command instanceof PercentType percentCommand) {
+                    update.setVol(AmpliPiUtils.percentTypeToVolume(percentCommand));
                 } else if (command instanceof IncreaseDecreaseType) {
                     if (zoneState != null) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
@@ -125,8 +130,8 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_SOURCE:
-                if (command instanceof DecimalType) {
-                    update.setSourceId(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    update.setSourceId(decimalCommand.intValue());
                 }
                 break;
         }
@@ -159,11 +164,13 @@ public class AmpliPiZoneHandler extends BaseThingHandler implements AmpliPiStatu
     private void updateZoneState(Zone state) {
         this.zoneState = state;
 
+        Boolean power = !zoneState.getMute();
         Boolean mute = zoneState.getMute();
         Integer vol = zoneState.getVol();
         Integer sourceId = zoneState.getSourceId();
 
-        updateState(AmpliPiBindingConstants.CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(AmpliPiBindingConstants.CHANNEL_POWER, OnOffType.from(power));
+        updateState(AmpliPiBindingConstants.CHANNEL_MUTE, OnOffType.from(mute));
         updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(vol));
         updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(sourceId));
     }

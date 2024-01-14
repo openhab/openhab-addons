@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,11 +24,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.dto.Capabilities;
-import org.openhab.binding.hue.internal.dto.ColorTemperature;
-import org.openhab.binding.hue.internal.dto.FullLight;
-import org.openhab.binding.hue.internal.dto.State;
-import org.openhab.binding.hue.internal.dto.StateUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.Capabilities;
+import org.openhab.binding.hue.internal.api.dto.clip1.ColorTemperature;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullLight;
+import org.openhab.binding.hue.internal.api.dto.clip1.State;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;

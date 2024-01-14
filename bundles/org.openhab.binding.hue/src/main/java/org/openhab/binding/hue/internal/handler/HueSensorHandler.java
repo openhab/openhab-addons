@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.hue.internal.handler;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
-import static org.openhab.binding.hue.internal.dto.FullSensor.*;
+import static org.openhab.binding.hue.internal.api.dto.clip1.FullSensor.*;
 import static org.openhab.core.thing.Thing.*;
 
 import java.time.LocalDateTime;
@@ -27,9 +27,9 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.dto.FullSensor;
-import org.openhab.binding.hue.internal.dto.SensorConfigUpdate;
-import org.openhab.binding.hue.internal.dto.StateUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullSensor;
+import org.openhab.binding.hue.internal.api.dto.clip1.SensorConfigUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -279,7 +279,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         if (flag != null) {
             try {
                 boolean value = Boolean.parseBoolean(String.valueOf(flag));
-                updateState(CHANNEL_FLAG, value ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_FLAG, OnOffType.from(value));
             } catch (DateTimeParseException e) {
                 // do nothing
             }
@@ -289,7 +289,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         if (battery != null) {
             DecimalType batteryLevel = DecimalType.valueOf(String.valueOf(battery));
             updateState(CHANNEL_BATTERY_LEVEL, batteryLevel);
-            updateState(CHANNEL_BATTERY_LOW, batteryLevel.intValue() <= 10 ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_BATTERY_LOW, OnOffType.from(batteryLevel.intValue() <= 10));
         }
 
         if (!configInitializedSuccessfully) {
@@ -320,7 +320,6 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
      * Handles the sensor change. Implementation should also update sensor-specific configuration that changed since the
      * last update.
      *
-     * @param bridge the bridge
      * @param sensor the sensor
      * @param config the configuration in which to update the config states of the sensor
      */

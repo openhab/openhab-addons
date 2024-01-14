@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,6 +90,7 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
         try {
             SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
             sslContextFactory.setEndpointIdentificationAlgorithm(null);
+            sslContextFactory.setTrustAll(true);
             HttpClient localHttpClient = httpClient = httpClientFactory.createHttpClient(httpClientName,
                     sslContextFactory);
             localHttpClient.start();
@@ -168,7 +169,7 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
      * @return
      */
     public List<String> getAvailablePlayers() {
-        List<String> availablePlayers = new ArrayList<String>();
+        List<String> availablePlayers = new ArrayList<>();
         MediaContainer sessionData = plexAPIConnector.getSessionData();
 
         if (sessionData != null && sessionData.getSize() > 0) {
@@ -244,10 +245,10 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
                                                                                               // configured, update
                                                                                               // it
                     tmpMeta.setArt(plexAPIConnector.getURL(tmpMeta.getArt()));
-                    if (tmpMeta.getType().equals("episode")) {
+                    if ("episode".equals(tmpMeta.getType())) {
                         tmpMeta.setThumb(plexAPIConnector.getURL(tmpMeta.getGrandparentThumb()));
                         tmpMeta.setTitle(tmpMeta.getGrandparentTitle() + " : " + tmpMeta.getTitle());
-                    } else if (tmpMeta.getType().equals("track")) {
+                    } else if ("track".equals(tmpMeta.getType())) {
                         tmpMeta.setThumb(plexAPIConnector.getURL(tmpMeta.getThumb()));
                         tmpMeta.setTitle(tmpMeta.getGrandparentTitle() + " - " + tmpMeta.getParentTitle() + " - "
                                 + tmpMeta.getTitle());
@@ -303,8 +304,8 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
             }
             refreshAllPlayers();
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
-                    .format("An exception occurred while polling the PLEX Server: '%s'", e.getMessage()).toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("An exception occurred while polling the PLEX Server: '%s'", e.getMessage()));
         }
     };
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -40,7 +39,7 @@ public class StatusServiceTest {
         // given
         StatusDTO status = new StatusDTO(true, 200, Arrays.asList(0, 0, 0, 0, 0, 0), Arrays.asList(0, 0, 0, 0, 0, 0),
                 Arrays.asList(0, 0, 0, 0, 0, 0));
-        List<UdpResponseDTO> statusString = Collections.singletonList(new UdpResponseDTO(
+        List<UdpResponseDTO> statusString = List.of(new UdpResponseDTO(
                 "V3{\"response\":90,\"code\":200,\"data\":{\"switch\":[0,0,0,0,0,0],\"watt\":[0,0,0,0,0,0],\"amp\":[0,0,0,0,0,0]}}",
                 "127.0.0.1"));
         when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 90}", "127.0.0.1"))
@@ -56,7 +55,7 @@ public class StatusServiceTest {
     @Test
     public void invalidUdpResponse() {
         // given
-        List<UdpResponseDTO> statusString = Collections.singletonList(new UdpResponseDTO("something invalid", "12345"));
+        List<UdpResponseDTO> statusString = List.of(new UdpResponseDTO("something invalid", "12345"));
         when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 90}", "127.0.0.1"))
                 .thenReturn(CompletableFuture.completedFuture(statusString));
 

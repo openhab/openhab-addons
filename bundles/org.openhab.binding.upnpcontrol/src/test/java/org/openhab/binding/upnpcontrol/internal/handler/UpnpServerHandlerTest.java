@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,9 +60,11 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
     private static final String THING_TYPE_UID = "upnpcontrol:upnpserver";
     private static final String THING_UID = THING_TYPE_UID + ":mockserver";
 
-    private static final String RESPONSE_HEADER = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" "
-            + "xmlns:dc=\"http://purl.org/dc/elements/1.1/\" "
-            + "xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\">";
+    private static final String RESPONSE_HEADER = """
+            <DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" \
+            xmlns:dc="http://purl.org/dc/elements/1.1/" \
+            xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">\
+            """;
     private static final String RESPONSE_FOOTER = "</DIDL-Lite>";
 
     private static final String BASE_CONTAINER = RESPONSE_HEADER

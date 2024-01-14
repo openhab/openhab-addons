@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,8 +88,8 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof ShadeThingHandler) {
-            refreshShade(((ShadeThingHandler) childHandler).getShadeId());
+        if (childHandler instanceof ShadeThingHandler shadeThingHandler) {
+            refreshShade(shadeThingHandler.getShadeId());
         }
     }
 

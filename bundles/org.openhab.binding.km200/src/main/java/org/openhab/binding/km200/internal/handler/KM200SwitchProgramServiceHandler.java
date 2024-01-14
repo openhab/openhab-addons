@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import com.google.gson.JsonObject;
  * The KM200SwitchProgramService representing a switch program service with its all capabilities
  *
  * @author Markus Eckhardt - Initial contribution
- * @NonNullByDefault is not working here because of the switchMap array handling
+ * @implNote {@code @NonNullByDefault} is not working here because of the switchMap array handling
  */
 
 public class KM200SwitchProgramServiceHandler {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,7 @@ public interface DeviceCallback extends ChannelStateUpdateListener {
     /**
      * Called, whenever a Homie property was existing before, but is not anymore.
      *
-     * @param node The affected property class.
+     * @param property The affected property class.
      */
     void propertyRemoved(Property property);
 
@@ -55,7 +55,7 @@ public interface DeviceCallback extends ChannelStateUpdateListener {
     /**
      * Called, whenever a Homie property was added or changed.
      *
-     * @param node The affected property class.
+     * @param property The affected property class.
      */
     void propertyAddedOrChanged(Property property);
 }

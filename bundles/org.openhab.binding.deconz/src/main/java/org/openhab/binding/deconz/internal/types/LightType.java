@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ public enum LightType {
     DIMMABLE_LIGHT("Dimmable light"),
     DIMMABLE_PLUGIN_UNIT("Dimmable plug-in unit"),
     WINDOW_COVERING_DEVICE("Window covering device"),
+    WINDOW_COVERING_CONTROLLER("Window covering controller"),
     CONFIGURATION_TOOL("Configuration tool"),
     WARNING_DEVICE("Warning device"),
     DOORLOCK("Door Lock"),

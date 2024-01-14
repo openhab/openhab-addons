@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ public class ServiceFactory {
 
     @SuppressWarnings("serial")
     private static final Map<String, Class<? extends SamsungTvService>> SERVICEMAP = Collections
-            .unmodifiableMap(new HashMap<String, Class<? extends SamsungTvService>>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
                     put(MainTVServerService.SERVICE_NAME, MainTVServerService.class);
                     put(MediaRendererService.SERVICE_NAME, MediaRendererService.class);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public final class QbusScene {
     }
 
     /**
-     * This method sets a pointer to the qComm SCENE of class {@link QbusCommuncation}.
+     * This method sets a pointer to the qComm SCENE of class {@link QbusCommunication}.
      * This is then used to be able to call back the sendCommand method in this class to send a command to the
      * Qbus client.
      *

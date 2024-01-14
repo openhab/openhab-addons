@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,8 +137,7 @@ public class MelCloudConnection {
         try {
             String response = HttpUtil.executeUrl("GET", url, getHeaderProperties(), null, null, TIMEOUT_MILLISECONDS);
             logger.debug("Device status response: {}", response);
-            DeviceStatus deviceStatus = gson.fromJson(response, DeviceStatus.class);
-            return deviceStatus;
+            return gson.fromJson(response, DeviceStatus.class);
         } catch (IOException | JsonSyntaxException e) {
             setConnected(false);
             throw new MelCloudCommException("Error occurred during device status fetch", e);
@@ -167,8 +166,7 @@ public class MelCloudConnection {
         try {
             String response = HttpUtil.executeUrl("GET", url, getHeaderProperties(), null, null, TIMEOUT_MILLISECONDS);
             logger.debug("Device heatpump status response: {}", response);
-            HeatpumpDeviceStatus heatpumpDeviceStatus = gson.fromJson(response, HeatpumpDeviceStatus.class);
-            return heatpumpDeviceStatus;
+            return gson.fromJson(response, HeatpumpDeviceStatus.class);
         } catch (IOException | JsonSyntaxException e) {
             setConnected(false);
             throw new MelCloudCommException("Error occurred during heatpump device status fetch", e);

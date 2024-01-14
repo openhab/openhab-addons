@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,26 +69,26 @@ public class AudioPlayerChannel extends MycroftChannel<State> {
 
     @Override
     public void handleCommand(Command command) {
-        if (command instanceof PlayPauseType) {
-            if (((PlayPauseType) command) == PlayPauseType.PAUSE) {
+        if (command instanceof PlayPauseType playPauseCommand) {
+            if (playPauseCommand == PlayPauseType.PAUSE) {
                 if (handler.sendMessage(new MessageAudioPause())) {
                     updateMyState(PlayPauseType.PAUSE);
                 }
             }
-            if (((PlayPauseType) command) == PlayPauseType.PLAY) {
+            if (playPauseCommand == PlayPauseType.PLAY) {
                 handler.sendMessage(new MessageAudioPlay());
                 if (handler.sendMessage(new MessageAudioResume())) {
                     updateMyState(PlayPauseType.PLAY);
                 }
             }
         }
-        if (command instanceof NextPreviousType) {
-            if (((NextPreviousType) command) == NextPreviousType.NEXT) {
+        if (command instanceof NextPreviousType nextPreviousCommand) {
+            if (nextPreviousCommand == NextPreviousType.NEXT) {
                 if (handler.sendMessage(new MessageAudioNext())) {
                     updateMyState(PlayPauseType.PLAY);
                 }
             }
-            if (((NextPreviousType) command) == NextPreviousType.PREVIOUS) {
+            if (nextPreviousCommand == NextPreviousType.PREVIOUS) {
                 if (handler.sendMessage(new MessageAudioPrev())) {
                     updateMyState(PlayPauseType.PLAY);
                 }

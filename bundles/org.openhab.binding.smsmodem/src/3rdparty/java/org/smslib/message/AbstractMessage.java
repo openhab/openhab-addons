@@ -21,7 +21,7 @@ public abstract class AbstractMessage implements Serializable {
         Enc7,
         Enc8,
         EncUcs2,
-        EncCustom;
+        EncCustom
     }
 
     public enum DcsClass {
@@ -194,30 +194,30 @@ public abstract class AbstractMessage implements Serializable {
         b.append(String.format("Recipient Address: %s%n", getRecipientAddress()));
         b.append(String.format("Payload Type: %s%n", payload.getType()));
         b.append(String.format("Text payload: %s%n", payload.getText() == null ? "null" : payload.getText()));
-        if (this instanceof InboundMessage) {
+        if (this instanceof InboundMessage message) {
             b.append(String.format("Sent Date: %s%n", getSentDate()));
-            b.append(String.format("Memory Storage Location: %s%n", ((InboundMessage) this).getMemLocation()));
-            b.append(String.format("Memory Index: %d%n", ((InboundMessage) this).getMemIndex()));
-            b.append(String.format("Memory MP Index: %s%n", ((InboundMessage) this).getMpMemIndex()));
+            b.append(String.format("Memory Storage Location: %s%n", message.getMemLocation()));
+            b.append(String.format("Memory Index: %d%n", message.getMemIndex()));
+            b.append(String.format("Memory MP Index: %s%n", message.getMpMemIndex()));
         }
-        if (this instanceof OutboundMessage) {
+        if (this instanceof OutboundMessage message) {
             b.append(String.format("Sent Date: %s%n",
-                    (((OutboundMessage) this).getSentStatus() == SentStatus.Sent ? getSentDate() : "N/A")));
+                    (message.getSentStatus() == SentStatus.Sent ? getSentDate() : "N/A")));
             String ids = "";
-            for (String opId : ((OutboundMessage) this).getOperatorMessageIds()) {
+            for (String opId : message.getOperatorMessageIds()) {
                 ids += (ids.length() == 0 ? opId : "," + opId);
             }
             b.append(String.format("Operator Message IDs: %s%n", ids));
-            b.append(String.format("Status: %s%n", ((OutboundMessage) this).getSentStatus().toString()));
-            b.append(String.format("Failure: %s%n", ((OutboundMessage) this).getFailureCause().toString()));
+            b.append(String.format("Status: %s%n", message.getSentStatus().toString()));
+            b.append(String.format("Failure: %s%n", message.getFailureCause().toString()));
             b.append(String.format("Request Delivery Reports: %b%n",
-                    ((OutboundMessage) this).getRequestDeliveryReport()));
+                    message.getRequestDeliveryReport()));
         }
-        if (this instanceof DeliveryReportMessage) {
+        if (this instanceof DeliveryReportMessage message) {
             b.append(String.format("Original Operator Message Id: %s%n",
-                    ((DeliveryReportMessage) this).getOriginalOperatorMessageId()));
-            b.append(String.format("Delivery Date: %s%n", ((DeliveryReportMessage) this).getOriginalReceivedDate()));
-            b.append(String.format("Delivery Status: %s%n", ((DeliveryReportMessage) this).getDeliveryStatus()));
+                    message.getOriginalOperatorMessageId()));
+            b.append(String.format("Delivery Date: %s%n", message.getOriginalReceivedDate()));
+            b.append(String.format("Delivery Status: %s%n", message.getDeliveryStatus()));
         }
         b.append(String
                 .format("== MESSAGE END ========================================================================%n"));

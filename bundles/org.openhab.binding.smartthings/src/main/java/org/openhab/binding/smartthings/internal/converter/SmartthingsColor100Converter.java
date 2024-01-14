@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,11 +53,11 @@ public class SmartthingsColor100Converter extends SmartthingsConverter {
         // The command should be of HSBType. The hue component needs to be divided by 3.6 to convert 0-360 degrees to
         // 0-100 percent
         // The easiest way to do this is to create a new HSBType with the hue component changed.
-        if (command instanceof HSBType) {
-            HSBType hsb = (HSBType) command;
-            double hue = Math.round((hsb.getHue().doubleValue() / 3.60)); // add .5 to round
+        if (command instanceof HSBType hsbCommand) {
+            double hue = Math.round((hsbCommand.getHue().doubleValue() / 3.60)); // add .5 to round
             long hueInt = (long) hue;
-            HSBType hsb100 = new HSBType(new DecimalType(hueInt), hsb.getSaturation(), hsb.getBrightness());
+            HSBType hsb100 = new HSBType(new DecimalType(hueInt), hsbCommand.getSaturation(),
+                    hsbCommand.getBrightness());
             // now use the default converter to convert to a JSON string
             jsonMsg = defaultConvertToSmartthings(channelUid, hsb100);
         } else {
@@ -95,7 +95,7 @@ public class SmartthingsColor100Converter extends SmartthingsConverter {
         }
 
         // Get the RGB colors
-        int rgb[] = new int[3];
+        int[] rgb = new int[3];
         for (int i = 0, pos = 1; i < 3; i++, pos += 2) {
             String c = value.substring(pos, pos + 2);
             rgb[i] = Integer.parseInt(c, 16);

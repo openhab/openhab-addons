@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -193,13 +193,11 @@ public class QueryHandler extends BaseThingHandler {
 
     private void updateStateWithParentBridgeStatus() {
         final @Nullable Bridge bridge = getBridge();
-        DatabaseBridgeHandler databaseBridgeHandler;
 
         if (bridge != null) {
             @Nullable
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof DatabaseBridgeHandler) {
-                databaseBridgeHandler = (DatabaseBridgeHandler) bridgeHandler;
+            if (bridgeHandler instanceof DatabaseBridgeHandler databaseBridgeHandler) {
                 database = databaseBridgeHandler.getDatabase();
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);

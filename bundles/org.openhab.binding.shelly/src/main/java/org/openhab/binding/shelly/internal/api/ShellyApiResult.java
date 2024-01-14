@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ public class ShellyApiResult {
     public String response = "";
     public int httpCode = -1;
     public String httpReason = "";
-    public String authResponse = "";
+    public String authChallenge = "";
 
     public ShellyApiResult() {
     }

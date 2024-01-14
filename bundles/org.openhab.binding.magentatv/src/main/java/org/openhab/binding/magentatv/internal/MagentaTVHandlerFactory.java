@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,15 +107,6 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
-    /**
-     * Add a device to the device table
-     *
-     * @param udn UDN for the device
-     * @param deviceId A unique device id
-     * @param ipAddress IP address of the receiver
-     * @param handler The corresponding thing handler
-     */
 
     public void setNotifyServletStatus(boolean newStatus) {
         logger.debug("NotifyServlet started");

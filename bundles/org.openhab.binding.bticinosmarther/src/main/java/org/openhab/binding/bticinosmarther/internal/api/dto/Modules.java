@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,6 +50,6 @@ public class Modules {
         if (modules == null || modules.isEmpty()) {
             return null;
         }
-        return modules.stream().map(a -> String.valueOf(a.getName())).collect(Collectors.joining(NAME_SEPARATOR));
+        return modules.stream().map(a -> a.getName()).collect(Collectors.joining(NAME_SEPARATOR));
     }
 }

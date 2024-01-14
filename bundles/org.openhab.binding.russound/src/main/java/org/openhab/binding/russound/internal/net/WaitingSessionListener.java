@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,10 +44,10 @@ public class WaitingSessionListener implements SocketSessionListener {
         // will not come in until the other commands have been processed. So we need a large wait
         // time for it to be sent to us
         final Object lastResponse = responses.poll(60, TimeUnit.SECONDS);
-        if (lastResponse instanceof String) {
-            return (String) lastResponse;
-        } else if (lastResponse instanceof IOException) {
-            throw (IOException) lastResponse;
+        if (lastResponse instanceof String stringCommand) {
+            return stringCommand;
+        } else if (lastResponse instanceof IOException ioException) {
+            throw ioException;
         } else if (lastResponse == null) {
             throw new IOException("Didn't receive response in time");
         } else {

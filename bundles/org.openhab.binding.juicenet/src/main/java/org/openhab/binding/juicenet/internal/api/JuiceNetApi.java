@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,6 +55,7 @@ public class JuiceNetApi {
     private static final String API_HOST = "https://jbv1-api.emotorwerks.com/";
     private static final String API_ACCOUNT = API_HOST + "box_pin";
     private static final String API_DEVICE = API_HOST + "box_api_secure";
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private String apiToken = "";
     private HttpClient httpClient;
@@ -156,8 +158,8 @@ public class JuiceNetApi {
         Map<String, Object> params = new HashMap<>();
 
         params.put("energy_at_plugin", Integer.toString(energy_at_plugin));
-        params.put("override_time", Long.toString(energy_at_plugin));
-        params.put("energy_to_add", Integer.toString(energy_at_plugin));
+        params.put("override_time", Long.toString(override_time));
+        params.put("energy_to_add", Integer.toString(energy_to_add));
 
         postApiCommand(ApiCommand.SET_OVERRIDE, token, params);
     }
@@ -180,6 +182,7 @@ public class JuiceNetApi {
     public JsonObject postApiCommand(ApiCommand cmd, @Nullable String token, Map<String, Object> params)
             throws InterruptedException, JuiceNetApiException {
         Request request = httpClient.POST(cmd.uri);
+        request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         request.header(HttpHeader.CONTENT_TYPE, "application/json");
 
         // Add required params

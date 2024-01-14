@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -197,8 +197,8 @@ public class InstarHandler extends ChannelDuplexHandler {
                         ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=0");
                     } else if (OnOffType.ON.equals(command)) {
                         ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=1");
-                    } else if (command instanceof PercentType) {
-                        int value = ((PercentType) command).toBigDecimal().divide(BigDecimal.TEN).intValue();
+                    } else if (command instanceof PercentType percentCommand) {
+                        int value = percentCommand.toBigDecimal().divide(BigDecimal.TEN).intValue();
                         ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=1&threshold=" + value);
                     }
                     return;
@@ -253,8 +253,8 @@ public class InstarHandler extends ChannelDuplexHandler {
                         ipCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=0");
                     } else if (OnOffType.ON.equals(command)) {
                         ipCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1");
-                    } else if (command instanceof PercentType) {
-                        int value = ((PercentType) command).toBigDecimal().divide(BigDecimal.TEN).intValue();
+                    } else if (command instanceof PercentType percentCommand) {
+                        int value = percentCommand.toBigDecimal().divide(BigDecimal.TEN).intValue();
                         ipCameraHandler.sendHttpGET(
                                 "/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1&-aa_value=" + value * 10);
                     }
@@ -381,7 +381,7 @@ public class InstarHandler extends ChannelDuplexHandler {
     // If a camera does not need to poll a request as often as snapshots, it can be
     // added here. Binding steps through the list.
     public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<String>(7);
+        ArrayList<String> lowPriorityRequests = new ArrayList<>(7);
         lowPriorityRequests.add("/param.cgi?cmd=getaudioalarmattr");
         lowPriorityRequests.add("/cgi-bin/hi3510/param.cgi?cmd=getmdattr");
         if (ipCameraHandler.newInstarApi) {// old API cameras get a error 404 response to this

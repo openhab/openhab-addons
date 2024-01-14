@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -675,8 +675,7 @@ public class SysteminfoHandler extends BaseThingHandler {
         }
 
         if (channelGroupID.contains(CHANNEL_GROUP_CURRENT_PROCESS)) {
-            int pid = systeminfo.getCurrentProcessID();
-            return pid;
+            return systeminfo.getCurrentProcessID();
         }
 
         // First try to get device index in group id, delete all non-digits from id

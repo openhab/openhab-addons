@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.paradoxalarm.internal.communication.crypto.EncryptionHandler;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderCommand;
@@ -27,6 +28,7 @@ import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public class TestEncryptionHandler {
 
     private static final String INPUT_STRING = "My test string for encryption.";

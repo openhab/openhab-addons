@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HueBridgeMDNSDiscoveryParticipant} is responsible for discovering new and removed Hue Bridges. It uses the
- * central MDNSDiscoveryService.
+ * central {@link org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService}.
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Thomas Höfer - Added representation

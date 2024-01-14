@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,8 @@ package org.openhab.binding.digitalstrom.internal.discovery;
 
 import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.BINDING_ID;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * The {@link DeviceDiscoveryService} discovers all digitalSTROM-Devices, of one supported device-color-type. The
  * device-color-type has to be given to the {@link #DeviceDiscoveryService(BridgeHandler, ThingTypeUID)} as
  * {@link ThingTypeUID}. The supported {@link ThingTypeUID} can be found at
- * {@link DeviceHandler#SUPPORTED_THING_TYPES}.
+ * {@link org.openhab.binding.digitalstrom.internal.handler.DeviceHandler#SUPPORTED_THING_TYPES}.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -76,7 +76,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
     public void deactivate() {
         logger.debug("deactivate discovery service for device type {} thing types are: {}", deviceType,
                 super.getSupportedThingTypes().toString());
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     @Override
@@ -108,8 +108,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
 
     private void onDeviceAddedInternal(GeneralDeviceInformation device) {
         boolean isSupported = false;
-        if (device instanceof Device) {
-            Device tempDevice = (Device) device;
+        if (device instanceof Device tempDevice) {
             if ((tempDevice.isSensorDevice() && deviceType.equals(tempDevice.getHWinfo().replaceAll("-", "")))
                     || (deviceType.equals(tempDevice.getHWinfo().substring(0, 2))
                             && (tempDevice.isDeviceWithOutput() || tempDevice.isBinaryInputDevice())
@@ -135,18 +134,17 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
 
                 thingDiscovered(discoveryResult);
             } else {
-                if (device instanceof Device) {
-                    logger.debug("Discovered unsupported device hardware type '{}' with uid {}",
-                            ((Device) device).getHWinfo(), device.getDSUID());
+                if (device instanceof Device device1) {
+                    logger.debug("Discovered unsupported device hardware type '{}' with uid {}", device1.getHWinfo(),
+                            device.getDSUID());
                 }
             }
         } else {
-            if (device instanceof Device) {
-                logger.debug(
-                        "Discovered device with disabled or no output mode. Device was not added to inbox. "
-                                + "Device information: hardware info: {}, dSUID: {}, device-name: {}, output value: {}",
-                        ((Device) device).getHWinfo(), device.getDSUID(), device.getName(),
-                        ((Device) device).getOutputMode());
+            if (device instanceof Device device1) {
+                logger.debug("""
+                        Discovered device with disabled or no output mode. Device was not added to inbox. \
+                        Device information: hardware info: {}, dSUID: {}, device-name: {}, output value: {}\
+                        """, device1.getHWinfo(), device.getDSUID(), device.getName(), device1.getOutputMode());
             }
         }
     }
@@ -154,8 +152,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
     private ThingUID getThingUID(GeneralDeviceInformation device) {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingTypeUID thingTypeUID = null;
-        if (device instanceof Device) {
-            Device tempDevice = (Device) device;
+        if (device instanceof Device tempDevice) {
             thingTypeUID = new ThingTypeUID(BINDING_ID, tempDevice.getHWinfo().substring(0, 2));
             if (tempDevice.isSensorDevice() && deviceType.equals(tempDevice.getHWinfo().replaceAll("-", ""))) {
                 thingTypeUID = new ThingTypeUID(BINDING_ID, deviceType);
@@ -166,15 +163,15 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
         }
         if (getSupportedThingTypes().contains(thingTypeUID)) {
             String thingDeviceId = device.getDSID().toString();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingDeviceId);
-            return thingUID;
+            return new ThingUID(thingTypeUID, bridgeUID, thingDeviceId);
         } else {
             return null;
         }
     }
 
     /**
-     * Removes the {@link Thing} of the given {@link Device}.
+     * Removes the {@link org.openhab.core.thing.Thing} of the given
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device}.
      *
      * @param device (must not be null)
      */
@@ -188,7 +185,8 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Creates a {@link DiscoveryResult} for the given {@link Device}, if the {@link Device} is supported and the
-     * {@link Device#getOutputMode()} is unequal {@link OutputModeEnum#DISABLED}.
+     * {@link Device#getOutputMode()} is unequal
+     * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum#DISABLED}.
      *
      * @param device (must not be null)
      */

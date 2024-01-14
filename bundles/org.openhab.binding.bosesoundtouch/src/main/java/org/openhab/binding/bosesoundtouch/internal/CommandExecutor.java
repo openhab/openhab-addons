@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,7 +66,7 @@ public class CommandExecutor implements AvailableSources {
      * Synchronizes the underlying storage container with the current value for the presets stored on the player
      * by updating the available ones and deleting the cleared ones
      *
-     * @param playerPresets a Map<Integer, ContentItems> containing the items currently stored on the player
+     * @param playerPresets a {@code Map<Integer, ContentItems>} containing the items currently stored on the player
      */
     public void updatePresetContainerFromPlayer(Map<Integer, ContentItem> playerPresets) {
         playerPresets.forEach((k, v) -> {
@@ -266,7 +266,7 @@ public class CommandExecutor implements AvailableSources {
     /**
      * Post RemoteKey on the device
      *
-     * @param command the command is Type of RemoteKeyType
+     * @param key the key is Type of RemoteKeyType
      */
     public void postRemoteKey(RemoteKeyType key) {
         sendPostRequestInWebSocket("key", "mainNode=\"keyPress\"",

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,10 +57,10 @@ public class HomekitCommandExtension extends AbstractConsoleCommandExtension {
     private static final String PARAM_INSTANCE_HELP = " [--instance <instance id>]";
 
     private class CommandCompleter implements ConsoleCommandCompleter {
+        @Override
         public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
             if (cursorArgumentIndex == 0) {
-                boolean result = SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
-                return result;
+                return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
             }
             return false;
         }

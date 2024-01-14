@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,7 +69,7 @@ public class CommandSetstate extends AbstractCommand {
             if (m.groupCount() == 4) {
                 setModule(m.group(2));
                 setConnector(m.group(3));
-                setState(m.group(4).equals("0") ? OnOffType.OFF : OnOffType.ON);
+                setState(OnOffType.from(!"0".equals(m.group(4))));
                 return true;
             }
         }

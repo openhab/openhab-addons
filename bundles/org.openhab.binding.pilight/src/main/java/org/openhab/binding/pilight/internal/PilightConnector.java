@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -97,8 +97,9 @@ public class PilightConnector implements Runnable, Closeable {
                         try (BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
                             String line = in.readLine();
                             while (!Thread.currentThread().isInterrupted() && line != null) {
-                                if (!line.isEmpty()) {
-                                    logger.trace("Received from pilight: {}", line);
+                                logger.trace("Received from pilight: {}", line);
+                                // ignore empty lines and lines starting with "status"
+                                if (!line.isEmpty() && !line.startsWith("{\"status\":")) {
                                     final ObjectMapper inputMapper = this.inputMapper;
                                     if (line.startsWith("{\"message\":\"config\"")) {
                                         final @Nullable Message message = inputMapper.readValue(line, Message.class);
@@ -109,13 +110,11 @@ public class PilightConnector implements Runnable, Closeable {
                                     } else if (line.startsWith("{\"version\":")) {
                                         final @Nullable Version version = inputMapper.readValue(line, Version.class);
                                         callback.versionReceived(version);
-                                    } else if (line.startsWith("{\"status\":")) {
-                                        // currently unused
-                                    } else if (line.equals("1")) {
+                                    } else if ("1".equals(line)) {
                                         throw new IOException("Connection to pilight lost");
                                     } else {
                                         final @Nullable Status status = inputMapper.readValue(line, Status.class);
-                                        callback.statusReceived(Collections.singletonList(status));
+                                        callback.statusReceived(List.of(status));
                                     }
                                 }
 

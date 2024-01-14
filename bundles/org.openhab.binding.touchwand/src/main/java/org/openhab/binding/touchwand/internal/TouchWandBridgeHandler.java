@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.touchwand.internal;
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.THING_TYPE_BRIDGE;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWandUnitStatusUpdateListener {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(TouchWandBridgeHandler.class);
     private boolean addSecondaryUnits;
     private @Nullable TouchWandWebSockets touchWandWebSockets;
@@ -138,6 +137,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(TouchWandUnitDiscoveryService.class);
+        return Set.of(TouchWandUnitDiscoveryService.class);
     }
 }

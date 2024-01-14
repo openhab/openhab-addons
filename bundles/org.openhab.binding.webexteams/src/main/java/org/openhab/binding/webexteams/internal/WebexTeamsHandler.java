@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -90,7 +90,7 @@ public class WebexTeamsHandler extends BaseThingHandler implements AccessTokenRe
     // creates list of available Actions
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(WebexTeamsActions.class);
+        return List.of(WebexTeamsActions.class);
     }
 
     @Override

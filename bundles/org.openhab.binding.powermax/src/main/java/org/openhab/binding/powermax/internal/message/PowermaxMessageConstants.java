@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public class PowermaxMessageConstants {
 
     // System events
 
-    public static enum PowermaxSysEventType {
+    public enum PowermaxSysEventType {
         NONE,
         ALARM,
         SILENT_ALARM,
@@ -41,7 +41,7 @@ public class PowermaxMessageConstants {
         RESTORE,
         GENERAL_RESTORE,
         CANCEL,
-        RESET;
+        RESET
     }
 
     public static class PowermaxSysEvent {

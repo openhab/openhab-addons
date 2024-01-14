@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,18 +26,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SVDRPTimerList {
 
-    private List<String> timers = new ArrayList<String>();
+    private List<String> timers = new ArrayList<>();
 
     /**
      * parse object from SVDRP Client Response
      *
      * @param message SVDRP Client Response
      * @return Timer List Object
-     * @throws SVDRPParseResponseException thrown if response data is not parseable
      */
     public static SVDRPTimerList parse(String message) {
         SVDRPTimerList timers = new SVDRPTimerList();
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
 
         StringTokenizer st = new StringTokenizer(message, System.lineSeparator());
         while (st.hasMoreTokens()) {

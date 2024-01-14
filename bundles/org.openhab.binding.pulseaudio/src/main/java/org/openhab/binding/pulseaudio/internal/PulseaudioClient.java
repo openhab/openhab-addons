@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -149,7 +149,7 @@ public class PulseaudioClient {
      */
     public synchronized void update() {
         // one step copy
-        modules = new ArrayList<Module>(Parser.parseModules(listModules()));
+        modules = new ArrayList<>(Parser.parseModules(listModules()));
 
         List<AbstractAudioDeviceConfig> newItems = new ArrayList<>(); // prepare new list before assigning it
         if (configuration.sink) {
@@ -225,8 +225,8 @@ public class PulseaudioClient {
      */
     public @Nullable Sink getSink(String name) {
         for (AbstractAudioDeviceConfig item : items) {
-            if (item.getPaName().equalsIgnoreCase(name) && item instanceof Sink) {
-                return (Sink) item;
+            if (item.getPaName().equalsIgnoreCase(name) && item instanceof Sink sink) {
+                return sink;
             }
         }
         return null;
@@ -239,8 +239,8 @@ public class PulseaudioClient {
      */
     public @Nullable Sink getSink(int id) {
         for (AbstractAudioDeviceConfig item : items) {
-            if (item.getId() == id && item instanceof Sink) {
-                return (Sink) item;
+            if (item.getId() == id && item instanceof Sink sink) {
+                return sink;
             }
         }
         return null;
@@ -253,8 +253,8 @@ public class PulseaudioClient {
      */
     public @Nullable Source getSource(int id) {
         for (AbstractAudioDeviceConfig item : items) {
-            if (item.getId() == id && item instanceof Source) {
-                return (Source) item;
+            if (item.getId() == id && item instanceof Source source) {
+                return source;
             }
         }
         return null;
@@ -264,7 +264,7 @@ public class PulseaudioClient {
      * retrieves an {@link AbstractAudioDeviceConfig} by its identifier
      * If several devices correspond to the deviceIdentifier, returns the first one (aphabetical order)
      *
-     * @param The device identifier to match against
+     * @param deviceIdentifier The device identifier to match against
      * @return the corresponding {@link AbstractAudioDeviceConfig} to the given <code>name</code>
      */
     public @Nullable AbstractAudioDeviceConfig getGenericAudioItem(DeviceIdentifier deviceIdentifier) {
@@ -362,8 +362,10 @@ public class PulseaudioClient {
             currentTry++;
         } while (currentTry < 3);
 
-        logger.warn("The pulseaudio binding tried 3 times to load the module-simple-protocol-tcp"
-                + " on random port on the pulseaudio server and give up trying");
+        logger.warn("""
+                The pulseaudio binding tried 3 times to load the module-simple-protocol-tcp\
+                 on random port on the pulseaudio server and give up trying\
+                """);
         return Optional.empty();
     }
 
@@ -380,7 +382,7 @@ public class PulseaudioClient {
         if (itemType == null) {
             return Optional.empty();
         }
-        List<Module> modulesCopy = new ArrayList<Module>(modules);
+        List<Module> modulesCopy = new ArrayList<>(modules);
         var isSource = item instanceof Source;
         return modulesCopy.stream() // iteration on modules
                 .filter(module -> MODULE_SIMPLE_PROTOCOL_TCP_NAME.equals(module.getPaName())) // filter on module name
@@ -637,7 +639,6 @@ public class PulseaudioClient {
                         lc++;
                         if (retRead > 0) {
                             String line = new String(buff, 0, retRead);
-                            // System.out.println("'"+line+"'");
                             if (line.endsWith(">>> ") && lc > 1) {
                                 result += line.substring(0, line.length() - 4);
                                 break;

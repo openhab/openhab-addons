@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -337,9 +337,9 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
                     command = (type == OnOffType.ON ? Commands.ON : Commands.OFF);
                     dimmingLevel = 0;
 
-                } else if (type instanceof PercentType) {
+                } else if (type instanceof PercentType percentCommand) {
                     command = Commands.SET_LEVEL;
-                    dimmingLevel = (byte) getDimLevelFromPercentType((PercentType) type);
+                    dimmingLevel = (byte) getDimLevelFromPercentType(percentCommand);
 
                     if (dimmingLevel == 0) {
                         command = Commands.OFF;

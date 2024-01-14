@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,10 +37,10 @@ public class SignalStrength {
     /**
      * Returns the signal strength as a quality percentage:
      * <ul>
-     * <li>RSSI <= -100: returns 0
-     * <li>-100 < RSSI < -50: returns a value between 0 and 1 (linearly distributed)
-     * <li>RSSI >= -50: returns 1
-     * <ul>
+     * <li>{@code RSSI <= -100}: returns 0
+     * <li>{@code -100 < RSSI < -50}: returns a value between 0 and 1 (linearly distributed)
+     * <li>{@code RSSI >= -50}: returns 1
+     * </ul>
      *
      * @return a value between 0 and 1. 0 being worst strength and 1
      *         being best strength.
@@ -62,7 +62,7 @@ public class SignalStrength {
     /**
      * Returns the received signal strength indicator (RSSI).
      *
-     * @return a value <= 0. 0 being best strength and more negative values indicate worser strength.
+     * @return a value {@code <= 0. 0} being best strength and more negative values indicate worser strength.
      */
     public double toRSSI() {
         return 10 * Math.log10(milliWatts);

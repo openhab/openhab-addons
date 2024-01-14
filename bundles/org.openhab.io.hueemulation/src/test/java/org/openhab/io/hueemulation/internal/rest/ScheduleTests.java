@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,15 +20,13 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -143,14 +141,13 @@ public class ScheduleTests {
 
     @SuppressWarnings("null")
     @Test
-    public void addGetRemoveScheduleViaRest() {
+    public void addGetRemoveScheduleViaRest() throws Exception {
         // 1. Create
         String body = "{ 'name':'Wake up', 'description':'My wake up alarm', 'localtime':'2015-06-30T14:24:40'," + //
                 "'command':{'address':'/api/testuser/lights/1/state','method':'PUT','body':'{\"on\":true}'} }";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/schedules").request()
-                .post(Entity.json(body));
+        ContentResponse response = commonSetup.sendPost("/testuser/schedules", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
+        assertThat(response.getContentAsString(), containsString("success"));
 
         // 1.1 Check for entry
         Entry<String, HueScheduleEntry> entry = cs.ds.schedules.entrySet().stream().findAny().get();
@@ -167,22 +164,20 @@ public class ScheduleTests {
         assertThat(rule.getActions().get(0).getTypeUID(), is("rules.HttpAction"));
 
         // 2. Get
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/schedules/" + entry.getKey()).request()
-                .get();
+        response = commonSetup.sendGet("/testuser/schedules/" + entry.getKey());
         assertEquals(200, response.getStatus());
-        HueSceneEntry fromJson = new Gson().fromJson(response.readEntity(String.class), HueSceneEntry.class);
+        HueSceneEntry fromJson = new Gson().fromJson(response.getContentAsString(), HueSceneEntry.class);
         assertThat(fromJson.name, is(entry.getValue().name));
 
         // 3. Remove
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/schedules/" + entry.getKey()).request()
-                .delete();
+        response = commonSetup.sendDelete("/testuser/schedules/" + entry.getKey());
         assertEquals(200, response.getStatus());
         assertTrue(cs.ds.schedules.isEmpty());
     }
 
     @SuppressWarnings("null")
     @Test
-    public void updateScheduleViaRest() {
+    public void updateScheduleViaRest() throws Exception {
         HueCommand command = new HueCommand("/api/testuser/lights/1/state", "PUT", "{'on':true}");
         String localtime = "2020-02-01T12:12:00";
 
@@ -194,10 +189,9 @@ public class ScheduleTests {
 
         // Modify (just the name)
         String body = "{ 'name':'A new name'}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/schedules/demo1").request()
-                .put(Entity.json(body));
+        ContentResponse response = commonSetup.sendPut("/testuser/schedules/demo1", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("name"));
+        assertThat(response.getContentAsString(), containsString("name"));
 
         Entry<String, HueScheduleEntry> entry = cs.ds.schedules.entrySet().stream().findAny().get();
         assertThat(entry.getValue().name, is("A new name"));
@@ -217,10 +211,9 @@ public class ScheduleTests {
 
         // Modify (Change time)
         body = "{ 'localtime':'2015-06-30T14:24:40'}";
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/schedules/demo1").request()
-                .put(Entity.json(body));
+        response = commonSetup.sendPut("/testuser/schedules/demo1", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("localtime"));
+        assertThat(response.getContentAsString(), containsString("localtime"));
 
         entry = cs.ds.schedules.entrySet().stream().findAny().get();
         assertThat(entry.getValue().name, is("test name")); // should not have changed
@@ -229,10 +222,9 @@ public class ScheduleTests {
 
         // Modify (Change command)
         body = "{ 'command':{'address':'/api/testuser/lights/2/state','method':'PUT','body':'{\"on\":true}'} }";
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/schedules/demo1").request()
-                .put(Entity.json(body));
+        response = commonSetup.sendPut("/testuser/schedules/demo1", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("command"));
+        assertThat(response.getContentAsString(), containsString("command"));
 
         entry = cs.ds.schedules.entrySet().stream().findAny().get();
         assertThat(entry.getValue().name, is("test name")); // should not have changed
@@ -241,7 +233,7 @@ public class ScheduleTests {
     }
 
     @Test
-    public void getAll() {
+    public void getAll() throws Exception {
         HueCommand command = new HueCommand("/api/testuser/lights/1/state", "POST", "{'on':true}");
         String localtime = "2020-02-01T12:12:00";
 
@@ -251,10 +243,10 @@ public class ScheduleTests {
 
         ruleRegistry.add(rule);
 
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/schedules").request().get();
+        ContentResponse response = commonSetup.sendGet("/testuser/schedules");
         Type type = new TypeToken<Map<String, HueSceneEntry>>() {
         }.getType();
-        Map<String, HueSceneEntry> fromJson = new Gson().fromJson(response.readEntity(String.class), type);
+        Map<String, HueSceneEntry> fromJson = new Gson().fromJson(response.getContentAsString(), type);
         assertTrue(fromJson.containsKey("demo1"));
     }
 
@@ -349,7 +341,7 @@ public class ScheduleTests {
         configuration.put("time", "12:12:00");
         trigger = TriggerBuilder.create().withId("absolutetrigger").withTypeUID("timer.AbsoluteDateTimeTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("2020-02-01T12:12:00"));
 
@@ -360,7 +352,7 @@ public class ScheduleTests {
         configuration.put("randomizeTime", "14:12:34");
         trigger = TriggerBuilder.create().withId("absolutetrigger").withTypeUID("timer.AbsoluteDateTimeTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("2020-02-01T12:12:00A14:12:34"));
 
@@ -370,7 +362,7 @@ public class ScheduleTests {
         configuration.put("cronExpression", "15 12 * * 6,7");
         trigger = TriggerBuilder.create().withId("crontrigger").withTypeUID("timer.GenericCronTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("W3/T12:15:00"));
 
@@ -379,7 +371,7 @@ public class ScheduleTests {
         configuration.put("cronExpression", "15 14 * * 1,2,3,4,5,6,7");
         trigger = TriggerBuilder.create().withId("crontrigger").withTypeUID("timer.GenericCronTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("W127/T14:15:00"));
 
@@ -388,7 +380,7 @@ public class ScheduleTests {
         configuration.put("time", "12:12:00");
         trigger = TriggerBuilder.create().withId("timertrigger").withTypeUID("timer.TimerTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("PT12:12:00"));
 
@@ -398,7 +390,7 @@ public class ScheduleTests {
         configuration.put("randomizeTime", "14:12:34");
         trigger = TriggerBuilder.create().withId("timertrigger").withTypeUID("timer.TimerTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("PT12:12:00A14:12:34"));
 
@@ -408,7 +400,7 @@ public class ScheduleTests {
         configuration.put("repeat", -1);
         trigger = TriggerBuilder.create().withId("timertrigger").withTypeUID("timer.TimerTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("R/PT12:12:00"));
 
@@ -419,7 +411,7 @@ public class ScheduleTests {
         configuration.put("repeat", 12);
         trigger = TriggerBuilder.create().withId("timertrigger").withTypeUID("timer.TimerTrigger")
                 .withConfiguration(configuration).build();
-        timeString = RuleUtils.timeStringFromTrigger(Collections.singletonList(trigger));
+        timeString = RuleUtils.timeStringFromTrigger(List.of(trigger));
 
         assertThat(timeString, is("R12/PT12:12:00A14:12:34"));
     }

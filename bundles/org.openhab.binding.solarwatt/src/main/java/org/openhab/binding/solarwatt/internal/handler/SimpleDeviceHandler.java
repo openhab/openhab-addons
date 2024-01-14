@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -212,8 +212,8 @@ public class SimpleDeviceHandler extends BaseThingHandler {
         Bridge bridge = this.getBridge();
         if (bridge != null) {
             BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof EnergyManagerHandler) {
-                return (EnergyManagerHandler) bridgeHandler;
+            if (bridgeHandler instanceof EnergyManagerHandler energyManagerHandler) {
+                return energyManagerHandler;
             } else {
                 // happens while dynamically reloading the binding
                 this.logger.warn("BridgeHandler is not implementing EnergyManagerHandler {}", bridgeHandler);

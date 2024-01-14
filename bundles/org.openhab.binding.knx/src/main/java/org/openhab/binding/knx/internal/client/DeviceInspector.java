@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.knx.internal.handler.Manufacturer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,8 +125,8 @@ public class DeviceInspector {
                 OPERATION_TIMEOUT);
         if ((elements == null ? 0 : toUnsigned(elements)) == 1) {
             Thread.sleep(OPERATION_INTERVAL);
-            String manufacturerID = Manufacturer.getName(toUnsigned(getClient().readDeviceProperties(address,
-                    DEVICE_OBJECT, PID.MANUFACTURER_ID, 1, 1, false, OPERATION_TIMEOUT)));
+            String manufacturerId = MANUFACTURER_MAP.getOrDefault(toUnsigned(getClient().readDeviceProperties(address,
+                    DEVICE_OBJECT, PID.MANUFACTURER_ID, 1, 1, false, OPERATION_TIMEOUT)), "Unknown");
 
             Thread.sleep(OPERATION_INTERVAL);
             String serialNo = toHex(getClient().readDeviceProperties(address, DEVICE_OBJECT, PID.SERIAL_NUMBER, 1, 1,
@@ -260,7 +259,7 @@ public class DeviceInspector {
                 // allowed to fail, optional
             }
 
-            ret.put(MANUFACTURER_NAME, manufacturerID);
+            ret.put(MANUFACTURER_NAME, manufacturerId);
             if (serialNo != null) {
                 ret.put(MANUFACTURER_SERIAL_NO, serialNo);
             }
@@ -272,7 +271,7 @@ public class DeviceInspector {
             }
             ret.put(MAX_APDU_LENGTH, maxApdu);
             logger.debug("Identified device {} as {}, type {}, revision {}, serial number {}, max APDU {}", address,
-                    manufacturerID, hardwareType, firmwareRevision, serialNo, maxApdu);
+                    manufacturerId, hardwareType, firmwareRevision, serialNo, maxApdu);
         } else {
             logger.debug("The KNX device with address {} does not expose a Device Object", address);
         }
@@ -285,7 +284,7 @@ public class DeviceInspector {
 
     /**
      * @implNote {@link readDeviceDescription(address)} tries to read device description from the KNX device.
-     *           According to KNX specification, eihter device descriptor DD0 or DD2 must be implemented.
+     *           According to KNX specification, either device descriptor DD0 or DD2 must be implemented.
      *           Currently only data from DD0 is returned; DD2 is just logged in debug mode.
      *
      * @param address Individual address of KNX device

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -228,6 +228,15 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     protected void assertNotPublished(String mqttTopic, String payload) {
         verify(bridgeConnection, never()).publish(eq(mqttTopic),
                 ArgumentMatchers.eq(payload.getBytes(StandardCharsets.UTF_8)), anyInt(), anyBoolean());
+    }
+
+    /**
+     * Assert that nothing was published on given topic.
+     *
+     * @param mqttTopic Mqtt topic
+     */
+    protected void assertNothingPublished(String mqttTopic) {
+        verify(bridgeConnection, never()).publish(eq(mqttTopic), any(), anyInt(), anyBoolean());
     }
 
     /**

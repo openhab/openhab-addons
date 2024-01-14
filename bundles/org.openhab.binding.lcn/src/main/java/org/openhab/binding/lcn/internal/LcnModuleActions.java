@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Fabian Wolter - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = LcnModuleActions.class)
 @ThingActionsScope(name = "lcn")
 @NonNullByDefault
 public class LcnModuleActions implements ThingActions {
@@ -161,7 +164,7 @@ public class LcnModuleActions implements ThingActions {
     /**
      * Start an lcn relay timer with the given duration [ms]
      *
-     * @param relaynumber 1-based number of the relay to use
+     * @param relayNumber 1-based number of the relay to use
      * @param duration duration of the relay timer in milliseconds
      */
     @RuleAction(label = "start a relay timer", description = "Start an LCN relay timer.")
@@ -178,7 +181,7 @@ public class LcnModuleActions implements ThingActions {
     /**
      * Let the beeper connected to the LCN module beep.
      *
-     * @param volume sound volume in percent. Can be null. Then, the last volume is used.
+     * @param soundVolume sound volume in percent. Can be null. Then, the last volume is used.
      * @param tonality N=normal, S=special, 1-7 tonalities 1-7. Can be null. Then, normal tonality is used.
      * @param count number of beeps. Can be null. Then, number of beeps is one.
      */

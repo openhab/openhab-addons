@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,9 +67,9 @@ public class HDPowerViewCommandExtension extends AbstractConsoleCommandExtension
 
         for (Thing thing : thingRegistry.getAll()) {
             ThingHandler thingHandler = thing.getHandler();
-            if (thingHandler instanceof HDPowerViewHubHandler) {
+            if (thingHandler instanceof HDPowerViewHubHandler hubHandler) {
                 console.println("Generation 1/2 API hub: " + thing.getLabel());
-                HDPowerViewWebTargets webTargets = ((HDPowerViewHubHandler) thingHandler).getWebTargets();
+                HDPowerViewWebTargets webTargets = hubHandler.getWebTargets();
 
                 try {
                     List<ShadeData> shades = webTargets.getShades().shadeData;
@@ -90,9 +90,9 @@ public class HDPowerViewCommandExtension extends AbstractConsoleCommandExtension
                 } catch (HubException e) {
                     console.println("Error retrieving ID's: " + e.getMessage());
                 }
-            } else if (thingHandler instanceof GatewayBridgeHandler) {
+            } else if (thingHandler instanceof GatewayBridgeHandler gatewayHandler) {
                 console.println("Generation 3 API gateway: " + thing.getLabel());
-                GatewayWebTargets webTargets = ((GatewayBridgeHandler) thingHandler).getWebTargets();
+                GatewayWebTargets webTargets = gatewayHandler.getWebTargets();
 
                 try {
                     List<Shade> shades = webTargets.getShades();

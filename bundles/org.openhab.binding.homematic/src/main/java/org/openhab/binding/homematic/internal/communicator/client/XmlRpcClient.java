@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,8 +84,7 @@ public class XmlRpcClient extends RpcClient<String> {
             } catch (IOException ex) {
                 reason = ex;
                 // no retries for "init" request or if connection is refused
-                if ("init".equals(request.getMethodName())
-                        || ex.getCause() != null && ex.getCause() instanceof ExecutionException) {
+                if ("init".equals(request.getMethodName()) || ex.getCause() instanceof ExecutionException) {
                     break;
                 }
                 logger.debug("XmlRpcMessage failed({}), sending message again {}/{}", ex.getMessage(), rpcRetryCounter,

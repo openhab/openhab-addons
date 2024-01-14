@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.orbitbhyve.internal.discovery;
 
 import static org.openhab.binding.orbitbhyve.internal.OrbitBhyveBindingConstants.THING_TYPE_SPRINKLER;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,15 +25,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.orbitbhyve.internal.handler.OrbitBhyveBridgeHandler;
 import org.openhab.binding.orbitbhyve.internal.model.OrbitBhyveDevice;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +42,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = OrbitBhyveDiscoveryService.class)
 @NonNullByDefault
-public class OrbitBhyveDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
-
+public class OrbitBhyveDiscoveryService extends AbstractThingHandlerDiscoveryService<OrbitBhyveBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(OrbitBhyveDiscoveryService.class);
-
-    private @Nullable OrbitBhyveBridgeHandler bridgeHandler;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
@@ -58,35 +53,13 @@ public class OrbitBhyveDiscoveryService extends AbstractDiscoveryService
     private static final int DISCOVERY_REFRESH_SEC = 1800;
 
     public OrbitBhyveDiscoveryService() {
-        super(DISCOVERY_TIMEOUT_SEC);
+        super(OrbitBhyveBridgeHandler.class, DISCOVERY_TIMEOUT_SEC);
         logger.debug("Creating discovery service");
     }
 
     @Override
     protected void startScan() {
         runDiscovery();
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler thingHandler) {
-        if (thingHandler instanceof OrbitBhyveBridgeHandler) {
-            bridgeHandler = (OrbitBhyveBridgeHandler) thingHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
     }
 
     @Override
@@ -110,9 +83,8 @@ public class OrbitBhyveDiscoveryService extends AbstractDiscoveryService
     }
 
     private synchronized void runDiscovery() {
-        OrbitBhyveBridgeHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler != null && ThingStatus.ONLINE == localBridgeHandler.getThing().getStatus()) {
-            List<OrbitBhyveDevice> devices = localBridgeHandler.getDevices();
+        if (ThingStatus.ONLINE == thingHandler.getThing().getStatus()) {
+            List<OrbitBhyveDevice> devices = thingHandler.getDevices();
             logger.debug("Discovered total of {} devices", devices.size());
             for (OrbitBhyveDevice device : devices) {
                 sprinklerDiscovered(device);
@@ -121,30 +93,26 @@ public class OrbitBhyveDiscoveryService extends AbstractDiscoveryService
     }
 
     private void sprinklerDiscovered(OrbitBhyveDevice device) {
-        OrbitBhyveBridgeHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler != null) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put("id", device.getId());
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFwVersion());
-            properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.getHwVersion());
-            properties.put(Thing.PROPERTY_MAC_ADDRESS, device.getMacAddress());
-            properties.put(Thing.PROPERTY_MODEL_ID, device.getType());
-            properties.put("Zones", device.getNumStations());
-            properties.put("Active zones", device.getZones().size());
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("id", device.getId());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFwVersion());
+        properties.put(Thing.PROPERTY_HARDWARE_VERSION, device.getHwVersion());
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, device.getMacAddress());
+        properties.put(Thing.PROPERTY_MODEL_ID, device.getType());
+        properties.put("Zones", device.getNumStations());
+        properties.put("Active zones", device.getZones().size());
 
-            ThingUID thingUID = new ThingUID(THING_TYPE_SPRINKLER, localBridgeHandler.getThing().getUID(),
-                    device.getId());
+        ThingUID thingUID = new ThingUID(THING_TYPE_SPRINKLER, thingHandler.getThing().getUID(), device.getId());
 
-            logger.debug("Detected a/an {} - label: {} id: {}", THING_TYPE_SPRINKLER.getId(), device.getName(),
-                    device.getId());
-            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_SPRINKLER)
-                    .withProperties(properties).withRepresentationProperty("id").withLabel(device.getName())
-                    .withBridge(localBridgeHandler.getThing().getUID()).build());
-        }
+        logger.debug("Detected a/an {} - label: {} id: {}", THING_TYPE_SPRINKLER.getId(), device.getName(),
+                device.getId());
+        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_SPRINKLER)
+                .withProperties(properties).withRepresentationProperty("id").withLabel(device.getName())
+                .withBridge(thingHandler.getThing().getUID()).build());
     }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return Collections.singleton(THING_TYPE_SPRINKLER);
+        return Set.of(THING_TYPE_SPRINKLER);
     }
 }

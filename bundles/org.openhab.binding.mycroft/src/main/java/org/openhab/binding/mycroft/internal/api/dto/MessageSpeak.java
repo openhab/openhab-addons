@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openhab.binding.mycroft.internal.api.MessageType;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * This message is sent to the Mycroft audio module
@@ -41,11 +43,13 @@ public class MessageSpeak extends BaseMessage {
 
     public static class Data {
         public String utterance = "";
-        public String expect_response = "";
-    };
+        @SerializedName("expect_response")
+        public String expectResponse = "";
+    }
 
     public static class Context {
-        public String client_name = "";
+        @SerializedName("client_name")
+        public String clientName = "";
         public List<String> source = new ArrayList<>();
         public String destination = "";
     }

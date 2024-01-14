@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -169,9 +169,9 @@ public class POP3IMAPHandler extends BaseThingHandler {
                                 }
                                 Object rawContent = message.getContent();
                                 String contentAsString;
-                                if (rawContent instanceof String) {
+                                if (rawContent instanceof String str) {
                                     logger.trace("Detected plain text message");
-                                    contentAsString = (String) rawContent;
+                                    contentAsString = str;
                                 } else if (rawContent instanceof MimeMessage mimeMessage) {
                                     logger.trace("Detected MIME message");
                                     try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {

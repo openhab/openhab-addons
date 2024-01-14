@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public final class WeekProfileRegister {
 
-    private @NotNull Map<Integer, WeekProfile> register = new HashMap<Integer, WeekProfile>();
+    private @NotNull Map<Integer, WeekProfile> register = new HashMap<>();
 
     /**
      * Stores a new week profile in the register. If a week profile exists with the same id, that value is overwritten.

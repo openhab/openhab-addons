@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -210,7 +210,7 @@ public class ESP2Packet {
         return ZERO;
     }
 
-    private byte calcCheckSum(byte data[], int offset, int length) {
+    private byte calcCheckSum(byte[] data, int offset, int length) {
         int checkSum = 0;
         for (int i = 0; i < length; i++) {
             checkSum += (data[offset + i] & 0xff);
@@ -251,7 +251,7 @@ public class ESP2Packet {
         }
     }
 
-    public static boolean validateCheckSum(byte data[], int length, byte checkSum) {
+    public static boolean validateCheckSum(byte[] data, int length, byte checkSum) {
         int sum = 0;
         for (int i = 0; i < length; i++) {
             sum += (data[i] & 0xff);

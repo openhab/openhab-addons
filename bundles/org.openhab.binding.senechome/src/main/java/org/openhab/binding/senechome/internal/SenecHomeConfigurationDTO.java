@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,10 +16,12 @@ package org.openhab.binding.senechome.internal;
  * The {@link SenecHomeConfigurationDTO} class contains fields mapping thing configuration parameters.
  *
  * @author Steven Schwarznau - Initial contribution
+ * @author Robert Delbrück - Add useHttp
  */
 public class SenecHomeConfigurationDTO {
     public String hostname;
     public int refreshInterval = 15;
     public int limitationTresholdValue = 95;
     public int limitationDuration = 120;
+    public boolean useHttp = false;
 }

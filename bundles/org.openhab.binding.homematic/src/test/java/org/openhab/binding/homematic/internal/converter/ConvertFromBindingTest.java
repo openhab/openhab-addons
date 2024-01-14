@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,18 +16,19 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.homematic.internal.converter.type.AbstractTypeConverter;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
-
-import tech.units.indriya.unit.UnitDimension;
+import org.openhab.core.types.UnDefType;
 
 /**
- * Tests for {@link AbstractTypeConverter#convertFromBinding(HmDatapoint)}.
+ * Tests for
+ * {@link org.openhab.binding.homematic.internal.converter.type.AbstractTypeConverter#convertFromBinding(HmDatapoint)}.
  *
  * @author Michael Reitler - Initial Contribution
  *
@@ -75,20 +76,19 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         floatQuantityDp.setUnit("°C");
         convertedState = temperatureConverter.convertFromBinding(floatQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
-        assertThat(((QuantityType<?>) convertedState).getDimension(), is(UnitDimension.TEMPERATURE));
+        assertThat(((QuantityType<?>) convertedState).getDimension(), is(equalTo(SIUnits.CELSIUS.getDimension())));
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(10.5));
         assertThat(((QuantityType<?>) convertedState).toUnit(ImperialUnits.FAHRENHEIT).doubleValue(), is(50.9));
 
         floatQuantityDp.setUnit("Â°C");
-        assertThat(((QuantityType<?>) convertedState).getDimension(), is(UnitDimension.TEMPERATURE));
+        assertThat(((QuantityType<?>) convertedState).getDimension(), is(equalTo(SIUnits.CELSIUS.getDimension())));
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(10.5));
 
         integerQuantityDp.setValue(50000);
         integerQuantityDp.setUnit("mHz");
         convertedState = frequencyConverter.convertFromBinding(integerQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
-        assertThat(((QuantityType<?>) convertedState).getDimension(),
-                is(UnitDimension.NONE.divide(UnitDimension.TIME)));
+        assertThat(((QuantityType<?>) convertedState).getDimension(), is(equalTo(Units.HERTZ.getDimension())));
         assertThat(((QuantityType<?>) convertedState).intValue(), is(50000));
         assertThat(((QuantityType<?>) convertedState).toUnit(Units.HERTZ).intValue(), is(50));
 
@@ -96,9 +96,34 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         floatQuantityDp.setUnit("100%");
         convertedState = timeConverter.convertFromBinding(floatQuantityDp);
         assertThat(convertedState, instanceOf(QuantityType.class));
-        assertThat(((QuantityType<?>) convertedState).getDimension(), is(UnitDimension.NONE));
+        assertThat(((QuantityType<?>) convertedState).getDimension(), is(equalTo(Units.ONE.getDimension())));
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(70.0));
         assertThat(((QuantityType<?>) convertedState).getUnit(), is(Units.PERCENT));
         assertThat(((QuantityType<?>) convertedState).toUnit(Units.ONE).doubleValue(), is(0.7));
+    }
+
+    @Test
+    public void testPercentTypeConverter() throws ConverterException {
+        State convertedState;
+        TypeConverter<?> percentTypeConverter = ConverterFactory.createConverter("Dimmer");
+
+        // the binding is backwards compatible, so clients may still use DecimalType, even if a unit is used
+        integerDp.setUnit("%");
+
+        integerDp.setValue(99.9);
+        integerDp.setMaxValue(100);
+        convertedState = percentTypeConverter.convertFromBinding(integerDp);
+        assertThat(convertedState, instanceOf(PercentType.class));
+        assertThat(((PercentType) convertedState).doubleValue(), is(99.0));
+
+        integerDp.setValue(77.77777778);
+        convertedState = percentTypeConverter.convertFromBinding(integerDp);
+        assertThat(convertedState, instanceOf(PercentType.class));
+        assertThat(((PercentType) convertedState).doubleValue(), is(77.0));
+
+        integerDp.setValue("");
+        convertedState = percentTypeConverter.convertFromBinding(integerDp);
+        assertThat(convertedState, instanceOf(UnDefType.class));
+        assertThat(((UnDefType) convertedState), is(UnDefType.NULL));
     }
 }

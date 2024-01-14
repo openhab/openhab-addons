@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ public class HueStateColorBulb extends HueStateBulb {
     /** time for transition in centiseconds. */
     public int transitiontime;
 
-    public static enum ColorMode {
+    public enum ColorMode {
         ct,
         hs,
         xy

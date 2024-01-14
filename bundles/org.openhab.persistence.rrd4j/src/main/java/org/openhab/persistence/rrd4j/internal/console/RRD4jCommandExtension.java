@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,8 +87,8 @@ public class RRD4jCommandExtension extends AbstractConsoleCommandExtension imple
 
     private @Nullable RRD4jPersistenceService getPersistenceService() {
         for (PersistenceService persistenceService : persistenceServiceRegistry.getAll()) {
-            if (persistenceService instanceof RRD4jPersistenceService) {
-                return (RRD4jPersistenceService) persistenceService;
+            if (persistenceService instanceof RRD4jPersistenceService service) {
+                return service;
             }
         }
         return null;

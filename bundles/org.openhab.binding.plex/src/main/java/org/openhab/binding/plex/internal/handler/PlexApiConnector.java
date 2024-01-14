@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,13 +17,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -129,11 +133,10 @@ public class PlexApiConnector {
      */
     public @Nullable MediaContainer getSessionData() {
         try {
-            String url = "http://" + host + ":" + String.valueOf(port) + "/status/sessions" + "?X-Plex-Token=" + token;
+            String url = "https://" + host + ":" + port + "/status/sessions" + "?X-Plex-Token=" + token;
             logger.debug("Getting session data '{}'", url);
-            MediaContainer mediaContainer = doHttpRequest("GET", url, getClientHeaders(), MediaContainer.class);
-            return mediaContainer;
-        } catch (IOException e) {
+            return getFromXml(doHttpRequest("GET", url, getClientHeaders(), false), MediaContainer.class);
+        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("An exception occurred while polling the PLEX Server: '{}'", e.getMessage());
             return null;
         }
@@ -146,12 +149,11 @@ public class PlexApiConnector {
      * @return the completed url that will be usable
      */
     public String getURL(String url) {
-        String artURL = scheme + "://" + host + ":" + String.valueOf(port + url + "?X-Plex-Token=" + token);
-        return artURL;
+        return scheme + "://" + host + ":" + port + url + "?X-Plex-Token=" + token;
     }
 
     /**
-     * This method will get an X-Token from the PLEX server if one is not provided in the bridge config
+     * This method will get an X-Token from the PLEX.tv server if one is not provided in the bridge config
      * and use this in the communication with the plex server
      */
     public void getToken() {
@@ -161,8 +163,8 @@ public class PlexApiConnector {
         headers.put("Authorization", "Basic " + authString);
 
         try {
-            user = doHttpRequest("POST", SIGNIN_URL, headers, User.class);
-        } catch (IOException e) {
+            user = getFromXml(doHttpRequest("POST", SIGNIN_URL, headers, true), User.class);
+        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("An exception occurred while fetching PLEX user token :'{}'", e.getMessage(), e);
             throw new ConfigurationException("Error occurred while fetching PLEX user token, please check config");
         }
@@ -176,11 +178,12 @@ public class PlexApiConnector {
     }
 
     /**
-     * This method will get the Api information from the PLEX servers.
+     * This method will get the Api information from the PLEX.tv servers.
      */
     public boolean getApi() {
         try {
-            MediaContainer api = doHttpRequest("GET", API_URL, getClientHeaders(), MediaContainer.class);
+            MediaContainer api = getFromXml(doHttpRequest("GET", API_URL, getClientHeaders(), true),
+                    MediaContainer.class);
             logger.debug("MediaContainer {}", api.getSize());
             if (api.getDevice() != null) {
                 for (Device tmpDevice : api.getDevice()) {
@@ -198,28 +201,59 @@ public class PlexApiConnector {
                 }
             }
             return false;
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("An exception occurred while fetching API :'{}'", e.getMessage(), e);
         }
         return false;
     }
 
     /**
-     * Make an HTTP request and return the class object that was used when calling.
+     * Make an HTTP request and return the response as a string.
      *
-     * @param <T> Class being used(dto)
      * @param method GET/POST
      * @param url What URL to call
      * @param headers Additional headers that will be used
-     * @param type class type for the XML parsing
-     * @return Returns a class object from the data returned by the call
+     * @param verify Flag to indicate if ssl certificate checking should be done
+     * @return Returns a string of the http response
      * @throws IOException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
      */
-    private <T> T doHttpRequest(String method, String url, Properties headers, Class<T> type) throws IOException {
-        String response = HttpUtil.executeUrl(method, url, headers, null, null, REQUEST_TIMEOUT_MS);
+    private String doHttpRequest(String method, String url, Properties headers, boolean verify)
+            throws IOException, InterruptedException, TimeoutException, ExecutionException {
+        final String response;
+        if (verify) {
+            // Requests sent to the PLEX.tv servers should use certificate checking
+            response = HttpUtil.executeUrl(method, url, headers, null, null, REQUEST_TIMEOUT_MS);
+        } else {
+            // Requests sent to the local server need to bypass certificate checking via the custom httpClient
+            final Request request = httpClient.newRequest(url).method(HttpUtil.createHttpMethod(method))
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            for (String httpHeaderKey : headers.stringPropertyNames()) {
+                if (httpHeaderKey.equalsIgnoreCase(HttpHeader.USER_AGENT.toString())) {
+                    request.agent(headers.getProperty(httpHeaderKey));
+                } else {
+                    request.header(httpHeaderKey, headers.getProperty(httpHeaderKey));
+                }
+            }
+            final ContentResponse res = request.send();
+            response = res.getContentAsString();
+        }
+        logger.debug("HTTP response: {}", response);
+        return response;
+    }
+
+    /**
+     * Return the class object that was represented by the xml input string.
+     *
+     * @param response The xml response to parse
+     * @param type Class type for the XML parsing
+     * @return Returns a class object from the input sring
+     */
+    private <T> T getFromXml(String response, Class<T> type) {
         @SuppressWarnings("unchecked")
         T obj = (T) xStream.fromXML(response);
-        logger.debug("HTTP response {}", response);
         return obj;
     }
 
@@ -230,7 +264,7 @@ public class PlexApiConnector {
      */
     private Properties getClientHeaders() {
         Properties headers = new Properties();
-        headers.put(HttpHeader.USER_AGENT, "openHAB / PLEX binding "); // + VERSION);
+        headers.put(HttpHeader.USER_AGENT, "openHAB/" + org.openhab.core.OpenHAB.getVersion() + " PLEX binding");
         headers.put("X-Plex-Client-Identifier", CLIENT_ID);
         headers.put("X-Plex-Product", "openHAB");
         headers.put("X-Plex-Version", "");
@@ -319,7 +353,7 @@ public class PlexApiConnector {
             NotificationContainer notification = gson.fromJson(msg, NotificationContainer.class);
             if (notification != null) {
                 PlexUpdateListener listenerLocal = listener;
-                if (listenerLocal != null && notification.getNotificationContainer().getType().equals("playing")) {
+                if (listenerLocal != null && "playing".equals(notification.getNotificationContainer().getType())) {
                     listenerLocal.onItemStatusUpdate(
                             notification.getNotificationContainer().getPlaySessionStateNotification().get(0)
                                     .getSessionKey(),
@@ -377,11 +411,11 @@ public class PlexApiConnector {
 
         if (commandPath != null) {
             try {
-                String url = "http://" + host + ":" + String.valueOf(port) + commandPath;
+                String url = "https://" + host + ":" + port + commandPath;
                 Properties headers = getClientHeaders();
                 headers.put("X-Plex-Target-Client-Identifier", playerID);
-                HttpUtil.executeUrl("GET", url, headers, null, null, REQUEST_TIMEOUT_MS);
-            } catch (IOException e) {
+                doHttpRequest("GET", url, headers, false);
+            } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
                 logger.debug("An exception occurred trying to send command '{}' to the player: {}", commandPath,
                         e.getMessage());
             }

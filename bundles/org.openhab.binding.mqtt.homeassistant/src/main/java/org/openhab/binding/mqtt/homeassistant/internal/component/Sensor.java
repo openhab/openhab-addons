@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,8 +88,7 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
 
         boolean trigger = TRIGGER_ICONS.matcher(icon).matches();
 
-        buildChannel(SENSOR_CHANNEL_ID, value, channelConfiguration.getName(),
-                getListener(componentConfiguration, value))
+        buildChannel(SENSOR_CHANNEL_ID, value, getName(), getListener(componentConfiguration, value))
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
                 .trigger(trigger).build();
     }

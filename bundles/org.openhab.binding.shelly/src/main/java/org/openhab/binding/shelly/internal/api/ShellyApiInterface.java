@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
@@ -42,7 +43,8 @@ public interface ShellyApiInterface {
 
     ShellySettingsDevice getDeviceInfo() throws ShellyApiException;
 
-    ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException;
+    ShellyDeviceProfile getDeviceProfile(String thingType, @Nullable ShellySettingsDevice device)
+            throws ShellyApiException;
 
     ShellySettingsStatus getStatus() throws ShellyApiException;
 

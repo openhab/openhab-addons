@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,6 +103,13 @@ public class LcnModuleLogicSubHandlerTest extends AbstractTestLcnModuleSubHandle
     @Test
     public void testStatusSingleLogic3And() {
         tryParseAllHandlers("=M000005S3050");
+        verify(handler).updateChannel(LcnChannelGroup.LOGIC, "3", AND);
+        verify(handler).updateChannel(any(), any(), any());
+    }
+
+    @Test
+    public void testStatusSingleLogic3And200() {
+        tryParseAllHandlers("=M000005S3200");
         verify(handler).updateChannel(LcnChannelGroup.LOGIC, "3", AND);
         verify(handler).updateChannel(any(), any(), any());
     }

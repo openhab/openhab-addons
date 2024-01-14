@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,16 +17,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.resol.handler.ResolBridgeHandler;
 import org.openhab.binding.resol.internal.ResolBindingConstants;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,18 +34,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Raphael Mack - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ResolDeviceDiscoveryService.class)
 @NonNullByDefault
-public class ResolDeviceDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class ResolDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<ResolBridgeHandler> {
 
     private static final String THING_PROPERTY_TYPE = "type";
 
     private final Logger logger = LoggerFactory.getLogger(ResolDeviceDiscoveryService.class);
 
-    private @Nullable ResolBridgeHandler resolBridgeHandler;
-
     public ResolDeviceDiscoveryService() throws IllegalArgumentException {
-        super(Set.of(ResolBindingConstants.THING_TYPE_UID_DEVICE), 15, false);
+        super(ResolBridgeHandler.class, Set.of(ResolBindingConstants.THING_TYPE_UID_DEVICE), 15, false);
     }
 
     public void addThing(ThingUID bridgeUID, String thingType, String type, String name) {
@@ -76,47 +72,25 @@ public class ResolDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void activate() {
-        ResolBridgeHandler resolBridgeHandler = this.resolBridgeHandler;
-        if (resolBridgeHandler != null) {
-            resolBridgeHandler.registerDiscoveryService(this);
-        }
+    public void initialize() {
+        thingHandler.registerDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
-    public void deactivate() {
-        ResolBridgeHandler resolBridgeHandler = this.resolBridgeHandler;
-        if (resolBridgeHandler != null) {
-            resolBridgeHandler.unregisterDiscoveryService();
-        }
+    public void dispose() {
+        super.dispose();
+        thingHandler.unregisterDiscoveryService();
     }
 
     @Override
     protected void startScan() {
-        ResolBridgeHandler resolBridgeHandler = this.resolBridgeHandler;
-        if (resolBridgeHandler != null) {
-            resolBridgeHandler.startScan();
-        }
+        thingHandler.startScan();
     }
 
     @Override
     protected void stopScan() {
-        ResolBridgeHandler resolBridgeHandler = this.resolBridgeHandler;
-        if (resolBridgeHandler != null) {
-            resolBridgeHandler.stopScan();
-        }
+        thingHandler.stopScan();
         super.stopScan();
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof ResolBridgeHandler) {
-            resolBridgeHandler = (ResolBridgeHandler) handler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return resolBridgeHandler;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.nzwateralerts.internal.handler;
 
 import static org.openhab.binding.nzwateralerts.internal.NZWaterAlertsBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
 public class NZWaterAlertsHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_WATERALERT);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_WATERALERT);
 
     @Activate
     public NZWaterAlertsHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {

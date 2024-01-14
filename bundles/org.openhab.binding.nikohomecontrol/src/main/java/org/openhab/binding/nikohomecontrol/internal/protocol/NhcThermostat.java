@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public abstract class NhcThermostat {
      * @param overrule the overrule temperature in 0.1°C multiples
      * @param overruletime in minutes
      * @param ecosave
-     * @param demand 0 if no demand, > 0 if heating, < 0 if cooling
+     * @param demand 0 if no demand, > 0 if heating, &lt; 0 if cooling
      */
     public void updateState(int measured, int setpoint, int mode, int overrule, int overruletime, int ecosave,
             int demand) {
@@ -109,7 +109,7 @@ public abstract class NhcThermostat {
     }
 
     /**
-     * This method should be called when an object implementing the {@NhcThermostatEvent} interface is initialized.
+     * This method should be called when an object implementing the {@link NhcThermostatEvent} interface is initialized.
      * It keeps a record of the event handler in that object so it can be updated when the action receives an update
      * from the Niko Home Control IP-interface.
      *
@@ -120,7 +120,7 @@ public abstract class NhcThermostat {
     }
 
     /**
-     * This method should be called when an object implementing the {@NhcThermostatEvent} interface is disposed.
+     * This method should be called when an object implementing the {@link NhcThermostatEvent} interface is disposed.
      * It resets the reference, so no updates go to the handler anymore.
      *
      */
@@ -304,14 +304,14 @@ public abstract class NhcThermostat {
             logger.debug("Thermostat mode {} not recognized, default to Day mode", mode);
         }
         executeMode(intMode);
-    };
+    }
 
     /**
      * Sends thermostat setpoint to Niko Home Control. This method is implemented in {@link NhcThermostat1} and
      * {@link NhcThermostat2}.
      *
      * @param overrule temperature to overrule the setpoint in 0.1°C multiples
-     * @param time time duration in min for overrule
+     * @param overruletime time duration in min for overrule
      */
     public abstract void executeOverrule(int overrule, int overruletime);
 

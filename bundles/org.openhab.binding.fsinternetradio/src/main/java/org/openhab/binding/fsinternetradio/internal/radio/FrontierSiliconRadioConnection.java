@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -124,8 +124,7 @@ public class FrontierSiliconRadioConnection {
      *
      * Typically used for polling state info.
      *
-     * @param REST
-     *            API requestString, e.g. "GET/netRemote.sys.power"
+     * @param requestString REST API request, e.g. "GET/netRemote.sys.power"
      * @return request result
      * @throws IOException if the request failed.
      */
@@ -138,10 +137,8 @@ public class FrontierSiliconRadioConnection {
      *
      * Typically used for changing parameters.
      *
-     * @param REST
-     *            API requestString, e.g. "SET/netRemote.sys.power"
-     * @param params
-     *            , e.g. "value=1"
+     * @param requestString REST API request, e.g. "SET/netRemote.sys.power"
+     * @param params parameters, e.g. "value=1"
      * @return request result
      * @throws IOException if the request failed.
      */

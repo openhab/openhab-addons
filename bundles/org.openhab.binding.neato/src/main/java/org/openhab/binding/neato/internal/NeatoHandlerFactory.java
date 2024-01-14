@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,8 +49,7 @@ public class NeatoHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections
             .unmodifiableSet(Stream.of(BRIDGE_TYPE_NEATOACCOUNT, THING_TYPE_VACUUMCLEANER).collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPE_UIDS = Collections
-            .singleton(THING_TYPE_VACUUMCLEANER);
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPE_UIDS = Set.of(THING_TYPE_VACUUMCLEANER);
 
     private Map<ThingUID, ServiceRegistration<DiscoveryService>> discoveryServiceRegistrations = new HashMap<>();
 

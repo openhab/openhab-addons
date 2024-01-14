@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ public class Vehicle {
     public String option_codes;
     public String vehicle_id;
     public String vin;
-    public String tokens[];
+    public String[] tokens;
     public String state;
     public boolean remote_start_enabled;
     public boolean calendar_enabled;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,6 +60,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Represents the measured type with conversion from the sensors' bytes to the openHAB state.
@@ -96,16 +97,26 @@ public enum MeasureType {
     CO2(PARTS_PER_MILLION, 2, CHANNEL_TYPE_CO2, Utils::toUInt16),
 
     WATER_LEAK_DETECTION(1, CHANNEL_TYPE_WATER_LEAK_DETECTION,
-            (data, offset, context) -> toUInt8(data[offset]) != 0 ? OnOffType.ON : OnOffType.OFF),
+            (data, offset, context) -> OnOffType.from(toUInt8(data[offset]) != 0)),
 
-    LIGHTNING_DISTANCE(KILO(METRE), 1, CHANNEL_TYPE_LIGHTNING_DISTANCE, (data, offset) -> toUInt8(data[offset])),
+    LIGHTNING_DISTANCE(KILO(METRE), 1, CHANNEL_TYPE_LIGHTNING_DISTANCE, (data, offset) -> {
+        int distance = toUInt8(data[offset]);
+        if (distance == 0xFF) {
+            return null;
+        }
+        return distance;
+    }),
 
     LIGHTNING_COUNTER(4, CHANNEL_TYPE_LIGHTNING_COUNTER,
             (data, offset, context) -> new DecimalType(toUInt32(data, offset))),
 
-    LIGHTNING_TIME(4, CHANNEL_TYPE_LIGHTNING_TIME,
-            (data, offset, context) -> new DateTimeType(
-                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(toUInt32(data, offset)), context.getZoneId()))),
+    LIGHTNING_TIME(4, CHANNEL_TYPE_LIGHTNING_TIME, (data, offset, context) -> {
+        int epochSecond = toUInt32(data, offset);
+        if (epochSecond == 0xFFFFFFFF) {
+            return UnDefType.UNDEF;
+        }
+        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), context.getZoneId()));
+    }),
 
     MILLIWATT_PER_SQUARE_METRE(MILLI(Units.WATT).divide(SQUARE_METRE), 2, CHANNEL_TYPE_UV_RADIATION,
             (data, offset) -> Utils.toUInt16(data, offset) / 10.),
@@ -129,7 +140,7 @@ public enum MeasureType {
             BiFunction<byte[], Integer, @Nullable Number> valueExtractor) {
         this(byteSize, channelTypeUID, (bytes, offset, context) -> {
             Number value = valueExtractor.apply(bytes, offset);
-            return value == null ? null : new QuantityType<>(value, unit);
+            return value == null ? UnDefType.UNDEF : new QuantityType<>(value, unit);
         });
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -339,8 +339,8 @@ public class NeeoDeviceHandler extends BaseThingHandler {
         final Bridge parent = getBridge();
         if (parent != null) {
             final BridgeHandler handler = parent.getHandler();
-            if (handler instanceof NeeoRoomHandler) {
-                return ((NeeoRoomHandler) handler);
+            if (handler instanceof NeeoRoomHandler roomHandler) {
+                return roomHandler;
             }
         }
         return null;

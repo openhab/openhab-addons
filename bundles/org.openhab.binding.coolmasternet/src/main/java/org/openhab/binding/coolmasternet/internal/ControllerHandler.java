@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -186,7 +186,7 @@ public final class ControllerHandler extends BaseBridgeHandler {
      * This method automatically acquires a connection.
      *
      * @return the server response to the command (never empty)
-     * @throws {@link IOException} if communications failed with the server
+     * @throws IOException if communications failed with the server
      */
     public String sendCommand(final String command) throws IOException {
         synchronized (socketLock) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -199,12 +199,12 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
     private Object convertValue(State state) {
         Object value;
-        if (state instanceof PercentType) {
-            value = ((PercentType) state).toBigDecimal().doubleValue();
-        } else if (state instanceof DateTimeType) {
-            value = Date.from(((DateTimeType) state).getZonedDateTime().toInstant());
-        } else if (state instanceof DecimalType) {
-            value = ((DecimalType) state).toBigDecimal().doubleValue();
+        if (state instanceof PercentType type) {
+            value = type.toBigDecimal().doubleValue();
+        } else if (state instanceof DateTimeType type) {
+            value = Date.from(type.getZonedDateTime().toInstant());
+        } else if (state instanceof DecimalType type) {
+            value = type.toBigDecimal().doubleValue();
         } else {
             value = state.toString();
         }

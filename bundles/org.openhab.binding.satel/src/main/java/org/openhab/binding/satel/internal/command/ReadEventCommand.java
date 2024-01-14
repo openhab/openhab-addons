@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,9 +106,7 @@ public class ReadEventCommand extends SatelCommandBase {
         if (year > currentYear) {
             year -= 4;
         }
-        LocalDateTime result = LocalDateTime.of(year, (payload[2] >> 4) & 0x0f, payload[1] & 0x1f, minutes / 60,
-                minutes % 60);
-        return result;
+        return LocalDateTime.of(year, (payload[2] >> 4) & 0x0f, payload[1] & 0x1f, minutes / 60, minutes % 60);
     }
 
     /**

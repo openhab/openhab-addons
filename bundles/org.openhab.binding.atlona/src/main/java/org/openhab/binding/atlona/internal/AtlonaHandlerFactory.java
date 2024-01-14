@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.atlona.internal;
 
 import static org.openhab.binding.atlona.internal.AtlonaBindingConstants.*;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -69,7 +68,7 @@ public class AtlonaHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_PRO3_44M)) {
-            return new AtlonaPro3Handler(thing, new AtlonaPro3Capabilities(5, 3, Collections.singleton(5), true));
+            return new AtlonaPro3Handler(thing, new AtlonaPro3Capabilities(5, 3, Set.of(5), true));
         }
 
         if (thingTypeUID.equals(THING_TYPE_PRO3_66M)) {

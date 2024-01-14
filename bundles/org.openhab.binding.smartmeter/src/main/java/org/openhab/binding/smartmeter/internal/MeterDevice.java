@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * This represents a meter device.
  * All read values of the device are cached here and can be obtained. The reading can be started with
- * {@link #readValues(ScheduledExecutorService, Duration)}
+ * {@link #readValues(long, ScheduledExecutorService, Duration)}
  *
  * @author Matthias Steigenberger - Initial contribution
  *
@@ -114,7 +114,7 @@ public abstract class MeterDevice<T> {
     /**
      * Returns the specified OBIS value if available.
      *
-     * @param obis the OBIS code which value should be retrieved.
+     * @param obisId the OBIS code which value should be retrieved.
      * @return the OBIS value as String if available - otherwise null.
      */
     @Nullable
@@ -129,7 +129,7 @@ public abstract class MeterDevice<T> {
     /**
      * Returns the specified OBIS value if available.
      *
-     * @param obis the OBIS code which value should be retrieved.
+     * @param obisId the OBIS code which value should be retrieved.
      * @return the OBIS value if available - otherwise null.
      */
     @SuppressWarnings("unchecked")
@@ -153,8 +153,9 @@ public abstract class MeterDevice<T> {
     /**
      * Read values from this device a store them locally against their OBIS code.
      *
-     * If there is an error in reading, it will be retried {@value #NUMBER_OF_RETRIES} times. The retry will be delayed
-     * by {@code period} seconds.
+     * If there is an error in reading, it will be retried
+     * {@value org.openhab.binding.smartmeter.connectors.ConnectorBase#NUMBER_OF_RETRIES} times.
+     * The retry will be delayed by {@code period} seconds.
      * If its still failing, the connection will be closed and opened again.
      *
      * @return The {@link Disposable} which needs to be disposed whenever not used anymore.

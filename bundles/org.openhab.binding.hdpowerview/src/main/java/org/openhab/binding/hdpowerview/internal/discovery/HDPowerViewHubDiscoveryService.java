@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.hdpowerview.internal.discovery;
 import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants.*;
 
 import java.net.UnknownHostException;
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -48,7 +48,7 @@ public class HDPowerViewHubDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> backgroundFuture;
 
     public HDPowerViewHubDiscoveryService() {
-        super(Collections.singleton(THING_TYPE_HUB), 60, true);
+        super(Set.of(THING_TYPE_HUB), 60, true);
         scanner = createScanner();
     }
 

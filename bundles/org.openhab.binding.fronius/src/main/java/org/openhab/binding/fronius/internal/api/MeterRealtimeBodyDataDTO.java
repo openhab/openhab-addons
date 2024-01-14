@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.fronius.internal.api;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MeterRealtimeBodyData} is responsible for storing
+ * The {@link MeterRealtimeBodyDataDTO} is responsible for storing
  * the "data" node of the JSON response
  * 
  * The main SerializedName values use Smart Meter 63A names

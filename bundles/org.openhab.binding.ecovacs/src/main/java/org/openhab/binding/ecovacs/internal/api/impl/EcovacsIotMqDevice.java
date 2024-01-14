@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -177,8 +177,8 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
             logger.debug("Established MQTT connection to device {}", getSerialNumber());
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            boolean isAuthFailure = cause instanceof Mqtt3ConnAckException && ((Mqtt3ConnAckException) cause)
-                    .getMqttMessage().getReturnCode() == Mqtt3ConnAckReturnCode.NOT_AUTHORIZED;
+            boolean isAuthFailure = cause instanceof Mqtt3ConnAckException connAckException
+                    && connAckException.getMqttMessage().getReturnCode() == Mqtt3ConnAckReturnCode.NOT_AUTHORIZED;
             throw new EcovacsApiException(e, isAuthFailure);
         }
     }

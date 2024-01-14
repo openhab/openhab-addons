@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -159,7 +159,7 @@ public enum ModuleType {
     public final ThingTypeUID thingTypeUID;
     public final FeatureArea feature;
     public final String apiName;
-    public final int thingTypeVersion;
+    public final String thingTypeVersion;
 
     ModuleType(FeatureArea feature, String apiName, int thingTypeVersion, @Nullable ModuleType bridge,
             Set<Class<? extends Capability>> capabilities, ChannelGroup... channelGroups) {
@@ -169,7 +169,7 @@ public enum ModuleType {
         this.apiName = apiName;
         this.channelGroups = Set.of(channelGroups);
         this.thingTypeUID = new ThingTypeUID(BINDING_ID, name().toLowerCase().replace("_", "-"));
-        this.thingTypeVersion = thingTypeVersion;
+        this.thingTypeVersion = Integer.toString(thingTypeVersion);
     }
 
     public boolean isLogical() {
@@ -195,7 +195,7 @@ public enum ModuleType {
                     : WIFI_SIGNAL_LEVELS;
         }
         throw new IllegalArgumentException(
-                "getSignalLevels should not be called for module type : '%s', please file a bug report."
+                "getSignalLevels should not be called for module type: '%s', please file a bug report."
                         .formatted(name()));
     }
 

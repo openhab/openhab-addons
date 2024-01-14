@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.etherrain.internal.config;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +30,7 @@ public class EtherRainConfiguration {
 
     public static final ThingTypeUID ETHERRAIN_THING_TYPE = new ThingTypeUID(BINDING_ID, "etherrain");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(ETHERRAIN_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(ETHERRAIN_THING_TYPE);
 
     /**
      * Hostname of the EtherRain API.

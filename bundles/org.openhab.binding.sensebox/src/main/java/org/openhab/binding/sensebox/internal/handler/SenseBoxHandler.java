@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,9 +102,7 @@ public class SenseBoxHandler extends BaseThingHandler {
         }
 
         if (senseBoxId != null && validConfig) {
-            cache.put(CACHE_KEY_DATA, () -> {
-                return connection.reallyFetchDataFromServer(senseBoxId);
-            });
+            cache.put(CACHE_KEY_DATA, () -> connection.reallyFetchDataFromServer(senseBoxId));
             updateStatus(ThingStatus.UNKNOWN);
             startAutomaticRefresh();
         } else {
@@ -151,7 +149,7 @@ public class SenseBoxHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
-    };
+    }
 
     private void startAutomaticRefresh() {
         stopAutomaticRefresh();

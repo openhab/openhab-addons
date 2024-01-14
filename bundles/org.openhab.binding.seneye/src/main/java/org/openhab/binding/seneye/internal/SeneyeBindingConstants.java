@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.seneye.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SeneyeBinding} class defines common constants, which are
+ * The {@link SeneyeBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Niko Tanghe - Initial contribution
@@ -53,5 +52,5 @@ public class SeneyeBindingConstants {
     public static final String PARAMETER_PASSWORD = "password";
     public static final String PARAMETER_POLLTIME = "polltime";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SENEYE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SENEYE);
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_INWALL_SWITCH = new ThingTypeUID(BINDING_ID, "in-wall-switch");
     public static final ThingTypeUID THING_TYPE_TWINGUARD = new ThingTypeUID(BINDING_ID, "twinguard");
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT = new ThingTypeUID(BINDING_ID, "window-contact");
+    public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2 = new ThingTypeUID(BINDING_ID, "window-contact-2");
     public static final ThingTypeUID THING_TYPE_MOTION_DETECTOR = new ThingTypeUID(BINDING_ID, "motion-detector");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
@@ -49,8 +50,12 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_SMART_BULB = new ThingTypeUID(BINDING_ID, "smart-bulb");
     public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR = new ThingTypeUID(BINDING_ID, "smoke-detector");
 
+    public static final ThingTypeUID THING_TYPE_USER_DEFINED_STATE = new ThingTypeUID(BINDING_ID, "user-defined-state");
+
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
+    public static final String CHANNEL_SCENARIO_TRIGGERED = "scenario-triggered";
+    public static final String CHANNEL_TRIGGER_SCENARIO = "trigger-scenario";
     public static final String CHANNEL_POWER_SWITCH = "power-switch";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_TEMPERATURE_RATING = "temperature-rating";
@@ -83,6 +88,11 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_SMOKE_CHECK = "smoke-check";
     public static final String CHANNEL_SILENT_MODE = "silent-mode";
+    public static final String CHANNEL_ILLUMINANCE = "illuminance";
+    public static final String CHANNEL_BYPASS_STATE = "bypass-state";
+    public static final String CHANNEL_SIGNAL_STRENGTH = "signal-strength";
+
+    public static final String CHANNEL_USER_DEFINED_STATE = "user-state";
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";

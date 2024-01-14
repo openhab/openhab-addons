@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -48,8 +47,8 @@ public class LxControlJalousieTest extends LxControlTest {
 
     @Test
     public void testChannels() {
-        testChannel("Rollershutter", Collections.singleton("Blinds"));
-        Set<String> tags = Collections.singleton("Switchable");
+        testChannel("Rollershutter", Set.of("Blinds"));
+        Set<String> tags = Set.of("Switchable");
         testChannel("Switch", SHADE_CHANNEL, tags);
         testChannel("Switch", AUTO_SHADE_CHANNEL, tags);
     }
@@ -65,7 +64,7 @@ public class LxControlJalousieTest extends LxControlTest {
             testChannelState(ROLLERSHUTTER_CHANNEL, new PercentType(i));
             testChannelState(SHADE_CHANNEL, OnOffType.OFF);
             changeLoxoneState("autoactive", a ? 1.0 : 0.0);
-            testChannelState(AUTO_SHADE_CHANNEL, a ? OnOffType.ON : OnOffType.OFF);
+            testChannelState(AUTO_SHADE_CHANNEL, OnOffType.from(a));
             a = !a;
         }
         changeLoxoneState("position", 100.1);

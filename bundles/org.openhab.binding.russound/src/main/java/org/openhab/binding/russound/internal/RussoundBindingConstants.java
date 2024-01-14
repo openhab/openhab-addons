@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.russound.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link RussoundBinding} class defines common constants, which are
+ * The {@link RussoundBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Tim Roberts - Initial contribution

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -206,7 +206,7 @@ public enum CosemObjectType {
      *
      * e.g. If the list contains 4 descriptors and the last 2 are repeating, idx=6 will return the 4th descriptor.
      *
-     * The idx is < 0 or outside a non-repeating descriptorslist size null is returned
+     * The idx {@code is < 0} or outside a non-repeating descriptorslist size null is returned
      *
      * @param idx the CosemValueDescriptor to return
      * @return the CosemValueDescriptor or null if not found.

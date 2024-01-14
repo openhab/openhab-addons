@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,6 +69,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SynopAnalyzerHandler extends BaseThingHandler {
+    private static final String DISTANCE = "Distance";
+    private static final String LOCATION = "Location";
+    private static final String USUAL_NAME = "Usual name";
     private static final String OGIMET_SYNOP_PATH = "http://www.ogimet.com/cgi-bin/getsynop?block=%s&begin=%s";
     private static final int REQUEST_TIMEOUT_MS = 5000;
     private static final DateTimeFormatter SYNOP_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHH00");
@@ -91,9 +94,9 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         SynopAnalyzerConfiguration configuration = getConfigAs(SynopAnalyzerConfiguration.class);
-        formattedStationId = String.format("%05d", configuration.stationId);
-        logger.info("Scheduling Synop update thread to run every {} minute for Station '{}'",
-                configuration.refreshInterval, formattedStationId);
+        formattedStationId = "%05d".formatted(configuration.stationId);
+        logger.info("Scheduling Synop update every {} minute for Station '{}'", configuration.refreshInterval,
+                formattedStationId);
 
         if (thing.getProperties().isEmpty()) {
             discoverAttributes(configuration.stationId, locationProvider.getLocation());
@@ -108,13 +111,13 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private void discoverAttributes(int stationId, @Nullable PointType serverLocation) {
         stations.stream().filter(s -> stationId == s.idOmm).findFirst().ifPresent(station -> {
             Map<String, String> properties = new HashMap<>(
-                    Map.of("Usual name", station.usualName, "Location", station.getLocation()));
+                    Map.of(USUAL_NAME, station.usualName, LOCATION, station.getLocation()));
 
             if (serverLocation != null) {
                 PointType stationLocation = new PointType(station.getLocation());
                 DecimalType distance = serverLocation.distanceFrom(stationLocation);
 
-                properties.put("Distance", new QuantityType<>(distance, SIUnits.METRE).toString());
+                properties.put(DISTANCE, new QuantityType<>(distance, SIUnits.METRE).toString());
             }
             updateProperties(properties);
         });
@@ -138,11 +141,11 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
                     return createSynopObject(synopMessage);
                 }
-                logger.warn("Message does not belong to station {} : {}", formattedStationId, message);
+                logger.warn("Message does not belong to station {}: {}", formattedStationId, message);
             }
             logger.warn("No valid Synop found for last 24h");
         } catch (IOException e) {
-            logger.warn("Synop request timedout : {}", e.getMessage());
+            logger.warn("Synop request timedout: {}", e.getMessage());
         }
         return Optional.empty();
     }
@@ -163,6 +166,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
     private State getChannelState(String channelId, Synop synop) {
         int octa = synop.getOcta();
+        Integer direction = synop.getWindDirection();
         switch (channelId) {
             case HORIZONTAL_VISIBILITY:
                 return new StringType(synop.getHorizontalVisibility().name());
@@ -183,9 +187,10 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             case TEMPERATURE:
                 return new QuantityType<>(synop.getTemperature(), TEMPERATURE_UNIT);
             case WIND_ANGLE:
-                return new QuantityType<>(synop.getWindDirection(), WIND_DIRECTION_UNIT);
+                return direction != null ? new QuantityType<>(direction, WIND_DIRECTION_UNIT) : UnDefType.NULL;
             case WIND_DIRECTION:
-                return new StringType(WindDirections.getWindDirection(synop.getWindDirection()).name());
+                return direction != null ? new StringType(WindDirections.getWindDirection(direction).name())
+                        : UnDefType.NULL;
             case WIND_STRENGTH:
                 return getWindStrength(synop);
             case WIND_SPEED_BEAUFORT:
@@ -199,7 +204,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 return new DateTimeType(
                         ZonedDateTime.of(year, month, synop.getDay(), synop.getHour(), 0, 0, 0, ZoneOffset.UTC));
             default:
-                logger.error("Unsupported channel Id '{}'", channelId);
+                logger.error("Unsupported channel '{}'", channelId);
                 return UnDefType.UNDEF;
         }
     }
@@ -226,7 +231,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private String forgeURL() {
         ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC).minusDays(1);
         String beginDate = SYNOP_DATE_FORMAT.format(utc);
-        return String.format(OGIMET_SYNOP_PATH, formattedStationId, beginDate);
+        return OGIMET_SYNOP_PATH.formatted(formattedStationId, beginDate);
     }
 
     @Override

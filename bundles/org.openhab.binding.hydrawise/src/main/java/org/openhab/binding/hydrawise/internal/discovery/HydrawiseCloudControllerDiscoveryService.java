@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,23 +12,22 @@
  */
 package org.openhab.binding.hydrawise.internal.discovery;
 
-import java.util.Collections;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants;
 import org.openhab.binding.hydrawise.internal.HydrawiseControllerListener;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.Controller;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.Customer;
 import org.openhab.binding.hydrawise.internal.handler.HydrawiseAccountHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  *
@@ -37,44 +36,33 @@ import org.osgi.service.component.annotations.Component;
  */
 
 @NonNullByDefault
-@Component(service = ThingHandlerService.class)
-public class HydrawiseCloudControllerDiscoveryService extends AbstractDiscoveryService
-        implements HydrawiseControllerListener, ThingHandlerService {
-
+@Component(scope = ServiceScope.PROTOTYPE, service = ThingHandlerService.class)
+public class HydrawiseCloudControllerDiscoveryService
+        extends AbstractThingHandlerDiscoveryService<HydrawiseAccountHandler> implements HydrawiseControllerListener {
     private static final int TIMEOUT = 5;
-    @Nullable
-    HydrawiseAccountHandler handler;
 
     public HydrawiseCloudControllerDiscoveryService() {
-        super(Collections.singleton(HydrawiseBindingConstants.THING_TYPE_CONTROLLER), TIMEOUT, true);
+        super(HydrawiseAccountHandler.class, Set.of(HydrawiseBindingConstants.THING_TYPE_CONTROLLER), TIMEOUT, true);
     }
 
     @Override
     protected void startScan() {
-        HydrawiseAccountHandler localHandler = this.handler;
-        if (localHandler != null) {
-            Customer data = localHandler.lastData();
-            if (data != null) {
-                data.controllers.forEach(controller -> addDiscoveryResults(controller));
-            }
+        Customer data = thingHandler.lastData();
+        if (data != null) {
+            data.controllers.forEach(controller -> addDiscoveryResults(controller));
         }
     }
 
     @Override
-    public void deactivate() {
-        HydrawiseAccountHandler localHandler = this.handler;
-        if (localHandler != null) {
-            removeOlderResults(new Date().getTime(), localHandler.getThing().getUID());
-        }
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
     }
 
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        HydrawiseAccountHandler localHandler = this.handler;
-        if (localHandler != null) {
-            removeOlderResults(getTimestampOfLastScan(), localHandler.getThing().getUID());
-        }
+        removeOlderResults(getTimestampOfLastScan(), thingHandler.getThing().getUID());
     }
 
     @Override
@@ -83,28 +71,19 @@ public class HydrawiseCloudControllerDiscoveryService extends AbstractDiscoveryS
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        this.handler = (HydrawiseAccountHandler) handler;
-        this.handler.addControllerListeners(this);
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
+    public void initialize() {
+        thingHandler.addControllerListeners(this);
+        super.initialize();
     }
 
     private void addDiscoveryResults(Controller controller) {
-        HydrawiseAccountHandler localHandler = this.handler;
-        if (localHandler != null) {
-            String label = String.format("Hydrawise Controller %s", controller.name);
-            int id = controller.id;
-            ThingUID bridgeUID = localHandler.getThing().getUID();
-            ThingUID thingUID = new ThingUID(HydrawiseBindingConstants.THING_TYPE_CONTROLLER, bridgeUID,
-                    String.valueOf(id));
-            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withLabel(label).withBridge(bridgeUID)
-                    .withProperty(HydrawiseBindingConstants.CONFIG_CONTROLLER_ID, id)
-                    .withRepresentationProperty(String.valueOf(HydrawiseBindingConstants.CONFIG_CONTROLLER_ID))
-                    .build());
-        }
+        String label = String.format("Hydrawise Controller %s", controller.name);
+        int id = controller.id;
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        ThingUID thingUID = new ThingUID(HydrawiseBindingConstants.THING_TYPE_CONTROLLER, bridgeUID,
+                String.valueOf(id));
+        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withLabel(label).withBridge(bridgeUID)
+                .withProperty(HydrawiseBindingConstants.CONFIG_CONTROLLER_ID, id)
+                .withRepresentationProperty(HydrawiseBindingConstants.CONFIG_CONTROLLER_ID).build());
     }
 }

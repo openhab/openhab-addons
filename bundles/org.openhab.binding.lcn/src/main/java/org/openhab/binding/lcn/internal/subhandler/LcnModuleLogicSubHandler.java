@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,6 +101,7 @@ public class LcnModuleLogicSubHandler extends AbstractLcnModuleSubHandler {
                     state = LcnDefs.LogicOpStatus.OR;
                     break;
                 case "050":
+                case "200": // not documented, but seen in the field and confirmed by the LCN hotline
                     state = LcnDefs.LogicOpStatus.AND;
                     break;
                 default:

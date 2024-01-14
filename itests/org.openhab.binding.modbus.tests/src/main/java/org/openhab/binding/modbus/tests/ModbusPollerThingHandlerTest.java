@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -246,7 +246,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         assertThat(poller.getStatusInfo().toString(), poller.getStatus(), is(equalTo(ThingStatus.ONLINE)));
 
         verifyEndpointBasicInitInteraction();
-        verify(mockedModbusManager).newModbusCommunicationInterface(argThat(new TypeSafeMatcher<ModbusSlaveEndpoint>() {
+        verify(mockedModbusManager).newModbusCommunicationInterface(argThat(new TypeSafeMatcher<>() {
 
             @Override
             public void describeTo(Description description) {
@@ -259,7 +259,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
             }
         }), any());
 
-        verify(comms).registerRegularPoll(argThat(new TypeSafeMatcher<ModbusReadRequestBlueprint>() {
+        verify(comms).registerRegularPoll(argThat(new TypeSafeMatcher<>() {
 
             @Override
             public void describeTo(Description description) {
@@ -326,7 +326,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
         // verify registration
         final AtomicReference<ModbusReadCallback> callbackRef = new AtomicReference<>();
-        verify(mockedModbusManager).newModbusCommunicationInterface(argThat(new TypeSafeMatcher<ModbusSlaveEndpoint>() {
+        verify(mockedModbusManager).newModbusCommunicationInterface(argThat(new TypeSafeMatcher<>() {
 
             @Override
             public void describeTo(Description description) {
@@ -338,7 +338,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
                 return checkEndpoint(endpoint);
             }
         }), any());
-        verify(comms).registerRegularPoll(argThat(new TypeSafeMatcher<ModbusReadRequestBlueprint>() {
+        verify(comms).registerRegularPoll(argThat(new TypeSafeMatcher<>() {
 
             @Override
             public void describeTo(Description description) {
@@ -348,7 +348,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
             protected boolean matchesSafely(ModbusReadRequestBlueprint request) {
                 return checkRequest(request, ModbusReadFunctionCode.READ_COILS);
             }
-        }), eq(150l), eq(0L), argThat(new TypeSafeMatcher<ModbusReadCallback>() {
+        }), eq(150l), eq(0L), argThat(new TypeSafeMatcher<>() {
 
             @Override
             public void describeTo(Description description) {
@@ -555,8 +555,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         ModbusDataThingHandler child1 = Mockito.mock(ModbusDataThingHandler.class);
         ModbusDataThingHandler child2 = Mockito.mock(ModbusDataThingHandler.class);
 
-        AsyncModbusFailure<ModbusReadRequestBlueprint> result = new AsyncModbusFailure<ModbusReadRequestBlueprint>(
-                request, error);
+        AsyncModbusFailure<ModbusReadRequestBlueprint> result = new AsyncModbusFailure<>(request, error);
 
         // has one data child
         thingHandler.childHandlerInitialized(child1, Mockito.mock(Thing.class));
@@ -755,8 +754,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         ModbusRegisterArray registers = Mockito.mock(ModbusRegisterArray.class);
         Exception error = Mockito.mock(Exception.class);
         AsyncModbusReadResult registersResult = new AsyncModbusReadResult(request, registers);
-        AsyncModbusFailure<ModbusReadRequestBlueprint> errorResult = new AsyncModbusFailure<ModbusReadRequestBlueprint>(
-                request2, error);
+        AsyncModbusFailure<ModbusReadRequestBlueprint> errorResult = new AsyncModbusFailure<>(request2, error);
 
         pollerReadCallback.handle(registersResult);
 

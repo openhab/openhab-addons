@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,24 +96,11 @@ public class BaseIntegrationTest extends JavaTest {
     static {
         ComponentContext context = Mockito.mock(ComponentContext.class);
         BundleContext bundleContext = Mockito.mock(BundleContext.class);
-        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        Hashtable<String, Object> properties = new Hashtable<>();
         properties.put("measurementSystem", SIUnits.MEASUREMENT_SYSTEM_NAME);
         when(context.getProperties()).thenReturn(properties);
         when(context.getBundleContext()).thenReturn(bundleContext);
         UNIT_PROVIDER = new I18nProviderImpl(context);
-    }
-
-    /**
-     * Whether tests are run in Continuous Integration environment, i.e. Jenkins or Travis CI
-     *
-     * Travis CI is detected using CI environment variable, see https://docs.travis-ci.com/user/environment-variables/
-     * Jenkins CI is detected using JENKINS_HOME environment variable
-     *
-     * @return
-     */
-    protected static boolean isRunningInCI() {
-        String jenkinsHome = System.getenv("JENKINS_HOME");
-        return "true".equals(System.getenv("CI")) || (jenkinsHome != null && !jenkinsHome.isBlank());
     }
 
     private static boolean credentialsSet() {
@@ -135,10 +122,9 @@ public class BaseIntegrationTest extends JavaTest {
 
     @Override
     protected void waitForAssert(Runnable runnable) {
-        // Longer timeouts and slower polling with real dynamodb
-        // Non-CI tests against local server are with lower timeout.
-        waitForAssert(runnable, hasFakeServer() ? isRunningInCI() ? 30_000L : 10_000L : 120_000L,
-                hasFakeServer() ? 500 : 1000L);
+        // Use longer timeouts and slower polling with real dynamodb when credentials are set.
+        // Otherwise, test against a local server with lower timeouts.
+        waitForAssert(runnable, hasFakeServer() ? 30_000L : 120_000L, hasFakeServer() ? 500 : 1000L);
     }
 
     @BeforeAll

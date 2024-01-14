@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class TradfriPlugHandler extends TradfriThingHandler {
             TradfriPlugData state = new TradfriPlugData(data);
             updateStatus(state.getReachabilityStatus() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
-            updateState(CHANNEL_POWER, state.getOnOffState() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_POWER, OnOffType.from(state.getOnOffState()));
             updateDeviceProperties(state);
         }
     }
@@ -75,8 +75,8 @@ public class TradfriPlugHandler extends TradfriThingHandler {
 
             switch (channelUID.getId()) {
                 case CHANNEL_POWER:
-                    if (command instanceof OnOffType) {
-                        setState(((OnOffType) command));
+                    if (command instanceof OnOffType onOffCommand) {
+                        setState(onOffCommand);
                     } else {
                         logger.debug("Cannot handle command '{}' for channel '{}'", command, CHANNEL_POWER);
                     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,8 +59,13 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.roku")
 public class RokuDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(RokuDiscoveryService.class);
-    private static final String ROKU_DISCOVERY_MESSAGE = "M-SEARCH * HTTP/1.1\r\n" + "Host: 239.255.255.250:1900\r\n"
-            + "Man: \"ssdp:discover\"\r\n" + "ST: roku:ecp\r\n" + "\r\n";
+    private static final String ROKU_DISCOVERY_MESSAGE = """
+            M-SEARCH * HTTP/1.1\r
+            Host: 239.255.255.250:1900\r
+            Man: "ssdp:discover"\r
+            ST: roku:ecp\r
+            \r
+            """;
 
     private static final Pattern USN_PATTERN = Pattern.compile("^(uuid:roku:)?ecp:([0-9a-zA-Z]{1,16})");
 
@@ -248,7 +253,10 @@ public class RokuDiscoveryService extends AbstractDiscoveryService {
         try {
             RokuCommunicator communicator = new RokuCommunicator(httpClient, host, port);
             DeviceInfo device = communicator.getDeviceInfo();
-            label = device.getModelName() + " " + device.getModelNumber();
+
+            // replace extraneous characters with spaces and remove any consecutive spaces
+            label = (device.getFriendlyModelName() + " " + device.getUserDeviceLocation())
+                    .replaceAll("[^a-zA-Z0-9\\-_]", " ").trim().replaceAll("  +", " ");
             if (device.isTv()) {
                 thingUid = new ThingUID(THING_TYPE_ROKU_TV, uuid);
             }

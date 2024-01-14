@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,11 +18,9 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.yamahareceiver.internal.ChannelsTypeProviderAvailableInputs;
@@ -87,7 +85,7 @@ import org.slf4j.LoggerFactory;
  * class {@link ZoneControlXML}, {@link InputWithPlayControlXML} and {@link InputWithNavigationControlXML}
  * for communication.
  *
- * @author David Graeff <david.graeff@web.de>
+ * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D), added
  *         config object
  */
@@ -124,9 +122,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections
-                .unmodifiableList(Stream.of(ChannelsTypeProviderAvailableInputs.class, ChannelsTypeProviderPreset.class)
-                        .collect(Collectors.toList()));
+        return List.of(ChannelsTypeProviderAvailableInputs.class, ChannelsTypeProviderPreset.class);
     }
 
     /**
@@ -287,11 +283,11 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                     zoneControl.setVolumeDB(((DecimalType) command).floatValue());
                     break;
                 case CHANNEL_VOLUME:
-                    if (command instanceof DecimalType) {
-                        zoneControl.setVolume(((DecimalType) command).floatValue());
-                    } else if (command instanceof IncreaseDecreaseType) {
+                    if (command instanceof DecimalType decimalCommand) {
+                        zoneControl.setVolume(decimalCommand.floatValue());
+                    } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                         zoneControl.setVolumeRelative(zoneState,
-                                (((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE ? 1 : -1)
+                                (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? 1 : -1)
                                         * zoneConfig.getVolumeRelativeChangeFactor());
                     }
                     break;
@@ -377,11 +373,11 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                         return;
                     }
 
-                    if (command instanceof DecimalType) {
-                        inputWithPresetControl.selectItemByPresetNumber(((DecimalType) command).intValue());
-                    } else if (command instanceof StringType) {
+                    if (command instanceof DecimalType decimalCommand) {
+                        inputWithPresetControl.selectItemByPresetNumber(decimalCommand.intValue());
+                    } else if (command instanceof StringType stringCommand) {
                         try {
-                            int v = Integer.valueOf(((StringType) command).toString());
+                            int v = Integer.valueOf(stringCommand.toString());
                             inputWithPresetControl.selectItemByPresetNumber(v);
                         } catch (NumberFormatException e) {
                             logger.warn("Provide a number for {}", id);
@@ -408,8 +404,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                         return;
                     }
 
-                    if (command instanceof PlayPauseType) {
-                        PlayPauseType t = ((PlayPauseType) command);
+                    if (command instanceof PlayPauseType t) {
                         switch (t) {
                             case PAUSE:
                                 inputWithPlayControl.pause();
@@ -418,8 +413,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                                 inputWithPlayControl.play();
                                 break;
                         }
-                    } else if (command instanceof NextPreviousType) {
-                        NextPreviousType t = ((NextPreviousType) command);
+                    } else if (command instanceof NextPreviousType t) {
                         switch (t) {
                             case NEXT:
                                 inputWithPlayControl.nextTrack();
@@ -428,15 +422,15 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                                 inputWithPlayControl.previousTrack();
                                 break;
                         }
-                    } else if (command instanceof DecimalType) {
-                        int v = ((DecimalType) command).intValue();
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        int v = decimalCommand.intValue();
                         if (v < 0) {
                             inputWithPlayControl.skipREV();
                         } else if (v > 0) {
                             inputWithPlayControl.skipFF();
                         }
-                    } else if (command instanceof StringType) {
-                        String v = ((StringType) command).toFullString();
+                    } else if (command instanceof StringType stringCommand) {
+                        String v = stringCommand.toFullString();
                         switch (v) {
                             case "Play":
                                 inputWithPlayControl.play();
@@ -483,26 +477,26 @@ public class YamahaZoneThingHandler extends BaseThingHandler
         String id = channelUID.getId();
 
         if (id.equals(grpZone(CHANNEL_POWER))) {
-            updateState(channelUID, zoneState.power ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUID, OnOffType.from(zoneState.power));
 
         } else if (id.equals(grpZone(CHANNEL_VOLUME_DB))) {
             updateState(channelUID, new DecimalType(zoneState.volumeDB));
         } else if (id.equals(grpZone(CHANNEL_VOLUME))) {
             updateState(channelUID, new PercentType((int) zoneConfig.getVolumePercentage(zoneState.volumeDB)));
         } else if (id.equals(grpZone(CHANNEL_MUTE))) {
-            updateState(channelUID, zoneState.mute ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUID, OnOffType.from(zoneState.mute));
         } else if (id.equals(grpZone(CHANNEL_INPUT))) {
             updateState(channelUID, new StringType(zoneState.inputID));
         } else if (id.equals(grpZone(CHANNEL_SURROUND))) {
             updateState(channelUID, new StringType(zoneState.surroundProgram));
         } else if (id.equals(grpZone(CHANNEL_SCENE))) {
-            // no state updates available
+            logger.debug("No state updates available");
         } else if (id.equals(grpZone(CHANNEL_DIALOGUE_LEVEL))) {
             updateState(channelUID, new DecimalType(zoneState.dialogueLevel));
         } else if (id.equals(grpZone(CHANNEL_HDMI1OUT))) {
-            updateState(channelUID, zoneState.hdmi1Out ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUID, OnOffType.from(zoneState.hdmi1Out));
         } else if (id.equals(grpZone(CHANNEL_HDMI2OUT))) {
-            updateState(channelUID, zoneState.hdmi2Out ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUID, OnOffType.from(zoneState.hdmi2Out));
 
         } else if (id.equals(grpPlayback(CHANNEL_PLAYBACK))) {
             updateState(channelUID, new StringType(playInfoState.playbackMode));
@@ -541,15 +535,15 @@ public class YamahaZoneThingHandler extends BaseThingHandler
 
         updateStatus(ThingStatus.ONLINE);
 
-        updateState(grpZone(CHANNEL_POWER), zoneState.power ? OnOffType.ON : OnOffType.OFF);
+        updateState(grpZone(CHANNEL_POWER), OnOffType.from(zoneState.power));
         updateState(grpZone(CHANNEL_INPUT), new StringType(zoneState.inputID));
         updateState(grpZone(CHANNEL_SURROUND), new StringType(zoneState.surroundProgram));
         updateState(grpZone(CHANNEL_VOLUME_DB), new DecimalType(zoneState.volumeDB));
         updateState(grpZone(CHANNEL_VOLUME), new PercentType((int) zoneConfig.getVolumePercentage(zoneState.volumeDB)));
-        updateState(grpZone(CHANNEL_MUTE), zoneState.mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(grpZone(CHANNEL_MUTE), OnOffType.from(zoneState.mute));
         updateState(grpZone(CHANNEL_DIALOGUE_LEVEL), new DecimalType(zoneState.dialogueLevel));
-        updateState(grpZone(CHANNEL_HDMI1OUT), zoneState.hdmi1Out ? OnOffType.ON : OnOffType.OFF);
-        updateState(grpZone(CHANNEL_HDMI2OUT), zoneState.hdmi2Out ? OnOffType.ON : OnOffType.OFF);
+        updateState(grpZone(CHANNEL_HDMI1OUT), OnOffType.from(zoneState.hdmi1Out));
+        updateState(grpZone(CHANNEL_HDMI2OUT), OnOffType.from(zoneState.hdmi2Out));
 
         // If the input changed
         if (inputChanged) {
@@ -739,7 +733,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                 stateUpdatable.update();
             } catch (IOException e) {
                 logger.debug("State update error. Changing thing to offline", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (ReceivedMessageParseException e) {
                 String message = e.getMessage();
                 updateProperty(PROPERTY_LAST_PARSE_ERROR, message != null ? message : "");

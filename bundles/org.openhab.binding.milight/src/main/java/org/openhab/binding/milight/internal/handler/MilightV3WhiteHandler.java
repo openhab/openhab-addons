@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,12 +33,12 @@ public class MilightV3WhiteHandler extends AbstractLedV3Handler {
         super(thing, sendQueue, 0);
     }
 
-    private static final byte COMMAND_FULL[] = { (byte) 0xB5, (byte) 0xB8, (byte) 0xBD, (byte) 0xB7, (byte) 0xB2 };
-    private static final byte COMMAND_ON[] = { (byte) 0x35, (byte) 0x38, (byte) 0x3D, (byte) 0x37, (byte) 0x32 };
-    private static final byte COMMAND_OFF[] = { (byte) 0x39, (byte) 0x3B, (byte) 0x33, (byte) 0x3A, (byte) 0x36 };
-    private static final byte COMMAND_NIGHTMODE[] = { (byte) 0xB9, (byte) 0xBB, (byte) 0xB3, (byte) 0xBA, (byte) 0xB6 };
-    private static final byte PREV_ANIMATION_MODE[] = { 0x27, 0x00, 0x55 };
-    private static final byte NEXT_ANIMATION_MODE[] = { 0x27, 0x00, 0x55 };
+    private static final byte[] COMMAND_FULL = { (byte) 0xB5, (byte) 0xB8, (byte) 0xBD, (byte) 0xB7, (byte) 0xB2 };
+    private static final byte[] COMMAND_ON = { (byte) 0x35, (byte) 0x38, (byte) 0x3D, (byte) 0x37, (byte) 0x32 };
+    private static final byte[] COMMAND_OFF = { (byte) 0x39, (byte) 0x3B, (byte) 0x33, (byte) 0x3A, (byte) 0x36 };
+    private static final byte[] COMMAND_NIGHTMODE = { (byte) 0xB9, (byte) 0xBB, (byte) 0xB3, (byte) 0xBA, (byte) 0xB6 };
+    private static final byte[] PREV_ANIMATION_MODE = { 0x27, 0x00, 0x55 };
+    private static final byte[] NEXT_ANIMATION_MODE = { 0x27, 0x00, 0x55 };
 
     protected void setFull(int zone, MilightThingState state) {
         sendQueue.queue(createRepeatable(uidc(ProtocolConstants.CAT_BRIGHTNESS_SET),
@@ -72,8 +72,8 @@ public class MilightV3WhiteHandler extends AbstractLedV3Handler {
 
     @Override
     public void nightMode(MilightThingState state) {
-        final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
-        final byte cNight[] = { COMMAND_NIGHTMODE[config.zone], 0x00, 0x55 };
+        final byte[] cOn = { COMMAND_ON[config.zone], 0x00, 0x55 };
+        final byte[] cNight = { COMMAND_NIGHTMODE[config.zone], 0x00, 0x55 };
         sendQueue.queue(createRepeatable(uidc(ProtocolConstants.CAT_POWER_MODE), cOn).addRepeatable(cNight));
     }
 
@@ -113,8 +113,8 @@ public class MilightV3WhiteHandler extends AbstractLedV3Handler {
     @Override
     public void changeColorTemperature(int colorTempRelative, MilightThingState state) {
         state.colorTemperature = Math.min(100, Math.max(state.colorTemperature + colorTempRelative, 0));
-        final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
-        final byte cTemp[] = { (byte) (colorTempRelative > 0 ? 0x3E : 0x3F), 0x00, 0x55 };
+        final byte[] cOn = { COMMAND_ON[config.zone], 0x00, 0x55 };
+        final byte[] cTemp = { (byte) (colorTempRelative > 0 ? 0x3E : 0x3F), 0x00, 0x55 };
         sendQueue.queue(createRepeatable(cOn).addNonRepeatable(cTemp));
     }
 
@@ -134,7 +134,7 @@ public class MilightV3WhiteHandler extends AbstractLedV3Handler {
 
         // When turning on start from full brightness
         int oldLevel;
-        final byte cFull[] = { COMMAND_FULL[config.zone], 0x00, 0x55 };
+        final byte[] cFull = { COMMAND_FULL[config.zone], 0x00, 0x55 };
         QueueItem item = createRepeatable(cFull);
         boolean skipFirst = false;
 
@@ -155,7 +155,7 @@ public class MilightV3WhiteHandler extends AbstractLedV3Handler {
                 String.valueOf(value), repeatCount);
 
         int op = newLevel > oldLevel ? +1 : -1;
-        final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
+        final byte[] cOn = { COMMAND_ON[config.zone], 0x00, 0x55 };
         for (int i = 0; i < repeatCount; i++) {
             final byte[] cBr = { (byte) (op < 0 ? 0x34 : 0x3C), 0x00, 0x55 };
             item = item.addRepeatable(cOn).addNonRepeatable(cBr);
@@ -182,8 +182,8 @@ public class MilightV3WhiteHandler extends AbstractLedV3Handler {
             sendQueue.queue(createRepeatable(uidc(ProtocolConstants.CAT_POWER_MODE),
                     new byte[] { COMMAND_OFF[config.zone], 0x00, 0x55 }));
         } else {
-            final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
-            final byte cBr[] = { (byte) (relativeBrightness < 0 ? 0x34 : 0x3C), 0x00, 0x55 };
+            final byte[] cOn = { COMMAND_ON[config.zone], 0x00, 0x55 };
+            final byte[] cBr = { (byte) (relativeBrightness < 0 ? 0x34 : 0x3C), 0x00, 0x55 };
             sendQueue.queue(createRepeatable(cOn).addNonRepeatable(cBr));
         }
     }
@@ -194,14 +194,14 @@ public class MilightV3WhiteHandler extends AbstractLedV3Handler {
 
     @Override
     public void previousAnimationMode(MilightThingState state) {
-        final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
+        final byte[] cOn = { COMMAND_ON[config.zone], 0x00, 0x55 };
         sendQueue.queue(createRepeatable(cOn).addNonRepeatable(PREV_ANIMATION_MODE));
         state.animationMode = Math.max(state.animationMode - 1, 0);
     }
 
     @Override
     public void nextAnimationMode(MilightThingState state) {
-        final byte cOn[] = { COMMAND_ON[config.zone], 0x00, 0x55 };
+        final byte[] cOn = { COMMAND_ON[config.zone], 0x00, 0x55 };
         sendQueue.queue(createRepeatable(cOn).addNonRepeatable(NEXT_ANIMATION_MODE));
         state.animationMode = Math.min(state.animationMode + 1, MAX_ANIM_MODES);
     }

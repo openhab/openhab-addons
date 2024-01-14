@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                         data = bridgehandler.evaluateXPath("//ColorLogic-Light/@lightState", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_LIGHTSTATE, data.get(i));
 
-                        if (data.get(i).equals("0")) {
+                        if ("0".equals(data.get(i))) {
                             updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "0");
                         } else {
                             updateData(HaywardBindingConstants.CHANNEL_COLORLOGIC_ENABLE, "1");

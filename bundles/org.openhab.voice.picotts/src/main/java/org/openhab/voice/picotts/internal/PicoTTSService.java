@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.voice.picotts.internal;
 
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,8 +48,8 @@ public class PicoTTSService extends AbstractCachedTTSService {
                     new PicoTTSVoice("es-ES"), new PicoTTSVoice("fr-FR"), new PicoTTSVoice("it-IT"))
             .collect(Collectors.toSet());
 
-    private final Set<AudioFormat> audioFormats = Collections.singleton(
-            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L));
+    private final Set<AudioFormat> audioFormats = Set
+            .of(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L));
 
     @Override
     public Set<Voice> getAvailableVoices() {
@@ -72,9 +71,8 @@ public class PicoTTSService extends AbstractCachedTTSService {
             throw new TTSException("The passed voice is unsupported");
         }
 
-        boolean isAudioFormatSupported = this.audioFormats.stream().anyMatch(audioFormat -> {
-            return audioFormat.isCompatible(requestedFormat);
-        });
+        boolean isAudioFormatSupported = this.audioFormats.stream()
+                .anyMatch(audioFormat -> audioFormat.isCompatible(requestedFormat));
 
         if (!isAudioFormatSupported) {
             throw new TTSException("The passed AudioFormat is unsupported");

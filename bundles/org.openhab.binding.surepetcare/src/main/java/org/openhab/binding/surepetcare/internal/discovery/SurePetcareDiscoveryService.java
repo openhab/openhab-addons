@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.surepetcare.internal.discovery;
 
 import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -28,14 +27,14 @@ import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice.ProductTyp
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareHousehold;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcarePet;
 import org.openhab.binding.surepetcare.internal.handler.SurePetcareBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,13 +44,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Rene Scherer - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = SurePetcareDiscoveryService.class)
 @NonNullByDefault
-public class SurePetcareDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class SurePetcareDiscoveryService extends AbstractThingHandlerDiscoveryService<SurePetcareBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(SurePetcareDiscoveryService.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
     private static final int DISCOVERY_SCAN_DELAY_MINUTES = 1;
@@ -59,14 +58,13 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
-    private @NonNullByDefault({}) SurePetcareBridgeHandler bridgeHandler;
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
     /**
      * Creates a SurePetcareDiscoveryService with enabled autostart.
      */
     public SurePetcareDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS);
+        super(SurePetcareBridgeHandler.class, SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS);
     }
 
     @Override
@@ -81,23 +79,10 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
         super.activate(properties);
     }
 
-    /* We override this method to allow a call from the thing handler factory */
     @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SurePetcareBridgeHandler) {
-            bridgeHandler = (SurePetcareBridgeHandler) handler;
-            bridgeUID = bridgeHandler.getUID();
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+    public void initialize() {
+        bridgeUID = thingHandler.getUID();
+        super.initialize();
     }
 
     @Override
@@ -124,11 +109,11 @@ public class SurePetcareDiscoveryService extends AbstractDiscoveryService
         logger.debug("Starting Sure Petcare discovery scan");
         // If the bridge is not online no other thing devices can be found, so no reason to scan at this moment.
         removeOlderResults(getTimestampOfLastScan());
-        if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             logger.debug("Starting device discovery for bridge {}", bridgeUID);
-            bridgeHandler.listHouseholds().forEach(this::householdDiscovered);
-            bridgeHandler.listPets().forEach(this::petDiscovered);
-            bridgeHandler.listDevices().forEach(this::deviceDiscovered);
+            thingHandler.listHouseholds().forEach(this::householdDiscovered);
+            thingHandler.listPets().forEach(this::petDiscovered);
+            thingHandler.listDevices().forEach(this::deviceDiscovered);
         }
     }
 

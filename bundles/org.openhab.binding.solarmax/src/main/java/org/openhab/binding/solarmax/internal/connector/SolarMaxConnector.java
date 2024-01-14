@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,9 +62,8 @@ public class SolarMaxConnector {
      * 
      * @param host hostname or ip address of the SolarMax device to be contacted
      * @param portNumber portNumber the SolarMax is listening on (default is 12345)
-     * @param commandList a list of commands to be sent to the SolarMax device
+     * @param deviceAddress
      * @return
-     * @throws UnknownHostException if the host is unknown
      * @throws SolarMaxException if some other exception occurs
      */
     public static SolarMaxData getAllValuesFromSolarMax(final String host, final int portNumber,

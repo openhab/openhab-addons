@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,8 +85,8 @@ public class ShadePosition {
                 if (shadeCapabilities.supportsPrimary() && shadeCapabilities.supportsSecondary()) {
                     // on dual rail shades constrain percent to not move the lower rail above the upper
                     State secondary = getState(shadeCapabilities, SECONDARY_POSITION);
-                    if (secondary instanceof PercentType) {
-                        int secPercent = ((PercentType) secondary).intValue();
+                    if (secondary instanceof PercentType percentCommand) {
+                        int secPercent = percentCommand.intValue();
                         if (percent < secPercent) {
                             percent = secPercent;
                         }
@@ -221,8 +221,8 @@ public class ShadePosition {
                 if (shadeCapabilities.supportsPrimary() && shadeCapabilities.supportsSecondary()) {
                     // on dual rail shades constrain percent to not move the upper rail below the lower
                     State primary = getState(shadeCapabilities, PRIMARY_POSITION);
-                    if (primary instanceof PercentType) {
-                        int primaryPercent = ((PercentType) primary).intValue();
+                    if (primary instanceof PercentType percentCommand) {
+                        int primaryPercent = percentCommand.intValue();
                         if (percent > primaryPercent) {
                             percent = primaryPercent;
                         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MCommand} Creates the MAX! Cube the room & device name information update message.
+ * The {@link MCommand} Creates the MAX! Cube the room and device name information update message.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */

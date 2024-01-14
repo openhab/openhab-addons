@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,6 +54,7 @@ public final class DoorbirdAPI {
     private static final Gson GSON = new Gson();
 
     private final Logger logger = LoggerFactory.getLogger(DoorbirdAPI.class);
+    private static final int CHUNK_SIZE = 256;
 
     private @Nullable Authorization authorization;
     private @Nullable HttpClient httpClient;
@@ -191,7 +192,6 @@ public final class DoorbirdAPI {
             // It is crucial to send data in small chunks to not overload the doorbird
             // It means that we have to wait the appropriate amount of time between chunk to send
             // real time data, as if it were live spoken.
-            int CHUNK_SIZE = 256;
             int nbByteRead = -1;
             long nextChunkSendTimeStamp = 0;
             do {

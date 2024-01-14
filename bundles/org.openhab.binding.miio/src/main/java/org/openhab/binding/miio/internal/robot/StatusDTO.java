@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,6 +85,15 @@ public class StatusDTO {
     @SerializedName("mop_forbidden_enable")
     @Expose
     private Integer mopForbiddenEnable;
+    @SerializedName("dry_status")
+    @Expose
+    private Integer isMopDryingActive;
+    @SerializedName("rdt")
+    @Expose
+    private Long mopDryTime;
+    @SerializedName("dock_error_status")
+    @Expose
+    private Integer dockErrorStatus;
 
     public final Integer getMsgVer() {
         return msgVer;
@@ -168,5 +177,21 @@ public class StatusDTO {
 
     public final Integer getMopForbiddenEnable() {
         return mopForbiddenEnable;
+    }
+
+    public Integer getIsMopDryingActive() {
+        return isMopDryingActive;
+    }
+
+    public Long getMopDryTime() {
+        return mopDryTime;
+    }
+
+    public Integer getDockErrorStatus() {
+        return this.dockErrorStatus;
+    }
+
+    public void setDockErrorStatus(Integer dockErrorStatus) {
+        this.dockErrorStatus = dockErrorStatus;
     }
 }

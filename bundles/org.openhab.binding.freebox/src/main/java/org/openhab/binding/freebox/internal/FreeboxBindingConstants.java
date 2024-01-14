@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link FreeboxBinding} class defines common constants, which are
+ * The {@link FreeboxBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Gaël L'hopital - Initial contribution
@@ -41,8 +41,7 @@ public class FreeboxBindingConstants {
     public static final ThingTypeUID FREEBOX_THING_TYPE_AIRPLAY = new ThingTypeUID(BINDING_ID, "airplay");
 
     // All supported Bridge types
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Collections
-            .singleton(FREEBOX_BRIDGE_TYPE_SERVER);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Set.of(FREEBOX_BRIDGE_TYPE_SERVER);
 
     // All supported Thing types
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections

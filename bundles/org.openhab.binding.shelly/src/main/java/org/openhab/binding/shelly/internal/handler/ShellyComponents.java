@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ import com.google.gson.Gson;
 
 /***
  * The{@link ShellyComponents} implements updates for supplemental components
- * Meter will be used by Relay + Light; Sensor is part of H&T, Flood, Door Window, Sense
+ * Meter will be used by Relay + Light; Sensor is part of H&amp;T, Flood, Door Window, Sense
  *
  * @author Markus Michels - Initial contribution
  */
@@ -54,8 +54,8 @@ public class ShellyComponents {
     /**
      * Update device status
      *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
+     * @param thingHandler Thing Handler instance
+     * @param status Status message
      */
     public static boolean updateDeviceStatus(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
         ShellyDeviceProfile profile = thingHandler.getProfile();
@@ -78,7 +78,7 @@ public class ShellyComponents {
         if (status.tmp != null && getBool(status.tmp.isValid) && !thingHandler.getProfile().isSensor
                 && status.tmp.tC != SHELLY_API_INVTEMP) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
-                    toQuantityType(getDouble(status.tmp.tC), DIGITS_NONE, SIUnits.CELSIUS));
+                    toQuantityType(getDouble(status.tmp.tC), DIGITS_TEMP, SIUnits.CELSIUS));
         } else if (status.temperature != null && status.temperature != SHELLY_API_INVTEMP) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
                     toQuantityType(getDouble(status.temperature), DIGITS_NONE, SIUnits.CELSIUS));
@@ -205,8 +205,7 @@ public class ShellyComponents {
     /**
      * Update Meter channel
      *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
+     * @param thingHandler Thing Handler instance
      * @param status Last ShellySettingsStatus
      */
     public static boolean updateMeters(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
@@ -369,8 +368,7 @@ public class ShellyComponents {
 
         // EM: compute from provided values
         if (emeter.reactive != null && Math.abs(emeter.power) + Math.abs(emeter.reactive) > 1.5) {
-            double pf = emeter.power / Math.sqrt(emeter.power * emeter.power + emeter.reactive * emeter.reactive);
-            return pf;
+            return emeter.power / Math.sqrt(emeter.power * emeter.power + emeter.reactive * emeter.reactive);
         }
         return 0.0;
     }
@@ -378,8 +376,7 @@ public class ShellyComponents {
     /**
      * Update Sensor channel
      *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
+     * @param thingHandler Thing Handler instance
      * @param status Last ShellySettingsStatus
      *
      * @throws ShellyApiException
@@ -438,7 +435,10 @@ public class ShellyComponents {
                     if (t.tmp != null) {
                         updated |= updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
                                 t.tmp.value, t.tmp.units);
-                        updated |= updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, CHANNEL_CONTROL_SETTEMP,
+                        if (t.targetTemp.unit == null) {
+                            t.targetTemp.unit = t.tmp.units;
+                        }
+                        updated |= updateTempChannel(thingHandler, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
                                 t.targetTemp.value, t.targetTemp.unit);
                     }
                     if (t.pos != null) {
@@ -491,7 +491,7 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM, toQuantityType(
                         getInteger(sdata.concentration.ppm).doubleValue(), DIGITS_NONE, Units.PARTS_PER_MILLION));
             }
-            if ((sdata.adcs != null) && (sdata.adcs.size() > 0)) {
+            if ((sdata.adcs != null) && (!sdata.adcs.isEmpty())) {
                 ShellyADC adc = sdata.adcs.get(0);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE,
                         toQuantityType(getDouble(adc.voltage), 2, Units.VOLT));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,6 +43,8 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class SecondGenerationConfigurationHandler {
 
+    private static final int REQUEST_TIMEOUT_MS = 5000;
+
     public static void executeConfigurationChanges(HttpClient httpClient, String url, String username, String password,
             String dxsId, String value)
             throws InterruptedException, ExecutionException, TimeoutException, NoSuchAlgorithmException {
@@ -59,8 +62,7 @@ public class SecondGenerationConfigurationHandler {
 
             sessionId = extractSessionId(getAuthenticateResponseJsonObject);
 
-            JsonObject authenticateJsonObject = JsonParser.parseString(getAuthenticateResponse.toString())
-                    .getAsJsonObject();
+            JsonObject authenticateJsonObject = JsonParser.parseString(getAuthenticateResponse).getAsJsonObject();
             salt = authenticateJsonObject.get("salt").getAsString();
 
             String saltedPassword = new StringBuilder(password).append(salt).toString();
@@ -76,7 +78,8 @@ public class SecondGenerationConfigurationHandler {
             String loginPostJsonData = "{\"mode\":1,\"userId\":\"" + username + "\",\"pwh\":\"" + saltedmDigestedPwd
                     + "\"}";
 
-            Request loginPostJsonResponse = httpClient.POST(urlLogin + "?sessionId=" + sessionId);
+            Request loginPostJsonResponse = httpClient.POST(urlLogin + "?sessionId=" + sessionId)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             loginPostJsonResponse.header(HttpHeader.CONTENT_TYPE, "application/json");
             loginPostJsonResponse.content(new StringContentProvider(loginPostJsonData));
             ContentResponse loginPostJsonDataContentResponse = loginPostJsonResponse.send();
@@ -92,7 +95,8 @@ public class SecondGenerationConfigurationHandler {
             // Part for sending data to Inverter
             String postJsonData = "{\"dxsEntries\":[{\"dxsId\":" + dxsId + ",\"value\":" + value + "}]}";
 
-            Request postJsonDataRequest = httpClient.POST(url + "/api/dxs.json?sessionId=" + sessionId);
+            Request postJsonDataRequest = httpClient.POST(url + "/api/dxs.json?sessionId=" + sessionId)
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             postJsonDataRequest.header(HttpHeader.CONTENT_TYPE, "application/json");
             postJsonDataRequest.content(new StringContentProvider(postJsonData));
             postJsonDataRequest.send();
@@ -120,9 +124,7 @@ public class SecondGenerationConfigurationHandler {
         int codeStartPosition = jsonResponse.indexOf("code");
         transformStringBuilder.insert(codeStartPosition + 11, ']');
 
-        String transformJsonObject = transformStringBuilder.toString();
-
-        return transformJsonObject;
+        return transformStringBuilder.toString();
     }
 
     // Method extractSessionId extracts sessionId from JsonObject

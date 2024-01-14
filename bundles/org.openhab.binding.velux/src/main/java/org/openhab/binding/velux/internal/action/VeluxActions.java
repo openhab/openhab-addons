@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,8 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = VeluxActions.class)
 @ThingActionsScope(name = "velux")
 @NonNullByDefault
 public class VeluxActions implements ThingActions {
@@ -41,8 +44,8 @@ public class VeluxActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VeluxBridgeHandler) {
-            this.bridgeHandler = (VeluxBridgeHandler) handler;
+        if (handler instanceof VeluxBridgeHandler veluxBridgeHandler) {
+            this.bridgeHandler = veluxBridgeHandler;
         }
     }
 
@@ -110,7 +113,8 @@ public class VeluxActions implements ThingActions {
      *
      * @param actions ThingActions from the caller
      * @param nodeId the node Id in the bridge
-     * @param relativePercent the target position relative to its current position (-100% <= relativePercent <= +100%)
+     * @param relativePercent the target position relative to its current position
+     *            ({@code -100% <= relativePercent <= +100%})
      * @return true if the command was sent
      * @throws IllegalArgumentException if actions is invalid
      * @throws IllegalStateException if anything else is wrong

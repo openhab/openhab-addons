@@ -10,25 +10,28 @@
 		<channels>
 			<channel id="spot-price" typeId="spot-price">
 				<label>Spot Price</label>
-				<description>Current spot price in DKK or EUR per kWh.</description>
+				<description>Spot price in DKK or EUR per kWh.</description>
 			</channel>
-			<channel id="net-tariff" typeId="datahub-price">
-				<label>Net Tariff</label>
-				<description>Current net tariff in DKK per kWh.</description>
+			<channel id="grid-tariff" typeId="datahub-price">
+				<label>Grid Tariff</label>
+				<description>Grid tariff in DKK per kWh.</description>
 			</channel>
 			<channel id="system-tariff" typeId="datahub-price">
 				<label>System Tariff</label>
-				<description>Current system tariff in DKK per kWh.</description>
+				<description>System tariff in DKK per kWh.</description>
+			</channel>
+			<channel id="transmission-grid-tariff" typeId="datahub-price">
+				<label>Transmission Grid Tariff</label>
+				<description>Transmission grid tariff in DKK per kWh.</description>
 			</channel>
 			<channel id="electricity-tax" typeId="datahub-price">
 				<label>Electricity Tax</label>
-				<description>Current electricity tax in DKK per kWh.</description>
+				<description>Electricity tax in DKK per kWh.</description>
 			</channel>
-			<channel id="transmission-net-tariff" typeId="datahub-price">
-				<label>Transmission Net Tariff</label>
-				<description>Current transmission net tariff in DKK per kWh.</description>
+			<channel id="reduced-electricity-tax" typeId="datahub-price">
+				<label>Reduced Electricity Tax</label>
+				<description>Reduced electricity tax in DKK per kWh. For electric heating customers only.</description>
 			</channel>
-			<channel id="hourly-prices" typeId="hourly-prices"/>
 		</channels>
 	</channel-group-type>
 

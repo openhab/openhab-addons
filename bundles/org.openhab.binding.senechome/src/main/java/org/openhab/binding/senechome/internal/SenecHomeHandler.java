@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -124,7 +124,7 @@ public class SenecHomeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SenecHomeConfigurationDTO.class);
-        senecHomeApi.setHostname(config.hostname);
+        senecHomeApi.setHostname("%s://%s".formatted(config.useHttp ? "http" : "https", config.hostname));
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval, TimeUnit.SECONDS);
         limitationStatus = null;
     }
@@ -196,20 +196,6 @@ public class SenecHomeHandler extends BaseThingHandler {
             updateQtyState(CHANNEL_SENEC_GRID_VOLTAGE_PH2, response.grid.currentGridVoltagePerPhase[1], 2, Units.VOLT);
             updateQtyState(CHANNEL_SENEC_GRID_VOLTAGE_PH3, response.grid.currentGridVoltagePerPhase[2], 2, Units.VOLT);
             updateQtyState(CHANNEL_SENEC_GRID_FREQUENCY, response.grid.currentGridFrequency, 2, Units.HERTZ);
-
-            updateQtyState(CHANNEL_SENEC_LIVE_BAT_CHARGE, response.statistics.liveBatCharge, 2, Units.KILOWATT_HOUR);
-            updateQtyState(CHANNEL_SENEC_LIVE_BAT_DISCHARGE, response.statistics.liveBatDischarge, 2,
-                    Units.KILOWATT_HOUR);
-            updateQtyState(CHANNEL_SENEC_LIVE_GRID_IMPORT, response.statistics.liveGridImport, 2, Units.KILOWATT_HOUR);
-            updateQtyState(CHANNEL_SENEC_LIVE_GRID_EXPORT, response.statistics.liveGridExport, 2, Units.KILOWATT_HOUR);
-            updateQtyState(CHANNEL_SENEC_LIVE_HOUSE_CONSUMPTION, response.statistics.liveHouseConsumption, 2,
-                    Units.KILOWATT_HOUR);
-            updateQtyState(CHANNEL_SENEC_LIVE_POWER_GENERATOR, response.statistics.livePowerGenerator, 2,
-                    Units.KILOWATT_HOUR);
-            if (response.statistics.liveWallboxEnergy != null) {
-                updateQtyState(CHANNEL_SENEC_LIVE_ENERGY_WALLBOX1, response.statistics.liveWallboxEnergy[0], 2,
-                        Units.KILOWATT_HOUR, DIVISOR_ISO_TO_KILO);
-            }
 
             if (response.battery.chargedEnergy != null) {
                 updateQtyState(CHANNEL_SENEC_CHARGED_ENERGY_PACK1, response.battery.chargedEnergy[0], 2,
@@ -340,7 +326,7 @@ public class SenecHomeHandler extends BaseThingHandler {
         } else {
             value = value.setScale(scale, RoundingMode.HALF_UP);
         }
-        updateState(channel.getUID(), new QuantityType<Q>(value, unit));
+        updateState(channel.getUID(), new QuantityType<>(value, unit));
     }
 
     protected BigDecimal getSenecValue(String value) {
@@ -413,7 +399,7 @@ public class SenecHomeHandler extends BaseThingHandler {
         }
 
         logger.debug("Updating power limitation state {}", status);
-        updateState(channel.getUID(), status ? OnOffType.ON : OnOffType.OFF);
+        updateState(channel.getUID(), OnOffType.from(status));
     }
 
     protected void updateGridPowerValues(BigDecimal gridTotalValue) {

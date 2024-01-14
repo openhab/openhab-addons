@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,8 +56,7 @@ public class CameraChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
-        if (naThing instanceof HomeStatusModule) {
-            HomeStatusModule camera = (HomeStatusModule) naThing;
+        if (naThing instanceof HomeStatusModule camera) {
             boolean isMonitoring = OnOffType.ON.equals(camera.getMonitoring());
             switch (channelId) {
                 case CHANNEL_MONITORING:

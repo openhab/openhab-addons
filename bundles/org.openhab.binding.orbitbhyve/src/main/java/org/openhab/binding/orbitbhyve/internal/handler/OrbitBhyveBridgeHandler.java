@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -109,7 +110,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(OrbitBhyveDiscoveryService.class);
+        return Set.of(OrbitBhyveDiscoveryService.class);
     }
 
     @Override
@@ -230,8 +231,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Device response: {}", response.getContentAsString());
                 }
-                OrbitBhyveDevice device = gson.fromJson(response.getContentAsString(), OrbitBhyveDevice.class);
-                return device;
+                return gson.fromJson(response.getContentAsString(), OrbitBhyveDevice.class);
             } else {
                 logger.debug("Returned status: {}", response.getStatus());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -288,7 +288,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 }
                 ch = getThingChannel(event.getDeviceId(), CHANNEL_CONTROL);
                 if (ch != null) {
-                    updateState(ch.getUID(), "off".equals(event.getMode()) ? OnOffType.OFF : OnOffType.ON);
+                    updateState(ch.getUID(), OnOffType.from(!"off".equals(event.getMode())));
                 }
                 updateDeviceStatus(event.getDeviceId());
                 break;
@@ -316,10 +316,10 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
             if (th.isEnabled()) {
                 String deviceId = th.getUID().getId();
                 ThingHandler handler = th.getHandler();
-                if (handler instanceof OrbitBhyveSprinklerHandler) {
+                if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
                     for (OrbitBhyveDevice device : devices) {
                         if (deviceId.equals(th.getUID().getId())) {
-                            updateDeviceStatus(device, (OrbitBhyveSprinklerHandler) handler);
+                            updateDeviceStatus(device, sprinklerHandler);
                         }
                     }
                 }
@@ -340,9 +340,9 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         for (Thing th : getThing().getThings()) {
             if (deviceId.equals(th.getUID().getId())) {
                 ThingHandler handler = th.getHandler();
-                if (handler instanceof OrbitBhyveSprinklerHandler) {
+                if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
                     OrbitBhyveDevice device = getDevice(deviceId);
-                    updateDeviceStatus(device, (OrbitBhyveSprinklerHandler) handler);
+                    updateDeviceStatus(device, sprinklerHandler);
                 }
             }
         }
@@ -352,8 +352,8 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         for (Thing th : getThing().getThings()) {
             if (program.getDeviceId().equals(th.getUID().getId())) {
                 ThingHandler handler = th.getHandler();
-                if (handler instanceof OrbitBhyveSprinklerHandler) {
-                    ((OrbitBhyveSprinklerHandler) handler).updateProgram(program);
+                if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
+                    sprinklerHandler.updateProgram(program);
                 }
             }
         }

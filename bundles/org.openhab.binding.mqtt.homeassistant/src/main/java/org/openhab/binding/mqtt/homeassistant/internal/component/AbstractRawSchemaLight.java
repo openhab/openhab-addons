@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,10 +53,10 @@ abstract class AbstractRawSchemaLight extends Light {
             if (newState.getBrightness().equals(PercentType.ZERO)) {
                 newState = new HSBType(newState.getHue(), newState.getSaturation(), PercentType.HUNDRED);
             }
-        } else if (command instanceof HSBType) {
-            newState = (HSBType) command;
-        } else if (command instanceof PercentType) {
-            newState = new HSBType(newState.getHue(), newState.getSaturation(), (PercentType) command);
+        } else if (command instanceof HSBType hsb) {
+            newState = hsb;
+        } else if (command instanceof PercentType brightness) {
+            newState = new HSBType(newState.getHue(), newState.getSaturation(), brightness);
         } else {
             return false;
         }

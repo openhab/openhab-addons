@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -241,29 +241,29 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
     }
 
     private boolean isSensor() {
-        return (getThing().getThingTypeUID().equals(TellstickBindingConstants.SENSOR_THING_TYPE)
+        return getThing().getThingTypeUID().equals(TellstickBindingConstants.SENSOR_THING_TYPE)
                 || getThing().getThingTypeUID().equals(TellstickBindingConstants.RAINSENSOR_THING_TYPE)
                 || getThing().getThingTypeUID().equals(TellstickBindingConstants.WINDSENSOR_THING_TYPE)
-                || getThing().getThingTypeUID().equals(TellstickBindingConstants.POWERSENSOR_THING_TYPE));
+                || getThing().getThingTypeUID().equals(TellstickBindingConstants.POWERSENSOR_THING_TYPE);
     }
 
     private void updateSensorStates(Device dev) {
-        if (dev instanceof TellstickSensor) {
+        if (dev instanceof TellstickSensor sensor) {
             updateStatus(ThingStatus.ONLINE);
-            for (DataType type : ((TellstickSensor) dev).getData().keySet()) {
-                updateSensorDataState(type, ((TellstickSensor) dev).getData(type));
+            for (DataType type : sensor.getData().keySet()) {
+                updateSensorDataState(type, sensor.getData(type));
             }
-        } else if (dev instanceof TellstickNetSensor) {
-            if (((TellstickNetSensor) dev).getOnline()) {
+        } else if (dev instanceof TellstickNetSensor netSensor) {
+            if (netSensor.getOnline()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }
-            for (DataTypeValue type : ((TellstickNetSensor) dev).getData()) {
+            for (DataTypeValue type : netSensor.getData()) {
                 updateSensorDataState(type);
             }
-        } else if (dev instanceof TellstickLocalSensorDTO) {
-            for (LocalDataTypeValueDTO type : ((TellstickLocalSensorDTO) dev).getData()) {
+        } else if (dev instanceof TellstickLocalSensorDTO localSensor) {
+            for (LocalDataTypeValueDTO type : localSensor.getData()) {
                 updateSensorDataState(type);
             }
         }
@@ -283,14 +283,11 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
         if (device.getUUId().equals(deviceId)) {
             if (event instanceof TellstickDeviceEvent) {
                 updateDeviceState(device);
-            } else if (event instanceof TellstickNetSensorEvent) {
-                TellstickNetSensorEvent sensorevent = (TellstickNetSensorEvent) event;
+            } else if (event instanceof TellstickNetSensorEvent sensorevent) {
                 updateSensorDataState(sensorevent.getDataTypeValue());
-            } else if (event instanceof TellstickLocalSensorEventDTO) {
-                TellstickLocalSensorEventDTO sensorevent = (TellstickLocalSensorEventDTO) event;
+            } else if (event instanceof TellstickLocalSensorEventDTO sensorevent) {
                 updateSensorDataState(sensorevent.getDataTypeValue());
-            } else if (event instanceof TellstickSensorEvent) {
-                TellstickSensorEvent sensorevent = (TellstickSensorEvent) event;
+            } else if (event instanceof TellstickSensorEvent sensorevent) {
                 updateSensorDataState(sensorevent.getDataType(), sensorevent.getData());
             } else {
                 logger.debug("Unhandled Device {}.", device.getDeviceType());
@@ -356,7 +353,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
                         new QuantityType<>(new BigDecimal(dataType.getValue()), WIND_SPEED_UNIT_MS));
                 break;
             case WATT:
-                if (dataType.getUnit() != null && dataType.getUnit().equals("A")) {
+                if ("A".equals(dataType.getUnit())) {
                     updateState(ampereChannel, new QuantityType<>(new BigDecimal(dataType.getValue()), ELECTRIC_UNIT));
                 } else {
                     updateState(wattChannel, new QuantityType<>(new BigDecimal(dataType.getValue()), POWER_UNIT));

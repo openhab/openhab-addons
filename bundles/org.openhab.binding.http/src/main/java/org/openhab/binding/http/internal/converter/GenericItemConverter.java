@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,6 +40,7 @@ public class GenericItemConverter extends AbstractTransformingItemConverter {
         this.toState = toState;
     }
 
+    @Override
     protected State toState(String value) {
         try {
             return toState.apply(value);
@@ -53,6 +54,7 @@ public class GenericItemConverter extends AbstractTransformingItemConverter {
         return null;
     }
 
+    @Override
     protected String toString(Command command) {
         return command.toString();
     }

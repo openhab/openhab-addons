@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -97,7 +97,7 @@ public class PushbulletHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(PushbulletActions.class);
+        return Set.of(PushbulletActions.class);
     }
 
     public boolean sendPush(@Nullable String recipient, @Nullable String message, String type) {
@@ -128,8 +128,6 @@ public class PushbulletHandler extends BaseThingHandler {
             PushResponse response = gson.fromJson(responseString, PushResponse.class);
 
             logger.debug("Unpacked Response: {}", response);
-
-            stream.close();
 
             if ((null != response) && (null == response.getPushError())) {
                 result = true;

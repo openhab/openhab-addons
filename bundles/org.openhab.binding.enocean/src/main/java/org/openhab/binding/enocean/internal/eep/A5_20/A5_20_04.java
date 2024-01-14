@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class A5_20_04 extends A5_20 {
     }
 
     @Override
-    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
         switch (channelId) {
             case CHANNEL_STATUS_REQUEST_EVENT:
@@ -60,7 +60,7 @@ public class A5_20_04 extends A5_20 {
     }
 
     private String getStatusRequestEvent() {
-        return Boolean.valueOf(getBit(getDB0Value(), 6)).toString();
+        return Boolean.toString(getBit(getDB0Value(), 6));
         // return getBit(getDB_0Value(), 6) ? "triggered" : null;
     }
 
@@ -232,7 +232,7 @@ public class A5_20_04 extends A5_20 {
     }
 
     private State getMeasurementControl() {
-        return getBit(getDB0Value(), 7) ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(!getBit(getDB0Value(), 7));
     }
 
     private State getFeedTemperature() {
@@ -261,7 +261,7 @@ public class A5_20_04 extends A5_20 {
     }
 
     private State getButtonLock() {
-        return getBit(getDB0Value(), 2) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(getBit(getDB0Value(), 2));
     }
 
     private State getValvePosition() {

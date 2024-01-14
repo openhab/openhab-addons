@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,7 +92,7 @@ public class EnergyMeter {
             socket.receive(msgPacket);
 
             String sma = new String(Arrays.copyOfRange(bytes, 0x00, 0x03));
-            if (!sma.equals("SMA")) {
+            if (!"SMA".equals(sma)) {
                 throw new IOException("Not a SMA telegram." + sma);
             }
 

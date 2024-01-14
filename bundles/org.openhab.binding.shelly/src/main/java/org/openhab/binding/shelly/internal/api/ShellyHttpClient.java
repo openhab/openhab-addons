@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,16 +14,21 @@ package org.openhab.binding.shelly.internal.api;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SHELLY_API_TIMEOUT_MS;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.ws.rs.core.HttpHeaders;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -32,6 +37,8 @@ import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthRsp;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
@@ -49,8 +56,9 @@ import com.google.gson.Gson;
 public class ShellyHttpClient {
     private final Logger logger = LoggerFactory.getLogger(ShellyHttpClient.class);
 
-    public static final String HTTP_HEADER_AUTH = "Authorization";
+    public static final String HTTP_HEADER_AUTH = HttpHeaders.AUTHORIZATION;
     public static final String HTTP_AUTH_TYPE_BASIC = "Basic";
+    public static final String HTTP_AUTH_TYPE_DIGEST = "Digest";
     public static final String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
     public static final String CONTENT_TYPE_FORM_URLENC = "application/x-www-form-urlencoded";
 
@@ -61,6 +69,7 @@ public class ShellyHttpClient {
     protected int timeoutErrors = 0;
     protected int timeoutsRecovered = 0;
     private ShellyDeviceProfile profile;
+    protected boolean basicAuth = false;
 
     public ShellyHttpClient(String thingName, ShellyThingInterface thing) {
         this(thingName, thing.getThingConfig(), thing.getHttpClient());
@@ -72,9 +81,7 @@ public class ShellyHttpClient {
         this.thingName = thingName;
         setConfig(thingName, config);
         this.httpClient = httpClient;
-    }
-
-    public void initialize() throws ShellyApiException {
+        this.httpClient.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
     }
 
     public void setConfig(String thingName, ShellyThingConfiguration config) {
@@ -103,7 +110,9 @@ public class ShellyHttpClient {
         boolean timeout = false;
         while (retries > 0) {
             try {
-                apiResult = innerRequest(HttpMethod.GET, uri, "");
+                apiResult = innerRequest(HttpMethod.GET, uri, null, "");
+
+                // If call doesn't throw an exception the device is reachable == no timeout
                 if (timeout) {
                     logger.debug("{}: API timeout #{}/{} recovered ({})", thingName, timeoutErrors, timeoutsRecovered,
                             apiResult.getUrl());
@@ -111,6 +120,12 @@ public class ShellyHttpClient {
                 }
                 return apiResult.response; // successful
             } catch (ShellyApiException e) {
+                if (e.isHttpAccessUnauthorized() && !profile.isGen2 && !basicAuth && !config.password.isEmpty()) {
+                    logger.debug("{}: Access is unauthorized, auto-activate basic auth", thingName);
+                    basicAuth = true;
+                    apiResult = innerRequest(HttpMethod.GET, uri, null, "");
+                }
+
                 if (e.isConnectionError()
                         || (!e.isTimeout() && !apiResult.isHttpServerError()) && !apiResult.isNotFound()
                         || profile.hasBattery || (retries == 0)) {
@@ -119,19 +134,26 @@ public class ShellyHttpClient {
                 }
 
                 timeout = true;
-                retries--;
                 timeoutErrors++; // count the retries
-                logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
+                retries--;
+                if (profile.alwaysOn) {
+                    logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
+                }
             }
         }
         throw new ShellyApiException("API Timeout or inconsistent result"); // successful
     }
 
     public String httpPost(String uri, String data) throws ShellyApiException {
-        return innerRequest(HttpMethod.POST, uri, data).response;
+        return innerRequest(HttpMethod.POST, uri, null, data).response;
     }
 
-    private ShellyApiResult innerRequest(HttpMethod method, String uri, String data) throws ShellyApiException {
+    public String httpPost(@Nullable Shelly2AuthChallenge auth, String data) throws ShellyApiException {
+        return innerRequest(HttpMethod.POST, SHELLYRPC_ENDPOINT, auth, data).response;
+    }
+
+    private ShellyApiResult innerRequest(HttpMethod method, String uri, @Nullable Shelly2AuthChallenge auth,
+            String data) throws ShellyApiException {
         Request request = null;
         String url = "http://" + config.deviceIp + uri;
         ShellyApiResult apiResult = new ShellyApiResult(method.toString(), url);
@@ -140,13 +162,27 @@ public class ShellyHttpClient {
             request = httpClient.newRequest(url).method(method.toString()).timeout(SHELLY_API_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
 
-            if (!config.password.isEmpty() && !getString(data).contains("\"auth\":{")) {
-                String value = config.userId + ":" + config.password;
-                request.header(HTTP_HEADER_AUTH,
-                        HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder().encodeToString(value.getBytes()));
+            if (!uri.equals(SHELLY_URL_DEVINFO) && !config.password.isEmpty()) { // not for /shelly or no password
+                                                                                 // configured
+                // Add Auth info
+                // Gen 1: Basic Auth
+                // Gen 2: Digest Auth
+                String authHeader = "";
+                if (auth != null) { // only if we received an Auth challenge
+                    authHeader = formatAuthResponse(uri,
+                            buildAuthResponse(uri, auth, SHELLY2_AUTHDEF_USER, config.password));
+                } else {
+                    if (basicAuth) {
+                        String bearer = config.userId + ":" + config.password;
+                        authHeader = HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder().encodeToString(bearer.getBytes());
+                    }
+                }
+                if (!authHeader.isEmpty()) {
+                    request.header(HTTP_HEADER_AUTH, authHeader);
+                }
             }
             fillPostData(request, data);
-            logger.trace("{}: HTTP {} for {} {}\n{}", thingName, method, url, data, request.getHeaders());
+            logger.trace("{}: HTTP {} {}\n{}\n{}", thingName, method, url, request.getHeaders(), data);
 
             // Do request and get response
             ContentResponse contentResponse = request.send();
@@ -162,14 +198,14 @@ public class ShellyHttpClient {
                     apiResult.httpCode = message.error.code;
                     apiResult.response = message.error.message;
                     if (getInteger(message.error.code) == HttpStatus.UNAUTHORIZED_401) {
-                        apiResult.authResponse = getString(message.error.message).replaceAll("\\\"", "\"");
+                        apiResult.authChallenge = getString(message.error.message).replaceAll("\\\"", "\"");
                     }
                 }
             }
             HttpFields headers = contentResponse.getHeaders();
-            String auth = headers.get(HttpHeader.WWW_AUTHENTICATE);
-            if (!getString(auth).isEmpty()) {
-                apiResult.authResponse = auth;
+            String authChallenge = headers.get(HttpHeader.WWW_AUTHENTICATE);
+            if (!getString(authChallenge).isEmpty()) {
+                apiResult.authChallenge = authChallenge;
             }
 
             // validate response, API errors are reported as Json
@@ -189,6 +225,36 @@ public class ShellyHttpClient {
             throw ex;
         }
         return apiResult;
+    }
+
+    protected @Nullable Shelly2AuthRsp buildAuthResponse(String uri, @Nullable Shelly2AuthChallenge challenge,
+            String user, String password) throws ShellyApiException {
+        if (challenge == null) {
+            return null; // not required
+        }
+        if (!SHELLY2_AUTHTTYPE_DIGEST.equalsIgnoreCase(challenge.authType)
+                || !SHELLY2_AUTHALG_SHA256.equalsIgnoreCase(challenge.algorithm)) {
+            throw new IllegalArgumentException("Unsupported Auth type/algorithm requested by device");
+        }
+        Shelly2AuthRsp response = new Shelly2AuthRsp();
+        response.username = user;
+        response.realm = challenge.realm;
+        response.nonce = challenge.nonce;
+        response.cnonce = Long.toHexString((long) Math.floor(Math.random() * 10e8));
+        response.nc = "00000001";
+        response.authType = challenge.authType;
+        response.algorithm = challenge.algorithm;
+        String ha1 = sha256(response.username + ":" + response.realm + ":" + password);
+        String ha2 = sha256(HttpMethod.POST + ":" + uri);// SHELLY2_AUTH_NOISE;
+        response.response = sha256(
+                ha1 + ":" + response.nonce + ":" + response.nc + ":" + response.cnonce + ":" + "auth" + ":" + ha2);
+        return response;
+    }
+
+    protected String formatAuthResponse(String uri, @Nullable Shelly2AuthRsp rsp) {
+        return rsp != null ? MessageFormat.format(HTTP_AUTH_TYPE_DIGEST
+                + " username=\"{0}\", realm=\"{1}\", uri=\"{2}\", nonce=\"{3}\", cnonce=\"{4}\", nc=\"{5}\", qop=\"auth\",response=\"{6}\", algorithm=\"{7}\", ",
+                rsp.username, rsp.realm, uri, rsp.nonce, rsp.cnonce, rsp.nc, rsp.response, rsp.algorithm) : "";
     }
 
     /**

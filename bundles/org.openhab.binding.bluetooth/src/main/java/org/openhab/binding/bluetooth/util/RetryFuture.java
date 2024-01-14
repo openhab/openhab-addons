@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,8 +94,7 @@ public class RetryFuture<T> extends HeritableFuture<T> {
                 if (th instanceof CompletionException) {
                     th = th.getCause();
                 }
-                if (th instanceof RetryException) {
-                    RetryException e = (RetryException) th;
+                if (th instanceof RetryException e) {
                     setParentFuture(() -> {
                         if (!isDone()) {
                             return scheduler.schedule(this, e.delay, e.unit);

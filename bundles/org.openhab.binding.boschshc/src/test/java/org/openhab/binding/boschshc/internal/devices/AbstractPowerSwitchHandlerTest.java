@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,8 +103,13 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
 
     @Test
     public void testUpdateChannelPowerMeterServiceState() {
-        JsonElement jsonObject = JsonParser.parseString("{\n" + "  \"@type\": \"powerMeterState\",\n"
-                + "  \"powerConsumption\": \"23\",\n" + "  \"energyConsumption\": 42\n" + "}");
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                  "@type": "powerMeterState",
+                  "powerConsumption": "23",
+                  "energyConsumption": 42
+                }\
+                """);
         getFixture().processUpdate("PowerMeter", jsonObject);
 
         verify(getCallback()).stateUpdated(eq(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION)),
@@ -129,7 +134,7 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION),
                 RefreshType.REFRESH);
         verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION),
-                new QuantityType<Power>(12.34d, Units.WATT));
+                new QuantityType<>(12.34d, Units.WATT));
     }
 
     @Test
@@ -137,6 +142,6 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION),
                 RefreshType.REFRESH);
         verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION),
-                new QuantityType<Energy>(56.78d, Units.WATT_HOUR));
+                new QuantityType<>(56.78d, Units.WATT_HOUR));
     }
 }

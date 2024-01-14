@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.boschshc.internal.serialization;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,6 +36,7 @@ public final class GsonUtils {
      * This instance does not serialize or deserialize fields named <code>logger</code>.
      */
     public static final Gson DEFAULT_GSON_INSTANCE = new GsonBuilder()
+            .registerTypeAdapter(BoschSHCServiceState.class, new BoschServiceDataDeserializer())
             .addSerializationExclusionStrategy(new LoggerExclusionStrategy())
             .addDeserializationExclusionStrategy(new LoggerExclusionStrategy()).create();
 }

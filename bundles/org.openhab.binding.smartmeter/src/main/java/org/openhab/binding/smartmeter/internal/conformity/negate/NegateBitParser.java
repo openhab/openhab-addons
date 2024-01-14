@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public class NegateBitParser {
                 String[] split = substring.split(":");
                 int negatePosition = Integer.parseInt(split[0]);
                 boolean negateBit = Integer.parseInt(split[1]) == 0 ? false : true;
-                boolean status = split.length > 2 ? split[2].equalsIgnoreCase("status") : false;
+                boolean status = split.length > 2 ? "status".equalsIgnoreCase(split[2]) : false;
                 return new NegateBitModel((byte) negatePosition, negateBit, obis, status);
             }
         } catch (Exception e) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,7 +104,7 @@ public class FireTVStickMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         String macAddress = service.getPropertyString(MDNS_PROPERTY_MAC_ADDRESS);
         if (macAddress != null && !macAddress.isBlank()) {
-            return new ThingUID(THING_TYPE_ANDROID_DEVICE, macAddress.replaceAll(":", "").toLowerCase());
+            return new ThingUID(THING_TYPE_ANDROID_DEVICE, macAddress.replace(":", "").toLowerCase());
         }
         return null;
     }

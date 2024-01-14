@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,7 +85,7 @@ public enum EirDataType {
     /**
      * Lookup function based on the type code. Returns {@link UNKNOWN} if the code does not exist.
      *
-     * @param bluetoothAddressType
+     * @param eirDataType
      *            the code to lookup
      * @return enumeration value.
      */

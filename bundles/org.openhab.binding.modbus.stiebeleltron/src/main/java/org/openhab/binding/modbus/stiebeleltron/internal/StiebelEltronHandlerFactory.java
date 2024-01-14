@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.modbus.stiebeleltron.internal;
 
 import static org.openhab.binding.modbus.stiebeleltron.internal.StiebelEltronBindingConstants.THING_TYPE_HEATPUMP;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,7 +27,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link Modbus.StiebelEltronHandlerFactory} is responsible for creating things and thing
+ * The {@link StiebelEltronHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Paul Frank - Initial contribution
@@ -37,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.stiebeleltron", service = ThingHandlerFactory.class)
 public class StiebelEltronHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_HEATPUMP);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HEATPUMP);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.unifi.internal.handler;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -134,6 +134,6 @@ public class UniFiSiteThingHandler extends UniFiBaseThingHandler<UniFiSite, UniF
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(UniFiSiteActions.class);
+        return Set.of(UniFiSiteActions.class);
     }
 }

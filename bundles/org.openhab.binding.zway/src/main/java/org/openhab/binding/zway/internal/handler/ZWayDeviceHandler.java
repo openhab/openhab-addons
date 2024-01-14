@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,8 +156,8 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             return null;
         }
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof ZWayBridgeHandler) {
-            return (ZWayBridgeHandler) handler;
+        if (handler instanceof ZWayBridgeHandler bridgeHandler) {
+            return bridgeHandler;
         } else {
             return null;
         }
@@ -448,14 +448,12 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             }
                         } else if (device instanceof SwitchRGBW) {
                             // possible commands: on(), off(), exact(red, green, blue)
-                            if (command instanceof HSBType) {
+                            if (command instanceof HSBType hsb) {
                                 logger.debug("Handle command: HSBType");
-
-                                HSBType hsb = (HSBType) command;
 
                                 // first set on/off
                                 if (hsb.getBrightness().intValue() > 0) {
-                                    if (device.getMetrics().getLevel().toLowerCase().equals("off")) {
+                                    if ("off".equals(device.getMetrics().getLevel().toLowerCase())) {
                                         device.on();
                                     }
 
@@ -578,7 +576,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
             }
 
             // 2. Check if device information includes further information about sensor type
-            if (!device.getProbeType().equals("")) {
+            if (!"".equals(device.getProbeType())) {
                 if (device instanceof SensorMultilevel) {
                     switch (device.getProbeType()) {
                         case PROBE_TYPE_TEMPERATURE:
@@ -680,7 +678,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             break;
                     }
                 }
-            } else if (!device.getMetrics().getProbeTitle().equals("")) {
+            } else if (!"".equals(device.getMetrics().getProbeTitle())) {
                 if (device instanceof SensorMultilevel) {
                     switch (device.getMetrics().getProbeTitle()) {
                         case PROBE_TITLE_CO2_LEVEL:
@@ -691,7 +689,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             break;
                     }
                 }
-            } else if (!device.getMetrics().getIcon().equals("")) {
+            } else if (!"".equals(device.getMetrics().getIcon())) {
                 if (device instanceof SwitchBinary) {
                     switch (device.getMetrics().getIcon()) {
                         case ICON_SWITCH:

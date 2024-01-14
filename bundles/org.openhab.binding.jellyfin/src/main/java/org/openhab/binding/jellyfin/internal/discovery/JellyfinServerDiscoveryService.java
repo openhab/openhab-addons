@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,7 +107,7 @@ public class JellyfinServerDiscoveryService extends AbstractDiscoveryService {
         new SystemApi(jellyClient).getPublicSystemInfo(asyncResponse);
         try {
             var publicSystemInfo = asyncResponse.awaitContent();
-            discoverServer(uri.getHost(), uri.getPort(), uri.getScheme().equalsIgnoreCase("https"), uri.getPath(),
+            discoverServer(uri.getHost(), uri.getPort(), "https".equalsIgnoreCase(uri.getScheme()), uri.getPath(),
                     publicSystemInfo);
         } catch (SyncCallback.SyncCallbackError | ApiClientException e) {
             logger.warn("Discovery error: {}", e.getMessage());

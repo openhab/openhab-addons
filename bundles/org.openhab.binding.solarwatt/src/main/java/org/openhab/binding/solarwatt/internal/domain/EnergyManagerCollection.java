@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Collection of all devices known to the energy manager including the energy manager itself.
  *
- * The {@link Device}s are generated from the {@link DeviceDTO}s inside of the {@link EnergyManagerDTO}
+ * The {@link Device}s are generated from the {@link org.openhab.binding.solarwatt.internal.domain.dto.DeviceDTO}s
+ * inside of the {@link org.openhab.binding.solarwatt.internal.domain.dto.EnergyManagerDTO}
  * 
  * @author Sven Carstens - Initial contribution
  */

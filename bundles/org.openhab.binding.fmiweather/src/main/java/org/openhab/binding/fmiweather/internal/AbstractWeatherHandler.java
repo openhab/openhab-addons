@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -191,7 +191,6 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
      *
      * @param channelUID channel UID
      * @param epochSecond value to update
-     * @param unit unit associated with the value
      */
     protected <T extends Quantity<T>> void updateEpochSecondStateIfLinked(ChannelUID channelUID, long epochSecond) {
         if (isLinked(channelUID)) {

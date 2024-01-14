@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -136,7 +136,7 @@ public class NamingStrategyTest {
         itemIdToItemNameMap.put(1, "First");
         itemIdToItemNameMap.put(3, "Third");
 
-        List<String> itemTables = new ArrayList<String>(3);
+        List<String> itemTables = new ArrayList<>(3);
         itemTables.add("Item1");
         itemTables.add("Item2");
         itemTables.add("Item3");
@@ -159,7 +159,7 @@ public class NamingStrategyTest {
         itemIdToItemNameMap.put(2, "Second");
         itemIdToItemNameMap.put(3, "Third");
 
-        List<String> itemTables = new ArrayList<String>(3);
+        List<String> itemTables = new ArrayList<>(3);
         itemTables.add("Item1");
         itemTables.add("Item002");
         itemTables.add("third_0003");
@@ -183,7 +183,7 @@ public class NamingStrategyTest {
         itemIdToItemNameMap.put(2, "Second");
         itemIdToItemNameMap.put(3, "Third");
 
-        List<String> itemTables = new ArrayList<String>(3);
+        List<String> itemTables = new ArrayList<>(3);
         itemTables.add("Item1");
         itemTables.add("Item002");
         itemTables.add("third_0003");
@@ -228,7 +228,7 @@ public class NamingStrategyTest {
         itemIdToItemNameMap.put(1, "MyItem");
         itemIdToItemNameMap.put(2, "myItem");
 
-        List<String> itemTables = new ArrayList<String>(2);
+        List<String> itemTables = new ArrayList<>(2);
         itemTables.add("MyItem");
         itemTables.add("myItem");
 
@@ -249,7 +249,7 @@ public class NamingStrategyTest {
         itemIdToItemNameMap.put(1, "MyItem");
         itemIdToItemNameMap.put(2, "myItem");
 
-        List<String> itemTables = new ArrayList<String>(2);
+        List<String> itemTables = new ArrayList<>(2);
         itemTables.add("Item1");
         itemTables.add("Item2");
 
@@ -270,7 +270,7 @@ public class NamingStrategyTest {
         itemIdToItemNameMap.put(1, "MyItem");
         itemIdToItemNameMap.put(2, "myItem");
 
-        List<String> itemTables = new ArrayList<String>(2);
+        List<String> itemTables = new ArrayList<>(2);
         itemTables.add("Item1");
         itemTables.add("Item2");
 
@@ -367,7 +367,7 @@ public class NamingStrategyTest {
         itemIdToItemNameMap.put(1, "Item2");
         itemIdToItemNameMap.put(2, "Item1");
 
-        List<String> itemTables = new ArrayList<String>(2);
+        List<String> itemTables = new ArrayList<>(2);
         itemTables.add("Item2");
         itemTables.add("Item1");
 
@@ -432,7 +432,7 @@ public class NamingStrategyTest {
     }
 
     private List<String> getItemTables(String tableName) {
-        List<String> itemTables = new ArrayList<String>(1);
+        List<String> itemTables = new ArrayList<>(1);
         itemTables.add(tableName);
         return itemTables;
     }

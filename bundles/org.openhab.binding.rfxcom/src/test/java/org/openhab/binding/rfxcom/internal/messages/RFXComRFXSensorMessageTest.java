@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,8 +93,8 @@ public class RFXComRFXSensorMessageTest {
     }
 
     private @Nullable Double getStateAsDouble(State state) {
-        if (state instanceof DecimalType) {
-            return ((DecimalType) state).doubleValue();
+        if (state instanceof DecimalType decimalCommand) {
+            return decimalCommand.doubleValue();
         } else {
             return null;
         }

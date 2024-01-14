@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,7 +95,7 @@ public interface NhcControllerEvent {
     /**
      * This method is called when a notice event is received from the Niko Home Control controller.
      *
-     * @param alarmText
+     * @param noticeText
      */
     void noticeEvent(String noticeText);
 

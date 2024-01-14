@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -167,7 +167,7 @@ public class HaID {
      * Return the topic to put into the HandlerConfiguration for this component.
      * <p>
      * <code>objectid</code> in the thing configuration will be
-     * <code>nodeID/objectID<code> from the HaID, if <code>nodeID</code> is not empty.
+     * <code>nodeID/objectID</code> from the HaID, if <code>nodeID</code> is not empty.
      * <p>
      *
      * @return the short topic.

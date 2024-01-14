@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.lcn.internal.pchkdiscovery;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -69,14 +70,14 @@ public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
         super(SUPPORTED_THING_TYPES_UIDS, 0, false);
     }
 
-    private List<InetAddress> getLocalAddresses() {
-        List<InetAddress> result = new LinkedList<>();
+    private List<NetworkInterface> getLocalNetworkInterfaces() {
+        List<NetworkInterface> result = new LinkedList<>();
         try {
             for (NetworkInterface networkInterface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
                 try {
                     if (networkInterface.isUp() && !networkInterface.isLoopback()
                             && !networkInterface.isPointToPoint()) {
-                        result.addAll(Collections.list(networkInterface.getInetAddresses()));
+                        result.add(networkInterface);
                     }
                 } catch (SocketException exception) {
                     // ignore
@@ -93,13 +94,13 @@ public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
         try {
             InetAddress multicastAddress = InetAddress.getByName(PCHK_DISCOVERY_MULTICAST_ADDRESS);
 
-            getLocalAddresses().forEach(localInterfaceAddress -> {
-                logger.debug("Searching on {} ...", localInterfaceAddress.getHostAddress());
+            getLocalNetworkInterfaces().forEach(localNetworkInterface -> {
+                logger.debug("Searching on {} ...", localNetworkInterface);
                 try (MulticastSocket socket = new MulticastSocket(PCHK_DISCOVERY_PORT)) {
-                    socket.setInterface(localInterfaceAddress);
                     socket.setReuseAddress(true);
                     socket.setSoTimeout(INTERFACE_TIMEOUT_SEC * 1000);
-                    socket.joinGroup(multicastAddress);
+                    socket.joinGroup(new InetSocketAddress(multicastAddress, PCHK_DISCOVERY_PORT),
+                            localNetworkInterface);
 
                     byte[] requestData = DISCOVER_REQUEST.getBytes(LcnDefs.LCN_ENCODING);
                     DatagramPacket request = new DatagramPacket(requestData, requestData.length, multicastAddress,
@@ -136,7 +137,7 @@ public class LcnPchkDiscoveryService extends AbstractDiscoveryService {
                         thingDiscovered(discoveryResult.build());
                     } while (true); // left by SocketTimeoutException
                 } catch (IOException e) {
-                    logger.debug("Discovery failed for {}: {}", localInterfaceAddress, e.getMessage());
+                    logger.debug("Discovery failed for {}: {}", localNetworkInterface, e.getMessage());
                 }
             });
         } catch (UnknownHostException e) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author John Cocula - Added variable spoon size, UoM, wind stats, bug fixes
  */
 public class MeteostickSensorHandler extends BaseThingHandler implements MeteostickEventListener {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DAVIS);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DAVIS);
 
     private final Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
 
@@ -173,7 +173,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     }
 
     private void processBattery(boolean batteryLow) {
-        OnOffType state = batteryLow ? OnOffType.ON : OnOffType.OFF;
+        OnOffType state = OnOffType.from(batteryLow);
 
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_LOW_BATTERY), state);
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,10 +115,14 @@ public class OpenUVIconProvider implements IconProvider {
         String result = "";
 
         URL iconResource = context.getBundle().getEntry("icon/%s.svg".formatted(iconName));
-        try (InputStream stream = iconResource.openStream()) {
-            result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            logger.warn("Unable to load ressource '{}' : {}", iconResource.getPath(), e.getMessage());
+        if (iconResource != null) {
+            try (InputStream stream = iconResource.openStream()) {
+                result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
+            }
+        } else {
+            logger.warn("Unable to load icon named '{}'", iconName);
         }
         return result;
     }

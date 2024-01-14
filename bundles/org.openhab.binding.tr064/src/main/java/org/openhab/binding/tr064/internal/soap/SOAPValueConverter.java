@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,9 +78,8 @@ public class SOAPValueConverter {
             // we don't have data to send
             return Optional.of("");
         }
-        if (command instanceof QuantityType) {
-            QuantityType<?> value = (unit.isEmpty()) ? ((QuantityType<?>) command)
-                    : ((QuantityType<?>) command).toUnit(unit);
+        if (command instanceof QuantityType quantityCommand) {
+            QuantityType<?> value = (unit.isEmpty()) ? quantityCommand : quantityCommand.toUnit(unit);
             if (value == null) {
                 logger.warn("Could not convert {} to unit {}", command, unit);
                 return Optional.empty();
@@ -95,8 +94,8 @@ public class SOAPValueConverter {
                 default -> {
                 }
             }
-        } else if (command instanceof DecimalType) {
-            BigDecimal value = ((DecimalType) command).toBigDecimal();
+        } else if (command instanceof DecimalType decimalCommand) {
+            BigDecimal value = decimalCommand.toBigDecimal();
             switch (dataType) {
                 case "ui1", "ui2" -> {
                     return Optional.of(String.valueOf(value.shortValue()));
@@ -139,7 +138,7 @@ public class SOAPValueConverter {
             // map rawValue to State
             switch (dataType) {
                 case "boolean" -> {
-                    return rawValue.equals("0") ? OnOffType.OFF : OnOffType.ON;
+                    return OnOffType.from(!"0".equals(rawValue));
                 }
                 case "string" -> {
                     return new StringType(rawValue);
@@ -170,8 +169,8 @@ public class SOAPValueConverter {
                 Method method = SOAPValueConverter.class.getDeclaredMethod(postProcessor, State.class,
                         Tr064ChannelConfig.class);
                 Object o = method.invoke(this, state, channelConfig);
-                if (o instanceof State) {
-                    return (State) o;
+                if (o instanceof State stateInstance) {
+                    return stateInstance;
                 }
             } catch (NoSuchMethodException | IllegalAccessException e) {
                 logger.warn("Postprocessor {} not found, this most likely is a programming error", postProcessor, e);
@@ -244,7 +243,7 @@ public class SOAPValueConverter {
     @SuppressWarnings("unused")
     private State processTamListURL(State state, Tr064ChannelConfig channelConfig) throws PostProcessingException {
         try {
-            ContentResponse response = httpClient.newRequest(state.toString()).timeout(timeout, TimeUnit.MILLISECONDS)
+            ContentResponse response = httpClient.newRequest(state.toString()).timeout(timeout, TimeUnit.SECONDS)
                     .send();
             String responseContent = response.getContentAsString();
             int messageCount = responseContent.split("<New>1</New>").length - 1;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -75,6 +76,7 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class HDPowerViewWebTargets {
+    private static final int REQUEST_TIMEOUT_MS = 30_000;
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewWebTargets.class);
 
@@ -581,7 +583,8 @@ public class HDPowerViewWebTargets {
                 logger.trace("JSON command = {}", jsonCommand);
             }
         }
-        Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*");
+        Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*")
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (query != null) {
             request.param(query.getKey(), query.getValue());
         }

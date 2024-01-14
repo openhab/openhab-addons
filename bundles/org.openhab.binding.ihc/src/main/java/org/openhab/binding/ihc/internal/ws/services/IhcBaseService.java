@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,11 +29,13 @@ public abstract class IhcBaseService extends IhcHttpsClient {
 
     // @formatter:off
     protected static final String EMPTY_QUERY =
-              "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-            + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-            + " <soapenv:Body>\n"
-            + " </soapenv:Body>\n"
-            + "</soapenv:Envelope>";
+              """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+             <soapenv:Body>
+             </soapenv:Body>
+            </soapenv:Envelope>\
+            """;
     // @formatter:on
 
     private String url;

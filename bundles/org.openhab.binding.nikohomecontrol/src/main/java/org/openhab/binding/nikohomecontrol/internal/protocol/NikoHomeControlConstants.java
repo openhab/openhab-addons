@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NikoHomeControlConstants {
 
     // Action types abstracted from NhcI and NhcII action types
-    public static enum ActionType {
+    public enum ActionType {
         TRIGGER,
         RELAY,
         DIMMER,

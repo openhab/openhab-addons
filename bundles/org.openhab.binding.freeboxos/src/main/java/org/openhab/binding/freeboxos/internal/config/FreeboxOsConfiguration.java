@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ public class FreeboxOsConfiguration {
     public String appToken = "";
     public boolean discoverNetDevice;
     public int discoveryInterval = 10;
+    public int wsReconnectInterval = 60;
 
     private int httpsPort = 15682;
     private boolean httpsAvailable;

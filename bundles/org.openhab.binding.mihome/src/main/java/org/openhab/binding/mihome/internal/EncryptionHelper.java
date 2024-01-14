@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Encrypts communication between openhab & xiaomi bridge (required by xiaomi).
+ * Encrypts communication between openhab and xiaomi bridge (required by xiaomi).
  *
  * @author Ondřej Pečta - Initial contribution to Xiaomi MiHome Binding for OH 1.x
  * @author Dieter Schmidt - Refactor logger

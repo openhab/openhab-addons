@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,33 +69,19 @@ public class Device extends AbstractMessageBody {
     @SerializedName("FirmwareImage")
     public FirmwareImage firmwareImage;
 
+    @SerializedName("IsThisDevice")
+    public boolean isThisDevice;
+
     public class FirmwareImage {
         @SerializedName("Firmware")
         public Firmware firmware;
         @SerializedName("Installed")
-        public Installed installed;
+        public ProjectTimestamp installed;
     }
 
     public class Firmware {
         @SerializedName("DisplayName")
         public String displayName;
-    }
-
-    public class Installed {
-        @SerializedName("Year")
-        public int year;
-        @SerializedName("Month")
-        public int month;
-        @SerializedName("Day")
-        public int day;
-        @SerializedName("Hour")
-        public int hour;
-        @SerializedName("Minute")
-        public int minute;
-        @SerializedName("Second")
-        public int second;
-        @SerializedName("Utc")
-        public String utc;
     }
 
     public class RepeaterProperties {

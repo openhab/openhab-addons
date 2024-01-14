@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,9 @@ public class DeviceInformationXML implements DeviceInformation {
      * We need that called only once. Will give us name, id, version and zone information.
      *
      * Example:
+     * 
+     * <pre>
+     * {@code
      * <Feature_Existence>
      * <Main_Zone>1</Main_Zone>
      * <Zone_2>1</Zone_2>
@@ -77,6 +80,8 @@ public class DeviceInformationXML implements DeviceInformation {
      * <iPod_USB>1</iPod_USB>
      * <AirPlay>1</AirPlay>
      * </Feature_Existence>
+     * }
+     * </pre>
      *
      * @throws IOException
      */
@@ -145,8 +150,7 @@ public class DeviceInformationXML implements DeviceInformation {
 
     private boolean isFeatureSupported(Node node, String name) {
         String value = getNodeContentOrEmpty(node, name);
-        boolean supported = value.equals("1") || value.equals("Available");
-        return supported;
+        return "1".equals(value) || "Available".equals(value);
     }
 
     private <T> void checkFeature(Node node, String name, T value, Set<T> set) {

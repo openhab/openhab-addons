@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,7 +115,6 @@ public class EnergeniePWMHandler extends BaseThingHandler {
                             "failed to logout: " + e.getMessage());
                 }
             }
-
         } catch (IOException e) {
             logger.debug("energenie: failed to login to {} with ip {}", thing.getUID(), host, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

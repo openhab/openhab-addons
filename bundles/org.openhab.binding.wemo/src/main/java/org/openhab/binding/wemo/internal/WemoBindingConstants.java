@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link WemoBinding} class defines common constants, which are
+ * The {@link WemoBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Hans-Jörg Merk - Initial contribution

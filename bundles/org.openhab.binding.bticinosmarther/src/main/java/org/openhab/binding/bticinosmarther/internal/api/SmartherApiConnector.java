@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,8 +113,7 @@ public class SmartherApiConnector {
      *
      * @return the raw response returned by the API gateway
      *
-     * @throws {@link SmartherGatewayException}
-     *             if the call failed due to an issue with the API gateway
+     * @throws SmartherGatewayException if the call failed due to an issue with the API gateway
      */
     public ContentResponse request(Function<HttpClient, Request> requester, String subscription, String authorization)
             throws SmartherGatewayException {
@@ -128,8 +127,8 @@ public class SmartherApiConnector {
         } catch (ExecutionException e) {
             final Throwable cause = e.getCause();
 
-            if (cause instanceof SmartherGatewayException) {
-                throw (SmartherGatewayException) cause;
+            if (cause instanceof SmartherGatewayException gatewayException) {
+                throw gatewayException;
             } else {
                 throw new SmartherGatewayException(e.getMessage(), e);
             }

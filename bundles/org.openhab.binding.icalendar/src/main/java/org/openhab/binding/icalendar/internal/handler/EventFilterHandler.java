@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -232,18 +232,19 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                 thingBuilder.withoutChannel(toDelete.getUID());
             });
 
-            resultChannels.stream().filter((ResultChannelSet current) -> {
-                return (getThing().getChannelsOfGroup(current.resultGroup.toString()).size() == 0);
-            }).forEach((ResultChannelSet current) -> {
-                for (ChannelBuilder builder : handlerCallback.createChannelBuilders(current.resultGroup,
-                        GROUP_TYPE_UID)) {
-                    Channel currentChannel = builder.build();
-                    Channel existingChannel = getThing().getChannel(currentChannel.getUID());
-                    if (existingChannel == null) {
-                        thingBuilder.withChannel(currentChannel);
-                    }
-                }
-            });
+            resultChannels
+                    .stream().filter((ResultChannelSet current) -> (getThing()
+                            .getChannelsOfGroup(current.resultGroup.toString()).isEmpty()))
+                    .forEach((ResultChannelSet current) -> {
+                        for (ChannelBuilder builder : handlerCallback.createChannelBuilders(current.resultGroup,
+                                GROUP_TYPE_UID)) {
+                            Channel currentChannel = builder.build();
+                            Channel existingChannel = getThing().getChannel(currentChannel.getUID());
+                            if (existingChannel == null) {
+                                thingBuilder.withChannel(currentChannel);
+                            }
+                        }
+                    });
         }
         updateThing(thingBuilder.build());
     }

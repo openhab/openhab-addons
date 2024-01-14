@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DsDeviceThingTypeProvider} creates the {@link ThingType}'s for the subclasses of the
- * {@link GeneralDeviceInformations}. It also adds the {@link ThingTypeUID}'s to the related handlers. So only the
+ * {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.GeneralDeviceInformation}s.
+ * It also adds the {@link ThingTypeUID}'s to the related handlers. So only the
  * {@link SupportedThingTypes} enum has to be adjusted, if new device types of digitalSTROM should be supported.
  * Provided the new digitalSTROM devices uses the same mechanism like now.
  *
@@ -62,7 +63,7 @@ public class DsDeviceThingTypeProvider extends BaseDsI18n implements ThingTypePr
      * @author Michael Ochel - Initial contribution
      * @author Matthias Siegele - Initial contribution
      */
-    public static enum SupportedThingTypes {
+    public enum SupportedThingTypes {
         // ThingType, responsible ThingHanlder, Device config-description with power-sensors
         GE(DeviceHandler.class.getSimpleName(), true),
         GR(DeviceHandler.class.getSimpleName(), false),

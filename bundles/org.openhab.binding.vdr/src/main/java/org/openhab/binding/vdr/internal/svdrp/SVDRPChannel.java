@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,7 @@ public class SVDRPChannel {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (number >= 0) {
-            sb.append("Number: " + String.valueOf(number) + System.lineSeparator());
+            sb.append("Number: " + number + System.lineSeparator());
         }
         sb.append("Name: " + name + System.lineSeparator());
         return sb.toString();

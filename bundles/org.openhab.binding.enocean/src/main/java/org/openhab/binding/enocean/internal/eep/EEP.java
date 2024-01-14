@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,7 +114,7 @@ public abstract class EEP {
         return convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);
     }
 
-    public @Nullable String convertToEvent(String channelId, String channelTypeId, String lastEvent,
+    public @Nullable String convertToEvent(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(
@@ -223,7 +223,7 @@ public abstract class EEP {
         return UnDefType.UNDEF;
     }
 
-    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
         return null;
     }

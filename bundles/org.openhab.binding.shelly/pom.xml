@@ -7,20 +7,14 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.2.0-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <bnd.importpackage>org.eclipse.jetty.websocket.server</bnd.importpackage>
+  </properties>
 
   <artifactId>org.openhab.binding.shelly</artifactId>
   <name>openHAB Add-ons :: Bundles :: Shelly Binding Gen1+2</name>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.eclipse.jetty.websocket</groupId>
-      <artifactId>websocket-server</artifactId>
-      <version>9.4.46.v20220331</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
 
 </project>

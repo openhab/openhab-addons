@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,10 +88,10 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
             } else {
                 updateState(channelUID, currentState);
             }
-        } else if (command instanceof State) {
+        } else if (command instanceof State stateCommand) {
             logger.debug("Updating: {} to {}", channelUID, command);
 
-            handler.updateDevice(requireNonNull(instanceKey), channelUID.getId(), (State) command);
+            handler.updateDevice(requireNonNull(instanceKey), channelUID.getId(), stateCommand);
         }
     }
 
@@ -124,6 +124,7 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         }
     }
 
+    @Override
     public void handleRemoval() {
         @Nullable
         final EchonetLiteBridgeHandler bridgeHandler = bridgeHandler();
@@ -136,6 +137,7 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         bridgeHandler.removeDevice(requireNonNull(instanceKey));
     }
 
+    @Override
     public void onInitialised(String identifier, InstanceKey instanceKey, Map<String, String> channelIdAndType) {
         logger.debug("Initialised Channels: {}", channelIdAndType);
 
@@ -167,6 +169,7 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         updateStatus(ThingStatus.ONLINE);
     }
 
+    @Override
     public void onUpdated(final String channelId, final State value) {
         stateByChannelId.put(channelId, value);
 
@@ -176,10 +179,12 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
         updateState(channelId, value);
     }
 
+    @Override
     public void onRemoved() {
         updateStatus(ThingStatus.REMOVED);
     }
 
+    @Override
     public void onOffline() {
         if (ThingStatus.OFFLINE != getThing().getStatus()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

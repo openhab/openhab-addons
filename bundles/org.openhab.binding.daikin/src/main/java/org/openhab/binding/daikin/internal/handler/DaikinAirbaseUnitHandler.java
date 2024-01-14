@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * Handles communicating with a Daikin Airbase wifi adapter.
  *
  * @author Tim Waterhouse - Initial Contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  * @author Jimmy Tanagra - Support Airside and auto fan levels, DynamicStateDescription
  *
  */

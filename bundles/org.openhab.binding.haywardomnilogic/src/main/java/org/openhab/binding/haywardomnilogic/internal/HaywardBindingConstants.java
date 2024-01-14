@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.haywardomnilogic.internal;
 
 import java.util.Set;
@@ -174,11 +173,13 @@ public class HaywardBindingConstants {
     // Hayward Command html
     public static final String COMMAND_PARAMETERS = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request>";
 
-    public static final String COMMAND_SCHEDULE = "<Parameter name=\"IsCountDownTimer\" dataType=\"bool\">false</Parameter>"
-            + "<Parameter name=\"StartTimeHours\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"StartTimeMinutes\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"EndTimeHours\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"EndTimeMinutes\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"DaysActive\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"Recurring\" dataType=\"bool\">false</Parameter>";
+    public static final String COMMAND_SCHEDULE = """
+            <Parameter name="IsCountDownTimer" dataType="bool">false</Parameter>\
+            <Parameter name="StartTimeHours" dataType="int">0</Parameter>\
+            <Parameter name="StartTimeMinutes" dataType="int">0</Parameter>\
+            <Parameter name="EndTimeHours" dataType="int">0</Parameter>\
+            <Parameter name="EndTimeMinutes" dataType="int">0</Parameter>\
+            <Parameter name="DaysActive" dataType="int">0</Parameter>\
+            <Parameter name="Recurring" dataType="bool">false</Parameter>\
+            """;
 }

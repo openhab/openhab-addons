@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,13 +23,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.IllegalFormatException;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.exec.internal.ExecWhitelistWatchService;
@@ -46,6 +46,7 @@ import org.openhab.core.transform.TransformationHelper;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.util.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -289,7 +290,7 @@ public class ExecHandler extends BaseThingHandler {
 
             outputBuilder.append(errorBuilder.toString());
 
-            String transformedResponse = StringUtils.chomp(outputBuilder.toString());
+            String transformedResponse = Objects.requireNonNull(StringUtils.chomp(outputBuilder.toString()));
             String transformation = (String) getConfig().get(TRANSFORM);
 
             if (transformation != null && transformation.length() > 0) {

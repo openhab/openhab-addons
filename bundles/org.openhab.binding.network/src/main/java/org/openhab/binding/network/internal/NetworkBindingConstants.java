@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.network.internal;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,10 +35,12 @@ public class NetworkBindingConstants {
     public static final ThingTypeUID SERVICE_DEVICE = new ThingTypeUID(BINDING_ID, "servicedevice");
     public static final ThingTypeUID SPEEDTEST_DEVICE = new ThingTypeUID(BINDING_ID, "speedtest");
 
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BACKWARDS_COMPATIBLE_DEVICE, PING_DEVICE,
+            SERVICE_DEVICE, SPEEDTEST_DEVICE);
+
     // List of all Channel ids
     public static final String CHANNEL_ONLINE = "online";
     public static final String CHANNEL_LATENCY = "latency";
-    public static final String CHANNEL_DEPRECATED_TIME = "time";
     public static final String CHANNEL_LASTSEEN = "lastseen";
     public static final String CHANNEL_TEST_ISRUNNING = "isRunning";
     public static final String CHANNEL_TEST_PROGRESS = "progress";
@@ -60,13 +61,4 @@ public class NetworkBindingConstants {
     public static final String PROPERTY_ICMP_STATE = "icmp_state";
     public static final String PROPERTY_PRESENCE_DETECTION_TYPE = "presence_detection_type";
     public static final String PROPERTY_IOS_WAKEUP = "uses_ios_wakeup";
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
-
-    static {
-        SUPPORTED_THING_TYPES_UIDS.add(PING_DEVICE);
-        SUPPORTED_THING_TYPES_UIDS.add(SERVICE_DEVICE);
-        SUPPORTED_THING_TYPES_UIDS.add(BACKWARDS_COMPATIBLE_DEVICE);
-        SUPPORTED_THING_TYPES_UIDS.add(SPEEDTEST_DEVICE);
-    }
 }

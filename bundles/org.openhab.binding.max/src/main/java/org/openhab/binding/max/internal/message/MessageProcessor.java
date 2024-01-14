@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeExcepti
  * possible to add additional lines when there is a message ready to be
  * processed.
  *
- * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
+ * @author Christian Rockrohr - Initial contribution
  */
 @NonNullByDefault
 public class MessageProcessor {
@@ -171,7 +171,7 @@ public class MessageProcessor {
                         }
                 }
             } else {
-                if ((!counter.equals(this.numberOfRequiredLines)) || (!(index == this.receivedLines.size()))) {
+                if (!counter.equals(this.numberOfRequiredLines) || index != this.receivedLines.size()) {
                     throw new IncorrectMultilineIndexException();
                 }
 

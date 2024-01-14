@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,8 +24,11 @@ import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * This class provides the list of valid inputs for the input channel of a source.
@@ -33,6 +36,8 @@ import org.openhab.core.types.StateOption;
  * @author Kai Kreuzer - Initial contribution
  *
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { DynamicStateDescriptionProvider.class,
+        InputStateOptionProvider.class })
 @NonNullByDefault
 public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvider implements ThingHandlerService {
 
@@ -65,7 +70,7 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
     }
 
     private @Nullable String getLabel(Stream stream) {
-        if (stream.getType().equals("internetradio")) {
+        if ("internetradio".equals(stream.getType())) {
             return stream.getName();
         } else {
             return stream.getType().substring(0, 1).toUpperCase() + stream.getType().substring(1);

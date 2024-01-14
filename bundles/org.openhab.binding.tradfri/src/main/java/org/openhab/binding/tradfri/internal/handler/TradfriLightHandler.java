@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -154,10 +154,10 @@ public class TradfriLightHandler extends TradfriThingHandler {
     }
 
     private void handleBrightnessCommand(Command command) {
-        if (command instanceof PercentType) {
-            setBrightness((PercentType) command);
-        } else if (command instanceof OnOffType) {
-            setState(((OnOffType) command));
+        if (command instanceof PercentType percentCommand) {
+            setBrightness(percentCommand);
+        } else if (command instanceof OnOffType onOffCommand) {
+            setState(onOffCommand);
         } else if (command instanceof IncreaseDecreaseType) {
             final TradfriLightData state = this.state;
             if (state != null && state.getBrightness() != null) {
@@ -177,8 +177,8 @@ public class TradfriLightHandler extends TradfriThingHandler {
     }
 
     private void handleColorTemperatureCommand(Command command) {
-        if (command instanceof PercentType) {
-            setColorTemperature((PercentType) command);
+        if (command instanceof PercentType percentCommand) {
+            setColorTemperature(percentCommand);
         } else if (command instanceof IncreaseDecreaseType) {
             final TradfriLightData state = this.state;
             if (state != null && state.getColorTemperature() != null) {
@@ -198,13 +198,13 @@ public class TradfriLightHandler extends TradfriThingHandler {
     }
 
     private void handleColorCommand(Command command) {
-        if (command instanceof HSBType) {
-            setColor((HSBType) command);
-            setBrightness(((HSBType) command).getBrightness());
-        } else if (command instanceof OnOffType) {
-            setState(((OnOffType) command));
-        } else if (command instanceof PercentType) {
-            setBrightness((PercentType) command);
+        if (command instanceof HSBType hsbCommand) {
+            setColor(hsbCommand);
+            setBrightness(hsbCommand.getBrightness());
+        } else if (command instanceof OnOffType onOffCommand) {
+            setState(onOffCommand);
+        } else if (command instanceof PercentType percentCommand) {
+            setBrightness(percentCommand);
         } else if (command instanceof IncreaseDecreaseType) {
             final TradfriLightData state = this.state;
             // increase or decrease only the brightness, but keep color

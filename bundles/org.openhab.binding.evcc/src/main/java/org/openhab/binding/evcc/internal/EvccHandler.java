@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -475,7 +475,7 @@ public class EvccHandler extends BaseThingHandler {
         updateState(channel, new QuantityType<>(targetSoC, Units.PERCENT));
 
         String targetTime = loadpoint.getTargetTime();
-        if (targetTime == null || targetTime.equals("0001-01-01T00:00:00Z")) {
+        if (targetTime == null || "0001-01-01T00:00:00Z".equals(targetTime)) {
             channel = new ChannelUID(uid, loadpointName, CHANNEL_LOADPOINT_TARGET_TIME_ENABLED);
             updateState(channel, OnOffType.OFF);
             targetTimeEnabled = false;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.AfterAll;
@@ -483,7 +483,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
         initialize(configuration, channelID, acceptedItemType, null, null);
 
         EventSubscriber eventSubscriberMock = mock(EventSubscriber.class);
-        when(eventSubscriberMock.getSubscribedEventTypes()).thenReturn(Collections.singleton(ItemStateEvent.TYPE));
+        when(eventSubscriberMock.getSubscribedEventTypes()).thenReturn(Set.of(ItemStateEvent.TYPE));
         registerService(eventSubscriberMock);
 
         if (updateEventType.equals(UpdateEventType.HANDLE_COMMAND)) {

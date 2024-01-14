@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,8 @@ package org.openhab.binding.mqtt.homeassistant;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -86,8 +86,7 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
                 scheduler, channelStateUpdateListener, availabilityTracker, gson, transformationServiceProvider));
 
-        HandlerConfiguration config = new HandlerConfiguration("homeassistant",
-                Collections.singletonList("switch/object"));
+        HandlerConfiguration config = new HandlerConfiguration("homeassistant", List.of("switch/object"));
 
         Set<HaID> discoveryIds = new HashSet<>();
         discoveryIds.addAll(HaID.fromConfig(config));

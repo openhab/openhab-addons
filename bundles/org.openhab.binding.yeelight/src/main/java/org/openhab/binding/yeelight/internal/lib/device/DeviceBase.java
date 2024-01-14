@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,7 +80,7 @@ public abstract class DeviceBase {
         try {
             if (message.has("method")) {
                 String method = message.get("method").toString().replace("\"", "");
-                if (method.equals("props")) {// Property notify
+                if ("props".equals(method)) {// Property notify
                     String params = message.get("params").toString();
                     JsonObject propsObject = JsonParser.parseString(params).getAsJsonObject();
                     for (Entry<String, JsonElement> prop : propsObject.entrySet()) {
@@ -92,9 +92,9 @@ public abstract class DeviceBase {
 
                         switch (property) {
                             case POWER:
-                                if (prop.getValue().toString().equals("\"off\"")) {
+                                if ("\"off\"".equals(prop.getValue().toString())) {
                                     mDeviceStatus.setPowerOff(true);
-                                } else if (prop.getValue().toString().equals("\"on\"")) {
+                                } else if ("\"on\"".equals(prop.getValue().toString())) {
                                     mDeviceStatus.setPowerOff(false);
                                 }
                                 break;
@@ -222,7 +222,7 @@ public abstract class DeviceBase {
             } else if (message.has("id") && message.has("result")) {
                 // no method, but result : ["ok"]
                 JsonArray result = message.get("result").getAsJsonArray();
-                if (result.get(0).toString().equals("\"ok\"")) {
+                if ("\"ok\"".equals(result.get(0).toString())) {
                     logger.info("######### this is control command response, don't need to notify status change!");
                     needNotify = false;
                 }

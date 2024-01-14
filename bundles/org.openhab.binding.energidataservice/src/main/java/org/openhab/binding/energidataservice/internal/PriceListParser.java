@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecord;
 
 /**
- * Parses results from {@link DatahubPricelistRecords} into map of hourly tariffs.
+ * Parses results from {@link org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecords}
+ * into map of hourly tariffs.
  * 
  * @author Jacob Laursen - Initial contribution
  */

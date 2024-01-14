@@ -9,6 +9,15 @@
 		<label>Smart Home Controller</label>
 		<description>The Bosch Smart Home Bridge representing the Bosch Smart Home Controller.</description>
 
+		<channels>
+			<channel id="scenario-triggered" typeId="scenario-triggered"/>
+			<channel id="trigger-scenario" typeId="trigger-scenario"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:boschshc:bridge"/>
 	</bridge-type>
 
@@ -94,6 +103,26 @@
 
 	</thing-type>
 
+	<thing-type id="window-contact-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Door/Window Contact II</label>
+		<description>Detects open windows and doors and features an additional button.</description>
+
+		<channels>
+			<channel id="contact" typeId="contact"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="bypass-state" typeId="bypass-state"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
 	<thing-type id="motion-detector">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>
@@ -105,9 +134,14 @@
 
 		<channels>
 			<channel id="latest-motion" typeId="latest-motion"/>
+			<channel id="illuminance" typeId="illuminance"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 
@@ -276,6 +310,21 @@
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
 
+	<thing-type id="user-defined-state">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>User-defined State</label>
+		<description>A User-defined state.</description>
+
+		<channels>
+			<channel id="user-state" typeId="user-state"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:user-defined-state"/>
+	</thing-type>
+
 	<!-- Channels -->
 
 	<channel-type id="system-availability">
@@ -347,8 +396,8 @@
 		<description>If privacy mode is enabled, the camera is disabled and vice versa.</description>
 		<state>
 			<options>
-				<option value="ENABLED">Privacy mode enabled (camera disabled)</option>
-				<option value="DISABLED">Privacy mode disabled (camera enabled)</option>
+				<option value="ON">Enabled (camera disabled)</option>
+				<option value="OFF">Disabled (camera enabled)</option>
 			</options>
 		</state>
 	</channel-type>
@@ -359,8 +408,8 @@
 		<description>Enables or disables notifications for the camera.</description>
 		<state>
 			<options>
-				<option value="ENABLED">Enable notifications</option>
-				<option value="DISABLED">Disable notifications</option>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
 			</options>
 		</state>
 	</channel-type>
@@ -481,6 +530,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="illuminance">
+		<item-type>Number</item-type>
+		<label>Illuminance</label>
+		<description>The illuminance level measured by the sensor (0 to 1000).</description>
+		<state min="0" max="1000" step="1" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="level">
 		<item-type>Rollershutter</item-type>
 		<label>Level</label>
@@ -514,8 +570,38 @@
 		<description>Enables or disables silent mode on thermostats. When enabled, the battery usage is higher.</description>
 		<state>
 			<options>
-				<option value="MODE_NORMAL">Silent mode disabled (lower battery usage)</option>
-				<option value="MODE_SILENT">Silent mode enabled (higher battery usage)</option>
+				<option value="OFF">Disabled (lower battery usage)</option>
+				<option value="ON">Enabled (higher battery usage)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scenario-triggered">
+		<item-type>String</item-type>
+		<label>Scenario Triggered</label>
+		<description>Name of the triggered scenario</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="trigger-scenario">
+		<item-type>String</item-type>
+		<label>Trigger Scenario</label>
+		<description>Name of the scenario to trigger</description>
+	</channel-type>
+
+	<channel-type id="user-state">
+		<item-type>Switch</item-type>
+		<label>State</label>
+		<description>State of user-defined state</description>
+	</channel-type>
+
+	<channel-type id="bypass-state">
+		<item-type>Switch</item-type>
+		<label>Bypass State</label>
+		<description>Indicates whether the device is currently bypassed.</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">Device is currently not bypassed</option>
+				<option value="ON">Device is currently bypassed</option>
 			</options>
 		</state>
 	</channel-type>

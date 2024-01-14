@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,7 +94,6 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
-     * @param managerRef the modbus manager
      */
     public AbstractSunSpecHandler(Thing thing) {
         super(thing);
@@ -257,9 +256,8 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             return null;
         }
 
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
-            return slaveEndpoint;
+        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+            return thingHandler;
         } else {
             logger.debug("Unexpected bridge handler: {}", handler);
             return null;
@@ -433,7 +431,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * @return the scaled value as a DecimalType
      */
     protected State getScaled(Optional<? extends Number> value, Optional<Short> scaleFactor, Unit<?> unit) {
-        if (!value.isPresent() || !scaleFactor.isPresent()) {
+        if (value.isEmpty() || scaleFactor.isEmpty()) {
             return UnDefType.UNDEF;
         }
         return getScaled(value.get().longValue(), scaleFactor.get(), unit);

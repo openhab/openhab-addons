@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.neeo.internal.NeeoConstants.BRIDGE_TYPE_BRAIN;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -50,7 +49,7 @@ public class NeeoBrainDiscovery implements MDNSDiscoveryParticipant {
 
     @Override
     public Set<@Nullable ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(BRIDGE_TYPE_BRAIN);
+        return Set.of(BRIDGE_TYPE_BRAIN);
     }
 
     @Override

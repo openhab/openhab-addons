@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,12 +67,12 @@ public class SinopeThermostatHandler extends BaseThingHandler {
         if (getSinopeGatewayHandler() != null) {
             try {
                 if (SinopeBindingConstants.CHANNEL_SETTEMP.equals(channelUID.getId())
-                        && command instanceof QuantityType) {
-                    setSetpointTemp(((QuantityType<?>) command).floatValue());
+                        && command instanceof QuantityType quantityCommand) {
+                    setSetpointTemp(quantityCommand.floatValue());
                 }
                 if (SinopeBindingConstants.CHANNEL_SETMODE.equals(channelUID.getId())
-                        && command instanceof DecimalType) {
-                    setSetpointMode(((DecimalType) command).intValue());
+                        && command instanceof DecimalType decimalCommand) {
+                    setSetpointMode(decimalCommand.intValue());
                 }
             } catch (IOException e) {
                 logger.debug("Cannot handle command for channel {} because of {}", channelUID.getId(),

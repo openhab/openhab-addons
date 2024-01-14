@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,8 +41,7 @@ public final class RequestResponseFactory {
      * @return
      */
     public static SimpleCommand getIpControlCommand(SimpleCommandType command) {
-        SimpleCommand result = new SimpleCommand(command);
-        return result;
+        return new SimpleCommand(command);
     }
 
     /**
@@ -53,8 +52,7 @@ public final class RequestResponseFactory {
      * @return
      */
     public static SimpleCommand getIpControlCommand(SimpleCommandType command, int zone) {
-        SimpleCommand result = new SimpleCommand(command, zone);
-        return result;
+        return new SimpleCommand(command, zone);
     }
 
     /**
@@ -65,8 +63,7 @@ public final class RequestResponseFactory {
      * @return
      */
     public static ParameterizedCommand getIpControlCommand(ParameterizedCommandType command) {
-        ParameterizedCommand result = new ParameterizedCommand(command);
-        return result;
+        return new ParameterizedCommand(command);
     }
 
     /**
@@ -78,8 +75,7 @@ public final class RequestResponseFactory {
      * @return
      */
     public static ParameterizedCommand getIpControlCommand(ParameterizedCommandType command, int zone) {
-        ParameterizedCommand result = new ParameterizedCommand(command, zone);
-        return result;
+        return new ParameterizedCommand(command, zone);
     }
 
     /**
@@ -88,7 +84,6 @@ public final class RequestResponseFactory {
      *
      * @param command
      * @param parameter
-     * @param zone
      * @return
      */
     public static ParameterizedCommand getIpControlCommand(ParameterizedCommandType command, String parameter) {

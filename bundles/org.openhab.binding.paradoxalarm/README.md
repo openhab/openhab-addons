@@ -76,7 +76,8 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | Channel                  | Type    | Description                                                                                   |
 |--------------------------|---------|-----------------------------------------------------------------------------------------------|
 | partitionLabel           | String  | Label of partition inside Paradox configuration                                               |
-| state                    | String  |State of partition (armed, disarmed, in alarm)                                                 |
+| state                    | String  | Calculated overall state of the partition (Armed, Disarmed, In Alarm)                         |
+| detailedState            | String  | Calculated detailed state of the partition based on partition state bits (see below table for possible values)             |
 | additionalState          | String  | This used to be a channel where all different states were consolidated as semi-colon separated string. With implementation of each state as channel additional states should be no longer used. (deprecated channel)                             |
 | readyToArm               | Switch  | Partition is Ready to arm                                                                     |
 | inExitDelay              | Switch  | Partition is in Exit delay                                                                    |
@@ -95,13 +96,30 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | allZonesClosed           | Contact | All zones in partition are currently closed                                                   |
 | command                  | String  | Command to be send to partition. Can be (ARM, DISARM, FORCE_ARM, INSTANT_ARM, STAY_ARM, BEEP) |
 
+### Partition detailed state possible values:
+| Overall state value      | Detailed state value (depending on the sub-state)                                            |
+|--------------------------|----------------------------------------------------------------------------------------------|
+| InAlarm                  | Silent Alarm, Audible Alarm, Fire Alarm, In Alarm (if none of the first three)               |
+| Armed                    | Away Armed, Stay Armed, NoEntry Armed, Armed (if none of the first three)                    |
+| Disarmed                 | Disarmed                                                                                     |
+
 ### Zone channels:
 
-| Channel         | Type    | Description                                                                    |
-|-----------------|---------|--------------------------------------------------------------------------------|
-| zoneLabel       | String  | Label of zone inside Paradox configuration                                     |
-| openedState     | Contact | Zone opened / closed                                                           |
-| tamperedState   | Switch  | Zone is tampered / not tampered                                                |
+| Channel                            | Type    | Description                                                                    |
+|------------------------------------|---------|--------------------------------------------------------------------------------|
+| zoneLabel                          | String  | Label of zone inside Paradox configuration                                     |
+| openedState                        | Contact | Zone opened / closed                                                           |
+| tamperedState                      | Switch  | Zone is tampered                                                               |
+| supervisionTrouble                 | Switch  | Zone is in supervision trouble                                                 |
+| inTxDelay                          | Switch  | Zone is in txDelay                                                             |
+| shutdown                           | Switch  | Zone is shutdown                                                               |
+| bypassed                           | Switch  | Zone is bypassed                                                               |
+| hasActivatedIntellizoneDelay       | Switch  | Zone is has an activated Intellizone delay                                     |
+| hasActivatedEntryDelay             | Switch  | Zone is has an activated entry delay                                           |
+| presentlyInAlarm                   | Switch  | Zone is currently in alarm                                                     |
+| generatedAlarm                     | Switch  | Zone has generated an alarm                                                    |
+| command                            | String  | Command for zone. Can be (BYPASS, CLEAR_BYPASS)                                |
+
 
 ## Example things configuration
 

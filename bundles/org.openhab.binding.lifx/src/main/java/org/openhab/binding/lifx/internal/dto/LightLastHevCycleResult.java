@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,7 @@ public enum LightLastHevCycleResult {
         Optional<LightLastHevCycleResult> result = Arrays.stream(values()).filter((value) -> value.type == type)
                 .findFirst();
 
-        if (!result.isPresent()) {
+        if (result.isEmpty()) {
             throw new IllegalArgumentException("Invalid LightLastHevCycleResult type: " + type);
         }
 

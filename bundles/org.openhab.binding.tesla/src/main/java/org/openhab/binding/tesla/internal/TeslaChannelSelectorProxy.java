@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,6 +45,48 @@ public class TeslaChannelSelectorProxy {
     public enum TeslaChannelSelector {
 
         API("api_version", "api", DecimalType.class, true),
+        AR_DESTINATION("active_route_destination", "destinationname", StringType.class, false),
+        AR_LATITUDE("active_route_latitude", "destinationlocation", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                proxy.arLatitude = s;
+                return new PointType(new StringType(proxy.arLatitude), new StringType(proxy.arLongitude),
+                        new StringType(proxy.elevation));
+            }
+        },
+        AR_LONGITUDE("active_route_longitude", "destinationlocation", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                proxy.arLongitude = s;
+                return new PointType(new StringType(proxy.arLatitude), new StringType(proxy.arLongitude),
+                        new StringType(proxy.elevation));
+            }
+        },
+        AR_DISTANCE_TO_ARRIVAL("active_route_miles_to_arrival", "distancetoarrival", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                State someState = super.getState(s);
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, ImperialUnits.MILE);
+            }
+        },
+        AR_MINUTES_TO_ARRIVAL("active_route_minutes_to_arrival", "minutestoarrival", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                State someState = super.getState(s);
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, Units.MINUTE);
+            }
+        },
+        AR_TRAFFIC_MINUTES_DELAY("active_route_traffic_minutes_delay", "trafficminutesdelay", DecimalType.class,
+                false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                State someState = super.getState(s);
+                BigDecimal value = ((DecimalType) someState).toBigDecimal();
+                return new QuantityType<>(value, Units.MINUTE);
+            }
+        },
         AUTO_COND("is_auto_conditioning_on", "autoconditioning", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -891,6 +933,8 @@ public class TeslaChannelSelectorProxy {
             }
         },
         SOC("soc", "soc", PercentType.class, false),
+        SOFTWARE_UPDATE_STATUS("status", "softwareupdatestatus", StringType.class, false),
+        SOFTWARE_UPDATE_VERSION("version", "softwareupdateversion", StringType.class, false),
         SPEED("speed", "speed", DecimalType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -964,7 +1008,7 @@ public class TeslaChannelSelectorProxy {
         VEHICLE_NAME("vehicle_name", "name", StringType.class, true) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                return super.getState(s.replaceAll("\"", ""));
+                return super.getState(s.replace("\"", ""));
             }
         },
         VALET_MODE("valet_mode", "valetmode", OnOffType.class, false) {
@@ -1094,6 +1138,8 @@ public class TeslaChannelSelectorProxy {
     public String elevation = "0";
     public String nativeLatitude = "0";
     public String nativeLongitude = "0";
+    public String arLatitude = "0";
+    public String arLongitude = "0";
 
     public State getState(String s, TeslaChannelSelector selector, Map<String, String> properties) {
         return selector.getState(s, this, properties);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,7 +77,7 @@ public class ActionConditions {
      * @return RGB value + brightness as first byte
      */
     private static @Nullable JsonElement hsvToBRGB(@Nullable Command command, @Nullable JsonElement value) {
-        if (command != null && command instanceof HSBType) {
+        if (command instanceof HSBType) {
             HSBType hsb = (HSBType) command;
             Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360, hsb.getSaturation().floatValue() / 100,
                     hsb.getBrightness().floatValue() / 100);
@@ -119,7 +119,7 @@ public class ActionConditions {
      * @return
      */
     private static @Nullable JsonElement hsbOnly(@Nullable Command command, @Nullable JsonElement value) {
-        if (command != null && command instanceof HSBType) {
+        if (command instanceof HSBType) {
             return value;
         }
         return null;

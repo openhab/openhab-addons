@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.draytonwiser.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -109,9 +106,8 @@ public class DraytonWiserBindingConstants {
     public static final String CHANNEL_SMARTPLUG_INSTANTANEOUS_POWER = "plugInstantaneousPower";
     public static final String CHANNEL_SMARTPLUG_ENERGY_DELIVERED = "plugEnergyDelivered";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_CONTROLLER, THING_TYPE_ROOM, THING_TYPE_ROOMSTAT,
-                    THING_TYPE_BRIDGE, THING_TYPE_ITRV, THING_TYPE_HOTWATER, THING_TYPE_SMARTPLUG)));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CONTROLLER, THING_TYPE_ROOM,
+            THING_TYPE_ROOMSTAT, THING_TYPE_BRIDGE, THING_TYPE_ITRV, THING_TYPE_HOTWATER, THING_TYPE_SMARTPLUG);
 
     // Lookups from text representations to useful values
 

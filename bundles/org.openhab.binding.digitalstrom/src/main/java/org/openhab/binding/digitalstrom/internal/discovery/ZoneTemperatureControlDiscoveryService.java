@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,8 @@ package org.openhab.binding.digitalstrom.internal.discovery;
 
 import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.BINDING_ID;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,8 +34,10 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link ZoneTemperatureControlDiscoveryService} discovers all digitalSTROM zones which have temperature control
  * configured. The thing-type has to be given to the
- * {@link #ZoneTemperatureControlDiscoveryService(BridgeHandler, ThingTypeUID)} as {@link ThingTypeUID}. The supported
- * {@link ThingTypeUID} can be found at {@link ZoneTemperatureControlHandler#SUPPORTED_THING_TYPES}
+ * {@link #ZoneTemperatureControlDiscoveryService(BridgeHandler, ThingTypeUID)} as
+ * {@link org.openhab.core.thing.ThingTypeUID}. The supported {@link org.openhab.core.thing.ThingTypeUID}
+ * can be found at
+ * {@link org.openhab.binding.digitalstrom.internal.handler.ZoneTemperatureControlHandler#SUPPORTED_THING_TYPES}
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -75,7 +77,7 @@ public class ZoneTemperatureControlDiscoveryService extends AbstractDiscoverySer
     public void deactivate() {
         logger.debug("Deactivate discovery service for zone teperature control type remove thing types {}",
                 super.getSupportedThingTypes());
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     /**
@@ -117,8 +119,7 @@ public class ZoneTemperatureControlDiscoveryService extends AbstractDiscoverySer
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, thingTypeID);
         if (getSupportedThingTypes().contains(thingTypeUID)) {
             String thingID = tempControlStatus.getZoneID().toString();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, thingID);
-            return thingUID;
+            return new ThingUID(thingTypeUID, bridgeUID, thingID);
         } else {
             return null;
         }

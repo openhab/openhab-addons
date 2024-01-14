@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,34 +34,34 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DHCPListenService {
     static @Nullable DHCPPacketListenerServer instance;
-    private static Map<String, IPRequestReceivedCallback> registeredListeners = new TreeMap<>();
-    private static Logger logger = LoggerFactory.getLogger(DHCPListenService.class);
+    private static final Map<String, IPRequestReceivedCallback> REGISTERED_LISTENERS = new TreeMap<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(DHCPListenService.class);
 
     public static synchronized DHCPPacketListenerServer register(String hostAddress,
             IPRequestReceivedCallback dhcpListener) throws SocketException {
         DHCPPacketListenerServer instance = DHCPListenService.instance;
         if (instance == null) {
-            instance = new DHCPPacketListenerServer((String ipAddress) -> {
-                IPRequestReceivedCallback listener = registeredListeners.get(ipAddress);
+            instance = new DHCPPacketListenerServer(ipAddress -> {
+                IPRequestReceivedCallback listener = REGISTERED_LISTENERS.get(ipAddress);
                 if (listener != null) {
                     listener.dhcpRequestReceived(ipAddress);
                 } else {
-                    logger.trace("DHCP request for unknown address: {}", ipAddress);
+                    LOGGER.trace("DHCP request for unknown address: {}", ipAddress);
                 }
             });
             DHCPListenService.instance = instance;
             instance.start();
         }
-        synchronized (registeredListeners) {
-            registeredListeners.put(hostAddress, dhcpListener);
+        synchronized (REGISTERED_LISTENERS) {
+            REGISTERED_LISTENERS.put(hostAddress, dhcpListener);
         }
         return instance;
     }
 
     public static void unregister(String hostAddress) {
-        synchronized (registeredListeners) {
-            registeredListeners.remove(hostAddress);
-            if (!registeredListeners.isEmpty()) {
+        synchronized (REGISTERED_LISTENERS) {
+            REGISTERED_LISTENERS.remove(hostAddress);
+            if (!REGISTERED_LISTENERS.isEmpty()) {
                 return;
             }
         }

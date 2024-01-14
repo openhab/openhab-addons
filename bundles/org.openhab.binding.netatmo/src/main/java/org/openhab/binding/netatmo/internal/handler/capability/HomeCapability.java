@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,11 +27,12 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.Location;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
+import org.openhab.binding.netatmo.internal.api.dto.NAError;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.HomeConfiguration;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
+import org.openhab.core.thing.Bridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,6 +106,16 @@ public class HomeCapability extends RestCapability<HomeApi> {
         return featureAreas.contains(searched);
     }
 
+    /**
+     * Errored equipments are reported at home level - so we need to explore all the tree to identify modules
+     * depending from a child device.
+     */
+    @Override
+    protected void updateErrors(NAError error) {
+        handler.getAllActiveChildren((Bridge) thing).stream().filter(handler -> handler.getId().equals(error.getId()))
+                .findFirst().ifPresent(handler -> handler.setNewData(error));
+    }
+
     @Override
     protected List<NAObject> updateReadings(HomeApi api) {
         List<NAObject> result = new ArrayList<>();
@@ -115,12 +126,13 @@ public class HomeCapability extends RestCapability<HomeApi> {
                     result.add(homeData);
                     featureAreas.addAll(homeData.getFeatures());
                 }
-                HomeStatus homeStatus = api.getHomeStatus(id);
-                if (homeStatus != null) {
-                    result.add(homeStatus);
-                }
+
+                api.getHomeStatus(id).ifPresent(body -> {
+                    body.getHomeStatus().ifPresent(result::add);
+                    result.addAll(body.getErrors());
+                });
             } catch (NetatmoException e) {
-                logger.warn("Error getting Home informations : {}", e.getMessage());
+                logger.warn("Error getting Home informations: {}", e.getMessage());
             }
         });
         return result;

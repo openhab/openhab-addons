@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,8 +81,8 @@ public class XiaomiSensorMagnetHandler extends XiaomiSensorBaseHandlerWithTimer 
     @Override
     void execute(ChannelUID channelUID, Command command) {
         if (CHANNEL_OPEN_ALARM_TIMER.equals(channelUID.getId())) {
-            if (command != null && command instanceof DecimalType) {
-                setTimerFromDecimalType((DecimalType) command);
+            if (command instanceof DecimalType decimalCommand) {
+                setTimerFromDecimalType(decimalCommand);
                 return;
             }
             // Only gets here, if no condition was met

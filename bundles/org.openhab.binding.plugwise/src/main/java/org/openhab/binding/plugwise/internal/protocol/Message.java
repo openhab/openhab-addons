@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.plugwise.internal.protocol;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
 import org.openhab.binding.plugwise.internal.protocol.field.MessageType;
@@ -40,14 +40,7 @@ public abstract class Message {
         int crc = 0x0000;
         int polynomial = 0x1021; // 0001 0000 0010 0001 (0, 5, 12)
 
-        byte[] bytes = new byte[0];
-        try {
-            bytes = string.getBytes("ASCII");
-        } catch (UnsupportedEncodingException e) {
-            return "";
-        }
-
-        for (byte b : bytes) {
+        for (byte b : string.getBytes(StandardCharsets.US_ASCII)) {
             for (int i = 0; i < 8; i++) {
                 boolean bit = ((b >> (7 - i) & 1) == 1);
                 boolean c15 = ((crc >> 15 & 1) == 1);
@@ -69,11 +62,11 @@ public abstract class Message {
 
     protected String payload;
 
-    public Message(MessageType messageType) {
+    protected Message(MessageType messageType) {
         this(messageType, null, null, null);
     }
 
-    public Message(MessageType messageType, Integer sequenceNumber, MACAddress macAddress, String payload) {
+    protected Message(MessageType messageType, Integer sequenceNumber, MACAddress macAddress, String payload) {
         this.type = messageType;
         this.sequenceNumber = sequenceNumber;
         this.macAddress = macAddress;
@@ -84,19 +77,19 @@ public abstract class Message {
         }
     }
 
-    public Message(MessageType messageType, Integer sequenceNumber, String payload) {
+    protected Message(MessageType messageType, Integer sequenceNumber, String payload) {
         this(messageType, sequenceNumber, null, payload);
     }
 
-    public Message(MessageType messageType, MACAddress macAddress) {
+    protected Message(MessageType messageType, MACAddress macAddress) {
         this(messageType, null, macAddress, null);
     }
 
-    public Message(MessageType messageType, MACAddress macAddress, String payload) {
+    protected Message(MessageType messageType, MACAddress macAddress, String payload) {
         this(messageType, null, macAddress, payload);
     }
 
-    public Message(MessageType messageType, String payload) {
+    protected Message(MessageType messageType, String payload) {
         this(messageType, null, null, payload);
     }
 

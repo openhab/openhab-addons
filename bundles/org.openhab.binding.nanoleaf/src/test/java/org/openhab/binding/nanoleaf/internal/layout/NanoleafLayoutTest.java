@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class NanoleafLayoutTest {
     }
 
     private class TestPanelState implements PanelState {
-        private final HSBType testColors[] = { HSBType.fromRGB(160, 120, 40), HSBType.fromRGB(80, 60, 20),
+        private final HSBType[] testColors = { HSBType.fromRGB(160, 120, 40), HSBType.fromRGB(80, 60, 20),
                 HSBType.fromRGB(120, 90, 30), HSBType.fromRGB(200, 150, 60) };
 
         @Override

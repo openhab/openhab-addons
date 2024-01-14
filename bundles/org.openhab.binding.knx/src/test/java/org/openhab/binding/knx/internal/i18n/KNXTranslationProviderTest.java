@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ class KNXTranslationProviderTest {
 
     @Test
     void testGetBeforeInit() {
-        // initial state, should not crash and preferrably return original strings (w. pattern substitution)
+        // initial state, should not crash and preferably return original strings (w. pattern substitution)
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN));
         assertEquals(UNKNOWN, KNXTranslationProvider.I18N.get(UNKNOWN, 5));
         assertEquals(UNKNOWN_NULL, KNXTranslationProvider.I18N.get(UNKNOWN_PATTERN, null, null));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,35 +12,39 @@
  */
 package org.openhab.binding.autelis.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration properties for connecting to an Autelis Controller
  *
  * @author Dan Cunningham - Initial contribution
  *
  */
+@NonNullByDefault
 public class AutelisConfiguration {
 
     /**
      * Host of the Autelis controller
      */
-    public String host;
+    public String host = "";
+
     /**
      * port of the Autelis controller
      */
-    public Integer port;
+    public int port = 80;
 
     /**
      * user to us when connecting to the Autelis controller
      */
-    public String user;
+    public String user = "";
 
     /**
      * password to us when connecting to the Autelis controller
      */
-    public String password;
+    public String password = "";
 
     /**
      * Rate we poll for new data
      */
-    public Integer refresh;
+    public int refresh = 5;
 }

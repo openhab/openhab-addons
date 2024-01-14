@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -343,8 +343,8 @@ public class AllPlayHandler extends BaseThingHandler
      * @throws SpeakerException Exception if the volume change failed
      */
     public void handleVolumeCommand(Command command) throws SpeakerException {
-        if (command instanceof PercentType) {
-            speaker.volume().setVolume(convertPercentToAbsoluteVolume((PercentType) command));
+        if (command instanceof PercentType percentCommand) {
+            speaker.volume().setVolume(convertPercentToAbsoluteVolume(percentCommand));
         } else if (command instanceof IncreaseDecreaseType) {
             int stepSize = (command == IncreaseDecreaseType.DECREASE ? -getVolumeStepSize() : getVolumeStepSize());
             speaker.volume().adjustVolume(stepSize);
@@ -403,14 +403,14 @@ public class AllPlayHandler extends BaseThingHandler
     @Override
     public void onShuffleModeChanged(ShuffleMode shuffleMode) {
         logger.debug("{}: ShuffleMode changed to {}", speaker.getName(), shuffleMode);
-        OnOffType shuffleOnOff = (shuffleMode == ShuffleMode.SHUFFLE) ? OnOffType.ON : OnOffType.OFF;
+        OnOffType shuffleOnOff = OnOffType.from(shuffleMode == ShuffleMode.SHUFFLE);
         updateState(SHUFFLE_MODE, shuffleOnOff);
     }
 
     @Override
     public void onMuteChanged(boolean mute) {
         logger.debug("{}: Mute changed to {}", speaker.getName(), mute);
-        updateState(MUTE, mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(MUTE, OnOffType.from(mute));
     }
 
     @Override
@@ -425,7 +425,7 @@ public class AllPlayHandler extends BaseThingHandler
 
     @Override
     public void onVolumeControlChanged(boolean enabled) {
-        updateState(VOLUME_CONTROL, enabled ? OnOffType.ON : OnOffType.OFF);
+        updateState(VOLUME_CONTROL, OnOffType.from(enabled));
     }
 
     @Override

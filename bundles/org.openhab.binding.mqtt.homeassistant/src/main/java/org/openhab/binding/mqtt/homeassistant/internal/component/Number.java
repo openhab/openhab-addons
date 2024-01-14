@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,8 +82,7 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
         NumberValue value = new NumberValue(channelConfiguration.min, channelConfiguration.max,
                 channelConfiguration.step, UnitUtils.parseUnit(channelConfiguration.unitOfMeasurement));
 
-        buildChannel(NUMBER_CHANNEL_ID, value, channelConfiguration.getName(),
-                componentConfiguration.getUpdateListener())
+        buildChannel(NUMBER_CHANNEL_ID, value, getName(), componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)

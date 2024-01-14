@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,7 @@ public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
 
                 // suppress warning for this datapoint due wrong CCU metadata
                 String deviceType = channel.getDevice().getType();
-                boolean isHmSenMdirNextTrans = dpInfo.getName().equals("NEXT_TRANSMISSION")
+                boolean isHmSenMdirNextTrans = "NEXT_TRANSMISSION".equals(dpInfo.getName())
                         && (deviceType.startsWith("HM-Sen-MDIR-O") || deviceType.startsWith("HM-Sen-MDIR-WM55")
                                 || deviceType.startsWith("HM-Sec-MDIR-2"));
                 if (!isHmSenMdirNextTrans) {

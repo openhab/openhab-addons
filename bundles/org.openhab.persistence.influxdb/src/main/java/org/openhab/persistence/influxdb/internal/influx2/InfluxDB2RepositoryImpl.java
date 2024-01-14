@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,6 +44,7 @@ import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.InfluxDBClientOptions;
 import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApi;
+import com.influxdb.client.domain.HealthCheck;
 import com.influxdb.client.domain.Ready;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
@@ -76,7 +77,8 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
 
     @Override
     public boolean isConnected() {
-        return client != null;
+        InfluxDBClient client = this.client;
+        return client != null && client.health().getStatus() == HealthCheck.StatusEnum.PASS;
     }
 
     @Override
@@ -186,12 +188,12 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         Point clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime(), WritePrecision.MS);
         @Nullable
         Object value = point.getValue();
-        if (value instanceof String) {
-            clientPoint.addField(FIELD_VALUE_NAME, (String) value);
-        } else if (value instanceof Number) {
-            clientPoint.addField(FIELD_VALUE_NAME, (Number) value);
-        } else if (value instanceof Boolean) {
-            clientPoint.addField(FIELD_VALUE_NAME, (Boolean) value);
+        if (value instanceof String string) {
+            clientPoint.addField(FIELD_VALUE_NAME, string);
+        } else if (value instanceof Number number) {
+            clientPoint.addField(FIELD_VALUE_NAME, number);
+        } else if (value instanceof Boolean boolean1) {
+            clientPoint.addField(FIELD_VALUE_NAME, boolean1);
         } else if (value == null) {
             clientPoint.addField(FIELD_VALUE_NAME, (String) null);
         } else {

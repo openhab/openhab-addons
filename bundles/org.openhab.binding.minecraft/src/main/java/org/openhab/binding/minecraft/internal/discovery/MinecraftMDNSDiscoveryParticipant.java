@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.minecraft.internal.discovery;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
 
 /**
  * The {@link MinecraftMDNSDiscoveryParticipant} is responsible for discovering Minecraft servers
- * {@link MDNSDiscoveryService}.
+ * {@link org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService}.
  *
  * @author Mattias Markehed - Initial contribution
  */
@@ -38,7 +37,7 @@ public class MinecraftMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(MinecraftBindingConstants.THING_TYPE_SERVER);
+        return Set.of(MinecraftBindingConstants.THING_TYPE_SERVER);
     }
 
     @Override
@@ -48,7 +47,7 @@ public class MinecraftMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
 
     @Override
     public DiscoveryResult createResult(ServiceInfo service) {
-        if (service.getName().equals("wc-minecraft")) {
+        if ("wc-minecraft".equals(service.getName())) {
             ThingUID uid = getThingUID(service);
 
             if (uid != null) {

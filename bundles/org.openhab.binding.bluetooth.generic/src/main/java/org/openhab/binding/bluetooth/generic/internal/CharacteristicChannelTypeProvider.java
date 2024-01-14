@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -108,7 +108,7 @@ public class CharacteristicChannelTypeProvider implements ChannelTypeProvider {
         if (channelID.charAt(30) != '-') {
             return false;
         }
-        return !(channelID.charAt(67) != '-');
+        return channelID.charAt(67) == '-';
     }
 
     public ChannelTypeUID registerChannelType(String characteristicUUID, boolean advanced, boolean readOnly,

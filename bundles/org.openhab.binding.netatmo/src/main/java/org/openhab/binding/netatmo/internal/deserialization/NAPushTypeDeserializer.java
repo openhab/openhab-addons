@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,12 +46,12 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
             moduleType = fromNetatmoObject(elements[0]);
             eventType = fromEvent(elements[1]);
         } else if (elements.length == 1) {
-            moduleType = ModuleType.ACCOUNT;
             eventType = fromEvent(string);
+            moduleType = eventType.getFirstModule();
         }
 
         if (moduleType.equals(ModuleType.UNKNOWN) || eventType.equals(EventType.UNKNOWN)) {
-            logger.warn("Unknown module or event type : {}, deserialized to '{}-{}'", string, moduleType, eventType);
+            logger.warn("Unknown module or event type: {}, deserialized to '{}-{}'", string, moduleType, eventType);
         }
 
         return new NAPushType(moduleType, eventType);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -208,8 +208,6 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
 
     /**
      * Constructor to set up interface
-     *
-     * @param config the Bridge configuration
      */
     public UplinkWebInterface(ScheduledExecutorService scheduler, NibeUplinkHandler handler, HttpClient httpClient) {
         this.uplinkHandler = handler;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,14 +61,14 @@ public class FeicanHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (command instanceof OnOffType) {
-                handleOnOff((OnOffType) command);
-            } else if (command instanceof HSBType) {
-                handleColor(channelUID, (HSBType) command);
-            } else if (command instanceof PercentType) {
-                handlePercentage(channelUID, (PercentType) command);
-            } else if (command instanceof StringType) {
-                handleString(channelUID, (StringType) command);
+            if (command instanceof OnOffType onOffCommand) {
+                handleOnOff(onOffCommand);
+            } else if (command instanceof HSBType hsbCommand) {
+                handleColor(channelUID, hsbCommand);
+            } else if (command instanceof PercentType percentCommand) {
+                handlePercentage(channelUID, percentCommand);
+            } else if (command instanceof StringType stringCommand) {
+                handleString(channelUID, stringCommand);
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -115,7 +115,7 @@ public class FeicanHandler extends BaseThingHandler {
      * @throws IOException Connection to the bulb failed
      */
     private void handleOnOff(DecimalType value) throws IOException {
-        handleOnOff(DecimalType.ZERO.equals(value) ? OnOffType.OFF : OnOffType.ON);
+        handleOnOff(OnOffType.from(!DecimalType.ZERO.equals(value)));
     }
 
     /**

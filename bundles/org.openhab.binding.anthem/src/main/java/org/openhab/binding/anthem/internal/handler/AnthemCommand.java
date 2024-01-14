@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import static org.openhab.binding.anthem.internal.AnthemBindingConstants.COMMAND
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AnthemCommend} is responsible for creating commands to be sent to the
+ * The {@link AnthemCommand} is responsible for creating commands to be sent to the
  * Anthem processor.
  *
  * @author Mark Hilbush - Initial contribution

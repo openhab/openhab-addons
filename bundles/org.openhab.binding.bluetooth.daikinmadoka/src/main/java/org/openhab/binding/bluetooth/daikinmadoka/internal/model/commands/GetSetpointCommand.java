@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,8 +59,8 @@ public class GetSetpointCommand extends BRC1HCommand {
         Integer iHeatingSetpoint = (int) (heatValue.getComputedValue() / 128.);
         Integer iCoolingSetpoint = (int) (coolValue.getComputedValue() / 128.);
 
-        this.heatingSetpoint = new QuantityType<Temperature>(iHeatingSetpoint, SIUnits.CELSIUS);
-        this.coolingSetpoint = new QuantityType<Temperature>(iCoolingSetpoint, SIUnits.CELSIUS);
+        this.heatingSetpoint = new QuantityType<>(iHeatingSetpoint, SIUnits.CELSIUS);
+        this.coolingSetpoint = new QuantityType<>(iCoolingSetpoint, SIUnits.CELSIUS);
 
         logger.debug("heatingSetpoint: {}", heatingSetpoint);
         logger.debug("coolingSetpoint: {}", coolingSetpoint);

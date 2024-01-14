@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,9 +52,9 @@ public class TradfriBindingConstants {
             .unmodifiableSet(Stream.of(THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_TEMP_LIGHT, THING_TYPE_COLOR_LIGHT)
                     .collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> SUPPORTED_PLUG_TYPES_UIDS = Collections.singleton(THING_TYPE_ONOFF_PLUG);
+    public static final Set<ThingTypeUID> SUPPORTED_PLUG_TYPES_UIDS = Set.of(THING_TYPE_ONOFF_PLUG);
 
-    public static final Set<ThingTypeUID> SUPPORTED_BLINDS_TYPES_UIDS = Collections.singleton(THING_TYPE_BLINDS);
+    public static final Set<ThingTypeUID> SUPPORTED_BLINDS_TYPES_UIDS = Set.of(THING_TYPE_BLINDS);
 
     public static final Set<ThingTypeUID> SUPPORTED_AIR_PURIFIER_TYPES_UIDS = Set.of(THING_TYPE_AIR_PURIFIER);
 
@@ -70,7 +70,7 @@ public class TradfriBindingConstants {
             .unmodifiableSet(Stream.of(THING_TYPE_DIMMER, THING_TYPE_REMOTE_CONTROL,
                     THING_TYPE_OPEN_CLOSE_REMOTE_CONTROL, THING_TYPE_MOTION_SENSOR).collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Collections.singleton(GATEWAY_TYPE_UID);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES_UIDS = Set.of(GATEWAY_TYPE_UID);
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(SUPPORTED_LIGHT_TYPES_UIDS.stream(), SUPPORTED_CONTROLLER_TYPES_UIDS.stream(),

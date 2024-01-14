@@ -240,20 +240,38 @@
 	<channel-type id="advanced-color" advanced="true">
 		<item-type>Color</item-type>
 		<label>Color XY Only</label>
+		<description>Set the color xy parameter of the light without changing other state parameters.</description>
 		<category>ColorLight</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="advanced-brightness" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Dimming Only</label>
+		<description>Set the dimming parameter of the light without changing other state parameters.</description>
 		<category>Light</category>
 		<state pattern="%.1f %%"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="advanced-power" advanced="true">
 		<item-type>Switch</item-type>
 		<label>On/Off Only</label>
+		<description>Set the on/off parameter of the light without changing other state parameters.</description>
 		<category>Switch</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="security-contact">
+		<item-type>Contact</item-type>
+		<label>Open/Closed</label>
+		<category>Lock</category>
+	</channel-type>
+
+	<channel-type id="security-tamper">
+		<item-type>Contact</item-type>
+		<label>Normal/Tamper</label>
+		<category>Siren</category>
 	</channel-type>
 
 </thing:thing-descriptions>

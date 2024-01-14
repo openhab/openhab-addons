@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,6 @@ public class MycroftConnectionTest {
 
     @Test
     public void testConnectionOK() throws IOException {
-
         MycroftConnection mycroftConnection = new MycroftConnection(mycroftConnectionListener, new WebSocketClient());
         Mockito.when(sessionMock.getRemoteAddress()).thenReturn(new InetSocketAddress(1234));
         mycroftConnection.onConnect(sessionMock);
@@ -85,7 +84,6 @@ public class MycroftConnectionTest {
 
     @Test
     public void testSpeakListener() throws IOException {
-
         MycroftConnection mycroftConnection = new MycroftConnection(mycroftConnectionListener, new WebSocketClient());
 
         Mockito.when(sessionMock.getRemoteAddress()).thenReturn(new InetSocketAddress(1234));

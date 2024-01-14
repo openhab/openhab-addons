@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.miio.internal.miot;
 
 import java.io.FileNotFoundException;
@@ -241,7 +240,7 @@ public class MiotParser {
                         }
                         miIoBasicChannel.setRefresh(property.access.contains("read"));
                         // add option values
-                        if (property.valueList != null && property.valueList.size() > 0) {
+                        if (property.valueList != null && !property.valueList.isEmpty()) {
                             StateDescriptionDTO stateDescription = miIoBasicChannel.getStateDescription();
                             if (stateDescription == null) {
                                 stateDescription = new StateDescriptionDTO();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,7 +123,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     public void updateCDP(String channelName, Map<String, String> cdpMap) {
         logger.trace("{} - Updating CDP for {}", this.thingID, channelName);
-        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
+        List<CommandOption> commandOptions = new ArrayList<>();
         cdpMap.forEach((key, value) -> commandOptions.add(new CommandOption(key, value)));
         logger.trace("{} - CDP List: {}", this.thingID, commandOptions);
         commandDescriptionProvider.setCommandOptions(new ChannelUID(getThing().getUID(), channelName), commandOptions);
@@ -152,6 +152,10 @@ public class AndroidTVHandler extends BaseThingHandler {
                 failed = true;
             }
             statusMessage = "GoogleTV: " + googletvConnectionManager.getStatusMessage();
+
+            if (!THING_TYPE_GOOGLETV.equals(thingTypeUID)) {
+                statusMessage = statusMessage + " | ";
+            }
         }
 
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
@@ -159,7 +163,7 @@ public class AndroidTVHandler extends BaseThingHandler {
                 if (!shieldtvConnectionManager.getLoggedIn()) {
                     failed = true;
                 }
-                statusMessage = statusMessage + " | ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
+                statusMessage = statusMessage + "ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
             }
         }
 
@@ -181,14 +185,17 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         GoogleTVConfiguration googletvConfig = getConfigAs(GoogleTVConfiguration.class);
         String ipAddress = googletvConfig.ipAddress;
+        boolean gtvEnabled = googletvConfig.gtvEnabled;
 
-        if (ipAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.googletv-address-not-specified");
-            return;
+        if (THING_TYPE_GOOGLETV.equals(thingTypeUID) || gtvEnabled) {
+            if (ipAddress.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.googletv-address-not-specified");
+                return;
+            }
+
+            googletvConnectionManager = new GoogleTVConnectionManager(this, googletvConfig);
         }
-
-        googletvConnectionManager = new GoogleTVConnectionManager(this, googletvConfig);
 
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
             ShieldTVConfiguration shieldtvConfig = getConfigAs(ShieldTVConfiguration.class);
@@ -205,6 +212,13 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         monitorThingStatusJob = scheduler.schedule(this::monitorThingStatus, THING_STATUS_FREQUENCY,
                 TimeUnit.MILLISECONDS);
+    }
+
+    public void sendCommandToProtocol(ChannelUID channelUID, Command command) {
+        ShieldTVConnectionManager shieldtvConnectionManager = this.shieldtvConnectionManager;
+        if (THING_TYPE_SHIELDTV.equals(thingTypeUID) && (shieldtvConnectionManager != null)) {
+            shieldtvConnectionManager.handleCommand(channelUID, command);
+        }
     }
 
     @Override
@@ -263,6 +277,9 @@ public class AndroidTVHandler extends BaseThingHandler {
                     shieldtvConnectionManager.handleCommand(channelUID, command);
                     return;
                 }
+            } else if (googletvConnectionManager == null) {
+                shieldtvConnectionManager.handleCommand(channelUID, command);
+                return;
             }
         }
 

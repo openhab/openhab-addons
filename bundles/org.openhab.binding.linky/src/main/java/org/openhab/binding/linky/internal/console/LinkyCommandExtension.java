@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,8 +65,8 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension imple
             LinkyHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof LinkyHandler) {
-                    handler = (LinkyHandler) thingHandler;
+                if (thingHandler instanceof LinkyHandler linkyHandler) {
+                    handler = linkyHandler;
                 }
             }
             if (thing == null) {
