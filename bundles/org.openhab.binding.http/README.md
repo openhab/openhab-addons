@@ -168,7 +168,7 @@ When sending an OFF command on 2020-07-06, the URL
 http://www.domain.org/home/lights/23871/?status=%2$s&date=%1$tY-%1$tm-%1$td
 ``` 
 
-is transformed to 
+is transformed to
 
 ```
 http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
