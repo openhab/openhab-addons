@@ -60,7 +60,6 @@ The `image` channel-type supports `stateExtension` only.
 | `stateContent`          | yes      | -           | Content for state requests (if method is `PUT` or `POST`)                                                 |
 | `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READONLY` means receive state, `WRITEONLY` means send commands. |
 
-Transformations need to be specified in the same format as 
 Some channels have additional parameters.
 When concatenating the `baseURL` and `stateExtension` or `commandExtension` the binding checks if a proper URL part separator (`/`, `&` or `?`) is present and adds a `/` if missing.
 
@@ -179,12 +178,12 @@ http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
 
 ### `demo.things`
 
-```
-Thing http:url:foo "Foo" [ 
-	baseURL="https://example.com/api/v1/metadata-api/web/metadata", 
-	headers="key1=value1", "key2=value2", "key3=value3",
-	refresh=15] {
-		Channels:
-			Type string : text "Text" [ stateTransformation="JSONPATH:$.metadata.data" ]
+```java
+Thing http:url:foo "Foo" [
+    baseURL="https://example.com/api/v1/metadata-api/web/metadata", 
+    headers="key1=value1", "key2=value2", "key3=value3",
+    refresh=15] {
+        Channels:
+            Type string : text "Text" [ stateTransformation="JSONPATH:$.metadata.data" ]
 }
 ```
