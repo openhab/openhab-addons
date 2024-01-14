@@ -16,7 +16,6 @@
 
   <properties>
     <bnd.importpackage>!org.simpleframework.xml.*,!org.cups4j,!net.sf.ehcache.*,!net.spy.*</bnd.importpackage>
-    <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
   </properties>
 
   <dependencies>
