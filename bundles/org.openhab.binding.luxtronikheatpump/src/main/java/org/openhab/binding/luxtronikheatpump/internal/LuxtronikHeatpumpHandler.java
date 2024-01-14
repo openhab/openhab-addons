@@ -159,6 +159,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
                 break;
             case CHANNEL_EINST_WK_AKT:
             case CHANNEL_EINST_BWS_AKT:
+            case CHANNEL_EINST_HZFTRL_AKT:
             case CHANNEL_EINST_KUCFTL_AKT:
             case CHANNEL_SOLLWERT_KUCFTL_AKT:
             case CHANNEL_SOLL_BWS_AKT:
