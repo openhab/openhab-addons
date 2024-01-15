@@ -210,7 +210,7 @@ public class TibberHandler extends BaseThingHandler {
 
                     TimeSeries timeSeries = buildTimeSeries(today, tomorrow);
                     sendTimeSeries(CURRENT_TOTAL, timeSeries);
-                } catch (JsonSyntaxException e) {
+                } catch (JsonSyntaxException | DateTimeParseException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error communicating with Tibber API: " + e.getMessage());
                 }
@@ -290,23 +290,10 @@ public class TibberHandler extends BaseThingHandler {
 
     private void mapTimeSeriesEntries(JsonArray prices, TimeSeries timeSeries) {
         for (JsonElement entry : prices) {
-            final Instant startsAt = parseDateTime(entry.getAsJsonObject().get("startsAt"));
-            if (startsAt == null) {
-                // Skip entry, if date is invalid.
-                continue;
-            }
-            final DecimalType value = new DecimalType(entry.getAsJsonObject().get("total").getAsString());
+            JsonObject entryObject = entry.getAsJsonObject();
+            final Instant startsAt = ZonedDateTime.parse(entryObject.get("startsAt").getAsString()).toInstant();
+            final DecimalType value = new DecimalType(entryObject.get("total").getAsString());
             timeSeries.add(startsAt, value);
-        }
-    }
-
-    @Nullable
-    private Instant parseDateTime(JsonElement element) {
-        try {
-            return ZonedDateTime.parse(element.getAsString()).toInstant();
-        } catch (DateTimeParseException e) {
-            logger.warn("Could not parse timestamp from response.", e);
-            return null;
         }
     }
 
