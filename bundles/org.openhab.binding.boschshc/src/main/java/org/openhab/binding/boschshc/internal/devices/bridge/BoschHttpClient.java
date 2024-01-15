@@ -56,6 +56,16 @@ public class BoschHttpClient extends HttpClient {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    /**
+     * Default number of seconds for HTTP request timeouts
+     */
+    public static final long DEFAULT_TIMEOUT_SECONDS = 10;
+
+    /**
+     * The time unit used for default HTTP request timeouts
+     */
+    public static final TimeUnit DEFAULT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
     private final String ipAddress;
     private final String systemPassword;
 
@@ -299,7 +309,7 @@ public class BoschHttpClient extends HttpClient {
 
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json")
                 .header("api-version", "3.2") // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/80
-                .timeout(10, TimeUnit.SECONDS); // Set default timeout
+                .timeout(DEFAULT_TIMEOUT_SECONDS, DEFAULT_TIMEOUT_UNIT); // Set default timeout
 
         if (content != null) {
             final String body;
