@@ -21,14 +21,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NikoHomeControlCommunication1;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NikoHomeControlCommunication2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NikoHomeControlCommunication} class is an abstract class representing the communication objects with the
- * Niko Home Control System. {@link NikoHomeControlCommunication1} or {@link NikoHomeControlCommunication2} should be
+ * Niko Home Control System.
+ * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NikoHomeControlCommunication1} or
+ * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NikoHomeControlCommunication2} should be
  * used for the respective version of Niko Home Control.
  * <ul>
  * <li>Start and stop communication with the Niko Home Control System.

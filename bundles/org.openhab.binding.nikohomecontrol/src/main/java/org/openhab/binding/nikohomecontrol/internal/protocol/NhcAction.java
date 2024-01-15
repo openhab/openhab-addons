@@ -15,15 +15,14 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.ActionType;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcAction1;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAction2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NhcAction} class represents the action Niko Home Control communication object. It contains all fields
  * representing a Niko Home Control action and has methods to trigger the action in Niko Home Control and receive action
- * updates. Specific implementation are {@link NhcAction1} and {@link NhcAction2}.
+ * updates. Specific implementation are {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcAction1}
+ * and {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAction2}.
  *
  * @author Mark Herwege - Initial Contribution
  */
@@ -204,7 +203,9 @@ public abstract class NhcAction {
     }
 
     /**
-     * Sets state of action. This method is implemented in {@link NhcAction1} and {@link NhcAction2}.
+     * Sets state of action. This method is implemented in
+     * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcAction1} and
+     * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAction2}.
      *
      * @param state - The allowed values depend on the action type.
      *            switch action: 0 or 100
@@ -214,7 +215,9 @@ public abstract class NhcAction {
     public abstract void setState(int state);
 
     /**
-     * Sends action to Niko Home Control. This method is implemented in {@link NhcAction1} and {@link NhcAction2}.
+     * Sends action to Niko Home Control. This method is implemented in
+     * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcAction1} and
+     * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAction2}.
      *
      * @param command - The allowed values depend on the action type.
      *            switch action: On or Off

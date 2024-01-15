@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,14 +17,14 @@ import static org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeCont
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.AccessType;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAccess2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NhcAccess} class represents the access control Niko Home Control communication object. It contains all
  * fields representing a Niko Home Control access control device and has methods to unlock the door in Niko Home Control
- * and receive bell signals. A specific implementation is {@link NhcAccess2}.
+ * and receive bell signals. A specific implementation is
+ * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAccess2}.
  *
  * @author Mark Herwege - Initial Contribution
  */
