@@ -53,6 +53,7 @@ Use the following options for a **network:pingdevice**:
 - **retry:** After how many refresh interval cycles the device will be assumed to be offline. Default: `1`.
 - **timeout:** How long the ping will wait for an answer, in milliseconds. Default: `5000` (5 seconds).
 - **refreshInterval:** How often the device will be checked, in milliseconds. Default: `60000` (one minute).
+- **useIOSWakeUp:** When set to true, an additional port knock is performed before a ping. Default: `true`.
 - **networkInterfaceNames:** The network interface names used for communicating with the device.
   Limiting the network interfaces reduces the load when arping and Wake-on-LAN are used.
   Use comma separated values when using textual config. Default: empty (all network interfaces).
@@ -91,8 +92,7 @@ Use DHCP listen for an almost immediate presence detection for phones and tablet
 
 Apple iOS devices are usually in a deep sleep mode and do not respond to ARP pings under all conditions, but to Bonjour service discovery messages (UDP port 5353).
 Therefore, first a Bonjour message is sent, before the ARP presence detection is performed.
-The binding automatically figures out if the target device is an iOS device.
-To check if the binding has correctly recognised a device, have a look at the _uses_ios_wakeup_ property of the Thing.
+This is default behaviour of the binding, when needed this can be changed with the config parameter `useIOSWakeUp`.
 
 ### Use open TCP ports
 
@@ -189,7 +189,7 @@ Things support the following channels:
 demo.things:
 
 ```java
-Thing network:pingdevice:devicename [ hostname="192.168.0.42", macAddress="6f:70:65:6e:48:41" ]
+Thing network:pingdevice:devicename [ hostname="192.168.0.42", macAddress="6f:70:65:6e:48:41", useIOSWakeUp="false" ]
 Thing network:speedtest:local "SpeedTest 50Mo" @ "Internet" [url="https://bouygues.testdebit.info/", fileName="50M.iso"]
 ```
 
