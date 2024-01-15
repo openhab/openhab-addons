@@ -46,13 +46,13 @@ Number  Temperature "Temperature [%.1f °C]"
 
 The regex pattern is is defined as follows:
 
-* `.*` match any character, zero and unlimited times
-* `=` match the equal sign literally, used to find the position
-* `()` capture group match
-  * `\d*` match a digit (equal to [0-9]), zero and unlimited times
-  * `\.` match the dot literally
-  * `\w*` match a word character (equal to [a-zA-Z_0-9]), zero and unlimited times
-* `.*` match any character, zero and unlimited times
+- `.*` match any character, zero and unlimited times
+- `=` match the equal sign literally, used to find the position
+- `()` capture group match
+  - `\d*` match a digit (equal to [0-9]), zero and unlimited times
+  - `\.` match the dot literally
+  - `\w*` match a word character (equal to [a-zA-Z_0-9]), zero and unlimited times
+- `.*` match any character, zero and unlimited times
 
 Note, the backslashes have to be escaped. See [string vs plain](#differences-to-plain-regex)
 
@@ -102,9 +102,9 @@ Please note: This profile is a one-way transformation, i.e. only values from a d
 
 ## Further Reading
 
-* A full [introduction](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) for regular expression is available at W3School.
-* Online validator help to check the syntax of a regex and give information how to design it.
-  * [Regex 101](https://regex101.com/)
-  * [Regex R](https://regexr.com/)
-  * [ExtendsClass](https://extendsclass.com/regex-tester.html)
-  * [Softwium](https://softwium.com/regex-explainer/)
+- A full [introduction](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) for regular expression is available at W3School.
+- Online validator help to check the syntax of a regex and give information how to design it.
+  - [Regex 101](https://regex101.com/)
+  - [Regex R](https://regexr.com/)
+  - [ExtendsClass](https://extendsclass.com/regex-tester.html)
+  - [Softwium](https://softwium.com/regex-explainer/)
