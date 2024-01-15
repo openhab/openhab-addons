@@ -129,7 +129,6 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
         // wait until we got all results
         waitForAssert(() -> assertEquals(config.size(), responses.size()));
         rateLimitedHttpClient.shutdown();
-
     }
 
     private static class Response {
