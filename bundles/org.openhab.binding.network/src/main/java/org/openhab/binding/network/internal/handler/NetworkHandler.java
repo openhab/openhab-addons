@@ -184,7 +184,7 @@ public class NetworkHandler extends BaseThingHandler
             }
             presenceDetection.setServicePorts(Set.of(port));
         } else {
-            presenceDetection.setIOSDevice(handlerConfiguration.assumeiOsDevice);
+            presenceDetection.setIOSDevice(handlerConfiguration.useIOSWakeUp);
             // Hand over binding configurations to the network service
             presenceDetection.setUseDhcpSniffing(configuration.allowDHCPlisten);
             presenceDetection.setUseIcmpPing(configuration.allowSystemPings);

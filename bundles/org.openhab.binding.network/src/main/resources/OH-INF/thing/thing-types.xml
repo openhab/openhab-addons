@@ -62,7 +62,7 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="assumeiOsDevice" type="boolean" required="true">
+			<parameter name="useIOSWakeUp" type="boolean" required="true">
 				<label>Assume iOS Device</label>
 				<default>true</default>
 				<description>Set to true if the device presence detection should be performed for an iOS device like iPhone or
