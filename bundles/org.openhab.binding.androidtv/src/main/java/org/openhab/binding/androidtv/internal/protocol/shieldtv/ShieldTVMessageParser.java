@@ -232,6 +232,12 @@ public class ShieldTVMessageParser {
                 appNameDB.put("com.google.android.backdrop", "Backdrop Daydream");
                 appURLDB.put("com.google.android.backdrop", "");
 
+                appNameDB.put("com.google.android.tv.remote.service", "Android TV Remote Service");
+                appURLDB.put("com.google.android.tv.remote.service", "");
+
+                appNameDB.put("com.android.systemui", "Android System UI");
+                appURLDB.put("com.android.systemui", "");
+
                 // Packet will end with 300118f107 after last entry
 
                 while (i < msg.length() - 10) {
