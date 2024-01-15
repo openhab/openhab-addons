@@ -63,7 +63,7 @@
 			</parameter>
 
 			<parameter name="useIOSWakeUp" type="boolean" required="true">
-				<label>Assume iOS Device</label>
+				<label>Use iOS Wake Up</label>
 				<default>true</default>
 				<description>Set to true if the device presence detection should be performed for an iOS device like iPhone or
 					iPads. An additional port knock is performed before a ping.</description>
