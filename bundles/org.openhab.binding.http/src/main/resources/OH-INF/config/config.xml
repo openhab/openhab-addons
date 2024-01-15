@@ -7,13 +7,11 @@
 	<config-description uri="channel-type:http:channel-config">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when receiving values. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when sending values. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -24,13 +22,6 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
-		</parameter>
-		<parameter name="escapedUrl" type="boolean">
-			<label>Escaped URL</label>
-			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
-				stateExtension.</description>
-			<advanced>true</advanced>
-			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
@@ -53,13 +44,11 @@
 	<config-description uri="channel-type:http:channel-config-color">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when receiving values.</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -70,13 +59,6 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
-		</parameter>
-		<parameter name="escapedUrl" type="boolean">
-			<label>Escaped URL</label>
-			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
-				stateExtension.</description>
-			<advanced>true</advanced>
-			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
@@ -131,13 +113,11 @@
 	<config-description uri="channel-type:http:channel-config-contact">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -148,13 +128,6 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
-		</parameter>
-		<parameter name="escapedUrl" type="boolean">
-			<label>Escaped URL</label>
-			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
-				stateExtension.</description>
-			<advanced>true</advanced>
-			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
@@ -185,13 +158,11 @@
 	<config-description uri="channel-type:http:channel-config-dimmer">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -202,13 +173,6 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
-		</parameter>
-		<parameter name="escapedUrl" type="boolean">
-			<label>Escaped URL</label>
-			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
-				stateExtension.</description>
-			<advanced>true</advanced>
-			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
@@ -256,12 +220,6 @@
 			<description>This value is added to the base URL configured in the thing for retrieving values.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="escapedUrl" type="boolean">
-			<label>Escaped URL</label>
-			<description>This specifies whether the URL is already escaped. Applies to the base URL and stateExtension.</description>
-			<advanced>true</advanced>
-			<default>false</default>
-		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
 			<description>Content for state request (only used if method is POST/PUT)</description>
@@ -272,13 +230,11 @@
 	<config-description uri="channel-type:http:channel-config-number">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -289,13 +245,6 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
-		</parameter>
-		<parameter name="escapedUrl" type="boolean">
-			<label>Escaped URL</label>
-			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
-				stateExtension.</description>
-			<advanced>true</advanced>
-			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
@@ -323,13 +272,11 @@
 	<config-description uri="channel-type:http:channel-config-player">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -340,13 +287,6 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
-		</parameter>
-		<parameter name="escapedUrl" type="boolean">
-			<label>Escaped URL</label>
-			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
-				stateExtension.</description>
-			<advanced>true</advanced>
-			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
@@ -393,13 +333,11 @@
 	<config-description uri="channel-type:http:channel-config-rollershutter">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values Chain multiple transformations with the mathematical
-				intersection character "∩"..</description>
+			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -410,13 +348,6 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
-		</parameter>
-		<parameter name="escapedUrl" type="boolean">
-			<label>Escaped URL</label>
-			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
-				stateExtension.</description>
-			<advanced>true</advanced>
-			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>
@@ -455,13 +386,11 @@
 	<config-description uri="channel-type:http:channel-config-switch">
 		<parameter name="stateTransformation" type="text">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values. Chain multiple transformations with the mathematical
-				intersection character "∩".</description>
+			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -472,13 +401,6 @@
 			<label>Command URL Extension</label>
 			<description>This value is added to the base URL configured in the thing for sending values.</description>
 			<advanced>true</advanced>
-		</parameter>
-		<parameter name="escapedUrl" type="boolean">
-			<label>Escaped URL</label>
-			<description>This specifies whether the URL is already escaped. Applies to the base URL, commandExtension and
-				stateExtension.</description>
-			<advanced>true</advanced>
-			<default>false</default>
 		</parameter>
 		<parameter name="stateContent" type="text">
 			<label>State Content</label>

@@ -9,6 +9,19 @@
 		<label>HTTP URL Thing</label>
 		<description>Represents a base URL and all associated requests.</description>
 
+		<channels>
+			<channel typeId="request-date-time" id="last-failure">
+				<label>Last Failure</label>
+			</channel>
+			<channel typeId="request-date-time" id="last-success">
+				<label>Last Success</label>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
 		<config-description>
 			<parameter name="baseURL" type="text" required="true">
 				<label>Base URL</label>
@@ -44,7 +57,7 @@
 			</parameter>
 			<parameter name="password" type="text">
 				<label>Password</label>
-				<description>Basic Authentication password</description>
+				<description>Authentication password or token</description>
 				<context>password</context>
 				<advanced>true</advanced>
 			</parameter>
@@ -54,6 +67,7 @@
 					<option value="BASIC">Basic Authentication</option>
 					<option value="BASIC_PREEMPTIVE">Preemptive Basic Authentication</option>
 					<option value="DIGEST">Digest Authentication</option>
+					<option value="TOKEN">Token/Bearer Authentication</option>
 				</options>
 				<default>BASIC</default>
 				<limitToOptions>true</limitToOptions>
@@ -112,8 +126,19 @@
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="userAgent" type="text">
+				<label>User Agent</label>
+				<description>Sets a custom user agent (default is "Jetty/version", e.g. "Jetty/9.4.20.v20190813").</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
+
+	<channel-type id="request-date-time">
+		<item-type>DateTime</item-type>
+		<label>Dummy</label>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
 
 	<channel-type id="color">
 		<item-type>Color</item-type>

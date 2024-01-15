@@ -14,8 +14,8 @@ package org.openhab.binding.touchwand.internal.discovery;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -137,14 +137,14 @@ public class TouchWandUnitDiscoveryService extends AbstractThingHandlerDiscovery
 
     @Override
     public void initialize() {
-        removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
         super.initialize();
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
     }
 
     @Override

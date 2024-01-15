@@ -6,6 +6,6 @@
 	<type>binding</type>
 	<name>HTTP Binding</name>
 	<description>This is the binding for retrieving and processing HTTP resources.</description>
-	<connection>local</connection>
+	<connection>hybrid</connection>
 
 </addon:addon>
