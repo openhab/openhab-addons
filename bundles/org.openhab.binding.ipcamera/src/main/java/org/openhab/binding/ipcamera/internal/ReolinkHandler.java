@@ -204,7 +204,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                             return;
                         }
                         if (aiResponse[0].value == null) {
-                            ipCameraHandler.logger.warn("The GetAiStateResponse could not be parsed: {}",
+                            ipCameraHandler.logger.debug("The GetAiStateResponse could not be parsed: {}",
                                     aiResponse[0].error.detail);
                             return;
                         }
@@ -283,6 +283,8 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_WHITE_LED, OnOffType.ON);
                     }
+                    break;
+                case "/cgi-bin/api.cgi?cmd=Snap":
                     break;
                 default:
                     if (!cutDownURL.contains("cmd=Set")) {// ignore the responses from all Setxxxxx commands
