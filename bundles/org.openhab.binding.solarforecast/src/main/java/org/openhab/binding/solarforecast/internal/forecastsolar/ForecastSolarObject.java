@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solarforecast.internal.forecastsolar;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -143,8 +144,13 @@ public class ForecastSolarObject implements SolarForecast {
                 if (c.getKey().toLocalDate().equals(queryDateTime.toLocalDate())) {
                     // we're during suntime!
                     double production = c.getValue() - f.getValue();
-                    int interpolation = queryDateTime.getMinute() - f.getKey().getMinute();
-                    double interpolationProduction = production * interpolation / 60;
+                    long floorToCeilingDuration = Duration.between(f.getKey(), c.getKey()).toMinutes();
+                    if (floorToCeilingDuration == 0) {
+                        return f.getValue() / 1000.0;
+                    }
+                    long floorToQueryDuration = Duration.between(f.getKey(), queryDateTime).toMinutes();
+                    double interpolation = (double) floorToQueryDuration / (double) floorToCeilingDuration;
+                    double interpolationProduction = production * interpolation;
                     double actualProduction = f.getValue() + interpolationProduction;
                     return actualProduction / 1000.0;
                 } else {
@@ -194,11 +200,16 @@ public class ForecastSolarObject implements SolarForecast {
             }
         } else if (f != null && c != null) {
             // we're during suntime!
-            double powerCeiling = c.getValue();
+            long floorToCeilingDuration = Duration.between(f.getKey(), c.getKey()).toMinutes();
             double powerFloor = f.getValue();
+            if (floorToCeilingDuration == 0) {
+                return powerFloor / 1000.0;
+            }
+            double powerCeiling = c.getValue();
             // calculate in minutes from floor to now, e.g. 20 minutes
             // => take 2/3 of floor and 1/3 of ceiling
-            double interpolation = (queryDateTime.getMinute() - f.getKey().getMinute()) / 60.0;
+            long floorToQueryDuration = Duration.between(f.getKey(), queryDateTime).toMinutes();
+            double interpolation = (double) floorToQueryDuration / (double) floorToCeilingDuration;
             actualPowerValue = ((1 - interpolation) * powerFloor) + (interpolation * powerCeiling);
             return actualPowerValue / 1000.0;
         } // else both null - this shall not happen

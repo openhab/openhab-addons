@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solarforecast.internal.solcast;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -55,6 +56,7 @@ public class SolcastObject implements SolarForecast {
 
     private Optional<JSONObject> rawData = Optional.of(new JSONObject());
     private Instant expirationDateTime;
+    private long period = 30;
 
     public enum QueryMode {
         Estimation("Estimation"),
@@ -133,6 +135,9 @@ public class SolcastObject implements SolarForecast {
             } else {
                 optimisticDataMap.put(periadEndZdt, jo.getDouble("pv_estimate"));
             }
+            if (jo.has("period")) {
+                period = Duration.parse(jo.getString("period")).toMinutes();
+            }
         }
     }
 
@@ -151,6 +156,7 @@ public class SolcastObject implements SolarForecast {
     }
 
     public double getActualEnergyValue(ZonedDateTime query, QueryMode mode) {
+        // calculate energy from day begin to latest entry BEFORE query
         ZonedDateTime iterationDateTime = query.withHour(0).withMinute(0).withSecond(0);
         TreeMap<ZonedDateTime, Double> dtm = getDataMap(mode);
         Entry<ZonedDateTime, Double> nextEntry = dtm.higherEntry(iterationDateTime);
@@ -164,7 +170,7 @@ public class SolcastObject implements SolarForecast {
             // for kw/h it's half the value
             Double endValue = nextEntry.getValue();
             // production during period is half of previous and next value
-            double addedValue = (endValue.doubleValue() + previousEstimate) / 2.0 / 2.0;
+            double addedValue = ((endValue.doubleValue() + previousEstimate) / 2.0) * period / 60.0;
             forecastValue += addedValue;
             previousEstimate = endValue.doubleValue();
             iterationDateTime = nextEntry.getKey();
@@ -173,13 +179,19 @@ public class SolcastObject implements SolarForecast {
                 break;
             }
         }
+        // interpolate minutes AFTER query
         Entry<ZonedDateTime, Double> f = dtm.floorEntry(query);
         Entry<ZonedDateTime, Double> c = dtm.ceilingEntry(query);
         if (f != null) {
             if (c != null) {
+                long duration = Duration.between(f.getKey(), c.getKey()).toMinutes();
+                // floor == ceiling: no addon calculation needed
+                if (duration == 0) {
+                    return forecastValue;
+                }
                 if (c.getValue() > 0) {
-                    int interpolation = query.getMinute() - f.getKey().getMinute();
-                    double interpolationProduction = getActualPowerValue(query, mode) * interpolation / 30.0 / 2.0;
+                    double interpolation = Duration.between(f.getKey(), query).toMinutes() / 60.0;
+                    double interpolationProduction = getActualPowerValue(query, mode) * interpolation;
                     forecastValue += interpolationProduction;
                     return forecastValue;
                 } else {
@@ -220,11 +232,16 @@ public class SolcastObject implements SolarForecast {
         if (f != null) {
             if (c != null) {
                 double powerCeiling = c.getValue();
+                long duration = Duration.between(f.getKey(), c.getKey()).toMinutes();
+                // floor == ceiling: return power from node, no interpolation needed
+                if (duration == 0) {
+                    return powerCeiling;
+                }
                 if (powerCeiling > 0) {
                     double powerFloor = f.getValue();
                     // calculate in minutes from floor to now, e.g. 20 minutes from PT30M 30 minutes
                     // => take 1/3 of floor and 2/3 of ceiling
-                    double interpolation = (query.getMinute() - f.getKey().getMinute()) / 30.0;
+                    double interpolation = Duration.between(f.getKey(), query).toMinutes() / (double) period;
                     actualPowerValue = ((1 - interpolation) * powerFloor) + (interpolation * powerCeiling);
                     return actualPowerValue;
                 } else {
@@ -269,7 +286,7 @@ public class SolcastObject implements SolarForecast {
             // for kw/h it's half the value
             Double endValue = nextEntry.getValue();
             // production during period is half of previous and next value
-            double addedValue = (endValue.doubleValue() + previousEstimate) / 2.0 / 2.0;
+            double addedValue = ((endValue.doubleValue() + previousEstimate) / 2.0) * period / 60.0;
             forecastValue += addedValue;
             previousEstimate = endValue.doubleValue();
             iterationDateTime = nextEntry.getKey();
