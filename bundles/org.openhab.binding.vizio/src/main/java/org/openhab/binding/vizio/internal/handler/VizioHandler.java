@@ -86,6 +86,7 @@ public class VizioHandler extends BaseThingHandler {
     private List<VizioApp> userConfigApps = new ArrayList<>();
     private Object sequenceLock = new Object();
 
+    private int failCount = 0;
     private int pairingDeviceId = -1;
     private int pairingToken = -1;
     private Long currentInputHash = 0L;
@@ -217,10 +218,16 @@ public class VizioHandler extends BaseThingHandler {
                     }
                 }
                 updateStatus(ThingStatus.ONLINE);
+                failCount = 0;
             } catch (VizioException e) {
                 logger.debug("Unable to retrieve Vizio TV power mode info. Exception: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.communication-error-get-power");
+                // A communication error must occur 3 times before updating the thing status
+                failCount++;
+                if (failCount > 2) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.communication-error-polling");
+                }
+                return;
             }
 
             if (powerOn && (isLinked(VOLUME) || isLinked(MUTE))) {
@@ -263,8 +270,6 @@ public class VizioHandler extends BaseThingHandler {
                 } catch (VizioException e) {
                     logger.debug("Unable to retrieve Vizio TV current audio settings. Exception: {}", e.getMessage(),
                             e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.communication-error-get-audio");
                 }
             }
 
@@ -280,8 +285,6 @@ public class VizioHandler extends BaseThingHandler {
                     }
                 } catch (VizioException e) {
                     logger.debug("Unable to retrieve Vizio TV current input. Exception: {}", e.getMessage(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.communication-error-get-input");
                 }
             }
 
@@ -318,8 +321,6 @@ public class VizioHandler extends BaseThingHandler {
                     }
                 } catch (VizioException e) {
                     logger.debug("Unable to retrieve Vizio TV current running app. Exception: {}", e.getMessage(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.communication-error-get-app");
                 }
             }
         }
@@ -403,8 +404,6 @@ public class VizioHandler extends BaseThingHandler {
                         } catch (VizioException e) {
                             logger.debug("Unable to send power {} command to the Vizio TV, Exception: {}", command,
                                     e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-set-power");
                         }
                     }
                     break;
@@ -432,8 +431,6 @@ public class VizioHandler extends BaseThingHandler {
                         } catch (VizioException e) {
                             logger.debug("Unable to set volume on the Vizio TV, command volume: {}, Exception: {}",
                                     command, e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-set-volume");
                         } catch (NumberFormatException e) {
                             logger.debug("Unable to parse command volume value {} as int", command);
                         }
@@ -453,8 +450,6 @@ public class VizioHandler extends BaseThingHandler {
                         } catch (VizioException e) {
                             logger.debug("Unable to send mute {} command to the Vizio TV, Exception: {}", command,
                                     e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-set-mute");
                         }
                     }
                     break;
@@ -476,8 +471,6 @@ public class VizioHandler extends BaseThingHandler {
                         } catch (VizioException e) {
                             logger.debug("Unable to set current source on the Vizio TV, source: {}, Exception: {}",
                                     command, e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-set-source");
                         }
                     }
                     break;
@@ -497,8 +490,6 @@ public class VizioHandler extends BaseThingHandler {
                         } catch (VizioException e) {
                             logger.debug("Unable to launch app name: '{}' on the Vizio TV, Exception: {}", command,
                                     e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-launch-app");
                         }
                     }
                     break;
@@ -510,8 +501,6 @@ public class VizioHandler extends BaseThingHandler {
                         } catch (VizioException e) {
                             logger.debug("Unable to send control command: '{}' to the Vizio TV, Exception: {}", command,
                                     e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-send-cmd");
                         }
                     }
                     break;
@@ -523,8 +512,6 @@ public class VizioHandler extends BaseThingHandler {
                         } catch (IllegalArgumentException | VizioException e) {
                             logger.debug("Unable to send keypress to the Vizio TV, key: {}, Exception: {}", command,
                                     e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-send-key");
                         }
                     }
                     break;
