@@ -21,12 +21,12 @@ Normally, only the hostname or IP address must be configured.
 
 ### `cp750` Thing Configuration
 
-| Name              | Type    | Description                                       | Default | Required | Advanced |
-|-------------------|---------|---------------------------------------------------|---------|----------|----------|
-| hostname          | text    | Hostname or IP address of the device              | N/A     | yes      | no       |
-| port              | integer | TCP port if different from 61408                  | 61408   | no       | no       |
-| refreshInterval   | integer | Interval the device is polled in sec.             | 5       | no       | no       |
-| reconnectInterval | integer | Interval a new connection is tried after IO error | 10      | no       | no       |
+| Name              | Type    | Description                                                  | Default | Required | Advanced |
+|-------------------|---------|--------------------------------------------------------------|---------|----------|----------|
+| hostname          | text    | Hostname or IP address of the device                         | N/A     | yes      | no       |
+| port              | integer | TCP port if different from 61408                             | 61408   | no       | no       |
+| refreshInterval   | integer | Interval the device is polled in seconds                     | 5       | no       | no       |
+| reconnectInterval | integer | Interval a new connection is tried after IO error in seconds | 10      | no       | no       |
 
 ## Channels
 

@@ -30,15 +30,15 @@ public class DolbyCPBindingConstants {
     public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "cp750");
 
     // List of all Channel ids
-    public static final String CHANNEL_FADER = "channel-fader";
-    public static final String CHANNEL_MUTE = "channel-mute";
-    public static final String CHANNEL_INPUT = "channel-input";
-    public static final String CHANNEL_ANALOG = "channel-analog";
-    public static final String CHANNEL_DIG1 = "channel-dig1";
-    public static final String CHANNEL_DIG2 = "channel-dig2";
-    public static final String CHANNEL_DIG3 = "channel-dig3";
-    public static final String CHANNEL_DIG4 = "channel-dig4";
-    public static final String CHANNEL_NONSYNC = "channel-nonsync";
-    public static final String CHANNEL_MIC = "channel-mic";
-    public static final String CHANNEL_VERSION = "channel-osversion";
+    public static final String CHANNEL_FADER = "fader";
+    public static final String CHANNEL_MUTE = "mute";
+    public static final String CHANNEL_INPUT = "input";
+    public static final String CHANNEL_ANALOG = "analog";
+    public static final String CHANNEL_DIG1 = "dig1";
+    public static final String CHANNEL_DIG2 = "dig2";
+    public static final String CHANNEL_DIG3 = "dig3";
+    public static final String CHANNEL_DIG4 = "dig4";
+    public static final String CHANNEL_NONSYNC = "nonsync";
+    public static final String CHANNEL_MIC = "mic";
+    public static final String CHANNEL_VERSION = "osversion";
 }
