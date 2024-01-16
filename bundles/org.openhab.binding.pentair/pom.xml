@@ -13,9 +13,4 @@
   <artifactId>org.openhab.binding.pentair</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Pentair Binding</name>
-
-  <properties>
-    <bnd.importpackage>gnu.io;version="[3.12,6)"</bnd.importpackage>
-  </properties>
-
 </project>

@@ -6,24 +6,31 @@
 
 	<bridge-type id="ip_bridge">
 		<label>IP Bridge</label>
-		<description>This bridge is for use over a network interface.</description>
+		<description>This bridge is for used over a network interface.</description>
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<label>IP Address</label>
-				<description>The IP address to connect to.</description>
+				<description>The IP address of the network interface.</description>
 				<context>network-address</context>
+				<default>127.0.0.1</default>
 			</parameter>
 
 			<parameter name="port" type="integer" required="false">
 				<label>Port</label>
-				<description>The port to connect to.</description>
+				<description>The port used to connect to the network interface.</description>
 				<default>10000</default>
 			</parameter>
 
 			<parameter name="id" type="integer" required="false">
 				<label>Pentair ID</label>
-				<description>The ID to use to send commands on the Pentair bus (default: 34)</description>
+				<description>The ID to use when sending commands on the Pentair bus (default: 34)</description>
 				<default>34</default>
+			</parameter>
+
+			<parameter name="discovery" type="boolean">
+				<label>Enable Discovery</label>
+				<description>Enable automatic discovery of devices</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
