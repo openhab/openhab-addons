@@ -17,7 +17,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.ReconnectionManager;
@@ -37,6 +42,7 @@ import org.jxmpp.jid.EntityBareJid;
 import org.jxmpp.jid.impl.JidCreate;
 import org.jxmpp.stringprep.XmppStringprepException;
 import org.openhab.binding.xmppclient.internal.handler.XMPPClientMessageSubscriber;
+import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +50,18 @@ import org.slf4j.LoggerFactory;
  * The {@link XMPPClient} is lib for handling XMPP connection and messaging
  *
  * @author Pavel Gololobov - Initial contribution
+ * @author Leo Siepel - Add reconnection logic
  */
+@NonNullByDefault
 public class XMPPClient implements IncomingChatMessageListener, ConnectionListener {
+    private static final int CONNECTION_CHECK_INTERVAL = 180;
     private final Logger logger = LoggerFactory.getLogger(XMPPClient.class);
-    private AbstractXMPPConnection connection;
-    private ChatManager chatManager;
-    private HttpFileUploadManager httpFileUploadManager;
+    private @Nullable AbstractXMPPConnection connection;
+    private @Nullable ChatManager chatManager;
+    private @Nullable HttpFileUploadManager httpFileUploadManager;
     private Set<XMPPClientMessageSubscriber> subscribers = new HashSet<>();
+    private @Nullable ScheduledFuture<?> connectionCheckJob;
+    protected final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ConnectionCheck");
 
     public void subscribe(XMPPClientMessageSubscriber channel) {
         logger.debug("Channel {} subscribed", channel.getName());
@@ -66,7 +77,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
             throws XMPPException, SmackException, IOException {
         disconnect();
         String serverHost = domain;
-        if ((host != null) && !host.isEmpty()) {
+        if (!host.isBlank()) {
             serverHost = host;
         }
 
@@ -77,10 +88,11 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
                 .setXmppDomain(domain) //
                 .build();
 
-        connection = new XMPPTCPConnection(config);
-        connection.addConnectionListener(this);
+        AbstractXMPPConnection connectionLocal = new XMPPTCPConnection(config);
+        connection = connectionLocal;
+        connectionLocal.addConnectionListener(this);
 
-        ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
+        ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connectionLocal);
         reconnectionManager.enableAutomaticReconnection();
 
         Identity identity = new Identity("client", "openHAB", "bot");
@@ -88,18 +100,57 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         sdm.setIdentity(identity);
 
         try {
-            connection.connect().login();
+            connectionLocal.connect().login();
         } catch (InterruptedException ex) {
         }
 
-        chatManager = ChatManager.getInstanceFor(connection);
-        chatManager.addIncomingListener(this);
+        ChatManager chatManagerLocal = ChatManager.getInstanceFor(connection);
+        chatManagerLocal.addIncomingListener(this);
+        chatManager = chatManagerLocal;
         httpFileUploadManager = HttpFileUploadManager.getInstanceFor(connection);
+
+        scheduleConnectionCheck();
+    }
+
+    private void checkAndReconnect() {
+        AbstractXMPPConnection connectionLocal = connection;
+        if (connectionLocal == null) {
+            logger.warn("XMPP connection is null, cannot automatic recover from this permanent failure");
+            return;
+        }
+
+        if (!connectionLocal.isConnected()) {
+            connectionLocal.disconnect();
+            try {
+                connectionLocal.connect().login();
+            } catch (SmackException | IOException | XMPPException | InterruptedException ex) {
+                logger.info("XMPP connection error", ex);
+            }
+        }
+    }
+
+    private synchronized void scheduleConnectionCheck() {
+        if (this.connectionCheckJob == null) {
+            logger.debug("Scheduling connection check job every {}s", CONNECTION_CHECK_INTERVAL);
+            this.connectionCheckJob = scheduler.scheduleWithFixedDelay(this::checkAndReconnect, 0,
+                    CONNECTION_CHECK_INTERVAL, TimeUnit.SECONDS);
+        }
+    }
+
+    private synchronized void cancelConnectionCheck() {
+        ScheduledFuture<?> connectionCheckJobLocal = connectionCheckJob;
+        if (connectionCheckJobLocal != null) {
+            logger.debug("Cancelling connection check job");
+            connectionCheckJobLocal.cancel(true);
+            this.connectionCheckJob = null;
+        }
     }
 
     public void disconnect() {
-        if (connection != null) {
-            connection.disconnect();
+        cancelConnectionCheck();
+        AbstractXMPPConnection connectionLocal = connection;
+        if (connectionLocal != null) {
+            connectionLocal.disconnect();
         }
     }
 
@@ -108,13 +159,14 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
             logger.warn("XMPP connection is null");
             return;
         }
-        if (chatManager == null) {
+        ChatManager chatManagerLocal = chatManager;
+        if (chatManagerLocal == null) {
             logger.warn("XMPP chatManager is null");
             return;
         }
         try {
             EntityBareJid jid = JidCreate.entityBareFrom(to);
-            Chat chat = chatManager.chatWith(jid);
+            Chat chat = chatManagerLocal.chatWith(jid);
             chat.send(message);
         } catch (XmppStringprepException | SmackException.NotConnectedException | InterruptedException e) {
             logger.info("XMPP message sending error", e);
@@ -126,12 +178,13 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
             logger.warn("XMPP connection is null");
             return;
         }
-        if (httpFileUploadManager == null) {
+        HttpFileUploadManager httpFileUploadManagerLocal = httpFileUploadManager;
+        if (httpFileUploadManagerLocal == null) {
             logger.warn("XMPP httpFileUploadManager is null");
             return;
         }
         try {
-            URL u = httpFileUploadManager.uploadFile(new File(filename));
+            URL u = httpFileUploadManagerLocal.uploadFile(new File(filename));
             // Use Stanza oob
             this.sendMessage(to, u.toString());
         } catch (XMPPException.XMPPErrorException | SmackException | InterruptedException | IOException e) {
@@ -140,7 +193,12 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     }
 
     @Override
-    public void newIncomingMessage(EntityBareJid from, Message message, Chat chat) {
+    public void newIncomingMessage(@Nullable EntityBareJid from, @Nullable Message message, @Nullable Chat chat) {
+        if (from == null || message == null || chat == null) {
+            logger.debug("newIncomingMessage with atleast one null argument, should not happen");
+            return;
+        }
+
         logger.debug("XMPP {} says {}", from.asBareJid().toString(), message.getBody());
         for (XMPPClientMessageSubscriber subscriber : subscribers) {
             logger.debug("Push to subscriber {}", subscriber.getName());
@@ -149,12 +207,12 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     }
 
     @Override
-    public void connected(XMPPConnection connection) {
+    public void connected(@Nullable XMPPConnection connection) {
         logger.debug("Connected to XMPP server.");
     }
 
     @Override
-    public void authenticated(XMPPConnection connection, boolean resumed) {
+    public void authenticated(@Nullable XMPPConnection connection, boolean resumed) {
         logger.debug("Authenticated to XMPP server.");
     }
 
@@ -164,15 +222,8 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     }
 
     @Override
-    public void connectionClosedOnError(Exception e) {
+    public void connectionClosedOnError(@Nullable Exception e) {
         logger.debug("Connection to XMPP server was lost.");
-        if (connection != null) {
-            connection.disconnect();
-            try {
-                connection.connect().login();
-            } catch (SmackException | IOException | XMPPException | InterruptedException ex) {
-                logger.info("XMPP connection error", ex);
-            }
-        }
+        checkAndReconnect();
     }
 }

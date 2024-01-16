@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.xmppclient.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Subscriber interface
  * 
  * @author Pavel Gololobov - Initial contribution
  */
+@NonNullByDefault
 public interface XMPPClientMessageSubscriber {
     void processMessage(String from, String payload);
 

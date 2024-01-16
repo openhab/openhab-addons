@@ -27,4 +27,12 @@ public class XMPPClientConfiguration {
     public String username = "";
     public String password = "";
     public String domain = "";
+
+    public boolean isValid() {
+        String hostLocal = host;
+        if (hostLocal == null) {
+            return false;
+        }
+        return !hostLocal.isBlank();
+    }
 }
