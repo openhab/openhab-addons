@@ -143,7 +143,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
 
     protected SolcastObject fetchData() {
         forecast.ifPresent(forecastObject -> {
-            if (!forecastObject.isValid()) {
+            if (forecastObject.isExpired() || !forecastObject.isValid()) {
                 String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
                 String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);
                 try {

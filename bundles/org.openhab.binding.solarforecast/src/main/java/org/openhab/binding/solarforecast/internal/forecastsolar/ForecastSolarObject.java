@@ -53,7 +53,6 @@ public class ForecastSolarObject implements SolarForecast {
 
     private ZoneId zone = ZoneId.systemDefault();
     private Optional<String> rawData = Optional.empty();
-    private boolean valid = false;
     private Instant expirationDateTime;
 
     public ForecastSolarObject() {
@@ -85,26 +84,38 @@ public class ForecastSolarObject implements SolarForecast {
                         return;
                     }
                 }
-                valid = true;
             } catch (JSONException je) {
                 logger.debug("Error parsing JSON response {} - {}", content, je.getMessage());
             }
         }
     }
 
+    /**
+     * Check if ForecastObject has some valid forecast data for the future
+     *
+     * @return true: valid forecast data available till the end of the day
+     */
     public boolean isValid() {
-        if (valid) {
-            if (!wattHourMap.isEmpty()) {
-                if (expirationDateTime.isAfter(Instant.now())) {
-                    return true;
-                }
-            }
+        if (wattHourMap.isEmpty() || wattMap.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check if refresh of forecast data shall happen
+     *
+     * @return true: refresh
+     */
+    public boolean isExpired() {
+        if (expirationDateTime.isAfter(Instant.now())) {
+            return true;
         }
         return false;
     }
 
     public double getActualEnergyValue(ZonedDateTime queryDateTime) {
-        if (wattHourMap.isEmpty()) {
+        if (!isValid()) {
             return -1;
         }
         Entry<ZonedDateTime, Double> f = wattHourMap.floorEntry(queryDateTime);
@@ -158,7 +169,7 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     public double getActualPowerValue(ZonedDateTime queryDateTime) {
-        if (wattMap.isEmpty()) {
+        if (!isValid()) {
             return -1;
         }
         double actualPowerValue = 0;
@@ -218,7 +229,7 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     public double getRemainingProduction(ZonedDateTime queryDateTime) {
-        if (wattHourMap.isEmpty()) {
+        if (!isValid()) {
             return -1;
         }
         double daily = getDayTotal(queryDateTime.toLocalDate());
@@ -230,7 +241,7 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     public String getRaw() {
-        if (valid && rawData.isPresent()) {
+        if (isValid() && rawData.isPresent()) {
             return rawData.get();
         }
         return "{}";
@@ -242,7 +253,7 @@ public class ForecastSolarObject implements SolarForecast {
 
     @Override
     public String toString() {
-        return "Expiration: " + expirationDateTime + ", Valid: " + valid + ", Data:" + wattHourMap;
+        return "Expiration: " + expirationDateTime + ", Valid: " + isValid() + ", Data:" + wattHourMap;
     }
 
     /**
@@ -297,7 +308,7 @@ public class ForecastSolarObject implements SolarForecast {
 
     @Override
     public Instant getForecastBegin() {
-        if (!wattHourMap.isEmpty()) {
+        if (isValid()) {
             ZonedDateTime zdt = wattHourMap.firstEntry().getKey();
             return zdt.toInstant();
         }
@@ -306,7 +317,7 @@ public class ForecastSolarObject implements SolarForecast {
 
     @Override
     public Instant getForecastEnd() {
-        if (!wattHourMap.isEmpty()) {
+        if (isValid()) {
             ZonedDateTime zdt = wattHourMap.lastEntry().getKey();
             return zdt.toInstant();
         }

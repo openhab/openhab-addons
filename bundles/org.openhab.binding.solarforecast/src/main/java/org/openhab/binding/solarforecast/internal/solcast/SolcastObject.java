@@ -55,7 +55,6 @@ public class SolcastObject implements SolarForecast {
 
     private Optional<JSONObject> rawData = Optional.of(new JSONObject());
     private Instant expirationDateTime;
-    private boolean valid = false;
 
     public enum QueryMode {
         Estimation("Estimation"),
@@ -101,13 +100,11 @@ public class SolcastObject implements SolarForecast {
                 resultJsonArray = contentJson.getJSONArray("forecasts");
                 addJSONArray(resultJsonArray);
                 rawData.get().put("forecasts", resultJsonArray);
-                valid = true;
             }
             if (contentJson.has("estimated_actuals")) {
                 resultJsonArray = contentJson.getJSONArray("estimated_actuals");
                 addJSONArray(resultJsonArray);
                 rawData.get().put("estimated_actuals", resultJsonArray);
-                valid = true;
             }
         }
     }
@@ -140,12 +137,15 @@ public class SolcastObject implements SolarForecast {
     }
 
     public boolean isValid() {
-        if (valid) {
-            if (!estimationDataMap.isEmpty()) {
-                if (expirationDateTime.isAfter(Instant.now())) {
-                    return true;
-                }
-            }
+        if (estimationDataMap.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isExpired() {
+        if (expirationDateTime.isAfter(Instant.now())) {
+            return true;
         }
         return false;
     }
@@ -287,11 +287,11 @@ public class SolcastObject implements SolarForecast {
 
     @Override
     public String toString() {
-        return "Expiration: " + expirationDateTime + ", Valid: " + valid + ", Data:" + estimationDataMap;
+        return "Expiration: " + expirationDateTime + ", Valid: " + isValid() + ", Data:" + estimationDataMap;
     }
 
     public String getRaw() {
-        if (valid && rawData.isPresent()) {
+        if (isValid() && rawData.isPresent()) {
             return rawData.get().toString();
         }
         return "{}";

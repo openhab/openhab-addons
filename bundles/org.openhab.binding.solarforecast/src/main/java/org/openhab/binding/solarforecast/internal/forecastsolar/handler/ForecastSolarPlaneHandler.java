@@ -134,7 +134,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
      */
     protected ForecastSolarObject fetchData() {
         if (location.isPresent()) {
-            if (!forecast.isValid()) {
+            if (forecast.isExpired() || !forecast.isValid()) {
                 String url;
                 if (apiKey.isEmpty()) {
                     // use public API
