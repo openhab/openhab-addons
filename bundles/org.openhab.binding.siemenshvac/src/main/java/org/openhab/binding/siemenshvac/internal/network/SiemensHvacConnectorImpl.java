@@ -462,7 +462,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
             while (!allRequestDone) {
                 allRequestDone = false;
-                reentrantReadWriteLock.readLock().lock();
                 int currentRequestCount = getCurrentHandlerRegistryCount();
 
                 logger.debug("WaitAllPendingRequest:waitAllRequestDone {} : {}", idx, currentRequestCount);
