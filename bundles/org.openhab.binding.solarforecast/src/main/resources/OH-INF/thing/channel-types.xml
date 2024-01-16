@@ -8,25 +8,25 @@
 		<item-type>Number:Power</item-type>
 		<label>Actual Power</label>
 		<description>Power prediction for this moment</description>
-		<state pattern="%.3f %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-estimate-channel">
 		<item-type>Number:Power</item-type>
 		<label>Power Forecast</label>
 		<description>Power forecast for next hours/days</description>
-		<state pattern="%.3f %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-estimate10-channel">
 		<item-type>Number:Power</item-type>
 		<label>Pessimistic Power Forecast</label>
 		<description>Pessimistic power forecast for next hours/days</description>
-		<state pattern="%.3f %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-estimate90-channel">
 		<item-type>Number:Power</item-type>
 		<label>Optimistic Power Forecast</label>
 		<description>Optimistic power forecast for next hours/days</description>
-		<state pattern="%.3f %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="energy-actual-channel">
 		<item-type>Number:Energy</item-type>

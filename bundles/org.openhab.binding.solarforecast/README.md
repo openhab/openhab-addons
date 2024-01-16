@@ -95,13 +95,13 @@ Forecasts are delivered up to 6 days in advance including
 
 | Channel                 | Type          | Unit | Description                                     | Advanced |
 |-------------------------|---------------|------|-------------------------------------------------|----------|
-| power-actual            | Number:Power  | W    | Power prediction for this moment                | no       |
 | power-estimate          | Number:Power  | W    | Power forecast for next hours/days              | no       |
 | power-estimate10        | Number:Power  | W    | Pessimistic power forecast for next hours/days  | no       |
 | power-estimate90        | Number:Power  | W    | Optimistic power forecast for next hours/days   | no       |
 | energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             | no       |
 | energy-estimate10       | Number:Energy | kWh  | Pessimistic energy forecast for next hours/days | no       |
 | energy-estimate90       | Number:Energy | kWh  | Optimistic energy forecast for next hours/days  | no       |
+| power-actual            | Number:Power  | W    | Power prediction for this moment                | no       |
 | energy-actual           | Number:Energy | kWh  | Today's forecast till now                       | no       |
 | energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          | no       |
 | energy-today            | Number:Energy | kWh  | Today's forecast in total                       | no       |
@@ -168,9 +168,9 @@ Forecasts are delivered up to 3 days for paid personal plans.
 
 | Channel                 | Type          | Unit | Description                                     | Advanced |
 |-------------------------|---------------|------|-------------------------------------------------|----------|
-| power-actual            | Number:Power  | W    | Power prediction for this moment                | no       |
 | power-estimate          | Number:Power  | W    | Power forecast for next hours/days              | no       |
 | energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             | no       |
+| power-actual            | Number:Power  | W    | Power prediction for this moment                | no       |
 | energy-actual           | Number:Energy | kWh  | Today's forecast till now                       | no       |
 | energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          | no       |
 | energy-today            | Number:Energy | kWh  | Today's forecast in total                       | no       |
