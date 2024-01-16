@@ -14,20 +14,28 @@ package org.openhab.binding.solarforecast;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
+import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarBridgeHandler;
+import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarPlaneHandler;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.internal.BridgeImpl;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
@@ -215,7 +223,7 @@ class ForecastSolarTest {
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
         ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
 
-        TimeSeries powerSeries = fo.getPowerTimeSeries();
+        TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.Estimation);
         assertEquals(36, powerSeries.size()); // 18 values each day for 2 days
         powerSeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
@@ -223,12 +231,72 @@ class ForecastSolarTest {
             assertEquals("kW", ((QuantityType<Power>) s).getUnit().toString());
         });
 
-        TimeSeries energySeries = fo.getEnergyTimeSeries();
+        TimeSeries energySeries = fo.getEnergyTimeSeries(QueryMode.Estimation);
         assertEquals(36, energySeries.size());
         energySeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kWh", ((QuantityType<Energy>) s).getUnit().toString());
         });
+    }
+
+    @Test
+    void testPowerTimeSeries() {
+        ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
+                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"), PointType.valueOf("1,2"));
+        CallbackMock cm = new CallbackMock();
+        fsbh.setCallback(cm);
+
+        String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
+        ForecastSolarObject fso1 = new ForecastSolarObject(content, Instant.now());
+        ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1);
+        fsbh.addPlane(fsph1);
+        fsbh.forecastUpdate();
+        TimeSeries ts1 = cm.getTimeSeries("solarforecast:fs-site:bridge:power-estimate");
+
+        ForecastSolarPlaneHandler fsph2 = new ForecastSolarPlaneMock(fso1);
+        fsbh.addPlane(fsph2);
+        fsbh.forecastUpdate();
+        TimeSeries ts2 = cm.getTimeSeries("solarforecast:fs-site:bridge:power-estimate");
+        Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
+        Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
+        while (iter1.hasNext()) {
+            TimeSeries.Entry e1 = iter1.next();
+            TimeSeries.Entry e2 = iter2.next();
+            assertEquals("kW", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
+            assertEquals("kW", ((QuantityType<?>) e2.state()).getUnit().toString(), "Power Unit");
+            assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() / 2,
+                    0.1, "Power Value");
+        }
+    }
+
+    @Test
+    void testEnergyTimeSeries() {
+        ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
+                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"), PointType.valueOf("1,2"));
+        CallbackMock cm = new CallbackMock();
+        fsbh.setCallback(cm);
+
+        String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
+        ForecastSolarObject fso1 = new ForecastSolarObject(content, Instant.now());
+        ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1);
+        fsbh.addPlane(fsph1);
+        fsbh.forecastUpdate();
+        TimeSeries ts1 = cm.getTimeSeries("solarforecast:fs-site:bridge:energy-estimate");
+
+        ForecastSolarPlaneHandler fsph2 = new ForecastSolarPlaneMock(fso1);
+        fsbh.addPlane(fsph2);
+        fsbh.forecastUpdate();
+        TimeSeries ts2 = cm.getTimeSeries("solarforecast:fs-site:bridge:energy-estimate");
+        Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
+        Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
+        while (iter1.hasNext()) {
+            TimeSeries.Entry e1 = iter1.next();
+            TimeSeries.Entry e2 = iter2.next();
+            assertEquals("kWh", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
+            assertEquals("kWh", ((QuantityType<?>) e2.state()).getUnit().toString(), "Power Unit");
+            assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() / 2,
+                    0.1, "Power Value");
+        }
     }
 }

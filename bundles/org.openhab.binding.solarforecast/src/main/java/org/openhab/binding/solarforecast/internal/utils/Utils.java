@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.solarforecast.internal.utils;
 
+import java.time.Instant;
+import java.util.TreeMap;
+
 import javax.measure.MetricPrefix;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
@@ -19,6 +22,7 @@ import javax.measure.quantity.Power;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.TimeSeries.Entry;
 
 /**
  * The {@link Utils} Helpers for Solcast and ForecastSolar
@@ -39,5 +43,16 @@ public class Utils {
             return QuantityType.valueOf(-1, MetricPrefix.KILO(Units.WATT));
         }
         return QuantityType.valueOf(Math.round(d * 1000) / 1000.0, MetricPrefix.KILO(Units.WATT));
+    }
+
+    public static void addState(TreeMap<Instant, QuantityType<?>> map, Entry entry) {
+        Instant timestamp = entry.timestamp();
+        QuantityType<?> qt1 = map.get(timestamp);
+        if (qt1 != null) {
+            QuantityType<?> qt2 = (QuantityType<?>) entry.state();
+            map.put(timestamp, QuantityType.valueOf(qt1.doubleValue() + qt2.doubleValue(), qt2.getUnit()));
+        } else {
+            map.put(timestamp, (QuantityType<?>) entry.state());
+        }
     }
 }

@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.measure.quantity.Energy;
@@ -29,13 +30,17 @@ import javax.measure.quantity.Power;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
+import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastBridgeHandler;
+import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneHandler;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.internal.BridgeImpl;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
@@ -537,6 +542,66 @@ class SolcastTest {
             double estValue = estimateL.get(i).doubleValue();
             double highValue = estimate90.get(i).doubleValue();
             assertTrue(lowValue <= estValue && estValue <= highValue);
+        }
+    }
+
+    @Test
+    void testCombinedPowerTimeSeries() {
+        SolcastBridgeHandler scbh = new SolcastBridgeHandler(
+                new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITGE, "bridge"), new TimeZP());
+        CallbackMock cm = new CallbackMock();
+        scbh.setCallback(cm);
+
+        String content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+        SolcastObject sco1 = new SolcastObject(content, Instant.now(), new TimeZP());
+        SolcastPlaneHandler scph1 = new SolcastPlaneMock(sco1);
+        scbh.addPlane(scph1);
+        scbh.forecastUpdate();
+        TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:power-estimate");
+
+        SolcastPlaneHandler scph2 = new SolcastPlaneMock(sco1);
+        scbh.addPlane(scph2);
+        scbh.forecastUpdate();
+        TimeSeries ts2 = cm.getTimeSeries("solarforecast:sc-site:bridge:power-estimate");
+        Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
+        Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
+        while (iter1.hasNext()) {
+            TimeSeries.Entry e1 = iter1.next();
+            TimeSeries.Entry e2 = iter2.next();
+            assertEquals("kW", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
+            assertEquals("kW", ((QuantityType<?>) e2.state()).getUnit().toString(), "Power Unit");
+            assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() / 2,
+                    0.1, "Power Value");
+        }
+    }
+
+    @Test
+    void testCombinedEnergyTimeSeries() {
+        SolcastBridgeHandler scbh = new SolcastBridgeHandler(
+                new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITGE, "bridge"), new TimeZP());
+        CallbackMock cm = new CallbackMock();
+        scbh.setCallback(cm);
+
+        String content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+        SolcastObject sco1 = new SolcastObject(content, Instant.now(), new TimeZP());
+        SolcastPlaneHandler scph1 = new SolcastPlaneMock(sco1);
+        scbh.addPlane(scph1);
+        scbh.forecastUpdate();
+        TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:energy-estimate");
+
+        SolcastPlaneHandler scph2 = new SolcastPlaneMock(sco1);
+        scbh.addPlane(scph2);
+        scbh.forecastUpdate();
+        TimeSeries ts2 = cm.getTimeSeries("solarforecast:sc-site:bridge:energy-estimate");
+        Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
+        Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
+        while (iter1.hasNext()) {
+            TimeSeries.Entry e1 = iter1.next();
+            TimeSeries.Entry e2 = iter2.next();
+            assertEquals("kWh", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
+            assertEquals("kWh", ((QuantityType<?>) e2.state()).getUnit().toString(), "Power Unit");
+            assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() / 2,
+                    0.1, "Power Value");
         }
     }
 }

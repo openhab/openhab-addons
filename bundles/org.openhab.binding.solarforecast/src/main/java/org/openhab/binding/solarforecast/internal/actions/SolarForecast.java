@@ -19,7 +19,9 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.types.TimeSeries;
 
 /**
  * The {@link SolarForecast} Interface needed for Actions
@@ -78,4 +80,20 @@ public interface SolarForecast {
      * @return date time
      */
     public Instant getForecastEnd();
+
+    /**
+     * Get TimeSeries for Power forecast
+     *
+     * @param mode QueryMode for optimistic, pessimistic or average estimation
+     * @return TimeSeries containing QuantityType<Power>
+     */
+    public TimeSeries getPowerTimeSeries(QueryMode mode);
+
+    /**
+     * Get TimeSeries for Energy forecast
+     *
+     * @param mode QueryMode for optimistic, pessimistic or average estimation
+     * @return TimeSeries containing QuantityType<Energy>
+     */
+    public TimeSeries getEnergyTimeSeries(QueryMode mode);
 }

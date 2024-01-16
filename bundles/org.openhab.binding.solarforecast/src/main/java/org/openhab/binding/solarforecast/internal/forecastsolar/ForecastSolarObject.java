@@ -31,6 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.TimeSeries;
@@ -147,7 +148,8 @@ public class ForecastSolarObject implements SolarForecast {
         return -1;
     }
 
-    public TimeSeries getEnergyTimeSeries() {
+    @Override
+    public TimeSeries getEnergyTimeSeries(QueryMode mode) {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
         wattHourMap.forEach((timestamp, energy) -> {
             ts.add(timestamp.toInstant(), Utils.getEnergyState(energy / 1000.0));
@@ -192,7 +194,8 @@ public class ForecastSolarObject implements SolarForecast {
         return -1;
     }
 
-    public TimeSeries getPowerTimeSeries() {
+    @Override
+    public TimeSeries getPowerTimeSeries(QueryMode mode) {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
         wattMap.forEach((timestamp, power) -> {
             ts.add(timestamp.toInstant(), Utils.getPowerState(power / 1000.0));

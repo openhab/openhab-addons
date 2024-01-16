@@ -33,8 +33,8 @@ public class SolarForecastBindingConstants {
     public static final ThingTypeUID FORECAST_SOLAR_PLANE = new ThingTypeUID(BINDING_ID, "fs-plane");
     public static final ThingTypeUID SOLCAST_SITGE = new ThingTypeUID(BINDING_ID, "sc-site");
     public static final ThingTypeUID SOLCAST_PLANE = new ThingTypeUID(BINDING_ID, "sc-plane");
-    public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(FORECAST_SOLAR_SITE,
-            FORECAST_SOLAR_PLANE, SOLCAST_SITGE, SOLCAST_PLANE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(FORECAST_SOLAR_SITE, FORECAST_SOLAR_PLANE,
+            SOLCAST_SITGE, SOLCAST_PLANE);
 
     // Channels
     public static final String CHANNEL_POWER_ACTUAL = "power-actual";

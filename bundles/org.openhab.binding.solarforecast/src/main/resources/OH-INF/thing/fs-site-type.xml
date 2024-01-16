@@ -9,12 +9,12 @@
 		<description>Site location for Forecast Solar</description>
 
 		<channels>
-			<channel id="power-actual" typeId="power-actual-channel"/>
 			<channel id="power-estimate" typeId="power-estimate-channel"/>
+			<channel id="energy-estimate" typeId="energy-estimate-channel"/>
+			<channel id="power-actual" typeId="power-actual-channel"/>
 			<channel id="energy-actual" typeId="energy-actual-channel"/>
 			<channel id="energy-remain" typeId="energy-remain-channel"/>
 			<channel id="energy-today" typeId="energy-today-channel"/>
-			<channel id="energy-estimate" typeId="energy-estimate-channel"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:solarforecast:fs-site"/>

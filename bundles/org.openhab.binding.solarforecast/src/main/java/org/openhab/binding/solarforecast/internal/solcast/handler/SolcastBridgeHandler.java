@@ -15,6 +15,7 @@ package org.openhab.binding.solarforecast.internal.solcast.handler;
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
 import java.time.DateTimeException;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +36,7 @@ import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMod
 import org.openhab.binding.solarforecast.internal.solcast.config.SolcastBridgeConfiguration;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -42,6 +45,8 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.TimeSeries.Policy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,11 +134,63 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(powerSum));
     }
 
-    synchronized void addPlane(SolcastPlaneHandler sph) {
+    public void forecastUpdate() {
+        if (planes.isEmpty()) {
+            return;
+        }
+        List<SolarForecast> forecastObjects = new ArrayList<SolarForecast>();
+        for (Iterator<SolcastPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
+            SolcastPlaneHandler sfph = iterator.next();
+            forecastObjects.addAll(sfph.getSolarForecasts());
+        }
+        List<QueryMode> modes = List.of(QueryMode.Estimation, QueryMode.Optimistic, QueryMode.Optimistic);
+        modes.forEach(mode -> {
+            TreeMap<Instant, QuantityType<?>> combinedPowerForecast = new TreeMap<Instant, QuantityType<?>>();
+            TreeMap<Instant, QuantityType<?>> combinedEnergyForecast = new TreeMap<Instant, QuantityType<?>>();
+            forecastObjects.forEach(fc -> {
+                TimeSeries powerTS = fc.getPowerTimeSeries(mode);
+                powerTS.getStates().forEach(entry -> {
+                    Utils.addState(combinedPowerForecast, entry);
+                });
+                TimeSeries energyTS = fc.getEnergyTimeSeries(mode);
+                energyTS.getStates().forEach(entry -> {
+                    Utils.addState(combinedEnergyForecast, entry);
+                });
+            });
+
+            TimeSeries powerSeries = new TimeSeries(Policy.REPLACE);
+            combinedPowerForecast.forEach((timestamp, state) -> {
+                powerSeries.add(timestamp, state);
+            });
+
+            TimeSeries energySeries = new TimeSeries(Policy.REPLACE);
+            combinedEnergyForecast.forEach((timestamp, state) -> {
+                energySeries.add(timestamp, state);
+            });
+            switch (mode) {
+                case Estimation:
+                    sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, energySeries);
+                    sendTimeSeries(CHANNEL_POWER_ESTIMATE, powerSeries);
+                    break;
+                case Optimistic:
+                    sendTimeSeries(CHANNEL_ENERGY_ESTIMATE90, energySeries);
+                    sendTimeSeries(CHANNEL_POWER_ESTIMATE90, powerSeries);
+                    break;
+                case Pessimistic:
+                    sendTimeSeries(CHANNEL_ENERGY_ESTIMATE10, energySeries);
+                    sendTimeSeries(CHANNEL_POWER_ESTIMATE10, powerSeries);
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    public synchronized void addPlane(SolcastPlaneHandler sph) {
         planes.add(sph);
     }
 
-    synchronized void removePlane(SolcastPlaneHandler sph) {
+    public synchronized void removePlane(SolcastPlaneHandler sph) {
         planes.remove(sph);
     }
 

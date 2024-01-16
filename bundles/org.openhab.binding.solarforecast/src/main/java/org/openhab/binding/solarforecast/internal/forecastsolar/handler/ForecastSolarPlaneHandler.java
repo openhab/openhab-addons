@@ -32,6 +32,7 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
 import org.openhab.binding.solarforecast.internal.forecastsolar.config.ForecastSolarPlaneConfiguration;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
@@ -116,9 +117,9 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         if (command instanceof RefreshType) {
             if (forecast.isValid()) {
                 if (CHANNEL_POWER_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                    sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries());
+                    sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Estimation));
                 } else if (CHANNEL_ENERGY_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                    sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries());
+                    sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Estimation));
                 } else if (CHANNEL_RAW.equals(channelUID.getIdWithoutGroup())) {
                     updateState(CHANNEL_RAW, StringType.valueOf(forecast.getRaw()));
                 } else {
@@ -160,8 +161,8 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                                 Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
                         updateState(CHANNEL_RAW, StringType.valueOf(cr.getContentAsString()));
                         if (localForecast.isValid()) {
-                            setForecast(localForecast);
                             updateStatus(ThingStatus.ONLINE);
+                            setForecast(localForecast);
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                     "@text/solarforecast.plane.status.json-status");
@@ -209,10 +210,13 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         apiKey = Optional.of(key);
     }
 
-    private synchronized void setForecast(ForecastSolarObject f) {
+    protected synchronized void setForecast(ForecastSolarObject f) {
         forecast = f;
-        sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries());
-        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries());
+        sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Estimation));
+        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Estimation));
+        bridgeHandler.ifPresent(h -> {
+            h.forecastUpdate();
+        });
     }
 
     @Override

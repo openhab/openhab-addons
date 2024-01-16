@@ -196,6 +196,7 @@ public class SolcastObject implements SolarForecast {
         }
     }
 
+    @Override
     public TimeSeries getEnergyTimeSeries(QueryMode mode) {
         TreeMap<ZonedDateTime, Double> dtm = getDataMap(mode);
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
@@ -240,6 +241,7 @@ public class SolcastObject implements SolarForecast {
         }
     }
 
+    @Override
     public TimeSeries getPowerTimeSeries(QueryMode mode) {
         TreeMap<ZonedDateTime, Double> dtm = getDataMap(mode);
         TimeSeries ts = new TimeSeries(Policy.REPLACE);

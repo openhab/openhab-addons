@@ -14,12 +14,14 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,15 +31,19 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
 import org.openhab.binding.solarforecast.internal.forecastsolar.config.ForecastSolarBridgeConfiguration;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.TimeSeries.Policy;
 
 /**
  * The {@link ForecastSolarBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
@@ -105,12 +111,47 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(powerSum));
     }
 
+    public void forecastUpdate() {
+        if (planes.isEmpty()) {
+            return;
+        }
+        TreeMap<Instant, QuantityType<?>> combinedPowerForecast = new TreeMap<Instant, QuantityType<?>>();
+        TreeMap<Instant, QuantityType<?>> combinedEnergyForecast = new TreeMap<Instant, QuantityType<?>>();
+        List<SolarForecast> forecastObjects = new ArrayList<SolarForecast>();
+        for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
+            ForecastSolarPlaneHandler sfph = iterator.next();
+            forecastObjects.addAll(sfph.getSolarForecasts());
+        }
+        forecastObjects.forEach(fc -> {
+            TimeSeries powerTS = fc.getPowerTimeSeries(QueryMode.Estimation);
+            powerTS.getStates().forEach(entry -> {
+                Utils.addState(combinedPowerForecast, entry);
+            });
+            TimeSeries energyTS = fc.getEnergyTimeSeries(QueryMode.Estimation);
+            energyTS.getStates().forEach(entry -> {
+                Utils.addState(combinedEnergyForecast, entry);
+            });
+        });
+
+        TimeSeries powerSeries = new TimeSeries(Policy.REPLACE);
+        combinedPowerForecast.forEach((timestamp, state) -> {
+            powerSeries.add(timestamp, state);
+        });
+        sendTimeSeries(CHANNEL_POWER_ESTIMATE, powerSeries);
+
+        TimeSeries energySeries = new TimeSeries(Policy.REPLACE);
+        combinedEnergyForecast.forEach((timestamp, state) -> {
+            energySeries.add(timestamp, state);
+        });
+        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, energySeries);
+    }
+
     @Override
     public void dispose() {
         refreshJob.ifPresent(job -> job.cancel(true));
     }
 
-    synchronized void addPlane(ForecastSolarPlaneHandler sfph) {
+    public synchronized void addPlane(ForecastSolarPlaneHandler sfph) {
         planes.add(sfph);
         // update passive PV plane with necessary data
         if (configuration.isPresent()) {
@@ -122,7 +163,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         getData();
     }
 
-    synchronized void removePlane(ForecastSolarPlaneHandler sfph) {
+    public synchronized void removePlane(ForecastSolarPlaneHandler sfph) {
         planes.remove(sfph);
     }
 

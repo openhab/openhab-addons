@@ -201,7 +201,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Estimation)));
     }
 
-    private synchronized void setForecast(SolcastObject f) {
+    protected synchronized void setForecast(SolcastObject f) {
         forecast = Optional.of(f);
         sendTimeSeries(CHANNEL_POWER_ESTIMATE, f.getPowerTimeSeries(QueryMode.Estimation));
         sendTimeSeries(CHANNEL_POWER_ESTIMATE10, f.getPowerTimeSeries(QueryMode.Optimistic));
@@ -209,6 +209,9 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, f.getEnergyTimeSeries(QueryMode.Estimation));
         sendTimeSeries(CHANNEL_ENERGY_ESTIMATE10, f.getEnergyTimeSeries(QueryMode.Optimistic));
         sendTimeSeries(CHANNEL_ENERGY_ESTIMATE90, f.getEnergyTimeSeries(QueryMode.Pessimistic));
+        bridgeHandler.ifPresent(h -> {
+            h.forecastUpdate();
+        });
     }
 
     @Override
