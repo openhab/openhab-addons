@@ -102,6 +102,21 @@ public final class DoorbirdAPI {
         return doorbirdInfo;
     }
 
+    public @Nullable DoorbirdSession getSession() {
+        DoorbirdSession doorbirdSession = null;
+        try {
+            String sessionResponse = executeGetRequest("/bha-api/getsession.cgi");
+            doorbirdSession = new DoorbirdSession(sessionResponse);
+        } catch (IOException e) {
+            logger.info("Unable to communicate with Doorbird: {}", e.getMessage());
+        } catch (JsonSyntaxException e) {
+            logger.info("Unable to parse Doorbird response: {}", e.getMessage());
+        } catch (DoorbirdUnauthorizedException e) {
+            logAuthorizationError("getDoorbirdName");
+        }
+        return doorbirdSession;
+    }
+
     public @Nullable SipStatus getSipStatus() {
         SipStatus sipStatus = null;
         try {
