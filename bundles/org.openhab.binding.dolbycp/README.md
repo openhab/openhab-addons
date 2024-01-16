@@ -13,7 +13,7 @@ This project is NOT affiliated with, funded, or in any way associated with Dolby
 
 ## Supported Things
 
-- `cp750`
+- `cp750` - The Dolby Digital Cinema Processor CP750 Device.
 
 ## Thing Configuration
 
