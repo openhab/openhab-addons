@@ -11,8 +11,6 @@ This binding wraps the CP750 Java library from https://github.com/Cybso/cp750-ja
 
 This project is NOT affiliated with, funded, or in any way associated with Dolby Laboratories, Inc.
 
-Currently, only _Fader_, _Mute_ and _Input Mode_ channels are implemented.
-
 ## Supported Things
 
 - `cp750`
