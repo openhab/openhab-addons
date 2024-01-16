@@ -33,6 +33,7 @@ public class ForecastSolarPlaneMock extends ForecastSolarPlaneHandler {
     public ForecastSolarPlaneMock(ForecastSolarObject fso) {
         super(new ThingImpl(SolarForecastBindingConstants.FORECAST_SOLAR_PLANE, new ThingUID("test", "plane")),
                 mock(HttpClient.class));
+        super.setCallback(new CallbackMock());
         super.setForecast(fso);
     }
 }

@@ -33,6 +33,7 @@ public class SolcastPlaneMock extends SolcastPlaneHandler {
     public SolcastPlaneMock(SolcastObject sco) {
         super(new ThingImpl(SolarForecastBindingConstants.SOLCAST_PLANE, new ThingUID("test", "plane")),
                 mock(HttpClient.class));
+        super.setCallback(new CallbackMock());
         super.setForecast(sco);
     }
 }
