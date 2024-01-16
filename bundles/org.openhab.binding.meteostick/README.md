@@ -41,11 +41,11 @@ Set mode to one of the following depending on your device and region:
 
 ### meteostick_davis_iss Configuration Options
 
-| Option       | Description                               |
-|--------------|-------------------------------------------|
-| channel      | Sets the RF channel used for this sensor  |
-| spoon        | Size of rain spoon assembly for this sensor in mm.  Default value is 0.254 (0.01") for use with Davis part number 7345.280.  Set to 0.2 for use with Davis part number 7345.319 |
-| deltawinddir | For Davis 6410, 7911 & 7914 anemometers, if your anemometer cannot be mounted aiming true North set the direction it is aiming here (0 to 359 degrees). Default is 0 (for North) |
+| Option             | Description                                                                                                                                                                      |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| channel            | Sets the RF channel used for this sensor                                                                                                                                         |
+| spoon              | Size of rain spoon assembly for this sensor in mm.  Default value is 0.254 (0.01") for use with Davis part number 7345.280.  Set to 0.2 for use with Davis part number 7345.319  |
+| deltaWindDirection | For Davis 6410, 7911 & 7914 anemometers, if your anemometer cannot be mounted aiming true North set the direction it is aiming here (0 to 359 degrees). Default is 0 (for North) |
 
 ## Channels
 
@@ -98,10 +98,10 @@ Things can be defined in the .things file as follows:
 
 ```java
 meteostick:meteostick_bridge:receiver [ port="/dev/tty.usbserial-AI02XA60", mode=1 ]
-meteostick:meteostick_davis_iss:iss (meteostick:meteostick_bridge:receiver) [ channel=1, spoon=0.2, deltawinddir=0 ]
+meteostick:meteostick_davis_iss:iss (meteostick:meteostick_bridge:receiver) [ channel=1, spoon=0.2, deltaWindDirection=0 ]
 ```
 
-Note the configuration options for `port`, `mode`, `channel`, `deltawinddir` and `spoon` above and adjust as needed for your specific hardware.
+Note the configuration options for `port`, `mode`, `channel`, `deltaWindDirection` and `spoon` above and adjust as needed for your specific hardware.
 
 ### items/meteostick.items
 
@@ -115,6 +115,7 @@ Number:Speed DavisVantageVueWindSpeed "ISS Wind Speed [%.1f m/s]" { channel="met
 Number:Speed DavisVantageVueWindSpeedAverage "ISS Average Wind Speed [%.1f m/s]" { channel="meteostick:meteostick_davis_iss:iss:wind-speed-last2min-average" }
 Number:Speed DavisVantageVueWindSpeedMaximum "ISS Maximum Wind Speed [%.1f m/s]" { channel="meteostick:meteostick_davis_iss:iss:wind-speed-last2min-maximum" }
 Number:Length DavisVantageVueRainCurrentHour "ISS Rain Current Hour [%.1f mm]" { channel="meteostick:meteostick_davis_iss:iss:rain-currenthour" }
+Number:Length DavisVantageVueRainToday "ISS Rain Today [%.1f mm]" { channel="meteostick:meteostick_davis_iss:iss:rain-today" }
 ```
 
 ### rules/meteostick.rules
