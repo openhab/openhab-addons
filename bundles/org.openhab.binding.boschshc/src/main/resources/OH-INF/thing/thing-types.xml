@@ -653,14 +653,29 @@
 		<item-type>String</item-type>
 		<label>Key Name</label>
 		<description>Name of the key that was pressed.</description>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="LOWER_BUTTON">Lower button</option>
+				<option value="UPPER_BUTTON">Upper button</option>
+				<option value="LOWER_LEFT_BUTTON">Lower left button</option>
+				<option value="LOWER_RIGHT_BUTTON">Lower right button</option>
+				<option value="UPPER_LEFT_BUTTON">Upper left button</option>
+				<option value="UPPER_RIGHT_BUTTON">Upper right button</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="key-event-type">
 		<item-type>String</item-type>
 		<label>Key Event Type</label>
-		<description>Indicates how the key was pressed. Possible values are PRESS_SHORT, PRESS_LONG and PRESS_LONG_RELEASED.</description>
-		<state readOnly="true"/>
+		<description>Indicates how the key was pressed.</description>
+		<state readOnly="true">
+			<options>
+				<option value="PRESS_SHORT">Short</option>
+				<option value="PRESS_LONG">Long (pressed)</option>
+				<option value="PRESS_LONG_RELEASED">Long (released)</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="key-event-timestamp">

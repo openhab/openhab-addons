@@ -13,6 +13,7 @@
 package org.openhab.binding.boschshc.internal.devices.universalswitch;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -24,7 +25,7 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class UniversalSwitch2Handler extends UniversalSwitchHandler {
 
-    public UniversalSwitch2Handler(Thing thing) {
-        super(thing);
+    public UniversalSwitch2Handler(Thing thing, TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 }

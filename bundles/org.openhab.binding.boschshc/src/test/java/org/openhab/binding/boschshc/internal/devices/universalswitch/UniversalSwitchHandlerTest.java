@@ -42,7 +42,7 @@ class UniversalSwitchHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest
 
     @Override
     protected UniversalSwitchHandler createFixture() {
-        return new UniversalSwitchHandler(getThing());
+        return new UniversalSwitchHandler(getThing(), () -> ZoneId.systemDefault());
     }
 
     @Override

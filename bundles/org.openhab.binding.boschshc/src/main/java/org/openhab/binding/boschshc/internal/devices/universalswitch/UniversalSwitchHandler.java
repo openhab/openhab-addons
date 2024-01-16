@@ -18,7 +18,6 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_KEY_NAME;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -27,6 +26,7 @@ import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDevic
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.keypad.KeypadService;
 import org.openhab.binding.boschshc.internal.services.keypad.dto.KeypadServiceState;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -41,8 +41,11 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class UniversalSwitchHandler extends AbstractBatteryPoweredDeviceHandler {
 
-    public UniversalSwitchHandler(Thing thing) {
+    private TimeZoneProvider timeZoneProvider;
+
+    public UniversalSwitchHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -60,6 +63,6 @@ public class UniversalSwitchHandler extends AbstractBatteryPoweredDeviceHandler 
 
         Instant instant = Instant.ofEpochMilli(keypadServiceState.eventTimestamp);
         updateState(CHANNEL_KEY_EVENT_TIMESTAMP,
-                new DateTimeType(ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())));
+                new DateTimeType(ZonedDateTime.ofInstant(instant, timeZoneProvider.getTimeZone())));
     }
 }
