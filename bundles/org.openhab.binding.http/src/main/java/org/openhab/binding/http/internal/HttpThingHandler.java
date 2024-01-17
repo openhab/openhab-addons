@@ -168,15 +168,6 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
         }
         rateLimitedHttpClient.setDelay(config.delay);
 
-        int urlHandlerCount = urlHandlers.size();
-        if (urlHandlerCount * config.delay > config.refresh * 1000) {
-            // this should prevent the rate limit queue from filling up
-            config.refresh = (urlHandlerCount * config.delay) / 1000 + 1;
-            logger.warn(
-                    "{} channels in thing {} with a delay of {} incompatible with the configured refresh time. Refresh-Time increased to the minimum of {}",
-                    urlHandlerCount, thing.getUID(), config.delay, config.refresh);
-        }
-
         // remove empty headers
         config.headers.removeIf(String::isBlank);
 
@@ -235,6 +226,17 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
         }
         // create channels
         thing.getChannels().forEach(this::createChannel);
+
+        int urlHandlerCount = urlHandlers.size();
+        if (urlHandlerCount * config.delay > config.refresh * 1000) {
+            // this should prevent the rate limit queue from filling up
+            config.refresh = (urlHandlerCount * config.delay) / 1000 + 1;
+            logger.warn(
+                    "{} channels in thing {} with a delay of {} incompatible with the configured refresh time. Refresh-Time increased to the minimum of {}",
+                    urlHandlerCount, thing.getUID(), config.delay, config.refresh);
+        }
+
+        urlHandlers.values().forEach(urlHandler -> urlHandler.start(scheduler, config.refresh));
 
         updateStatus(ThingStatus.UNKNOWN);
     }
@@ -330,9 +332,10 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
             // we need a key consisting of stateContent and URL, only if both are equal, we can use the same cache
             String key = channelConfig.stateContent + "$" + stateUrl;
             channelUrls.put(channelUID, key);
-            Objects.requireNonNull(urlHandlers.computeIfAbsent(key,
-                    k -> new RefreshingUrlCache(scheduler, rateLimitedHttpClient, stateUrl, config,
-                            channelConfig.stateContent, config.contentType, this)))
+            Objects.requireNonNull(
+                    urlHandlers.computeIfAbsent(key,
+                            k -> new RefreshingUrlCache(rateLimitedHttpClient, stateUrl, config,
+                                    channelConfig.stateContent, config.contentType, this)))
                     .addConsumer(itemValueConverter::process);
         }
 

@@ -252,10 +252,10 @@ public class RefreshingUrlCacheTest extends AbstractWireMockTest {
      * @return the cache object
      */
     private RefreshingUrlCache getUrlCache(String content) {
-        RefreshingUrlCache urlCache = new RefreshingUrlCache(scheduler, rateLimitedHttpClient, url, thingConfig,
-                content, null, statusListener);
+        RefreshingUrlCache urlCache = new RefreshingUrlCache(rateLimitedHttpClient, url, thingConfig, content, null,
+                statusListener);
         urlCache.addConsumer(contentWrappers::add);
-
+        urlCache.start(scheduler, thingConfig.refresh);
         return urlCache;
     }
 }

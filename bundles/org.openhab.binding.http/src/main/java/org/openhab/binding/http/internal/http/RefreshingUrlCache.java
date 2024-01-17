@@ -59,12 +59,11 @@ public class RefreshingUrlCache {
     private final @Nullable String httpContentType;
     private final HttpStatusListener httpStatusListener;
 
-    private final ScheduledFuture<?> future;
+    private @Nullable ScheduledFuture<?> future;
     private @Nullable ChannelHandlerContent lastContent;
 
-    public RefreshingUrlCache(ScheduledExecutorService executor, RateLimitedHttpClient httpClient, String url,
-            HttpThingConfig thingConfig, String httpContent, @Nullable String httpContentType,
-            HttpStatusListener httpStatusListener) {
+    public RefreshingUrlCache(RateLimitedHttpClient httpClient, String url, HttpThingConfig thingConfig,
+            String httpContent, @Nullable String httpContentType, HttpStatusListener httpStatusListener) {
         this.httpClient = httpClient;
         this.url = url;
         this.strictErrorHandling = thingConfig.strictErrorHandling;
@@ -76,9 +75,25 @@ public class RefreshingUrlCache {
         this.httpContentType = httpContentType;
         this.httpStatusListener = httpStatusListener;
         fallbackEncoding = thingConfig.encoding;
+    }
 
-        future = executor.scheduleWithFixedDelay(this::refresh, 1, thingConfig.refresh, TimeUnit.SECONDS);
-        logger.trace("Started refresh task for URL '{}' with interval {}s", url, thingConfig.refresh);
+    public void start(ScheduledExecutorService executor, int refreshTime) {
+        if (future != null) {
+            logger.warn("Starting refresh task requested but it is already started. This is bug.");
+            return;
+        }
+        future = executor.scheduleWithFixedDelay(this::refresh, 1, refreshTime, TimeUnit.SECONDS);
+        logger.trace("Started refresh task for URL '{}' with interval {}s", url, refreshTime);
+    }
+
+    public void stop() {
+        // clearing all listeners to prevent further updates
+        consumers.clear();
+        ScheduledFuture<?> future = this.future;
+        if (future != null) {
+            future.cancel(true);
+            logger.trace("Stopped refresh task for URL '{}'", url);
+        }
     }
 
     private void refresh() {
@@ -130,13 +145,6 @@ public class RefreshingUrlCache {
         } catch (IllegalArgumentException | URISyntaxException | MalformedURLException e) {
             logger.warn("Creating request for '{}' failed: {}", url, e.getMessage());
         }
-    }
-
-    public void stop() {
-        // clearing all listeners to prevent further updates
-        consumers.clear();
-        future.cancel(false);
-        logger.trace("Stopped refresh task for URL '{}'", url);
     }
 
     public void addConsumer(Consumer<@Nullable ChannelHandlerContent> consumer) {
