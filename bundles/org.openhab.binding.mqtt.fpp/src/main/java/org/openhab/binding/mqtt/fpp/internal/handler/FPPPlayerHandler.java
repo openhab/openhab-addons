@@ -63,9 +63,6 @@ import tech.units.indriya.unit.Units;
  */
 @NonNullByDefault
 public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSubscriber {
-    // these are all constants used in color conversion calcuations.
-    // strings are necessary to prevent floating point loss of precision
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private @Nullable MqttBrokerConnection connection;
 
@@ -261,7 +258,6 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
         try {
             Properties header = new Properties();
             header.put("Accept", "application/json");
-            // header.put("Connection", "keep-alive");
             header.put("Content-Type", "application/json");
             String response = HttpUtil.executeUrl("POST", "http://" + config.playerIP + url, header,
                     new ByteArrayInputStream(json.getBytes()), "application/json", 5000);
