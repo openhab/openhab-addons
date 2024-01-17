@@ -620,7 +620,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             } else {
                 if (!oldSessionId.containsKey(sessionIdToInvalidate) && sessionIdToInvalidate.equals(sessionIdHttp)) {
                     oldSessionId.put(sessionIdToInvalidate, true);
-                    logger.debug("Invalidate sessionIdHttp:" + sessionIdToInvalidate);
+                    logger.debug("Invalidate sessionIdHttp:", sessionIdToInvalidate);
                     sessionIdHttp = null;
                 }
             }
@@ -630,7 +630,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             } else {
                 if (!oldSessionId.containsKey(sessionIdToInvalidate) && sessionIdToInvalidate.equals(sessionId)) {
                     oldSessionId.put(sessionIdToInvalidate, true);
-                    logger.debug("Invalidate sessionId:" + sessionIdToInvalidate);
+                    logger.debug("Invalidate sessionId:", sessionIdToInvalidate);
                     sessionId = null;
                 }
             }
