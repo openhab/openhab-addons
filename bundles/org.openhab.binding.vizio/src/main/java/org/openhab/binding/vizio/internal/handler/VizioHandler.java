@@ -402,7 +402,7 @@ public class VizioHandler extends BaseThingHandler {
                                 powerOn = false;
                             }
                         } catch (VizioException e) {
-                            logger.debug("Unable to send power {} command to the Vizio TV, Exception: {}", command,
+                            logger.warn("Unable to send power {} command to the Vizio TV, Exception: {}", command,
                                     e.getMessage());
                         }
                     }
@@ -429,10 +429,10 @@ public class VizioHandler extends BaseThingHandler {
                                     .changeVolume(String.format(MODIFY_INT_SETTING_JSON, volume, currentVolumeHash));
                             currentVolumeHash = 0L;
                         } catch (VizioException e) {
-                            logger.debug("Unable to set volume on the Vizio TV, command volume: {}, Exception: {}",
+                            logger.warn("Unable to set volume on the Vizio TV, command volume: {}, Exception: {}",
                                     command, e.getMessage());
                         } catch (NumberFormatException e) {
-                            logger.debug("Unable to parse command volume value {} as int", command);
+                            logger.warn("Unable to parse command volume value {} as int", command);
                         }
                     }
                     break;
@@ -448,7 +448,7 @@ public class VizioHandler extends BaseThingHandler {
                                 currentMute = false;
                             }
                         } catch (VizioException e) {
-                            logger.debug("Unable to send mute {} command to the Vizio TV, Exception: {}", command,
+                            logger.warn("Unable to send mute {} command to the Vizio TV, Exception: {}", command,
                                     e.getMessage());
                         }
                     }
@@ -469,7 +469,7 @@ public class VizioHandler extends BaseThingHandler {
                                     .changeInput(String.format(MODIFY_STRING_SETTING_JSON, command, currentInputHash));
                             currentInputHash = 0L;
                         } catch (VizioException e) {
-                            logger.debug("Unable to set current source on the Vizio TV, source: {}, Exception: {}",
+                            logger.warn("Unable to set current source on the Vizio TV, source: {}, Exception: {}",
                                     command, e.getMessage());
                         }
                     }
@@ -484,11 +484,11 @@ public class VizioHandler extends BaseThingHandler {
                             if (selectedApp.isPresent()) {
                                 communicator.launchApp(selectedApp.get().getConfig());
                             } else {
-                                logger.debug("Unknown app name: '{}', check that it exists in App List configuration",
+                                logger.warn("Unknown app name: '{}', check that it exists in App List configuration",
                                         command);
                             }
                         } catch (VizioException e) {
-                            logger.debug("Unable to launch app name: '{}' on the Vizio TV, Exception: {}", command,
+                            logger.warn("Unable to launch app name: '{}' on the Vizio TV, Exception: {}", command,
                                     e.getMessage());
                         }
                     }
@@ -499,7 +499,7 @@ public class VizioHandler extends BaseThingHandler {
                         try {
                             handleControlCommand(command);
                         } catch (VizioException e) {
-                            logger.debug("Unable to send control command: '{}' to the Vizio TV, Exception: {}", command,
+                            logger.warn("Unable to send control command: '{}' to the Vizio TV, Exception: {}", command,
                                     e.getMessage());
                         }
                     }
@@ -510,7 +510,7 @@ public class VizioHandler extends BaseThingHandler {
                             KeyCommand keyCommand = KeyCommand.valueOf(command.toString().toUpperCase(Locale.ENGLISH));
                             communicator.sendKeyPress(keyCommand.getJson());
                         } catch (IllegalArgumentException | VizioException e) {
-                            logger.debug("Unable to send keypress to the Vizio TV, key: {}, Exception: {}", command,
+                            logger.warn("Unable to send keypress to the Vizio TV, key: {}, Exception: {}", command,
                                     e.getMessage());
                         }
                     }
