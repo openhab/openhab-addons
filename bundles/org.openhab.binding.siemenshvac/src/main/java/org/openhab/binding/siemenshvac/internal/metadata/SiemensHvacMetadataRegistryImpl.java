@@ -1230,24 +1230,30 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     @Override
     public void invalidate() {
         root = null;
-        if (hvacConnector != null) {
-            hvacConnector.invalidate();
+        SiemensHvacConnector lcHavConnector = hvacConnector;
+        SiemensHvacChannelGroupTypeProvider lcChannelGroupTypeProvider = channelGroupTypeProvider;
+        SiemensHvacThingTypeProvider lcThingTypeProvider = thingTypeProvider;
+        SiemensHvacChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
+        SiemensHvacConfigDescriptionProvider lcConfigDescriptionProvider = configDescriptionProvider;
+
+        if (lcHavConnector != null) {
+            lcHavConnector.invalidate();
         }
 
-        if (channelGroupTypeProvider != null) {
-            channelGroupTypeProvider.invalidate();
+        if (lcChannelGroupTypeProvider != null) {
+            lcChannelGroupTypeProvider.invalidate();
         }
 
-        if (thingTypeProvider != null) {
-            thingTypeProvider.invalidate();
+        if (lcThingTypeProvider != null) {
+            lcThingTypeProvider.invalidate();
         }
 
-        if (channelTypeProvider != null) {
-            channelTypeProvider.invalidate();
+        if (lcChannelTypeProvider != null) {
+            lcChannelTypeProvider.invalidate();
         }
 
-        if (configDescriptionProvider != null) {
-            configDescriptionProvider.invalidate();
+        if (lcConfigDescriptionProvider != null) {
+            lcConfigDescriptionProvider.invalidate();
         }
     }
 }
