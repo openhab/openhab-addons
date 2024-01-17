@@ -267,9 +267,11 @@ The configuration is set like this:
 ```java
 Thing velbus:vmbdali:<bridgeId>:<thingId> [VL1="R,G,B,W"]
 ```
+
 The white channel is optional.
 
 e.g.:
+
 ```java
 Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 ```
