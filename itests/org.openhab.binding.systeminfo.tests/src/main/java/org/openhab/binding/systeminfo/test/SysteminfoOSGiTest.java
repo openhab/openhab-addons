@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Frequency;
@@ -275,8 +276,12 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         Channel channel = ChannelBuilder.create(channelUID, acceptedItemType).withType(channelTypeUID)
                 .withKind(ChannelKind.STATE).withConfiguration(channelConfig).build();
 
-        Thing thing = ThingBuilder.create(thingTypeUID, thingUID).withConfiguration(thingConfiguration)
-                .withChannel(channel).build();
+        ThingBuilder thingBuilder = ThingBuilder.create(thingTypeUID, thingUID).withConfiguration(thingConfiguration)
+                .withChannel(channel);
+        // Make sure the thingTypeVersion matches the highest version in the update instructions of the binding to avoid
+        // new channels being added and the thing not initializing
+        thingBuilder = thingBuilder.withProperties(Map.of("thingTypeVersion", "1"));
+        Thing thing = thingBuilder.build();
         systeminfoThing = thing;
 
         managedThingProvider.add(thing);
