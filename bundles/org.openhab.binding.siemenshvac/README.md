@@ -1,10 +1,10 @@
-# SiemensHvac Binding
+# SiemensHVAC Binding
 
-This binding provides support for the Siemens Hvac controller ecosystem, and the Web Gateway interface OZW672.
+This binding provides support for the Siemens HVAC controller ecosystem, and the Web Gateway interface OZW672.
 A typical system is composed of:
          
 ![Diagram](doc/Diagram.png)                 
-
+ 
 There's a lot of different HVAC controllers depending on model in lot of different PAC constructors.
 Siemens RVS41.813/327 inside a Atlantic Hybrid Duo was used for the development, and is fully supported and tested.
 
@@ -43,7 +43,7 @@ Be aware what you will have to modify the password in Gateway parameters just af
 Be also aware that first initialization is a little long because the binding needs to read all the metadata from the device.
 
 Discovery of HVAC device have to be done through the Scan button inside the binding.
-Go to the Thing page, click on the "+" button, select the SiemensHvac binding, and then click Scan.
+Go to the Thing page, click on the "+" button, select the SiemensHVAC binding, and then click Scan.
 Your device should appear on the page after a few seconds.
 
 ## Bridge Configuration
