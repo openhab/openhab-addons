@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -727,7 +727,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                         (capabilityId) -> client.setVariableActuatorState(capabilityId, state));
                 // PSS / PSSO / ISS2 / BT-PSS
             } else if (DEVICE_PSS.equals(deviceType) || DEVICE_PSSO.equals(deviceType) || DEVICE_ISS2.equals(deviceType)
-                    || DEVICE_BT_PSS.equals((deviceType))) {
+                    || DEVICE_BT_PSS.equals(deviceType)) {
                 executeCommand(deviceId, CapabilityDTO.TYPE_SWITCHACTUATOR,
                         (capabilityId) -> client.setSwitchActuatorState(capabilityId, state));
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,13 +80,13 @@ public class LightLevelHandler extends HueSensorHandler {
         Object dark = sensor.getState().get(STATE_DARK);
         if (dark != null) {
             boolean value = Boolean.parseBoolean(String.valueOf(dark));
-            updateState(CHANNEL_DARK, value ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_DARK, OnOffType.from(value));
         }
 
         Object daylight = sensor.getState().get(STATE_DAYLIGHT);
         if (daylight != null) {
             boolean value = Boolean.parseBoolean(String.valueOf(daylight));
-            updateState(CHANNEL_DAYLIGHT, value ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_DAYLIGHT, OnOffType.from(value));
         }
 
         if (sensor.getConfig().containsKey(CONFIG_LED_INDICATION)) {

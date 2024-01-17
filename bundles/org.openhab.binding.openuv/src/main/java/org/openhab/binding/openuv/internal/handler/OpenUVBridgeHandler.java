@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,11 +31,7 @@ import org.openhab.binding.openuv.internal.config.BridgeConfiguration;
 import org.openhab.binding.openuv.internal.discovery.OpenUVDiscoveryService;
 import org.openhab.binding.openuv.internal.json.OpenUVResponse;
 import org.openhab.binding.openuv.internal.json.OpenUVResult;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpUtil;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -66,20 +62,13 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenUVBridgeHandler.class);
     private final Properties header = new Properties();
     private final Gson gson;
-    private final LocationProvider locationProvider;
-    private final TranslationProvider i18nProvider;
-    private final LocaleProvider localeProvider;
 
     private Optional<ScheduledFuture<?>> reconnectJob = Optional.empty();
     private boolean keyVerified;
 
-    public OpenUVBridgeHandler(Bridge bridge, LocationProvider locationProvider, TranslationProvider i18nProvider,
-            LocaleProvider localeProvider, Gson gson) {
+    public OpenUVBridgeHandler(Bridge bridge, Gson gson) {
         super(bridge);
         this.gson = gson;
-        this.locationProvider = locationProvider;
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -177,17 +166,5 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(OpenUVDiscoveryService.class);
-    }
-
-    public @Nullable PointType getLocation() {
-        return locationProvider.getLocation();
-    }
-
-    public TranslationProvider getI18nProvider() {
-        return i18nProvider;
-    }
-
-    public LocaleProvider getLocaleProvider() {
-        return localeProvider;
     }
 }

@@ -211,7 +211,7 @@ class HttpAuthenticationFilter implements ClientRequestFilter, ClientResponseFil
 
         Invocation.Builder builder = resourceTarget.request(mediaType);
 
-        MultivaluedMap<String, Object> newHeaders = new MultivaluedHashMap<String, Object>();
+        MultivaluedMap<String, Object> newHeaders = new MultivaluedHashMap<>();
 
         for (Map.Entry<String, List<Object>> entry : request.getHeaders().entrySet()) {
             if (HttpHeaders.AUTHORIZATION.equals(entry.getKey())) {

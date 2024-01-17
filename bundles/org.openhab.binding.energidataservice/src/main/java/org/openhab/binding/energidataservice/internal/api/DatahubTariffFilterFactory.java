@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -124,7 +124,8 @@ public class DatahubTariffFilterFactory {
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("TAC")), Set.of(NOTE_NET_TARIFF_C),
                         DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_NORDVESTJYSK_ELFORSYNING_NOE_NET:
-                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("Net C")), Set.of(NOTE_NET_TARIFF_C));
+                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("30030")), Set.of(NOTE_NET_TARIFF_C),
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_RADIUS:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("DT_C_01")), Set.of(NOTE_NET_TARIFF_C_HOUR),
                         DateQueryParameter.of(RADIUS_CUTOFF_DATE));

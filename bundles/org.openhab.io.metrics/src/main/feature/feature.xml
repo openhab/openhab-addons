@@ -4,8 +4,6 @@
 
 	<feature name="openhab-misc-metrics" description="Metrics Service" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature>openhab-core-model-item</feature>
-		<feature>openhab-core-base</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.metrics/${project.version}</bundle>
 	</feature>
 </features>

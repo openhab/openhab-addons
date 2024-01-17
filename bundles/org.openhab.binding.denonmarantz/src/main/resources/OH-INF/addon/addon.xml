@@ -20,7 +20,12 @@
 		</discovery-method>
 		<discovery-method>
 			<service-type>mdns</service-type>
-			<mdns-service-type>_raop._tcp.local.</mdns-service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_raop._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
 			<match-properties>
 				<match-property>
 					<name>name</name>

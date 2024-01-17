@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ public class IpCameraBindingConstants {
     public static final String COMMON_HANDLER = "commonHandler";
     public static final String INSTAR_HANDLER = "instarHandler";
     public static final String REOLINK_HANDLER = "reolinkHandler";
+    public static final String HIKVISION_HANDLER = "hikvisionHandler";
 
     public enum FFmpegFormat {
         HLS,
@@ -70,12 +71,11 @@ public class IpCameraBindingConstants {
     public static final String REOLINK_THING = "reolink";
     public static final ThingTypeUID THING_TYPE_REOLINK = new ThingTypeUID(BINDING_ID, REOLINK_THING);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_ONVIF, THING_TYPE_GENERIC, THING_TYPE_AMCREST, THING_TYPE_DAHUA, THING_TYPE_INSTAR,
                     THING_TYPE_FOSCAM, THING_TYPE_DOORBIRD, THING_TYPE_HIKVISION, THING_TYPE_REOLINK));
 
-    public static final Set<ThingTypeUID> GROUP_SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_GROUP));
+    public static final Set<ThingTypeUID> GROUP_SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_GROUP));
 
     // List of all Thing Config items
     public static final String CONFIG_IPADDRESS = "ipAddress";

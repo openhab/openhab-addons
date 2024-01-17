@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,6 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeDataPerson;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusPerson;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.config.HomeConfiguration;
@@ -88,21 +87,19 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     }
 
     @Override
-    protected void updateHomeStatus(HomeStatus homeStatus) {
-        if (homeStatus instanceof NAHomeStatus.Security securityStatus) {
-            NAObjectMap<HomeStatusPerson> persons = securityStatus.getPersons();
-            NAObjectMap<HomeStatusModule> modules = securityStatus.getModules();
-            handler.getActiveChildren(FeatureArea.SECURITY).forEach(childHandler -> {
-                String childId = childHandler.getId();
-                persons.getOpt(childId).ifPresentOrElse(personData -> childHandler.setNewData(personData), () -> {
-                    modules.getOpt(childId).ifPresent(childData -> {
-                        childHandler.setNewData(childData);
-                        modules.values().stream().filter(module -> childId.equals(module.getBridge()))
-                                .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
-                    });
+    protected void updateHomeStatus(HomeStatus securityStatus) {
+        NAObjectMap<HomeStatusPerson> persons = securityStatus.getPersons();
+        NAObjectMap<HomeStatusModule> modules = securityStatus.getModules();
+        handler.getActiveChildren(FeatureArea.SECURITY).forEach(childHandler -> {
+            String childId = childHandler.getId();
+            persons.getOpt(childId).ifPresentOrElse(personData -> childHandler.setNewData(personData), () -> {
+                modules.getOpt(childId).ifPresent(childData -> {
+                    childHandler.setNewData(childData);
+                    modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                            .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
                 });
             });
-        }
+        });
     }
 
     @Override

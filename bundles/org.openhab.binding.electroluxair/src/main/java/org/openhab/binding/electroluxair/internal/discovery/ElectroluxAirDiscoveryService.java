@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,18 +14,14 @@ package org.openhab.binding.electroluxair.internal.discovery;
 
 import static org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants.*;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.electroluxair.internal.ElectroluxAirConfiguration;
 import org.openhab.binding.electroluxair.internal.handler.ElectroluxAirBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link ElectroluxAirDiscoveryService} searches for available
@@ -33,51 +29,26 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ElectroluxAirDiscoveryService.class)
 @NonNullByDefault
-public class ElectroluxAirDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService, DiscoveryService {
+public class ElectroluxAirDiscoveryService extends AbstractThingHandlerDiscoveryService<ElectroluxAirBridgeHandler> {
     private static final int SEARCH_TIME = 2;
-    private @Nullable ElectroluxAirBridgeHandler handler;
 
     public ElectroluxAirDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ElectroluxAirBridgeHandler bridgeHandler) {
-            this.handler = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
-    }
-
-    @Override
-    public void activate(@Nullable Map<String, Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(ElectroluxAirBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
     }
 
     @Override
     protected void startScan() {
-        ElectroluxAirBridgeHandler bridgeHandler = this.handler;
-        if (bridgeHandler != null) {
-            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            bridgeHandler.getElectroluxAirThings().entrySet().stream().forEach(thing -> {
-                thingDiscovered(DiscoveryResultBuilder
-                        .create(new ThingUID(THING_TYPE_ELECTROLUX_PURE_A9, bridgeUID, thing.getKey()))
-                        .withLabel("Electrolux Pure A9").withBridge(bridgeUID)
-                        .withProperty(ElectroluxAirConfiguration.DEVICE_ID_LABEL, thing.getKey())
-                        .withRepresentationProperty(ElectroluxAirConfiguration.DEVICE_ID_LABEL).build());
-            });
-        }
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        thingHandler.getElectroluxAirThings().entrySet().stream().forEach(thing -> {
+            thingDiscovered(DiscoveryResultBuilder
+                    .create(new ThingUID(THING_TYPE_ELECTROLUX_PURE_A9, bridgeUID, thing.getKey()))
+                    .withLabel("Electrolux Pure A9").withBridge(bridgeUID)
+                    .withProperty(ElectroluxAirConfiguration.DEVICE_ID_LABEL, thing.getKey())
+                    .withRepresentationProperty(ElectroluxAirConfiguration.DEVICE_ID_LABEL).build());
+        });
+
         stopScan();
     }
 }

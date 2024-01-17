@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,6 +77,6 @@ public class MilightV6RGBWHandler extends AbstractLedV6Handler {
 
     @Override
     public void changeSpeed(int relativeSpeed, MilightThingState state) {
-        sendNonRepeatable(4, relativeSpeed > 1 ? 3 : 4);
+        sendNonRepeatable(4, relativeSpeed == 1 ? 3 : 4);
     }
 }

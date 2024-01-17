@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,15 +40,15 @@ public class KNXProfileAdvisor implements ProfileAdvisor {
         if (channelTypeUID == null || !channelTypeUID.getBindingId().equals(BINDING_ID)) {
             return null;
         }
-        return getSuggestedProfieTypeUID(channelTypeUID);
+        return getSuggestedProfileTypeUID(channelTypeUID);
     }
 
     @Override
     public @Nullable ProfileTypeUID getSuggestedProfileTypeUID(ChannelType channelType, @Nullable String itemType) {
-        return getSuggestedProfieTypeUID(channelType.getUID());
+        return getSuggestedProfileTypeUID(channelType.getUID());
     }
 
-    private ProfileTypeUID getSuggestedProfieTypeUID(ChannelTypeUID channelTypeUID) {
+    private ProfileTypeUID getSuggestedProfileTypeUID(ChannelTypeUID channelTypeUID) {
         if (isControl(channelTypeUID)) {
             return SystemProfiles.FOLLOW;
         } else {

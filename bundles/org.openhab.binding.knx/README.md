@@ -31,6 +31,20 @@ There is an _ip_ bridge to connect to KNX IP Gateways, and a _serial_ bridge for
 The following two bridge types are supported.
 Bridges don't have channels on their own.
 
+### Discovery
+
+KNX IP bridges, i.e. IP interfaces, routers, and knxd instances, are discovered through mulitcast communication in the local network.
+As a KNX setup is typically static, this in only done during startup of the binding.
+Corresponding bridges are added to the inbox.
+Additional configuration might be necessary after adding a bridge.
+
+Note that several items per device might be created, as routers typically support routing and tunneling.
+Make sure you import only one item per device.
+
+Discovery is not available for serial bridges and device Things described below.
+Discovery of IP bridges will not work without further measures if openHAB and the interface run on different network segments,
+as multicast traffic is typically not forwarded.
+
 ### IP Gateway
 
 The IP Gateway is the most commonly used way to connect to the KNX bus. At its base, the _ip_ bridge accepts the following configuration parameters:

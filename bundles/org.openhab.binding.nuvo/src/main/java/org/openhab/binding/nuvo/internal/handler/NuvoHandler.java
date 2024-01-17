@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,19 +156,19 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
     private boolean isAnyOhNuvoNet = false;
     private NuvoMenu nuvoMenus = new NuvoMenu();
-    private HashMap<String, Set<NuvoEnum>> nuvoGroupMap = new HashMap<String, Set<NuvoEnum>>();
-    private HashMap<NuvoEnum, Integer> nuvoNetSrcMap = new HashMap<NuvoEnum, Integer>();
-    private HashMap<NuvoEnum, String> favPrefixMap = new HashMap<NuvoEnum, String>();
-    private HashMap<NuvoEnum, String[]> favoriteMap = new HashMap<NuvoEnum, String[]>();
+    private HashMap<String, Set<NuvoEnum>> nuvoGroupMap = new HashMap<>();
+    private HashMap<NuvoEnum, Integer> nuvoNetSrcMap = new HashMap<>();
+    private HashMap<NuvoEnum, String> favPrefixMap = new HashMap<>();
+    private HashMap<NuvoEnum, String[]> favoriteMap = new HashMap<>();
 
-    private HashMap<NuvoEnum, byte[]> albumArtMap = new HashMap<NuvoEnum, byte[]>();
-    private HashMap<NuvoEnum, Integer> albumArtIds = new HashMap<NuvoEnum, Integer>();
-    private HashMap<NuvoEnum, String> dispInfoCache = new HashMap<NuvoEnum, String>();
+    private HashMap<NuvoEnum, byte[]> albumArtMap = new HashMap<>();
+    private HashMap<NuvoEnum, Integer> albumArtIds = new HashMap<>();
+    private HashMap<NuvoEnum, String> dispInfoCache = new HashMap<>();
 
     Set<Integer> activeZones = new HashSet<>(1);
 
     // A tree map that maps the source ids to source labels
-    TreeMap<String, String> sourceLabels = new TreeMap<String, String>();
+    TreeMap<String, String> sourceLabels = new TreeMap<>();
 
     // Indicates if there is a need to poll status because of a disconnection used for MPS4 systems
     boolean pollStatusNeeded = true;
@@ -233,10 +233,10 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         nuvoNetSrcMap.put(NuvoEnum.SOURCE5, config.nuvoNetSrc5);
         nuvoNetSrcMap.put(NuvoEnum.SOURCE6, config.nuvoNetSrc6);
 
-        nuvoGroupMap.put("1", new HashSet<NuvoEnum>());
-        nuvoGroupMap.put("2", new HashSet<NuvoEnum>());
-        nuvoGroupMap.put("3", new HashSet<NuvoEnum>());
-        nuvoGroupMap.put("4", new HashSet<NuvoEnum>());
+        nuvoGroupMap.put("1", new HashSet<>());
+        nuvoGroupMap.put("2", new HashSet<>());
+        nuvoGroupMap.put("3", new HashSet<>());
+        nuvoGroupMap.put("4", new HashSet<>());
 
         if (this.isMps4) {
             logger.debug("Port set to {} configuring binding for MPS4 compatability", MPS4_PORT);
@@ -1355,7 +1355,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             case CHANNEL_TYPE_ALLMUTE:
             case CHANNEL_TYPE_PAGE:
             case CHANNEL_TYPE_LOUDNESS:
-                state = ON.equals(value) ? OnOffType.ON : OnOffType.OFF;
+                state = OnOffType.from(ON.equals(value));
                 break;
             case CHANNEL_TYPE_LOCK:
                 state = ON.equals(value) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
@@ -1385,7 +1385,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             case CHANNEL_TRACK_LENGTH:
             case CHANNEL_TRACK_POSITION:
-                state = new QuantityType<Time>(Integer.parseInt(value) / 10, NuvoHandler.API_SECOND_UNIT);
+                state = new QuantityType<>(Integer.parseInt(value) / 10, NuvoHandler.API_SECOND_UNIT);
                 break;
             case CHANNEL_ALBUM_ART:
                 state = new RawType(bytes, "image/jpeg");

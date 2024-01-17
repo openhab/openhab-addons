@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,6 @@ import static org.openhab.binding.meater.internal.MeaterBindingConstants.*;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -107,17 +105,17 @@ public class MeaterHandler extends BaseThingHandler {
         Cook cook = meaterProbe.cook;
         switch (channelId) {
             case CHANNEL_INTERNAL_TEMPERATURE:
-                return new QuantityType<Temperature>(meaterProbe.temperature.internal, SIUnits.CELSIUS);
+                return new QuantityType<>(meaterProbe.temperature.internal, SIUnits.CELSIUS);
             case CHANNEL_AMBIENT_TEMPERATURE:
-                return new QuantityType<Temperature>(meaterProbe.temperature.ambient, SIUnits.CELSIUS);
+                return new QuantityType<>(meaterProbe.temperature.ambient, SIUnits.CELSIUS);
             case CHANNEL_COOK_TARGET_TEMPERATURE:
                 if (cook != null) {
-                    return new QuantityType<Temperature>(cook.temperature.target, SIUnits.CELSIUS);
+                    return new QuantityType<>(cook.temperature.target, SIUnits.CELSIUS);
                 }
                 break;
             case CHANNEL_COOK_PEAK_TEMPERATURE:
                 if (cook != null) {
-                    return new QuantityType<Temperature>(cook.temperature.peak, SIUnits.CELSIUS);
+                    return new QuantityType<>(cook.temperature.peak, SIUnits.CELSIUS);
                 }
                 break;
             case CHANNEL_COOK_ELAPSED_TIME:

@@ -1,0 +1,48 @@
+[
+    {
+        "vin": "anonymousICE",
+        "mappingInfo": {
+            "isAssociated": false,
+            "isLmmEnabled": false,
+            "mappingStatus": "CONFIRMED",
+            "isPrimaryUser": true
+        },
+        "appVehicleType": "CONNECTED",
+        "attributes": {
+            "lastFetched": "2022-12-22T18:58:29.700Z",
+            "model": "Cooper",
+            "year": 2022,
+            "color": 4290295992,
+            "brand": "MINI",
+            "driveTrain": "COMBUSTION",
+            "headUnitType": "ENTRY_EVO",
+            "headUnitRaw": "ENAVEVO",
+            "hmiVersion": "ID5",
+            "softwareVersionCurrent": {
+                "puStep": {
+                    "month": 3,
+                    "year": 22
+                },
+                "iStep": 580,
+                "seriesCluster": "F056"
+            },
+            "softwareVersionExFactory": {
+                "puStep": {
+                    "month": 3,
+                    "year": 22
+                },
+                "iStep": 580,
+                "seriesCluster": "F056"
+            },
+            "telematicsUnit": "ATM1",
+            "bodyType": "F56",
+            "countryOfOrigin": "DE",
+            "driverGuideInfo": {
+                "androidAppScheme": "com.mini.driversguide.row",
+                "iosAppScheme": "minidriversguide:///open",
+                "androidStoreUrl": "https://play.google.com/store/apps/details?id=com.mini.driversguide.row",
+                "iosStoreUrl": "https://apps.apple.com/de/app/id834510424?mt=8"
+            }
+        }
+    }
+]

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -167,7 +167,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
+            return EnhancedType.of(ZonedDateTime.class);
         }
 
         @Override
@@ -206,7 +206,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
         @Override
         public EnhancedType<ZonedDateTime> type() {
-            return EnhancedType.<ZonedDateTime> of(ZonedDateTime.class);
+            return EnhancedType.of(ZonedDateTime.class);
         }
 
         @Override
@@ -421,7 +421,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
                         // % values have been stored as-is
                         return new PercentType(numberState);
                     } else if (item instanceof SwitchItem) {
-                        return numberState.compareTo(BigDecimal.ZERO) != 0 ? OnOffType.ON : OnOffType.OFF;
+                        return OnOffType.from(numberState.compareTo(BigDecimal.ZERO) != 0);
                     } else if (item instanceof ContactItem) {
                         return numberState.compareTo(BigDecimal.ZERO) != 0 ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED;

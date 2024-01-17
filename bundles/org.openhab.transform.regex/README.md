@@ -20,12 +20,12 @@ The special characters `\.[]{}()*+-?^$|` have to be escaped when they should be 
 
 ### Basic Examples
 
-|         Input String        |    Regular Expression    |         Output String        | Explanation              |
-|---------------------------|------------------------|----------------------------|--------------------------|
-| `My network does not work.` | `s/work/cast/g` | `"My netcast does not cast."` | Replaces all matches of the string "work" with the string "cast". |
-| `My network does not work.` | `.*(\snot).*` | `" not"` | Returns only the first match and strips of the rest, "\s" defines a  whitespace. |
-| `temp=44.0'C` | `temp=(.*?)'C)`          | `44.0` | Matches whole string and returns the content of the captcha group `(.?)`. |
-| `48312` | `s/(.{2})(.{3})/$1.$2/g` | `48.312` | Captures 2 and 3 character, returns first capture group adds a dot and the second capture group. This divides by 1000. |
+| Input String                | Regular Expression       | Output String                 | Explanation                                                                                                            |
+| --------------------------- | ------------------------ | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `My network does not work.` | `s/work/cast/g`          | `"My netcast does not cast."` | Replaces all matches of the string "work" with the string "cast".                                                      |
+| `My network does not work.` | `.*(\snot).*`            | `" not"`                      | Returns only the first match and strips of the rest, "\s" defines a  whitespace.                                       |
+| `temp=44.0'C`               | `temp=(.*?)'C`           | `44.0`                        | Matches whole string and returns the content of the captcha group `(.?)`.                                              |
+| `48312`                     | `s/(.{2})(.{3})/$1.$2/g` | `48.312`                      | Captures 2 and 3 character, returns first capture group adds a dot and the second capture group. This divides by 1000. |
 
 ### Example In Setup
 
@@ -40,22 +40,24 @@ the regex transformation can be used to extract the value to display it on the l
 **.items**
 
 ```csv
-String  Temperature_str "Temperature [REGEX(.*=(\\d*.\\d*).*):%s °C]" {...}
+String  Temperature_str "Temperature [REGEX(.*=(\\d*\\.\\d*).*):%s °C]" {...}
 Number  Temperature "Temperature [%.1f °C]"
 ```
 
-The regex pattern is is defined as follows
+The regex pattern is is defined as follows:
 
-* `.*` match any character, zero and unlimited times
-* `=` match the equal sign literally, used to find the position
-*  `()` capture group match 
-    * `\d*` match a digit (equal to [0-9]), zero and unlimited times, the backslash has to be escaped see [string vs plain](#Differences-to-plain-Regex)
-    * `.` match the dot literally
-    * `\w*` match a word character (equal to [a-zA-Z_0-9]), zero and unlimited times, the backslash has to be escaped see [string vs plain](#Differences-to-plain-Regex)
-* `.*` match any character, zero and unlimited times
+- `.*` match any character, zero and unlimited times
+- `=` match the equal sign literally, used to find the position
+- `()` capture group match
+  - `\d*` match a digit (equal to [0-9]), zero and unlimited times
+  - `\.` match the dot literally
+  - `\w*` match a word character (equal to [a-zA-Z_0-9]), zero and unlimited times
+- `.*` match any character, zero and unlimited times
 
-The result will be `44.0` and displayed on the label as `Temperature 44.0°C`.
-A better solution would be to use the regex on the result from the binding either in a rule or when the binding allows it on the output channel. 
+Note, the backslashes have to be escaped. See [string vs plain](#differences-to-plain-regex)
+
+The result will be `44.0` and displayed on the label as `Temperature 44.0 °C`.
+A better solution would be to use the regex on the result from the binding either in a rule or when the binding allows it on the output channel.
 Thus the value `44.0` would be saved as a number.
 
 **.rules**
@@ -66,7 +68,7 @@ rule "Convert String to Item Number"
     Item Temperature_str changed
  then
     // use the transformation service to retrieve the value
-    val newValue = transform("REGEX", ".*=(\\d*.\\d*).*", Temperature_str.state.toString)
+    val newValue = transform("REGEX", ".*=(\\d*\\.\\d*).*", Temperature_str.state.toString)
 
     // post the new value to the Number Item
     Temperature.postUpdate( newValue )
@@ -100,9 +102,9 @@ Please note: This profile is a one-way transformation, i.e. only values from a d
 
 ## Further Reading
 
-* A full [introduction](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) for regular expression is available at W3School.
-* Online validator help to check the syntax of a regex and give information how to design it.
-    * [Regex 101](https://regex101.com/)
-    * [Regex R](https://regexr.com/)
-    * [ExtendsClass](https://extendsclass.com/regex-tester.html)
-    * [Softwium](https://softwium.com/regex-explainer/)
+- A full [introduction](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) for regular expression is available at W3School.
+- Online validator help to check the syntax of a regex and give information how to design it.
+  - [Regex 101](https://regex101.com/)
+  - [Regex R](https://regexr.com/)
+  - [ExtendsClass](https://extendsclass.com/regex-tester.html)
+  - [Softwium](https://softwium.com/regex-explainer/)

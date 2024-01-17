@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +33,7 @@ import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -233,5 +235,30 @@ class ThingDiscoveryServiceTest {
         assertThat(fixture.getThingTypeUID(device), is(BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL));
         device.deviceModel = "TWINGUARD";
         assertThat(fixture.getThingTypeUID(device), is(BoschSHCBindingConstants.THING_TYPE_TWINGUARD));
+    }
+
+    @Test
+    void testAddUserDefinedStates() {
+        mockBridgeCalls();
+
+        ArrayList<UserDefinedState> userStates = new ArrayList<>();
+
+        UserDefinedState userState1 = new UserDefinedState();
+        userState1.setId(UUID.randomUUID().toString());
+        userState1.setName("first defined state");
+        userState1.setState(true);
+        UserDefinedState userState2 = new UserDefinedState();
+        userState2.setId(UUID.randomUUID().toString());
+        userState2.setName("another defined state");
+        userState2.setState(false);
+        userStates.add(userState1);
+        userStates.add(userState2);
+
+        verify(discoveryListener, never()).thingDiscovered(any(), any());
+
+        fixture.addUserStates(userStates);
+
+        // two calls for the two devices expected
+        verify(discoveryListener, times(2)).thingDiscovered(any(), any());
     }
 }

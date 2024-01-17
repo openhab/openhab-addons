@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,8 +71,16 @@ public class RollershutterValue extends Value {
         this.upCommandString = upCommandString;
         this.downCommandString = downCommandString;
         this.stopCommandString = stopCommandString;
-        this.upStateString = upStateString;
-        this.downStateString = downStateString;
+        if (upStateString == null) {
+            this.upStateString = upCommandString;
+        } else {
+            this.upStateString = upStateString;
+        }
+        if (downStateString == null) {
+            this.downStateString = downCommandString;
+        } else {
+            this.downStateString = downStateString;
+        }
         this.inverted = inverted;
         this.transformExtentsToString = transformExtentsToString;
     }

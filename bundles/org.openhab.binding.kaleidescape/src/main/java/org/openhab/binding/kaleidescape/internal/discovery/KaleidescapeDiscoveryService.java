@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,7 +74,7 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
     private static final String STRATO_S = "Strato S";
     private static final String DISC_VAULT = "Disc Vault";
 
-    private static final Set<String> ALLOWED_DEVICES = new HashSet<String>(
+    private static final Set<String> ALLOWED_DEVICES = new HashSet<>(
             Arrays.asList(PLAYER, CINEMA_ONE, ALTO, STRATO, STRATO_S, DISC_VAULT));
 
     @Nullable
@@ -85,7 +85,7 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
      */
     private boolean scanning;
 
-    private Set<String> foundIPs = new HashSet<String>();
+    private Set<String> foundIPs = new HashSet<>();
 
     @Activate
     public KaleidescapeDiscoveryService() {
