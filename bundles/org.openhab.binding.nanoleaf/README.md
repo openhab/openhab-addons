@@ -104,6 +104,9 @@ Compare the following output with the right picture at the beginning of the arti
 
 ```
 
+As mentioned above this only works for the squared panels.
+It is recommended to instead use the layout-channel described below which works for all designs.
+
 ## State
 
 The state channel shows an image of the panels on the wall.
