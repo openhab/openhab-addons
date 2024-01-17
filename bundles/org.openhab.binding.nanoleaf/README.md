@@ -36,7 +36,7 @@ You can set the **color** for each panel and in the case of a Nanoleaf Canvas or
 | Lines                  | NL59 | Lines                                                      |     X     |               |
 | Canvas                 | NL29 | Squares                                                    |     X     |       X       |
 
-x  = Supported  (-) = unknown (no device available to test)
+  x = Supported  (-) = unknown (no device available to test)
 
 ## Discovery
 
@@ -103,9 +103,6 @@ Compare the following output with the right picture at the beginning of the arti
                                     41451                                     
 
 ```
-
-As mentioned above this only works for the squared panels.
-It is recommended to instead use the layout-channel described below which works for all designs.
 
 ## State
 
@@ -175,7 +172,7 @@ The controller bridge has the following channels:
 | rhythmActive        | Switch             | Activity state of the rhythm module                                                                       | Yes       |
 | rhythmMode          | Number             | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                             | No        |
 | state               | Image              | Shows the current state of your panels with colors.                                                       | Yes       |
-| swipe               | Trigger            | [Canvas / Shapes Only] Detects Swipes over the panel. LEFT, RIGHT, UP, DOWN events are supported.         | Yes       |
+| swipe               | Trigger            | [Canvas / Shapes Only] Detects Swipes over the panel.LEFT, RIGHT, UP, DOWN events are supported.          | Yes       |
 
 A lightpanel thing has the following channels:
 
@@ -224,9 +221,9 @@ The following files provide a full example for a configuration (using a things f
 
 ```java
 Bridge nanoleaf:controller:MyLightPanels @ "mylocation" [ address="192.168.1.100", port=16021, authToken="AbcDefGhiJk879LmNopqRstUv1234WxyZ", refreshInterval=60 ] {
-        Thing lightpanel 135 [ id=135 ]
-        Thing lightpanel 158 [ id=158 ]
-        }
+    Thing lightpanel 135 [ id=135 ]
+    Thing lightpanel 158 [ id=158 ]
+}
 ```
 
 If you define your device statically in the thing file, auto-discovery of the same thing is suppressed by using
@@ -254,23 +251,23 @@ Note: If you auto-discovered your things and items:
 
 ```java
 Switch NanoleafPower "Nanoleaf" { channel="nanoleaf:controller:MyLightPanels:color" }
-        Color NanoleafColor "Color" { channel="nanoleaf:controller:MyLightPanels:color" }
-        Dimmer NanoleafBrightness "Brightness [%.0f]" { channel="nanoleaf:controller:MyLightPanels:color" }
-        String NanoleafHue "Hue [%s]"
-        String NanoleafSaturation "Saturation [%s]"
-        Dimmer NanoleafColorTemp "Color temperature [%.0f]" { channel="nanoleaf:controller:MyLightPanels:colorTemperature" }
-        Number:Temperature NanoleafColorTempAbs "Color temperature [%d K]" { channel="nanoleaf:controller:MyLightPanels:colorTemperatureAbs" }
-        String NanoleafColorMode "Color mode [%s]" { channel="nanoleaf:controller:MyLightPanels:colorMode" }
-        String NanoleafEffect "Effect" { channel="nanoleaf:controller:MyLightPanels:effect" }
-        Switch NanoleafRhythmState "Rhythm connected [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmState" }
-        Switch NanoleafRhythmActive "Rhythm active [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmActive" }
-        Number NanoleafRhythmSource  "Rhythm source [%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmMode" }
+Color NanoleafColor "Color" { channel="nanoleaf:controller:MyLightPanels:color" }
+Dimmer NanoleafBrightness "Brightness [%.0f]" { channel="nanoleaf:controller:MyLightPanels:color" }
+String NanoleafHue "Hue [%s]"
+String NanoleafSaturation "Saturation [%s]"
+Dimmer NanoleafColorTemp "Color temperature [%.0f]" { channel="nanoleaf:controller:MyLightPanels:colorTemperature" }
+Number:Temperature NanoleafColorTempAbs "Color temperature [%d K]" { channel="nanoleaf:controller:MyLightPanels:colorTemperatureAbs" }
+String NanoleafColorMode "Color mode [%s]" { channel="nanoleaf:controller:MyLightPanels:colorMode" }
+String NanoleafEffect "Effect" { channel="nanoleaf:controller:MyLightPanels:effect" }
+Switch NanoleafRhythmState "Rhythm connected [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmState" }
+Switch NanoleafRhythmActive "Rhythm active [MAP(nanoleaf.map):%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmActive" }
+Number NanoleafRhythmSource  "Rhythm source [%s]" { channel="nanoleaf:controller:MyLightPanels:rhythmMode" }
 
 // note that the next to items use the exact same channel but the two different types Color and Dimmer to control different parameters
-        Color PanelColor "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:color" }
-        Dimmer Panel1Brightness "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:color" }
-        Switch Panel2Color "Panel 2" { channel="nanoleaf:lightpanel:MyLightPanels:158:color" }
-        Switch NanoleafRainbowScene "Show Rainbow Scene"
+Color PanelColor "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:color" }
+Dimmer Panel1Brightness "Panel 1" { channel="nanoleaf:lightpanel:MyLightPanels:135:color" }
+Switch Panel2Color "Panel 2" { channel="nanoleaf:lightpanel:MyLightPanels:158:color" }
+Switch NanoleafRainbowScene "Show Rainbow Scene"
 ```
 
 ### nanoleaf.sitemap
@@ -309,69 +306,69 @@ sitemap nanoleaf label="Nanoleaf"
 
 ```java
 rule "UpdateHueAndSat"
-        when Item NanoleafColor changed
-        then
-        val hsbValues = NanoleafColor.state as HSBType
-        NanoleafHue.postUpdate(hsbValues.hue.intValue)
-        NanoleafSaturation.postUpdate(hsbValues.saturation.intValue)
-        end
+when Item NanoleafColor changed
+then
+    val hsbValues = NanoleafColor.state as HSBType    
+    NanoleafHue.postUpdate(hsbValues.hue.intValue)
+    NanoleafSaturation.postUpdate(hsbValues.saturation.intValue)
+end
 
-        rule "ShowRainbowScene"
-        when Item NanoleafRainbowScene received command ON
-        then
-        val saturation = new PercentType(75)
-        val brightness = new PercentType(90)
-        val long pause = 200
+rule "ShowRainbowScene"
+when Item NanoleafRainbowScene received command ON
+then
+    val saturation = new PercentType(75)
+    val brightness = new PercentType(90)
+    val long pause = 200
 
-        var hue = 0
-        var direction = 1
+    var hue = 0
+    var direction = 1
 
-        while(NanoleafRainbowScene.state == ON) {
-        Thread::sleep(pause)
+    while(NanoleafRainbowScene.state == ON) {        
+        Thread::sleep(pause)        
         hue = hue + (5 * direction)
         if(hue >= 359) {
-        hue = 359
-        direction = direction * -1
+            hue = 359
+            direction = direction * -1            
         }
         else if (hue < 0) {
-        hue = 0
-        direction = direction * -1
-        }
+            hue = 0
+            direction = direction * -1            
+        }        
         // replace NanoleafColor with Panel1Color to run rainbow on a single panel
         NanoleafColor.sendCommand(new HSBType(new DecimalType(hue), saturation, brightness))
-        }
-        end
+    }
+end
 
-        rule "Nanoleaf canvas touch detection Panel 2"
-        when
-        Channel "nanoleaf:lightpanel:MyLightPanels:158:tap" triggered SHORT_PRESS
-        then
-        logInfo("CanvasTouch", "Nanoleaf Canvas Panel 2 was touched once")
+rule "Nanoleaf canvas touch detection Panel 2"
+when
+    Channel "nanoleaf:lightpanel:MyLightPanels:158:tap" triggered SHORT_PRESS
+then
+    logInfo("CanvasTouch", "Nanoleaf Canvas Panel 2 was touched once")
 
-        if (My_Main_Light.state == OFF) {
+    if (My_Main_Light.state == OFF) {
         sendCommand(My_Main_Light,ON)
-        } else {
+    } else {
         sendCommand(My_Main_Light,OFF)
-        }
-        end
+    }
+end
 
-        rule "Nanoleaf double tap toggles power of device"
-        when
-        Channel "nanoleaf:lightpanel:MyLightPanels:135:tap" triggered DOUBLE_PRESS
-        then
-        logInfo("CanvasTouch", "Nanoleaf Canvas Panel 1 was touched twice. Toggle Power of whole canvas.")
+rule "Nanoleaf double tap toggles power of device"
+when
+    Channel "nanoleaf:lightpanel:MyLightPanels:135:tap" triggered DOUBLE_PRESS
+then
+    logInfo("CanvasTouch", "Nanoleaf Canvas Panel 1 was touched twice. Toggle Power of whole canvas.")
 
-        if (NanoleafPower.state == OFF ) {
+    if (NanoleafPower.state == OFF ) {
         sendCommand(NanoleafPower,ON)
-        } else {
+    } else {
         sendCommand(NanoleafPower,OFF)
-        }
-        end
+    }
+end
 
 // This is a complex rule controlling an item (e.g. a lamp) by swiping the nanoleaf but only if the swipe action has been triggered to become active.
 
-        var brightnessMode = null
-        var oldEffect = null
+var brightnessMode = null
+var oldEffect = null
 
 /*
 
@@ -392,50 +389,50 @@ tapping different panels before.
 
 */
 
-        rule "Enable swipe brightness mode"
-        when
-        Channel "nanoleaf:lightpanel:645E3A484FFF:31104:tap" triggered SHORT_PRESSED
-        then
-        if (brightnessMode == OFF || brightnessMode === null) {
+rule "Enable swipe brightness mode"
+when
+    Channel "nanoleaf:lightpanel:645E3A484FFF:31104:tap" triggered SHORT_PRESSED
+then
+    if (brightnessMode == OFF || brightnessMode === null) {
         brightnessMode = ON
         oldEffect = SZNanoCanvas_Effect.state.toString
         SZNanoCanvas_Color.sendCommand("0,100,100")
-        } else {
+    } else {
         brightnessMode = OFF
         sendCommand("SZNanoCanvas_Effect", oldEffect)
-        }
-        end
+    }    
+end
 
-        rule "Swipe Nano to control brightness"
-        when
-        Channel "nanoleaf:controller:645E3A484FFF:swipe" triggered
-        then
-        // Note: you can even control a rollershutter instead of a light dimmer
-        var dimItem = MyLampDimmerItem
-
-        // only process the swipe if brightness mode is active
-        if (brightnessMode == ON) {
+rule "Swipe Nano to control brightness"
+when
+    Channel "nanoleaf:controller:645E3A484FFF:swipe" triggered 
+then
+    // Note: you can even control a rollershutter instead of a light dimmer
+    var dimItem = MyLampDimmerItem
+     
+    // only process the swipe if brightness mode is active
+    if (brightnessMode == ON) {
         var currentBrightness = dimItem.state as Number
         switch (receivedEvent) {
-        case "LEFT": {
-        if (currentBrightness >= 10) {
-        currentBrightness = currentBrightness  - 10
-        } else {
-        currentBrightness = 0;
-        }
-        }
-        case "RIGHT": {
-        if (currentBrightness <= 90) {
-        currentBrightness = currentBrightness  + 10
-        } else {
-        currentBrightness = 100;
-        }
+            case "LEFT": {
+                if (currentBrightness >= 10) {
+                    currentBrightness = currentBrightness  - 10
+                } else {
+                    currentBrightness = 0;
+                }
+            }
+            case "RIGHT": {
+                if (currentBrightness <= 90) {
+                    currentBrightness = currentBrightness  + 10
+                } else {
+                    currentBrightness = 100;
+                }
 
-        }
+            }
         }
         sendCommand(dimItem, currentBrightness)
-        }
-        end
+    }
+end
 ```
 
 ### nanoleaf.map
