@@ -31,7 +31,6 @@ public class DoorbirdSession {
     private @Nullable String sessionId;
     private @Nullable String decryptionKey;
 
-    @SuppressWarnings("null")
     public DoorbirdSession(String infoJson) throws JsonSyntaxException {
         GetsessionDTO session = DoorbirdAPI.fromJson(infoJson, GetsessionDTO.class);
         if (session != null) {
