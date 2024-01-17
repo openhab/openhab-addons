@@ -1,7 +1,5 @@
 # Growatt Binding
 
-![Growatt](doc/growatt.png)
-
 This binding supports the integration of Growatt solar inverters.
 
 It depends on the independent [Grott](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor) proxy server application.
