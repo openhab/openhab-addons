@@ -147,6 +147,10 @@ public class FPPStatus {
     @Expose
     public FPPPlaylist current_playlist;
 
+    @SerializedName("bridging")
+    @Expose
+    public boolean bridging;
+
     // public String getStatus() {
     // return status_name;
     // }

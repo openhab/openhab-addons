@@ -23,6 +23,10 @@
 			<channel id="fppSecRemaining" typeId="fppSecRemaining"/>
 			<channel id="fppUptime" typeId="fppUptime"/>
 			<channel id="fppUUID" typeId="fppUUID"/>
+			<channel id="fppBridging" typeId="fppBridging"/>
+			<channel id="fppMultisync" typeId="fppMultisync"/>
+			<channel id="fppTesting" typeId="fppTesting"/>
+			<channel id="fppLastPlaylist" typeId="fppLastPlaylist"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:player"/>
 	</thing-type>
@@ -95,5 +99,28 @@
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>FPP Volume of the sound</description>
+	</channel-type>
+	<channel-type id="fppBridging" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Bridging</label>
+		<description>FPP Is Bridging</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppMultisync" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Multisync</label>
+		<description>FPP Multisync</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppTesting">
+		<item-type>Switch</item-type>
+		<label>Testing</label>
+		<description>FPP Is Testing</description>
+	</channel-type>
+	<channel-type id="fppLastPlaylist">
+		<item-type>String</item-type>
+		<label>Last Run Playlist</label>
+		<description>FPP Last Run Playlist</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

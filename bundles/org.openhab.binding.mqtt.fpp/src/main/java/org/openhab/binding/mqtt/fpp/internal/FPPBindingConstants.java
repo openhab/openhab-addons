@@ -51,8 +51,14 @@ public class FPPBindingConstants {
     public static final String CHANNEL_UPTIME = "fppUptime";
     public static final String CHANNEL_UUID = "fppUUID";
     public static final String CHANNEL_VERSION = "fppVersion";
+    public static final String CHANNEL_BRIDGING = "fppBridging";
+    public static final String CHANNEL_MULTISYNC = "fppMultisync";
+    public static final String CHANNEL_TESTING = "fppTesting";
+    public static final String CHANNEL_LAST_PLAYLIST = "fppLastPlaylist";
 
     // Status
     public static final String CONNECTED = "connected";
     public static final String CHANNEL_STATUS_NAME = "status_name";
+
+    public static final String TESTING = "testing";
 }
