@@ -175,7 +175,7 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
 
     private String GetTestMode(int enable) {
         return "{\"mode\":\"RGBChase\",\"subMode\":\"RGBChase-RGB\",\"cycleMS\":1000,\"colorPattern\":\"FF000000FF000000FF\",\"enabled\":"
-                + enable + ",\"channelSet\": \"1-520\",\"channelSetType\": \"channelRange\"}";
+                + enable + ",\"channelSet\": \"1-1048576\",\"channelSetType\": \"channelRange\"}";
     }
 
     @Override
