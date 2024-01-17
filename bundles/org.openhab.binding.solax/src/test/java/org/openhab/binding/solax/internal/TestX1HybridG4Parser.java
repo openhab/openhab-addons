@@ -13,13 +13,13 @@
 package org.openhab.binding.solax.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.solax.internal.SolaxBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterData;
 import org.openhab.binding.solax.internal.model.InverterType;
+import org.openhab.binding.solax.internal.model.InverterWorkMode;
 import org.openhab.binding.solax.internal.model.parsers.RawDataParser;
 
 /**
@@ -71,7 +71,7 @@ public class TestX1HybridG4Parser {
         assertEquals(65, data.getPV2Power()); // [9]
 
         assertEquals(2, data.getInverterWorkModeCode()); // [10]
-        assertEquals(WORKMODE_NORMAL, data.getInverterWorkMode()); // [10]
+        assertEquals(InverterWorkMode.NORMAL, data.getInverterWorkMode()); // [10]
 
         assertEquals(121.8, data.getBatteryVoltage()); // [14]
         assertEquals(5, data.getBatteryCurrent()); // [15]
