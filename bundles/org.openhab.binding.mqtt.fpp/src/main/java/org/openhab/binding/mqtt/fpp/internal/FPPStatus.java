@@ -151,6 +151,10 @@ public class FPPStatus {
     @Expose
     public boolean bridging;
 
+    @SerializedName("scheduler")
+    @Expose
+    public FPPScheduler scheduler;
+
     // public String getStatus() {
     // return status_name;
     // }

@@ -27,6 +27,13 @@
 			<channel id="fppMultisync" typeId="fppMultisync"/>
 			<channel id="fppTesting" typeId="fppTesting"/>
 			<channel id="fppLastPlaylist" typeId="fppLastPlaylist"/>
+			<channel id="fppSchedulerStatus" typeId="fppSchedulerStatus"/>
+			<channel id="fppSchedulerCurrentPlaylist" typeId="fppSchedulerCurrentPlaylist"/>
+			<channel id="fppSchedulerCurrentPlaylistStart" typeId="fppSchedulerCurrentPlaylistStart"/>
+			<channel id="fppSchedulerCurrentPlaylistEnd" typeId="fppSchedulerCurrentPlaylistEnd"/>
+			<channel id="fppSchedulerCurrentPlaylistStopType" typeId="fppSchedulerCurrentPlaylistStopType"/>
+			<channel id="fppSchedulerNextPlaylist" typeId="fppSchedulerNextPlaylist"/>
+			<channel id="fppSchedulerNextPlaylistStart" typeId="fppSchedulerNextPlaylistStart"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:player"/>
 	</thing-type>
@@ -117,10 +124,52 @@
 		<label>Testing</label>
 		<description>FPP Is Testing</description>
 	</channel-type>
-	<channel-type id="fppLastPlaylist">
+	<channel-type id="fppLastPlaylist" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Run Playlist</label>
 		<description>FPP Last Run Playlist</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppSchedulerStatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Scheduler Status</label>
+		<description>FPP Scheduler Status</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppSchedulerCurrentPlaylist">
+		<item-type>String</item-type>
+		<label>Scheduler Current Playlist</label>
+		<description>FPP Current Playlist</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppSchedulerCurrentPlaylistStart" advanced="true">
+		<item-type>String</item-type>
+		<label>Scheduler Current Playlist Start</label>
+		<description>FPP Scheduler Current Playlist Start Time</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppSchedulerCurrentPlaylistEnd" advanced="true">
+		<item-type>String</item-type>
+		<label>Scheduler Current Playlist End</label>
+		<description>FPP Scheduler Current Playlist End Time</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppSchedulerCurrentPlaylistStopType" advanced="true">
+		<item-type>String</item-type>
+		<label>Scheduler Current Playlist Stop Type</label>
+		<description>FPP Scheduler Current Playlist Stop Type</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppSchedulerNextPlaylist" advanced="true">
+		<item-type>String</item-type>
+		<label>Scheduler Next Playlist</label>
+		<description>FPP Scheduler Next Playlist</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppSchedulerNextPlaylistStart" advanced="true">
+		<item-type>String</item-type>
+		<label>Scheduler Next Playlist Start</label>
+		<description>FPP Scheduler Next Playlist Start Time</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

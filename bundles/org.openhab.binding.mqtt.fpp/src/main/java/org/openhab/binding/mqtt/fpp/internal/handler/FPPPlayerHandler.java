@@ -68,11 +68,9 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private @Nullable MqttBrokerConnection connection;
-    private ThingRegistry thingRegistry;
 
     private String fullStatusTopic = "";
     private String fullVersionTopic = "";
-    private String fullCommandTopic = "";
     private int lastKnownVolume = 50;
     private String lastPlaylist = "";
     private ConfigOptions config = new ConfigOptions();
@@ -81,11 +79,9 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
 
     public FPPPlayerHandler(Thing thing, ThingRegistry thingRegistry) {
         super(thing);
-        this.thingRegistry = thingRegistry;
     }
 
     private void processIncomingState(String messageJSON) {
-        // Need to handle State and Level at the same time to process level=0 as off//
         FPPStatus data = gson.fromJson(messageJSON, FPPStatus.class);
         updateState(CHANNEL_STATUS, new StringType(data.status_name));
         updateState(CHANNEL_PLAYER, data.status == 1 ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
@@ -100,9 +96,23 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
         updateState(CHANNEL_SEC_REMAINING, new QuantityType<>(new BigDecimal(data.seconds_remaining), Units.SECOND));
         updateState(CHANNEL_UPTIME, new QuantityType<>(new BigDecimal(data.uptimeTotalSeconds), Units.SECOND));
         updateState(CHANNEL_BRIDGING, OnOffType.from(data.bridging));
-        updateState(CHANNEL_MULTISYNC, OnOffType.from(data.multisync));//
-
+        updateState(CHANNEL_MULTISYNC, OnOffType.from(data.multisync));
         updateState(CHANNEL_TESTING, data.status_name.equals(TESTING) ? OnOffType.ON : OnOffType.OFF);
+
+        updateState(CHANNEL_SCHEDULERSTATUS, new StringType(data.scheduler.status));
+        updateState(CHANNEL_SCHEDULERNEXTPLAYLIST, new StringType(data.scheduler.nextPlaylist.playlistName));
+        updateState(CHANNEL_SCHEDULERNEXTPLAYLISTSTART,
+                new StringType(data.scheduler.nextPlaylist.scheduledStartTimeStr));
+
+        if (data.scheduler.currentPlaylist != null) {
+            updateState(CHANNEL_SCHEDULERCURRENTPLAYLIST, new StringType(data.scheduler.currentPlaylist.playlistName));
+            updateState(CHANNEL_SCHEDULERCURRENTPLAYLISTSTART,
+                    new StringType(data.scheduler.currentPlaylist.playlistName));
+            updateState(CHANNEL_SCHEDULERCURRENTPLAYLISTEND,
+                    new StringType(data.scheduler.currentPlaylist.playlistName));
+            updateState(CHANNEL_SCHEDULERCURRENTPLAYLISTSTOPTYPE,
+                    new StringType(data.scheduler.currentPlaylist.playlistName));
+        }
 
         if (!data.current_playlist.playlist.isEmpty()) {
             lastPlaylist = data.current_playlist.playlist;
@@ -150,7 +160,6 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
             }
             if (volume != null) {
                 lastKnownVolume = volume;
-                // { "volume": 34 }
                 executePost("/api/system/volume", "{\"volume\":" + lastKnownVolume + "}");
                 updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
             }
@@ -175,8 +184,6 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
 
         fullStatusTopic = config.playerMQTT + "/" + STATUS_TOPIC;
         fullVersionTopic = config.playerMQTT + "/" + VERSION_TOPIC;
-        // Need to remove the lowercase x from 0x12AB in case it contains all numbers
-
         bridgeStatusChanged(getBridgeStatus());
     }
 
