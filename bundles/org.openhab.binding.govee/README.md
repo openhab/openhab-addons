@@ -137,32 +137,32 @@ Thing channel setup:
 
 ```java
 UID: govee:govee-light:33_5F_60_74_F4_08_77_21
-        label: Govee H6159 RGB Light Strip H6159 (192.168.178.173)
-        thingTypeUID: govee:govee-light
-        configuration:
-        deviceType: H6159
-        wifiSoftwareVersion: 1.02.11
-        hostname: 192.168.162.233
-        macAddress: 33:5F:60:74:F4:08:66:21
-        wifiHardwareVersion: 1.00.10
-        refreshInterval: 5
-        productName: H6159 RGB Light Strip
-        channels:
-        - id: color
-        channelTypeUID: system:color
-        label: Color
-        description: Controls the color of the light
-        configuration: {}
-        - id: color-temperature
-        channelTypeUID: system:color-temperature
-        label: Color Temperature
-        description: Controls the color temperature of the light from 0 (cold) to 100 (warm)
-        configuration: {}
-        - id: color-temperature-abs
-        channelTypeUID: govee:color-temperature-abs
-        label: Absolute Color Temperature
-        description: Controls the color temperature of the light in Kelvin
-        configuration: {}
+label: Govee H6159 RGB Light Strip H6159 (192.168.178.173)
+thingTypeUID: govee:govee-light
+configuration:
+deviceType: H6159
+wifiSoftwareVersion: 1.02.11
+hostname: 192.168.162.233
+macAddress: 33:5F:60:74:F4:08:66:21
+wifiHardwareVersion: 1.00.10
+refreshInterval: 5
+productName: H6159 RGB Light Strip
+channels:
+- id: color
+channelTypeUID: system:color
+label: Color
+description: Controls the color of the light
+configuration: {}
+- id: color-temperature
+channelTypeUID: system:color-temperature
+label: Color Temperature
+description: Controls the color temperature of the light from 0 (cold) to 100 (warm)
+configuration: {}
+- id: color-temperature-abs
+channelTypeUID: govee:color-temperature-abs
+label: Absolute Color Temperature
+description: Controls the color temperature of the light in Kelvin
+configuration: {}
 ```
 
 # Troubleshooting
