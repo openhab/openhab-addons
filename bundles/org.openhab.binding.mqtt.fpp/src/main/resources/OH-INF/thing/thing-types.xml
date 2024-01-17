@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mqtt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="player">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="broker"/>
+		</supported-bridge-type-refs>
+		<label>FPP Player</label>
+		<description>FPP Player.</description>
+		<channels>
+			<channel id="fppPlayer" typeId="fppPlayer"/>
+			<channel id="fppStatus" typeId="fppStatus"/>
+			<channel id="fppVolume" typeId="fppVolume"/>
+			<channel id="fppVersion" typeId="fppVersion"/>
+			<channel id="fppMode" typeId="fppMode"/>
+			<channel id="fppCurrentSequence" typeId="fppCurrentSequence"/>
+			<channel id="fppCurrentSong" typeId="fppCurrentSong"/>
+			<channel id="fppCurrentPlaylist" typeId="fppCurrentPlaylist"/>
+			<channel id="fppSecPlayed" typeId="fppSecPlayed"/>
+			<channel id="fppSecRemaining" typeId="fppSecRemaining"/>
+			<channel id="fppUptime" typeId="fppUptime"/>
+			<channel id="fppUUID" typeId="fppUUID"/>
+		</channels>
+		<config-description-ref uri="thing-type:mqtt:player"/>
+	</thing-type>
+	<channel-type id="fppStatus">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>FPP Player Status</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppVersion" advanced="true">
+		<item-type>String</item-type>
+		<label>Version</label>
+		<description>FPP Version</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>FPP Player Mode</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppCurrentSequence">
+		<item-type>String</item-type>
+		<label>Current Sequence</label>
+		<description>FPP Current Sequence</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppCurrentSong">
+		<item-type>String</item-type>
+		<label>Current Song</label>
+		<description>FPP Current Song</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppCurrentPlaylist">
+		<item-type>String</item-type>
+		<label>Current Playlist</label>
+		<description>FPP Current Playlist</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppSecPlayed" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Seconds Played</label>
+		<description>FPP Seconds Played</description>
+		<state readOnly="true" pattern="%.1f sec"/>
+	</channel-type>
+	<channel-type id="fppSecRemaining" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Seconds Remaining</label>
+		<description>FPP Seconds Remaining</description>
+		<state readOnly="true" pattern="%.1f sec"/>
+	</channel-type>
+	<channel-type id="fppUptime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>FPP Uptime</label>
+		<description>FPP uptime (time after start)</description>
+		<state readOnly="true" pattern="%.1f sec"/>
+	</channel-type>
+	<channel-type id="fppUUID" advanced="true">
+		<item-type>String</item-type>
+		<label>UUID</label>
+		<description>FPP Hardware UUID</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fppPlayer">
+		<item-type>Player</item-type>
+		<label>Player</label>
+		<description>FPP Player Control</description>
+	</channel-type>
+	<channel-type id="fppVolume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>FPP Volume of the sound</description>
+	</channel-type>
+</thing:thing-descriptions>
