@@ -74,6 +74,7 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
     private String fullVersionTopic = "";
     private String fullCommandTopic = "";
     private int lastKnownVolume = 50;
+    private String lastPlaylist = "";
     private ConfigOptions config = new ConfigOptions();
 
     private final Gson gson = new Gson();
@@ -98,18 +99,14 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
         updateState(CHANNEL_SEC_PLAYED, new QuantityType<>(new BigDecimal(data.seconds_played), Units.SECOND));
         updateState(CHANNEL_SEC_REMAINING, new QuantityType<>(new BigDecimal(data.seconds_remaining), Units.SECOND));
         updateState(CHANNEL_UPTIME, new QuantityType<>(new BigDecimal(data.uptimeTotalSeconds), Units.SECOND));
-    }
+        updateState(CHANNEL_BRIDGING, OnOffType.from(data.bridging));
+        updateState(CHANNEL_MULTISYNC, OnOffType.from(data.multisync));//
 
-    void handleLevelColour(Command command) {
-        if (command instanceof OnOffType) {
+        updateState(CHANNEL_TESTING, data.status_name.equals(TESTING) ? OnOffType.ON : OnOffType.OFF);
 
-        } else if (command instanceof IncreaseDecreaseType) {
-
-            // sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel.intValue() + "}");
-            return;
-        } else if (command instanceof PercentType percentType) {
-            // sendMQTT("{\"state\":\"ON\",\"level\":" + command + "}");
-            return;
+        if (!data.current_playlist.playlist.isEmpty()) {
+            lastPlaylist = data.current_playlist.playlist;
+            updateState(CHANNEL_LAST_PLAYLIST, new StringType(lastPlaylist));
         }
     }
 
@@ -123,7 +120,9 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
             if (command == PlayPauseType.PAUSE || command == OnOffType.OFF) {
                 executeGet("/api/playlists/stop");
             } else if (command == PlayPauseType.PLAY || command == OnOffType.ON) {
-
+                if (!lastPlaylist.isEmpty()) {
+                    executeGet("/api/playlist/" + lastPlaylist + "/start");
+                }
             } else if (command == NextPreviousType.NEXT) {
                 executeGet("/api/command/Next Playlist Item");
             } else if (command == NextPreviousType.PREVIOUS) {
@@ -156,6 +155,18 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
                 updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
             }
         }
+        if (channelId.equals(CHANNEL_TESTING)) {
+            if (command == OnOffType.OFF) {
+                executePost("/api/testmode", GetTestMode(0));
+            } else if (command == OnOffType.ON) {
+                executePost("/api/testmode", GetTestMode(1));
+            }
+        }
+    }
+
+    private String GetTestMode(int enable) {
+        return "{\"mode\":\"RGBChase\",\"subMode\":\"RGBChase-RGB\",\"cycleMS\":1000,\"colorPattern\":\"FF000000FF000000FF\",\"enabled\":"
+                + enable + ",\"channelSet\": \"1-520\",\"channelSetType\": \"channelRange\"}";
     }
 
     @Override
