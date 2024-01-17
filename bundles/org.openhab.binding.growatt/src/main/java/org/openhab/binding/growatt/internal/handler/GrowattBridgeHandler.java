@@ -21,7 +21,7 @@ import org.openhab.binding.growatt.internal.cloud.GrowattCloud;
 import org.openhab.binding.growatt.internal.config.GrowattBridgeConfiguration;
 import org.openhab.binding.growatt.internal.discovery.GrowattDiscoveryService;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
-import org.openhab.binding.growatt.internal.gson.GrottIntegerDeserializer;
+import org.openhab.binding.growatt.internal.dto.helper.GrottIntegerDeserializer;
 import org.openhab.binding.growatt.internal.servlet.GrowattHttpServlet;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;

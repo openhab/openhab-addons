@@ -41,7 +41,8 @@ import org.openhab.binding.growatt.internal.cloud.GrowattCloud;
 import org.openhab.binding.growatt.internal.config.GrowattBridgeConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
 import org.openhab.binding.growatt.internal.dto.GrottValues;
-import org.openhab.binding.growatt.internal.gson.GrottIntegerDeserializer;
+import org.openhab.binding.growatt.internal.dto.helper.GrottIntegerDeserializer;
+import org.openhab.binding.growatt.internal.dto.helper.GrottValuesHelper;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -195,7 +196,7 @@ public class GrowattTest {
         assertEquals(65503878, grottValues.total_work_time);
 
         Map<String, QuantityType<?>> channelStates = null;
-        channelStates = grottValues.getChannelStates();
+        channelStates = GrottValuesHelper.getChannelStates(grottValues);
 
         assertNotNull(channelStates);
         assertEquals(29, channelStates.size());
@@ -355,7 +356,7 @@ public class GrowattTest {
         GrottValues grottValues = loadGrottValues("3phase");
         assertNotNull(grottValues);
 
-        Map<String, QuantityType<?>> channelStates = grottValues.getChannelStates();
+        Map<String, QuantityType<?>> channelStates = GrottValuesHelper.getChannelStates(grottValues);
         assertNotNull(channelStates);
         assertEquals(64, channelStates.size());
 
@@ -372,7 +373,7 @@ public class GrowattTest {
         GrottValues grottValues = loadGrottValues("meter");
         assertNotNull(grottValues);
 
-        Map<String, QuantityType<?>> channelStates = grottValues.getChannelStates();
+        Map<String, QuantityType<?>> channelStates = GrottValuesHelper.getChannelStates(grottValues);
         assertNotNull(channelStates);
         assertEquals(16, channelStates.size());
 

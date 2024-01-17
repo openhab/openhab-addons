@@ -7,7 +7,7 @@ This binding supports the integration of Growatt solar inverters.
 It depends on the independent [Grott](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor) proxy server application.
 This intercepts the logging data that the Growatt inverter data logger normally sends directly to the Growatt cloud server.
 It sends the original (encoded) data onwards to the cloud server (so the cloud server will not notice anything different).
-But it also sends a (decoded) copy to OpenHAB as well.
+But it also sends a (decoded) copy to openHAB as well.
 
 ## Supported Things
 
@@ -23,12 +23,12 @@ However if a bridge exists and it receives inverter data, then a matching invert
 
 ## Thing Configuration
 
-The `bridge` thing requires configuration of the user credentials:
+The `bridge` thing allows configuration of the user credentials, which are only required if you want to send inverter commands via the Growatt cloud server:
 
-| Name      | Type    | Description                                                                              | Required |
-|-----------|---------|------------------------------------------------------------------------------------------|----------|
-| userName  | text    | User name for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)  | no       |
-| password  | text    | Password for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)   | no       |
+| Name      | Type    | Description                                                                              | Advanced |Required |
+|-----------|---------|------------------------------------------------------------------------------------------|----------|---------|
+| userName  | text    | User name for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)  | yes      | no      |
+| password  | text    | Password for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)   | yes      | no      |
 
 The `inverter` thing requires configuration of its serial number resp. `deviceId`:
 
@@ -41,7 +41,7 @@ The `inverter` thing requires configuration of its serial number resp. `deviceId
 The `bridge` thing has no channels.
 
 The `inverter` thing supports many possible channels relating to solar generation and consumption.
-All channels are read only.
+All channels are read-only.
 Depending on the inverter model, and its configuration, not all of the channels will be present.
 The list of all possible channels is as follows:
 
@@ -233,7 +233,7 @@ end
 ### Example `.things` file
 
 ```java
-Bridge growatt:bridge:home "Growattt Bridge" [] {
+Bridge growatt:bridge:home "Growattt Bridge" [userName="USERNAME", password="PASSWORD"] {
     Thing inverter sph "Growatt SPH Inverter" [deviceId="INVERTERTID"]
 }
 ```
@@ -259,12 +259,12 @@ Number:Power Discharge_Power "Discharge Power [%.0f W]" <energy> {channel="growa
 
 ## Grott Application Installation and Setup
 
-You can install the Grott application either on the same computer as OpenHAB or on another.
+You can install the Grott application either on the same computer as openHAB or on another.
 The following assumes you will be running it on the same computer.
 The Grott application acts as a proxy server between your Growatt inverter and the Growatt cloud server.
-It intercepts data packets between the inverter and the cloud server, and it sends a copy of the intercepted data also to OpenHAB.
+It intercepts data packets between the inverter and the cloud server, and it sends a copy of the intercepted data also to openHAB.
 
-**NOTE**: make sure that the Grott application is **FULLY OPERATIONAL** for your inverter **BEFORE** you create any things in OpenHAB!
+**NOTE**: make sure that the Grott application is **FULLY OPERATIONAL** for your inverter **BEFORE** you create any things in openHAB!
 Otherwise the binding might create a wrong (or even empty) list of channels for the inverter thing.
 (Yet if you do make that mistake you can rectify it by deleting and recreating the thing).
 
@@ -291,9 +291,9 @@ The installation is as follows:
 - Copy `grott.py`, `grottconf.py`, `grottdata.py`, `grottproxy.py`, `grottsniffer.py`, `grottserver.py` to the home folder.
 - Copy `grottext.py` application extension to the home folder.
 - Copy `grott.ini` configuration file to the home folder.
-- Modify `grott.ini` to run in proxy mode; not in compatibility mode; show your inverter type; not run MQTT; not run PVOutput; enable the `grottext` extension; and set the OpenHAB `/growatt` servlet url.
+- Modify `grott.ini` to run in proxy mode; not in compatibility mode; show your inverter type; not run MQTT; not run PVOutput; enable the `grottext` extension; and set the openHAB `/growatt` servlet url.
 
-A suggested Grott configuration for OpenHAB is as follows:
+A suggested Grott configuration for openHAB is as follows:
 
 ```php
 [Generic]
@@ -310,7 +310,7 @@ pvoutput = False // disable pvoutput
 [extension] // enable the 'grottext' extension
 extension = True
 extname = grottext
-extvar = {"url": "http://127.0.0.1:8080/growatt"} // or ip address of openhab (if remote)
+extvar = {"url": "http://127.0.0.1:8080/growatt"} // or ip address of openHAB (if remote)
 ```
 
 ### Start Grott as a Service

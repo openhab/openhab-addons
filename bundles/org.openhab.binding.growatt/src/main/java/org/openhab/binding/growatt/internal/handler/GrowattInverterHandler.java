@@ -27,6 +27,7 @@ import org.openhab.binding.growatt.internal.cloud.GrowattCloud;
 import org.openhab.binding.growatt.internal.config.GrowattInverterConfiguration;
 import org.openhab.binding.growatt.internal.dto.GrottDevice;
 import org.openhab.binding.growatt.internal.dto.GrottValues;
+import org.openhab.binding.growatt.internal.dto.helper.GrottValuesHelper;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -129,7 +130,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
         // get channel states
         Map<String, QuantityType<?>> channelStates;
         try {
-            channelStates = inverterValues.getChannelStates();
+            channelStates = GrottValuesHelper.getChannelStates(inverterValues);
         } catch (NoSuchFieldException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
             logger.warn("updateInverterValues() unexpected exception:{}, message:{}", e.getClass().getName(),
                     e.getMessage(), e);

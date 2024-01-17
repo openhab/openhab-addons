@@ -12,14 +12,8 @@
  */
 package org.openhab.binding.growatt.internal.dto;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.growatt.internal.GrowattChannels;
-import org.openhab.binding.growatt.internal.GrowattChannels.UoM;
-import org.openhab.core.library.types.QuantityType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -191,30 +185,4 @@ public class GrottValues {
     public @Nullable @SerializedName(value = "eractotal") Integer erac_total;
 
     // @formatter:on
-
-    /**
-     * Return the valid values from this DTO in a map between channel id and respective QuantityType states.
-     *
-     * @return a map of channel ids and respective QuantityType state values.
-     */
-    public Map<String, QuantityType<?>> getChannelStates()
-            throws NoSuchFieldException, SecurityException, IllegalAccessException, IllegalArgumentException {
-        Map<String, QuantityType<?>> map = new HashMap<>();
-        GrowattChannels.getMap().entrySet().forEach(entry -> {
-            String channelId = entry.getKey();
-            try {
-                Object field = getClass().getField(getFieldName(channelId)).get(this);
-                if (field instanceof Integer) {
-                    UoM uom = entry.getValue();
-                    map.put(channelId, QuantityType.valueOf(((Integer) field).doubleValue() / uom.divisor, uom.units));
-                }
-            } catch (NoSuchFieldException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
-                // Ignore exceptions because they never actually occur at run time..
-                // - NoSuchFieldException never occurs since we have explicitly tested this in the JUnit tests.
-                // - SecurityException, IllegalAccessException never occur since all fields are public.
-                // - IllegalArgumentException never occurs since we are explicitly working within this same class.
-            }
-        });
-        return map;
-    }
 }

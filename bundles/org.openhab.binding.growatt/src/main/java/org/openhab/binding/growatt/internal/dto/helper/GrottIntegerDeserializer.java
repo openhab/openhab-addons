@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.growatt.internal.gson;
+package org.openhab.binding.growatt.internal.dto.helper;
 
 import java.lang.reflect.Type;
 import java.util.Objects;
