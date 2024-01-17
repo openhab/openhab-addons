@@ -91,7 +91,7 @@ public class RefreshingUrlCache {
         consumers.clear();
         ScheduledFuture<?> future = this.future;
         if (future != null) {
-            future.cancel(false);
+            future.cancel(true);
             logger.trace("Stopped refresh task for URL '{}'", url);
         }
     }
