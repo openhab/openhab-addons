@@ -125,13 +125,17 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         }
 
         if (lcBridge.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
+            if (!ThingStatusDetail.COMMUNICATION_ERROR.equals(lcBridge.getStatusInfo().getStatusDetail())) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                return;
+            }
         }
 
         if (lcBridge.getStatus() != ThingStatus.ONLINE) {
-            logger.debug("Bridge is not ready, don't enter polling for now!");
-            return;
+            if (!ThingStatusDetail.COMMUNICATION_ERROR.equals(lcBridge.getStatusInfo().getStatusDetail())) {
+                logger.debug("Bridge is not ready, don't enter polling for now!");
+                return;
+            }
         }
 
         long start = System.currentTimeMillis();
@@ -160,7 +164,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
             double errorRate = (double) errorCount / requestCount * 100.00;
 
-            if (errorRate > 20) {
+            if (errorRate > 50) {
                 SiemensHvacBridgeBaseThingHandler bridgeHandler = (SiemensHvacBridgeBaseThingHandler) lcBridge
                         .getHandler();
 
@@ -175,6 +179,17 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 }
             } else {
                 updateStatus(ThingStatus.ONLINE);
+
+                SiemensHvacBridgeBaseThingHandler bridgeHandler = (SiemensHvacBridgeBaseThingHandler) lcBridge
+                        .getHandler();
+
+                // Automatically recover from communication errors if errorRate is ok.
+                if (bridgeHandler != null) {
+                    if (ThingStatusDetail.COMMUNICATION_ERROR
+                            .equals(bridgeHandler.getThing().getStatusInfo().getStatusDetail())) {
+                        bridgeHandler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+                    }
+                }
             }
 
             lcHvacConnector.displayRequestStats();

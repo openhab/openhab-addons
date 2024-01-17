@@ -43,14 +43,14 @@ public interface SiemensHvacConnector {
     void onComplete(Request request, SiemensHvacRequestHandler reqListener) throws Exception;
 
     void onError(Request request, SiemensHvacRequestHandler reqListener,
-            SiemensHvacRequestListener.ErrorSource errorSource) throws Exception;
+            SiemensHvacRequestListener.ErrorSource errorSource, boolean mayRetry) throws Exception;
 
     void setSiemensHvacBridgeBaseThingHandler(SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler);
 
     @Nullable
     SiemensHvacBridgeConfig getBridgeConfiguration();
 
-    void resetSessionId(boolean web);
+    void resetSessionId(@Nullable String sessionIdToInvalidate, boolean web);
 
     void displayRequestStats();
 

@@ -783,8 +783,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             request = request + "&language=" + lang + "&submit=OK";
             if (lcHvacConnector != null) {
                 lcHvacConnector.doBasicRequest(request);
-                lcHvacConnector.resetSessionId(false);
-                lcHvacConnector.resetSessionId(true);
+                lcHvacConnector.resetSessionId(null, false);
+                lcHvacConnector.resetSessionId(null, true);
             }
 
         } catch (
