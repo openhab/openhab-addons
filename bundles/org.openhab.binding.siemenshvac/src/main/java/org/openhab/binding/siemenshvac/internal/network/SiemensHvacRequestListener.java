@@ -159,10 +159,11 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
         try {
             String content = getContentAsString();
             logger.trace("response complete: {}", content);
+            boolean mayRetry = true;
 
             if (result.getResponse().getStatus() != 200) {
                 logger.debug("Error requesting gateway, non success code: {}", result.getResponse().getStatus());
-                hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge);
+                hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge, mayRetry);
                 return;
             }
 
@@ -176,7 +177,7 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                         Gson gson = hvacConnector.getGson();
                         resultObj = gson.fromJson(content, JsonObject.class);
                     } catch (JsonSyntaxException ex) {
-                        logger.debug("error: {}", ex.toString());
+                        logger.debug("error(1): {}", ex.toString());
                     }
 
                     if (resultObj != null && resultObj.has("Result")) {
@@ -191,8 +192,12 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                             }
 
                             if (errorMsg.indexOf("session") >= 0) {
-                                hvacConnector.resetSessionId(false);
-                                hvacConnector.resetSessionId(true);
+                                String query = result.getRequest().getURI().getQuery();
+                                String sessionId = SiemensHvacConnectorImpl.extractSessionId(query);
+
+                                hvacConnector.resetSessionId(sessionId, false);
+                                hvacConnector.resetSessionId(sessionId, true);
+                                mayRetry = false;
                             }
 
                             if (resultVal) {
@@ -207,28 +212,31 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                                         resultObj);
                                 return;
                             } else if (("read failed").equals(errorMsg)) {
-                                logger.debug("error: {}", subResultObj);
-                                hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorThings);
+                                logger.debug("error(2): {}", subResultObj);
+                                hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorThings,
+                                        mayRetry);
                             } else {
-                                logger.debug("error: {}", subResultObj);
-                                hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge);
+                                logger.debug("error(3): {}", subResultObj);
+                                hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge,
+                                        mayRetry);
                                 return;
                             }
                         } else {
-                            logger.debug("error: invalid response from gateway, missing subResultObj:Success entry");
-                            hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge);
+                            logger.debug("error(4): invalid response from gateway, missing subResultObj:Success entry");
+                            hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge,
+                                    mayRetry);
                             return;
                         }
 
                     } else {
-                        logger.debug("error: invalid response from gateway, missing Result entry");
-                        hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge);
+                        logger.debug("error(5): invalid response from gateway, missing Result entry");
+                        hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge, mayRetry);
                         return;
                     }
                 }
             } else {
                 logger.debug("error: content == null");
-                hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge);
+                hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge, mayRetry);
                 return;
             }
         } catch (Exception ex) {
