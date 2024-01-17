@@ -99,7 +99,7 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
         assertThat((int) msBetween, allOf(greaterThanOrEqualTo(1000), lessThan(1100)));
     }
 
-    private List<Response> doLimitTest(int setDelay, List<Boolean> config) {
+    private void doLimitTest(int setDelay, List<Boolean> config) {
         stubFor(get(urlEqualTo(TEST_LOCATION)).willReturn(aResponse().withBody(TEST_CONTENT)));
 
         RateLimitedHttpClient rateLimitedHttpClient = new RateLimitedHttpClient(httpClient, scheduler);
@@ -129,8 +129,6 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
         // wait until we got all results
         waitForAssert(() -> assertEquals(config.size(), responses.size()));
         rateLimitedHttpClient.shutdown();
-
-        return responses;
     }
 
     private static class Response {
