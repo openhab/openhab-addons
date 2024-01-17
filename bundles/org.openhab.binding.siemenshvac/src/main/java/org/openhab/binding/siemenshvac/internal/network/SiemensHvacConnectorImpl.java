@@ -244,7 +244,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private void unregisterRequestHandler(SiemensHvacRequestHandler handler) throws SiemensHvacException {
         synchronized (currentHandlerRegistry) {
-
             if (!currentHandlerRegistry.containsKey(handler)) {
                 throw new SiemensHvacException("Internal error, try to unregister not registred handler: " + handler);
             }
@@ -511,7 +510,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 Thread.sleep(1000);
 
                 if ((idx % 50) == 0) {
-                    CheckStaleRequest();
+                    checkStaleRequest();
                 }
                 idx++;
             }
@@ -522,7 +521,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         logger.debug("WaitAllPendingRequest:end WaitAllPendingRequest");
     }
 
-    public void CheckStaleRequest() {
+    public void checkStaleRequest() {
         synchronized (currentHandlerRegistry) {
             logger.debug("check stale request::begin");
             int staleRequest = 0;
