@@ -51,7 +51,6 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
             THING_TYPE_VMBVP1, THING_TYPE_VMBKP, THING_TYPE_VMBIN, THING_TYPE_VMB4PB, THING_TYPE_VMB6PB_20));
     private static final HashMap<ThingTypeUID, Integer> ALARM_CONFIGURATION_MEMORY_ADDRESSES = new HashMap<>();
 
-
     static {
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMB2PBN, 0x0093);
         ALARM_CONFIGURATION_MEMORY_ADDRESSES.put(THING_TYPE_VMB4AN, 0x0046);
