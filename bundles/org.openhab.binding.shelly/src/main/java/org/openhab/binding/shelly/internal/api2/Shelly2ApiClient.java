@@ -239,9 +239,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             int duration = (int) (now() - rs.timerStartetAt);
             sr.timerRemaining = duration;
         }
-        if (status.tmp == null) {
-            status.tmp = new ShellySensorTmp();
-        }
         if (rs.temperature != null) {
             if (status.tmp == null) {
                 status.tmp = new ShellySensorTmp();
