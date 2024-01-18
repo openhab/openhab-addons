@@ -165,6 +165,15 @@ channels:
     configuration: {}
 ```
 
+# Troubleshooting
+
+In case nothing is discovered
+
+- please check if all devices are set to LAN-Mode
+- ping the following address `ping 239.255.255.250`.
+  You should get a response for every Govee Device on your LAN
+- In case you get a result, add the device via the manual option
+
 ## Additional Information
 
 Please provide any feedback regarding unlisted devices that even though not mentioned herein do work.
