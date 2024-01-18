@@ -21,6 +21,8 @@ Binding for the Bosch Smart Home.
     - [Smart Bulb](#smart-bulb)
     - [Smoke Detector](#smoke-detector)
     - [User-defined States](#user-defined-states)
+    - [Universal Switch](#universal-switch)
+    - [Universal Switch II](#universal-switch-ii)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
   - [Bridge Configuration](#bridge-configuration)
@@ -246,6 +248,31 @@ Individual states can be activated/deactivated and can be used as triggers, cond
 |-----------------|-----------| :------: |--------------------------------------------|
 | user-state      | Switch    | &#9745;  | Switches the User-defined state on or off. |
 
+### Universal Switch
+
+A universally configurable switch with two buttons.
+
+**Thing Type ID**: `universal-switch`
+
+| Channel Type ID     | Item Type            | Writable | Description                               |
+| ------------------- | -------------------- | :------: | ----------------------------------------- |
+| key-code            | Number:Dimensionless | &#9744;  | Integer code of the key that was pressed. |
+| key-name            | String               | &#9744;  | Name of a key pressed on a device. Possible values for Universal Switch: `LOWER_BUTTON`, `UPPER_BUTTON`. |
+| key-event-type      | String               | &#9744;  | Indicates how the key was pressed. Possible values are `PRESS_SHORT`, `PRESS_LONG` and `PRESS_LONG_RELEASED`. |
+| key-event-timestamp | DateTime             | &#9744;  | Timestamp indicating when the key was pressed. |
+
+### Universal Switch II
+
+A universally configurable switch with four buttons.
+
+**Thing Type ID**: `universal-switch-2`
+
+| Channel Type ID     | Item Type            | Writable | Description                               |
+| ------------------- | -------------------- | :------: | ----------------------------------------- |
+| key-code            | Number:Dimensionless | &#9744;  | Integer code of the key that was pressed. |
+| key-name            | String               | &#9744;  | Name of the key that was pressed. Possible values for Universal Switch II: `LOWER_LEFT_BUTTON`, `LOWER_RIGHT_BUTTON`, `UPPER_LEFT_BUTTON`, `UPPER_RIGHT_BUTTON`. |
+| key-event-type      | String               | &#9744;  | Indicates how the key was pressed. Possible values are `PRESS_SHORT`, `PRESS_LONG` and `PRESS_LONG_RELEASED`. |
+| key-event-timestamp | DateTime             | &#9744;  | Timestamp indicating when the key was pressed. |
 
 ## Limitations
 
