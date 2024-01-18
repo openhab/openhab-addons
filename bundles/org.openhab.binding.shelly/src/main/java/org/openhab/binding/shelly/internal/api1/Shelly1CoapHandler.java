@@ -359,16 +359,12 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     valid &= addSensor(descr.sen.get(i));
                 }
             }
-            coiot.completeMissingSensorDefinition(sensorMap);
-
             if (!valid) {
-                logger.debug(
-                        "{}: Incompatible device description detected for CoIoT version {} (id length mismatch), discarding!",
-                        thingName, coiot.getVersion());
-
-                discover();
-                return;
+                logger.debug("{}: WARNING: Incompatible device description detected for CoIoT version {}!", thingName,
+                        coiot.getVersion());
             }
+
+            coiot.completeMissingSensorDefinition(sensorMap); // fix incomplete format
         } catch (JsonSyntaxException e) {
             logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload);
         } catch (NullPointerException | IllegalArgumentException e) {
