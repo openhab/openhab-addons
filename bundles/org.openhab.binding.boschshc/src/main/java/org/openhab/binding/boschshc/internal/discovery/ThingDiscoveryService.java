@@ -86,7 +86,9 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             new AbstractMap.SimpleEntry<>("LEDVANCE_LIGHT", BoschSHCBindingConstants.THING_TYPE_SMART_BULB),
             new AbstractMap.SimpleEntry<>("SWD", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT),
             new AbstractMap.SimpleEntry<>("SWD2", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2),
-            new AbstractMap.SimpleEntry<>("TRV", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT)
+            new AbstractMap.SimpleEntry<>("TRV", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT),
+            new AbstractMap.SimpleEntry<>("WRC2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH),
+            new AbstractMap.SimpleEntry<>("SWITCH2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2)
 // Future Extension: map deviceModel names to BoschSHC Thing Types when they are supported
 //            new AbstractMap.SimpleEntry<>("SMOKE_DETECTION_SYSTEM", BoschSHCBindingConstants.),
 //            new AbstractMap.SimpleEntry<>("PRESENCE_SIMULATION_SERVICE", BoschSHCBindingConstants.),
