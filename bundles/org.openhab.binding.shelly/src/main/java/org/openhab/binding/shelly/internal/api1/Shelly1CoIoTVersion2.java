@@ -142,6 +142,9 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
 
         processed = true;
         switch (sen.id) {
+            case "6": // 3EM: neutralCurrent
+                break;
+
             case "3106": // L, luminosity, lux, U32, -1
             case "3110": // S, luminosityLevel, dark/twilight/bright, "unknown"=unknown
             case "3111": // B, battery, 0-100%, unknown -1
