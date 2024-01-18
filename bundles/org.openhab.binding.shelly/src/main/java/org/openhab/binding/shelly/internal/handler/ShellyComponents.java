@@ -534,7 +534,7 @@ public class ShellyComponents {
             updated |= thingHandler.updateInputs(status);
 
             if (updated) {
-                thingHandler.updateChannel(profile.getControlGroup(0), CHANNEL_LAST_UPDATE, getTimestamp());
+                thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
             }
         }
         return updated;

@@ -293,8 +293,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return false;
         }
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                messages.get("status.unknown.initializing"));
+        if (profile.alwaysOn || !profile.isInitialized()) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                    messages.get("status.unknown.initializing"));
+        }
 
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
@@ -513,7 +515,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private double getNumber(Command command) {
-        if (command instanceof QuantityType quantityCommand) {
+        if (command instanceof QuantityType<?> quantityCommand) {
             return quantityCommand.doubleValue();
         }
         if (command instanceof DecimalType decimalCommand) {
@@ -1279,7 +1281,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public double getChannelDouble(String group, String channel) {
         State value = getChannelValue(group, channel);
         if (value != UnDefType.NULL) {
-            if (value instanceof QuantityType quantityCommand) {
+            if (value instanceof QuantityType<?> quantityCommand) {
                 return quantityCommand.toBigDecimal().doubleValue();
             }
             if (value instanceof DecimalType decimalCommand) {

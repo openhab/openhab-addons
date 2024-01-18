@@ -239,7 +239,7 @@ public class ShellyUtils {
         if (command instanceof DecimalType decimalCommand) {
             return decimalCommand.doubleValue();
         }
-        if (command instanceof QuantityType quantityCommand) {
+        if (command instanceof QuantityType<?> quantityCommand) {
             return quantityCommand.doubleValue();
         }
         throw new IllegalArgumentException("Unable to convert number");
