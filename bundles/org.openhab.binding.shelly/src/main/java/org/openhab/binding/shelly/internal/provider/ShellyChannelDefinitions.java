@@ -504,7 +504,6 @@ public class ShellyChannelDefinitions {
             ShellyEMNCurrentStatus status) {
         String group = CHANNEL_GROUP_NMETER;
         Map<String, Channel> newChannels = new LinkedHashMap<>();
-        ShellyThingInterface handler = (ShellyThingInterface) thing.getHandler();
         addChannel(thing, newChannels, status.current != null, group, CHANNEL_NMETER_CURRENT);
         addChannel(thing, newChannels, status.ixsum != null, group, CHANNEL_NMETER_IXSUM);
         addChannel(thing, newChannels, status.mismatch != null, group, CHANNEL_NMETER_MISMATCH);
