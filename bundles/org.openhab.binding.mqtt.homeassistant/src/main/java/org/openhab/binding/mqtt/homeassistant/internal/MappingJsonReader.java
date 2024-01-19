@@ -23,7 +23,8 @@ import com.google.gson.stream.JsonReader;
 
 /**
  * JsonReader which will replace specific names.
- * Abbreviations are defined at https://github.com/home-assistant/core/blob/dev/homeassistant/components/mqtt/abbreviations.py
+ * Abbreviations are defined at
+ * https://github.com/home-assistant/core/blob/dev/homeassistant/components/mqtt/abbreviations.py
  * The documentation at https://www.home-assistant.io/integrations/mqtt/#discovery-payload is often out of date
  *
  * @author Jochen Klein - Initial contribution
