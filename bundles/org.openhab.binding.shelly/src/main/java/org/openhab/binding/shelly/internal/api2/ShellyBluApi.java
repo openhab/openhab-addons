@@ -18,7 +18,6 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -69,6 +68,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             "2", SHELLY_BTNEVENT_2SHORTPUSH, //
             "3", SHELLY_BTNEVENT_3SHORTPUSH, //
             "4", SHELLY_BTNEVENT_LONGPUSH);
+
     /**
      * Regular constructor - called by Thing handler
      *
