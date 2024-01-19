@@ -491,6 +491,10 @@ public class PentairControllerHandler extends PentairBaseThingHandler {
 
                     refreshChannelsFromUIDs(circuitSwitchUIDs);
                     refreshGroupChannels(GROUP_CONTROLLER_STATUS);
+                    handleRefreshHeatStatusChannel(new ChannelUID(this.getThing().getUID(), GROUP_CONTROLLER_POOLHEAT,
+                            CHANNEL_CONTROLLER_TEMPERATURE));
+                    handleRefreshHeatStatusChannel(new ChannelUID(this.getThing().getUID(), GROUP_CONTROLLER_SPAHEAT,
+                            CHANNEL_CONTROLLER_TEMPERATURE));
                 }
 
                 break;
