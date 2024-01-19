@@ -1,5 +1,5 @@
 /*
- * This script uses the BLE scan functionality in scripting to pass scan reults to openHAB
+ * This script uses the BLE scan functionality in scripting to pass scan results to openHAB
  * Supported BLU Devices: BLU Button 1, BLU Door/Window, BLU Motion
  * Version 0.2
  */

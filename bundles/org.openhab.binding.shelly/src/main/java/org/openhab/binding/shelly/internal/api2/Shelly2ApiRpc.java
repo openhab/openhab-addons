@@ -672,7 +672,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         getThing().requestUpdates(1, true); // refresh config
                         break;
                     case SHELLY2_EVENT_SLEEP:
-                        logger.debug("{}: Device went to sleep mode", thingName);
+                        logger.debug("{}: Connection terminated, e.g. device in sleep mode", thingName);
                         break;
                     case SHELLY2_EVENT_WIFICONNFAILED:
                         logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName,
