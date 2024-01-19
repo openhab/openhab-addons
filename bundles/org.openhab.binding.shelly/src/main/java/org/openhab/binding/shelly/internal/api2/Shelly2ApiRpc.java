@@ -700,10 +700,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onClose(int statusCode, String reason) {
+    public void onClose(int statusCode, String description) {
         try {
-            logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, getString(reason));
-            if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) { // e.g. device rebooted
+            String reason = getString(description);
+            logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, reason);
+            if ("Bye".equalsIgnoreCase(reason)) {
+                logger.debug("{}: Device went to sleep mode", thingName);
+            } else if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) {
+                // e.g. device rebooted
                 thingOffline("WebSocket connection closed abnormal");
             }
         } catch (ShellyApiException e) {
@@ -714,7 +718,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onError(Throwable cause) {
-        logger.debug("{}: WebSocket error", thingName);
+        logger.debug("{}: WebSocket error: {}", thingName, cause.getMessage());
         if (thing != null && thing.getProfile().alwaysOn) {
             thingOffline("WebSocket error");
         }
