@@ -69,8 +69,8 @@ import com.google.gson.GsonBuilder;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(service = DiscoveryService.class, configurationPid = "org.openhab.binding.mqtt.homeassistant", property = Constants.SERVICE_PID
-        + "=org.openhab.binding.mqtt.homeassistant")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.mqttha", property = Constants.SERVICE_PID
+        + "=discovery.mqttha")
 @ConfigurableService(category = "system", label = "Home Assistant Discovery", description_uri = "binding:mqtt.homeassistant")
 @NonNullByDefault
 public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
