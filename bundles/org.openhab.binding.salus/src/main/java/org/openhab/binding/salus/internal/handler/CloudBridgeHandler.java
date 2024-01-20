@@ -1,30 +1,19 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
+ * <p>
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.salus.internal.handler;
 
-import static java.util.Collections.emptySortedSet;
-import static java.util.Objects.requireNonNullElse;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static org.openhab.core.types.RefreshType.REFRESH;
-
-import java.time.Duration;
-import java.util.Optional;
-import java.util.SortedSet;
-import java.util.concurrent.ScheduledFuture;
-
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,8 +31,21 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
+import java.time.Duration;
+import java.util.Optional;
+import java.util.SortedSet;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import static java.util.Collections.emptySortedSet;
+import static java.util.Objects.requireNonNullElse;
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
+import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.types.RefreshType.REFRESH;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -84,24 +86,27 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                 config.getUrl(), httpClient, GsonMapper.INSTANCE);
         logger = LoggerFactory
                 .getLogger(CloudBridgeHandler.class.getName() + "[" + config.getUsername().replace(".", "_") + "]");
-        try {
-            localSalusApi.findDevices();
-        } catch (Exception ex) {
-            var msg = "Cannot connect to Salus Cloud! Probably username/password mismatch!";
-            logger.error(msg, ex);
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, msg + " " + ex.getMessage());
-            return;
-        }
+
+        var scheduledPool = ThreadPoolManager.getScheduledPool("Salus");
+        scheduledPool.schedule(() -> tryConnectToCloud(localSalusApi), 1, MICROSECONDS);
+
         this.devicePropertiesCache = Caffeine.newBuilder().maximumSize(10_000)
                 .expireAfterWrite(Duration.ofSeconds(config.getPropertiesRefreshInterval()))
                 .refreshAfterWrite(Duration.ofSeconds(config.getPropertiesRefreshInterval()))
                 .build(this::loadPropertiesForDevice);
-        var scheduledPool = ThreadPoolManager.getScheduledPool("Salus");
         this.scheduledFuture = scheduledPool.scheduleWithFixedDelay(this::refreshCloudDevices,
                 config.getRefreshInterval() * 2, config.getRefreshInterval(), SECONDS);
 
         // done
         updateStatus(ONLINE);
+    }
+
+    private void tryConnectToCloud(SalusApi localSalusApi) {
+        try {
+            localSalusApi.findDevices();
+        } catch (Exception ex) {
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, "Cannot connect to Salus Cloud! Probably username/password mismatch! " + ex.getMessage());
+        }
     }
 
     private void refreshCloudDevices() {
