@@ -388,7 +388,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         int vers = coiot.getVersion();
         if (((vers == COIOT_VERSION_1) && (sen.id.length() > 3))
                 || ((vers >= COIOT_VERSION_2) && (sen.id.length() < 4) && !sen.id.equals("6"))) {
-            logger.debug("{}: Invalid format for sensor defition detected, id={}", thingName, sen.id);
+            logger.debug("{}: Invalid format for sensor definition detected, id={}", thingName, sen.id);
             return false;
         }
 
