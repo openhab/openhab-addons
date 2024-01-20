@@ -12,8 +12,21 @@
  */
 package org.openhab.binding.salus.internal.handler;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
+import static java.util.Collections.emptySortedSet;
+import static java.util.Objects.requireNonNullElse;
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
+import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.types.RefreshType.REFRESH;
+
+import java.time.Duration;
+import java.util.Optional;
+import java.util.SortedSet;
+import java.util.concurrent.ScheduledFuture;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,21 +44,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-import java.util.Optional;
-import java.util.SortedSet;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import static java.util.Collections.emptySortedSet;
-import static java.util.Objects.requireNonNullElse;
-import static java.util.concurrent.TimeUnit.MICROSECONDS;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static org.openhab.core.types.RefreshType.REFRESH;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -105,7 +105,8 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         try {
             localSalusApi.findDevices();
         } catch (Exception ex) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "Cannot connect to Salus Cloud! Probably username/password mismatch! " + ex.getMessage());
+            updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                    "Cannot connect to Salus Cloud! Probably username/password mismatch! " + ex.getMessage());
         }
     }
 
