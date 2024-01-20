@@ -82,11 +82,11 @@ public class CloudBridgeConfig {
         this.propertiesRefreshInterval = propertiesRefreshInterval;
     }
 
-    public boolean hasUsername() {
+    private boolean hasUsername() {
         return !username.isBlank();
     }
 
-    public boolean hasPassword() {
+    private boolean hasPassword() {
         return !password.isBlank();
     }
 
@@ -95,5 +95,9 @@ public class CloudBridgeConfig {
         return "CloudBridgeConfig{" + "username='" + username + '\'' + ", password='<SECRET>'" + ", url='" + url + '\''
                 + ", refreshInterval=" + refreshInterval + ", propertiesRefreshInterval=" + propertiesRefreshInterval
                 + '}';
+    }
+
+    public boolean isValid() {
+        return hasUsername() && hasPassword();
     }
 }
