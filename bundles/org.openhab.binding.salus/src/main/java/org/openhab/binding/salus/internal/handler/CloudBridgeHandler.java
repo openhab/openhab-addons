@@ -75,20 +75,8 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     private void internalInitialize() {
         var config = this.getConfigAs(CloudBridgeConfig.class);
-        var missingUsername = !config.hasUsername();
-        var missingPassword = !config.hasPassword();
-        if (missingUsername || missingPassword) {
-            var msg = "";
-            if (missingUsername) {
-                msg += "Username is missing.";
-            }
-            if (missingPassword) {
-                if (!msg.isEmpty()) {
-                    msg += " ";
-                }
-                msg += "Password is missing.";
-            }
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, msg);
+        if (!config.isValid()) {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "Username or password is not valid");
             return;
         }
         var httpClient = new JettyHttpClient(httpClientFactory.getCommonHttpClient());
@@ -131,6 +119,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                         logger.debug("Thing {} is disabled, refresh cancelled", thing.getUID());
                         continue;
                     }
+
                     var handler = thing.getHandler();
                     if (handler == null) {
                         logger.debug("No handler for thing {} refresh cancelled", thing.getUID());
