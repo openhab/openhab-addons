@@ -6,7 +6,7 @@
 
 	<!-- Bridge Thing Type -->
 	<bridge-type id="bridge">
-		<label>Growatt Bridge Thing</label>
+		<label>Growatt Bridge</label>
 		<description>Bridge Thing for Growatt Binding</description>
 
 		<config-description>
@@ -30,7 +30,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Growatt Inverter Thing</label>
+		<label>Growatt Inverter</label>
 		<description>Inverter Thing for Growatt Binding</description>
 
 		<!-- All known channels; unused channels are dynamically deleted -->
@@ -66,11 +66,11 @@
 			</channel>
 
 			<channel id="pv1-power" typeId="advanced-electric-power">
-				<label>Solar String #1 Power</label>
+				<label>String #1 Power</label>
 				<description>Power from solar panel string #1.</description>
 			</channel>
 			<channel id="pv2-power" typeId="advanced-electric-power">
-				<label>Solar String #2 Power</label>
+				<label>String #2 Power</label>
 				<description>Power from solar panel string #2.</description>
 			</channel>
 
@@ -106,32 +106,32 @@
 
 			<!-- inverter power to grid -->
 			<channel id="inverter-current-r" typeId="system.electric-current">
-				<label>Inverter Output Current (#R)</label>
+				<label>Inverter Current (#R)</label>
 				<description>AC current from inverter (phase #R).</description>
 			</channel>
 			<channel id="inverter-current-s" typeId="advanced-electric-current">
-				<label>Inverter Output Current #S</label>
+				<label>Inverter Current #S</label>
 				<description>AC current from inverter phase #S.</description>
 			</channel>
 			<channel id="inverter-current-t" typeId="advanced-electric-current">
-				<label>Inverter Output Current #T</label>
+				<label>Inverter Current #T</label>
 				<description>AC current from inverter phase #T.</description>
 			</channel>
 
 			<channel id="inverter-power" typeId="system.electric-power">
-				<label>Inverter Output Power</label>
+				<label>Inverter Power</label>
 				<description>AC power the inverter (total).</description>
 			</channel>
 			<channel id="inverter-power-r" typeId="system.electric-power">
-				<label>Inverter Output Power (#R)</label>
+				<label>Inverter Power (#R)</label>
 				<description>AC power from inverter (phase #R).</description>
 			</channel>
 			<channel id="inverter-power-s" typeId="advanced-electric-power">
-				<label>Inverter Output Power #S</label>
+				<label>Inverter Power #S</label>
 				<description>AC power from inverter phase #S.</description>
 			</channel>
 			<channel id="inverter-power-t" typeId="advanced-electric-power">
-				<label>Inverter Output Power #T</label>
+				<label>Inverter Power #T</label>
 				<description>AC power from inverter phase #T.</description>
 			</channel>
 
@@ -214,38 +214,38 @@
 
 			<!-- inverter AC output energy -->
 			<channel id="inverter-energy-today" typeId="system.electric-energy">
-				<label>Inverter Output Energy Today</label>
+				<label>Inverter Energy Today</label>
 				<description>Inverter output energy produced today.</description>
 			</channel>
 			<channel id="inverter-energy-total" typeId="system.electric-energy">
-				<label>Inverter Output Energy Total</label>
+				<label>Inverter Energy Total</label>
 				<description>Total inverter output energy produced.</description>
 			</channel>
 
 			<!-- solar DC energy -->
 			<channel id="pv-energy-today" typeId="system.electric-energy">
-				<label>Solar DC Energy Today</label>
+				<label>DC Energy Today</label>
 				<description>Solar DC energy collected.</description>
 			</channel>
 			<channel id="pv1-energy-today" typeId="advanced-electric-energy">
-				<label>Solar DC Energy #1 Today</label>
+				<label>DC Energy #1 Today</label>
 				<description>Solar DC energy collected by string #1 to grid today.</description>
 			</channel>
 			<channel id="pv2-energy-today" typeId="advanced-electric-energy">
-				<label>Solar DC Energy #2 Today</label>
+				<label>DC Energy #2 Today</label>
 				<description>Solar DC energy collected by string #2 to grid today.</description>
 			</channel>
 
 			<channel id="pv-energy-total" typeId="system.electric-energy">
-				<label>Solar DC Energy Total</label>
+				<label>DC Energy Total</label>
 				<description>Total solar energy supplied to grid.</description>
 			</channel>
 			<channel id="pv1-energy-total" typeId="advanced-electric-energy">
-				<label>Solar DC Energy #1 Total</label>
+				<label>DC Energy #1 Total</label>
 				<description>Total solar DC collected by string #1.</description>
 			</channel>
 			<channel id="pv2-energy-total" typeId="advanced-electric-energy">
-				<label>Solar DC Energy #2 Total</label>
+				<label>DC Energy #2 Total</label>
 				<description>Total solar DC collected by string #2.</description>
 			</channel>
 
@@ -271,41 +271,41 @@
 
 			<!-- energy supplied to local -->
 			<channel id="load-energy-today" typeId="system.electric-energy">
-				<label>Energy to Load Today</label>
+				<label>Load Energy Today</label>
 				<description>Energy supplied to load today.</description>
 			</channel>
 			<channel id="load-energy-total" typeId="system.electric-energy">
-				<label>Energy to Load Total</label>
+				<label>Load Energy Total</label>
 				<description>Total energy supplied to load.</description>
 			</channel>
 
 			<!-- energy imported from grid to charge -->
 			<channel id="import-charge-energy-today" typeId="system.electric-energy">
-				<label>Import Energy to Charge Battery Today</label>
+				<label>Battery Import Energy Today</label>
 				<description>Energy imported from grid to charge battery today.</description>
 			</channel>
 			<channel id="import-charge-energy-total" typeId="system.electric-energy">
-				<label>Import Energy to Charge Battery Total</label>
+				<label>Battery Import Energy Totals</label>
 				<description>Total energy imported from grid to charge battery.</description>
 			</channel>
 
 			<!-- inverter energy to charge -->
 			<channel id="inverter-charge-energy-today" typeId="system.electric-energy">
-				<label>Inverter Energy to Charge Battery Today</label>
+				<label>Battery Inverter Energy Today</label>
 				<description>Energy from inverter to charge battery today.</description>
 			</channel>
 			<channel id="inverter-charge-energy-total" typeId="system.electric-energy">
-				<label>Inverter Energy to Charge Battery Total</label>
+				<label>Battery Inverter Energy Total</label>
 				<description>Total energy from inverter to charge battery.</description>
 			</channel>
 
 			<!-- energy consumed from battery -->
 			<channel id="discharge-energy-today" typeId="system.electric-energy">
-				<label>Energy from Battery Today</label>
+				<label>Battery Energy Today</label>
 				<description>Energy consumed from battery today.</description>
 			</channel>
 			<channel id="discharge-energy-total" typeId="system.electric-energy">
-				<label>Energy from Battery Total</label>
+				<label>Battery Energy Total</label>
 				<description>Total energy consumed from battery.</description>
 			</channel>
 
@@ -343,7 +343,7 @@
 				<description>Boost temperature.</description>
 			</channel>
 			<channel id="temperature-4" typeId="advanced-outdoor-temperature">
-				<label>Temp #4</label>
+				<label>Temperature #4</label>
 				<description>Temperature #4.</description>
 			</channel>
 			<channel id="pv2-temperature" typeId="advanced-outdoor-temperature">
