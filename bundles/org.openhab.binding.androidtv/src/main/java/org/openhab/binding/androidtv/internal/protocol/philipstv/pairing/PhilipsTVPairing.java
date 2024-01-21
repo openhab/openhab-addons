@@ -50,11 +50,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManagerUtil;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.AuthDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.DeviceDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.FinishPairingDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.PairingDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.RequestCodeDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.AuthDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.DeviceDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.FinishPairingDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.PairingDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.pairing.model.RequestCodeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,35 +81,35 @@ public class PhilipsTVPairing {
 
     public void requestPairingPin(HttpHost target)
             throws IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        RequestCodeDto requestCodeDto = new RequestCodeDto(
+        RequestCodeDTO requestCodeDTO = new RequestCodeDTO(
                 Stream.of("read", "write", "control").collect(Collectors.toList()), createDeviceSpecification());
 
         CloseableHttpClient httpClient = ConnectionManagerUtil.createSharedHttpClient(target, EMPTY, EMPTY);
         ConnectionManager connectionManager = new ConnectionManager(httpClient, target);
-        String requestCodeJson = OBJECT_MAPPER.writeValueAsString(requestCodeDto);
+        String requestCodeJson = OBJECT_MAPPER.writeValueAsString(requestCodeDTO);
         String requestPairingCodePath = pairingBasePath + "request";
         logger.debug("Request pairing code with json: {}", requestCodeJson);
-        PairingDto pairingDto = OBJECT_MAPPER
-                .readValue(connectionManager.doHttpsPost(requestPairingCodePath, requestCodeJson), PairingDto.class);
+        PairingDTO pairingDTO = OBJECT_MAPPER
+                .readValue(connectionManager.doHttpsPost(requestPairingCodePath, requestCodeJson), PairingDTO.class);
 
-        authTimestamp = pairingDto.getTimestamp();
-        authKey = pairingDto.getAuthKey();
+        authTimestamp = pairingDTO.getTimestamp();
+        authKey = pairingDTO.getAuthKey();
 
-        logger.info("The pairing code is valid for {} seconds.", pairingDto.getTimeout());
+        logger.info("The pairing code is valid for {} seconds.", pairingDTO.getTimeout());
     }
 
     public void finishPairingWithTv(String pairingCode, PhilipsTVConnectionManager handler, HttpHost target)
             throws NoSuchAlgorithmException, InvalidKeyException, IOException, KeyStoreException,
             KeyManagementException {
 
-        AuthDto authDto = new AuthDto();
-        authDto.setAuthAppId("1");
-        authDto.setAuthSignature(calculateRFC2104HMAC(authTimestamp + pairingCode));
-        authDto.setAuthTimestamp(authTimestamp);
-        authDto.setPin(pairingCode);
+        AuthDTO authDTO = new AuthDTO();
+        authDTO.setAuthAppId("1");
+        authDTO.setAuthSignature(calculateRFC2104HMAC(authTimestamp + pairingCode));
+        authDTO.setAuthTimestamp(authTimestamp);
+        authDTO.setPin(pairingCode);
 
-        FinishPairingDto finishPairingDto = new FinishPairingDto(createDeviceSpecification(), authDto);
-        String grantPairingJson = OBJECT_MAPPER.writeValueAsString(finishPairingDto);
+        FinishPairingDTO finishPairingDTO = new FinishPairingDTO(createDeviceSpecification(), authDTO);
+        String grantPairingJson = OBJECT_MAPPER.writeValueAsString(finishPairingDTO);
 
         Header challengeHeader = null;
         try (CloseableHttpClient httpClient = ConnectionManagerUtil.createSharedHttpClient(target, EMPTY, EMPTY)) {
@@ -167,18 +167,18 @@ public class PhilipsTVPairing {
         return deviceIdBuilder.toString();
     }
 
-    private DeviceDto createDeviceSpecification() {
-        DeviceDto deviceDto = new DeviceDto();
-        deviceDto.setAppName("openHAB");
-        deviceDto.setAppId("app.id");
-        deviceDto.setDeviceName("heliotrope");
-        deviceDto.setDeviceOs("Android");
-        deviceDto.setType("native");
+    private DeviceDTO createDeviceSpecification() {
+        DeviceDTO deviceDTO = new DeviceDTO();
+        deviceDTO.setAppName("openHAB");
+        deviceDTO.setAppId("app.id");
+        deviceDTO.setDeviceName("heliotrope");
+        deviceDTO.setDeviceOs("Android");
+        deviceDTO.setType("native");
         if (deviceId.isEmpty()) {
             deviceId = createDeviceId();
         }
-        deviceDto.setId(deviceId);
-        return deviceDto;
+        deviceDTO.setId(deviceId);
+        return deviceDTO;
     }
 
     private String toHexString(byte[] bytes) {

@@ -21,10 +21,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ComponentDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ExtrasDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.IntentDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.LaunchAppDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ComponentDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ExtrasDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.IntentDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.LaunchAppDTO;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -75,14 +75,14 @@ public class SearchContentService implements PhilipsTVService {
     }
 
     private void searchForContentOnTv(String searchContent) throws IOException {
-        ExtrasDto extrasDto = new ExtrasDto();
-        extrasDto.setQuery(searchContent);
+        ExtrasDTO extrasDTO = new ExtrasDTO();
+        extrasDTO.setQuery(searchContent);
 
-        IntentDto intentDto = new IntentDto(new ComponentDto(), extrasDto);
-        intentDto.setAction("android.search.action.GLOBAL_SEARCH");
-        LaunchAppDto launchAppDto = new LaunchAppDto(intentDto);
+        IntentDTO intentDTO = new IntentDTO(new ComponentDTO(), extrasDTO);
+        intentDTO.setAction("android.search.action.GLOBAL_SEARCH");
+        LaunchAppDTO launchAppDTO = new LaunchAppDTO(intentDTO);
 
-        String searchContentLaunch = OBJECT_MAPPER.writeValueAsString(launchAppDto);
+        String searchContentLaunch = OBJECT_MAPPER.writeValueAsString(launchAppDTO);
 
         logger.debug("Search Content Launch json: {}", searchContentLaunch);
         connectionManager.doHttpsPost(LAUNCH_APP_PATH, searchContentLaunch);

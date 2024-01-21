@@ -28,10 +28,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.AvailableTvChannelsDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.ChannelDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.ChannelListDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.TvChannelDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.AvailableTvChannelsDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.ChannelDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.ChannelListDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.channel.TvChannelDTO;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -106,11 +106,11 @@ public class TvChannelService implements PhilipsTVService {
     }
 
     private Map<String, String> getAvailableTvChannelListFromTv() throws IOException {
-        AvailableTvChannelsDto availableTvChannelsDto = OBJECT_MAPPER.readValue(
-                connectionManager.doHttpsGet(GET_AVAILABLE_TV_CHANNEL_LIST_PATH), AvailableTvChannelsDto.class);
+        AvailableTvChannelsDTO availableTvChannelsDTO = OBJECT_MAPPER.readValue(
+                connectionManager.doHttpsGet(GET_AVAILABLE_TV_CHANNEL_LIST_PATH), AvailableTvChannelsDTO.class);
 
-        ConcurrentMap<String, String> tvChannelsMap = availableTvChannelsDto.getChannel().stream()
-                .collect(Collectors.toConcurrentMap(ChannelDto::getName, ChannelDto::getCcid, (c1, c2) -> c1));
+        ConcurrentMap<String, String> tvChannelsMap = availableTvChannelsDTO.getChannel().stream()
+                .collect(Collectors.toConcurrentMap(ChannelDTO::getName, ChannelDTO::getCcid, (c1, c2) -> c1));
 
         logger.debug("TV Channels added: {}", tvChannelsMap.size());
         if (logger.isTraceEnabled()) {
@@ -120,21 +120,21 @@ public class TvChannelService implements PhilipsTVService {
     }
 
     private String getCurrentTvChannel() throws IOException {
-        TvChannelDto tvChannelDto = OBJECT_MAPPER.readValue(connectionManager.doHttpsGet(TV_CHANNEL_PATH),
-                TvChannelDto.class);
-        return Optional.ofNullable(tvChannelDto.getChannel()).map(ChannelDto::getName).orElse("NA");
+        TvChannelDTO tvChannelDTO = OBJECT_MAPPER.readValue(connectionManager.doHttpsGet(TV_CHANNEL_PATH),
+                TvChannelDTO.class);
+        return Optional.ofNullable(tvChannelDTO.getChannel()).map(ChannelDTO::getName).orElse("NA");
     }
 
     private void switchTvChannel(Command command) throws IOException {
-        ChannelDto channelDto = new ChannelDto();
-        channelDto.setCcid(availableTvChannels.get(command.toString()));
+        ChannelDTO channelDTO = new ChannelDTO();
+        channelDTO.setCcid(availableTvChannels.get(command.toString()));
 
-        ChannelListDto channelListDto = new ChannelListDto();
-        channelListDto.setId("allter");
-        channelListDto.setVersion("30");
+        ChannelListDTO channelListDTO = new ChannelListDTO();
+        channelListDTO.setId("allter");
+        channelListDTO.setVersion("30");
 
-        TvChannelDto tvChannelDto = new TvChannelDto(channelDto, channelListDto);
-        String switchTvChannelJson = OBJECT_MAPPER.writeValueAsString(tvChannelDto);
+        TvChannelDTO tvChannelDTO = new TvChannelDTO(channelDTO, channelListDTO);
+        String switchTvChannelJson = OBJECT_MAPPER.writeValueAsString(tvChannelDTO);
         logger.debug("Switch TV Channel json: {}", switchTvChannelJson);
         connectionManager.doHttpsPost(TV_CHANNEL_PATH, switchTvChannelJson);
     }

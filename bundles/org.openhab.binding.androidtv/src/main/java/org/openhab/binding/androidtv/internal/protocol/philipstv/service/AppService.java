@@ -30,13 +30,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ApplicationsDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.AvailableAppsDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ComponentDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.CurrentAppDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ExtrasDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.IntentDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.LaunchAppDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ApplicationsDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.AvailableAppsDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ComponentDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.CurrentAppDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.ExtrasDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.IntentDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.application.LaunchAppDTO;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ThingStatus;
@@ -150,23 +150,23 @@ public class AppService implements PhilipsTVService {
     private void launchApp(String appName) throws IOException {
         Map.Entry<String, String> app = availableApps.get(appName);
 
-        ComponentDto componentDto = new ComponentDto();
-        componentDto.setPackageName(app.getKey());
-        componentDto.setClassName(app.getValue());
+        ComponentDTO componentDTO = new ComponentDTO();
+        componentDTO.setPackageName(app.getKey());
+        componentDTO.setClassName(app.getValue());
 
-        IntentDto intentDto = new IntentDto(componentDto, new ExtrasDto());
-        intentDto.setAction("empty");
-        LaunchAppDto launchAppDto = new LaunchAppDto(intentDto);
-        String appLaunchJson = OBJECT_MAPPER.writeValueAsString(launchAppDto);
+        IntentDTO intentDTO = new IntentDTO(componentDTO, new ExtrasDTO());
+        intentDTO.setAction("empty");
+        LaunchAppDTO launchAppDTO = new LaunchAppDTO(intentDTO);
+        String appLaunchJson = OBJECT_MAPPER.writeValueAsString(launchAppDTO);
 
         logger.debug("App Launch json: {}", appLaunchJson);
         connectionManager.doHttpsPost(LAUNCH_APP_PATH, appLaunchJson);
     }
 
     private String getCurrentApp() throws IOException, ParseException {
-        CurrentAppDto currentAppDto = OBJECT_MAPPER.readValue(connectionManager.doHttpsGet(GET_CURRENT_APP_PATH),
-                CurrentAppDto.class);
-        return currentAppDto.getComponent().getPackageName();
+        CurrentAppDTO currentAppDTO = OBJECT_MAPPER.readValue(connectionManager.doHttpsGet(GET_CURRENT_APP_PATH),
+                CurrentAppDTO.class);
+        return currentAppDTO.getComponent().getPackageName();
     }
 
     private @Nullable RawType getIconForApp(String packageName, String className) throws IOException {
@@ -181,12 +181,12 @@ public class AppService implements PhilipsTVService {
     }
 
     private void getAvailableAppListFromTv() throws IOException {
-        AvailableAppsDto availableAppsDto = OBJECT_MAPPER
-                .readValue(connectionManager.doHttpsGet(GET_AVAILABLE_APP_LIST_PATH), AvailableAppsDto.class);
+        AvailableAppsDTO availableAppsDTO = OBJECT_MAPPER
+                .readValue(connectionManager.doHttpsGet(GET_AVAILABLE_APP_LIST_PATH), AvailableAppsDTO.class);
 
-        ConcurrentMap<String, AbstractMap.SimpleEntry<String, String>> appsMap = availableAppsDto.getApplications()
+        ConcurrentMap<String, AbstractMap.SimpleEntry<String, String>> appsMap = availableAppsDTO.getApplications()
                 .stream()
-                .collect(Collectors.toConcurrentMap(ApplicationsDto::getLabel,
+                .collect(Collectors.toConcurrentMap(ApplicationsDTO::getLabel,
                         a -> new AbstractMap.SimpleEntry<>(a.getIntent().getComponent().getPackageName(),
                                 a.getIntent().getComponent().getClassName()),
                         (a1, a2) -> a1));

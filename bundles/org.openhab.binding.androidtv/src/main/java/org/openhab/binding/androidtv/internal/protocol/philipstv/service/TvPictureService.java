@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.TvSettingsUpdateDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.TvSettingsUpdateDTO;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -95,7 +95,7 @@ public class TvPictureService implements PhilipsTVService {
         String getBrightnessJson = ServiceUtil.createTvSettingsRetrievalJson(BRIGHTNESS_NODE_ID);
         logger.debug("Post Tv Picture retrieval brightness json: {}", getBrightnessJson);
         return (int) OBJECT_MAPPER.readValue(connectionManager.doHttpsPost(CURRENT_SETTINGS_PATH, getBrightnessJson),
-                TvSettingsUpdateDto.class).getValues().get(0).getValue().getData().getValue();
+                TvSettingsUpdateDTO.class).getValues().get(0).getValue().getData().getValue();
     }
 
     private void setBrightness(int brightness) throws IOException {
@@ -108,7 +108,7 @@ public class TvPictureService implements PhilipsTVService {
         String getContrastJson = ServiceUtil.createTvSettingsRetrievalJson(CONTRAST_NODE_ID);
         logger.debug("Post Tv Picture retrieval contrast json: {}", getContrastJson);
         return (int) OBJECT_MAPPER.readValue(connectionManager.doHttpsPost(CURRENT_SETTINGS_PATH, getContrastJson),
-                TvSettingsUpdateDto.class).getValues().get(0).getValue().getData().getValue();
+                TvSettingsUpdateDTO.class).getValues().get(0).getValue().getData().getValue();
     }
 
     private void setContrast(int contrast) throws IOException {
@@ -121,7 +121,7 @@ public class TvPictureService implements PhilipsTVService {
         String getSharpnessJson = ServiceUtil.createTvSettingsRetrievalJson(SHARPNESS_NODE_ID);
         logger.debug("Post Tv Picture retrieval sharpness json: {}", getSharpnessJson);
         return (int) OBJECT_MAPPER.readValue(connectionManager.doHttpsPost(CURRENT_SETTINGS_PATH, getSharpnessJson),
-                TvSettingsUpdateDto.class).getValues().get(0).getValue().getData().getValue();
+                TvSettingsUpdateDTO.class).getValues().get(0).getValue().getData().getValue();
     }
 
     private void setSharpness(int sharpness) throws IOException {

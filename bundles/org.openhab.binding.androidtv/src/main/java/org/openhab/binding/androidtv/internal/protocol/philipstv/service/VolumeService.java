@@ -23,8 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keypress.KeyPressDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.volume.VolumeDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keypress.KeyPressDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.volume.VolumeDTO;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ThingStatus;
@@ -59,9 +59,9 @@ public class VolumeService implements PhilipsTVService {
     public void handleCommand(String channel, Command command) {
         try {
             if (command instanceof RefreshType) {
-                VolumeDto volumeDto = getVolume();
-                handler.postUpdateChannel(CHANNEL_VOLUME, new PercentType(volumeDto.getCurrentVolume()));
-                handler.postUpdateChannel(CHANNEL_MUTE, volumeDto.isMuted() ? OnOffType.ON : OnOffType.OFF);
+                VolumeDTO volumeDTO = getVolume();
+                handler.postUpdateChannel(CHANNEL_VOLUME, new PercentType(volumeDTO.getCurrentVolume()));
+                handler.postUpdateChannel(CHANNEL_MUTE, volumeDTO.isMuted() ? OnOffType.ON : OnOffType.OFF);
             } else if (CHANNEL_VOLUME.equals(channel) && command instanceof PercentType) {
                 setVolume((PercentType) command);
                 handler.postUpdateChannel(CHANNEL_VOLUME, (PercentType) command);
@@ -83,24 +83,24 @@ public class VolumeService implements PhilipsTVService {
         }
     }
 
-    private VolumeDto getVolume() throws IOException {
+    private VolumeDTO getVolume() throws IOException {
         String jsonContent = connectionManager.doHttpsGet(VOLUME_PATH);
-        return OBJECT_MAPPER.readValue(jsonContent, VolumeDto.class);
+        return OBJECT_MAPPER.readValue(jsonContent, VolumeDTO.class);
     }
 
     private void setVolume(PercentType volumeToSet) throws IOException {
-        VolumeDto volumeDto = new VolumeDto();
-        volumeDto.setMuted(false);
-        volumeDto.setCurrentVolume(volumeToSet.intValue());
-        String volumeJson = OBJECT_MAPPER.writeValueAsString(volumeDto);
+        VolumeDTO volumeDTO = new VolumeDTO();
+        volumeDTO.setMuted(false);
+        volumeDTO.setCurrentVolume(volumeToSet.intValue());
+        String volumeJson = OBJECT_MAPPER.writeValueAsString(volumeDTO);
         logger.debug("Set json volume: {}", volumeJson);
         connectionManager.doHttpsPost(VOLUME_PATH, volumeJson);
     }
 
     private void setMute() throws IOException {
         // We just sent the KEY_MUTE and dont bother what was actually requested
-        KeyPressDto keyPressDto = new KeyPressDto(KEY_MUTE);
-        String muteJson = OBJECT_MAPPER.writeValueAsString(keyPressDto);
+        KeyPressDTO keyPressDTO = new KeyPressDTO(KEY_MUTE);
+        String muteJson = OBJECT_MAPPER.writeValueAsString(keyPressDTO);
         logger.debug("Set json mute state: {}", muteJson);
         connectionManager.doHttpsPost(KEY_CODE_PATH, muteJson);
     }

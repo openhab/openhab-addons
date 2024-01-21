@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keypress.KeyPressDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.keypress.KeyPressDTO;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RewindFastforwardType;
@@ -99,8 +99,8 @@ public class KeyPressService implements PhilipsTVService {
     }
 
     private void sendKeyPress(KeyPress key) throws IOException {
-        KeyPressDto keyPressDto = new KeyPressDto(key);
-        String keyPressJson = OBJECT_MAPPER.writeValueAsString(keyPressDto);
+        KeyPressDTO keyPressDTO = new KeyPressDTO(key);
+        String keyPressJson = OBJECT_MAPPER.writeValueAsString(keyPressDTO);
         logger.debug("KeyPress Json sent: {}", keyPressJson);
         connectionManager.doHttpsPost(KEY_CODE_PATH, keyPressJson);
     }

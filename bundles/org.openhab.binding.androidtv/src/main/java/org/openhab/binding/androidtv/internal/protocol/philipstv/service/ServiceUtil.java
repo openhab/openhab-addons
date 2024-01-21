@@ -17,12 +17,12 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.Connecti
 import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.DataDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.NodesDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.TvSettingsCurrentDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.TvSettingsUpdateDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ValueDto;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ValuesDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.DataDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.NodesDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.TvSettingsCurrentDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.TvSettingsUpdateDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ValueDTO;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.ValuesDTO;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -39,19 +39,19 @@ final class ServiceUtil {
     }
 
     static String createTvSettingsRetrievalJson(int nodeId) throws JsonProcessingException {
-        NodesDto nodes = new NodesDto();
+        NodesDTO nodes = new NodesDTO();
         nodes.setNodeid(nodeId);
-        TvSettingsCurrentDto tvSettingCurrent = new TvSettingsCurrentDto(Collections.singletonList(nodes));
+        TvSettingsCurrentDTO tvSettingCurrent = new TvSettingsCurrentDTO(Collections.singletonList(nodes));
         return OBJECT_MAPPER.writeValueAsString(tvSettingCurrent);
     }
 
     static String createTvSettingsUpdateJson(int nodeId, int valueToSet) throws JsonProcessingException {
-        DataDto data = new DataDto(valueToSet);
-        ValueDto value = new ValueDto(data);
+        DataDTO data = new DataDTO(valueToSet);
+        ValueDTO value = new ValueDTO(data);
         value.setNodeid(nodeId);
-        ValuesDto values = new ValuesDto(value);
+        ValuesDTO values = new ValuesDTO(value);
         values.setValue(value);
-        TvSettingsUpdateDto tvSetting = new TvSettingsUpdateDto(Collections.singletonList(values));
+        TvSettingsUpdateDTO tvSetting = new TvSettingsUpdateDTO(Collections.singletonList(values));
         return OBJECT_MAPPER.writeValueAsString(tvSetting);
     }
 }

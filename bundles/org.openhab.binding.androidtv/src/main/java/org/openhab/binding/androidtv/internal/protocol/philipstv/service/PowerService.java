@@ -23,7 +23,7 @@ import org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManag
 import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.WakeOnLanUtil;
 import org.openhab.binding.androidtv.internal.protocol.philipstv.service.api.PhilipsTVService;
-import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.power.PowerStateDto;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.service.model.power.PowerStateDTO;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -60,12 +60,12 @@ public class PowerService implements PhilipsTVService {
     public void handleCommand(String channel, Command command) {
         try {
             if (command instanceof RefreshType) {
-                PowerStateDto powerStateDto = getPowerState();
-                if (powerStateDto.isPoweredOn()) {
+                PowerStateDTO powerStateDTO = getPowerState();
+                if (powerStateDTO.isPoweredOn()) {
                     handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "online.online");
-                } else if (powerStateDto.isStandby()) {
+                } else if (powerStateDTO.isStandby()) {
                     handler.postUpdateThing(ThingStatus.ONLINE, ThingStatusDetail.NONE, "online.standby");
-                    if (powerStateDto.isStandbyKeep()) {
+                    if (powerStateDTO.isStandbyKeep()) {
                         handler.checkPendingPowerOn();
                     }
                 } else {
@@ -94,22 +94,22 @@ public class PowerService implements PhilipsTVService {
         }
     }
 
-    private PowerStateDto getPowerState() throws IOException, ParseException {
-        return OBJECT_MAPPER.readValue(connectionManager.doHttpsGet(TV_POWERSTATE_PATH), PowerStateDto.class);
+    private PowerStateDTO getPowerState() throws IOException, ParseException {
+        return OBJECT_MAPPER.readValue(connectionManager.doHttpsGet(TV_POWERSTATE_PATH), PowerStateDTO.class);
     }
 
     private void setPowerState(OnOffType onOffType) throws IOException, InterruptedException {
-        PowerStateDto powerStateDto = new PowerStateDto();
+        PowerStateDTO powerStateDTO = new PowerStateDTO();
         if (onOffType == OnOffType.ON) {
             if (isWakeOnLanEnabled && !WakeOnLanUtil.isReachable(handler.config.ipAddress)) {
                 WakeOnLanUtil.wakeOnLan(handler.config.ipAddress, handler.getMacAddress());
             }
-            powerStateDto.setPowerState(POWER_ON);
+            powerStateDTO.setPowerState(POWER_ON);
         } else {
-            powerStateDto.setPowerState(STANDBY);
+            powerStateDTO.setPowerState(STANDBY);
         }
 
-        String powerStateJson = OBJECT_MAPPER.writeValueAsString(powerStateDto);
+        String powerStateJson = OBJECT_MAPPER.writeValueAsString(powerStateDTO);
         logger.debug("PowerState Json sent: {}", powerStateJson);
         connectionManager.doHttpsPost(TV_POWERSTATE_PATH, powerStateJson);
     }
