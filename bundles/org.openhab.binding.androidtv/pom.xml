@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: AndroidTV Binding</name>
 
   <properties>
-    <bnd.importpackage>!org.simpleframework.xml.*,!org.cups4j,!net.sf.ehcache.*,!net.spy.*</bnd.importpackage>
+    <bnd.importpackage>!net.sf.ehcache.*,!net.spy.*</bnd.importpackage>
   </properties>
 
   <dependencies>
