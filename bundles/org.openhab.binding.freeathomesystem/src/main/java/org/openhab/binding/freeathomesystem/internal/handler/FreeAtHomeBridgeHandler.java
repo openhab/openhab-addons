@@ -324,17 +324,20 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             return value;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.error-in-sysap-com");
 
             throw new FreeAtHomeHttpCommunicationException(0,
                     "Http communication interrupted [ " + e.getMessage() + " ]");
         } catch (ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.error-in-sysap-com");
 
             throw new FreeAtHomeHttpCommunicationException(0,
                     "Http communication timout or execution interrupted [ " + e.getMessage() + " ]");
         } catch (JsonParseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.error-in-sysap-com");
 
             throw new FreeAtHomeHttpCommunicationException(0,
                     "Invalid JSON file is received by getDatapoint with the URL [ " + e.getMessage() + " ]");
@@ -368,12 +371,14 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.error-in-sysap-com");
 
             throw new FreeAtHomeHttpCommunicationException(0,
                     "Http communication interrupted [ " + e.getMessage() + " ]");
         } catch (ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.error-in-sysap-com");
 
             restartHttpConnection();
 
@@ -461,8 +466,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/comm-error.not-able-start-httpclient");
 
-            logger.debug("Cannot start http client - {}", ex.getMessage());
-
             ret = false;
         }
 
@@ -501,8 +504,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/comm-error.not-able-open-httpconnection");
 
-                logger.debug("Cannot open http connection {}", ex.getMessage());
-
                 ret = false;
             }
         }
@@ -536,9 +537,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             ret = true;
         } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error.not-able-start-httpclient");
-
-            logger.debug("Cannot stop http client - {}", ex.getMessage());
+                    "@text/comm-error.not-able-stop-httpclient");
 
             ret = false;
         }
@@ -725,8 +724,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/comm-error.http-wrongpass-or-ip");
 
-                logger.debug("Cannot open http connection");
-
                 thingReachable = false;
             }
 
@@ -734,8 +731,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             if (!openWebSocketConnection()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/comm-error.not-able-open-websocketconnection");
-
-                logger.debug("Cannot open websocket connection");
 
                 thingReachable = false;
             }
@@ -802,11 +797,9 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             } catch (InterruptedException e) {
-                logger.debug("Thread interrupted [{}]", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/comm-error.general-websocket-issue");
             } catch (IOException e) {
-                logger.debug("Keep-alive not succesfull [{}]", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/comm-error.websocket-keep-alive-error");
             }
@@ -827,8 +820,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             if (!connectWebsocketSession()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/comm-error.general-websocket-issue");
-
-                logger.debug("Problem in websocket connection, trying to reconnect");
 
                 reconnectDelay.set(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
 

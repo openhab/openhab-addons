@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
 import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeBridgeHandler;
 import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeHttpCommunicationException;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
  * @author Andras Uhrin - Initial contribution
  */
 @NonNullByDefault
-public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscoveryService<FreeAtHomeBridgeHandler>
+        implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeSystemDiscoveryService.class);
 
@@ -59,30 +60,26 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
                         FreeAtHomeDeviceDescription device = bridgeHandler
                                 .getFreeatHomeDeviceDescription(deviceList.get(i));
 
-                        boolean useGenericDevice = true;
+                        ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.FREEATHOMEDEVICE_TYPE_UID,
+                                bridgeUID, device.deviceId);
+                        Map<String, Object> properties = new HashMap<>(1);
+                        properties.put("deviceId", device.deviceId);
+                        properties.put("interface", device.interfaceType);
 
-                        if (useGenericDevice) {
-                            ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.FREEATHOMEDEVICE_TYPE_UID,
-                                    bridgeUID, device.deviceId);
-                            Map<String, Object> properties = new HashMap<>(1);
-                            properties.put("deviceId", device.deviceId);
-                            properties.put("interface", device.interfaceType);
+                        String deviceLabel = device.deviceLabel;
 
-                            String deviceLabel = device.deviceLabel;
+                        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(deviceLabel)
+                                .withBridge(bridgeUID).withProperties(properties).build();
 
-                            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(deviceLabel)
-                                    .withBridge(bridgeUID).withProperties(properties).build();
+                        thingDiscovered(discoveryResult);
 
-                            thingDiscovered(discoveryResult);
-
-                            logger.debug("Thing discovered - DeviceId: {} - Device label: {}", device.getDeviceId(),
-                                    device.getDeviceLabel());
-                        }
+                        logger.debug("Thing discovered - DeviceId: {} - Device label: {}", device.getDeviceId(),
+                                device.getDeviceLabel());
                     }
 
                     stopScan();
                 } catch (FreeAtHomeHttpCommunicationException e) {
-                    logger.debug("TCommunication error in device discovery with the bridge: {}",
+                    logger.debug("Communication error in device discovery with the bridge: {}",
                             bridgeHandler.getThing().getLabel());
                 }
             }
@@ -90,11 +87,12 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
     };
 
     public FreeAtHomeSystemDiscoveryService(int timeout) {
-        super(FreeAtHomeSystemBindingConstants.SUPPORTED_THING_TYPES_UIDS, timeout, false);
+        super(FreeAtHomeBridgeHandler.class, FreeAtHomeSystemBindingConstants.SUPPORTED_THING_TYPES_UIDS, timeout,
+                false);
     }
 
     public FreeAtHomeSystemDiscoveryService() {
-        super(FreeAtHomeSystemBindingConstants.SUPPORTED_THING_TYPES_UIDS, 90, false);
+        super(FreeAtHomeBridgeHandler.class, FreeAtHomeSystemBindingConstants.SUPPORTED_THING_TYPES_UIDS, 90, false);
     }
 
     @Override
@@ -118,17 +116,19 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
     protected void startScan() {
         this.removeOlderResults(Instant.now().toEpochMilli());
 
+        bridgeHandler = this.thingHandler;
+
         scheduler.execute(runnable);
     }
 
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        removeOlderResults(Instant.now().getEpochSecond());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     @Override
     public void deactivate() {
-        removeOlderResults(Instant.now().getEpochSecond());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 }

@@ -49,6 +49,6 @@ public class PIdContainerClass {
 
         this.label = pLabel;
 
-        this.descprition = pDescription;
+        this.description = pDescription;
     }
 }

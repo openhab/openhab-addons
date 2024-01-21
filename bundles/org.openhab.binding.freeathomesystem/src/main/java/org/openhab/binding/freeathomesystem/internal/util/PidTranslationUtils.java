@@ -556,7 +556,7 @@ public class PidTranslationUtils {
     public static String getDescriptionTextForPairingId(String Key) {
         PIdContainerClass desc = MAP_TRANSLATOR.get(Key);
 
-        return (desc != null) ? desc.descprition : "Unknown description";
+        return (desc != null) ? desc.description : "Unknown description";
     }
 
     @SuppressWarnings("null")

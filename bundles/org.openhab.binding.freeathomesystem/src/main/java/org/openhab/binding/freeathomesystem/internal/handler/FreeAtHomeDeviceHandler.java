@@ -150,7 +150,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                 logger.debug("Communication error during refresh command {} - at channel {} - Error string {}",
                         deviceID, channelUID.getAsString(), e.getMessage());
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/comm-error.error-in-sysap-com");
             }
         } else {
             logger.debug("Invalid parameter in handleRefreshCommand - deviceID - {} - at channel {}", deviceID,
@@ -218,7 +219,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                     "Communication error during set command {} - at channel {} - full command {} - Error string {}",
                     deviceID, channelUID.getAsString(), command.toFullString(), e.getMessage());
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.error-in-sysap-com");
         }
     }
 
@@ -239,7 +241,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         if (freeAtHomeBridge != null) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/conf-error.invalid-bridge");
             return;
         }
 
@@ -250,9 +253,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
             logger.debug("Handle command for device (but invalid datapointgroup) {} - at channel {} - full command {}",
                     deviceID, channelUID.getAsString(), command.toFullString());
 
-            String errInfo = "Datapointgroup is not available in RefreshCommand - channel: " + channelUID.getAsString();
-
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errInfo);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error.invalid-deviceconfig");
         } else {
             if (command instanceof RefreshType) {
                 handleRefreshCommand(freeAtHomeBridge, dpg, channelUID);
@@ -321,7 +323,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
             logger.debug("Communication error during set command {} - at channel {} - value {} - Error string {}",
                     deviceID, channelUID.getAsString(), valueString, e.getMessage());
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.not-able-open-httpconnection");
         }
     }
 
@@ -381,7 +384,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                 }
             }
         } catch (FreeAtHomeHttpCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.error-in-sysap-com");
         }
 
         // Initialize channels
@@ -494,7 +498,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                 }
             }
         } catch (FreeAtHomeHttpCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.error-in-sysap-com");
         }
 
         for (int i = 0; i < device.getNumberOfChannels(); i++) {
@@ -550,7 +555,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                 }
             }
         } catch (FreeAtHomeHttpCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.error-in-sysap-com");
         }
 
         // Initialize channels
