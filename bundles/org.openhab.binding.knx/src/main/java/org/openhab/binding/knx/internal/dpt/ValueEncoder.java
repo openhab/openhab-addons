@@ -47,6 +47,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlator1BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator2ByteFloat;
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
+import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDate;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
 import tuwien.auto.calimero.dptxlator.DPTXlatorTime;
@@ -236,6 +237,11 @@ public class ValueEncoder {
             }
         }
         switch (mainNumber) {
+            case "1":
+                if (DPTXlatorBoolean.DPT_SCENE_AB.getID().equals(dptId)) {
+                    return (bigDecimal.intValue() == 0) ? dpt.getLowerValue() : dpt.getUpperValue();
+                }
+                return bigDecimal.stripTrailingZeros().toPlainString();
             case "2":
                 DPT valueDPT = ((DPTXlator1BitControlled.DPT1BitControlled) dpt).getValueDPT();
                 switch (bigDecimal.intValue()) {
