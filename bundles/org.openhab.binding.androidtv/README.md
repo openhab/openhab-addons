@@ -37,12 +37,17 @@ The is one required field to connect to the devices.  All other fields are optio
 | Name             | Type    | Description                           | Default | Required | Advanced |
 |------------------|---------|---------------------------------------|---------|----------|----------|
 | ipAddress        | text    | IP address of the device              | N/A     | yes      | no       |
-| googletvPort     | text    | TCP Port for GoogleTV                 | 6466    | no       | no       |
-| shieldtvPort     | text    | TCP Port for ShieldTV                 | 8987    | no       | no       |
-| philipstvPort    | text    | TCP Port for PhilipsTV                | 1926    | no       | no       |
-| keystore         | text    | Location of the Java Keystore         | N/A     | no       | no       |
-| keystorePassword | text    | Password of the Java Keystore         | N/A     | no       | no       |
-| gtvEnabled       | boolean | Enable/Disable the GoogleTV protocol  | true    | no       | no       |
+| googletvPort     | text    | TCP Port for GoogleTV                 | 6466    | no       | yes      |
+| shieldtvPort     | text    | TCP Port for ShieldTV                 | 8987    | no       | yes      |
+| philipstvPort    | text    | TCP Port for PhilipsTV                | 1926    | no       | yes      |
+| keystoreFileName | text    | Location of the Java Keystore         | N/A     | no       | yes      |
+| keystorePassword | text    | Password of the Java Keystore         | N/A     | no       | yes      |
+| reconnect        | text    | Delay between reconnections           | 60      | no       | yes      |
+| heartbeat        | text    | Frequency of heartbeats               | 5       | no       | yes      |
+| delay            | text    | Delay between messages                | 0       | no       | yes      |
+| refreshRate      | text    | Refresh interval of PhilipsTV         | 10      | no       | yes      |
+| useUpnpDiscovery | boolean | Enables UPnP Discovery for PhilipsTV  | true    | no       | yes      |
+| gtvEnabled       | boolean | Enable/Disable the GoogleTV protocol  | true    | no       | yes      |
 
 ```java
 Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
