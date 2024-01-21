@@ -137,8 +137,8 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
                         }
                     }
                     case CHANNEL_FADER -> {
-                        if (command instanceof DecimalType) {
-                            client.setFader(((DecimalType) command).intValue());
+                        if (command instanceof DecimalType commandAsDecimalType) {
+                            client.setFader(commandAsDecimalType.intValue());
                         }
                         if (command instanceof IncreaseDecreaseType) {
                             client.setFaderDelta(command == IncreaseDecreaseType.INCREASE ? 1 : -1);
