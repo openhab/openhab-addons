@@ -194,10 +194,7 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
         ScheduledFuture<?> scheduleFuture = this.scheduleFuture;
         this.scheduleFuture = null;
         if (scheduleFuture != null) {
-            try {
                 scheduleFuture.cancel(true);
-            } catch (Exception ignore) {
-            }
         }
         CP750Client client = this.client;
         this.client = null;
