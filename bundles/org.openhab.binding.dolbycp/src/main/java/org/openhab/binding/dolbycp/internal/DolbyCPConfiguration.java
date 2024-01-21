@@ -32,7 +32,7 @@ public class DolbyCPConfiguration {
     public int port = 61408;
 
     /**
-     * Interval to update channels
+     * Interval in seconds to update channels
      */
     public int refreshInterval = 5;
 
