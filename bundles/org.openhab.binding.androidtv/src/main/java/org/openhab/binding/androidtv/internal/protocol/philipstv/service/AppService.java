@@ -76,7 +76,7 @@ public class AppService implements PhilipsTVService {
     @Override
     public void handleCommand(String channel, Command command) {
         try {
-            synchronized (this) { // TODO: avoids multiple inits at startup
+            synchronized (this) {
                 if (isAvailableAppListEmpty()) {
                     getAvailableAppListFromTv();
                     handler.updateChannelStateDescription(CHANNEL_APPNAME, availableApps.keySet().stream()

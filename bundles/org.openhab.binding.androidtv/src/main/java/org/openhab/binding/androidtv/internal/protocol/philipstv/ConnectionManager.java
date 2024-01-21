@@ -104,9 +104,9 @@ public class ConnectionManager {
 
     private String getJsonFromResponse(HttpResponse response) throws IOException {
         String jsonContent = EntityUtils.toString(response.getEntity());
-        logger.debug("----------------------------------------");
-        logger.debug("{}", response.getStatusLine());
-        logger.debug("{}", jsonContent);
+        logger.trace("----------------------------------------");
+        logger.trace("{}", response.getStatusLine());
+        logger.trace("{}", jsonContent);
         return jsonContent;
     }
 

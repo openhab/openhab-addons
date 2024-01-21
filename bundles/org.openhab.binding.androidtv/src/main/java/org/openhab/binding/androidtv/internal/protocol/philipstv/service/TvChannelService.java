@@ -67,7 +67,7 @@ public class TvChannelService implements PhilipsTVService {
     public void handleCommand(String channel, Command command) {
         try {
             synchronized (this) {
-                if (isTvChannelListEmpty()) { // TODO: avoids multiple inits at startup
+                if (isTvChannelListEmpty()) {
                     availableTvChannels = getAvailableTvChannelListFromTv();
                     handler.updateChannelStateDescription(CHANNEL_TV_CHANNEL, availableTvChannels.keySet().stream()
                             .collect(Collectors.toMap(Function.identity(), Function.identity())));

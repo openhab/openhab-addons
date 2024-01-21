@@ -29,7 +29,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +67,7 @@ public class KeyPressService implements PhilipsTVService {
                     try {
                         keyPress = KeyPress.getKeyPressForValue(command.toString());
                     } catch (IllegalArgumentException e3) {
-                        // do nothing, error message is logged later
+                        logger.trace("KeyPress threw IllegalArgumentException", e3);
                     }
                 }
             }
@@ -90,10 +89,6 @@ public class KeyPressService implements PhilipsTVService {
                 }
             } else {
                 logger.warn("Command '{}' not a supported keyPress code.", command);
-            }
-        } else {
-            if (!(command instanceof RefreshType)) { // RefreshType is valid but ignored
-                logger.warn("Not a supported command: {}", command);
             }
         }
     }

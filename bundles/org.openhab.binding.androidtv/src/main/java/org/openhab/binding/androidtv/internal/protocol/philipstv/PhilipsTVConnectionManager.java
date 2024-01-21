@@ -133,7 +133,6 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     private Map<String, PhilipsTVService> channelServices = new HashMap<>();
 
     public PhilipsTVConnectionManager(AndroidTVHandler handler, PhilipsTVConfiguration config) {
-
         logger.debug("Create a Philips TV Handler for thing '{}'", handler.getThingUID());
         this.handler = handler;
         this.config = config;
@@ -345,7 +344,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             isLoggedIn = this.isLoggedIn;
             if (!isLoggedIn) {
                 // still offline
-                logger.info(
+                logger.warn(
                         "Cannot execute command {} for channel {}: PowerState of TV was checked and resolved to offline.",
                         command, channelUID.getId());
                 return;
