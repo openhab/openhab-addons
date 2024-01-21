@@ -100,6 +100,6 @@ public class PhilipsTVBindingConstants {
     public static final String STRUCTURE_SETTINGS_PATH = SETTINGS_BASE_PATH + "structure";
 
     // Logging messages
-    public static final String TV_OFFLINE_MSG = "TV is not reachable and should therefore be off.";
-    public static final String TV_NOT_LISTENING_MSG = "TV does not accept commands at the moment.";
+    public static final String TV_OFFLINE_MSG = "offline.tv-is-not-reachable-and-should-therefore-be-off";
+    public static final String TV_NOT_LISTENING_MSG = "offline.tv-does-not-accept-commands-at-the-moment";
 }

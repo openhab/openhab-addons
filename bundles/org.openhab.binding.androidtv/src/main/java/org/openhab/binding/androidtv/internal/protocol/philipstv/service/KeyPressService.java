@@ -77,7 +77,7 @@ public class KeyPressService implements PhilipsTVService {
                     sendKeyPress(keyPress);
                 } catch (Exception e) {
                     if (isTvOfflineException(e)) {
-                        logger.warn("Could not execute command for key code, the TV is offline.");
+                        logger.debug("Could not execute command for key code, the TV is offline.");
                         handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.NONE, TV_OFFLINE_MSG);
                     } else if (isTvNotListeningException(e)) {
                         handler.postUpdateThing(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
