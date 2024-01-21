@@ -37,7 +37,7 @@ public class DolbyCPConfiguration {
     public int refreshInterval = 5;
 
     /**
-     * Reconnect interval after a broken TCP connection
+     * Reconnect interval in seconds after a broken TCP connection
      */
     public int reconnectInterval = 10;
 }
