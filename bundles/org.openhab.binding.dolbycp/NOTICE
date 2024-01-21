@@ -11,3 +11,15 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third Party Dependencies
+Third Party Dependencies are used inside the code of this project, but not
+redistributed. Instead, Openhab retrieves the dependencies directly from
+public sources.
+
+=== de.cybso.cp750:cp750
+Author: Roland Tapken
+URL: https://github.com/cybso/cp750-java
+License: Apache License Version 2.0
+
+
