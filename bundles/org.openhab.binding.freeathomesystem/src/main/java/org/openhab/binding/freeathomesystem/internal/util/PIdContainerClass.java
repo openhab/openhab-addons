@@ -27,7 +27,7 @@ public class PIdContainerClass {
     int min;
     int max;
     String label;
-    String descprition;
+    String description;
 
     PIdContainerClass(String pValueType, String pCategory, String pMin, String pMax, String pLabel,
             String pDescription) {

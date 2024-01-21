@@ -116,7 +116,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractDiscoveryService i
 
     @Override
     protected void startScan() {
-        this.removeOlderResults(Instant.now().getEpochSecond());
+        this.removeOlderResults(Instant.now().toEpochMilli());
 
         scheduler.execute(runnable);
     }

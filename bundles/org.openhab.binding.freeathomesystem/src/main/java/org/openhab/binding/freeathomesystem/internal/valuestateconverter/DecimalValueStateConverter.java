@@ -27,15 +27,11 @@ public class DecimalValueStateConverter implements ValueStateConverter {
 
     @Override
     public State convertToState(String value) {
-        DecimalType dec = new DecimalType(value);
-
-        return dec;
+        return new DecimalType(value);
     }
 
     @Override
     public String convertToValueString(State state) {
-        String valueString = ((DecimalType) state).toString();
-
-        return valueString;
+        return ((DecimalType) state).toString();
     }
 }

@@ -124,13 +124,13 @@ Number LivingRoom_ThermostatHeatingDemand                 "Thermostat Heating De
 
 Sample for the free@home sensor/actuator 1/1
 
-```
+```java
 Switch SwitchMoodlight_Livingroom                         "Moodlight Livingroom"     <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:actuator:0836e63805:ABB700D85E0A_0:switchChannel }
 ```
 
 Sample for the free@home sensor/actuator 2/2
 
-```
+```java
 Switch Switch_Livingroom_Double_1                         "Moodlight Livingroom"     <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:actuator:0836e63805:ABB700887F0A_0:switchChannel }
 Switch Switch_Livingroom_Double_2                         "Moodlight Livingroom"     <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:actuator:0836e63805:ABB700887F0A_1:switchChannel }
 ```

@@ -279,7 +279,7 @@ public class FreeAtHomeDatapointGroup {
                 break;
             default:
                 itemTypeString = CoreItemFactory.NUMBER;
-                logger.debug("Item type constant not forund for PairingID {} - using default",
+                logger.debug("Item type constant not found for PairingID {} - using default",
                         String.format("0x%04X", pairingId));
                 break;
         }

@@ -53,7 +53,7 @@ public class FreeAtHomeDeviceChannel {
         // check whether this is a valid channel
         if (channelFunctionID.isEmpty()) {
             // invalid channel found
-            logger.info("Invalid channel fucntion ID found - Devicelabel: {} Channel: {}", deviceLabel, channelId);
+            logger.info("Invalid channel function ID found - Devicelabel: {} Channel: {}", deviceLabel, channelId);
 
             return false;
         }
