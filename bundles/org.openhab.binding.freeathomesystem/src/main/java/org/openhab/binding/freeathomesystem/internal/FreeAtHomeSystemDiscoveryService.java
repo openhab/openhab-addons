@@ -96,13 +96,6 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
-            this.bridgeHandler = bridgeHandler;
-        }
-    }
-
-    @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         return Set.of(FreeAtHomeSystemBindingConstants.BRIDGE_TYPE_UID);
     }
