@@ -116,7 +116,7 @@ public class ValueDecoder {
 
             switch (mainType) {
                 case "1":
-                    return handleDpt1(subType, translator);
+                    return handleDpt1(subType, translator, preferredType);
                 case "2":
                     DPTXlator1BitControlled translator1BitControlled = (DPTXlator1BitControlled) translator;
                     int decValue = (translator1BitControlled.getControlBit() ? 2 : 0)
@@ -172,13 +172,18 @@ public class ValueDecoder {
         return null;
     }
 
-    private static Type handleDpt1(String subType, DPTXlator translator) {
+    private static Type handleDpt1(String subType, DPTXlator translator, Class<? extends Type> preferredType) {
         DPTXlatorBoolean translatorBoolean = (DPTXlatorBoolean) translator;
         switch (subType) {
             case "008":
                 return translatorBoolean.getValueBoolean() ? UpDownType.DOWN : UpDownType.UP;
             case "009":
             case "019":
+                // default is OpenClosedType (Contact), but it may be mapped to OnOffType as well
+                if (OnOffType.class.equals(preferredType)) {
+                    return OnOffType.from(translatorBoolean.getValueBoolean());
+                }
+
                 // This is wrong for DPT 1.009. It should be true -> CLOSE, false -> OPEN, but unfortunately
                 // can't be fixed without breaking a lot of working installations.
                 // The documentation has been updated to reflect that. / @J-N-K
@@ -188,6 +193,11 @@ public class ValueDecoder {
             case "022":
                 return DecimalType.valueOf(translatorBoolean.getValueBoolean() ? "1" : "0");
             default:
+                // default is OnOffType (Switch), but it may be mapped to OpenClosedType as well
+                if (OpenClosedType.class.equals(preferredType)) {
+                    return translatorBoolean.getValueBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                }
+
                 return OnOffType.from(translatorBoolean.getValueBoolean());
         }
     }
