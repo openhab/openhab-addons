@@ -63,7 +63,6 @@ public class SolaxBindingConstants {
     public static final String CHANNEL_INVERTER_OUTPUT_FREQUENCY_PHASE3 = "inverter-frequency-phase3";
     public static final String CHANNEL_INVERTER_TEMPERATURE1 = "inverter-temperature1";
     public static final String CHANNEL_INVERTER_TEMPERATURE2 = "inverter-temperature2";
-    public static final String CHANNEL_INVERTER_WORKMODE_CODE = "inverter-workmode-code";
     public static final String CHANNEL_INVERTER_WORKMODE = "inverter-workmode";
 
     // Generic

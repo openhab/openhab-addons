@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterData;
 import org.openhab.binding.solax.internal.model.InverterType;
-import org.openhab.binding.solax.internal.model.InverterWorkMode;
 import org.openhab.binding.solax.internal.model.parsers.RawDataParser;
 
 /**
@@ -71,7 +70,7 @@ public class TestX1HybridG4Parser {
         assertEquals(65, data.getPV2Power()); // [9]
 
         assertEquals(2, data.getInverterWorkModeCode()); // [10]
-        assertEquals(InverterWorkMode.NORMAL, data.getInverterWorkMode()); // [10]
+        assertEquals("2", data.getInverterWorkMode()); // [10]
 
         assertEquals(121.8, data.getBatteryVoltage()); // [14]
         assertEquals(5, data.getBatteryCurrent()); // [15]

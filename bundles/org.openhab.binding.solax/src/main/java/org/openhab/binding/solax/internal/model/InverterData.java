@@ -94,8 +94,8 @@ public interface InverterData {
         return Short.MIN_VALUE;
     }
 
-    default InverterWorkMode getInverterWorkMode() {
-        return InverterWorkMode.fromCode(getInverterWorkModeCode());
+    default String getInverterWorkMode() {
+        return String.valueOf(getInverterWorkModeCode());
     }
 
     default short getBatteryLevel() {

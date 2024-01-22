@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterData;
 import org.openhab.binding.solax.internal.model.InverterType;
-import org.openhab.binding.solax.internal.model.InverterWorkMode;
 import org.openhab.binding.solax.internal.model.parsers.RawDataParser;
 
 /**
@@ -91,7 +90,7 @@ public class TestX3HybridG4Parser {
         assertEquals(49.96, data.getFrequencyPhase3()); // [18]
 
         assertEquals(2, data.getInverterWorkModeCode()); // [19]
-        assertEquals(InverterWorkMode.NORMAL, data.getInverterWorkMode()); // [19]
+        assertEquals("2", data.getInverterWorkMode()); // [19]
 
         assertEquals(-41, data.getFeedInPower()); // [34] - [35]
 

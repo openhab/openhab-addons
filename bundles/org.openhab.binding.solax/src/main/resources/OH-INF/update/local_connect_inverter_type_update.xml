@@ -143,12 +143,6 @@
 				<label>Inverter Temperature 2</label>
 				<description>Temperature 2 of the inverter</description>
 			</add-channel>
-			<add-channel id="inverter-workmode-code">
-				<type>solax:inverter-workmode-code</type>
-				<label>Inverter Workmode Code</label>
-				<description>Inverter Workmode Code (0=Waiting, 1=Checking, 2=Normal, 3=Off, 4=Fault, 5=Permanent fault,
-					6=Upgrading)</description>
-			</add-channel>
 			<add-channel id="inverter-workmode">
 				<type>solax:inverter-workmode</type>
 				<label>Inverter Workmode</label>

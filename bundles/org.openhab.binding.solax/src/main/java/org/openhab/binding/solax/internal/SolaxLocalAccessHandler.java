@@ -200,10 +200,8 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
                 supportedChannels);
         updateChannel(SolaxBindingConstants.CHANNEL_POWER_USAGE, inverterData.getPowerUsage(), Units.WATT,
                 supportedChannels);
-        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_WORKMODE_CODE, inverterData.getInverterWorkModeCode(),
-                Units.ONE, supportedChannels);
         updateState(SolaxBindingConstants.CHANNEL_INVERTER_WORKMODE,
-                new StringType(inverterData.getInverterWorkMode().getText()));
+                new StringType(inverterData.getInverterWorkMode()));
 
         // Totals
         updateChannel(SolaxBindingConstants.CHANNEL_TOTAL_ENERGY, inverterData.getTotalEnergy(), Units.KILOWATT_HOUR,
