@@ -53,6 +53,7 @@ public class PresenceDetectionTest {
 
     private @Mock @NonNullByDefault({}) Consumer<PresenceDetectionValue> callback;
     private @Mock @NonNullByDefault({}) ExecutorService detectionExecutorService;
+    private @Mock @NonNullByDefault({}) ExecutorService waitForResultExecutorService;
     private @Mock @NonNullByDefault({}) ScheduledExecutorService scheduledExecutorService;
     private @Mock @NonNullByDefault({}) PresenceDetectionListener listener;
     private @Mock @NonNullByDefault({}) NetworkUtils networkUtils;
@@ -90,6 +91,8 @@ public class PresenceDetectionTest {
         doNothing().when(subject).performSystemPing(any());
         doNothing().when(subject).performServicePing(any(), anyInt());
 
+        doReturn(waitForResultExecutorService).when(subject).getThreadsFor(1);
+
         subject.getValue(callback -> {
         });
 
@@ -99,7 +102,7 @@ public class PresenceDetectionTest {
 
         // "Wait" for the presence detection to finish
         ArgumentCaptor<Runnable> runnableCapture = ArgumentCaptor.forClass(Runnable.class);
-        verify(scheduledExecutorService, times(1)).execute(runnableCapture.capture());
+        verify(waitForResultExecutorService, times(1)).execute(runnableCapture.capture());
         runnableCapture.getValue().run();
 
         assertThat(subject.detectionChecks, is(0));
@@ -114,7 +117,8 @@ public class PresenceDetectionTest {
                 anyString(), any(), any());
         doReturn(pingResult).when(networkUtils).servicePing(anyString(), anyInt(), any());
 
-        doReturn(detectionExecutorService).when(subject).getThreadsFor(anyInt());
+        doReturn(detectionExecutorService).when(subject).getThreadsFor(3);
+        doReturn(waitForResultExecutorService).when(subject).getThreadsFor(1);
 
         subject.performPresenceDetection();
 
@@ -129,7 +133,7 @@ public class PresenceDetectionTest {
 
         // "Wait" for the presence detection to finish
         ArgumentCaptor<Runnable> runnableCapture = ArgumentCaptor.forClass(Runnable.class);
-        verify(scheduledExecutorService, times(1)).execute(runnableCapture.capture());
+        verify(waitForResultExecutorService, times(1)).execute(runnableCapture.capture());
         runnableCapture.getValue().run();
 
         assertThat(subject.detectionChecks, is(0));
@@ -154,7 +158,8 @@ public class PresenceDetectionTest {
                 anyString(), any(), any());
         doReturn(pingResult).when(networkUtils).servicePing(anyString(), anyInt(), any());
 
-        doReturn(detectionExecutorService).when(subject).getThreadsFor(anyInt());
+        doReturn(detectionExecutorService).when(subject).getThreadsFor(3);
+        doReturn(waitForResultExecutorService).when(subject).getThreadsFor(1);
 
         // We expect no valid value
         assertTrue(subject.cache.isExpired());
@@ -174,7 +179,7 @@ public class PresenceDetectionTest {
 
         // "Wait" for the presence detection to finish
         capture = ArgumentCaptor.forClass(Runnable.class);
-        verify(scheduledExecutorService, times(1)).execute(capture.capture());
+        verify(waitForResultExecutorService, times(1)).execute(capture.capture());
         capture.getValue().run();
 
         // Although there are multiple partial results and a final result,
