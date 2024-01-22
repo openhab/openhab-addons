@@ -95,6 +95,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
 
     private static class TestHomeAssistantDiscovery extends HomeAssistantDiscovery {
         public TestHomeAssistantDiscovery(MqttChannelTypeProvider typeProvider) {
+            super(null);
             this.typeProvider = typeProvider;
         }
     }
