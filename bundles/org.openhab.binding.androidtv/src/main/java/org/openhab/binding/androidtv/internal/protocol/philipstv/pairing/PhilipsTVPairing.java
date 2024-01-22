@@ -101,7 +101,6 @@ public class PhilipsTVPairing {
     public void finishPairingWithTv(String pairingCode, PhilipsTVConnectionManager handler, HttpHost target)
             throws NoSuchAlgorithmException, InvalidKeyException, IOException, KeyStoreException,
             KeyManagementException {
-
         AuthDTO authDTO = new AuthDTO();
         authDTO.setAuthAppId("1");
         authDTO.setAuthSignature(calculateRFC2104HMAC(authTimestamp + pairingCode));
