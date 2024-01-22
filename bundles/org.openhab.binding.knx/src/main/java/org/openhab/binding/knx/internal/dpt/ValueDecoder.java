@@ -81,6 +81,28 @@ public class ValueDecoder {
     public static final Pattern XYY_PATTERN = Pattern
             .compile("(?:\\((?<x>\\d+(?:[,.]\\d+)?) (?<y>\\d+(?:[,.]\\d+)?)\\))?\\s*(?:(?<Y>\\d+(?:[,.]\\d+)?)\\s%)?");
 
+    private static boolean check235001(byte[] data) throws KNXException {
+        if (data.length != 6) {
+            throw new KNXFormatException("DPT235 broken frame");
+        }
+        if ((data[5] & 2) == 0) {
+            LOGGER.trace("DPT235.001 w/o ActiveEnergy ignored");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean check23561001(byte[] data) throws KNXException {
+        if (data.length != 6) {
+            throw new KNXFormatException("DPT235 broken frame");
+        }
+        if ((data[5] & 1) == 0) {
+            LOGGER.trace("DPT235.61001 w/o Tariff ignored");
+            return false;
+        }
+        return true;
+    }
+
     /**
      * convert the raw value received to the corresponding openHAB value
      *
@@ -91,18 +113,46 @@ public class ValueDecoder {
      */
     public static @Nullable Type decode(String dptId, byte[] data, Class<? extends Type> preferredType) {
         try {
-            DPTXlator translator = TranslatorTypes.createTranslator(0,
-                    DPTUtil.NORMALIZED_DPT.getOrDefault(dptId, dptId));
-            translator.setData(data);
-            String value = translator.getValue();
-
+            String value = "";
+            String translatorDptId = dptId;
+            DPTXlator translator;
+            try {
+                translator = TranslatorTypes.createTranslator(0, DPTUtil.NORMALIZED_DPT.getOrDefault(dptId, dptId));
+                translator.setData(data);
+                value = translator.getValue();
+                translatorDptId = translator.getType().getID();
+            } catch (KNXException e) {
+                // special handling for decoding DPTs not yet supported by Calimero
+                if ("235.001".equals(dptId)) {
+                    if (!check235001(data)) {
+                        return null;
+                    }
+                    translator = TranslatorTypes.createTranslator(0, "13.010");
+                    translator.setData(data);
+                    value = translator.getValue();
+                    dptId = "13.010";
+                    translatorDptId = dptId;
+                } else if ("235.61001".equals(dptId)) {
+                    if (!check23561001(data)) {
+                        return null;
+                    }
+                    translator = TranslatorTypes.createTranslator(0, "5.006");
+                    translator.setData(new byte[] { data[4] });
+                    value = translator.getValue();
+                    dptId = "5.006";
+                    translatorDptId = dptId;
+                } else {
+                    // no known special case, handle unknown translator outer try block
+                    throw e;
+                }
+            }
             String id = dptId; // prefer using the user-supplied DPT
 
             Matcher m = DPTUtil.DPT_PATTERN.matcher(id);
             if (!m.matches() || m.groupCount() != 2) {
                 LOGGER.trace("User-Supplied DPT '{}' did not match for sub-type, using DPT returned from Translator",
                         id);
-                id = translator.getType().getID();
+                id = translatorDptId;
                 m = DPTUtil.DPT_PATTERN.matcher(id);
                 if (!m.matches() || m.groupCount() != 2) {
                     LOGGER.warn("Couldn't identify main/sub number in dptID '{}'", id);
