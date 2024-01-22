@@ -267,6 +267,18 @@ With `*-control` channels, the state is not owned by any device on the KNX bus, 
 The element `dpt` is  highly recommended and may change to a mandatory element in future versions.
 If omitted, the corresponding default value will be used (see the channel descriptions above).
 
+## Special DPTs
+
+OpenHAB supports all DPTs supported by the corresponding release of Calimero library.
+
+Additional DPTs have been introduced to add functionality:
+
+| DPT           | Description                                                 | Remark     |
+|---------------|-------------------------------------------------------------|------------|
+| DPT 232.60000 | DPT 232.600 with HSB instead of RGB data (see below)        | read/write |
+| DPT 235.001   | Composed DPT 235.001, first element ActiveEnergy (Wh)       | read only  |
+| DPT 235.61001 | Composed DPT 235.001, second element Tariff (plain number)  | read only  |
+
 ## KNX Secure
 
 > NOTE: Support for KNX Secure is partly implemented for openHAB and should be considered as experimental.
