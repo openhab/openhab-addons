@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.internal.serial.SerialTransportAdapter;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -44,9 +45,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link UsbGatewayDiscoveryService} extends {@link AbstractDiscoveryService} to detect Zigbee USB gateways
- * connected via serial port. The service will iterate over the available serial ports and open each one to test if a
- * OpenWebNet Zigbee USB gateway is connected. On successful connection, a new DiscoveryResult is created.
+ * The {@link UsbGatewayDiscoveryService} extends
+ * {@link AbstractDiscoveryService} to detect Zigbee USB gateways connected via
+ * serial port. The service will iterate over the available serial ports and
+ * open each one to test if a OpenWebNet Zigbee USB gateway is connected. On
+ * successful connection, a new DiscoveryResult is created.
  *
  * @author Massimo Valla - Initial contribution
  */
@@ -74,13 +77,21 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
     private boolean scanning;
 
     /**
-     * Constructs a new UsbGatewayDiscoveryService with the specified Zigbee USB Bridge ThingTypeUID
+     * Constructs a new UsbGatewayDiscoveryService with the specified Zigbee USB
+     * Bridge ThingTypeUID
      */
     @Activate
     public UsbGatewayDiscoveryService(final @Reference SerialPortManager spm) {
         super(Set.of(OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY), DISCOVERY_TIMEOUT_SECONDS, false);
         // Obtain the serial port manager service using an OSGi reference
         serialPortManager = spm;
+        // FIXME
+
+        SerialTransportAdapter.setSerialPortManager(spm);
+
+        logger.debug("*********************************************************************************");
+        logger.debug("********************* set SerialPortManager: {}", SerialTransportAdapter.serialPortManager);
+        logger.debug("*********************************************************************************");
     }
 
     /**

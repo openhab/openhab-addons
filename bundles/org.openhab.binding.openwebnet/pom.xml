@@ -14,10 +14,11 @@
 
   <name>openHAB Add-ons :: Bundles :: OpenWebNet (BTicino/Legrand) Binding</name>
 
-  <properties>
+  <!--
+    <properties>
     <bnd.importpackage>gnu.io;version="[3.12,6)"</bnd.importpackage>
-  </properties>
-
+    </properties>
+  -->
   <dependencies>
 
     <dependency>
