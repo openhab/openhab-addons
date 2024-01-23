@@ -23,6 +23,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.bn.coders.IASN1PreparedElement;
+import org.eclipse.jdt.annotation.DefaultLocation;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.saicismart.internal.exceptions.ChargingStatusAPIException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -42,6 +44,8 @@ import net.heberling.ismart.asn1.v3_0.entity.OTA_ChrgMangDataResp;
  *
  * @author Markus Heberling - Initial contribution
  */
+@NonNullByDefault({ DefaultLocation.PARAMETER, DefaultLocation.RETURN_TYPE, DefaultLocation.FIELD,
+        DefaultLocation.TYPE_BOUND })
 class ChargeStateUpdater implements Callable<OTA_ChrgMangDataResp> {
     private final Logger logger = LoggerFactory.getLogger(ChargeStateUpdater.class);
 
