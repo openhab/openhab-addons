@@ -8,4 +8,16 @@
 	<description>This is the binding for Growatt solar inverters.</description>
 	<connection>hybrid</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>process</service-type>
+			<match-properties>
+				<match-property>
+					<name>commandLine</name>
+					<regex>.*grott\.py.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>
