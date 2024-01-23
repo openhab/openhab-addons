@@ -13,7 +13,6 @@
 package org.openhab.binding.broadlink.handler;
 
 import static org.openhab.binding.broadlink.BroadlinkBindingConstants.*;
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.BROADLINK_HUMIDITY_UNIT;
 
 import java.io.IOException;
 import java.util.Map;
@@ -90,6 +89,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         return authenticated;
     }
 
+    @Override
     public void initialize() {
         logger.debug("initializing handler");
 
@@ -105,6 +105,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         if (thingConfig.getPollingInterval() != 0) {
             refreshHandle = scheduler.scheduleWithFixedDelay(new Runnable() {
 
+                @Override
                 public void run() {
                     updateItemStatus();
                 }
@@ -112,6 +113,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         }
     }
 
+    @Override
     @SuppressWarnings("null")
     public void dispose() {
         logger.debug("Disposing of {}", getThing().getLabel());
@@ -130,12 +132,11 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     private boolean authenticate() {
         logger.trace("Authenticating");
         authenticated = false;
-        // When authenticating, we must ALWAYS use the initial values
         this.deviceId = HexUtils.hexToBytes(INITIAL_DEVICE_ID);
         this.deviceKey = HexUtils.hexToBytes(BroadlinkBindingConstants.BROADLINK_AUTH_KEY);
 
         try {
-            byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload(), -1);
+            byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload(), -1); // 21011
             byte response[] = sendAndReceiveDatagram(authRequest, "authentication");
             if (response == null) {
                 logger.warn("response from device during authentication was null");
@@ -193,6 +194,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         return rxBytes;
     }
 
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             logger.trace("Refresh requested, updating item status ...");
@@ -246,12 +248,14 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         }
     }
 
+    @Override
     public void onDeviceRediscovered(String newIpAddress) {
         logger.debug("Rediscovered this device at IP {}", newIpAddress);
         thingConfig.setIpAddress(newIpAddress);
         transitionToOnline();
     }
 
+    @Override
     public void onDeviceRediscoveryFailure() {
         if (!Utils.isOffline(getThing())) {
             forceOffline(ThingStatusDetail.NONE,

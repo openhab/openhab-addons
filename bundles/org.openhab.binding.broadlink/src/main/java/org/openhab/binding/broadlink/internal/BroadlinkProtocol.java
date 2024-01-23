@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.ProtocolException;
 import java.util.Calendar;
+import java.util.HexFormat;
 import java.util.TimeZone;
 
 import javax.crypto.spec.IvParameterSpec;
@@ -34,6 +35,12 @@ public class BroadlinkProtocol {
 
     public static byte[] buildMessage(byte command, byte[] payload, int count, byte[] mac, byte[] deviceId, byte[] iv,
             byte[] key, int deviceType, Logger logger) {
+        logger.trace("Building message");
+        HexFormat hex = HexFormat.of();
+        logger.trace(
+                "Command: {}, Pay load length: {}, count: {}, mac: {}, deviceId: {}, iv:{}, key:{}, deviceType: {}",
+                hex.toHexDigits(command), payload.length, count, hex.formatHex(mac), hex.formatHex(deviceId),
+                hex.formatHex(iv), hex.formatHex(key), deviceType);
         byte packet[] = new byte[0x38];
         packet[0x00] = 0x5a;
         packet[0x01] = (byte) 0xa5; // https://stackoverflow.com/questions/20026942/type-mismatch-cannot-convert-int-to-byte
@@ -51,12 +58,12 @@ public class BroadlinkProtocol {
         packet[0x26] = command;
         packet[0x28] = (byte) (count & 0xff);
         packet[0x29] = (byte) (count >> 8);
-        packet[0x2a] = mac[0];
-        packet[0x2b] = mac[1];
-        packet[0x2c] = mac[2];
-        packet[0x2d] = mac[3];
-        packet[0x2e] = mac[4];
-        packet[0x2f] = mac[5];
+        packet[0x2a] = mac[5];
+        packet[0x2b] = mac[4];
+        packet[0x2c] = mac[3];
+        packet[0x2d] = mac[2];
+        packet[0x2e] = mac[1];
+        packet[0x2f] = mac[0];
         packet[0x30] = deviceId[0];
         packet[0x31] = deviceId[1];
         packet[0x32] = deviceId[2];
@@ -114,6 +121,8 @@ public class BroadlinkProtocol {
         payload[0x10] = 0x31;
         payload[0x11] = 0x31;
         payload[0x12] = 0x31;
+        payload[0x13] = 0x31;
+        payload[0x14] = 0x31;
         payload[0x1e] = 0x01;
         payload[0x2d] = 0x01;
         payload[0x30] = (byte) 'T';
@@ -187,7 +196,7 @@ public class BroadlinkProtocol {
             throw new ProtocolException("Unexpectedly short packet; length " + packet.length
                     + " is shorter than protocol minimum " + MIN_RESPONSE_PACKET_LENGTH);
         }
-        boolean error = (int) packet[0x22] != 0 || (int) packet[0x23] != 0;
+        boolean error = packet[0x22] != 0 || packet[0x23] != 0;
         if (error) {
             throw new ProtocolException(String.format("Response from device is not valid. (0x22=0x%02X,0x23=0x%02X)",
                     packet[0x22], packet[0x23]));

@@ -18,6 +18,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
+import java.util.HexFormat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -72,6 +73,8 @@ public class RetryableSocket {
     private boolean sendDatagram(byte message[], String purpose) {
         try {
             logger.trace("Sending {} to {}:{}", purpose, thingConfig.getIpAddress(), thingConfig.getPort());
+            HexFormat hex = HexFormat.of();
+            logger.trace("Message length {} bytes: {}", message.length, hex.formatHex(message));
             if (socket == null || socket.isClosed()) {
                 logger.trace("No existing socket ... creating");
                 socket = new DatagramSocket();

@@ -92,6 +92,7 @@ public class ModelMapper {
             case 0x6508:
                 return BroadlinkBindingConstants.THING_TYPE_RM3Q;
             case 0x51DA:
+            case 0x5213:
             case 0x6070:
             case 0x610E:
             case 0x610F:
