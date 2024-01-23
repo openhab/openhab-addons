@@ -54,11 +54,6 @@ public class TestNegateBit {
                 obis -> new MeterValue<>(obis, "49.0", null));
 
         assertTrue(negateStateDot);
-
-        boolean negateStateComma = NegateHandler.shouldNegateState(negateProperty,
-                obis -> new MeterValue<>(obis, "49,0", null));
-
-        assertTrue(negateStateComma);
     }
 
     @Test

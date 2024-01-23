@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.smartmeter.internal.conformity.negate;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.Locale;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -70,11 +67,10 @@ public class NegateHandler {
      * @return Whether the given bit is set or not
      */
     public static boolean isNegateSet(String value, int negatePosition) {
-        NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
         long longValue = 0;
         try {
-            longValue = format.parse(value).longValue();
-        } catch (ParseException e) {
+            longValue = (long) Double.parseDouble(value);
+        } catch (NumberFormatException e) {
             LOGGER.warn("Failed to parse value: {} when determining isNegateSet, assuming false", value);
             return false;
         }
