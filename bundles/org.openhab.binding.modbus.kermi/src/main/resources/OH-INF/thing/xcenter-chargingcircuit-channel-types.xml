@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="flow-temperature-channel">
+		<item-type>Number</item-type>
+		<label>Flow temperature</label>
+		<description>B16 - Vorlauftemperatur WP</description>
+	</channel-type>
+	<channel-type id="return-temperature-channel">
+		<item-type>Number</item-type>
+		<label>Return temperature</label>
+		<description>B17 - Rücklauftemperatur WP</description>
+	</channel-type>
+	<channel-type id="flow-speed-channel">
+		<item-type>Number</item-type>
+		<label>Flow speed </label>
+		<description>P13 - Durchfluss WP</description>
+	</channel-type>
+</thing:thing-descriptions>

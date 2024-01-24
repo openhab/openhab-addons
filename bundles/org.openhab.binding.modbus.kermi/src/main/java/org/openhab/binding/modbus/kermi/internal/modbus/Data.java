@@ -22,7 +22,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface Data {
     enum DataType {
-        INFO,
-        DATA // marks all types besides INFO
+        STATE,
+        ALARM_STATE,
+        ENERGY_SOURCE,
+        CHARGING_CIRCUIT,
+        POWER,
+        WORK_HOURS,
+        PV,
+        DATA // marks all types besides INFO/STATE
     }
 }

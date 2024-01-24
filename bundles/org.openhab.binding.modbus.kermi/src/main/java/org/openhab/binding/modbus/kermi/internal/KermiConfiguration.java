@@ -23,4 +23,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class KermiConfiguration {
 
     public int refresh = 5000;
+    public boolean pvEnabled = false;
 }

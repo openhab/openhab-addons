@@ -19,18 +19,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The numbers are taken from Kermi ExcelChart for Modbus
  * (Registers start from 0 (not 1!) so from the documented registers subtract 1)
  *
- * @author Kai Neuhaus - adapted for Kermi
+ * @author Kai Neuhaus - Initial contribution
  */
 @NonNullByDefault
 public class KermiModbusConstans {
     // "String" registers at the beginning shall be read with very low frequency - 1 hour
-    public static final int INFO_POLL_REFRESH_TIME_MS = 60 * 60 * 1000;
+    public static final int SLOW_POLL_REFRESH_TIME_MS = 60 * 60 * 1000;
 
     // poll every 30 seconds
     public static final int STATE_POLL_REFRESH_TIME_MS = 30 * 1000;
 
     // Constants where a certain Block starts and block size. Note: General offset is -1 so INFO_REG from E3DC Modbus
     // Spec starts at 1 but it's Register 0!
+    public static final int XCENTER_DATA_REG_START = 1;
+    public static final int XCENTER_DATA_REG_SIZE = 111;
+
     public static final int ENERGY_SOURCE_REG_START = 1;
     public static final int ENERGY_SOURCE_REG_SIZE = 3;
 
@@ -40,6 +43,7 @@ public class KermiModbusConstans {
     public static final int POWER_REG_START = 100;
     public static final int POWER_REG_SIZE = 12;
 
+    /** INFO BLOCK **/
     public static final int WORK_HOURS_REG_START = 150;
     public static final int WORK_HOURS_REG_SIZE = 3;
 
@@ -48,9 +52,11 @@ public class KermiModbusConstans {
 
     public static final int ALARM_REG_START = 250;
     public static final int ALARM_REG_SIZE = 1;
+    /** END INFO BLOCK **/
 
+    /** PV BLOCK **/
     public static final int PV_MODULATION_REG_START = 300;
     public static final int PV_MODULATION_REG_SIZE = 4;
 
-    public static final int REGISTER_LENGTH = 104;
+    public static final int DATA_REGISTER_LENGTH = 111;
 }

@@ -30,7 +30,47 @@ public class KermiBindingConstants {
     // Supported Thing Types
     public static final ThingTypeUID THING_TYPE_KERMI_XCENTER = new ThingTypeUID(BINDING_ID, "kermi-xcenter");
 
-    // Channels for State Block
+    // Channels for State
     public static final String GLOBAL_STATE_CHANNEL = "global-state";
     public static final String GLOBAL_STATE_ID_CHANNEL = "global-state-id";
+
+    // Alarm State
+    public static final String ALARM_STATE_CHANNEL = "alarm-state";
+
+    // Energy Source
+    public static final String FLOW_TEMPERATURE_CHANNEL = "flow-temperature";
+    public static final String RETURN_TEMPERATURE_CHANNEL = "return-temperature";
+    public static final String FLOW_SPEED_CHANNEL = "flow-speed";
+
+    // Charging Circuit
+    public static final String EXIT_TEMPERATURE_CHANNEL = "exit-temperature";
+    public static final String INCOMING_TEMPERATURE_CHANNEL = "incoming-temperature";
+    public static final String TEMPERATURE_SENSOR_OUTSIDE_CHANNEL = "temperature-sensor-outside";
+
+    // Power
+    public static final String COP_CHANNEL = "cop";
+    public static final String COP_HEATING_CHANNEL = "cop-heating";
+    public static final String COP_DRINKINGWATER_CHANNEL = "cop-drinkingwater";
+    public static final String COP_COOLING_CHANNEL = "cop-cooling";
+
+    public static final String POWER_CHANNEL = "power";
+    public static final String POWER_HEATING_CHANNEL = "power-heating";
+    public static final String POWER_DRINKINGWATER_CHANNEL = "power-drinkingwater";
+    public static final String POWER_COOLING_CHANNEL = "power-cooling";
+
+    public static final String ELECTRIC_POWER_CHANNEL = "electric-power";
+    public static final String ELECTRIC_POWER_HEATING_CHANNEL = "electric-power-heating";
+    public static final String ELECTRIC_POWER_DRINKINGWATER_CHANNEL = "electric-power-drinkingwater";
+    public static final String ELECTRIC_POWER_COOLING_CHANNEL = "electric-power-cooling";
+
+    // Work hours
+    public static final String WORKHOURS_FAN_CHANNEL = "workhours-fan";
+    public static final String WORKHOURS_STORAGE_LOADING_PUMP_CHANNEL = "workhours-storage-loading-pump";
+    public static final String WORKHOURS_COMPRESSOR_CHANNEL = "workhours-compressor";
+
+    // PV
+    public static final String PV_STATE_CHANNEL = "pv-state";
+    public static final String PV_POWER_CHANNEL = "pv-power";
+    public static final String PV_TARGET_TEMPERATURE_HEATING_CHANNEL = "pv-target-temperature-heating";
+    public static final String PV_TARGET_TEMPERATURE_DRINKINGWATER_CHANNEL = "pv-target-temperature-drinkingwater";
 }

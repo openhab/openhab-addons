@@ -20,7 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 /**
  * Test for {@link StateDTO} class
  * 
- * @author Kai Neuhaus
+ * @author Kai Neuhaus - Initial contribution
  */
 public class StateDTOTest {
 

@@ -18,14 +18,14 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 
 /**
- * The {@link StateDTO} Data object for Kermi Xcenter State Block
+ * The {@link StateDTO} Data object for Kermi Xcenter
  *
  * @author Kai Neuhaus - Initial contribution
  */
 public class StateDTO implements Data {
 
-    public StringType globalState = STATE_UNKOWN;
-    public DecimalType globalStateId = new DecimalType(-1);
+    public StringType globalState;
+    public DecimalType globalStateId;
 
     // State definitions
     public static final StringType STATE_STANDBY = StringType.valueOf("Standby");
@@ -45,7 +45,7 @@ public class StateDTO implements Data {
 
     public StateDTO(byte[] bArray) {
 
-        int status = ModbusBitUtilities.extractUInt16(bArray, 0);
+        int status = ModbusBitUtilities.extractBit(bArray, 0);
 
         globalStateId = new DecimalType(status);
 
@@ -54,11 +54,5 @@ public class StateDTO implements Data {
         } else {
             globalState = STATE_UNKOWN;
         }
-        //
-        // // index handling to calculate the correct start index
-        // ValueBuffer wrap = ValueBuffer.wrap(bArray);
-        //
-        // // int32_swap value = 4 byte
-        // int globalState = wrap.getUInt16();
     }
 }
