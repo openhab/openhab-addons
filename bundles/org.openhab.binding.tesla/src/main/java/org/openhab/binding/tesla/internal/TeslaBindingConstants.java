@@ -35,7 +35,7 @@ public class TeslaBindingConstants {
     public static final String URI_EVENT = "wss://streaming.vn.teslamotors.com/streaming/";
     public static final String URI_OWNERS = "https://owner-api.teslamotors.com";
     public static final String VALETPIN = "valetpin";
-    public static final String VEHICLES = "vehicles";
+    public static final String VEHICLES = "products";
     public static final String VIN = "vin";
 
     // SSO URI constants
