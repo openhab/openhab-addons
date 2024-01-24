@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,12 +60,10 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 
 /**
  * This is the implementation of the MongoDB {@link PersistenceService}.
@@ -176,7 +175,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         String collectionName = collectionPerItem ? realItemName : this.collection;
 
         @Nullable
-        DBCollection collection = connectToCollection(collectionName);
+        MongoCollection<Document> collection = connectToCollection(collectionName);
 
         if (collection == null) {
             // Logging is done in connectToCollection()
@@ -186,13 +185,13 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         String name = (alias != null) ? alias : realItemName;
         Object value = this.convertValue(item.getState());
 
-        DBObject obj = new BasicDBObject();
+        Document obj = new Document();
         obj.put(FIELD_ID, new ObjectId());
         obj.put(FIELD_ITEM, name);
         obj.put(FIELD_REALNAME, realItemName);
         obj.put(FIELD_TIMESTAMP, new Date());
         obj.put(FIELD_VALUE, value);
-        collection.save(obj);
+        collection.insertOne(obj);
 
         logger.debug("MongoDB save {}={}", name, value);
     }
@@ -236,7 +235,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         // Network problems may cause failure sometimes,
         // even if the connection object was successfully created before.
         try {
-            cl.getAddress();
+            cl.listDatabaseNames().first();
             return true;
         } catch (Exception ex) {
             return false;
@@ -257,11 +256,11 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             logger.debug("Connect MongoDB");
             disconnectFromDatabase();
 
-            this.cl = new MongoClient(new MongoClientURI(this.url));
+            this.cl = MongoClients.create(this.url);
 
-            // The mongo always succeeds in creating the connection.
+            // The MongoDB driver always succeeds in creating the connection.
             // We have to actually force it to test the connection to try to connect to the server.
-            cl.getAddress();
+            cl.listDatabaseNames().first();
 
             logger.debug("Connect MongoDB ... done");
             return true;
@@ -286,7 +285,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
      *
      * @return The collection object when collection creation was successful. Null otherwise.
      */
-    private @Nullable DBCollection connectToCollection(String collectionName) {
+    private @Nullable MongoCollection<Document> connectToCollection(String collectionName) {
         try {
             @Nullable
             MongoClient db = getDatabase();
@@ -296,9 +295,9 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
                 return null;
             }
 
-            DBCollection mongoCollection = db.getDB(this.db).getCollection(collectionName);
+            MongoCollection<Document> mongoCollection = db.getDatabase(this.db).getCollection(collectionName);
 
-            BasicDBObject idx = new BasicDBObject();
+            Document idx = new Document();
             idx.append(FIELD_ITEM, 1).append(FIELD_TIMESTAMP, 1);
             mongoCollection.createIndex(idx);
 
@@ -338,7 +337,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
 
         String collectionName = collectionPerItem ? realItemName : this.collection;
         @Nullable
-        DBCollection collection = connectToCollection(collectionName);
+        MongoCollection<Document> collection = connectToCollection(collectionName);
 
         // If collection creation failed, return nothing.
         if (collection == null) {
@@ -355,7 +354,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         }
 
         List<HistoricItem> items = new ArrayList<>();
-        BasicDBObject query = new BasicDBObject();
+        Document query = new Document();
         if (filter.getItemName() != null) {
             query.put(FIELD_ITEM, filter.getItemName());
         }
@@ -370,10 +369,10 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             }
 
             Object value = convertValue(filterState);
-            query.put(FIELD_VALUE, new BasicDBObject(op, value));
+            query.put(FIELD_VALUE, new Document(op, value));
         }
 
-        BasicDBObject dateQueries = new BasicDBObject();
+        Document dateQueries = new Document();
         if (filter.getBeginDate() != null) {
             dateQueries.put("$gte", Date.from(filter.getBeginDate().toInstant()));
         }
@@ -387,32 +386,39 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         logger.debug("Query: {}", query);
 
         Integer sortDir = (filter.getOrdering() == Ordering.ASCENDING) ? 1 : -1;
-        DBCursor cursor = collection.find(query).sort(new BasicDBObject(FIELD_TIMESTAMP, sortDir))
-                .skip(filter.getPageNumber() * filter.getPageSize()).limit(filter.getPageSize());
+        MongoCursor<Document> cursor = null;
+        try {
+            cursor = collection.find(query).sort(new Document(FIELD_TIMESTAMP, sortDir))
+                    .skip(filter.getPageNumber() * filter.getPageSize()).limit(filter.getPageSize()).iterator();
 
-        while (cursor.hasNext()) {
-            BasicDBObject obj = (BasicDBObject) cursor.next();
+            while (cursor.hasNext()) {
+                Document obj = cursor.next();
 
-            final State state;
-            if (item instanceof NumberItem) {
-                state = new DecimalType(obj.getDouble(FIELD_VALUE));
-            } else if (item instanceof DimmerItem) {
-                state = new PercentType(obj.getInt(FIELD_VALUE));
-            } else if (item instanceof SwitchItem) {
-                state = OnOffType.valueOf(obj.getString(FIELD_VALUE));
-            } else if (item instanceof ContactItem) {
-                state = OpenClosedType.valueOf(obj.getString(FIELD_VALUE));
-            } else if (item instanceof RollershutterItem) {
-                state = new PercentType(obj.getInt(FIELD_VALUE));
-            } else if (item instanceof DateTimeItem) {
-                state = new DateTimeType(
-                        ZonedDateTime.ofInstant(obj.getDate(FIELD_VALUE).toInstant(), ZoneId.systemDefault()));
-            } else {
-                state = new StringType(obj.getString(FIELD_VALUE));
+                final State state;
+                if (item instanceof NumberItem) {
+                    state = new DecimalType(obj.getDouble(FIELD_VALUE));
+                } else if (item instanceof DimmerItem) {
+                    state = new PercentType(obj.getInteger(FIELD_VALUE));
+                } else if (item instanceof SwitchItem) {
+                    state = OnOffType.valueOf(obj.getString(FIELD_VALUE));
+                } else if (item instanceof ContactItem) {
+                    state = OpenClosedType.valueOf(obj.getString(FIELD_VALUE));
+                } else if (item instanceof RollershutterItem) {
+                    state = new PercentType(obj.getInteger(FIELD_VALUE));
+                } else if (item instanceof DateTimeItem) {
+                    state = new DateTimeType(
+                            ZonedDateTime.ofInstant(obj.getDate(FIELD_VALUE).toInstant(), ZoneId.systemDefault()));
+                } else {
+                    state = new StringType(obj.getString(FIELD_VALUE));
+                }
+
+                items.add(new MongoDBItem(realItemName, state,
+                        ZonedDateTime.ofInstant(obj.getDate(FIELD_TIMESTAMP).toInstant(), ZoneId.systemDefault())));
             }
-
-            items.add(new MongoDBItem(realItemName, state,
-                    ZonedDateTime.ofInstant(obj.getDate(FIELD_TIMESTAMP).toInstant(), ZoneId.systemDefault())));
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
 
         return items;

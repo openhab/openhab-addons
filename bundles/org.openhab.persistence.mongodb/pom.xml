@@ -15,11 +15,28 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: MongoDB</name>
 
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
     <dependency>
       <groupId>org.mongodb</groupId>
-      <artifactId>mongo-java-driver</artifactId>
-      <version>2.13.1</version>
+      <artifactId>mongodb-driver-sync</artifactId>
+      <version>4.11.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-crypt</artifactId>
+      <version>1.8.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.11</version>
+    </dependency>
+    <!-- MongoDB In-memory Server -->
+    <dependency>
+      <groupId>de.bwaldvogel</groupId>
+      <artifactId>mongo-java-server</artifactId>
+      <version>1.44.0</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 </project>
