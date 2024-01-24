@@ -28,6 +28,7 @@
 			<property name="chlorMode"></property>
 			<property name="cellType"></property>
 			<property name="dispenserType"></property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>systemID</representation-property>
 
