@@ -294,7 +294,6 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     }
             }
         } finally
-
         {
             ReferenceCountUtil.release(msg);
         }
