@@ -2992,7 +2992,7 @@
 	<channel-type id="enableEmail" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enable Email</label>
-		<description>Turn the email features of the camera on and off</description>
+		<description>Turn the email features of the camera on or off</description>
 	</channel-type>
 
 	<channel-type id="enablePush" advanced="true">
