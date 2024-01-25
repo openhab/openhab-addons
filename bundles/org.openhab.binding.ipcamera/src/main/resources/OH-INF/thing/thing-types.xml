@@ -2998,7 +2998,7 @@
 	<channel-type id="enablePush" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enable Push</label>
-		<description>Turn the push notification features of the camera on and off</description>
+		<description>Turn the push notification features of the camera on or off</description>
 	</channel-type>
 
 	<channel-type id="autoLED" advanced="true">
