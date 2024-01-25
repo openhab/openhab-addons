@@ -57,7 +57,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeSystemHandlerFactory.class);
 
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private final HttpClient httpClient;
     private final FreeAtHomeThingTypeProvider thingTypeProvider;
     private final FreeAtHomeChannelTypeProvider channelTypeProvider;
     private final FreeAtHomeChannelGroupTypeProvider channelGroupsTypeProvider;

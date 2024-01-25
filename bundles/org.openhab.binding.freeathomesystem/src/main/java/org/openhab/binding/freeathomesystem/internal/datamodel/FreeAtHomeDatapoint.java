@@ -44,7 +44,7 @@ public class FreeAtHomeDatapoint {
             JsonObject jsonObjectOfChannel) {
         int resultingDirection = DATAPOINT_DIRECTION_UNKNOWN;
         boolean foundId = false;
-        JsonObject localDataponits = null;
+        JsonObject localDatapoints = null;
 
         switch (direction) {
             case DATAPOINT_DIRECTION_INPUT: {

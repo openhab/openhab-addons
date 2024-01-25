@@ -478,7 +478,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 URI uri1 = new URI("http://" + ipAddress + "/fhapi/v1");
                 auth.addAuthenticationResult(new BasicAuthentication.BasicResult(uri1, username, password));
 
-                String url = "http://" + ipAddress + "/fhapi/v1/api/rest/devicelist";
+                String url = baseUrl + "/rest/devicelist";
 
                 Request req = httpClient.newRequest(url);
                 ContentResponse res = req.send();

@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
  * @author Andras Uhrin - Initial contribution
  *
  */
+@NonNullByDefault
 public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
     private static final String CHANNEL_URI = "channel-type:freeathomesystem:config";

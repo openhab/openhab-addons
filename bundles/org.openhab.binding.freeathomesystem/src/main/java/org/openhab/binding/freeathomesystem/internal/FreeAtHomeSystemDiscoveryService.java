@@ -39,8 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Andras Uhrin - Initial contribution
  */
 @NonNullByDefault
-public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscoveryService<FreeAtHomeBridgeHandler>
-        implements ThingHandlerService {
+public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscoveryService<FreeAtHomeBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeSystemDiscoveryService.class);
 
@@ -98,11 +97,6 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
         return Set.of(FreeAtHomeSystemBindingConstants.BRIDGE_TYPE_UID);
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
     }
 
     @Override
