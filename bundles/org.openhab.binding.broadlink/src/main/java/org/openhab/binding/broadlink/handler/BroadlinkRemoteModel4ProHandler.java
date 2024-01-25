@@ -15,6 +15,12 @@ package org.openhab.binding.broadlink.handler;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.core.thing.Thing;
 
+/**
+ * Extension for the RF part of an RM 4 Pro
+ *
+ * @author Anton Jansen
+ */
+
 public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHandler {
 
     public BroadlinkRemoteModel4ProHandler(Thing thing,
