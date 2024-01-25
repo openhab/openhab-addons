@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 
 /**
  * Tests that each Thing Type maps to the right model number.
- * 
+ *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 @NonNullByDefault
@@ -48,27 +48,27 @@ public class ModelMapperTest {
 
     @Test
     public void mapsRm4bAsRm4() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x51da, mockLogger));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4_MINI, ModelMapper.getThingType(0x51da, mockLogger));
     }
 
     @Test
     public void mapsRm4ProAsRm4() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x61a2, mockLogger));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4_PRO, ModelMapper.getThingType(0x61a2, mockLogger));
     }
 
     @Test
     public void mapsRm462bcAsRm4() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x62bc, mockLogger));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4_MINI, ModelMapper.getThingType(0x62bc, mockLogger));
     }
 
     @Test
     public void mapsRm4Model6026AsRm4() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(0x6026, mockLogger));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4_PRO, ModelMapper.getThingType(0x6026, mockLogger));
     }
 
     @Test
     public void mapsRm4Model24846AsRm4() {
-        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4, ModelMapper.getThingType(24846, mockLogger));
+        assertEquals(BroadlinkBindingConstants.THING_TYPE_RM4_MINI, ModelMapper.getThingType(24846, mockLogger));
     }
 
     @Test

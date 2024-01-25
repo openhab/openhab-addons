@@ -35,9 +35,9 @@
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
 	</thing-type>
-	<thing-type id="rm4">
-		<label>Broadlink RM4</label>
-		<description>The Broadlink RM 4 is a Wi-Fi IR transmitter with temperature and humidity sensors.</description>
+	<thing-type id="rm4mini">
+		<label>Broadlink RM4 Mini</label>
+		<description>The Broadlink RM 4 Mini is a Wi-Fi IR transmitter with temperature and humidity sensors.</description>
 		<channels>
 			<channel id="command" typeId="command"/>
 			<channel id="learningControl" typeId="learningControl"/>
@@ -47,4 +47,18 @@
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
 	</thing-type>
+	<thing-type id="rm4pro">
+		<label>Broadlink RM4 Pro</label>
+		<description>The Broadlink RM 4 Pro is a Wi-Fi IR and RF transmitter with temperature and humidity sensors.</description>
+		<channels>
+			<channel id="command" typeId="command"/>
+			<channel id="learningControl" typeId="learningControl"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
+	</thing-type>
+
+
 </thing:thing-descriptions>

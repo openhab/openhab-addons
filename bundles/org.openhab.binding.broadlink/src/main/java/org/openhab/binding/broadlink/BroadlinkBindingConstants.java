@@ -37,7 +37,8 @@ public class BroadlinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_RM2 = new ThingTypeUID("broadlink", "rm2");
     public static final ThingTypeUID THING_TYPE_RM3 = new ThingTypeUID("broadlink", "rm3");
     public static final ThingTypeUID THING_TYPE_RM3Q = new ThingTypeUID("broadlink", "rm3q");
-    public static final ThingTypeUID THING_TYPE_RM4 = new ThingTypeUID("broadlink", "rm4");
+    public static final ThingTypeUID THING_TYPE_RM4_MINI = new ThingTypeUID("broadlink", "rm4mini");
+    public static final ThingTypeUID THING_TYPE_RM4_PRO = new ThingTypeUID("broadlink", "rm4pro");
     public static final ThingTypeUID THING_TYPE_A1 = new ThingTypeUID("broadlink", "a1");
     public static final ThingTypeUID THING_TYPE_MP1 = new ThingTypeUID("broadlink", "mp1");
     public static final ThingTypeUID THING_TYPE_MP1_1K3S2U = new ThingTypeUID("broadlink", "mp1_1k3s2u");
@@ -53,7 +54,8 @@ public class BroadlinkBindingConstants {
     public static final String RM2 = "Broadlink RM2";
     public static final String RM3 = "Broadlink RM3";
     public static final String RM3Q = "Broadlink RM3 v11057";
-    public static final String RM4 = "Broadlink RM4 / RM4 Mini / RM4 Pro";
+    public static final String RM4_MINI = "Broadlink RM4 Mini";
+    public static final String RM4_PRO = "Broadlink RM4 Pro";
     public static final String A1 = "Broadlink A1";
     public static final String MP1 = "Broadlink MP1";
     public static final String MP1_1K3S2U = "Broadlink MP1 1K3S2U";
@@ -91,7 +93,8 @@ public class BroadlinkBindingConstants {
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM2, RM2);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM3, RM3);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM3Q, RM3Q);
-        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM4, RM4);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM4_MINI, RM4_MINI);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM4_PRO, RM4_PRO);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_A1, A1);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MP1, MP1);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MP1_1K3S2U, MP1_1K3S2U);

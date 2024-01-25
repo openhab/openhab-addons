@@ -19,7 +19,8 @@ import org.openhab.binding.broadlink.handler.BroadlinkA1Handler;
 import org.openhab.binding.broadlink.handler.BroadlinkRemoteModel2Handler;
 import org.openhab.binding.broadlink.handler.BroadlinkRemoteModel3Handler;
 import org.openhab.binding.broadlink.handler.BroadlinkRemoteModel3V44057Handler;
-import org.openhab.binding.broadlink.handler.BroadlinkRemoteModel4Handler;
+import org.openhab.binding.broadlink.handler.BroadlinkRemoteModel4MiniHandler;
+import org.openhab.binding.broadlink.handler.BroadlinkRemoteModel4ProHandler;
 import org.openhab.binding.broadlink.handler.BroadlinkSocketModel1Handler;
 import org.openhab.binding.broadlink.handler.BroadlinkSocketModel2Handler;
 import org.openhab.binding.broadlink.handler.BroadlinkSocketModel3Handler;
@@ -56,10 +57,12 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
         this.commandDescriptionProvider = commandDescriptionProvider;
     }
 
+    @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.keySet().contains(thingTypeUID);
     }
 
+    @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (logger.isDebugEnabled()) {
@@ -77,9 +80,13 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("RM 3 v11057 handler requested created");
             return new BroadlinkRemoteModel3V44057Handler(thing, commandDescriptionProvider);
         }
-        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM4)) {
-            logger.debug("RM 4 handler requested created");
-            return new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM4_MINI)) {
+            logger.debug("RM 4 Mini handler requested created");
+            return new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
+        }
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM4_PRO)) {
+            logger.debug("RM 4 Pro handler requested created");
+            return new BroadlinkRemoteModel4ProHandler(thing, commandDescriptionProvider);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_A1)) {
             logger.debug("A1 handler requested created");

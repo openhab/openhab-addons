@@ -34,9 +34,9 @@ import org.openhab.core.thing.Thing;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkRemoteModel4Handler extends BroadlinkRemoteHandler {
+public class BroadlinkRemoteModel4MiniHandler extends BroadlinkRemoteHandler {
 
-    public BroadlinkRemoteModel4Handler(Thing thing,
+    public BroadlinkRemoteModel4MiniHandler(Thing thing,
             BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
         super(thing, commandDescriptionProvider);
     }

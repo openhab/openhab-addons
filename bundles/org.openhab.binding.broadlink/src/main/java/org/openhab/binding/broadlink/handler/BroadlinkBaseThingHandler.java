@@ -132,11 +132,12 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     private boolean authenticate() {
         logger.trace("Authenticating");
         authenticated = false;
+        // When authenticating, we must ALWAYS use the initial values
         this.deviceId = HexUtils.hexToBytes(INITIAL_DEVICE_ID);
         this.deviceKey = HexUtils.hexToBytes(BroadlinkBindingConstants.BROADLINK_AUTH_KEY);
 
         try {
-            byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload(), -1); // 21011
+            byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload(), -1);
             byte response[] = sendAndReceiveDatagram(authRequest, "authentication");
             if (response == null) {
                 logger.warn("response from device during authentication was null");

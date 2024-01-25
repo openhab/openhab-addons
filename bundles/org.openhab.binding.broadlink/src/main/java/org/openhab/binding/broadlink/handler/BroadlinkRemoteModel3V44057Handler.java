@@ -22,7 +22,7 @@ import org.openhab.core.thing.Thing;
  * @author Stewart Cossey - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkRemoteModel3V44057Handler extends BroadlinkRemoteModel4Handler {
+public class BroadlinkRemoteModel3V44057Handler extends BroadlinkRemoteModel4MiniHandler {
 
     public BroadlinkRemoteModel3V44057Handler(Thing thing,
             BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {

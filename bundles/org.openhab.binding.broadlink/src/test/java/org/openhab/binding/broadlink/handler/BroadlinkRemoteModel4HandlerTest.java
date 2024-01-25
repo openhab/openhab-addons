@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.broadlink.BroadlinkBindingConstants;
@@ -35,7 +36,7 @@ import org.openhab.core.types.State;
 
 /**
  * Tests the Remote Model 4 handler.
- * 
+ *
  * @author John Marshall - Initial contribution
  */
 @NonNullByDefault
@@ -54,9 +55,10 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
 
     @BeforeEach
     public void setUp() throws Exception {
-        configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_RM4, "rm4-test");
+        configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_RM4_MINI, "rm4-test");
         MockitoAnnotations.openMocks(this).close();
-        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
+        Mockito.when(mockSocket.sendAndReceive(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyString()))
+                .thenReturn(response);
     }
 
     @Test
@@ -64,7 +66,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
 
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
         setMocksForTesting(model4);
         reset(trafficObserver);
         model4.getStatusFromDevice();
@@ -86,7 +88,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
     public void sendsExpectedBytesWhenSendingCode() throws IOException {
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
         setMocksForTesting(model4);
         // Note the length is 10 so as to not require padding (6 byte preamble)
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
@@ -102,7 +104,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         byte[] sentBytes = byteCaptor.getValue();
         assertEquals(16, sentBytes.length);
 
-        assertEquals((byte) 0x0e, (byte) sentBytes[0]);
+        assertEquals((byte) 0x0e, sentBytes[0]);
         assertEquals(0x00, sentBytes[1]);
 
         assertEquals(0x02, sentBytes[2]);
@@ -126,7 +128,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
     public void sendsExpectedBytesWhenSendingCodeIncludingPadding() throws IOException {
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
         setMocksForTesting(model4);
         // Note the length is such that padding up to the next multiple of 16 will be needed
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b };
@@ -143,7 +145,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
 
         // Calculated length field is len(data) + 4 ===> 11 + 4 = 15 = 0x0f
 
-        assertEquals((byte) 0x0f, (byte) sentBytes[0]);
+        assertEquals((byte) 0x0f, sentBytes[0]);
         assertEquals(0x00, sentBytes[1]);
 
         assertEquals(0x02, sentBytes[2]); // The "send code" command
@@ -164,7 +166,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
 
     @Test
     public void setsTheTemperatureAndHumidityChannelsAfterGettingStatus() {
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
         setMocksForTesting(model4);
         reset(mockCallback);
 
@@ -196,7 +198,7 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
     public void sendsExpectedBytesWhenEnteringLearnMode() throws IOException {
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4Handler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
         setMocksForTesting(model4);
 
         reset(trafficObserver);

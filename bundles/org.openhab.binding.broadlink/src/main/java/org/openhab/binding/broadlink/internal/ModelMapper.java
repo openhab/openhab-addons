@@ -72,6 +72,7 @@ public class ModelMapper {
             case 0x27D0:
             case 0x27D1:
             case 0x27D3:
+            case 0x27DC:
             case 0x27DE:
                 return BroadlinkBindingConstants.THING_TYPE_RM3;
             case 0x2712:
@@ -89,10 +90,16 @@ public class ModelMapper {
             case 0x27C3:
                 return BroadlinkBindingConstants.THING_TYPE_RM2;
             case 0x5F36:
+            case 0x6507:
             case 0x6508:
                 return BroadlinkBindingConstants.THING_TYPE_RM3Q;
             case 0x51DA:
-            case 0x5213:
+            case 0x5209:
+            case 0x520C:
+            case 0x520D:
+            case 0x5211:
+            case 0x5212:
+            case 0x5216:
             case 0x6070:
             case 0x610E:
             case 0x610F:
@@ -102,11 +109,16 @@ public class ModelMapper {
             case 0x648D:
             case 0x6539:
             case 0x653A:
+                return BroadlinkBindingConstants.THING_TYPE_RM4_MINI;
+            case 0x520B:
+            case 0x5213:
+            case 0x5218:
             case 0x6026:
+            case 0x6184:
             case 0x61A2:
             case 0x649B:
             case 0x653C:
-                return BroadlinkBindingConstants.THING_TYPE_RM4;
+                return BroadlinkBindingConstants.THING_TYPE_RM4_PRO;
             case 0x2714:
                 return BroadlinkBindingConstants.THING_TYPE_A1;
             case 0x4EB5:
