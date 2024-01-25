@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.linky.internal;
 
-import static org.openhab.binding.linky.internal.LinkyBindingConstants.THING_TYPE_LINKY;
-
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
@@ -27,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
@@ -50,10 +49,11 @@ import com.google.gson.JsonDeserializer;
  * The {@link LinkyHandlerFactory} is responsible for creating things handlers.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
-public class LinkyHandlerFactory extends BaseThingHandlerFactory {
+public class LinkyHandlerFactory extends BaseThingHandlerFactory implements LinkyAccountHandler {
     private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
     private static final int REQUEST_BUFFER_SIZE = 8000;
 
@@ -64,10 +64,13 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
             .create();
     private final LocaleProvider localeProvider;
     private final HttpClient httpClient;
+    private final OAuthFactory oAuthFactory;
+    private final LinkyAuthService authService;
 
     @Activate
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
-            final @Reference HttpClientFactory httpClientFactory) {
+            final @Reference HttpClientFactory httpClientFactory, final @Reference LinkyAuthService authService,
+            final @Reference OAuthFactory oAuthFactory) {
         this.localeProvider = localeProvider;
         SslContextFactory sslContextFactory = new SslContextFactory.Client();
         try {
@@ -83,6 +86,9 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);
         httpClient.setFollowRedirects(false);
         httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
+        this.oAuthFactory = oAuthFactory;
+        this.authService = authService;
+
     }
 
     @Override
@@ -107,12 +113,32 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return THING_TYPE_LINKY.equals(thingTypeUID);
+        return LinkyBindingConstants.THING_TYPE_LINKY.equals(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        return supportsThingType(thing.getThingTypeUID()) ? new LinkyHandler(thing, localeProvider, gson, httpClient)
+
+        authService.setLinkyAccountHandler(this);
+
+        return supportsThingType(thing.getThingTypeUID())
+                ? new LinkyHandler(thing, localeProvider, gson, httpClient, oAuthFactory)
                 : null;
     }
+
+    @Override
+    public boolean isAuthorized() {
+        return true;
+    }
+
+    @Override
+    public String authorize(String redirectUrl, String reqCode) {
+        return "";
+    }
+
+    @Override
+    public String formatAuthorizationUrl(String redirectUri) {
+        return "";
+    }
+
 }
