@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.broadlink.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.core.thing.Thing;
 
@@ -21,6 +22,7 @@ import org.openhab.core.thing.Thing;
  * @author Anton Jansen
  */
 
+@NonNullByDefault
 public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHandler {
 
     public BroadlinkRemoteModel4ProHandler(Thing thing,
