@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,20 +14,26 @@ package org.openhab.binding.linky.internal.dto;
 
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link UserInfo} holds ids of existing Prms
+ * The {@link UserInfo} holds informations about energy delivery point
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class PrmInfo {
-    public String prmId;
-    public String customerId;
+public class AddressInfo {
+    public String street;
+    public String locality;
 
-    public Contracts contractInfo;
-    public UsagePointDetails usagePointInfo;
-    public ContactInfo contactInfo;
-    public AddressInfo addressInfo;
-    public IdentityInfo identityInfo;
+    @SerializedName("postalCode")
+    public String postal_code;
+
+    @SerializedName("insee_code")
+    public String inseeCode;
+
+    public String city;
+    public String country;
+
 }

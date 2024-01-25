@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,16 +19,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
 public class LinkyConfiguration {
-    public static final String INTERNAL_AUTH_ID = "internalAuthId";
-    public String username = "";
-    public String password = "";
-    public String internalAuthId = "";
-    public String timezone = "";
+    public String token = "";
+    public String prmId = "";
 
     public boolean seemsValid() {
-        return !username.isBlank() && !password.isBlank() && !internalAuthId.isBlank();
+        return !token.isBlank() && !prmId.isBlank();
     }
 }
