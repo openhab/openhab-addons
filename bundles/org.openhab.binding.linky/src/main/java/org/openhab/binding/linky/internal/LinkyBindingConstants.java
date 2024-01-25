@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.linky.internal;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -20,6 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API *
  */
 @NonNullByDefault
 public class LinkyBindingConstants {
@@ -32,7 +36,7 @@ public class LinkyBindingConstants {
     // Thing properties
     public static final String PUISSANCE = "puissance";
     public static final String PRM_ID = "prmId";
-    public static final String USER_ID = "av2_interne_id";
+    public static final String USER_ID = "customerId";
 
     // List of all Channel id's
     public static final String YESTERDAY = "daily#yesterday";
@@ -44,4 +48,21 @@ public class LinkyBindingConstants {
     public static final String LAST_MONTH = "monthly#lastMonth";
     public static final String THIS_YEAR = "yearly#thisYear";
     public static final String LAST_YEAR = "yearly#lastYear";
+
+    // Authorization related Servlet and resources aliases.
+    public static final String LINKY_ALIAS = "/connectlinky";
+    public static final String LINKY_IMG_ALIAS = "/img";
+
+    /**
+     * Smartthings scopes needed by this binding to work.
+     */
+    public static final String LINKY_SCOPES = Stream.of("r:devices:*", "w:devices:*", "x:devices:*", "r:hubs:*",
+            "r:locations:*", "w:locations:*", "x:locations:*", "r:scenes:*", "x:scenes:*", "r:rules:*", "w:rules:*",
+            "r:installedapps", "w:installedapps").collect(Collectors.joining(" "));
+
+    // List of Spotify services related urls, information
+    public static final String LINKY_ACCOUNT_URL = "https://api.smartthings.com/oauth";
+    public static final String LINKY_AUTHORIZE_URL = LINKY_ACCOUNT_URL + "/authorize";
+    public static final String LINKY_API_TOKEN_URL = LINKY_ACCOUNT_URL + "/token";
+
 }
