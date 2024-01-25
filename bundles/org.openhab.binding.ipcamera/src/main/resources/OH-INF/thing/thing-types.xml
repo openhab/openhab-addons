@@ -3010,7 +3010,7 @@
 	<channel-type id="autoWhiteLED" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Auto White LED</label>
-		<description>Turn the automatic mode for the visible white LED ON and OFF.</description>
+		<description>Turn the automatic mode for the visible white LED ON or OFF.</description>
 	</channel-type>
 
 	<channel-type id="externalLight" advanced="true">
