@@ -15,6 +15,7 @@ package org.openhab.binding.linky.internal;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -56,7 +57,9 @@ import com.google.gson.JsonDeserializer;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
 public class LinkyHandlerFactory extends BaseThingHandlerFactory implements LinkyAccountHandler {
     private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
-    private static final DateTimeFormatter LINKY_FORMATTER2 = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+    private static final DateTimeFormatter LINKY_LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+    private static final DateTimeFormatter LINKY_LOCALDATETIME_FORMATTER = DateTimeFormatter
+            .ofPattern("uuuu-MM-dd HH:mm:ss");
     private static final int REQUEST_BUFFER_SIZE = 8000;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
@@ -66,7 +69,18 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
                             .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
             .registerTypeAdapter(LocalDate.class,
                     (JsonDeserializer<LocalDate>) (json, type, jsonDeserializationContext) -> LocalDate
-                            .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER2))
+                            .parse(json.getAsJsonPrimitive().getAsString(), LINKY_LOCALDATE_FORMATTER))
+            .registerTypeAdapter(LocalDateTime.class,
+                    (JsonDeserializer<LocalDateTime>) (json, type, jsonDeserializationContext) -> {
+                        try {
+                            return LocalDateTime.parse(json.getAsJsonPrimitive().getAsString(),
+                                    LINKY_LOCALDATETIME_FORMATTER);
+                        } catch (Exception ex) {
+                            return LocalDate.parse(json.getAsJsonPrimitive().getAsString(), LINKY_LOCALDATE_FORMATTER)
+                                    .atStartOfDay();
+                        }
+                    })
+
             .create();
 
     private final LocaleProvider localeProvider;

@@ -150,7 +150,7 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData(String.format("%s/%s/cache", ADDRESS_URL, "21454992660003"));
+        String data = getData(String.format("%s/%s/cache", ADDRESS_URL, config.prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", ADDRESS_URL);
         }
@@ -170,7 +170,7 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData(String.format("%s/%s/cache", IDENTITY_URL, "21454992660003"));
+        String data = getData(String.format("%s/%s/cache", IDENTITY_URL, config.prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", IDENTITY_URL);
         }
@@ -190,7 +190,7 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData(String.format("%s/%s/cache", CONTACT_URL, "21454992660003"));
+        String data = getData(String.format("%s/%s/cache", CONTACT_URL, config.prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", CONTACT_URL);
         }
@@ -237,10 +237,7 @@ public class EnedisHttpApi {
         return getMeasures(userId, prmId, from, to, "daily_consumption");
     }
 
-    /*
-     * public MeterReading getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException
-     * {
-     * return getMeasures(userId, prmId, from, to, "daily_consumption_max_power");
-     * }
-     */
+    public MeterReading getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
+        return getMeasures(userId, prmId, from, to, "daily_consumption_max_power");
+    }
 }
