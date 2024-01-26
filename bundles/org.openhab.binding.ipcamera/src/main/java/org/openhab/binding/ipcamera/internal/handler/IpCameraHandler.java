@@ -437,7 +437,7 @@ public class IpCameraHandler extends BaseThingHandler {
         return false;
     }
 
-    private String getCorrectUrlFormat(String longUrl) {
+    public String getCorrectUrlFormat(String longUrl) {
         String temp = longUrl;
         URL url;
 

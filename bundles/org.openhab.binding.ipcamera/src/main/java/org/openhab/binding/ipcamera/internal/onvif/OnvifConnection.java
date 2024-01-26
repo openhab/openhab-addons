@@ -131,7 +131,7 @@ public class OnvifConnection {
     private String subscriptionXAddr = "http://" + ipAddress + "/onvif/device_service";
     private boolean isConnected = false;
     private int mediaProfileIndex = 0;
-    private String snapshotUri = "";
+    // private String snapshotUri = "";
     private String rtspUri = "";
     private IpCameraHandler ipCameraHandler;
     private boolean usingEvents = false;
@@ -359,11 +359,10 @@ public class OnvifConnection {
         } else if (message.contains("GetSnapshotUriResponse")) {
             String url = Helper.fetchXML(message, ":MediaUri", ":Uri");
             if (!url.isBlank()) {
-                snapshotUri = removeIPfromUrl(url);
-                logger.debug("GetSnapshotUri: {}", snapshotUri);
+                logger.debug("GetSnapshotUri: {}", url);
                 if (ipCameraHandler.snapshotUri.isEmpty()
                         && !"ffmpeg".equals(ipCameraHandler.cameraConfig.getSnapshotUrl())) {
-                    ipCameraHandler.snapshotUri = snapshotUri;
+                    ipCameraHandler.snapshotUri = ipCameraHandler.getCorrectUrlFormat(url);
                 }
             }
         } else if (message.contains("GetStreamUriResponse")) {
@@ -379,12 +378,13 @@ public class OnvifConnection {
     }
 
     /**
-     * The {@link removeIPfromUrl} Will throw away all text before the cameras IP, also removes the IP and the PORT
+     * The {@link removeIPandPortFromUrl} Will throw away all text before the cameras IP, also removes the IP and the
+     * PORT
      * leaving just the URL.
      *
      * @author Matthew Skinner - Initial contribution
      */
-    String removeIPfromUrl(String url) {
+    String removeIPandPortFromUrl(String url) {
         int index = url.indexOf("//");
         if (index != -1) {// now remove the :port
             index = url.indexOf("/", index + 2);
@@ -500,7 +500,8 @@ public class OnvifConnection {
     }
 
     public void sendOnvifRequest(RequestType requestType, String xAddr) {
-        logger.trace("Sending ONVIF request: {}", requestType);
+        logger.trace("Sending ONVIF request: {} to {}", requestType, xAddr);
+        int port = extractPortFromUrl(xAddr);
         String security = "";
         String extraEnvelope = "";
         String headerTo = "";
@@ -528,12 +529,13 @@ public class OnvifConnection {
             headers = "";
         }
         FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"),
-                removeIPfromUrl(xAddr));
+                removeIPandPortFromUrl(xAddr));
         String actionString = Helper.fetchXML(getXmlCache, requestType.toString(), "xmlns=\"");
         request.headers().add("Content-Type",
                 "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + requestType + "\"");
         request.headers().add("Charset", "utf-8");
-        request.headers().set("Host", ipAddress + ":" + onvifPort);
+        // Tapo brand have different ports for the event xAddr to the other xAddr, can't use 1 port for all ONVIF calls.
+        request.headers().set("Host", ipAddress + ":" + port);
         request.headers().set("Connection", HttpHeaderValues.CLOSE);
         request.headers().set("Accept-Encoding", "gzip, deflate");
         String fullXml = "<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\"" + extraEnvelope + ">"
@@ -568,7 +570,8 @@ public class OnvifConnection {
             bootstrap = localBootstap;
         }
         if (!mainEventLoopGroup.isShuttingDown()) {
-            localBootstap.connect(new InetSocketAddress(ipAddress, onvifPort)).addListener(new ChannelFutureListener() {
+            // Tapo brand have different ports for the event xAddr to the other xAddr, can't use 1 port for all calls.
+            localBootstap.connect(new InetSocketAddress(ipAddress, port)).addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(@Nullable ChannelFuture future) {
                     if (future == null) {
