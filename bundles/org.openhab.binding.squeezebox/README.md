@@ -94,38 +94,38 @@ The Squeezebox server supports the following channel:
 
 All devices support some of the following channels:
 
-| Channel Type ID        | Item Type | Description                                                                                  |
-| ---------------------- | --------- | -------------------------------------------------------------------------------------------- |
-| power                  | Switch    | Power on/off your device                                                                     |
-| mute                   | Switch    | Mute/unmute your device                                                                      |
-| volume                 | Dimmer    | Volume of your device                                                                        |
-| stop                   | Switch    | Stop the current title                                                                       |
-| control                | Player    | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind                        |
-| stream                 | String    | Play the given HTTP or file stream (file:// or http://)                                      |
-| source                 | String    | Shows the source of the currently playing playlist entry. (i.e. `http://radio.org/radio.mp3` |
-| sync                   | String    | Add another player to your device for synchronized playback (other player mac address)       |
-| playListIndex          | Number    | Playlist Index                                                                               |
-| currentPlayingTime     | Number    | Current Playing Time                                                                         |
-| duration               | Number    | Duration of currently playing track (in seconds)                                             |
-| currentPlaylistShuffle | Number    | Current playlist shuffle mode (0 No Shuffle, 1 Shuffle Songs, 2 Shuffle Albums)              |
-| currentPlaylistRepeat  | Number    | Current playlist repeat Mode (0 No Repeat, 1 Repeat Song, 2 Repeat Playlist)                 |
-| title                  | String    | Title of the current song                                                                    |
-| remotetitle            | String    | Remote Title (Radio) of the current song                                                     |
-| album                  | String    | Album name of the current song                                                               |
-| artist                 | String    | Artist name of the current song                                                              |
-| year                   | String    | Release year of the current song                                                             |
-| genre                  | String    | Genre name of the current song                                                               |
-| albumArtist            | String    | Main artist of the entire album                                                              |
-| trackArtist            | String    | Main artist of the track                                                                     |
-| band                   | String    | Band/orchestra that performed the work                                                       |
-| composer               | String    | Original composer of the work                                                                |
-| conductor              | String    | Person who conducted the performance                                                         |
-| coverartdata           | Image     | Image data of cover art of the current song                                                  |
-| ircode                 | String    | Received IR code                                                                             |
-| numberPlaylistTracks   | Number    | Number of playlist tracks                                                                    |
-| playFavorite           | String    | ID of Favorite to play (channel's state options contains available favorites)                |
-| rate                   | Switch    | "Like" or "unlike" the currently playing song (if supported by the streaming service)        |
-| sleep                  | Number    | Power off the player in the specified number of minutes. Sending 0 cancels the timer         |
+| Channel Type ID        | Item Type   | Description                                                                                  |
+| ---------------------- | ----------- | -------------------------------------------------------------------------------------------- |
+| power                  | Switch      | Power on/off your device                                                                     |
+| mute                   | Switch      | Mute/unmute your device                                                                      |
+| volume                 | Dimmer      | Volume of your device                                                                        |
+| stop                   | Switch      | Stop the current title                                                                       |
+| control                | Player      | Control the Zone Player, e.g.  play/pause/next/previous/ffward/rewind                        |
+| stream                 | String      | Play the given HTTP or file stream (file:// or http://)                                      |
+| source                 | String      | Shows the source of the currently playing playlist entry. (i.e. `http://radio.org/radio.mp3` |
+| sync                   | String      | Add another player to your device for synchronized playback (other player mac address)       |
+| playListIndex          | Number      | Playlist Index                                                                               |
+| currentPlayingTime     | Number:Time | Current Playing Time                                                                         |
+| duration               | Number:Time | Duration of currently playing track (in seconds)                                             |
+| currentPlaylistShuffle | Number      | Current playlist shuffle mode (0 No Shuffle, 1 Shuffle Songs, 2 Shuffle Albums)              |
+| currentPlaylistRepeat  | Number      | Current playlist repeat Mode (0 No Repeat, 1 Repeat Song, 2 Repeat Playlist)                 |
+| title                  | String      | Title of the current song                                                                    |
+| remotetitle            | String      | Remote Title (Radio) of the current song                                                     |
+| album                  | String      | Album name of the current song                                                               |
+| artist                 | String      | Artist name of the current song                                                              |
+| year                   | String      | Release year of the current song                                                             |
+| genre                  | String      | Genre name of the current song                                                               |
+| albumArtist            | String      | Main artist of the entire album                                                              |
+| trackArtist            | String      | Main artist of the track                                                                     |
+| band                   | String      | Band/orchestra that performed the work                                                       |
+| composer               | String      | Original composer of the work                                                                |
+| conductor              | String      | Person who conducted the performance                                                         |
+| coverartdata           | Image       | Image data of cover art of the current song                                                  |
+| ircode                 | String      | Received IR code                                                                             |
+| numberPlaylistTracks   | Number      | Number of playlist tracks                                                                    |
+| playFavorite           | String      | ID of Favorite to play (channel's state options contains available favorites)                |
+| rate                   | Switch      | "Like" or "unlike" the currently playing song (if supported by the streaming service)        |
+| sleep                  | Number      | Power off the player in the specified number of minutes. Sending 0 cancels the timer         |
 
 ## Example .Items File
 

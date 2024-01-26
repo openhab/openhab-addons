@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -127,20 +127,19 @@ class RioSourceProtocol extends AbstractRioProtocol {
      * The table of channels to unique identifiers for media management functions
      */
     @SuppressWarnings("serial")
-    private final Map<String, AtomicInteger> mmSeqNbrs = Collections
-            .unmodifiableMap(new HashMap<String, AtomicInteger>() {
-                {
-                    put(RioConstants.CHANNEL_SOURCEMMMENU, new AtomicInteger(0));
-                    put(RioConstants.CHANNEL_SOURCEMMSCREEN, new AtomicInteger(0));
-                    put(RioConstants.CHANNEL_SOURCEMMTITLE, new AtomicInteger(0));
-                    put(RioConstants.CHANNEL_SOURCEMMATTR, new AtomicInteger(0));
-                    put(RioConstants.CHANNEL_SOURCEMMBUTTONOKTEXT, new AtomicInteger(0));
-                    put(RioConstants.CHANNEL_SOURCEMMBUTTONBACKTEXT, new AtomicInteger(0));
-                    put(RioConstants.CHANNEL_SOURCEMMINFOTEXT, new AtomicInteger(0));
-                    put(RioConstants.CHANNEL_SOURCEMMHELPTEXT, new AtomicInteger(0));
-                    put(RioConstants.CHANNEL_SOURCEMMTEXTFIELD, new AtomicInteger(0));
-                }
-            });
+    private final Map<String, AtomicInteger> mmSeqNbrs = Collections.unmodifiableMap(new HashMap<>() {
+        {
+            put(RioConstants.CHANNEL_SOURCEMMMENU, new AtomicInteger(0));
+            put(RioConstants.CHANNEL_SOURCEMMSCREEN, new AtomicInteger(0));
+            put(RioConstants.CHANNEL_SOURCEMMTITLE, new AtomicInteger(0));
+            put(RioConstants.CHANNEL_SOURCEMMATTR, new AtomicInteger(0));
+            put(RioConstants.CHANNEL_SOURCEMMBUTTONOKTEXT, new AtomicInteger(0));
+            put(RioConstants.CHANNEL_SOURCEMMBUTTONBACKTEXT, new AtomicInteger(0));
+            put(RioConstants.CHANNEL_SOURCEMMINFOTEXT, new AtomicInteger(0));
+            put(RioConstants.CHANNEL_SOURCEMMHELPTEXT, new AtomicInteger(0));
+            put(RioConstants.CHANNEL_SOURCEMMTEXTFIELD, new AtomicInteger(0));
+        }
+    });
 
     /**
      * The client used for http requests

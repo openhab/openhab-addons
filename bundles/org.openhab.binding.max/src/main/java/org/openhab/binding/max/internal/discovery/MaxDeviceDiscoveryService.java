@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,25 +12,23 @@
  */
 package org.openhab.binding.max.internal.discovery;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.max.internal.MaxBindingConstants;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.handler.DeviceStatusListener;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,46 +38,29 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = MaxDeviceDiscoveryService.class)
 @NonNullByDefault
-public class MaxDeviceDiscoveryService extends AbstractDiscoveryService
-        implements DeviceStatusListener, DiscoveryService, ThingHandlerService {
+public class MaxDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<MaxCubeBridgeHandler>
+        implements DeviceStatusListener {
 
     private static final int SEARCH_TIME = 60;
     private final Logger logger = LoggerFactory.getLogger(MaxDeviceDiscoveryService.class);
 
-    private @Nullable MaxCubeBridgeHandler maxCubeBridgeHandler;
-
     public MaxDeviceDiscoveryService() {
-        super(MaxBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME, true);
+        super(MaxCubeBridgeHandler.class, MaxBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, SEARCH_TIME, true);
     }
 
     @Override
-    public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
-        if (handler instanceof MaxCubeBridgeHandler maxCubeBridgeHandler) {
-            this.maxCubeBridgeHandler = maxCubeBridgeHandler;
-        }
+    public void initialize() {
+        thingHandler.registerDeviceStatusListener(this);
+        super.initialize();
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return maxCubeBridgeHandler;
-    }
-
-    @Override
-    public void activate() {
-        MaxCubeBridgeHandler localMaxCubeBridgeHandler = maxCubeBridgeHandler;
-        if (localMaxCubeBridgeHandler != null) {
-            localMaxCubeBridgeHandler.registerDeviceStatusListener(this);
-        }
-    }
-
-    @Override
-    public void deactivate() {
-        MaxCubeBridgeHandler localMaxCubeBridgeHandler = maxCubeBridgeHandler;
-        if (localMaxCubeBridgeHandler != null) {
-            localMaxCubeBridgeHandler.unregisterDeviceStatusListener(this);
-            removeOlderResults(new Date().getTime(), localMaxCubeBridgeHandler.getThing().getUID());
-        }
+    public void dispose() {
+        super.dispose();
+        thingHandler.unregisterDeviceStatusListener(this);
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
     }
 
     @Override
@@ -133,11 +114,8 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void startScan() {
-        MaxCubeBridgeHandler localMaxCubeBridgeHandler = maxCubeBridgeHandler;
-        if (localMaxCubeBridgeHandler != null) {
-            localMaxCubeBridgeHandler.clearDeviceList();
-            localMaxCubeBridgeHandler.deviceInclusion();
-        }
+        thingHandler.clearDeviceList();
+        thingHandler.deviceInclusion();
     }
 
     @Override

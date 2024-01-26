@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class StuderHandler extends BaseThingHandler {
     /**
      * Array of tasks used to poll the device
      */
-    private ArrayList<PollTask> pollTasks = new ArrayList<PollTask>();
+    private ArrayList<PollTask> pollTasks = new ArrayList<>();
 
     /**
      * Communication interface to the slave endpoint we're connecting to

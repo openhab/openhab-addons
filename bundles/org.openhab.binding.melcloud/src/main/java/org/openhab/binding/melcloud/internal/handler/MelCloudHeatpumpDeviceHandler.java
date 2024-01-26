@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -242,7 +242,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     private void updateChannels(String channelId, HeatpumpDeviceStatus heatpumpDeviceStatus) {
         switch (channelId) {
             case CHANNEL_POWER:
-                updateState(CHANNEL_POWER, heatpumpDeviceStatus.getPower() ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_POWER, OnOffType.from(heatpumpDeviceStatus.getPower()));
                 break;
             case CHANNEL_TANKWATERTEMPERATURE:
                 updateState(CHANNEL_TANKWATERTEMPERATURE,
@@ -257,8 +257,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
                         new DecimalType(heatpumpDeviceStatus.getRoomTemperatureZone1()));
                 break;
             case CHANNEL_FORCED_HOTWATERMODE:
-                updateState(CHANNEL_FORCED_HOTWATERMODE,
-                        heatpumpDeviceStatus.getForcedHotWaterMode() ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_FORCED_HOTWATERMODE, OnOffType.from(heatpumpDeviceStatus.getForcedHotWaterMode()));
                 break;
             case CHANNEL_LAST_COMMUNICATION:
                 updateState(CHANNEL_LAST_COMMUNICATION,
@@ -269,11 +268,10 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
                         new DateTimeType(convertDateTime(heatpumpDeviceStatus.getNextCommunication())));
                 break;
             case CHANNEL_HAS_PENDING_COMMAND:
-                updateState(CHANNEL_HAS_PENDING_COMMAND,
-                        heatpumpDeviceStatus.getHasPendingCommand() ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_HAS_PENDING_COMMAND, OnOffType.from(heatpumpDeviceStatus.getHasPendingCommand()));
                 break;
             case CHANNEL_OFFLINE:
-                updateState(CHANNEL_OFFLINE, heatpumpDeviceStatus.getOffline() ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_OFFLINE, OnOffType.from(heatpumpDeviceStatus.getOffline()));
                 break;
         }
     }

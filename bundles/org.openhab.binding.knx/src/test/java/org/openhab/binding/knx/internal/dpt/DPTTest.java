@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.knx.internal.dpt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.stream.IntStream;
@@ -30,6 +31,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.util.ColorUtil;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
@@ -329,7 +331,53 @@ class DPTTest {
     }
 
     @Test
-    public void dpt252EncoderTest() {
+    public void dpt235Decoder() {
+        byte[] noActiveEnergy = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xfd };
+        assertNull(ValueDecoder.decode("235.001", noActiveEnergy, QuantityType.class));
+
+        byte[] noTariff = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xfe };
+        assertNull(ValueDecoder.decode("235.61001", noTariff, DecimalType.class));
+
+        byte[] activeEnergy = new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x03, (byte) 0xff, (byte) 0x0a, (byte) 0x02 };
+        assertEquals(new QuantityType<>("1023 Wh"), ValueDecoder.decode("235.001", activeEnergy, QuantityType.class));
+
+        byte[] activeTariff = new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x03, (byte) 0xff, (byte) 0x0a, (byte) 0x01 };
+        assertEquals(new DecimalType("10"), ValueDecoder.decode("235.61001", activeTariff, DecimalType.class));
+
+        byte[] activeAll = new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x03, (byte) 0xff, (byte) 0x0a, (byte) 0x03 };
+        assertEquals(new QuantityType<>("1023 Wh"), ValueDecoder.decode("235.001", activeAll, QuantityType.class));
+        assertEquals(new DecimalType("10"), ValueDecoder.decode("235.61001", activeAll, DecimalType.class));
+
+        byte[] negativeEnergy = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00,
+                (byte) 0x02 };
+        assertEquals(new QuantityType<>("-1 Wh"), ValueDecoder.decode("235.001", negativeEnergy, QuantityType.class));
+    }
+
+    @Test
+    public void dpt251White() {
+        // input data: color white
+        byte[] data = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x00, 0x00, 0x0e };
+        HSBType hsbType = (HSBType) ValueDecoder.decode("251.600", data, HSBType.class);
+
+        assertNotNull(hsbType);
+        assertEquals(0, hsbType.getHue().doubleValue(), 0.5);
+        assertEquals(0, hsbType.getSaturation().doubleValue(), 0.5);
+        assertEquals(100, hsbType.getBrightness().doubleValue(), 0.5);
+
+        String enc = ValueEncoder.encode(hsbType, "251.600");
+        // white should be "100 100 100 - %", but expect small deviation due to rounding
+        assertNotNull(enc);
+        String[] parts = enc.split(" ");
+        assertEquals(5, parts.length);
+        int[] rgb = ColorUtil.hsbToRgb(hsbType);
+        assertEquals(rgb[0] * 100d / 255, Double.valueOf(parts[0].replace(',', '.')), 1);
+        assertEquals(rgb[1] * 100d / 255, Double.valueOf(parts[1].replace(',', '.')), 1);
+        assertEquals(rgb[2] * 100d / 255, Double.valueOf(parts[2].replace(',', '.')), 1);
+    }
+
+    @Test
+    public void dpt251Value() {
         // input data
         byte[] data = new byte[] { 0x26, 0x2b, 0x31, 0x00, 0x00, 0x0e };
         HSBType hsbType = (HSBType) ValueDecoder.decode("251.600", data, HSBType.class);
@@ -338,6 +386,16 @@ class DPTTest {
         assertEquals(207, hsbType.getHue().doubleValue(), 0.5);
         assertEquals(23, hsbType.getSaturation().doubleValue(), 0.5);
         assertEquals(19, hsbType.getBrightness().doubleValue(), 0.5);
+
+        String enc = ValueEncoder.encode(hsbType, "251.600");
+        // white should be "100 100 100 - %", but expect small deviation due to rounding
+        assertNotNull(enc);
+        String[] parts = enc.split(" ");
+        assertEquals(5, parts.length);
+        int[] rgb = ColorUtil.hsbToRgb(hsbType);
+        assertEquals(rgb[0] * 100d / 255, Double.valueOf(parts[0].replace(',', '.')), 1);
+        assertEquals(rgb[1] * 100d / 255, Double.valueOf(parts[1].replace(',', '.')), 1);
+        assertEquals(rgb[2] * 100d / 255, Double.valueOf(parts[2].replace(',', '.')), 1);
     }
 
     // This test checks all our overrides for units. It allows to detect unnecessary overrides when we
@@ -386,16 +444,20 @@ class DPTTest {
         assertNotEquals(DPTXlator64BitSigned.DPT_REACTIVE_ENERGY.getUnit(), Units.VAR_HOUR.toString());
     }
 
-    private static Stream<String> unitProvider() {
+    private static Stream<Map.Entry<String, String>> unitProvider() {
         return DPTUnits.getAllUnitStrings();
     }
 
     @ParameterizedTest
     @MethodSource("unitProvider")
-    public void unitsValid(String unit) {
-        String valueStr = "1 " + unit;
-        QuantityType<?> value = new QuantityType<>(valueStr);
-        Assertions.assertNotNull(value);
+    public void unitsValid(Map.Entry<String, String> unit) {
+        String valueStr = "1 " + unit.getValue();
+        try {
+            QuantityType<?> value = new QuantityType<>(valueStr);
+            Assertions.assertNotNull(value, "Failed to parse " + unit + "(result null)");
+        } catch (Exception e) {
+            fail("Failed to parse " + unit + ": " + e.getMessage());
+        }
     }
 
     private static Stream<byte[]> rgbValueProvider() {

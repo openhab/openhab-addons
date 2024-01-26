@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.ScheduledExecutorService;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,11 +55,13 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class NetworkHandlerTest extends JavaTest {
     private ThingUID thingUID = new ThingUID("network", "ttype", "ping");
 
-    private @Mock ThingHandlerCallback callback;
-    private @Mock Thing thing;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
+    private @Mock @NonNullByDefault({}) ScheduledExecutorService scheduledExecutorService;
+    private @Mock @NonNullByDefault({}) Thing thing;
 
     @BeforeEach
     public void setUp() {
@@ -76,17 +83,18 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_TIMEOUT, 1234);
             return conf;
         });
-        PresenceDetection presenceDetection = spy(new PresenceDetection(handler, 2000));
+        PresenceDetection presenceDetection = spy(
+                new PresenceDetection(handler, scheduledExecutorService, Duration.ofSeconds(2)));
         // Mock start/stop automatic refresh
-        doNothing().when(presenceDetection).startAutomaticRefresh(any());
+        doNothing().when(presenceDetection).startAutomaticRefresh();
         doNothing().when(presenceDetection).stopAutomaticRefresh();
 
         handler.initialize(presenceDetection);
         assertThat(handler.retries, is(10));
         assertThat(presenceDetection.getHostname(), is("127.0.0.1"));
         assertThat(presenceDetection.getServicePorts().iterator().next(), is(8080));
-        assertThat(presenceDetection.getRefreshInterval(), is(101010L));
-        assertThat(presenceDetection.getTimeout(), is(1234));
+        assertThat(presenceDetection.getRefreshInterval(), is(Duration.ofMillis(101010)));
+        assertThat(presenceDetection.getTimeout(), is(Duration.ofMillis(1234)));
     }
 
     @Test
@@ -101,7 +109,7 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_HOSTNAME, "127.0.0.1");
             return conf;
         });
-        handler.initialize(new PresenceDetection(handler, 2000));
+        handler.initialize(new PresenceDetection(handler, scheduledExecutorService, Duration.ofSeconds(2)));
         // Check that we are offline
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
@@ -120,10 +128,12 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_HOSTNAME, "127.0.0.1");
             return conf;
         });
-        PresenceDetection presenceDetection = spy(new PresenceDetection(handler, 2000));
+        PresenceDetection presenceDetection = spy(
+                new PresenceDetection(handler, scheduledExecutorService, Duration.ofSeconds(2)));
         // Mock start/stop automatic refresh
-        doNothing().when(presenceDetection).startAutomaticRefresh(any());
+        doNothing().when(presenceDetection).startAutomaticRefresh();
         doNothing().when(presenceDetection).stopAutomaticRefresh();
+        doReturn(Instant.now()).when(presenceDetection).getLastSeen();
 
         handler.initialize(presenceDetection);
         // Check that we are online
@@ -133,7 +143,7 @@ public class NetworkHandlerTest extends JavaTest {
 
         // Mock result value
         PresenceDetectionValue value = mock(PresenceDetectionValue.class);
-        when(value.getLowestLatency()).thenReturn(10.0);
+        when(value.getLowestLatency()).thenReturn(Duration.ofMillis(10));
         when(value.isReachable()).thenReturn(true);
         when(value.getSuccessfulDetectionTypes()).thenReturn("TESTMETHOD");
 
@@ -146,7 +156,6 @@ public class NetworkHandlerTest extends JavaTest {
                 eq(new QuantityType<>("10.0 ms")));
 
         // Final result affects the LASTSEEN channel
-        when(value.isFinished()).thenReturn(true);
         handler.finalDetectionResult(value);
         verify(callback).stateUpdated(eq(new ChannelUID(thingUID, NetworkBindingConstants.CHANNEL_LASTSEEN)), any());
     }

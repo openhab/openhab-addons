@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,10 +131,10 @@ public abstract class A5_10 extends _4BSMessage {
                 return getTemperature();
 
             case CHANNEL_BATTERYLOW:
-                return getBit(getDB0(), 4) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(getDB0(), 4));
 
             case CHANNEL_OCCUPANCY:
-                return getBit(getDB0(), 0) ? OnOffType.OFF : OnOffType.ON;
+                return OnOffType.from(!getBit(getDB0(), 0));
 
             case CHANNEL_DAYNIGHTMODESTATE:
                 return new DecimalType(getDB0Value() & 0x01);

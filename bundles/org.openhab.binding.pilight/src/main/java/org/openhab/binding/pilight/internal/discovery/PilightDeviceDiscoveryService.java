@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.pilight.internal.discovery;
 
 import static org.openhab.binding.pilight.internal.PilightBindingConstants.*;
 
-import java.util.HashMap;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,18 +25,18 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.pilight.internal.PilightHandlerFactory;
 import org.openhab.binding.pilight.internal.dto.Config;
 import org.openhab.binding.pilight.internal.dto.DeviceType;
 import org.openhab.binding.pilight.internal.dto.Status;
 import org.openhab.binding.pilight.internal.handler.PilightBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,91 +46,76 @@ import org.slf4j.LoggerFactory;
  *
  * @author Niklas Dörfler - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = PilightDeviceDiscoveryService.class)
 @NonNullByDefault
-public class PilightDeviceDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = PilightHandlerFactory.SUPPORTED_THING_TYPES_UIDS;
+public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<PilightBridgeHandler> {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CONTACT, THING_TYPE_DIMMER,
+            THING_TYPE_GENERIC, THING_TYPE_SWITCH);
 
     private static final int AUTODISCOVERY_SEARCH_TIME_SEC = 10;
-    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC = 60 * 10;
+    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INITIAL_DELAY_SEC = 20;
+    private static final int AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC = 10 * 60; // 10 minutes
 
     private final Logger logger = LoggerFactory.getLogger(PilightDeviceDiscoveryService.class);
-
-    private @Nullable PilightBridgeHandler pilightBridgeHandler;
-    private @Nullable ThingUID bridgeUID;
 
     private @Nullable ScheduledFuture<?> backgroundDiscoveryJob;
     private CompletableFuture<Config> configFuture;
     private CompletableFuture<List<Status>> statusFuture;
 
     public PilightDeviceDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, AUTODISCOVERY_SEARCH_TIME_SEC);
+        super(PilightBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, AUTODISCOVERY_SEARCH_TIME_SEC);
         configFuture = new CompletableFuture<>();
         statusFuture = new CompletableFuture<>();
     }
 
     @Override
     protected void startScan() {
-        if (pilightBridgeHandler != null) {
-            configFuture = new CompletableFuture<>();
-            statusFuture = new CompletableFuture<>();
+        configFuture = new CompletableFuture<>();
+        statusFuture = new CompletableFuture<>();
 
-            configFuture.thenAcceptBoth(statusFuture, (config, allStatus) -> {
-                removeOlderResults(getTimestampOfLastScan(), bridgeUID);
-                config.getDevices().forEach((deviceId, device) -> {
-                    if (this.pilightBridgeHandler != null) {
-                        final Optional<Status> status = allStatus.stream()
-                                .filter(s -> s.getDevices().contains(deviceId)).findFirst();
+        configFuture.thenAcceptBoth(statusFuture, (config, allStatus) -> {
+            removeOlderResults(getTimestampOfLastScan(), thingHandler.getThing().getUID());
+            config.getDevices().forEach((deviceId, device) -> {
+                final Optional<Status> status = allStatus.stream().filter(s -> s.getDevices().contains(deviceId))
+                        .findFirst();
 
-                        final ThingTypeUID thingTypeUID;
-                        final String typeString;
+                final ThingTypeUID thingTypeUID;
+                final String typeString;
 
-                        if (status.isPresent()) {
-                            if (status.get().getType().equals(DeviceType.SWITCH)) {
-                                thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_SWITCH.getId());
-                                typeString = "Switch";
-                            } else if (status.get().getType().equals(DeviceType.DIMMER)) {
-                                thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_DIMMER.getId());
-                                typeString = "Dimmer";
-                            } else if (status.get().getType().equals(DeviceType.VALUE)) {
-                                thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_GENERIC.getId());
-                                typeString = "Generic";
-                            } else if (status.get().getType().equals(DeviceType.CONTACT)) {
-                                thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_CONTACT.getId());
-                                typeString = "Contact";
-                            } else {
-                                thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_GENERIC.getId());
-                                typeString = "Generic";
-                            }
-                        } else {
-                            thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_GENERIC.getId());
-                            typeString = "Generic";
-                        }
-
-                        final @Nullable PilightBridgeHandler pilightBridgeHandler = this.pilightBridgeHandler;
-                        if (pilightBridgeHandler != null) {
-                            final ThingUID thingUID = new ThingUID(thingTypeUID,
-                                    pilightBridgeHandler.getThing().getUID(), deviceId);
-
-                            final Map<String, Object> properties = new HashMap<>();
-                            properties.put(PROPERTY_NAME, deviceId);
-
-                            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                                    .withThingType(thingTypeUID).withProperties(properties).withBridge(bridgeUID)
-                                    .withRepresentationProperty(PROPERTY_NAME)
-                                    .withLabel("Pilight " + typeString + " Device '" + deviceId + "'").build();
-
-                            thingDiscovered(discoveryResult);
-                        }
+                if (status.isPresent()) {
+                    if (status.get().getType().equals(DeviceType.SWITCH)) {
+                        thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_SWITCH.getId());
+                        typeString = "Switch";
+                    } else if (status.get().getType().equals(DeviceType.DIMMER)) {
+                        thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_DIMMER.getId());
+                        typeString = "Dimmer";
+                    } else if (status.get().getType().equals(DeviceType.VALUE)) {
+                        thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_GENERIC.getId());
+                        typeString = "Generic";
+                    } else if (status.get().getType().equals(DeviceType.CONTACT)) {
+                        thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_CONTACT.getId());
+                        typeString = "Contact";
+                    } else {
+                        thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_GENERIC.getId());
+                        typeString = "Generic";
                     }
-                });
-            });
+                } else {
+                    thingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_GENERIC.getId());
+                    typeString = "Generic";
+                }
 
-            final @Nullable PilightBridgeHandler pilightBridgeHandler = this.pilightBridgeHandler;
-            if (pilightBridgeHandler != null) {
-                pilightBridgeHandler.refreshConfigAndStatus();
-            }
-        }
+                final ThingUID thingUID = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(), deviceId);
+
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                        .withProperties(Map.of(PROPERTY_NAME, deviceId)).withBridge(thingHandler.getThing().getUID())
+                        .withRepresentationProperty(PROPERTY_NAME)
+                        .withLabel("Pilight " + typeString + " Device '" + deviceId + "'").build();
+
+                thingDiscovered(discoveryResult);
+            });
+        });
+
+        thingHandler.refreshConfigAndStatus();
     }
 
     @Override
@@ -138,9 +123,7 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService impl
         super.stopScan();
         configFuture.cancel(true);
         statusFuture.cancel(true);
-        if (bridgeUID != null) {
-            removeOlderResults(getTimestampOfLastScan(), bridgeUID);
-        }
+        removeOlderResults(getTimestampOfLastScan(), thingHandler.getThing().getUID());
     }
 
     @Override
@@ -148,8 +131,9 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService impl
         logger.debug("Start Pilight device background discovery");
         final @Nullable ScheduledFuture<?> backgroundDiscoveryJob = this.backgroundDiscoveryJob;
         if (backgroundDiscoveryJob == null || backgroundDiscoveryJob.isCancelled()) {
-            this.backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 20,
-                    AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC, TimeUnit.SECONDS);
+            this.backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan,
+                    AUTODISCOVERY_BACKGROUND_SEARCH_INITIAL_DELAY_SEC, AUTODISCOVERY_BACKGROUND_SEARCH_INTERVAL_SEC,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -164,39 +148,20 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService impl
     }
 
     @Override
-    public void setThingHandler(final ThingHandler handler) {
-        if (handler instanceof PilightBridgeHandler pilightBridgeHandler) {
-            this.pilightBridgeHandler = pilightBridgeHandler;
-            bridgeUID = pilightBridgeHandler.getThing().getUID();
-        }
+    public void initialize() {
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        thingHandler.registerDiscoveryListener(this);
+
+        super.initialize();
+        super.modified(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
+                thingHandler.isBackgroundDiscoveryEnabled()));
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return pilightBridgeHandler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-        final @Nullable PilightBridgeHandler pilightBridgeHandler = this.pilightBridgeHandler;
-        if (pilightBridgeHandler != null) {
-            pilightBridgeHandler.registerDiscoveryListener(this);
-        }
-    }
-
-    @Override
-    public void deactivate() {
-        if (bridgeUID != null) {
-            removeOlderResults(getTimestampOfLastScan(), bridgeUID);
-        }
-
-        final @Nullable PilightBridgeHandler pilightBridgeHandler = this.pilightBridgeHandler;
-        if (pilightBridgeHandler != null) {
-            pilightBridgeHandler.unregisterDiscoveryListener();
-        }
-
-        super.deactivate();
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        thingHandler.unregisterDiscoveryListener();
     }
 
     /**
@@ -215,10 +180,5 @@ public class PilightDeviceDiscoveryService extends AbstractDiscoveryService impl
      */
     public void setStatus(List<Status> status) {
         statusFuture.complete(status);
-    }
-
-    @Override
-    public Set<ThingTypeUID> getSupportedThingTypes() {
-        return SUPPORTED_THING_TYPES_UIDS;
     }
 }

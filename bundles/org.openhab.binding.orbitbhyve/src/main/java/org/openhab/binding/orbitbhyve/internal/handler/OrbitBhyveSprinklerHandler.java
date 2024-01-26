@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -190,7 +190,7 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
     public void updateDeviceStatus(OrbitBhyveDeviceStatus status) {
         if (!status.getMode().isEmpty()) {
             updateState(CHANNEL_MODE, new StringType(status.getMode()));
-            updateState(CHANNEL_CONTROL, "off".equals(status.getMode()) ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_CONTROL, OnOffType.from(!"off".equals(status.getMode())));
         }
         if (!status.getNextStartTime().isEmpty()) {
             DateTimeType dt = new DateTimeType(status.getNextStartTime());
@@ -214,7 +214,7 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
         }
         Channel ch = thing.getChannel(enableChannelName);
         if (ch != null) {
-            updateState(ch.getUID(), program.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+            updateState(ch.getUID(), OnOffType.from(program.isEnabled()));
         }
     }
 
@@ -259,11 +259,11 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
         String enableChannelName = "enable_program_" + program.getProgram();
         Channel ch = thing.getChannel(enableChannelName);
         if (ch != null) {
-            updateState(ch.getUID(), program.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+            updateState(ch.getUID(), OnOffType.from(program.isEnabled()));
         }
     }
 
     public void updateSmartWatering(String senseMode) {
-        updateState(CHANNEL_SMART_WATERING, ("auto".equals(senseMode)) ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_SMART_WATERING, OnOffType.from("auto".equals(senseMode)));
     }
 }

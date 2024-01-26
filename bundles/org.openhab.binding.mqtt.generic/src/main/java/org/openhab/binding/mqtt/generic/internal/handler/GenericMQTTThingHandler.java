@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         clearAllAvailabilityTopics();
         initializeAvailabilityTopicsFromConfig();
         return channelStateByChannelUID.values().stream().map(c -> c.start(connection, scheduler, 0))
-                .collect(FutureCollector.allOf()).thenRun(this::calculateThingStatus);
+                .collect(FutureCollector.allOf()).thenRun(() -> calculateAndUpdateThingStatus(false));
     }
 
     @Override

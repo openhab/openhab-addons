@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class SomfyTahomaMyfoxCameraHandler extends SomfyTahomaBaseThingHandler {
             if (ch != null) {
                 // we need to covert opened/closed values to ON/OFF
                 boolean open = "opened".equals(state.getValue());
-                updateState(ch.getUID(), open ? OnOffType.ON : OnOffType.OFF);
+                updateState(ch.getUID(), OnOffType.from(open));
             }
         } else if (CLOUD_DEVICE_STATUS_STATE.equals(state.getName())) {
             Channel ch = thing.getChannel(CLOUD_STATUS);

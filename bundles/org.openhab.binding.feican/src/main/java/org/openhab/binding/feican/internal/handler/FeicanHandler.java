@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,7 +115,7 @@ public class FeicanHandler extends BaseThingHandler {
      * @throws IOException Connection to the bulb failed
      */
     private void handleOnOff(DecimalType value) throws IOException {
-        handleOnOff(DecimalType.ZERO.equals(value) ? OnOffType.OFF : OnOffType.ON);
+        handleOnOff(OnOffType.from(!DecimalType.ZERO.equals(value)));
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,7 +88,7 @@ public class PLCMemoryHandler extends PLCCommonHandler {
                 if (result == 0) {
                     if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type) && MEMORY_BYTE.equalsIgnoreCase(kind)) {
                         boolean value = S7.GetBitAt(buffer, address, getBit(name));
-                        updateState(channelUID, value ? OnOffType.ON : OnOffType.OFF);
+                        updateState(channelUID, OnOffType.from(value));
                         logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
                     } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_BYTE.equalsIgnoreCase(kind)) {
                         int value = buffer[address];
@@ -172,7 +172,7 @@ public class PLCMemoryHandler extends PLCCommonHandler {
 
                 if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type) && kind.equalsIgnoreCase(MEMORY_BYTE)) {
                     OnOffType state = (OnOffType) getOldValue(name);
-                    OnOffType value = S7.GetBitAt(data, address, getBit(name)) ? OnOffType.ON : OnOffType.OFF;
+                    OnOffType value = OnOffType.from(S7.GetBitAt(data, address, getBit(name)));
                     if ((state == null) || (value != state) || force) {
                         updateState(channelUID, value);
                         logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);

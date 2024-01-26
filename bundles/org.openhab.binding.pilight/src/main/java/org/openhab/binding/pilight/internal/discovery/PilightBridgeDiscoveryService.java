@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,6 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -76,11 +75,7 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> backgroundDiscoveryJob;
 
     public PilightBridgeDiscoveryService() throws IllegalArgumentException {
-        super(getSupportedThingTypeUIDs(), AUTODISCOVERY_SEARCH_TIME_SEC, true);
-    }
-
-    public static Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(PilightBindingConstants.THING_TYPE_BRIDGE);
+        super(Set.of(PilightBindingConstants.THING_TYPE_BRIDGE), AUTODISCOVERY_SEARCH_TIME_SEC, true);
     }
 
     @Override
@@ -152,7 +147,7 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Start Pilight device background discovery");
+        logger.debug("Start Pilight bridge background discovery");
         final @Nullable ScheduledFuture<?> backgroundDiscoveryJob = this.backgroundDiscoveryJob;
         if (backgroundDiscoveryJob == null || backgroundDiscoveryJob.isCancelled()) {
             this.backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 5,
@@ -162,7 +157,7 @@ public class PilightBridgeDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        logger.debug("Stop Pilight device background discovery");
+        logger.debug("Stop Pilight bridge background discovery");
         final @Nullable ScheduledFuture<?> backgroundDiscoveryJob = this.backgroundDiscoveryJob;
         if (backgroundDiscoveryJob != null) {
             backgroundDiscoveryJob.cancel(true);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,7 +114,7 @@ public class MinecraftServerHandler extends BaseBridgeHandler {
      * @param isOnline true if server is online
      */
     private void updateOnlineState(boolean isOnline) {
-        State onlineState = isOnline ? OnOffType.ON : OnOffType.OFF;
+        State onlineState = OnOffType.from(isOnline);
         updateState(MinecraftBindingConstants.CHANNEL_ONLINE, onlineState);
     }
 

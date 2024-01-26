@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.List;
  * The {@link AuthQueryResponse} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Martin Grassl - add toString for debugging
  */
 public class AuthQueryResponse {
     public String clientName;// ": "mybmwapp",
@@ -47,4 +48,17 @@ public class AuthQueryResponse {
     // "authenticate_user"
     // ],
     public List<String> promptValues; // ": ["login"]
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+
+    @Override
+    public String toString() {
+        return "AuthQueryResponse [clientName=" + clientName + ", clientSecret=" + clientSecret + ", clientId="
+                + clientId + ", gcdmBaseUrl=" + gcdmBaseUrl + ", returnUrl=" + returnUrl + ", brand=" + brand
+                + ", language=" + language + ", country=" + country + ", authorizationEndpoint=" + authorizationEndpoint
+                + ", tokenEndpoint=" + tokenEndpoint + ", scopes=" + scopes + ", promptValues=" + promptValues + "]";
+    }
 }

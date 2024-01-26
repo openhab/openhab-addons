@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -293,8 +293,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return false;
         }
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                messages.get("status.unknown.initializing"));
+        if (profile.alwaysOn || !profile.isInitialized()) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                    messages.get("status.unknown.initializing"));
+        }
 
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
@@ -338,7 +340,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     ? tmpPrf.settings.sleepMode.period * 60 // minutes
                     : tmpPrf.settings.sleepMode.period * 3600; // hours
             tmpPrf.updatePeriod += 60; // give 1min extra
-        } else if ((tmpPrf.settings.coiot != null) && tmpPrf.settings.coiot.updatePeriod != null) {
+        } else if (tmpPrf.settings.coiot != null && tmpPrf.settings.coiot.updatePeriod != null) {
             // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
             tmpPrf.updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS,
                     2 * getInteger(tmpPrf.settings.coiot.updatePeriod)) + 10;
@@ -513,7 +515,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private double getNumber(Command command) {
-        if (command instanceof QuantityType quantityCommand) {
+        if (command instanceof QuantityType<?> quantityCommand) {
             return quantityCommand.doubleValue();
         }
         if (command instanceof DecimalType decimalCommand) {
@@ -920,7 +922,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     case SHELLY_EVENT_FLOOD_DETECTED:
                     case SHELLY_EVENT_FLOOD_GONE:
                         updateChannel(group, CHANNEL_SENSOR_FLOOD,
-                                event.equalsIgnoreCase(SHELLY_EVENT_FLOOD_DETECTED) ? OnOffType.ON : OnOffType.OFF);
+                                OnOffType.from(event.equalsIgnoreCase(SHELLY_EVENT_FLOOD_DETECTED)));
                         break;
 
                     case SHELLY_EVENT_CLOSE: // DW 1.7
@@ -949,7 +951,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
 
                 if (!onoff.isEmpty()) {
-                    updateChannel(group, onoff, event.toLowerCase().contains("_on") ? OnOffType.ON : OnOffType.OFF);
+                    updateChannel(group, onoff, OnOffType.from(event.toLowerCase().contains("_on")));
                 }
                 if (!payload.isEmpty()) {
                     // Pass event to trigger channel
@@ -1211,7 +1213,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             if (status.input != null) {
                 // RGBW2: a single int rather than an array
                 return updateChannel(profile.getControlGroup(0), CHANNEL_INPUT,
-                        getInteger(status.input) == 0 ? OnOffType.OFF : OnOffType.ON);
+                        OnOffType.from(getInteger(status.input) != 0));
             }
         }
         return updated;
@@ -1279,7 +1281,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public double getChannelDouble(String group, String channel) {
         State value = getChannelValue(group, channel);
         if (value != UnDefType.NULL) {
-            if (value instanceof QuantityType quantityCommand) {
+            if (value instanceof QuantityType<?> quantityCommand) {
                 return quantityCommand.toBigDecimal().doubleValue();
             }
             if (value instanceof DecimalType decimalCommand) {

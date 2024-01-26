@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
+import org.openhab.binding.boschshc.internal.services.userstate.dto.UserStateServiceState;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * Test class
@@ -78,5 +80,13 @@ class BoschSHCServiceStateTest {
                 GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"testState2\"}", JsonObject.class),
                 TestState2.class);
         assertNotEquals(null, state2);
+    }
+
+    @Test
+    void fromJsonReturnsUserStateServiceStateForValidJson() {
+        var state = BoschSHCServiceState.fromJson(new JsonPrimitive("false"), UserStateServiceState.class);
+        assertNotEquals(null, state);
+        assertTrue(state.getClass().isAssignableFrom(UserStateServiceState.class));
+        assertFalse(state.isState());
     }
 }

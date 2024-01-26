@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -132,7 +132,7 @@ public class UpnpEntryQueue {
         }
 
         // Shuffle the queue again
-        shuffledQueue = new ArrayList<UpnpEntry>(currentQueue);
+        shuffledQueue = new ArrayList<>(currentQueue);
         Collections.shuffle(shuffledQueue);
         if (current != null) {
             // Put the current entry at the beginning of the shuffled queue

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,9 +19,6 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.quantity.Energy;
-import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -252,7 +249,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         Integer activePower;
         try {
             activePower = Integer.parseInt(msg.getDimValues()[0]);
-            updateState(CHANNEL_POWER, new QuantityType<Power>(activePower, Units.WATT));
+            updateState(CHANNEL_POWER, new QuantityType<>(activePower, Units.WATT));
         } catch (FrameException e) {
             logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
             updateState(CHANNEL_POWER, UnDefType.UNDEF);
@@ -271,7 +268,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         Double currentDayEnergy;
         try {
             currentDayEnergy = Double.parseDouble(msg.getDimValues()[0]) / 1000d;
-            updateState(CHANNEL_ENERGY_TOTALIZER_DAY, new QuantityType<Energy>(currentDayEnergy, Units.KILOWATT_HOUR));
+            updateState(CHANNEL_ENERGY_TOTALIZER_DAY, new QuantityType<>(currentDayEnergy, Units.KILOWATT_HOUR));
         } catch (FrameException e) {
             logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
             updateState(CHANNEL_ENERGY_TOTALIZER_DAY, UnDefType.UNDEF);
@@ -290,8 +287,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
         Double currentMonthEnergy;
         try {
             currentMonthEnergy = Double.parseDouble(msg.getDimValues()[0]) / 1000d;
-            updateState(CHANNEL_ENERGY_TOTALIZER_MONTH,
-                    new QuantityType<Energy>(currentMonthEnergy, Units.KILOWATT_HOUR));
+            updateState(CHANNEL_ENERGY_TOTALIZER_MONTH, new QuantityType<>(currentMonthEnergy, Units.KILOWATT_HOUR));
         } catch (FrameException e) {
             logger.warn("FrameException on frame {}: {}", msg, e.getMessage());
             updateState(CHANNEL_ENERGY_TOTALIZER_MONTH, UnDefType.UNDEF);

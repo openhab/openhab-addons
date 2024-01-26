@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.doorbird.internal.action.DoorbirdActions;
 import org.openhab.binding.doorbird.internal.api.DoorbirdAPI;
 import org.openhab.binding.doorbird.internal.api.DoorbirdImage;
+import org.openhab.binding.doorbird.internal.api.DoorbirdSession;
 import org.openhab.binding.doorbird.internal.api.SipStatus;
 import org.openhab.binding.doorbird.internal.audio.DoorbirdAudioSink;
 import org.openhab.binding.doorbird.internal.config.DoorbellConfiguration;
@@ -94,6 +95,8 @@ public class DoorbellHandler extends BaseThingHandler {
 
     private DoorbirdAPI api = new DoorbirdAPI();
 
+    private @Nullable DoorbirdSession session;
+
     private BundleContext bundleContext;
 
     private @Nullable ServiceRegistration<AudioSink> audioSinkRegistration;
@@ -130,6 +133,7 @@ public class DoorbellHandler extends BaseThingHandler {
         }
         api.setAuthorization(host, user, password);
         api.setHttpClient(httpClient);
+        session = api.getSession();
         startImageRefreshJob();
         startUDPListenerJob();
         startAudioSink();
@@ -187,6 +191,11 @@ public class DoorbellHandler extends BaseThingHandler {
         updateState(CHANNEL_MOTION, OnOffType.ON);
         startMotionOffJob();
         updateMotionMontage();
+    }
+
+    // Callback used by listener to get session object
+    public @Nullable DoorbirdSession getSession() {
+        return session;
     }
 
     @Override

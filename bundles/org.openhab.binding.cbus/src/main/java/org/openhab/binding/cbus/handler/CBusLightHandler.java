@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ public class CBusLightHandler extends CBusGroupHandler {
                 int level = group.getLevel();
                 logger.debug("handle RefreshType Command for Chanell {} Group {} level {}", channelUID, groupId, level);
                 if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_STATE)) {
-                    updateState(channelUID, (level > 0) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, OnOffType.from(level > 0));
                 } else if (channelUID.getId().equals(CBusBindingConstants.CHANNEL_LEVEL)) {
                     updateState(channelUID, new PercentType((int) (level * 100 / 255.0)));
                 }
@@ -127,7 +127,7 @@ public class CBusLightHandler extends CBusGroupHandler {
                 } else {
                     try {
                         int v = Integer.parseInt(value);
-                        updateState(channelUID, v > 0 ? OnOffType.ON : OnOffType.OFF);
+                        updateState(channelUID, OnOffType.from(v > 0));
                         updateState(channelLevelUID, new PercentType((int) (v * 100 / 255.0)));
                     } catch (NumberFormatException e) {
                         logger.warn("Invalid value presented to channel {}. Received {}, expected On/Off", channelUID,

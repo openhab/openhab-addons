@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -578,7 +578,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             updateState(CHANNEL_ID_TOTAL_CLEAN_RUNS, new DecimalType(totalStats.cleanRuns));
 
             boolean continuousCleaningEnabled = device.sendCommand(new GetContinuousCleaningCommand());
-            updateState(CHANNEL_ID_CONTINUOUS_CLEANING, continuousCleaningEnabled ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_ID_CONTINUOUS_CLEANING, OnOffType.from(continuousCleaningEnabled));
 
             List<CleanLogRecord> cleanLogRecords = device.getCleanLogs();
             if (!cleanLogRecords.isEmpty()) {
@@ -630,11 +630,11 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
             if (device.hasCapability(DeviceCapability.AUTO_EMPTY_STATION)) {
                 boolean autoEmptyEnabled = device.sendCommand(new GetDustbinAutoEmptyCommand());
-                updateState(CHANNEL_ID_AUTO_EMPTY, autoEmptyEnabled ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_ID_AUTO_EMPTY, OnOffType.from(autoEmptyEnabled));
             }
             if (device.hasCapability(DeviceCapability.TRUE_DETECT_3D)) {
                 boolean trueDetectEnabled = device.sendCommand(new GetTrueDetectCommand());
-                updateState(CHANNEL_ID_TRUE_DETECT_3D, trueDetectEnabled ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_ID_TRUE_DETECT_3D, OnOffType.from(trueDetectEnabled));
             }
             if (device.hasCapability(DeviceCapability.DEFAULT_CLEAN_COUNT_SETTING)) {
                 lastDefaultCleaningPasses = device.sendCommand(new GetDefaultCleanPassesCommand());

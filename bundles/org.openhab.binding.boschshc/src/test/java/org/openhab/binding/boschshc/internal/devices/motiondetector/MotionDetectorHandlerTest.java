@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -61,5 +62,18 @@ class MotionDetectorHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_LATEST_MOTION),
                 new DateTimeType("2020-04-03T19:02:19.054Z"));
+    }
+
+    @Test
+    void testUpdateChannelsIlluminanceService() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                    "@type": "illuminanceLevelState",
+                    "illuminance": 42
+                }\
+                """);
+        getFixture().processUpdate("MultiLevelSensor", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ILLUMINANCE), new DecimalType(42));
     }
 }

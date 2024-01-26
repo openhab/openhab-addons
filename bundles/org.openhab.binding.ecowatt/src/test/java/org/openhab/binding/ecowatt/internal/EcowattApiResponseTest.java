@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ import com.google.gson.JsonDeserializer;
 @NonNullByDefault
 public class EcowattApiResponseTest {
 
+    private static final DecimalType STATE_ZERO = new DecimalType(0);
     private static final DecimalType STATE_ONE = new DecimalType(1);
     private static final DecimalType STATE_TWO = new DecimalType(2);
     private static final DecimalType STATE_THREE = new DecimalType(3);
@@ -104,6 +105,10 @@ public class EcowattApiResponseTest {
         State expectedState;
         for (int h = 0; h < 24; h++) {
             switch (h) {
+                case 2:
+                case 3:
+                    expectedState = STATE_ZERO;
+                    break;
                 case 7:
                 case 11:
                 case 19:
@@ -154,6 +159,10 @@ public class EcowattApiResponseTest {
                 case 1:
                 case 2:
                     expectedState = UnDefType.UNDEF;
+                    break;
+                case 5:
+                case 6:
+                    expectedState = STATE_ZERO;
                     break;
                 case 10:
                 case 14:

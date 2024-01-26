@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,8 +49,10 @@ public class AndroidTVBindingConstants {
     public static final String CHANNEL_PLAYER = "player";
 
     // List of all config properties
-    public static final String PROPERTY_IP_ADDRESS = "ipAddress";
-    public static final String PROPERTY_GTV_ENABLED = "gtvEnabled";
+    public static final String PARAMETER_IP_ADDRESS = "ipAddress";
+    public static final String PARAMETER_GOOGLETV_PORT = "googletvPort";
+    public static final String PARAMETER_SHIELDTV_PORT = "shieldtvPort";
+    public static final String PARAMETER_GTV_ENABLED = "gtvEnabled";
 
     // List of all static String literals
     public static final String PIN_REQUEST = "REQUEST";

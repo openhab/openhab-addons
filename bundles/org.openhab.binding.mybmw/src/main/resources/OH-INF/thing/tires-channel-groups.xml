@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="tire-pressures">
 		<label>Tire Pressure</label>
-		<description>Current and wanted pressure for all tires</description>
+		<description>Current and target pressure for all tires</description>
 		<channels>
 			<channel id="fl-current" typeId="front-left-current-channel"/>
 			<channel id="fl-target" typeId="front-left-target-channel"/>

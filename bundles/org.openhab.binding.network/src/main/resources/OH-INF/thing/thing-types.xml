@@ -21,7 +21,6 @@
 			<property name="dhcp_state">-</property>
 			<property name="icmp_state">-</property>
 			<property name="presence_detection_type">-</property>
-			<property name="uses_ios_wakeup">-</property>
 		</properties>
 
 		<config-description>
@@ -54,6 +53,23 @@
 				<default>5000</default>
 				<advanced>true</advanced>
 			</parameter>
+
+			<parameter name="networkInterfaceNames" type="text" required="false" multiple="true">
+				<label>Network Interface Names</label>
+				<context>network-interface</context>
+				<description>The network interface names used for communicating with the device. Limiting the network interfaces
+					reduces the load when arping and Wake-on-LAN are used. All interfaces are used when left empty.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="useIOSWakeUp" type="boolean" required="true">
+				<label>Use iOS Wake Up</label>
+				<default>true</default>
+				<description>Set to true if the device presence detection should be performed for an iOS device like iPhone or
+					iPads. An additional port knock is performed before a ping.</description>
+				<advanced>true</advanced>
+			</parameter>
+
 		</config-description>
 	</thing-type>
 
@@ -74,7 +90,6 @@
 			<property name="dhcp_state">-</property>
 			<property name="icmp_state">-</property>
 			<property name="presence_detection_type">-</property>
-			<property name="uses_ios_wakeup">-</property>
 		</properties>
 
 		<config-description>
@@ -111,6 +126,14 @@
 				<label>Refresh Interval</label>
 				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
 				<default>60000</default>
+			</parameter>
+
+			<parameter name="networkInterfaceNames" type="text" required="false" multiple="true">
+				<label>Network Interface Names</label>
+				<context>network-interface</context>
+				<description>The network interface names used for communicating with the device. Limiting the network interfaces
+					reduces the load when arping and Wake-on-LAN are used. All interfaces are used when left empty.</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

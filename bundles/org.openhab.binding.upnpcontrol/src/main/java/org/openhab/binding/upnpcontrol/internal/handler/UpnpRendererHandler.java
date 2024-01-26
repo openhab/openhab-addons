@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -312,8 +312,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (stopping != null) {
                 stopping.complete(false);
             }
-            isStopping = new CompletableFuture<Boolean>(); // set this so we can check if stop confirmation has been
-                                                           // received
+            isStopping = new CompletableFuture<>(); // set this so we can check if stop confirmation has been
+                                                    // received
         }
 
         Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
@@ -421,8 +421,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (settingURI != null) {
                 settingURI.complete(false);
             }
-            isSettingURI = new CompletableFuture<Boolean>(); // set this so we don't start playing when not finished
-                                                             // setting URI
+            isSettingURI = new CompletableFuture<>(); // set this so we don't start playing when not finished
+                                                      // setting URI
         } else {
             logger.debug("New URI {} is same as previous on renderer {}", nowPlayingUri, thing.getLabel());
         }
@@ -1125,16 +1125,14 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void onValueReceivedMute(String variable, @Nullable String value) {
         if (value != null && !value.isEmpty()) {
             String upnpChannel = variable.replace("Mute", "mute").replace("Master", "");
-            updateState(upnpChannel,
-                    ("1".equals(value) || "true".equals(value.toLowerCase())) ? OnOffType.ON : OnOffType.OFF);
+            updateState(upnpChannel, OnOffType.from("1".equals(value) || "true".equalsIgnoreCase(value)));
         }
     }
 
     private void onValueReceivedLoudness(String variable, @Nullable String value) {
         if (value != null && !value.isEmpty()) {
             String upnpChannel = variable.replace("Loudness", "loudness").replace("Master", "");
-            updateState(upnpChannel,
-                    ("1".equals(value) || "true".equals(value.toLowerCase())) ? OnOffType.ON : OnOffType.OFF);
+            updateState(upnpChannel, OnOffType.from("1".equals(value) || "true".equalsIgnoreCase(value)));
         }
     }
 

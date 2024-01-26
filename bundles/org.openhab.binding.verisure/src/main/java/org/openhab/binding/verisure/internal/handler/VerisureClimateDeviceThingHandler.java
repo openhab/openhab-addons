@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,6 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.verisure.internal.dto.VerisureBatteryStatusDTO;
@@ -46,7 +43,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<VerisureClimatesDTO> {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>();
     static {
         SUPPORTED_THING_TYPES.add(THING_TYPE_SMOKEDETECTOR);
         SUPPORTED_THING_TYPES.add(THING_TYPE_WATERDETECTOR);
@@ -93,12 +90,12 @@ public class VerisureClimateDeviceThingHandler extends VerisureThingHandler<Veri
             case CHANNEL_TEMPERATURE:
                 if (climateList != null && !climateList.isEmpty()) {
                     double temperature = climateList.get(0).getTemperatureValue();
-                    return new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);
+                    return new QuantityType<>(temperature, SIUnits.CELSIUS);
                 }
             case CHANNEL_HUMIDITY:
                 if (climateList != null && !climateList.isEmpty() && climateList.get(0).isHumidityEnabled()) {
                     double humidity = climateList.get(0).getHumidityValue();
-                    return new QuantityType<Dimensionless>(humidity, Units.PERCENT);
+                    return new QuantityType<>(humidity, Units.PERCENT);
                 }
             case CHANNEL_HUMIDITY_ENABLED:
                 if (climateList != null && !climateList.isEmpty()) {

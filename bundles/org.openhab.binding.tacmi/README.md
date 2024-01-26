@@ -192,17 +192,26 @@ The binding supports all 21 measure types that exist according to the TA documen
 Unfortunately, the documentation is not consistent here, so most of the types are supported only by generic names.
 The known measure types are:
 
-| id     | type          | description                                   |
-|--------|---------------|-----------------------------------------------|
-| 1      | Temperature   | Tempeature value. Value is multiplied by 0.1  |
-| 2      | Unknown2      |                                               |
-| 3      | Unknown3      |                                               |
-| 4      | Seconds       |                                               |
-| 5...9  | Unknown5..9   |                                               |
-| 10     | Kilowatt      |                                               |
-| 11     | Kilowatthours |                                               |
-| 12     | Megawatthours |                                               |
-| 13..21 | Unknown       |                                               |
+| id     | type          | unit    | description                                  |
+|--------|---------------|---------|----------------------------------------------|
+| 1      | Temperature   | °C      | Temperature value, multiplied by 0.1         |
+| 2      | Energy Flux   | W/m2    | e.g. for solar irridiation                   |
+| 3      | Flow Rate     | l/h     | e.g. for flow meters such as TA FTS-xx       |
+| 4      | Time          | s       |                                              |
+| 5      | Time          | min     |                                              |
+| 6      | Flow Rate     | l/lmp   | standardized lpm flowrate                    |
+| 7      | Temperature   | K       | Kelvin, e.g. for Temperature differences     |
+| 8      | Percentage    | %       |                                              |
+| 9      | unknown       | :       | might be another dimensionless unit          |
+| 10     | Power         | kW      |                                              |
+| 11     | Energy        | KWh     |                                              |
+| 12     | Energy        | MWh     |                                              |
+| 13     | el  Voltage   | V       |                                              |
+| 14     | el. Current   | mA      |                                              |
+| 15     | Time          | hours   |                                              |
+| 16     | dimensionless | [none]  | use for multiplexers, etc                    |
+| 17..   | repeating again from 1, e.g 17==1, 18==2, ...                          |
+
 
 ## Full Example
 

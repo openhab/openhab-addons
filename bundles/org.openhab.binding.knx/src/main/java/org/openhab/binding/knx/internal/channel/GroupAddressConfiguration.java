@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import tuwien.auto.calimero.KNXFormatException;
 /**
  * Data structure representing the content of a channel's group address configuration.
  *
- * @author Simon Kaufmann - initial contribution and API.
+ * @author Simon Kaufmann - Initial contribution and API
  *
  */
 @NonNullByDefault
@@ -36,7 +36,7 @@ public class GroupAddressConfiguration {
     public static final Logger LOGGER = LoggerFactory.getLogger(GroupAddressConfiguration.class);
 
     private static final Pattern PATTERN_GA_CONFIGURATION = Pattern.compile(
-            "^((?<dpt>[1-9][0-9]{0,2}\\.[0-9]{3,5}):)?(?<read><)?(?<mainGA>[0-9]{1,5}(/[0-9]{1,4}){0,2})(?<listenGAs>(\\+(<?[0-9]{1,5}(/[0-9]{1,4}){0,2}))*)$");
+            "^((?<dpt>[1-9][0-9]{0,2}\\.[0-9]{3,5}):)?(?<modifier>[<>])?(?<mainGA>[0-9]{1,5}(/[0-9]{1,4}){0,2})(?<listenGAs>(\\+(<?[0-9]{1,5}(/[0-9]{1,4}){0,2}))*)$");
     private static final Pattern PATTERN_LISTEN_GA = Pattern
             .compile("\\+((?<read><)?(?<GA>[0-9]{1,5}(/[0-9]{1,4}){0,2}))");
 
@@ -57,14 +57,28 @@ public class GroupAddressConfiguration {
         return dpt;
     }
 
+    /**
+     * Returns the main GA, which is the GA to send commands to.
+     */
     public GroupAddress getMainGA() {
         return mainGA;
     }
 
+    /**
+     * Returns all GAs to listen to.
+     * This includes the main GA (unless disabled by '>'), and additional listening GAs
+     * (those after the "+" symbol).
+     */
     public Set<GroupAddress> getListenGAs() {
         return listenGAs;
     }
 
+    /**
+     * Returns all GAs to read from.
+     * Those GAs accept read requests to the KNX bus, i.e. they respond to a "GroupValueRead" with a
+     * "GroupValueResponse".
+     * The '&lt;' sign sets a GA as read GA.
+     */
     public Set<GroupAddress> getReadGAs() {
         return readGAs;
     }
@@ -99,9 +113,20 @@ public class GroupAddressConfiguration {
             String mainGA = matcher.group("mainGA");
             try {
                 GroupAddress groupAddress = new GroupAddress(mainGA);
-                listenGAs.add(groupAddress); // also listening to main GA
-                if (matcher.group("read") != null) {
-                    readGAs.add(groupAddress); // also reading main GA
+                @Nullable
+                String modifier = matcher.group("modifier");
+                if (modifier == null) {
+                    // default: main GA address writes and listens
+                    listenGAs.add(groupAddress);
+                } else if ("<".equals(modifier)) {
+                    // configured for read at startup
+                    listenGAs.add(groupAddress);
+                    readGAs.add(groupAddress);
+                } // else (">").equals(modifier) -> write only, no action
+                if (readGAs.size() > 1) {
+                    LOGGER.info(
+                            "Item with mainGA {} has more than one GA configured for read at startup, check configuration",
+                            groupAddress);
                 }
                 return new GroupAddressConfiguration(matcher.group("dpt"), groupAddress, listenGAs, readGAs);
             } catch (KNXFormatException e) {

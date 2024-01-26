@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -316,10 +316,10 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
         switch (actionType) {
             case TRIGGER:
-                updateState(CHANNEL_BUTTON, (actionState == 0) ? OnOffType.OFF : OnOffType.ON);
+                updateState(CHANNEL_BUTTON, OnOffType.from(actionState != 0));
                 updateStatus(ThingStatus.ONLINE);
             case RELAY:
-                updateState(CHANNEL_SWITCH, (actionState == 0) ? OnOffType.OFF : OnOffType.ON);
+                updateState(CHANNEL_SWITCH, OnOffType.from(actionState != 0));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case DIMMER:

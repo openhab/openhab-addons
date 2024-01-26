@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -125,8 +125,8 @@ public class OpenhabGraalJSScriptEngine
                     v -> v.getMember("rawItem").as(Item.class), HostAccess.TargetMappingPrecedence.LOW)
 
             // Translate openhab-js Quantity to org.openhab.core.library.types.QuantityType
-            .targetTypeMapping(Value.class, QuantityType.class, v -> v.hasMember("raw") && v.hasMember("toUnit"),
-                    v -> v.getMember("raw").as(QuantityType.class), HostAccess.TargetMappingPrecedence.LOW)
+            .targetTypeMapping(Value.class, QuantityType.class, v -> v.hasMember("rawQtyType"),
+                    v -> v.getMember("rawQtyType").as(QuantityType.class), HostAccess.TargetMappingPrecedence.LOW)
             .build();
 
     /** {@link Lock} synchronization of multi-thread access */

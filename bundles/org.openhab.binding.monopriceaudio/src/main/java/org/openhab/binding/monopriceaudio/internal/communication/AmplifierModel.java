@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,21 @@ public enum AmplifierModel {
     MONOPRICE("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, 18,
             6, true, List.of("11", "12", "13", "14", "15", "16", "21", "22", "23", "24", "25", "26", "31", "32", "33",
                     "34", "35", "36")) {
+        @Override
+        public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
+            return getMonopriceZoneData(newZoneData);
+        }
+
+        @Override
+        public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
+            return List.of(new StateOption("1", config.inputLabel1), new StateOption("2", config.inputLabel2),
+                    new StateOption("3", config.inputLabel3), new StateOption("4", config.inputLabel4),
+                    new StateOption("5", config.inputLabel5), new StateOption("6", config.inputLabel6));
+        }
+    },
+    // Monoprice 44519 4 zone variant
+    MONOPRICE4("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, 12,
+            6, true, List.of("11", "12", "13", "14", "21", "22", "23", "24", "31", "32", "33", "34")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             return getMonopriceZoneData(newZoneData);

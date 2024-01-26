@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.persistence.rrd4j.internal;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -444,15 +445,13 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
         try {
             if (filterBeginDate == null) {
-                // as rrd goes back for years and gets more and more
-                // inaccurate, we only support descending order
-                // and a single return value
-                // if there is no begin date is given - this case is
-                // required specifically for the historicState()
-                // query, which we want to support
+                // as rrd goes back for years and gets more and more inaccurate, we only support descending order
+                // and a single return value if no begin date is given - this case is required specifically for the
+                // historicState() query, which we want to support
                 if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
                         && filter.getPageNumber() == 0) {
-                    if (filterEndDate == null) {
+                    if (filterEndDate == null || Duration.between(filterEndDate, ZonedDateTime.now()).getSeconds() < db
+                            .getRrdDef().getStep()) {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
@@ -611,7 +610,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
 
         if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
-            return value == 0.0d ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(value != 0.0d);
         } else if (item instanceof ContactItem) {
             return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem || item instanceof ColorItem) {

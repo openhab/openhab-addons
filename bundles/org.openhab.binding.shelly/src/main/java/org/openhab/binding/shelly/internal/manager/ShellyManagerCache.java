@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
 
     private static final long serialVersionUID = 1L;
 
-    private Map<K, Long> timeMap = new ConcurrentHashMap<K, Long>();
+    private Map<K, Long> timeMap = new ConcurrentHashMap<>();
     private long expiryInMillis = ShellyManagerConstants.CACHE_TIMEOUT_DEF_MIN * 60 * 1000; // Default 1h
 
     public ShellyManagerCache() {
