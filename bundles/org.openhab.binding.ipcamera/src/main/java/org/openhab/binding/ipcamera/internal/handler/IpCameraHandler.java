@@ -517,7 +517,6 @@ public class IpCameraHandler extends BaseThingHandler {
             Ffmpeg localSnapshot = ffmpegSnapshot;
             if (localSnapshot != null && !localSnapshot.isAlive()) {
                 cameraCommunicationError("FFmpeg Snapshots Stopped: Check that your camera can be reached.");
-                return;
             }
             return; // ffmpeg snapshot stream is still alive
         }
@@ -537,8 +536,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 return;
             }
         }
-        cameraCommunicationError(
-                "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
+        cameraCommunicationError("Connection Timeout: Check your IP:" + cameraConfig.getIp() + " and PORT:"
+                + cameraConfig.getPort() + " are correct and the camera can be reached.");
     }
 
     // Always use this as sendHttpGET(GET/POST/PUT/DELETE, "/foo/bar",null)//
