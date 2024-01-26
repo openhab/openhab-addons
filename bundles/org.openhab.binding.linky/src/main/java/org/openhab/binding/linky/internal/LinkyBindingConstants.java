@@ -39,15 +39,26 @@ public class LinkyBindingConstants {
     public static final String USER_ID = "customerId";
 
     // List of all Channel id's
-    public static final String YESTERDAY = "daily#yesterday";
-    public static final String PEAK_POWER = "daily#power";
-    public static final String PEAK_TIMESTAMP = "daily#timestamp";
-    public static final String THIS_WEEK = "weekly#thisWeek";
-    public static final String LAST_WEEK = "weekly#lastWeek";
-    public static final String THIS_MONTH = "monthly#thisMonth";
-    public static final String LAST_MONTH = "monthly#lastMonth";
-    public static final String THIS_YEAR = "yearly#thisYear";
-    public static final String LAST_YEAR = "yearly#lastYear";
+    public static final String DAY_MINUS_1 = "daily#day-1";
+    public static final String DAY_MINUS_2 = "daily#day-2";
+    public static final String DAY_MINUS_3 = "daily#day-3";
+
+    public static final String PEAK_POWER_DAY_MINUS_1 = "daily#maxPower-day-1";
+    public static final String PEAK_POWER_TS_DAY_MINUS_1 = "daily#maxPowerTs-day-1";
+    public static final String PEAK_POWER_DAY_MINUS_2 = "daily#maxPower-day-2";
+    public static final String PEAK_POWER_TS_DAY_MINUS_2 = "daily#maxPowerTs-day-2";
+    public static final String PEAK_POWER_DAY_MINUS_3 = "daily#maxPower-day-3";
+    public static final String PEAK_POWER_TS_DAY_MINUS_3 = "daily#maxPowerTs-day-3";
+
+    public static final String WEEK_MINUS_0 = "weekly#week-0";
+    public static final String WEEK_MINUS_1 = "weekly#week-1";
+    public static final String WEEK_MINUS_2 = "weekly#week-2";
+    public static final String MONTH_MINUS_0 = "monthly#month-0";
+    public static final String MONTH_MINUS_1 = "monthly#month-1";
+    public static final String MONTH_MINUS_2 = "monthly#month-2";
+    public static final String YEAR_MINUS_0 = "yearly#year-0";
+    public static final String YEAR_MINUS_1 = "yearly#year-1";
+    public static final String YEAR_MINUS_2 = "yearly#year-2";
 
     // Authorization related Servlet and resources aliases.
     public static final String LINKY_ALIAS = "/connectlinky";

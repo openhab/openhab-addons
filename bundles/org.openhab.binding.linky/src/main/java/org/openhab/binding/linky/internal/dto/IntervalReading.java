@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
@@ -30,6 +30,6 @@ public class IntervalReading {
     public double value;
 
     @SerializedName("date")
-    public LocalDate date;
+    public LocalDateTime date;
 
 }

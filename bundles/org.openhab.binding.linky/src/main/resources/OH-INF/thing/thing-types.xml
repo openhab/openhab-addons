@@ -34,50 +34,75 @@
 	<channel-group-type id="daily">
 		<label>Daily consumption</label>
 		<channels>
-			<channel id="yesterday" typeId="consumption">
+			<channel id="day-1" typeId="consumption">
 				<label>Yesterday Consumption</label>
 			</channel>
-			<channel id="power" typeId="power"/>
-			<channel id="timestamp" typeId="timestamp">
+			<channel id="day-2" typeId="consumption">
+                <label>Yesterday Consumption</label>
+            </channel>
+            <channel id="day-3" typeId="consumption">
+                <label>Yesterday Consumption</label>
+            </channel>
+			<channel id="maxPower-day-1" typeId="power"/>
+			<channel id="maxPowerTs-day-1" typeId="timestamp">
 				<label>Peak Timestamp</label>
 				<description>Maximum power usage timestamp</description>
 			</channel>
+            <channel id="maxPower-day-2" typeId="power"/>
+            <channel id="maxPowerTs-day-2" typeId="timestamp">
+                <label>Peak Timestamp</label>
+                <description>Maximum power usage timestamp</description>
+            </channel>
+            <channel id="maxPower-day-3" typeId="power"/>
+            <channel id="maxPowerTs-day-3" typeId="timestamp">
+                <label>Peak Timestamp</label>
+                <description>Maximum power usage timestamp</description>
+            </channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="weekly">
 		<label>Weekly consumption</label>
 		<channels>
-			<channel id="thisWeek" typeId="consumption">
+			<channel id="week-0" typeId="consumption">
 				<label>This Week Consumption</label>
 			</channel>
-			<channel id="lastWeek" typeId="consumption">
+			<channel id="week-1" typeId="consumption">
 				<label>Last Week Consumption</label>
 			</channel>
+			<channel id="week-2" typeId="consumption">
+                <label>Last Week Consumption</label>
+            </channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="monthly">
 		<label>Monthly consumption</label>
 		<channels>
-			<channel id="thisMonth" typeId="consumption">
+			<channel id="month-0" typeId="consumption">
 				<label>This Month Consumption</label>
 			</channel>
-			<channel id="lastMonth" typeId="consumption">
+			<channel id="month-1" typeId="consumption">
 				<label>Last Month Consumption</label>
 			</channel>
+            <channel id="month-2" typeId="consumption">
+                <label>Last Month Consumption</label>
+            </channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="yearly">
 		<label>Yearly consumption</label>
 		<channels>
-			<channel id="thisYear" typeId="consumption">
+			<channel id="year-0" typeId="consumption">
 				<label>This Year Consumption</label>
 			</channel>
-			<channel id="lastYear" typeId="consumption">
+			<channel id="year-1" typeId="consumption">
 				<label>Last Year Consumption</label>
 			</channel>
+            <channel id="year-2" typeId="consumption">
+                <label>Last Year Consumption</label>
+            </channel>
 		</channels>
 	</channel-group-type>
 
