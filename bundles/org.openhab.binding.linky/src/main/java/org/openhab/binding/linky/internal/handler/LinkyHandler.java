@@ -20,6 +20,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -292,52 +294,52 @@ public class LinkyHandler extends BaseThingHandler {
      * @return the report as a list of string
      */
 
-    /*
-     * public synchronized List<String> reportValues(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
-     * List<String> report = buildReport(startDay, endDay, separator);
-     * disconnect();
-     * return report;
-     * }
-     *
-     * private List<String> buildReport(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
-     * List<String> report = new ArrayList<>();
-     * if (startDay.getYear() == endDay.getYear() && startDay.getMonthValue() == endDay.getMonthValue()) {
-     * // All values in the same month
-     * Consumption result = getConsumptionData(startDay, endDay.plusDays(1));
-     * if (result != null) {
-     * Aggregate days = result.aggregats.days;
-     * int size = (days.datas == null || days.periodes == null) ? 0
-     * : (days.datas.size() <= days.periodes.size() ? days.datas.size() : days.periodes.size());
-     * for (int i = 0; i < size; i++) {
-     * double consumption = days.datas.get(i);
-     * String line = days.periodes.get(i).dateDebut.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator;
-     * if (consumption >= 0) {
-     * line += String.valueOf(consumption);
-     * }
-     * report.add(line);
-     * }
-     * } else {
-     * LocalDate currentDay = startDay;
-     * while (!currentDay.isAfter(endDay)) {
-     * report.add(currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator);
-     * currentDay = currentDay.plusDays(1);
-     * }
-     * }
-     * } else {
-     * // Concatenate the report produced for each month between the two dates
-     * LocalDate first = startDay;
-     * do {
-     * LocalDate last = first.withDayOfMonth(first.lengthOfMonth());
-     * if (last.isAfter(endDay)) {
-     * last = endDay;
-     * }
-     * report.addAll(buildReport(first, last, separator));
-     * first = last.plusDays(1);
-     * } while (!first.isAfter(endDay));
-     * }
-     * return report;
-     * }
-     */
+    public synchronized List<String> reportValues(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
+        List<String> report = buildReport(startDay, endDay, separator);
+        disconnect();
+        return report;
+    }
+
+    private List<String> buildReport(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
+        List<String> report = new ArrayList<>();
+        if (startDay.getYear() == endDay.getYear() && startDay.getMonthValue() == endDay.getMonthValue()) {
+            // All values in the same month
+            MeterReading meterReading = getConsumptionData(startDay, endDay.plusDays(1));
+            if (meterReading != null) {
+
+                IntervalReading[] days = meterReading.dayValue;
+
+                int size = days.length;
+
+                for (int i = 0; i < size; i++) {
+                    double consumption = days[i].value;
+                    String line = days[i].date.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator;
+                    if (consumption >= 0) {
+                        line += String.valueOf(consumption);
+                    }
+                    report.add(line);
+                }
+            } else {
+                LocalDate currentDay = startDay;
+                while (!currentDay.isAfter(endDay)) {
+                    report.add(currentDay.format(DateTimeFormatter.ISO_LOCAL_DATE) + separator);
+                    currentDay = currentDay.plusDays(1);
+                }
+            }
+        } else {
+            // Concatenate the report produced for each month between the two dates
+            LocalDate first = startDay;
+            do {
+                LocalDate last = first.withDayOfMonth(first.lengthOfMonth());
+                if (last.isAfter(endDay)) {
+                    last = endDay;
+                }
+                report.addAll(buildReport(first, last, separator));
+                first = last.plusDays(1);
+            } while (!first.isAfter(endDay));
+        }
+        return report;
+    }
 
     private @Nullable MeterReading getConsumptionData(LocalDate from, LocalDate to) {
         logger.debug("getConsumptionData from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),

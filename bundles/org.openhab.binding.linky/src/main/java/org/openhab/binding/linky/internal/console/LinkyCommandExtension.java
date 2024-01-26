@@ -57,13 +57,8 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension imple
         this.thingRegistry = thingRegistry;
     }
 
-    
-    
-
     @Override
     public void execute(String[] args, Console console) {
-        /*
-        
         if (args.length >= 2) {
             Thing thing = getThing(args[0]);
             ThingHandler thingHandler = null;
@@ -126,11 +121,8 @@ public class LinkyCommandExtension extends AbstractConsoleCommandExtension imple
         } else {
             printUsage(console);
         }
-        */
-        
     }
-    
-    
+
     @Override
     public List<String> getUsages() {
         return Arrays
