@@ -588,11 +588,12 @@ public class OnvifConnection {
                             if (cause instanceof ConnectTimeoutException) {
                                 usingEvents = false;// Prevent Unsubscribe from being sent
                                 ipCameraHandler.cameraCommunicationError(
-                                        "Camera timed out when trying to connect to the ONVIF port");
+                                        "Camera timed out when trying to connect to the ONVIF port:" + port);
                             } else if ((cause instanceof ConnectException) && msg != null
                                     && msg.contains("Connection refused")) {
                                 usingEvents = false;// Prevent Unsubscribe from being sent
-                                ipCameraHandler.cameraCommunicationError("Camera refused to connect to the ONVIF port");
+                                ipCameraHandler.cameraCommunicationError(
+                                        "Camera refused to connect when using ONVIF to port:" + port);
                             }
                         }
                         if (isConnected) {
