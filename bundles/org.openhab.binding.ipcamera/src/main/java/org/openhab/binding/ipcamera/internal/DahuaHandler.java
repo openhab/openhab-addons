@@ -313,7 +313,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_WHITE_LED:
                 if (DecimalType.ZERO.equals(command) || OnOffType.OFF.equals(command)) {
-                    // IR to auto and white light off, then set white light to come on for motion
+                    // IR to auto and white light off.
                     ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.ON);
                     ipCameraHandler
                             .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[" + nvrChannelAdjusted
@@ -329,9 +329,15 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_AUTO_WHITE_LED:
                 if (OnOffType.ON.equals(command)) {
+                    // we do not know the state anymore as it now will turns on and off via motion
                     ipCameraHandler.setChannelState(CHANNEL_WHITE_LED, UnDefType.UNDEF);
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2["
-                            + nvrChannelAdjusted + "][0][1].Mode=Auto");
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmLighting[" + nvrChannelAdjusted
+                                    + "][0].Enable=true&Alarm[2].EventHandler.LightingLink.LightDuration=300");
+                } else {
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmLighting[" + nvrChannelAdjusted
+                                    + "][0].Enable=false&Alarm[2].EventHandler.LightingLink.LightDuration=0");
                 }
                 return;
             case CHANNEL_ENABLE_LED:
