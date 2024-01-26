@@ -14,6 +14,7 @@ package org.openhab.binding.linky.internal;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -55,13 +56,19 @@ import com.google.gson.JsonDeserializer;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
 public class LinkyHandlerFactory extends BaseThingHandlerFactory implements LinkyAccountHandler {
     private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
+    private static final DateTimeFormatter LINKY_FORMATTER2 = DateTimeFormatter.ofPattern("uuuu-MM-dd");
     private static final int REQUEST_BUFFER_SIZE = 8000;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
-    private final Gson gson = new GsonBuilder().registerTypeAdapter(ZonedDateTime.class,
-            (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
-                    .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime.class,
+                    (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
+                            .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER))
+            .registerTypeAdapter(LocalDate.class,
+                    (JsonDeserializer<LocalDate>) (json, type, jsonDeserializationContext) -> LocalDate
+                            .parse(json.getAsJsonPrimitive().getAsString(), LINKY_FORMATTER2))
             .create();
+
     private final LocaleProvider localeProvider;
     private final HttpClient httpClient;
     private final OAuthFactory oAuthFactory;

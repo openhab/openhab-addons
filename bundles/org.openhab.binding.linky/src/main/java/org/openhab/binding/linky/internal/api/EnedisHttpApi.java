@@ -26,13 +26,12 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AddressInfo;
-import org.openhab.binding.linky.internal.dto.ConsumptionReport;
-import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
 import org.openhab.binding.linky.internal.dto.ContactInfo;
 import org.openhab.binding.linky.internal.dto.Customer;
 import org.openhab.binding.linky.internal.dto.CustomerIdResponse;
 import org.openhab.binding.linky.internal.dto.CustomerReponse;
 import org.openhab.binding.linky.internal.dto.IdentityInfo;
+import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.MeterResponse;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
@@ -207,7 +206,7 @@ public class EnedisHttpApi {
         }
     }
 
-    private Consumption getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)
+    private MeterReading getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)
             throws LinkyException {
 
         String dtStart = from.format(API_DATE_FORMAT);
@@ -227,18 +226,21 @@ public class EnedisHttpApi {
             if (meterResponse == null) {
                 throw new LinkyException("No report data received");
             }
-            return new ConsumptionReport().new Consumption();
+            return meterResponse.meterReading;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching ConsumptionReport.class: {}", data);
             throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
         }
     }
 
-    public Consumption getEnergyData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
+    public MeterReading getEnergyData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
         return getMeasures(userId, prmId, from, to, "daily_consumption");
     }
 
-    public Consumption getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(userId, prmId, from, to, "daily_consumption_max_power");
-    }
+    /*
+     * public MeterReading getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException
+     * {
+     * return getMeasures(userId, prmId, from, to, "daily_consumption_max_power");
+     * }
+     */
 }
