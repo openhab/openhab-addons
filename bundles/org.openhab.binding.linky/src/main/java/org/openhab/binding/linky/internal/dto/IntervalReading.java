@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import java.time.LocalDate;
+
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
 import com.google.gson.annotations.SerializedName;
@@ -25,9 +27,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class IntervalReading {
     @SerializedName("value")
-    public String value;
+    public double value;
 
     @SerializedName("date")
-    public String date;
+    public LocalDate date;
 
 }
