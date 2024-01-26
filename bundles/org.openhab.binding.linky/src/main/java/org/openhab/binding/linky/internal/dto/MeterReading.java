@@ -42,4 +42,8 @@ public class MeterReading {
     @SerializedName("interval_reading")
     public IntervalReading[] intervalReading;
 
+    public IntervalReading[] WeekValue;
+    public IntervalReading[] MonthValue;
+    public IntervalReading[] YearValue;
+
 }
