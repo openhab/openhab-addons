@@ -208,7 +208,7 @@ public class ValueDecoder {
                 case "242":
                     return handleDpt242(value);
                 case "251":
-                    return handleDpt251(value, preferredType);
+                    return handleDpt251(value, subType, preferredType);
                 default:
                     return handleNumericDpt(id, translator, preferredType);
                 // TODO 6.001 is mapped to PercentType, which can only cover 0-100%, not -128..127%
@@ -418,7 +418,7 @@ public class ValueDecoder {
         return null;
     }
 
-    private static @Nullable Type handleDpt251(String value, Class<? extends Type> preferredType) {
+    private static @Nullable Type handleDpt251(String value, String subType, Class<? extends Type> preferredType) {
         Matcher rgbw = RGBW_PATTERN.matcher(value);
         if (rgbw.matches()) {
             String rString = rgbw.group("r");
@@ -426,19 +426,39 @@ public class ValueDecoder {
             String bString = rgbw.group("b");
             String wString = rgbw.group("w");
 
-            if (rString != null && gString != null && bString != null && HSBType.class.equals(preferredType)) {
-                // does not support PercentType and r,g,b valid -> HSBType
-                int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
-                int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
-                int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
+            switch (subType) {
+                case "600":
+                    if (rString != null && gString != null && bString != null && HSBType.class.equals(preferredType)) {
+                        // does not support PercentType and r,g,b valid -> HSBType
+                        int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
+                        int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
+                        int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
 
-                return HSBType.fromRGB(r, g, b);
-            } else if (wString != null && PercentType.class.equals(preferredType)) {
-                // does support PercentType and w valid -> PercentType
-                BigDecimal w = new BigDecimal(wString.replace(",", "."));
+                        return HSBType.fromRGB(r, g, b);
+                    } else if (wString != null && PercentType.class.equals(preferredType)) {
+                        // does support PercentType and w valid -> PercentType
+                        BigDecimal w = new BigDecimal(wString.replace(",", "."));
 
-                return new PercentType(w);
+                        return new PercentType(w);
+                    }
+                case "60600":
+                    // special type used by OH for .600 indicating that RGBW should be handled with a single HSBType,
+                    // typically we use HSBType for RGB and PercentType for W.
+                    if (rString != null && gString != null && bString != null && wString != null
+                            && HSBType.class.equals(preferredType)) {
+                        // does support PercentType and w valid -> PercentType
+                        int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
+                        int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
+                        int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
+                        int w = coerceToRange((int) (Double.parseDouble(wString.replace(",", ".")) * 2.55), 0, 255);
+
+                        return ColorUtil.rgbToHsb(new int[] { r, g, b, w });
+                    }
+                default:
+                    LOGGER.warn("Unknown subtype '251.{}', no conversion possible.", subType);
+                    return null;
             }
+
         }
         LOGGER.warn("Failed to convert '{}' (DPT 251): Pattern does not match or invalid content", value);
         return null;
