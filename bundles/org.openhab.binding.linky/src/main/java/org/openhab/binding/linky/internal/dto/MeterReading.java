@@ -40,10 +40,10 @@ public class MeterReading {
     public ReadingType readingType;
 
     @SerializedName("interval_reading")
-    public IntervalReading[] intervalReading;
+    public IntervalReading[] dayValue;
 
-    public IntervalReading[] WeekValue;
-    public IntervalReading[] MonthValue;
-    public IntervalReading[] YearValue;
+    public IntervalReading[] weekValue;
+    public IntervalReading[] monthValue;
+    public IntervalReading[] yearValue;
 
 }
