@@ -32,6 +32,7 @@ import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetBusBridgeConfig;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetZigBeeBridgeConfig;
+import org.openhab.binding.openwebnet.internal.serial.SerialTransportAdapter;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -179,7 +180,16 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     "@text/offline.conf-error-no-serial-port");
             return null;
         } else {
-            return new USBGateway(serialPort);
+
+            // FIXME modified - test no SPI
+            USBGateway tmpUSBGateway = new USBGateway(serialPort);
+
+            tmpUSBGateway.setSerialPortProvider(new SerialTransportAdapter());
+            logger.info("===================================================================================");
+            logger.info("===================== OpenWebNetBridgeHandler :: setSerialPortProvider to: {}",
+                    tmpUSBGateway.serialPortProvider);
+            logger.info("===================================================================================");
+            return tmpUSBGateway;
         }
     }
 
