@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="xcenter-power-values">
 		<label>Power and efficency</label>
-		<description>Information about power and efficency</description>
+		<description>Information about power and efficiency</description>
 		<channels>
 			<channel id="cop" typeId="cop-channel"/>
 			<channel id="cop-heating" typeId="cop-heating-channel"/>

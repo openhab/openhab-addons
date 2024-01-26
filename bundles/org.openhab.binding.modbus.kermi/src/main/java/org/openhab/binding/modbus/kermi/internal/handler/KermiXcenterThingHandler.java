@@ -275,6 +275,14 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             ModbusCommunicationInterface localComms = connectEndpoint();
             if (localComms != null) {
 
+                /**
+                 * Before asking: i tried to create 1 "big poller" and separate the data from the received bytes.
+                 * But when polling "registers" which are not declared (from Kermi), the answer was corrupted or
+                 * invalid.
+                 * e.x. polling 100 to 150, expecting 50 registers the device returns 18 only, strange behaviour.
+                 * Maybe polling will be improved in future - to have not that "huge" amount of pollerTasks.
+                 */
+
                 // very slow requests
                 ModbusReadRequestBlueprint workHoursRequest = new ModbusReadRequestBlueprint(slaveId,
                         ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, WORK_HOURS_REG_START, WORK_HOURS_REG_SIZE, 3);
@@ -331,13 +339,6 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
 
                     pollTasks.add(pvPoller);
                 }
-
-                /*
-                 * ModbusReadRequestBlueprint testPollerRequest = new ModbusReadRequestBlueprint(slaveId,
-                 * ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 1, 111, 3);
-                 * testPoller = localComms.registerRegularPoll(testPollerRequest, SLOW_POLL_REFRESH_TIME_MS, 0,
-                 * this::handleTestPollerResult, this::handleTestPollerFailure);
-                 */
 
             } // else state handling performed in connectEndPoint function
         });
