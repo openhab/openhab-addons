@@ -199,7 +199,7 @@ public class FidTranslationUtils {
     public static final int FID_DIMMING_ACTUATOR_FLEX = 0x1810;
 
     static {
-        Map<String, String> mapDesc = new HashMap<String, String>();
+        Map<String, String> mapDesc = new HashMap<>();
 
         mapDesc.put("0x0000", "Control element"); // FID_SWITCH_SENSOR
         mapDesc.put("0x0001", "Dimming sensor"); // FID_DIMMING_SENSOR

@@ -545,7 +545,6 @@ public class PidTranslationUtils {
         MAP_TRANSLATOR = Collections.unmodifiableMap(mapDescObj);
     }
 
-    @SuppressWarnings("null")
     public static String getShortTextForPairingId(String Key) {
         PIdContainerClass desc = MAP_TRANSLATOR.get(Key);
 
