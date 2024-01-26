@@ -209,22 +209,22 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                     aiResponse[0].error.detail);
                             return;
                         }
-                        if (aiResponse[0].value.dog_cat.alarm_state == 1) {
+                        if (aiResponse[0].value.dogCat.alarmState == 1) {
                             ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.ON);
                         } else {
                             ipCameraHandler.setChannelState(CHANNEL_ANIMAL_ALARM, OnOffType.OFF);
                         }
-                        if (aiResponse[0].value.face.alarm_state == 1) {
+                        if (aiResponse[0].value.face.alarmState == 1) {
                             ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);
                         } else {
                             ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
                         }
-                        if (aiResponse[0].value.people.alarm_state == 1) {
+                        if (aiResponse[0].value.people.alarmState == 1) {
                             ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.ON);
                         } else {
                             ipCameraHandler.setChannelState(CHANNEL_HUMAN_ALARM, OnOffType.OFF);
                         }
-                        if (aiResponse[0].value.vehicle.alarm_state == 1) {
+                        if (aiResponse[0].value.vehicle.alarmState == 1) {
                             ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.ON);
                         } else {
                             ipCameraHandler.setChannelState(CHANNEL_CAR_ALARM, OnOffType.OFF);

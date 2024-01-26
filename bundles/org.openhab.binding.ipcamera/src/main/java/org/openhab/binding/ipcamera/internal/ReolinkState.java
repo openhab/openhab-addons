@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link ReolinkState} class holds the state and GSON parsed replies for a single Reolink Camera.
+ * The {@link ReolinkState} DTO holds the state and GSON parsed replies from a Reolink Camera.
  *
  * @author Matthew Skinner - Initial contribution
  */
@@ -26,10 +26,12 @@ public class ReolinkState {
     public class GetAiStateResponse {
         public class Value {
             public class Alarm {
-                public int alarm_state = 0;
+                @SerializedName(value = "alarmState", alternate = { "alarm_state" }) // alarm_state is used in json
+                public int alarmState = 0;
             }
 
-            public Alarm dog_cat = new Alarm();
+            @SerializedName(value = "dogCat", alternate = { "dog_cat" }) // dog_cat is used in json
+            public Alarm dogCat = new Alarm();
             public Alarm face = new Alarm();
             public Alarm people = new Alarm();
             public Alarm vehicle = new Alarm();
