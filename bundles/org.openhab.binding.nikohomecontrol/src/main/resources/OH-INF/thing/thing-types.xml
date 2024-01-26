@@ -182,6 +182,7 @@
 	<thing-type id="energyMeterLive">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
 		<label>@text/energyMeterLiveLabel</label>
 		<description>@text/energyMeterLiveDescription</description>

@@ -1,11 +1,5 @@
 # Niko Home Control Binding
 
-**Notice for Niko Home Control II and Energy Meters**:
-Starting with openHAB 3.3, support for Energy Meters with Niko Home Control II in the binding has temporarily been disabled.
-This functionality caused heavy network traffic between your Niko Home Control II controller and the Niko cloud.
-If you are using this functionality in an older version of the binding, please disable it (remove the Energy Meter thing).
-As soon as Niko has adapted their controller software, this functionality will be restored.
-
 **Upgrade notice for Niko Home Control II and openHAB 2.5.3 or later**:
 Starting with openHAB 2.5.3 the binding uses Niko Home Control hobby API token based authentication.
 The Niko Home Control hobby API is available with Niko Home Control system version 2.5.1 or newer.
@@ -47,7 +41,7 @@ The following thing types are available in the binding:
 | dimmer              |   x   |   x    | dimmable light action                                                             |
 | blind               |   x   |   x    | rollershutter, venetian blind                                                     |
 | thermostat          |   x   |   x    | thermostat                                                                        |
-| energyMeterLive     |   x   |        | energy meter with live power monitoring and aggregation                           |
+| energyMeterLive     |   x   |   x    | energy meter with live power monitoring and aggregation                           |
 | energyMeter         |   x   |        | energy meter, aggregates readings with 10 min intervals                           |
 | gasMeter            |   x   |        | gas meter, aggregates readings with 10 min intervals                              |
 | waterMeter          |   x   |        | water meter, aggregates readings with 10 min intervals                            |
@@ -142,8 +136,8 @@ The Thing configurations for **Niko Home Control actions, thermostats, energy me
 | invert        |   x   |   x    |          | blind, energyMeterLive, energyMeter, gasMeter, waterMeter | inverts rollershutter or blind direction. Inverts sign of meter reading. Default false |
 | thermostatId  |   x   |   x    |     x    | thermostat                       | unique ID for the thermostat in the controller                                    |
 | overruleTime  |   x   |   x    |          | thermostat                       | standard overrule duration in minutes when setting a new setpoint without providing an overrule duration, default value is 60 |
-| meterId       |   x   |        |     x    | energyMeterLive, energyMeter, gasMeter, waterMeter | unique ID for the energy meter in the controller                |
-| refresh       |   x   |        |          | energyMeterLive, energyMeter, gasMeter, waterMeter | refresh interval for meter reading in minutes, default 10 minutes. The value should not be lower than 5 minutes to avoid too many meter data retrieval calls |
+| meterId       |   x   |   x    |     x    | energyMeterLive, energyMeter, gasMeter, waterMeter | unique ID for the energy meter in the controller                |
+| refresh       |   x   |   x    |          | energyMeterLive, energyMeter, gasMeter, waterMeter | refresh interval for meter reading in minutes, default 10 minutes. The value should not be lower than 5 minutes to avoid too many meter data retrieval calls |
 | accessId      |       |   x    |     x    | access, accessRingAndComeIn      | unique ID for the access device in the controller                                 |
 
 For Niko Home Control I, the `actionId`, `thermostatId` or `meterId` parameter are the unique IP Interface Object ID (`ipInterfaceObjectId`) as automatically assigned in the Niko Home Control Controller when programming the Niko Home Control system using the Niko Home Control I programming software.

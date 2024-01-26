@@ -15,7 +15,7 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link NikoHomeControlMeterConfig} is the config class for Niko Home Control Thermostats.
+ * {@link NikoHomeControlMeterConfig} is the config class for Niko Home Control Meters.
  *
  * @author Mark Herwege - Initial Contribution
  */
