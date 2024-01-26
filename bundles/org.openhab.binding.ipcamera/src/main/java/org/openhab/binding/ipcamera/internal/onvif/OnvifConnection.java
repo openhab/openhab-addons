@@ -363,6 +363,10 @@ public class OnvifConnection {
                 if (ipCameraHandler.snapshotUri.isEmpty()
                         && !"ffmpeg".equals(ipCameraHandler.cameraConfig.getSnapshotUrl())) {
                     ipCameraHandler.snapshotUri = ipCameraHandler.getCorrectUrlFormat(url);
+                    if (ipCameraHandler.getPortFromShortenedUrl(url) != ipCameraHandler.cameraConfig.getPort()) {
+                        logger.warn("ONVIF is reporting the snapshot does not match the things configured port of:{}",
+                                ipCameraHandler.cameraConfig.getPort());
+                    }
                 }
             }
         } else if (message.contains("GetStreamUriResponse")) {
