@@ -582,6 +582,16 @@ public class Back2BackTest {
         // RGBW, only RGB part
         helper("251.600", new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x00, 0x00, 0x0e },
                 new HSBType("0, 0, 100"), new byte[] { 1, 1, 1, 0, 0, 0 }, new byte[0]);
+        // RGBW, only W part
+        helper("251.600", new byte[] { 0x0, 0x0, 0x0, 0x1A, 0x00, 0x01 }, new PercentType("10.2"));
+        // RGBW, all
+        helper("251.60600", new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0xff, 0x00, 0x0f },
+                new HSBType("0, 0, 100"), new byte[] { 1, 1, 1, 2, 0, 0 }, new byte[0]);
+        // RGBW, mixed
+        int[] rgbw = new int[] { 240, 0x0, 0x0, 0x0f };
+        HSBType hsb = ColorUtil.rgbToHsb(rgbw);
+        helper("251.60600", new byte[] { (byte) rgbw[0], (byte) rgbw[1], (byte) rgbw[2], (byte) rgbw[3], 0x00, 0x0f },
+                hsb, new byte[] { 2, 2, 2, 2, 0, 0 }, new byte[0]);
     }
 
     @Test
