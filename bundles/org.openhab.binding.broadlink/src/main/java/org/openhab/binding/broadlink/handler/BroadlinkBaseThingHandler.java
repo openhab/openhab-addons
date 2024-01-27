@@ -124,7 +124,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     private boolean authenticate() {
-        logger.trace("Authenticating");
         authenticated = false;
         // When authenticating, we must ALWAYS use the initial values
         this.deviceId = HexUtils.hexToBytes(INITIAL_DEVICE_ID);
