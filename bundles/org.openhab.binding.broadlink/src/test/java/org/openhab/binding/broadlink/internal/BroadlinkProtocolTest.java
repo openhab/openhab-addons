@@ -22,11 +22,11 @@ import org.slf4j.Logger;
 
 /**
  * Tests the Broadlink protocol.
- * 
+ *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkProtocolTest {
+public class BroadlinkProtocolTest { // NOPMD
 
     private final Logger mockLogger = Mockito.mock(Logger.class);
 

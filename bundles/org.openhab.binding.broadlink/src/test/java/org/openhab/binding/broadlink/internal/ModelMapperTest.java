@@ -27,7 +27,7 @@ import org.slf4j.Logger;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 @NonNullByDefault
-public class ModelMapperTest {
+public class ModelMapperTest { // NOPMD
 
     private Logger mockLogger = Mockito.mock(Logger.class);
 
