@@ -89,8 +89,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     @Override
     public void initialize() {
-        logger.debug("initializing handler");
-
         this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
         count = (new Random()).nextInt(65535);
 
