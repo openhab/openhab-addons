@@ -27,6 +27,6 @@ public class LinkyConfiguration {
     public String prmId = "";
 
     public boolean seemsValid() {
-        return !token.isBlank() && !prmId.isBlank();
+        return !prmId.isBlank();
     }
 }

@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 ${pageRefresh}
-<title>Authorize openHAB binding for Smartthings</title>
+<title>Authorize openHAB Linky binding for Enedis</title>
 <link rel="icon" href="img/favicon.ico" type="image/vnd.microsoft.icon">
 <link>
 <style>
@@ -67,19 +67,24 @@ html {
     <path d="m 311.16893,3.3686968 c 46.45255,0 84.33469,37.4250352 84.33469,83.3154142 0,45.887409 -37.88214,83.314139 -84.33469,83.314139 -25.37318,0 -48.18501,-11.17665 -63.66633,-28.79057 l 2.98008,-2.95501 2.16319,-2.13785 2.16749,-2.14377 2.16835,-2.14209 0.0884,-0.0865 c 13.00665,15.21415 32.43854,24.9082 54.09884,24.9082 39.00964,0 70.82522,-31.42855 70.82522,-69.966579 0,-38.540154 -31.81558,-69.969554 -70.82522,-69.969554 -39.01137,0 -70.82694,31.4294 -70.82694,69.969554 0,5.189918 0.58434,10.24717 1.67968,15.121749 l -4.69923,4.65206 -6.27207,6.2012 c -2.73168,-8.18222 -4.217,-16.909931 -4.217,-25.97501 0,-45.89038 37.88214,-83.3154145 84.33556,-83.3154145 z" style="clip-rule:evenodd;fill:#474747;fill-rule:evenodd;stroke-width:0.87332809" />
   </g>
 </svg>
-	<h3>Authorize openHAB binding for Smartthings</h3>
-	<p>On this page you can authorize the openHAB Smartthings biding to access your Smartthings account.</p>
+	<h3>Authorize openHAB Linky binding for Enedis</h3>
+	<p>On this page you can authorize the openHAB Linky binding to access your Enedis account.</p>
 	<p>
-		The redirect URI to use with Smartthings for this openHAB installation is
+		The redirect URI to use with Enedis for this openHAB installation is
 		<a href="${redirectUri}">${redirectUri}</a>
 	</p>
 	${error} ${authorizedUser}
 	
 	<div class="block${bridge.authorized}">
-        Connect to SmartThings:  
+        Connect to Enedis:  
         <p>
                 <div class="button">
-                    <a href=${bridge.uri}>Authorize Bridge
+                    <a href=${authorize.uri}>Authorize Bridge
+                    </a>
+                </div>
+                <br/><br/>
+                <div class="button">
+                    <a href=${retrieveToken.uri}>Retrieve token
                     </a>
                 </div>
         </p>
