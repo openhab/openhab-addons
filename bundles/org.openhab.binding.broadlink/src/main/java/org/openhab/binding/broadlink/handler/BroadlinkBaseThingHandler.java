@@ -150,7 +150,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             authenticated = true;
             return true;
         } catch (Exception e) {
-            logger.warn("Authentication failed: ", e);
+            logger.warn("Authentication failed: {}", e.getMessage());
             return false;
         }
     }
