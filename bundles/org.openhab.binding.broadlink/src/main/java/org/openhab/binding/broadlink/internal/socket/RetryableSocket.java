@@ -18,7 +18,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
-import java.util.HexFormat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -72,11 +71,7 @@ public class RetryableSocket {
     @SuppressWarnings("null")
     private boolean sendDatagram(byte message[], String purpose) {
         try {
-            logger.trace("Sending {} to {}:{}", purpose, thingConfig.getIpAddress(), thingConfig.getPort());
-            HexFormat hex = HexFormat.of();
-            logger.trace("Message length {} bytes: {}", message.length, hex.formatHex(message));
             if (socket == null || socket.isClosed()) {
-                logger.trace("No existing socket ... creating");
                 socket = new DatagramSocket();
                 socket.setBroadcast(true);
                 socket.setReuseAddress(true);
@@ -86,7 +81,6 @@ public class RetryableSocket {
             int port = thingConfig.getPort();
             DatagramPacket sendPacket = new DatagramPacket(message, message.length, new InetSocketAddress(host, port));
             socket.send(sendPacket);
-            logger.trace("Sending {} complete", purpose);
             return true;
         } catch (IOException e) {
             logger.warn("IO error during UDP command sending {}:", purpose, e);
@@ -96,14 +90,11 @@ public class RetryableSocket {
 
     @SuppressWarnings("null")
     private @Nullable DatagramPacket receiveDatagram(String purpose, DatagramPacket receivePacket) {
-        logger.trace("Awaiting {} response", purpose);
-
         try {
             if (socket == null) {
                 logger.warn("receiveDatagram {} for socket was unexpectedly null", purpose);
             } else {
                 socket.receive(receivePacket);
-                logger.trace("Received {} ({} bytes)", purpose, receivePacket.getLength());
                 return receivePacket;
             }
         } catch (SocketTimeoutException ste) {
