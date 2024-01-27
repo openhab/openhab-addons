@@ -30,7 +30,6 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
 
     @Override
     protected boolean getStatusFromDevice() {
-        logger.trace("A1 getStatusFromDevice");
         byte payload[];
         payload = new byte[16];
         payload[0] = 1;
