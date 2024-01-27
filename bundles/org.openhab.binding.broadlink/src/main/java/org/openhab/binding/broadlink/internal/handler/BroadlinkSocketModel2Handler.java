@@ -97,7 +97,6 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
     @Override
     protected boolean getStatusFromDevice() {
         try {
-            logger.trace("SP2/SP2s getting status...");
             byte[] statusBytes = getStatusBytesFromDevice();
             updateState(COMMAND_POWER_ON, derivePowerStateFromStatusBytes(statusBytes));
             if (supportsPowerConsumptionMeasurement) {

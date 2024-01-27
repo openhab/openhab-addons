@@ -13,6 +13,7 @@
 package org.openhab.binding.broadlink.internal;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -23,9 +24,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -50,18 +49,21 @@ public class BroadlinkMappingService {
     private static final String TRANSFORM_DIR = OpenHAB.getConfigFolder() + File.separator + "transform"
             + File.separator;
     private final Logger logger = LoggerFactory.getLogger(BroadlinkMappingService.class);
-    private final String mapFileName;
+    private final String irMapFileName;
+    private final String rfMapFileName;
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
     private final ChannelUID targetChannelUID;
-    private final Map<String, String> commandMap = new HashMap<>();
 
     private @Nullable WatchService watchService = null;
     private @Nullable WatchKey transformDirWatchKey = null;
     private @Nullable Thread watchThread = null;
+    private Properties irProperties = new Properties();
+    private Properties rfProperties = new Properties();
 
-    public BroadlinkMappingService(String mapFileName,
+    public BroadlinkMappingService(String irMapFileName, String rfMapFileName,
             BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider, ChannelUID targetChannelUID) {
-        this.mapFileName = mapFileName;
+        this.irMapFileName = irMapFileName;
+        this.rfMapFileName = rfMapFileName;
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.targetChannelUID = targetChannelUID;
         reloadFromFile();
@@ -89,8 +91,38 @@ public class BroadlinkMappingService {
         }
     }
 
-    public @Nullable String lookup(String command) {
-        return commandMap.get(command);
+    public @Nullable String lookupIR(String command) {
+        return (String) irProperties.get(command);
+    }
+
+    public void storeIR(String command, String irCommand) {
+        irProperties.put(command, irCommand);
+        try {
+            Path mapFilePath = Paths.get(TRANSFORM_DIR + irMapFileName);
+            logger.trace("Storing {} to {}", command, mapFilePath);
+            FileOutputStream fr = new FileOutputStream(mapFilePath.toFile());
+            irProperties.store(fr, "Broadlink IR commands");
+            fr.close();
+        } catch (IOException ex) {
+            logger.warn("Cannot store IR command to file: " + irMapFileName, ex);
+        }
+    }
+
+    public @Nullable String lookupRF(String command) {
+        return (String) rfProperties.get(command);
+    }
+
+    public void storeRF(String command, String rfCommand) {
+        rfProperties.put(command, rfCommand);
+        try {
+            Path mapFilePath = Paths.get(TRANSFORM_DIR + rfMapFileName);
+            logger.trace("Storing {} to {}", command, mapFilePath);
+            FileOutputStream fr = new FileOutputStream(mapFilePath.toFile());
+            irProperties.store(fr, "Broadlink RF commands");
+            fr.close();
+        } catch (IOException ex) {
+            logger.warn("Cannot store RF command to file: " + rfMapFileName, ex);
+        }
     }
 
     @SuppressWarnings({ "null", "unchecked" })
@@ -106,8 +138,8 @@ public class BroadlinkMappingService {
                             .filter(e -> e.kind() == StandardWatchEventKinds.ENTRY_MODIFY);
 
                     if (modificationEvents
-                            .anyMatch(e -> ((WatchEvent<Path>) e).context().toString().equals(mapFileName))) {
-                        logger.debug("File {} has changed - reloading", mapFileName);
+                            .anyMatch(e -> ((WatchEvent<Path>) e).context().toString().equals(irMapFileName))) {
+                        logger.debug("File {} has changed - reloading", irMapFileName);
                         reloadFromFile();
                     }
                     key.reset();
@@ -132,17 +164,13 @@ public class BroadlinkMappingService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void reloadFromFile() {
-        Properties props = new Properties();
-        Path mapFilePath = Paths.get(TRANSFORM_DIR + mapFileName);
+        Path mapFilePath = Paths.get(TRANSFORM_DIR + irMapFileName);
         try (FileReader reader = new FileReader(mapFilePath.toFile())) {
-            props.load(reader);
-            commandMap.clear();
-            props.stringPropertyNames().forEach(k -> {
-                commandMap.put(k, props.getProperty(k));
-            });
-            logger.debug("Read {} commands from {}", commandMap.size(), mapFilePath);
-            notifyAvailableCommands(commandMap.keySet());
+            irProperties.load(reader);
+            logger.debug("Read {} commands from {}", irProperties.size(), mapFilePath);
+            notifyAvailableCommands((Set<String>) (Set<?>) irProperties.keySet());
         } catch (IOException e) {
             logger.warn("Couldn't read {}: {}", mapFilePath, e.getMessage());
         }
@@ -151,7 +179,7 @@ public class BroadlinkMappingService {
     private void notifyAvailableCommands(Set<String> commandNames) {
         List<CommandOption> commandOptions = new ArrayList<>();
         commandNames.forEach((c) -> commandOptions.add(new CommandOption(c, null)));
-        logger.debug("notifying framework about {} commands from {}", commandOptions.size(), mapFileName);
+        logger.debug("notifying framework about {} commands from {}", commandOptions.size(), irMapFileName);
         this.commandDescriptionProvider.setCommandOptions(targetChannelUID, commandOptions);
     }
 }
