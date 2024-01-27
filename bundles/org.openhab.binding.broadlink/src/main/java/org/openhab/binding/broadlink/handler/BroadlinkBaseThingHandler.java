@@ -70,8 +70,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     public BroadlinkBaseThingHandler(Thing thing) {
         super(thing);
-        logger.debug("constructed: resetting deviceKey to '{}', length {}",
-                BroadlinkBindingConstants.BROADLINK_AUTH_KEY, BroadlinkBindingConstants.BROADLINK_AUTH_KEY.length());
         this.deviceId = HexUtils.hexToBytes(INITIAL_DEVICE_ID);
         this.deviceKey = HexUtils.hexToBytes(BroadlinkBindingConstants.BROADLINK_AUTH_KEY);
     }
