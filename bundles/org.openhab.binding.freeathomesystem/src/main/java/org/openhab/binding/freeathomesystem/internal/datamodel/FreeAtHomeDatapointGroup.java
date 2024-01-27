@@ -37,12 +37,14 @@ public class FreeAtHomeDatapointGroup {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDatapointGroup.class);
 
-    public static final int DATAPOINTGROUP_DIRECTION_UNDEFINED = 0;
-    public static final int DATAPOINTGROUP_DIRECTION_INPUT = 1;
-    public static final int DATAPOINTGROUP_DIRECTION_OUTPUT = 2;
-    public static final int DATAPOINTGROUP_DIRECTION_INPUTOUTPUT = 3;
+    public enum DatapointGroupDirection {
+        UNDEFINED,
+        INPUT,
+        OUTPUT,
+        INPUTOUTPUT
+    }
 
-    private int datapointGroupDirection;
+    private DatapointGroupDirection datapointGroupDirection;
     private int pairingId;
 
     private String functionString = "";
@@ -50,7 +52,7 @@ public class FreeAtHomeDatapointGroup {
     private @Nullable FreeAtHomeDatapoint outputDatapoint;
 
     FreeAtHomeDatapointGroup() {
-        datapointGroupDirection = DATAPOINTGROUP_DIRECTION_UNDEFINED;
+        datapointGroupDirection = DatapointGroupDirection.UNDEFINED;
         inputDatapoint = null;
         outputDatapoint = null;
     }
@@ -83,15 +85,15 @@ public class FreeAtHomeDatapointGroup {
         }
 
         if (inputDatapoint != null && outputDatapoint != null) {
-            datapointGroupDirection = DATAPOINTGROUP_DIRECTION_INPUTOUTPUT;
+            datapointGroupDirection = DatapointGroupDirection.INPUTOUTPUT;
         } else {
             if (inputDatapoint == null && outputDatapoint != null) {
-                datapointGroupDirection = DATAPOINTGROUP_DIRECTION_OUTPUT;
+                datapointGroupDirection = DatapointGroupDirection.OUTPUT;
             } else {
                 if (inputDatapoint != null && outputDatapoint == null) {
-                    datapointGroupDirection = DATAPOINTGROUP_DIRECTION_INPUT;
+                    datapointGroupDirection = DatapointGroupDirection.INPUT;
                 } else {
-                    datapointGroupDirection = DATAPOINTGROUP_DIRECTION_UNDEFINED;
+                    datapointGroupDirection = DatapointGroupDirection.UNDEFINED;
                 }
             }
         }
@@ -109,15 +111,15 @@ public class FreeAtHomeDatapointGroup {
         outputDatapoint = localDatapoint;
 
         if (inputDatapoint != null && outputDatapoint != null) {
-            datapointGroupDirection = DATAPOINTGROUP_DIRECTION_INPUTOUTPUT;
+            datapointGroupDirection = DatapointGroupDirection.INPUTOUTPUT;
         } else {
             if (inputDatapoint == null && outputDatapoint != null) {
-                datapointGroupDirection = DATAPOINTGROUP_DIRECTION_OUTPUT;
+                datapointGroupDirection = DatapointGroupDirection.OUTPUT;
             } else {
                 if (inputDatapoint != null && outputDatapoint == null) {
-                    datapointGroupDirection = DATAPOINTGROUP_DIRECTION_INPUT;
+                    datapointGroupDirection = DatapointGroupDirection.INPUT;
                 } else {
-                    datapointGroupDirection = DATAPOINTGROUP_DIRECTION_UNDEFINED;
+                    datapointGroupDirection = DatapointGroupDirection.UNDEFINED;
                 }
             }
         }
@@ -133,7 +135,7 @@ public class FreeAtHomeDatapointGroup {
         return outputDatapoint;
     }
 
-    public int getDirection() {
+    public DatapointGroupDirection getDirection() {
         return datapointGroupDirection;
     }
 
@@ -174,11 +176,11 @@ public class FreeAtHomeDatapointGroup {
     public boolean isReadOnly() {
         boolean result = true;
 
-        if (DATAPOINTGROUP_DIRECTION_INPUTOUTPUT == datapointGroupDirection) {
+        if (DatapointGroupDirection.INPUTOUTPUT == datapointGroupDirection) {
             result = false;
         }
 
-        if (DATAPOINTGROUP_DIRECTION_INPUT == datapointGroupDirection) {
+        if (DatapointGroupDirection.INPUT == datapointGroupDirection) {
             result = false;
         }
 

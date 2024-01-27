@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapoint;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapointGroup;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceChannel;
@@ -70,9 +71,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
     private FreeAtHomeDeviceDescription device = new FreeAtHomeDeviceDescription();
     private FreeAtHomeChannelTypeProvider channelTypeProvider;
 
-    private String deviceID = null;
-
-    private static URI configDescriptionUriChannel = null;
+    private String deviceID = "unknownID";
 
     private Map<ChannelUID, FreeAtHomeDatapointGroup> mapChannelUID = new HashMap<ChannelUID, FreeAtHomeDatapointGroup>();
     private Map<ChannelUID, String> mapChannelUIDVal = new HashMap<ChannelUID, String>();
@@ -91,15 +90,21 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             Map<String, String> properties = getThing().getProperties();
 
-            deviceID = properties.get("deviceId");
+            String locDeviceId = properties.get("deviceId");
 
-            logger.debug("Start creating device - device id: {}", deviceID);
+            if (locDeviceId != null) {
+                deviceID = locDeviceId;
 
-            updateChannels();
+                logger.debug("Start creating device - device id: {}", deviceID);
 
-            updateStatus(ThingStatus.ONLINE);
+                updateChannels();
 
-            logger.debug("Device created - device id: {}", deviceID);
+                updateStatus(ThingStatus.ONLINE);
+
+                logger.debug("Device created - device id: {}", deviceID);
+            } else {
+                logger.debug("Device cannot be created: device ID is null");
+            }
         });
     }
 
@@ -120,7 +125,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         if (dpg != null) {
             // Check whether it is a INPUT only datapoint group
 
-            if (dpg.getDirection() == FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUT) {
+            if (dpg.getDirection() == FreeAtHomeDatapointGroup.DatapointGroupDirection.INPUT) {
                 FreeAtHomeDatapoint datapoint = dpg.getInputDatapoint();
 
                 if (datapoint != null) {
@@ -306,8 +311,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        if ((dpg.getDirection() != FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUT)
-                || (dpg.getDirection() != FreeAtHomeDatapointGroup.DATAPOINTGROUP_DIRECTION_INPUTOUTPUT)) {
+        if ((dpg.getDirection() != FreeAtHomeDatapointGroup.DatapointGroupDirection.INPUT)
+                || (dpg.getDirection() != FreeAtHomeDatapointGroup.DatapointGroupDirection.INPUTOUTPUT)) {
             logger.debug("Handle feedback for virtual device {} - at channel {} - but wrong config", deviceID,
                     channelUID.getAsString());
         }
@@ -343,28 +348,27 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         }
 
         try {
-            configDescriptionUriChannel = new URI(CHANNEL_URI);
+            URI configDescriptionUriChannel = new URI(CHANNEL_URI);
+
+            ChannelTypeBuilder<?> channelTypeBuilder = ChannelTypeBuilder
+                    .state(channelTypeUID,
+                            String.format("%s-%s-%s-%s", dpg.getLabel(), dpg.getOpenHabItemType(),
+                                    dpg.getOpenHabCategory(), "type"),
+                            dpg.getOpenHabItemType())
+                    .withCategory(dpg.getOpenHabCategory()).withStateDescriptionFragment(stateFragment.build());
+
+            ChannelType channelType = channelTypeBuilder.isAdvanced(false)
+                    .withConfigDescriptionURI(configDescriptionUriChannel)
+                    .withDescription(String.format("Type for channel - %s ", dpg.getLabel())).build();
+
+            channelTypeProvider.addChannelType(channelType);
+
+            logger.debug("Channel type created {} - label: {} - caegory: {}", channelTypeUID.getAsString(),
+                    dpg.getLabel(), dpg.getOpenHabCategory());
+
         } catch (URISyntaxException e) {
             logger.debug("Channel config URI cannot created for datapoint - datapoint group: {}", dpg.getLabel());
-
-            return null;
         }
-
-        ChannelTypeBuilder<?> channelTypeBuilder = ChannelTypeBuilder
-                .state(channelTypeUID,
-                        String.format("%s-%s-%s-%s", dpg.getLabel(), dpg.getOpenHabItemType(), dpg.getOpenHabCategory(),
-                                "type"),
-                        dpg.getOpenHabItemType())
-                .withCategory(dpg.getOpenHabCategory()).withStateDescriptionFragment(stateFragment.build());
-
-        ChannelType channelType = channelTypeBuilder.isAdvanced(false)
-                .withConfigDescriptionURI(configDescriptionUriChannel)
-                .withDescription(String.format("Type for channel - %s ", dpg.getLabel())).build();
-
-        channelTypeProvider.addChannelType(channelType);
-
-        logger.debug("Channel type created {} - label: {} - caegory: {}", channelTypeUID.getAsString(), dpg.getLabel(),
-                dpg.getOpenHabCategory());
 
         return channelTypeUID;
     }

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.freeathomesystem.internal.util;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,9 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class FidTranslationUtils {
 
-    private static final Map<String, String> MAP_FUNCTIONID;
-
-    public static final int FID_UNKNOWN = 0xFFFFAAFF; // Control element
+    public static final int FID_UNKNOWN = 0xFFFFAAFF; // Unknown
 
     // free@home constants
     public static final int FID_SWITCH_SENSOR = 0x0000; // Control element
@@ -57,8 +53,8 @@ public class FidTranslationUtils {
     public static final int FID_TWO_LEVEL_CONTROLLER = 0x0017; // Two-level controller
     public static final int FID_DES_DOOR_OPENER_ACTUATOR = 0x001A; // Door opener
     public static final int FID_PROXY = 0x001B; // Proxy
-    public static final int FID_DES_LEVEL_CALL_ACTUATOR = 0x001D; // Door Entry System Call Level Actuator
-    public static final int FID_DES_LEVEL_CALL_SENSOR = 0x001E; // Door Entry System Call Level Sensor
+    public static final int FID_DES_LEVEL_CALL_ACTUATOR = 0x001D; // Door Map.entry System Call Level Actuator
+    public static final int FID_DES_LEVEL_CALL_SENSOR = 0x001E; // Door Map.entry System Call Level Sensor
     public static final int FID_DES_DOOR_RINGING_SENSOR = 0x001F; // Door call
     public static final int FID_DES_AUTOMATIC_DOOR_OPENER_ACTUATOR = 0x0020; // Automatic door opener
     public static final int FID_DES_LIGHT_SWITCH_ACTUATOR = 0x0021; // Corridor light
@@ -198,169 +194,165 @@ public class FidTranslationUtils {
     public static final int FID_MOVEMENT_DETECTOR_FLEX = 0x1090;
     public static final int FID_DIMMING_ACTUATOR_FLEX = 0x1810;
 
-    static {
-        Map<String, String> mapDesc = new HashMap<>();
+    private static final Map<String, String> mapFunctionId = Map.ofEntries(Map.entry("0x0000", "Control element"), // FID_SWITCH_SENSOR
+            Map.entry("0x0001", "Dimming sensor"), // FID_DIMMING_SENSOR
+            Map.entry("0x0003", "Blind sensor"), // FID_BLIND_SENSOR
+            Map.entry("0x0004", "Stairwell light sensor"), // FID_STAIRCASE_LIGHT_SENSOR
+            Map.entry("0x0005", "Force On/Off sensor"), // FID_FORCE_ON_OFF_SENSOR
+            Map.entry("0x0006", "Scene sensor"), // FID_SCENE_SENSOR
+            Map.entry("0x0007", "Switch actuator"), // FID_SWITCH_ACTUATOR
+            Map.entry("0x0009", "Blind actuator"), // FID_SHUTTER_ACTUATOR
+            Map.entry("0x000A", "Room temperature controller with fan speed level"), // FID_ROOM_TEMPERATURE_CONTROLLER_MASTER_WITH_FAN
+            Map.entry("0x000B", "Room temperature controller extension unit"), // FID_ROOM_TEMPERATURE_CONTROLLER_SLAVE
+            Map.entry("0x000C", "Wind Alarm"), // FID_WIND_ALARM_SENSOR
+            Map.entry("0x000D", "Frost Alarm"), // FID_FROST_ALARM_SENSOR
+            Map.entry("0x000E", "Rain Alarm"), // FID_RAIN_ALARM_SENSOR
+            Map.entry("0x000F", "Window sensor"), // FID_WINDOW_DOOR_SENSOR
+            Map.entry("0x0011", "Movement Detector"), // FID_MOVEMENT_DETECTOR
+            Map.entry("0x0012", "Dim actuator"), // FID_DIMMING_ACTUATOR
+            Map.entry("0x0014", "Radiator"), // FID_RADIATOR_ACTUATOR
+            Map.entry("0x0015", "Underfloor heating"), // FID_UNDERFLOOR_HEATING
+            Map.entry("0x0016", "Fan Coil"), // FID_FAN_COIL
+            Map.entry("0x0017", "Two-level controller"), // FID_TWO_LEVEL_CONTROLLER
+            Map.entry("0x001A", "Door opener"), // FID_DES_DOOR_OPENER_ACTUATOR
+            Map.entry("0x001B", "Proxy"), // FID_PROXY
+            Map.entry("0x001D", "Door Map.entry System Call Level Actuator"), // FID_DES_LEVEL_CALL_ACTUATOR
+            Map.entry("0x001E", "Door Map.entry System Call Level Sensor"), // FID_DES_LEVEL_CALL_SENSOR
+            Map.entry("0x001F", "Door call"), // FID_DES_DOOR_RINGING_SENSOR
+            Map.entry("0x0020", "Automatic door opener"), // FID_DES_AUTOMATIC_DOOR_OPENER_ACTUATOR
+            Map.entry("0x0021", "Corridor light"), // FID_DES_LIGHT_SWITCH_ACTUATOR
+            Map.entry("0x0023", "Room temperature controller"), // FID_ROOM_TEMPERATURE_CONTROLLER_MASTER_WITHOUT_FAN
+            Map.entry("0x0024", "Cooling mode"), // FID_COOLING_ACTUATOR
+            Map.entry("0x0027", "Heating mode"), // FID_HEATING_ACTUATOR
+            Map.entry("0x0028", "Force-position blind"), // FID_FORCE_UP_DOWN_SENSOR
+            Map.entry("0x0029", "Auto. heating/cooling mode"), // FID_HEATING_COOLING_ACTUATOR
+            Map.entry("0x002A", "Switchover heating/cooling"), // FID_HEATING_COOLING_SENSOR
+            Map.entry("0x002B", "Device settings"), // FID_DES_DEVICE_SETTINGS
+            Map.entry("0x002E", "Dim actuator"), // FID_RGB_W_ACTUATOR
+            Map.entry("0x002F", "Dim actuator"), // FID_RGB_ACTUATOR
+            Map.entry("0x0030", "Control element"), // FID_PANEL_SWITCH_SENSOR
+            Map.entry("0x0031", "Dimming sensor"), // FID_PANEL_DIMMING_SENSOR
+            Map.entry("0x0033", "Blind sensor"), // FID_PANEL_BLIND_SENSOR
+            Map.entry("0x0034", "Stairwell light sensor"), // FID_PANEL_STAIRCASE_LIGHT_SENSOR
+            Map.entry("0x0035", "Force On/Off sensor"), // FID_PANEL_FORCE_ON_OFF_SENSOR
+            Map.entry("0x0036", "Force-position blind"), // FID_PANEL_FORCE_UP_DOWN_SENSOR
+            Map.entry("0x0037", "Scene sensor"), // FID_PANEL_SCENE_SENSOR
+            Map.entry("0x0038", "Room temperature controller extension unit"), // FID_PANEL_ROOM_TEMPERATURE_CONTROLLER_SLAVE
+            Map.entry("0x0039", "Fan coil sensor"), // FID_PANEL_FAN_COIL_SENSOR
+            Map.entry("0x003A", "RGB + warm white/cold white sensor"), // FID_PANEL_RGB_CT_SENSOR
+            Map.entry("0x003B", "RGB sensor"), // FID_PANEL_RGB_SENSOR
+            Map.entry("0x003C", "Warm white/cold white sensor"), // FID_PANEL_CT_SENSOR
+            Map.entry("0x003D", "Add. stage for heating mode"), // FID_ADDITIONAL_HEATING_ACTUATOR
+            Map.entry("0x003E", "Radiator thermostate"), // FID_RADIATOR_ACTUATOR_MASTER
+            Map.entry("0x003F", "Room temperature controller extension unit"), // FID_RADIATOR_ACTUATOR_SLAVE
+            Map.entry("0x0041", "Brightness sensor"), // FID_BRIGHTNESS_SENSOR
+            Map.entry("0x0042", "Rain sensor"), // FID_RAIN_SENSOR
+            Map.entry("0x0043", "Temperature sensor"), // FID_TEMPERATURE_SENSOR
+            Map.entry("0x0044", "Wind sensor"), // FID_WIND_SENSOR
+            Map.entry("0x0045", "Trigger"), // FID_TRIGGER
+            Map.entry("0x0047", "Heating mode"), // FID_FCA_2_PIPE_HEATING
+            Map.entry("0x0048", "Cooling mode"), // FID_FCA_2_PIPE_COOLING
+            Map.entry("0x0049", "Auto. heating/cooling mode"), // FID_FCA_2_PIPE_HEATING_COOLING
+            Map.entry("0x004A", "Two valves for heating and cooling"), // FID_FCA_4_PIPE_HEATING_AND_COOLING
+            Map.entry("0x004B", "Window/Door"), // FID_WINDOW_DOOR_ACTUATOR
+            Map.entry("0x004E", "ABC"), // FID_INVERTER_INFO
+            Map.entry("0x004F", "ABD"), // FID_METER_INFO
+            Map.entry("0x0050", "ACD"), // FID_BATTERY_INFO
+            Map.entry("0x0051", "Timer program switch sensor"), // FID_PANEL_TIMER_PROGRAM_SWITCH_SENSOR
+            Map.entry("0x0055", "Zone"), // FID_DOMUSTECH_ZONE
+            Map.entry("0x0056", "Central heating actuator"), // FID_CENTRAL_HEATING_ACTUATOR
+            Map.entry("0x0057", "Central cooling actuator"), // FID_CENTRAL_COOLING_ACTUATOR
+            Map.entry("0x0059", "Housekeeping"), // FID_HOUSE_KEEPING
+            Map.entry("0x005A", "Media Player"), // FID_MEDIA_PLAYER
+            Map.entry("0x005B", "Panel Room Temperature Controller Slave For Battery Device"), // FID_PANEL_ROOM_TEMPERATURE_CONTROLLER_SLAVE_FOR_BATTERY_DEVICE
+            Map.entry("0x0060", "Media Player Sensor"), // FID_PANEL_MEDIA_PLAYER_SENSOR
+            Map.entry("0x0061", "Roller blind actuator"), // FID_BLIND_ACTUATOR
+            Map.entry("0x0062", "Attic window actuator"), // FID_ATTIC_WINDOW_ACTUATOR
+            Map.entry("0x0063", "Awning actuator"), // FID_AWNING_ACTUATOR
+            Map.entry("0x0064", "WindowDoor Position Sensor"), // FID_WINDOW_DOOR_POSITION_SENSOR
+            Map.entry("0x0065", "Window/Door position"), // FID_WINDOW_DOOR_POSITION_ACTUATOR
+            Map.entry("0x0066", "Media playback control sensor"), // FID_MEDIA_PLAYBACK_CONTROL_SENSOR
+            Map.entry("0x0067", "Media volume sensor"), // FID_MEDIA_VOLUME_SENSOR
+            Map.entry("0x0068", "Dishwasher"), // FID_DISHWASHER
+            Map.entry("0x0069", "Laundry"), // FID_LAUNDRY
+            Map.entry("0x006A", "Dryer"), // FID_DRYER
+            Map.entry("0x006B", "Oven"), // FID_OVEN
+            Map.entry("0x006C", "Fridge"), // FID_FRIDGE
+            Map.entry("0x006D", "Freezer"), // FID_FREEZER
+            Map.entry("0x006E", "Hood"), // FID_HOOD
+            Map.entry("0x006F", "Coffee machine"), // FID_COFFEE_MACHINE
+            Map.entry("0x0070", "Fridge/Freezer"), // FID_FRIDGE_FREEZER
+            Map.entry("0x0071", "Timer program switch sensor"), // FID_TIMER_PROGRAM_OR_ALERT_SWITCH_SENSOR
+            Map.entry("0x0073", "Ceiling fan actuator"), // FID_CEILING_FAN_ACTUATOR
+            Map.entry("0x0074", "Ceiling fan sensor"), // FID_CEILING_FAN_SENSOR
+            Map.entry("0x0075", "Room temperature controller with fan speed level"), // FID_SPLIT_UNIT_GATEWAY
+            Map.entry("0x0076", "Zone"), // FID_ZONE
+            Map.entry("0x0077", "Safety"), // FID_24H_ZONE
+            Map.entry("0x0078", "External IR Sensor BX80"), // FID_EXTERNAL_IR_SENSOR_BX80
+            Map.entry("0x0079", "External IR Sensor VXI"), // FID_EXTERNAL_IR_SENSOR_VXI
+            Map.entry("0x007A", "External IR Sensor Mini"), // FID_EXTERNAL_IR_SENSOR_MINI
+            Map.entry("0x007B", "External IR Sensor High Altitude"), // FID_EXTERNAL_IR_SENSOR_HIGH_ALTITUDE
+            Map.entry("0x007C", "External IR Sensor Curtain"), // FID_EXTERNAL_IR_SENSOR_CURTAIN
+            Map.entry("0x007D", "Smoke Detector"), // FID_SMOKE_DETECTOR
+            Map.entry("0x007E", "Carbon Monoxide Sensor"), // FID_CARBON_MONOXIDE_SENSOR
+            Map.entry("0x007F", "Methane Detector"), // FID_METHANE_DETECTOR
+            Map.entry("0x0080", "Gas Sensor LPG"), // FID_GAS_SENSOR_LPG
+            Map.entry("0x0081", "Flood Detection"), // FID_FLOOD_DETECTION
+            Map.entry("0x0082", "secure@home Central Unit"), // FID_DOMUS_CENTRAL_UNIT_NEXTGEN
+            Map.entry("0x0083", "Thermostat"), // FID_THERMOSTAT
+            Map.entry("0x0084", "secure@home Zone Sensor"), // FID_PANEL_DOMUS_ZONE_SENSOR
+            Map.entry("0x0085", "Slave thermostat"), // FID_THERMOSTAT_SLAVE
+            Map.entry("0x0086", "secure@home Integration Logic"), // FID_DOMUS_SECURE_INTEGRATION
+            Map.entry("0x0087", "Add. stage for cooling mode"), // FID_ADDITIONAL_COOLING_ACTUATOR
+            Map.entry("0x0088", "Two Level Heating Actuator"), // FID_TWO_LEVEL_HEATING_ACTUATOR
+            Map.entry("0x0089", "Two Level Cooling Actuator"), // FID_TWO_LEVEL_COOLING_ACTUATOR
+            Map.entry("0x008E", "Zone"), // FID_GLOBAL_ZONE
+            Map.entry("0x008F", "Volume up"), // FID_VOLUME_UP_SENSOR
+            Map.entry("0x0090", "Volume down"), // FID_VOLUME_DOWN_SENSOR
+            Map.entry("0x0091", "Play/pause"), // FID_PLAY_PAUSE_SENSOR
+            Map.entry("0x0092", "Next favorite"), // FID_NEXT_FAVORITE_SENSOR
+            Map.entry("0x0093", "Next song"), // FID_NEXT_SONG_SENSOR
+            Map.entry("0x0094", "Previous song"), // FID_PREVIOUS_SONG_SENSOR
+            Map.entry("0x0095", "Home appliance sensor"), // FID_HOME_APPLIANCE_SENSOR
+            Map.entry("0x0096", "Heat sensor"), // FID_HEAT_SENSOR
+            Map.entry("0x0097", "Zone switching"), // FID_ZONE_SWITCHING
+            Map.entry("0x0098", "Button function"), // FID_SECURE_AT_HOME_FUNCTION
+            Map.entry("0x0099", "Advanced configuration"), // FID_COMPLEX_CONFIGURATION
+            Map.entry("0x009A", "secure@home Central Unit Basic"), // FID_DOMUS_CENTRAL_UNIT_BASIC
+            Map.entry("0x009B", "Repeater"), // FID_DOMUS_REPEATER
+            Map.entry("0x009C", "Remote scene control"), // FID_DOMUS_SCENE_TRIGGER
+            Map.entry("0x009D", "Window sensor"), // FID_DOMUSWINDOWCONTACT
+            Map.entry("0x009E", "Movement Detector"), // FID_DOMUSMOVEMENTDETECTOR
+            Map.entry("0x009F", "External IR Sensor Curtain"), // FID_DOMUSCURTAINDETECTOR
+            Map.entry("0x00A0", "Smoke Detector"), // FID_DOMUSSMOKEDETECTOR
+            Map.entry("0x00A1", "Flood Detection"), // FID_DOMUSFLOODDETECTOR
+            Map.entry("0x00A3", "Sensor for air-conditioning unit"), // FID_PANEL_SUG_SENSOR
+            Map.entry("0x00A4", "Two-point controller for heating or cooling"), // FID_TWO_LEVEL_HEATING_COOLING_ACTUATOR
+            Map.entry("0x00A5", "Slave thermostat"), // FID_PANEL_THERMOSTAT_CONTROLLER_SLAVE
+            Map.entry("0x00A6", "Wallbox"), // FID_WALLBOX
+            Map.entry("0x00A7", "Wallbox"), // FID_PANEL_WALLBOX
+            Map.entry("0x00A8", "Door lock control"), // FID_DOOR_LOCK_CONTROL
+            Map.entry("0x00AA", "Room temperature controller with fan speed level"), // FID_VRV_GATEWAY
 
-        mapDesc.put("0x0000", "Control element"); // FID_SWITCH_SENSOR
-        mapDesc.put("0x0001", "Dimming sensor"); // FID_DIMMING_SENSOR
-        mapDesc.put("0x0003", "Blind sensor"); // FID_BLIND_SENSOR
-        mapDesc.put("0x0004", "Stairwell light sensor"); // FID_STAIRCASE_LIGHT_SENSOR
-        mapDesc.put("0x0005", "Force On/Off sensor"); // FID_FORCE_ON_OFF_SENSOR
-        mapDesc.put("0x0006", "Scene sensor"); // FID_SCENE_SENSOR
-        mapDesc.put("0x0007", "Switch actuator"); // FID_SWITCH_ACTUATOR
-        mapDesc.put("0x0009", "Blind actuator"); // FID_SHUTTER_ACTUATOR
-        mapDesc.put("0x000A", "Room temperature controller with fan speed level"); // FID_ROOM_TEMPERATURE_CONTROLLER_MASTER_WITH_FAN
-        mapDesc.put("0x000B", "Room temperature controller extension unit"); // FID_ROOM_TEMPERATURE_CONTROLLER_SLAVE
-        mapDesc.put("0x000C", "Wind Alarm"); // FID_WIND_ALARM_SENSOR
-        mapDesc.put("0x000D", "Frost Alarm"); // FID_FROST_ALARM_SENSOR
-        mapDesc.put("0x000E", "Rain Alarm"); // FID_RAIN_ALARM_SENSOR
-        mapDesc.put("0x000F", "Window sensor"); // FID_WINDOW_DOOR_SENSOR
-        mapDesc.put("0x0011", "Movement Detector"); // FID_MOVEMENT_DETECTOR
-        mapDesc.put("0x0012", "Dim actuator"); // FID_DIMMING_ACTUATOR
-        mapDesc.put("0x0014", "Radiator"); // FID_RADIATOR_ACTUATOR
-        mapDesc.put("0x0015", "Underfloor heating"); // FID_UNDERFLOOR_HEATING
-        mapDesc.put("0x0016", "Fan Coil"); // FID_FAN_COIL
-        mapDesc.put("0x0017", "Two-level controller"); // FID_TWO_LEVEL_CONTROLLER
-        mapDesc.put("0x001A", "Door opener"); // FID_DES_DOOR_OPENER_ACTUATOR
-        mapDesc.put("0x001B", "Proxy"); // FID_PROXY
-        mapDesc.put("0x001D", "Door Entry System Call Level Actuator"); // FID_DES_LEVEL_CALL_ACTUATOR
-        mapDesc.put("0x001E", "Door Entry System Call Level Sensor"); // FID_DES_LEVEL_CALL_SENSOR
-        mapDesc.put("0x001F", "Door call"); // FID_DES_DOOR_RINGING_SENSOR
-        mapDesc.put("0x0020", "Automatic door opener"); // FID_DES_AUTOMATIC_DOOR_OPENER_ACTUATOR
-        mapDesc.put("0x0021", "Corridor light"); // FID_DES_LIGHT_SWITCH_ACTUATOR
-        mapDesc.put("0x0023", "Room temperature controller"); // FID_ROOM_TEMPERATURE_CONTROLLER_MASTER_WITHOUT_FAN
-        mapDesc.put("0x0024", "Cooling mode"); // FID_COOLING_ACTUATOR
-        mapDesc.put("0x0027", "Heating mode"); // FID_HEATING_ACTUATOR
-        mapDesc.put("0x0028", "Force-position blind"); // FID_FORCE_UP_DOWN_SENSOR
-        mapDesc.put("0x0029", "Auto. heating/cooling mode"); // FID_HEATING_COOLING_ACTUATOR
-        mapDesc.put("0x002A", "Switchover heating/cooling"); // FID_HEATING_COOLING_SENSOR
-        mapDesc.put("0x002B", "Device settings"); // FID_DES_DEVICE_SETTINGS
-        mapDesc.put("0x002E", "Dim actuator"); // FID_RGB_W_ACTUATOR
-        mapDesc.put("0x002F", "Dim actuator"); // FID_RGB_ACTUATOR
-        mapDesc.put("0x0030", "Control element"); // FID_PANEL_SWITCH_SENSOR
-        mapDesc.put("0x0031", "Dimming sensor"); // FID_PANEL_DIMMING_SENSOR
-        mapDesc.put("0x0033", "Blind sensor"); // FID_PANEL_BLIND_SENSOR
-        mapDesc.put("0x0034", "Stairwell light sensor"); // FID_PANEL_STAIRCASE_LIGHT_SENSOR
-        mapDesc.put("0x0035", "Force On/Off sensor"); // FID_PANEL_FORCE_ON_OFF_SENSOR
-        mapDesc.put("0x0036", "Force-position blind"); // FID_PANEL_FORCE_UP_DOWN_SENSOR
-        mapDesc.put("0x0037", "Scene sensor"); // FID_PANEL_SCENE_SENSOR
-        mapDesc.put("0x0038", "Room temperature controller extension unit"); // FID_PANEL_ROOM_TEMPERATURE_CONTROLLER_SLAVE
-        mapDesc.put("0x0039", "Fan coil sensor"); // FID_PANEL_FAN_COIL_SENSOR
-        mapDesc.put("0x003A", "RGB + warm white/cold white sensor"); // FID_PANEL_RGB_CT_SENSOR
-        mapDesc.put("0x003B", "RGB sensor"); // FID_PANEL_RGB_SENSOR
-        mapDesc.put("0x003C", "Warm white/cold white sensor"); // FID_PANEL_CT_SENSOR
-        mapDesc.put("0x003D", "Add. stage for heating mode"); // FID_ADDITIONAL_HEATING_ACTUATOR
-        mapDesc.put("0x003E", "Radiator thermostate"); // FID_RADIATOR_ACTUATOR_MASTER
-        mapDesc.put("0x003F", "Room temperature controller extension unit"); // FID_RADIATOR_ACTUATOR_SLAVE
-        mapDesc.put("0x0041", "Brightness sensor"); // FID_BRIGHTNESS_SENSOR
-        mapDesc.put("0x0042", "Rain sensor"); // FID_RAIN_SENSOR
-        mapDesc.put("0x0043", "Temperature sensor"); // FID_TEMPERATURE_SENSOR
-        mapDesc.put("0x0044", "Wind sensor"); // FID_WIND_SENSOR
-        mapDesc.put("0x0045", "Trigger"); // FID_TRIGGER
-        mapDesc.put("0x0047", "Heating mode"); // FID_FCA_2_PIPE_HEATING
-        mapDesc.put("0x0048", "Cooling mode"); // FID_FCA_2_PIPE_COOLING
-        mapDesc.put("0x0049", "Auto. heating/cooling mode"); // FID_FCA_2_PIPE_HEATING_COOLING
-        mapDesc.put("0x004A", "Two valves for heating and cooling"); // FID_FCA_4_PIPE_HEATING_AND_COOLING
-        mapDesc.put("0x004B", "Window/Door"); // FID_WINDOW_DOOR_ACTUATOR
-        mapDesc.put("0x004E", "ABC"); // FID_INVERTER_INFO
-        mapDesc.put("0x004F", "ABD"); // FID_METER_INFO
-        mapDesc.put("0x0050", "ACD"); // FID_BATTERY_INFO
-        mapDesc.put("0x0051", "Timer program switch sensor"); // FID_PANEL_TIMER_PROGRAM_SWITCH_SENSOR
-        mapDesc.put("0x0055", "Zone"); // FID_DOMUSTECH_ZONE
-        mapDesc.put("0x0056", "Central heating actuator"); // FID_CENTRAL_HEATING_ACTUATOR
-        mapDesc.put("0x0057", "Central cooling actuator"); // FID_CENTRAL_COOLING_ACTUATOR
-        mapDesc.put("0x0059", "Housekeeping"); // FID_HOUSE_KEEPING
-        mapDesc.put("0x005A", "Media Player"); // FID_MEDIA_PLAYER
-        mapDesc.put("0x005B", "Panel Room Temperature Controller Slave For Battery Device"); // FID_PANEL_ROOM_TEMPERATURE_CONTROLLER_SLAVE_FOR_BATTERY_DEVICE
-        mapDesc.put("0x0060", "Media Player Sensor"); // FID_PANEL_MEDIA_PLAYER_SENSOR
-        mapDesc.put("0x0061", "Roller blind actuator"); // FID_BLIND_ACTUATOR
-        mapDesc.put("0x0062", "Attic window actuator"); // FID_ATTIC_WINDOW_ACTUATOR
-        mapDesc.put("0x0063", "Awning actuator"); // FID_AWNING_ACTUATOR
-        mapDesc.put("0x0064", "WindowDoor Position Sensor"); // FID_WINDOW_DOOR_POSITION_SENSOR
-        mapDesc.put("0x0065", "Window/Door position"); // FID_WINDOW_DOOR_POSITION_ACTUATOR
-        mapDesc.put("0x0066", "Media playback control sensor"); // FID_MEDIA_PLAYBACK_CONTROL_SENSOR
-        mapDesc.put("0x0067", "Media volume sensor"); // FID_MEDIA_VOLUME_SENSOR
-        mapDesc.put("0x0068", "Dishwasher"); // FID_DISHWASHER
-        mapDesc.put("0x0069", "Laundry"); // FID_LAUNDRY
-        mapDesc.put("0x006A", "Dryer"); // FID_DRYER
-        mapDesc.put("0x006B", "Oven"); // FID_OVEN
-        mapDesc.put("0x006C", "Fridge"); // FID_FRIDGE
-        mapDesc.put("0x006D", "Freezer"); // FID_FREEZER
-        mapDesc.put("0x006E", "Hood"); // FID_HOOD
-        mapDesc.put("0x006F", "Coffee machine"); // FID_COFFEE_MACHINE
-        mapDesc.put("0x0070", "Fridge/Freezer"); // FID_FRIDGE_FREEZER
-        mapDesc.put("0x0071", "Timer program switch sensor"); // FID_TIMER_PROGRAM_OR_ALERT_SWITCH_SENSOR
-        mapDesc.put("0x0073", "Ceiling fan actuator"); // FID_CEILING_FAN_ACTUATOR
-        mapDesc.put("0x0074", "Ceiling fan sensor"); // FID_CEILING_FAN_SENSOR
-        mapDesc.put("0x0075", "Room temperature controller with fan speed level"); // FID_SPLIT_UNIT_GATEWAY
-        mapDesc.put("0x0076", "Zone"); // FID_ZONE
-        mapDesc.put("0x0077", "Safety"); // FID_24H_ZONE
-        mapDesc.put("0x0078", "External IR Sensor BX80"); // FID_EXTERNAL_IR_SENSOR_BX80
-        mapDesc.put("0x0079", "External IR Sensor VXI"); // FID_EXTERNAL_IR_SENSOR_VXI
-        mapDesc.put("0x007A", "External IR Sensor Mini"); // FID_EXTERNAL_IR_SENSOR_MINI
-        mapDesc.put("0x007B", "External IR Sensor High Altitude"); // FID_EXTERNAL_IR_SENSOR_HIGH_ALTITUDE
-        mapDesc.put("0x007C", "External IR Sensor Curtain"); // FID_EXTERNAL_IR_SENSOR_CURTAIN
-        mapDesc.put("0x007D", "Smoke Detector"); // FID_SMOKE_DETECTOR
-        mapDesc.put("0x007E", "Carbon Monoxide Sensor"); // FID_CARBON_MONOXIDE_SENSOR
-        mapDesc.put("0x007F", "Methane Detector"); // FID_METHANE_DETECTOR
-        mapDesc.put("0x0080", "Gas Sensor LPG"); // FID_GAS_SENSOR_LPG
-        mapDesc.put("0x0081", "Flood Detection"); // FID_FLOOD_DETECTION
-        mapDesc.put("0x0082", "secure@home Central Unit"); // FID_DOMUS_CENTRAL_UNIT_NEXTGEN
-        mapDesc.put("0x0083", "Thermostat"); // FID_THERMOSTAT
-        mapDesc.put("0x0084", "secure@home Zone Sensor"); // FID_PANEL_DOMUS_ZONE_SENSOR
-        mapDesc.put("0x0085", "Slave thermostat"); // FID_THERMOSTAT_SLAVE
-        mapDesc.put("0x0086", "secure@home Integration Logic"); // FID_DOMUS_SECURE_INTEGRATION
-        mapDesc.put("0x0087", "Add. stage for cooling mode"); // FID_ADDITIONAL_COOLING_ACTUATOR
-        mapDesc.put("0x0088", "Two Level Heating Actuator"); // FID_TWO_LEVEL_HEATING_ACTUATOR
-        mapDesc.put("0x0089", "Two Level Cooling Actuator"); // FID_TWO_LEVEL_COOLING_ACTUATOR
-        mapDesc.put("0x008E", "Zone"); // FID_GLOBAL_ZONE
-        mapDesc.put("0x008F", "Volume up"); // FID_VOLUME_UP_SENSOR
-        mapDesc.put("0x0090", "Volume down"); // FID_VOLUME_DOWN_SENSOR
-        mapDesc.put("0x0091", "Play/pause"); // FID_PLAY_PAUSE_SENSOR
-        mapDesc.put("0x0092", "Next favorite"); // FID_NEXT_FAVORITE_SENSOR
-        mapDesc.put("0x0093", "Next song"); // FID_NEXT_SONG_SENSOR
-        mapDesc.put("0x0094", "Previous song"); // FID_PREVIOUS_SONG_SENSOR
-        mapDesc.put("0x0095", "Home appliance sensor"); // FID_HOME_APPLIANCE_SENSOR
-        mapDesc.put("0x0096", "Heat sensor"); // FID_HEAT_SENSOR
-        mapDesc.put("0x0097", "Zone switching"); // FID_ZONE_SWITCHING
-        mapDesc.put("0x0098", "Button function"); // FID_SECURE_AT_HOME_FUNCTION
-        mapDesc.put("0x0099", "Advanced configuration"); // FID_COMPLEX_CONFIGURATION
-        mapDesc.put("0x009A", "secure@home Central Unit Basic"); // FID_DOMUS_CENTRAL_UNIT_BASIC
-        mapDesc.put("0x009B", "Repeater"); // FID_DOMUS_REPEATER
-        mapDesc.put("0x009C", "Remote scene control"); // FID_DOMUS_SCENE_TRIGGER
-        mapDesc.put("0x009D", "Window sensor"); // FID_DOMUSWINDOWCONTACT
-        mapDesc.put("0x009E", "Movement Detector"); // FID_DOMUSMOVEMENTDETECTOR
-        mapDesc.put("0x009F", "External IR Sensor Curtain"); // FID_DOMUSCURTAINDETECTOR
-        mapDesc.put("0x00A0", "Smoke Detector"); // FID_DOMUSSMOKEDETECTOR
-        mapDesc.put("0x00A1", "Flood Detection"); // FID_DOMUSFLOODDETECTOR
-        mapDesc.put("0x00A3", "Sensor for air-conditioning unit"); // FID_PANEL_SUG_SENSOR
-        mapDesc.put("0x00A4", "Two-point controller for heating or cooling"); // FID_TWO_LEVEL_HEATING_COOLING_ACTUATOR
-        mapDesc.put("0x00A5", "Slave thermostat"); // FID_PANEL_THERMOSTAT_CONTROLLER_SLAVE
-        mapDesc.put("0x00A6", "Wallbox"); // FID_WALLBOX
-        mapDesc.put("0x00A7", "Wallbox"); // FID_PANEL_WALLBOX
-        mapDesc.put("0x00A8", "Door lock control"); // FID_DOOR_LOCK_CONTROL
-        mapDesc.put("0x00AA", "Room temperature controller with fan speed level"); // FID_VRV_GATEWAY
+            Map.entry("0x4800", "Scene trigger"), // FID_SCENE_TRIGGER
+            Map.entry("0x4A00", "Rule Switch"), // FID_RULE_SWITCH
 
-        mapDesc.put("0x4800", "Scene trigger"); // FID_SCENE_TRIGGER
-        mapDesc.put("0x4A00", "Rule Switch"); // FID_RULE_SWITCH
+            Map.entry("0x0E017", "Air quality sensor Pressure"), // FID_AIRQUALITYSENSOR_PRESSURE
+            Map.entry("0x0E018", "Air quality sensor CO2"), // FID_AIRQUALITYSENSOR_CO2
+            Map.entry("0x0E019", "Air quality sensor CO"), // FID_AIRQUALITYSENSOR_CO
+            Map.entry("0x0E01A", "Air quality sensor NO2"), // FID_AIRQUALITYSENSOR_NO2
+            Map.entry("0x0E01B", "Air quality sensor O3"), // FID_AIRQUALITYSENSOR_O3
+            Map.entry("0x0E01C", "Air quality sensor PM10"), // FID_AIRQUALITYSENSOR_PM10
+            Map.entry("0x0E01D", "Air quality sensor PM25"), // FID_AIRQUALITYSENSOR_PM25
+            Map.entry("0x0E01E", "Air quality sensor VOC"), // FID_AIRQUALITYSENSOR_VOC
+            Map.entry("0x0B03F", "Air quality sensor humidity"), // FID_AIRQUALITYSENSOR_HUMIDITY
 
-        mapDesc.put("0x0E017", "Air quality sensor Pressure"); // FID_AIRQUALITYSENSOR_PRESSURE
-        mapDesc.put("0x0E018", "Air quality sensor CO2"); // FID_AIRQUALITYSENSOR_CO2
-        mapDesc.put("0x0E019", "Air quality sensor CO"); // FID_AIRQUALITYSENSOR_CO
-        mapDesc.put("0x0E01A", "Air quality sensor NO2"); // FID_AIRQUALITYSENSOR_NO2
-        mapDesc.put("0x0E01B", "Air quality sensor O3"); // FID_AIRQUALITYSENSOR_O3
-        mapDesc.put("0x0E01C", "Air quality sensor PM10"); // FID_AIRQUALITYSENSOR_PM10
-        mapDesc.put("0x0E01D", "Air quality sensor PM25"); // FID_AIRQUALITYSENSOR_PM25
-        mapDesc.put("0x0E01E", "Air quality sensor VOC"); // FID_AIRQUALITYSENSOR_VOC
-        mapDesc.put("0x0B03F", "Air quality sensor humidity"); // FID_AIRQUALITYSENSOR_HUMIDITY
+            Map.entry("0x1090", "Movement detector (flex)"), // FID_MOVEMENT_DETECTOR_FLEX
+            Map.entry("0x1810", "Dim actuator (flex)") // FID_SWITCH_ACTUATOR_FLEX
+    );
 
-        mapDesc.put("0x1090", "Movement detector (flex)"); // FID_MOVEMENT_DETECTOR_FLEX
-        mapDesc.put("0x1810", "Dim actuator (flex)"); // FID_SWITCH_ACTUATOR_FLEX
-
-        MAP_FUNCTIONID = Collections.unmodifiableMap(mapDesc);
-    }
-
-    public static @Nullable String getFunctionIdText(String Key) {
-        return MAP_FUNCTIONID.get(Key);
+    @Nullable
+    public static String getFunctionIdText(String Key) {
+        return mapFunctionId.get(Key);
     }
 }

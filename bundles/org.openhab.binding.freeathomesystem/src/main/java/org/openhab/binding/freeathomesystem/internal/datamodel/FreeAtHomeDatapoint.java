@@ -48,28 +48,28 @@ public class FreeAtHomeDatapoint {
 
         switch (direction) {
             case DATAPOINT_DIRECTION_INPUT: {
-                localDataponits = jsonObjectOfChannel.getAsJsonObject("inputs");
+                localDatapoints = jsonObjectOfChannel.getAsJsonObject("inputs");
                 resultingDirection = DATAPOINT_DIRECTION_INPUT;
                 break;
             }
             case DATAPOINT_DIRECTION_INPUT_AS_OUTPUT: {
-                localDataponits = jsonObjectOfChannel.getAsJsonObject("inputs");
+                localDatapoints = jsonObjectOfChannel.getAsJsonObject("inputs");
                 resultingDirection = DATAPOINT_DIRECTION_OUTPUT;
                 break;
             }
             case DATAPOINT_DIRECTION_OUTPUT: {
-                localDataponits = jsonObjectOfChannel.getAsJsonObject("outputs");
+                localDatapoints = jsonObjectOfChannel.getAsJsonObject("outputs");
                 resultingDirection = DATAPOINT_DIRECTION_OUTPUT;
                 break;
             }
             default: {
-                localDataponits = jsonObjectOfChannel.getAsJsonObject("outputs");
+                localDatapoints = jsonObjectOfChannel.getAsJsonObject("outputs");
                 resultingDirection = DATAPOINT_DIRECTION_OUTPUT;
                 break;
             }
         }
 
-        Set<String> keys = localDataponits.keySet();
+        Set<String> keys = localDatapoints.keySet();
 
         Iterator<String> iter = keys.iterator();
 
@@ -77,7 +77,7 @@ public class FreeAtHomeDatapoint {
         while (iter.hasNext() && !foundId) {
             String datapointId = iter.next();
 
-            JsonObject datapointJsonObject = localDataponits.getAsJsonObject(datapointId);
+            JsonObject datapointJsonObject = localDatapoints.getAsJsonObject(datapointId);
 
             int pairingIDFunction = datapointJsonObject.get("pairingID").getAsInt();
 
