@@ -1009,9 +1009,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
         if (config.localIp.startsWith("169.254")) {
-            logger.warn("{}: An invalid local ip address {} was detected, check system and openHAB network settings",
-                    thingName, config.localIp);
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.network-config");
+            setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
+                    config.localIp);
             return;
         }
 
