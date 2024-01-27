@@ -1008,6 +1008,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         config.serviceName = getString(properties.get(PROPERTY_SERVICE_NAME));
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
+        if (config.localIp.startsWith("169.254")) {
+            setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
+                    config.localIp);
+            return;
+        }
+
         if (!profile.isGen2 && config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
             // Gen2 has hard coded user "admin"
             config.userId = bindingConfig.defaultUserId;
