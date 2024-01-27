@@ -24,9 +24,9 @@
                 <label>PrmId</label>
                 <description>Your PrmId</description>
             </parameter>
-			<parameter name="token" type="text" required="true">
+			<parameter name="token" type="text" required="false">
 				<label>Token</label>
-				<description>Your Enedis token</description>
+				<description>Your Enedis token (can be left empty, use the connection page to automatically fill it http://youopenhab/connectlinky)</description>
 			</parameter>
 		</config-description>
 	</thing-type>

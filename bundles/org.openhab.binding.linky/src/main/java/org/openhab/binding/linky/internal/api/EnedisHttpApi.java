@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -58,14 +59,17 @@ public class EnedisHttpApi {
     private static final String ADDRESS_URL = BASE_URL + "addresses";
     private static final String MEASURE_URL = BASE_URL + "%s/%s/start/%s/end/%s/cache";
 
+    private static final String TOKEN_URL = BASE_URL
+            + "v1/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=na&user_type=na&state=na&person_id=-1&usage_points_id=%s";
+
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
-    private final LinkyConfiguration config;
+    private @Nullable LinkyConfiguration config;
 
     private boolean connected = false;
 
-    public EnedisHttpApi(LinkyConfiguration config, Gson gson, HttpClient httpClient) {
+    public EnedisHttpApi(@Nullable LinkyConfiguration config, Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.httpClient = httpClient;
         this.config = config;
@@ -97,9 +101,21 @@ public class EnedisHttpApi {
         try {
             Request request = httpClient.newRequest(url);
             request = request.method(HttpMethod.GET);
-            request = request.header("Authorization", config.token);
 
             ContentResponse result = request.send();
+            if (result.getStatus() == 307) {
+                String loc = result.getHeaders().get("Location");
+                url = BASE_URL + loc.substring(1);
+                request = httpClient.newRequest(url);
+                request = request.method(HttpMethod.GET);
+                result = request.send();
+
+                if (result.getStatus() == 307) {
+                    loc = result.getHeaders().get("Location");
+                    String res = loc.split("/")[3];
+                    return res;
+                }
+            }
             if (result.getStatus() != 200) {
                 throw new LinkyException("Error requesting '%s' : %s", url, result.getContentAsString());
             }
@@ -239,5 +255,15 @@ public class EnedisHttpApi {
 
     public MeterReading getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
         return getMeasures(userId, prmId, from, to, "daily_consumption_max_power");
+    }
+
+    public String getToken(String clientId, String prmId) {
+        try {
+            String url = String.format(TOKEN_URL, clientId, prmId);
+            String token = getData(url);
+            return token;
+        } catch (LinkyException e) {
+            return "";
+        }
     }
 }

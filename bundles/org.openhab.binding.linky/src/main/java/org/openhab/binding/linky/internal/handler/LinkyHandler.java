@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.linky.internal.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
@@ -37,7 +36,6 @@ import org.openhab.binding.linky.internal.api.ExpiringDayCache;
 import org.openhab.binding.linky.internal.dto.IntervalReading;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -77,9 +75,7 @@ public class LinkyHandler extends BaseThingHandler {
     private final ExpiringDayCache<MeterReading> dailyConsumption;
     private final ExpiringDayCache<MeterReading> dailyConsumptionMaxPower;
 
-    // private final ExpiringDayCache<Consumption> cachedPowerData;
-    // private final ExpiringDayCache<Consumption> cachedMonthlyData;
-    // private final ExpiringDayCache<Consumption> cachedYearlyData;
+    private @Nullable LinkyConfiguration config;
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable EnedisHttpApi enedisApi;
@@ -94,8 +90,6 @@ public class LinkyHandler extends BaseThingHandler {
         LAST,
         ALL
     }
-
-    private @Nullable OAuthClientService oAuthService;
 
     public LinkyHandler(Thing thing, LocaleProvider localeProvider, Gson gson, HttpClient httpClient,
             OAuthFactory oAuthFactory) {
@@ -139,13 +133,8 @@ public class LinkyHandler extends BaseThingHandler {
         logger.debug("Initializing Linky handler.");
         updateStatus(ThingStatus.UNKNOWN);
 
-        LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
+        config = getConfigAs(LinkyConfiguration.class);
         if (config.seemsValid()) {
-
-            OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
-                    LinkyBindingConstants.LINKY_API_TOKEN_URL, LinkyBindingConstants.LINKY_AUTHORIZE_URL, "clientId",
-                    "clientSecret", LinkyBindingConstants.LINKY_SCOPES, true);
-
             enedisApi = new EnedisHttpApi(config, gson, httpClient);
             scheduler.submit(() -> {
                 try {

@@ -72,8 +72,12 @@ public class LinkyBindingConstants {
             "r:installedapps", "w:installedapps").collect(Collectors.joining(" "));
 
     // List of Spotify services related urls, information
-    public static final String LINKY_ACCOUNT_URL = "https://api.smartthings.com/oauth";
-    public static final String LINKY_AUTHORIZE_URL = LINKY_ACCOUNT_URL + "/authorize";
-    public static final String LINKY_API_TOKEN_URL = LINKY_ACCOUNT_URL + "/token";
+    public static final String LINKY_ACCOUNT_URL = "https://www.myelectricaldata.fr/";
+    public static final String LINKY_AUTHORIZE_URL = LINKY_ACCOUNT_URL + "v1/oauth2/authorize";
+    public static final String LINKY_API_TOKEN_URL = LINKY_ACCOUNT_URL + "token";
+
+    public static final String ENEDIS_ACCOUNT_URL = "https://mon-compte-particulier.enedis.fr/";
+    public static final String ENEDIS_AUTHORIZE_URL = ENEDIS_ACCOUNT_URL + "dataconnect/v1/oauth2/authorize";
+    public static final String ENEDIS_API_TOKEN_URL = ENEDIS_ACCOUNT_URL + "token";
 
 }

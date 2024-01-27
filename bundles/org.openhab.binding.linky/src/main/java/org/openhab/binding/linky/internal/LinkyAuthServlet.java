@@ -13,6 +13,7 @@
 package org.openhab.binding.linky.internal;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -25,6 +26,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.util.MultiMap;
+import org.eclipse.jetty.util.StringUtil;
+import org.eclipse.jetty.util.UrlEncoded;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +46,20 @@ public class LinkyAuthServlet extends HttpServlet {
 
     private static final Pattern MESSAGE_KEY_PATTERN = Pattern.compile("\\$\\{([^\\}]+)\\}");
 
+    private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
+
+    private static final String HTML_USER_AUTHORIZED = "<p class='block authorized'>Addon authorized for user %s.</p>";
+    private static final String HTML_ERROR = "<p class='block error'>Call to Enedis failed with error: %s</p>";
+
+    private static final String HTML_META_REFRESH_CONTENT = "<meta http-equiv='refresh' content='10; url=%s'>";
+
     // Keys present in the index.html
-    private static final String KEY_BRIDGE_URI = "bridge.uri";
+    private static final String KEY_AUTHORIZE_URI = "authorize.uri";
+    private static final String KEY_RETRIEVE_TOKEN_URI = "retrieveToken.uri";
+    private static final String KEY_REDIRECT_URI = "redirectUri";
+    private static final String KEY_AUTHORIZED_USER = "authorizedUser";
+    private static final String KEY_ERROR = "error";
+    private static final String KEY_PAGE_REFRESH = "pageRefresh";
 
     private final Logger logger = LoggerFactory.getLogger(LinkyAuthServlet.class);
     private final LinkyAuthService linkyAuthService;
@@ -59,23 +75,65 @@ public class LinkyAuthServlet extends HttpServlet {
             throws ServletException, IOException {
         logger.debug("Linky auth callback servlet received GET request {}.", req.getRequestURI());
         final Map<String, String> replaceMap = new HashMap<>();
-        /*
-         *
-         * final String servletBaseURL = req.getRequestURL().toString();
-         * final String queryString = req.getQueryString();
-         *
-         *
-         * String servletBaseURLSecure = servletBaseURL.replace("http://", "https://").replace("8080", "8443");
-         * handleSmartthingsRedirect(replaceMap, servletBaseURLSecure, queryString);
-         * resp.setContentType(CONTENT_TYPE);
-         * LinkyAccountHandler accountHandler = linkyAuthService.getLinkyAccountHandler();
-         */
-        String uri = "https://mon-compte-particulier.enedis.fr/dataconnect/v1/oauth2/authorize?client_id=e551937c-5250-48bc-b4a6-2323af68db92&duration=P36M&response_type=code";
 
-        // replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
-        replaceMap.put(KEY_BRIDGE_URI, uri);
+        final String servletBaseURL = req.getRequestURL().toString();
+
+        String servletBaseURLSecure = servletBaseURL;
+        // .replace("http://", "https://");
+        // .replace("8080", "8443");
+        servletBaseURLSecure = servletBaseURLSecure + "?state=OK";
+
+        handleLinkyRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
+
+        LinkyAccountHandler accountHandler = linkyAuthService.getLinkyAccountHandler();
+
+        resp.setContentType(CONTENT_TYPE);
+        replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
+        replaceMap.put(KEY_RETRIEVE_TOKEN_URI, servletBaseURLSecure);
+        replaceMap.put(KEY_AUTHORIZE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
         resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
         resp.getWriter().close();
+    }
+
+    /**
+     * Handles a possible call from Enedis to the redirect_uri. If that is the case Spotify will pass the authorization
+     * codes via the url and these are processed. In case of an error this is shown to the user. If the user was
+     * authorized this is passed on to the handler. Based on all these different outcomes the HTML is generated to
+     * inform the user.
+     *
+     * @param replaceMap a map with key String values that will be mapped in the HTML templates.
+     * @param servletBaseURL the servlet base, which should be used as the Spotify redirect_uri value
+     * @param queryString the query part of the GET request this servlet is processing
+     */
+    private void handleLinkyRedirect(Map<String, String> replaceMap, String servletBaseURL,
+            @Nullable String queryString) {
+        replaceMap.put(KEY_AUTHORIZED_USER, "");
+        replaceMap.put(KEY_ERROR, "");
+        replaceMap.put(KEY_PAGE_REFRESH, "");
+
+        if (queryString != null) {
+            final MultiMap<String> params = new MultiMap<>();
+            UrlEncoded.decodeTo(queryString, params, StandardCharsets.UTF_8.name());
+            final String reqCode = params.getString("code");
+            final String reqState = params.getString("state");
+            final String reqError = params.getString("error");
+
+            replaceMap.put(KEY_PAGE_REFRESH,
+                    params.isEmpty() ? "" : String.format(HTML_META_REFRESH_CONTENT, servletBaseURL));
+
+            if (!StringUtil.isBlank(reqError)) {
+                logger.debug("Spotify redirected with an error: {}", reqError);
+                replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, reqError));
+            } else if (!StringUtil.isBlank(reqState)) {
+                try {
+                    replaceMap.put(KEY_AUTHORIZED_USER, String.format(HTML_USER_AUTHORIZED,
+                            linkyAuthService.authorize(servletBaseURL, reqState, reqCode)));
+                } catch (RuntimeException e) {
+                    logger.debug("Exception during authorizaton: ", e);
+                    replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
+                }
+            }
+        }
     }
 
     /**
