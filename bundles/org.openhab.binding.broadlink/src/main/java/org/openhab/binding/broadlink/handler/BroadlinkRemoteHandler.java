@@ -53,12 +53,14 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         this.commandDescriptionProvider = commandDescriptionProvider;
     }
 
+    @Override
     public void initialize() {
         super.initialize();
-        this.mappingService = new BroadlinkMappingService(thingConfig.getMapFilename(), commandDescriptionProvider,
-                new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL));
+        this.mappingService = new BroadlinkMappingService(thingConfig.getMapFilename(), thingConfig.getRfmapFilename(),
+                commandDescriptionProvider, new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL));
     }
 
+    @Override
     @SuppressWarnings("null")
     public void dispose() {
         if (this.mappingService != null) {
@@ -106,13 +108,14 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         return Utils.slice(decryptedResponse, 4, decryptedResponse.length);
     }
 
-    private void sendCheckDataCommandAndLog() {
+    private void sendCheckDataCommandAndLog(String irCommand) {
         try {
             byte[] response = sendCommand(COMMAND_BYTE_CHECK_LEARNT_DATA, "send learnt code check command");
             if (response == null) {
                 logger.warn("Got nothing back while getting learnt code");
             } else {
                 String hexString = Utils.toHexString(extractResponsePayload(response));
+                mappingService.storeIR(irCommand, hexString);
                 logger.info("BEGIN LAST LEARNT CODE");
                 logger.info("{}", hexString);
                 logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
@@ -129,13 +132,15 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 sendCommand(COMMAND_BYTE_ENTER_LEARNING, "enter remote code learning mode");
                 break;
             case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK:
-                sendCheckDataCommandAndLog();
+                logger.trace("Learning IR command {}", thingConfig.getNameOfCommandToLearn());
+                sendCheckDataCommandAndLog(thingConfig.getNameOfCommandToLearn());
                 break;
             default:
                 logger.warn("Unrecognised learning channel command: {}", learningCommand);
         }
     }
 
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!Utils.isOnline(getThing())) {
             logger.debug("Can't handle command {} because handler for thing {} is not ONLINE", command,
@@ -159,9 +164,9 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
         switch (channelTypeUID.getId()) {
             case BroadlinkBindingConstants.COMMAND_CHANNEL: {
-                logger.debug("Handling ir/rf command '{}' on channel {} of thing {}", command, channelUID.getId(),
+                logger.debug("Handling ir command '{}' on channel {} of thing {}", command, channelUID.getId(),
                         getThing().getLabel());
-                byte code[] = lookupCode(command, channelUID);
+                byte code[] = lookupIRCode(command, channelUID);
                 if (code != null) {
                     sendCode(code);
                 }
@@ -176,9 +181,9 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     @SuppressWarnings("null")
-    private byte @Nullable [] lookupCode(Command command, ChannelUID channelUID) {
+    private byte @Nullable [] lookupIRCode(Command command, ChannelUID channelUID) {
         byte code[] = null;
-        String value = this.mappingService.lookup(command.toString());
+        String value = this.mappingService.lookupIR(command.toString());
 
         if (value == null || value.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

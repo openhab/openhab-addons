@@ -19,7 +19,7 @@ import org.openhab.core.thing.Thing;
 /**
  * Extension for the RF part of an RM 4 Pro
  *
- * @author Anton Jansen
+ * @author Anton Jansen - Initial contribution
  */
 
 @NonNullByDefault

@@ -70,8 +70,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     public BroadlinkBaseThingHandler(Thing thing) {
         super(thing);
-        logger.debug("constructed: resetting deviceKey to '{}', length {}",
-                BroadlinkBindingConstants.BROADLINK_AUTH_KEY, BroadlinkBindingConstants.BROADLINK_AUTH_KEY.length());
         this.deviceId = HexUtils.hexToBytes(INITIAL_DEVICE_ID);
         this.deviceKey = HexUtils.hexToBytes(BroadlinkBindingConstants.BROADLINK_AUTH_KEY);
     }
@@ -91,8 +89,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     @Override
     public void initialize() {
-        logger.debug("initializing handler");
-
         this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
         count = (new Random()).nextInt(65535);
 
@@ -116,9 +112,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     @Override
     @SuppressWarnings("null")
     public void dispose() {
-        logger.debug("Disposing of {}", getThing().getLabel());
         if (refreshHandle != null && !refreshHandle.isDone()) {
-            logger.debug("Cancelling refresh task");
             boolean cancelled = refreshHandle.cancel(true);
             logger.debug("Cancellation successful: {}", cancelled);
         }
@@ -130,7 +124,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     private boolean authenticate() {
-        logger.trace("Authenticating");
         authenticated = false;
         // When authenticating, we must ALWAYS use the initial values
         this.deviceId = HexUtils.hexToBytes(INITIAL_DEVICE_ID);
@@ -157,7 +150,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             authenticated = true;
             return true;
         } catch (Exception e) {
-            logger.warn("Authentication failed: ", e);
+            logger.warn("Authentication failed: {}", e.getMessage());
             return false;
         }
     }
@@ -198,8 +191,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            logger.trace("Refresh requested, updating item status ...");
-
             updateItemStatus();
         }
     }
@@ -217,9 +208,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     public void updateItemStatus() {
-        logger.trace("updateItemStatus; checking host availability at {}", thingConfig.getIpAddress());
         if (NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000, logger)) {
-            logger.trace("updateItemStatus; host found at {}", thingConfig.getIpAddress());
             if (!Utils.isOnline(getThing())) {
                 logger.trace("updateItemStatus; device not currently online, resolving");
                 transitionToOnline();

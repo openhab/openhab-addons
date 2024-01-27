@@ -40,6 +40,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         this.supportsPowerConsumptionMeasurement = supportsPowerConsumptionMeasurement;
     }
 
+    @Override
     protected void setStatusOnDevice(int status) throws IOException {
         byte payload[] = new byte[16];
         payload[0] = 2;
@@ -77,6 +78,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         return powerOnOff == OnOffType.ON ? 0x01 : 0x00;
     }
 
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (channelUID.getId().equals(COMMAND_POWER_ON)) {
@@ -92,9 +94,9 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
                 new QuantityType<Power>(consumptionWatts, BROADLINK_POWER_CONSUMPTION_UNIT));
     }
 
+    @Override
     protected boolean getStatusFromDevice() {
         try {
-            logger.trace("SP2/SP2s getting status...");
             byte[] statusBytes = getStatusBytesFromDevice();
             updateState(COMMAND_POWER_ON, derivePowerStateFromStatusBytes(statusBytes));
             if (supportsPowerConsumptionMeasurement) {
@@ -118,6 +120,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         return decodeDevicePacket(response);
     }
 
+    @Override
     protected boolean onBroadlinkDeviceBecomingReachable() {
         return getStatusFromDevice();
     }
