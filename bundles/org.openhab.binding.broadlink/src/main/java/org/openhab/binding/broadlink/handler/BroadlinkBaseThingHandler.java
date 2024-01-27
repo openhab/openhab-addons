@@ -191,7 +191,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-
             updateItemStatus();
         }
     }

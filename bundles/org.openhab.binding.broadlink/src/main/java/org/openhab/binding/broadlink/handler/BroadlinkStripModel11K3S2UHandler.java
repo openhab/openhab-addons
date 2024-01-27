@@ -33,6 +33,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
         super(thing);
     }
 
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateItemStatus();
@@ -54,7 +55,6 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
                 break;
             default:
                 break;
-
         }
     }
 
@@ -81,7 +81,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
         if (state == 1) {
             payload[6] = (byte) (178 + (sidMask << 1));
         } else {
-            payload[6] = (byte) (byte) (178 + sidMask);
+            payload[6] = (byte) (178 + sidMask);
         }
         payload[7] = -64;
         payload[8] = 2;
@@ -96,6 +96,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
         sendAndReceiveDatagram(message, "Setting MP13K2U status");
     }
 
+    @Override
     protected boolean getStatusFromDevice() {
         byte payload[] = new byte[16];
         payload[0] = 10;
@@ -127,6 +128,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
         return true;
     }
 
+    @Override
     protected boolean onBroadlinkDeviceBecomingReachable() {
         return getStatusFromDevice();
     }
