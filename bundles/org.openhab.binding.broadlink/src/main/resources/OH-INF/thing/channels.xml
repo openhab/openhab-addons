@@ -10,17 +10,35 @@
 		<description>The IR/RF command sent to the device</description>
 		<category>Text</category>
 	</channel-type>
+	<channel-type id="commandToLearn">
+        <item-type>String</item-type>
+        <label>Name of command</label>
+        <description>Name of the IR/RF command to learn from the device</description>
+        <category>Text</category>
+        <state readOnly="false"></state>
+    </channel-type>
 	<channel-type id="learningControl">
 		<item-type>String</item-type>
-		<label>Remote Learning Control</label>
-		<description>Instructs the Broadlink device to perform tasks related to code learning</description>
+		<label>Remote IR Learning Control</label>
+		<description>Instructs the Broadlink device to perform tasks related to IR code learning</description>
 		<state readOnly="false">
 			<options>
 				<option value="LEARN">Enter infrared learn mode</option>
-				<option value="CHECK">Check last captured IR code</option>
+				<option value="CHECK">Save last captured IR code</option>
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="learningRFControl">
+        <item-type>String</item-type>
+        <label>Remote RF Learning Control</label>
+        <description>Instructs the Broadlink device to perform tasks related to RF code learning</description>
+        <state readOnly="false">
+            <options>
+                <option value="LEARN">Enter RF learn mode (find frequencies)</option>
+                <option value="CHECK">Save last captured RF code</option>
+            </options>
+        </state>
+    </channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
