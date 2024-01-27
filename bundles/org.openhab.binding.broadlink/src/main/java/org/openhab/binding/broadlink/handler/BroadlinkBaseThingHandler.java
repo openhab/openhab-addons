@@ -112,7 +112,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     @Override
     @SuppressWarnings("null")
     public void dispose() {
-        logger.debug("Disposing of {}", getThing().getLabel());
         if (refreshHandle != null && !refreshHandle.isDone()) {
             logger.debug("Cancelling refresh task");
             boolean cancelled = refreshHandle.cancel(true);
