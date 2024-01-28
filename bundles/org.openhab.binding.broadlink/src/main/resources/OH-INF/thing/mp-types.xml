@@ -46,7 +46,7 @@
 	</thing-type>
 	<thing-type id="mp2">
 		<label>Broadlink MP2</label>
-		<description>The Broadlink MP2 is a smart socket with Wi-Fi connectivity. It does not support switching by individual
+		<description>The Broadlink MP2 is a smart socket with Wi-Fi connectivity. It does not support switching individual
 			ports.</description>
 		<channels>
 			<channel id="powerOn" typeId="powerOn"/>
