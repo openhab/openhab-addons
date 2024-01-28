@@ -17,7 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +30,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.ItemNotFoundException;
-import org.openhab.core.library.items.NumberItem;
-import org.openhab.core.library.items.StringItem;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.items.*;
+import org.openhab.core.library.types.*;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.osgi.framework.BundleContext;
@@ -633,6 +634,54 @@ public class MongoDBPersistenceServiceTest {
             // Verification
 
             VerificationHelper.verifyQueryResult(result, item.getState());
+        } finally {
+            dbContainer.stop();
+        }
+    }
+
+    /**
+     * Tests the old way of storing data and query method of the MongoDBPersistenceService with all types of openHAB items.
+     * Each item is queried with the type from one collection in the MongoDB database.
+     *
+     * @param item The item to store in the database.
+     */
+    @ParameterizedTest
+    @MethodSource("org.openhab.persistence.mongodb.internal.DataCreationHelper#provideOpenhabItemTypes")
+    public void testOldDataQueryAllOpenhabItemTypesSingleCollection(GenericItem item) {
+        // Preparation
+        DatabaseTestContainer dbContainer = new DatabaseTestContainer(new MemoryBackend());
+        try {
+            SetupResult setupResult = DataCreationHelper.setupMongoDB("testCollection", dbContainer);
+            MongoDBPersistenceService service = setupResult.service;
+            MongoDatabase database = setupResult.database;
+
+            service.activate(setupResult.bundleContext, setupResult.config);
+            try {
+                Mockito.when(setupResult.itemRegistry.getItem(item.getName())).thenReturn(item);
+            } catch (ItemNotFoundException e) {
+            }
+            MongoCollection<Document> collection = database.getCollection("testCollection");
+            DataCreationHelper.storeOldData(collection, item.getName(), item.getState());
+            // after storing, we have to adjust the expected values for ImageItems, ColorItems as well as DateTimeItems
+            if (item instanceof ImageItem) {
+                item.setState(new RawType(new byte[0], "application/octet-stream"));
+            } else if (item instanceof ColorItem) {
+                item.setState(new HSBType("0,0,0"));
+            } 
+
+            // Execution
+            FilterCriteria filter = DataCreationHelper.createFilterCriteria(item.getName());
+            Iterable<HistoricItem> result = service.query(filter);
+            // Verification
+
+            if (item instanceof DateTimeItem) {
+                // verify just the date part
+                assertEquals(((DateTimeType)item.getState()).getZonedDateTime().toLocalDate(), 
+                    ((DateTimeType)result.iterator().next().getState()).getZonedDateTime().toLocalDate());
+            }
+            else {
+                VerificationHelper.verifyQueryResult(result, item.getState());
+            }
         } finally {
             dbContainer.stop();
         }

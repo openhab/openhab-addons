@@ -13,12 +13,16 @@
 package org.openhab.persistence.mongodb.internal;
 
 import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
+import java.util.Date;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import javax.measure.Unit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.bson.Document;
 import org.bson.types.Binary;
@@ -39,6 +43,8 @@ import org.openhab.core.types.State;
  * @author René Ulbricht - Initial contribution
  */
 public class MongoDBTypeConversions {
+
+    private static final Logger logger = LoggerFactory.getLogger(MongoDBPersistenceService.class);
     /**
      * A map of converters that convert openHAB states to MongoDB compatible types.
      * Each converter is a function that takes an openHAB state and returns an object that can be stored in MongoDB.
@@ -78,24 +84,55 @@ public class MongoDBTypeConversions {
         ITEM_STATE_CONVERTERS.put(NumberItem.class, (item, doc) -> {
             NumberItem numberItem = (NumberItem) item;
             Unit<?> unit = numberItem.getUnit();
+            Object value = doc.get(MongoDBFields.FIELD_VALUE);
+            if (value instanceof String) {
+                return new QuantityType<>(value.toString());
+            }
             if (unit != null) {
-                return new QuantityType<>(doc.getDouble(MongoDBFields.FIELD_VALUE), unit);
+                return new QuantityType<>(((Number)value).doubleValue(), unit);
             } else {
-                return new DecimalType(doc.getDouble(MongoDBFields.FIELD_VALUE));
+                return new DecimalType(((Number)value).doubleValue());
             }
         });
-        ITEM_STATE_CONVERTERS.put(ColorItem.class,
-                (item, doc) -> new HSBType(doc.getString(MongoDBFields.FIELD_VALUE)));
-        ITEM_STATE_CONVERTERS.put(DimmerItem.class,
-                (item, doc) -> new PercentType(doc.getInteger(MongoDBFields.FIELD_VALUE)));
+        ITEM_STATE_CONVERTERS.put(ColorItem.class, (item, doc) -> {
+                    Object value = doc.get(MongoDBFields.FIELD_VALUE);
+                    if (value instanceof String) {
+                        return new HSBType(value.toString());
+                    }
+                    else {
+                        logger.warn("HSBType ({}) value is not a valid string: {}", doc.getString(MongoDBFields.FIELD_REALNAME), value);
+                        return new HSBType("0,0,0");
+                    }
+        });
+        ITEM_STATE_CONVERTERS.put(DimmerItem.class, (item, doc) -> {
+                Object value = doc.get(MongoDBFields.FIELD_VALUE);
+                if (value instanceof Integer) {
+                    return new PercentType((Integer)value);
+                } else {
+                    return new PercentType(((Number)value).intValue());
+                }
+        });
         ITEM_STATE_CONVERTERS.put(SwitchItem.class,
                 (item, doc) -> OnOffType.valueOf(doc.getString(MongoDBFields.FIELD_VALUE)));
         ITEM_STATE_CONVERTERS.put(ContactItem.class,
                 (item, doc) -> OpenClosedType.valueOf(doc.getString(MongoDBFields.FIELD_VALUE)));
-        ITEM_STATE_CONVERTERS.put(RollershutterItem.class,
-                (item, doc) -> new PercentType(doc.getInteger(MongoDBFields.FIELD_VALUE)));
-        ITEM_STATE_CONVERTERS.put(DateTimeItem.class,
-                (item, doc) -> new DateTimeType(ZonedDateTime.parse(doc.getString(MongoDBFields.FIELD_VALUE))));
+        ITEM_STATE_CONVERTERS.put(RollershutterItem.class, (item, doc) -> {
+                Object value = doc.get(MongoDBFields.FIELD_VALUE);
+                if (value instanceof Integer) {
+                    return new PercentType((Integer)value);
+                } else {
+                    return new PercentType(((Number)value).intValue());
+                }
+        });
+        ITEM_STATE_CONVERTERS.put(DateTimeItem.class, (item, doc) -> {
+            Object value = doc.get(MongoDBFields.FIELD_VALUE);
+            if (value instanceof String) {
+                return new DateTimeType(ZonedDateTime.parse(doc.getString(MongoDBFields.FIELD_VALUE)));
+            }
+            else {
+                return new DateTimeType(ZonedDateTime.ofInstant(((Date)value).toInstant(), ZoneId.systemDefault()));
+            }
+        });
         ITEM_STATE_CONVERTERS.put(LocationItem.class,
                 (item, doc) -> new PointType(doc.getString(MongoDBFields.FIELD_VALUE)));
         ITEM_STATE_CONVERTERS.put(PlayerItem.class,
@@ -103,13 +140,21 @@ public class MongoDBTypeConversions {
         ITEM_STATE_CONVERTERS.put(CallItem.class,
                 (item, doc) -> new StringListType(doc.getString(MongoDBFields.FIELD_VALUE)));
         ITEM_STATE_CONVERTERS.put(ImageItem.class, (item, doc) -> {
-            Document fieldValue = (Document) doc.get(MongoDBFields.FIELD_VALUE);
-            String type = fieldValue.getString(MongoDBFields.FIELD_VALUE_TYPE);
-            Binary data = fieldValue.get(MongoDBFields.FIELD_VALUE_DATA, Binary.class);
-            return new RawType(data.getData(), type);
+            Object value = doc.get(MongoDBFields.FIELD_VALUE);
+            if (value instanceof Document) {
+                Document fieldValue = (Document) value;
+                String type = fieldValue.getString(MongoDBFields.FIELD_VALUE_TYPE);
+                Binary data = fieldValue.get(MongoDBFields.FIELD_VALUE_DATA, Binary.class);
+                return new RawType(data.getData(), type);
+            }
+            else {
+                logger.warn("ImageItem ({}) value is not a Document: {}", doc.getString(MongoDBFields.FIELD_REALNAME), value);
+                return new RawType(new byte[0], "application/octet-stream");
+            }
         });
         ITEM_STATE_CONVERTERS.put(GenericItem.class,
                 (item, doc) -> new StringType(doc.getString(MongoDBFields.FIELD_VALUE)));
+
     }
 
     /**

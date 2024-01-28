@@ -16,7 +16,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
+
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -39,6 +41,9 @@ import org.testcontainers.DockerClientFactory;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -266,4 +271,34 @@ public class DataCreationHelper {
         logger.setLevel(level); // Set log level
         return listAppender;
     }
+
+        private static Object convertValue(State state) {
+            Object value;
+            if (state instanceof PercentType) {
+                PercentType type = (PercentType) state;
+                value = type.toBigDecimal().doubleValue();
+            } else if (state instanceof DateTimeType) {
+                DateTimeType type = (DateTimeType) state;
+                value = Date.from(type.getZonedDateTime().toInstant());
+            } else if (state instanceof DecimalType) {
+                DecimalType type = (DecimalType) state;
+                value = type.toBigDecimal().doubleValue();
+            } else {
+                value = state.toString();
+            }
+            return value;
+        }
+
+        public static void storeOldData(MongoCollection<Document> collection, String realItemName, State state) {
+            // use the old way to store data
+            Object value = convertValue(state);
+
+            Document obj = new Document();
+            obj.put(MongoDBFields.FIELD_ID, new ObjectId());
+            obj.put(MongoDBFields.FIELD_ITEM, realItemName);
+            obj.put(MongoDBFields.FIELD_REALNAME, realItemName);
+            obj.put(MongoDBFields.FIELD_TIMESTAMP, new Date());
+            obj.put(MongoDBFields.FIELD_VALUE, value);
+            collection.insertOne(obj);
+        }
 }
