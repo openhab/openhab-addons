@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.COMMAND_NIGHTLIGHT;
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.COMMAND_POWER_ON;
+import static org.openhab.binding.broadlink.BroadlinkBindingConstants.*;
 
 import java.io.IOException;
 
@@ -46,6 +45,7 @@ public class BroadlinkSocketModel3Handler extends BroadlinkSocketModel2Handler {
         return powerBit | nightLightBit;
     }
 
+    @Override
     protected boolean getStatusFromDevice() {
         try {
             logger.debug("SP3 getting status...");
@@ -54,11 +54,13 @@ public class BroadlinkSocketModel3Handler extends BroadlinkSocketModel2Handler {
             updateState(COMMAND_NIGHTLIGHT, deriveNightLightStateFromStatusBytes(statusBytes));
             return true;
         } catch (Exception ex) {
-            logger.warn("Exception while getting status from device", ex);
+            logger.warn("Unexpected exception while getting status from device: {}, please check device address.",
+                    ex.getMessage());
             return false;
         }
     }
 
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             // Always pull back the latest device status and merge it:

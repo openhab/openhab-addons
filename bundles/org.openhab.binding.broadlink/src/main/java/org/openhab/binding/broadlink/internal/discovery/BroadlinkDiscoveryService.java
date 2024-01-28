@@ -48,21 +48,24 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         logger.debug("BroadlinkDiscoveryService - Constructed");
     }
 
+    @Override
     public void startScan() {
         foundCount = 0;
-        logger.warn("BroadlinkDiscoveryService - Beginning Broadlink device scan...");
         DiscoveryProtocol.beginAsync(this, 10000L, this, logger);
     }
 
+    @Override
     public void onDiscoveryFinished() {
         logger.info("Discovery complete. Found {} Broadlink devices", foundCount);
     }
 
+    @Override
     protected synchronized void stopScan() {
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
     }
 
+    @Override
     public void onDataReceived(String remoteAddress, int remotePort, String remoteMAC, ThingTypeUID thingTypeUID,
             int model) {
         logger.trace("Data received during Broadlink device discovery: from {}:{} [{}]", remoteAddress, remotePort,

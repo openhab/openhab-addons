@@ -34,6 +34,7 @@ public abstract class BroadlinkSocketHandler extends BroadlinkBaseThingHandler {
 
     protected abstract void setStatusOnDevice(int state) throws IOException;
 
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (channelUID.getId().equals("powerOn")) {
@@ -44,7 +45,7 @@ public abstract class BroadlinkSocketHandler extends BroadlinkBaseThingHandler {
                 }
             }
         } catch (IOException e) {
-            logger.warn("Could not send command to socket device", e);
+            logger.warn("Could not send command to socket device: {}", e.getMessage());
         }
     }
 }

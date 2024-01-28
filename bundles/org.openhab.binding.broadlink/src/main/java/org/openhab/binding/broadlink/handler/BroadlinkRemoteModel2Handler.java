@@ -29,10 +29,12 @@ public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
         super(thing, commandDescriptionProvider);
     }
 
+    @Override
     protected boolean onBroadlinkDeviceBecomingReachable() {
         return getStatusFromDevice();
     }
 
+    @Override
     protected boolean getStatusFromDevice() {
         try {
             byte payload[] = new byte[16];
@@ -40,15 +42,15 @@ public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
             byte message[] = buildMessage((byte) 0x6a, payload);
             byte response[] = sendAndReceiveDatagram(message, "RM2 device status");
             if (response == null) {
-                logger.warn("response from RM2 device was null");
+                logger.warn("response from RM2 device was null, did you configure the right address for the device?");
                 return false;
             }
             byte decodedPayload[] = decodeDevicePacket(response);
-            double temperature = ((double) (decodedPayload[4] * 10 + decodedPayload[5]) / 10D);
+            double temperature = ((decodedPayload[4] * 10 + decodedPayload[5]) / 10D);
             updateTemperature(temperature);
             return true;
         } catch (Exception e) {
-            logger.warn("Could not get status: ", e);
+            logger.warn("Could not get status: {}", e.getMessage());
             return false;
         }
     }

@@ -41,10 +41,12 @@ public class BroadlinkRemoteModel4MiniHandler extends BroadlinkRemoteHandler {
         super(thing, commandDescriptionProvider);
     }
 
+    @Override
     protected boolean onBroadlinkDeviceBecomingReachable() {
         return getStatusFromDevice();
     }
 
+    @Override
     protected boolean getStatusFromDevice() {
         try {
             // These devices use a 2-byte preamble to the normal protocol;
@@ -52,19 +54,19 @@ public class BroadlinkRemoteModel4MiniHandler extends BroadlinkRemoteHandler {
             byte[] response = sendCommand((byte) 0x24, "RM4 device status"); // Status check is now Ox24, not 0x01 as in
                                                                              // earlier devices
             if (response == null) {
-                logger.warn("response from RM4 device was null");
+                logger.warn("response from RM4 device was null, did you configure the right address for the device?");
                 return false;
             }
             byte decodedPayload[] = extractResponsePayload(response);
 
             // Temps and humidity get divided by 100 now, not 10
-            double temperature = ((double) (decodedPayload[0] * 100 + decodedPayload[1]) / 100D);
+            double temperature = ((decodedPayload[0] * 100 + decodedPayload[1]) / 100D);
             updateTemperature(temperature);
-            double humidity = ((double) (decodedPayload[2] * 100 + decodedPayload[3]) / 100D);
+            double humidity = ((decodedPayload[2] * 100 + decodedPayload[3]) / 100D);
             updateHumidity(humidity);
             return true;
         } catch (Exception e) {
-            logger.warn("Could not get status: ", e);
+            logger.warn("Could not get status: {}", e.getMessage());
             return false;
         }
     }

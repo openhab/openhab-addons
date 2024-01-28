@@ -85,7 +85,7 @@ public class BroadlinkMappingService {
                 this.watchService = null;
             }
         } catch (IOException ioe) {
-            logger.warn("Cannot deactivate watcher", ioe);
+            logger.warn("Cannot deactivate watcher: {}", ioe.getMessage());
         }
     }
 
@@ -128,7 +128,7 @@ public class BroadlinkMappingService {
             this.watchThread.setDaemon(true);
             this.watchThread.start();
         } catch (IOException ioe) {
-            logger.warn("Couldn't setup automatic watch:", ioe);
+            logger.warn("Couldn't setup automatic watch: {}", ioe.getMessage());
         }
     }
 

@@ -33,6 +33,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
         super(thing);
     }
 
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateItemStatus();
@@ -65,7 +66,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
                 setStatusOnDevice((byte) sid, (byte) 0);
             }
         } catch (IOException e) {
-            logger.warn("Couldn't interpret command for strip device", e);
+            logger.warn("Couldn't interpret command for strip device: {}", e.getMessage());
         }
     }
 
@@ -80,7 +81,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
         if (state == 1) {
             payload[6] = (byte) (178 + (sidMask << 1));
         } else {
-            payload[6] = (byte) (byte) (178 + sidMask);
+            payload[6] = (byte) (178 + sidMask);
         }
         payload[7] = -64;
         payload[8] = 2;
@@ -95,6 +96,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
         sendAndReceiveDatagram(message, "Setting MPx status");
     }
 
+    @Override
     protected boolean getStatusFromDevice() {
         byte payload[] = new byte[16];
         payload[0] = 10;
@@ -109,7 +111,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
             byte message[] = buildMessage((byte) 106, payload);
             byte response[] = sendAndReceiveDatagram(message, "status for strip");
             if (response == null) {
-                logger.warn("response from strip device was null");
+                logger.warn("response from strip device was null, did you setup the address of the device correctly?");
                 return false;
             }
             byte decodedPayload[] = decodeDevicePacket(response);
@@ -120,12 +122,13 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
             this.updateState("s3powerOn", (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
             this.updateState("s4powerOn", (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
-            logger.warn("Exception while getting status from device", ex);
+            logger.warn("Exception while getting status from device: {}", ex.getMessage());
             return false;
         }
         return true;
     }
 
+    @Override
     protected boolean onBroadlinkDeviceBecomingReachable() {
         return getStatusFromDevice();
     }

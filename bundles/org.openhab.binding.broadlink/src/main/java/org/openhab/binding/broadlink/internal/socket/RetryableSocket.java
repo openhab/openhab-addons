@@ -83,7 +83,7 @@ public class RetryableSocket {
             socket.send(sendPacket);
             return true;
         } catch (IOException e) {
-            logger.warn("IO error during UDP command sending {}:", purpose, e);
+            logger.warn("IO error during UDP command sending {}:{}", purpose, e.getMessage());
             return false;
         }
     }
@@ -100,7 +100,7 @@ public class RetryableSocket {
         } catch (SocketTimeoutException ste) {
             logger.debug("No further {} response received for device", purpose);
         } catch (Exception e) {
-            logger.warn("While {}", purpose, e);
+            logger.warn("While {} got unexpected exception: {}", purpose, e.getMessage());
         }
 
         return null;

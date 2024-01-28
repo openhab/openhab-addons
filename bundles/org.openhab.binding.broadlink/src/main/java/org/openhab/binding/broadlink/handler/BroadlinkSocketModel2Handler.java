@@ -40,6 +40,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         this.supportsPowerConsumptionMeasurement = supportsPowerConsumptionMeasurement;
     }
 
+    @Override
     protected void setStatusOnDevice(int status) throws IOException {
         byte payload[] = new byte[16];
         payload[0] = 2;
@@ -77,13 +78,14 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         return powerOnOff == OnOffType.ON ? 0x01 : 0x00;
     }
 
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (channelUID.getId().equals(COMMAND_POWER_ON)) {
                 setStatusOnDevice(toPowerOnOffBits(command));
             }
         } catch (IOException e) {
-            logger.warn("Could not send command to socket device", e);
+            logger.warn("Could not send command to socket device: {}", e.getMessage());
         }
     }
 
@@ -92,6 +94,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
                 new QuantityType<Power>(consumptionWatts, BROADLINK_POWER_CONSUMPTION_UNIT));
     }
 
+    @Override
     protected boolean getStatusFromDevice() {
         try {
             logger.trace("SP2/SP2s getting status...");
@@ -102,7 +105,9 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
             }
             return true;
         } catch (Exception ex) {
-            logger.warn("Exception while getting status from device", ex);
+            logger.warn(
+                    "Unexpected exception while getting status from device: {}, did you configure the devic address correctly?",
+                    ex.getMessage());
             return false;
         }
     }
@@ -118,6 +123,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         return decodeDevicePacket(response);
     }
 
+    @Override
     protected boolean onBroadlinkDeviceBecomingReachable() {
         return getStatusFromDevice();
     }

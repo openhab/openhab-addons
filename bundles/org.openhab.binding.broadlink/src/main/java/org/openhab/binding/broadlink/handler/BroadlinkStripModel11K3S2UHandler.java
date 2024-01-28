@@ -66,7 +66,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
                 setStatusOnDevice((byte) sid, (byte) 0);
             }
         } catch (IOException e) {
-            logger.warn("Couldn't interpret command for strip device MP13K2U", e);
+            logger.warn("Couldn't interpret command for strip device MP13K2U: {}", e.getMessage());
         }
     }
 
@@ -111,7 +111,8 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
             byte message[] = buildMessage((byte) 106, payload);
             byte response[] = sendAndReceiveDatagram(message, "status for MP13K2U strip");
             if (response == null) {
-                logger.warn("response from MP13K2U strip device was null");
+                logger.warn(
+                        "response from MP13K2U strip device was null, did you define the address of the device correctly?");
                 return false;
             }
             byte decodedPayload[] = decodeDevicePacket(response);
@@ -122,7 +123,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
             this.updateState("s3powerOn", (status & 0x04) == 0x04 ? OnOffType.ON : OnOffType.OFF);
             this.updateState("usbPowerOn", (status & 0x08) == 0x08 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
-            logger.warn("Exception while getting status from device", ex);
+            logger.warn("Exception while getting status from device: {}", ex.getMessage());
             return false;
         }
         return true;

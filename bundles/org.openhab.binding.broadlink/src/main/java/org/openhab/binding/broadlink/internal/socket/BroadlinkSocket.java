@@ -66,6 +66,7 @@ public class BroadlinkSocket {
     private static class ReceiverThread extends Thread {
         private Logger logger;
 
+        @Override
         public void run() {
             receiveData(BroadlinkSocket.socket, BroadlinkSocket.datagramPacket);
         }
@@ -92,7 +93,7 @@ public class BroadlinkSocket {
                 }
             } catch (IOException e) {
                 if (!isInterrupted()) {
-                    logger.warn("Error while receiving", e);
+                    logger.warn("Error while receiving data: {}", e.getMessage());
                 }
             }
             logger.debug("Receiver thread ended");

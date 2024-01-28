@@ -78,7 +78,7 @@ public class BroadlinkProtocol {
             outputStream.write(packet);
             outputStream.write(Utils.encrypt(key, new IvParameterSpec(iv), payload));
         } catch (IOException e) {
-            logger.warn("IOException while building message", e);
+            logger.warn("IOException while building message: {}", e.getMessage());
             return packet;
         }
         byte data[] = outputStream.toByteArray();

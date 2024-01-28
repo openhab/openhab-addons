@@ -42,7 +42,7 @@ public class NetworkUtils {
             InetAddress address = InetAddress.getByName(host);
             return address.isReachable(timeout);
         } catch (Exception e) {
-            logger.warn("Exception while trying to determine reachability of {}", host, e);
+            logger.warn("Exception while trying to determine reachability of {}: {}", host, e.getMessage());
         }
         return false;
     }
