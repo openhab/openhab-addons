@@ -571,7 +571,7 @@ public class MongoDBPersistenceServiceTest {
 
     /**
      * Tests the store method of the MongoDBPersistenceService with all types of openHAB items.
-     * Each item is stored in a single collection in the MongoDB database.
+     * Each item is stored in the collection in the MongoDB database.
      *
      * @param item The item to store in the database.
      */
@@ -599,6 +599,40 @@ public class MongoDBPersistenceServiceTest {
             Document insertedDocument = documents.get(0); // Get the first (and only) document
 
             VerificationHelper.verifyDocument(insertedDocument, item.getName(), item.getState());
+        } finally {
+            dbContainer.stop();
+        }
+    }
+
+    /**
+     * Tests the store and query method of the MongoDBPersistenceService with all types of openHAB items.
+     * Each item is queried with the type from one collection in the MongoDB database.
+     *
+     * @param item The item to store in the database.
+     */
+    @ParameterizedTest
+    @MethodSource("org.openhab.persistence.mongodb.internal.DataCreationHelper#provideOpenhabItemTypes")
+    public void testQueryAllOpenhabItemTypesSingleCollection(GenericItem item) {
+        // Preparation
+        DatabaseTestContainer dbContainer = new DatabaseTestContainer(new MemoryBackend());
+        try {
+            SetupResult setupResult = DataCreationHelper.setupMongoDB("testCollection", dbContainer);
+            MongoDBPersistenceService service = setupResult.service;
+            MongoDatabase database = setupResult.database;
+
+            service.activate(setupResult.bundleContext, setupResult.config);
+            try {
+                Mockito.when(setupResult.itemRegistry.getItem(item.getName())).thenReturn(item);
+            } catch (ItemNotFoundException e) {
+            }
+            service.store(item, null);
+
+            // Execution
+            FilterCriteria filter = DataCreationHelper.createFilterCriteria(item.getName());
+            Iterable<HistoricItem> result = service.query(filter);
+            // Verification
+
+            VerificationHelper.verifyQueryResult(result, item.getState());
         } finally {
             dbContainer.stop();
         }

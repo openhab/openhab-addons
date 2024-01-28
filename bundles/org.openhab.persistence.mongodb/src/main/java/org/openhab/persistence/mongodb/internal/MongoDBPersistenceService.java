@@ -29,26 +29,16 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.library.items.ContactItem;
-import org.openhab.core.library.items.DateTimeItem;
-import org.openhab.core.library.items.DimmerItem;
-import org.openhab.core.library.items.NumberItem;
-import org.openhab.core.library.items.RollershutterItem;
-import org.openhab.core.library.items.SwitchItem;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.items.*;
+import org.openhab.core.library.types.*;
 import org.openhab.core.persistence.FilterCriteria;
-import org.openhab.core.persistence.FilterCriteria.Operator;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
+import org.openhab.core.types.*;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
@@ -70,17 +60,12 @@ import com.mongodb.client.MongoCursor;
  *
  * @author Thorsten Hoeger - Initial contribution
  * @author Stephan Brunner - Query fixes, Cleanup
+ * @author René Ulbricht - Fixes type handling, driver update and cleanup
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class,
         QueryablePersistenceService.class }, configurationPid = "org.openhab.mongodb", configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class MongoDBPersistenceService implements QueryablePersistenceService {
-
-    private static final String FIELD_ID = "_id";
-    private static final String FIELD_ITEM = "item";
-    private static final String FIELD_REALNAME = "realName";
-    private static final String FIELD_TIMESTAMP = "timestamp";
-    private static final String FIELD_VALUE = "value";
 
     private final Logger logger = LoggerFactory.getLogger(MongoDBPersistenceService.class);
 
@@ -183,31 +168,17 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         }
 
         String name = (alias != null) ? alias : realItemName;
-        Object value = this.convertValue(item.getState());
+        Object value = MongoDBTypeConversions.convertValue(item.getState());
 
         Document obj = new Document();
-        obj.put(FIELD_ID, new ObjectId());
-        obj.put(FIELD_ITEM, name);
-        obj.put(FIELD_REALNAME, realItemName);
-        obj.put(FIELD_TIMESTAMP, new Date());
-        obj.put(FIELD_VALUE, value);
+        obj.put(MongoDBFields.FIELD_ID, new ObjectId());
+        obj.put(MongoDBFields.FIELD_ITEM, name);
+        obj.put(MongoDBFields.FIELD_REALNAME, realItemName);
+        obj.put(MongoDBFields.FIELD_TIMESTAMP, new Date());
+        obj.put(MongoDBFields.FIELD_VALUE, value);
         collection.insertOne(obj);
 
         logger.debug("MongoDB save {}={}", name, value);
-    }
-
-    private Object convertValue(State state) {
-        Object value;
-        if (state instanceof PercentType type) {
-            value = type.toBigDecimal().doubleValue();
-        } else if (state instanceof DateTimeType type) {
-            value = Date.from(type.getZonedDateTime().toInstant());
-        } else if (state instanceof DecimalType type) {
-            value = type.toBigDecimal().doubleValue();
-        } else {
-            value = state.toString();
-        }
-        return value;
     }
 
     @Override
@@ -298,7 +269,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             MongoCollection<Document> mongoCollection = db.getDatabase(this.db).getCollection(collectionName);
 
             Document idx = new Document();
-            idx.append(FIELD_ITEM, 1).append(FIELD_TIMESTAMP, 1);
+            idx.append(MongoDBFields.FIELD_ITEM, 1).append(MongoDBFields.FIELD_TIMESTAMP, 1);
             mongoCollection.createIndex(idx);
 
             return mongoCollection;
@@ -356,20 +327,20 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         List<HistoricItem> items = new ArrayList<>();
         Document query = new Document();
         if (filter.getItemName() != null) {
-            query.put(FIELD_ITEM, filter.getItemName());
+            query.put(MongoDBFields.FIELD_ITEM, filter.getItemName());
         }
         State filterState = filter.getState();
         if (filterState != null && filter.getOperator() != null) {
             @Nullable
-            String op = convertOperator(filter.getOperator());
+            String op = MongoDBTypeConversions.convertOperator(filter.getOperator());
 
             if (op == null) {
                 logger.error("Failed to convert operator {} to MongoDB operator", filter.getOperator());
                 return Collections.emptyList();
             }
 
-            Object value = convertValue(filterState);
-            query.put(FIELD_VALUE, new Document(op, value));
+            Object value = MongoDBTypeConversions.convertValue(filterState);
+            query.put(MongoDBFields.FIELD_VALUE, new Document(op, value));
         }
 
         Document dateQueries = new Document();
@@ -380,7 +351,7 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             dateQueries.put("$lte", Date.from(filter.getEndDate().toInstant()));
         }
         if (!dateQueries.isEmpty()) {
-            query.put(FIELD_TIMESTAMP, dateQueries);
+            query.put(MongoDBFields.FIELD_TIMESTAMP, dateQueries);
         }
 
         logger.debug("Query: {}", query);
@@ -388,32 +359,16 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         Integer sortDir = (filter.getOrdering() == Ordering.ASCENDING) ? 1 : -1;
         MongoCursor<Document> cursor = null;
         try {
-            cursor = collection.find(query).sort(new Document(FIELD_TIMESTAMP, sortDir))
+            cursor = collection.find(query).sort(new Document(MongoDBFields.FIELD_TIMESTAMP, sortDir))
                     .skip(filter.getPageNumber() * filter.getPageSize()).limit(filter.getPageSize()).iterator();
 
             while (cursor.hasNext()) {
                 Document obj = cursor.next();
 
-                final State state;
-                if (item instanceof NumberItem) {
-                    state = new DecimalType(obj.getDouble(FIELD_VALUE));
-                } else if (item instanceof DimmerItem) {
-                    state = new PercentType(obj.getInteger(FIELD_VALUE));
-                } else if (item instanceof SwitchItem) {
-                    state = OnOffType.valueOf(obj.getString(FIELD_VALUE));
-                } else if (item instanceof ContactItem) {
-                    state = OpenClosedType.valueOf(obj.getString(FIELD_VALUE));
-                } else if (item instanceof RollershutterItem) {
-                    state = new PercentType(obj.getInteger(FIELD_VALUE));
-                } else if (item instanceof DateTimeItem) {
-                    state = new DateTimeType(
-                            ZonedDateTime.ofInstant(obj.getDate(FIELD_VALUE).toInstant(), ZoneId.systemDefault()));
-                } else {
-                    state = new StringType(obj.getString(FIELD_VALUE));
-                }
+                final State state = MongoDBTypeConversions.getStateFromDocument(item, obj);
 
-                items.add(new MongoDBItem(realItemName, state,
-                        ZonedDateTime.ofInstant(obj.getDate(FIELD_TIMESTAMP).toInstant(), ZoneId.systemDefault())));
+                items.add(new MongoDBItem(realItemName, state, ZonedDateTime
+                        .ofInstant(obj.getDate(MongoDBFields.FIELD_TIMESTAMP).toInstant(), ZoneId.systemDefault())));
             }
         } finally {
             if (cursor != null) {
@@ -422,25 +377,6 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         }
 
         return items;
-    }
-
-    private @Nullable String convertOperator(Operator operator) {
-        switch (operator) {
-            case EQ:
-                return "$eq";
-            case GT:
-                return "$gt";
-            case GTE:
-                return "$gte";
-            case LT:
-                return "$lt";
-            case LTE:
-                return "$lte";
-            case NEQ:
-                return "$neq";
-            default:
-                return null;
-        }
     }
 
     private @Nullable Item getItem(String itemName) {

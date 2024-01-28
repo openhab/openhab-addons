@@ -24,17 +24,12 @@ import java.util.stream.Stream;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.Mockito;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.items.*;
-import org.openhab.core.library.items.NumberItem;
-import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.types.*;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.types.State;
 import org.osgi.framework.BundleContext;
@@ -56,12 +51,6 @@ import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
  * @author René Ulbricht - Initial contribution
  */
 public class DataCreationHelper {
-
-    private static final String FIELD_ID = "_id";
-    private static final String FIELD_ITEM = "item";
-    private static final String FIELD_REALNAME = "realName";
-    private static final String FIELD_TIMESTAMP = "timestamp";
-    private static final String FIELD_VALUE = "value";
 
     /**
      * Creates a NumberItem with a given name and value.
@@ -127,13 +116,16 @@ public class DataCreationHelper {
                         new PercentType(30))),
                 Arguments.of(DataCreationHelper.createItem(DateTimeItem.class, "DateTimeItem",
                         new DateTimeType(ZonedDateTime.now()))),
-                // Arguments.of(DataCreationHelper.createItem(ColorItem.class, "ColorItem", new
-                // HSBType("180,100,100"))),
+                Arguments.of(DataCreationHelper.createItem(ColorItem.class, "ColorItem", new HSBType("180,100,100"))),
                 Arguments.of(
                         DataCreationHelper.createItem(LocationItem.class, "LocationItem", new PointType("51.0,0.0"))),
                 Arguments.of(DataCreationHelper.createItem(PlayerItem.class, "PlayerItem", PlayPauseType.PLAY)),
-                Arguments.of(
-                        DataCreationHelper.createItem(PlayerItem.class, "PlayerItem", RewindFastforwardType.REWIND)));
+                Arguments.of(DataCreationHelper.createItem(CallItem.class, "CallItem",
+                        new StringListType("+49 123 456 789"))),
+                Arguments.of(DataCreationHelper.createItem(ImageItem.class, "ImageItem",
+                        new RawType(new byte[] { 0x00, 0x01, 0x02 }, "image/png"))),
+                Arguments.of(DataCreationHelper.createItem(NumberItem.class, "NumberItemCelcius",
+                        new QuantityType<>("25.00 °C"))));
     }
 
     /**
@@ -166,11 +158,11 @@ public class DataCreationHelper {
      */
     public static Document createDocument(String itemName, double value, LocalDate timestamp) {
         Document obj = new Document();
-        obj.put(FIELD_ID, new ObjectId());
-        obj.put(FIELD_ITEM, itemName);
-        obj.put(FIELD_REALNAME, itemName);
-        obj.put(FIELD_TIMESTAMP, timestamp);
-        obj.put(FIELD_VALUE, value);
+        obj.put(MongoDBFields.FIELD_ID, new ObjectId());
+        obj.put(MongoDBFields.FIELD_ITEM, itemName);
+        obj.put(MongoDBFields.FIELD_REALNAME, itemName);
+        obj.put(MongoDBFields.FIELD_TIMESTAMP, timestamp);
+        obj.put(MongoDBFields.FIELD_VALUE, value);
         return obj;
     }
 

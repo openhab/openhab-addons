@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +24,7 @@ import java.util.function.BiFunction;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.Document;
 import org.bson.json.JsonWriterSettings;
+import org.bson.types.Binary;
 import org.openhab.core.library.types.*;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.persistence.HistoricItem;
@@ -32,6 +32,14 @@ import org.openhab.core.persistence.HistoricItem;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 
+/**
+ * This is a helper class for verifying various aspects of the MongoDB persistence service.
+ * It provides methods for verifying log messages, MongoDB documents, and query results.
+ * Each verification method checks if the actual value matches the expected value and throws an
+ * AssertionError if they do not match.
+ *
+ * @author René Ulbricht - Initial contribution
+ */
 public class VerificationHelper {
 
     /**
@@ -67,28 +75,44 @@ public class VerificationHelper {
      */
     public static void verifyDocumentWithAlias(Document document, String expectedAlias, String expectedRealName,
             Object expectedValue) {
-        assertEquals(expectedAlias, document.get("item"));
-        assertEquals(expectedRealName, document.get("realName"));
+        assertEquals(expectedAlias, document.get(MongoDBFields.FIELD_ITEM));
+        assertEquals(expectedRealName, document.get(MongoDBFields.FIELD_REALNAME));
 
         // Define a map from types to functions that handle those types
         Map<Class<?>, BiFunction<Object, Document, Pair<Object, Object>>> handlers = new HashMap<>();
-        handlers.put(Double.class, (ev, doc) -> Pair.of(ev, doc.get("value")));
-        handlers.put(String.class, (ev, doc) -> Pair.of(ev, doc.get("value")));
-        handlers.put(HSBType.class, (ev, doc) -> Pair.of(ev.toString(), doc.get("value")));
-        handlers.put(DecimalType.class, (ev, doc) -> Pair.of(((DecimalType) ev).doubleValue(), doc.getDouble("value")));
-        handlers.put(DateTimeType.class, (ev, doc) -> Pair
-                .of(Date.from(((DateTimeType) ev).getZonedDateTime().toInstant()), doc.getDate("value")));
-        handlers.put(IncreaseDecreaseType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString("value")));
-        handlers.put(RewindFastforwardType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString("value")));
-        handlers.put(NextPreviousType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString("value")));
-        handlers.put(OnOffType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString("value")));
-        handlers.put(OpenClosedType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString("value")));
-        handlers.put(PercentType.class, (ev, doc) -> Pair.of(((PercentType) ev).doubleValue(), doc.getDouble("value")));
-        handlers.put(PlayPauseType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString("value")));
-        handlers.put(PointType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString("value")));
-        handlers.put(StopMoveType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString("value")));
-        handlers.put(StringType.class, (ev, doc) -> Pair.of(ev, doc.get("value")));
-        handlers.put(UpDownType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString("value")));
+        handlers.put(Double.class, (ev, doc) -> Pair.of(ev, doc.get(MongoDBFields.FIELD_VALUE)));
+        handlers.put(String.class, (ev, doc) -> Pair.of(ev, doc.get(MongoDBFields.FIELD_VALUE)));
+        handlers.put(HSBType.class, (ev, doc) -> Pair.of(ev.toString(), doc.get(MongoDBFields.FIELD_VALUE)));
+        handlers.put(DecimalType.class,
+                (ev, doc) -> Pair.of(((DecimalType) ev).doubleValue(), doc.getDouble(MongoDBFields.FIELD_VALUE)));
+        handlers.put(DateTimeType.class, (ev, doc) -> Pair.of(((DateTimeType) ev).getZonedDateTime().toString(),
+                doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(IncreaseDecreaseType.class,
+                (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(RewindFastforwardType.class,
+                (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(NextPreviousType.class,
+                (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(OnOffType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(OpenClosedType.class,
+                (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(PercentType.class,
+                (ev, doc) -> Pair.of(((PercentType) ev).intValue(), doc.getInteger(MongoDBFields.FIELD_VALUE)));
+        handlers.put(PlayPauseType.class,
+                (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(PointType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(StopMoveType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(StringListType.class,
+                (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(StringType.class, (ev, doc) -> Pair.of(ev, doc.get(MongoDBFields.FIELD_VALUE)));
+        handlers.put(UpDownType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(RawType.class, (ev, doc) -> {
+            RawType rawType = (RawType) ev;
+            Document expectedDoc = new Document();
+            expectedDoc.put(MongoDBFields.FIELD_VALUE_TYPE, rawType.getMimeType());
+            expectedDoc.put(MongoDBFields.FIELD_VALUE_DATA, new Binary(rawType.getBytes()));
+            return Pair.of(expectedDoc, doc.get(MongoDBFields.FIELD_VALUE));
+        });
 
         // Use the map to handle the expected value
         BiFunction<Object, Document, Pair<Object, Object>> handler = handlers.get(expectedValue.getClass());
@@ -123,5 +147,14 @@ public class VerificationHelper {
             assertEquals(expectedState, ((DecimalType) item.getState()).intValue());
             expectedState += increment;
         }
+    }
+
+    public static void verifyQueryResult(Iterable<HistoricItem> result, Object expectedState) {
+        List<HistoricItem> resultList = new ArrayList<>();
+        result.forEach(resultList::add);
+
+        assertEquals(1, resultList.size());
+
+        assertEquals(expectedState, resultList.get(0).getState());
     }
 }
