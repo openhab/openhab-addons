@@ -17,9 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -606,14 +604,14 @@ public class MongoDBPersistenceServiceTest {
     }
 
     /**
-     * Tests the store and query method of the MongoDBPersistenceService with all types of openHAB items.
+     * Tests the store and query method for various image sizes of the MongoDBPersistenceService
      * Each item is queried with the type from one collection in the MongoDB database.
      *
      * @param item The item to store in the database.
      */
     @ParameterizedTest
-    @MethodSource("org.openhab.persistence.mongodb.internal.DataCreationHelper#provideOpenhabItemTypes")
-    public void testQueryAllOpenhabItemTypesSingleCollection(GenericItem item) {
+    @MethodSource("org.openhab.persistence.mongodb.internal.DataCreationHelper#provideOpenhabImageItemsInDifferentSizes")
+    public void testStoreAndQueryyLargerImages(ImageItem item) {
         // Preparation
         DatabaseTestContainer dbContainer = new DatabaseTestContainer(new MemoryBackend());
         try {
@@ -626,7 +624,16 @@ public class MongoDBPersistenceServiceTest {
                 Mockito.when(setupResult.itemRegistry.getItem(item.getName())).thenReturn(item);
             } catch (ItemNotFoundException e) {
             }
-            service.store(item, null);
+            try {
+                service.store(item, null);
+            } catch (org.bson.BsonMaximumSizeExceededException e) {
+                if (item.getName().equals("ImageItem20MB")) {
+                    // this is expected
+                    return;
+                } else {
+                    throw e;
+                }
+            }
 
             // Execution
             FilterCriteria filter = DataCreationHelper.createFilterCriteria(item.getName());
@@ -640,7 +647,8 @@ public class MongoDBPersistenceServiceTest {
     }
 
     /**
-     * Tests the old way of storing data and query method of the MongoDBPersistenceService with all types of openHAB items.
+     * Tests the old way of storing data and query method of the MongoDBPersistenceService with all types of openHAB
+     * items.
      * Each item is queried with the type from one collection in the MongoDB database.
      *
      * @param item The item to store in the database.
@@ -667,7 +675,7 @@ public class MongoDBPersistenceServiceTest {
                 item.setState(new RawType(new byte[0], "application/octet-stream"));
             } else if (item instanceof ColorItem) {
                 item.setState(new HSBType("0,0,0"));
-            } 
+            }
 
             // Execution
             FilterCriteria filter = DataCreationHelper.createFilterCriteria(item.getName());
@@ -676,10 +684,9 @@ public class MongoDBPersistenceServiceTest {
 
             if (item instanceof DateTimeItem) {
                 // verify just the date part
-                assertEquals(((DateTimeType)item.getState()).getZonedDateTime().toLocalDate(), 
-                    ((DateTimeType)result.iterator().next().getState()).getZonedDateTime().toLocalDate());
-            }
-            else {
+                assertEquals(((DateTimeType) item.getState()).getZonedDateTime().toLocalDate(),
+                        ((DateTimeType) result.iterator().next().getState()).getZonedDateTime().toLocalDate());
+            } else {
                 VerificationHelper.verifyQueryResult(result, item.getState());
             }
         } finally {

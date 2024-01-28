@@ -176,8 +176,12 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         obj.put(MongoDBFields.FIELD_REALNAME, realItemName);
         obj.put(MongoDBFields.FIELD_TIMESTAMP, new Date());
         obj.put(MongoDBFields.FIELD_VALUE, value);
-        collection.insertOne(obj);
-
+        try {
+            collection.insertOne(obj);
+        } catch (org.bson.BsonMaximumSizeExceededException e) {
+            logger.error("Document size exceeds maximum size of 16MB. Item {} not persisted.", name);
+            throw e;
+        }
         logger.debug("MongoDB save {}={}", name, value);
     }
 
