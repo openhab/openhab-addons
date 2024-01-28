@@ -41,7 +41,7 @@ public class BroadlinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_RM4_PRO = new ThingTypeUID("broadlink", "rm4pro");
     public static final ThingTypeUID THING_TYPE_A1 = new ThingTypeUID("broadlink", "a1");
     public static final ThingTypeUID THING_TYPE_MP1 = new ThingTypeUID("broadlink", "mp1");
-    public static final ThingTypeUID THING_TYPE_MP1_1K3S2U = new ThingTypeUID("broadlink", "mp1_1k3s2u");
+    public static final ThingTypeUID THING_TYPE_MP1_1K3S2U = new ThingTypeUID("broadlink", "mp1-1k3s2u");
     public static final ThingTypeUID THING_TYPE_MP2 = new ThingTypeUID("broadlink", "mp2");
     public static final ThingTypeUID THING_TYPE_SP1 = new ThingTypeUID("broadlink", "sp1");
     public static final ThingTypeUID THING_TYPE_SP2 = new ThingTypeUID("broadlink", "sp2");
