@@ -50,12 +50,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.lastnpe.eea</groupId>
-      <artifactId>eea-all</artifactId>
-      <version>2.2.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>bson-record-codec</artifactId>
       <version>4.11.1</version>
@@ -67,18 +61,6 @@
       <groupId>de.bwaldvogel</groupId>
       <artifactId>mongo-java-server</artifactId>
       <version>1.44.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.2.9</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>4.2.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

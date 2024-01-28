@@ -34,6 +34,7 @@ import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.types.State;
 import org.osgi.framework.BundleContext;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.DockerClientFactory;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -133,19 +134,25 @@ public class DataCreationHelper {
      *
      * Each argument is a DatabaseTestContainer instance. Some instances use a MemoryBackend,
      * while others use a MongoDBContainer with a specific MongoDB version.
+     * In case there is no Docker available, only the MemoryBackend is used.
      *
      * @return A stream of Arguments, each containing a DatabaseTestContainer instance.
      */
     public static Stream<Arguments> provideDatabaseBackends() {
-        // Create a stream of Arguments
-        return Stream.of(
-                // Create a DatabaseTestContainer with a MemoryBackend
-                Arguments.of(new DatabaseTestContainer(new MemoryBackend())),
-                // Create DatabaseTestContainers with MongoDBContainers of specific versions
-                Arguments.of(new DatabaseTestContainer("mongo:3.6")),
-                Arguments.of(new DatabaseTestContainer("mongo:4.4")),
-                Arguments.of(new DatabaseTestContainer("mongo:5.0")),
-                Arguments.of(new DatabaseTestContainer("mongo:6.0")));
+        if (DockerClientFactory.instance().isDockerAvailable()) {
+            // If Docker is available, create a stream of Arguments with all backends
+            return Stream.of(
+                    // Create a DatabaseTestContainer with a MemoryBackend
+                    Arguments.of(new DatabaseTestContainer(new MemoryBackend())),
+                    // Create DatabaseTestContainers with MongoDBContainers of specific versions
+                    Arguments.of(new DatabaseTestContainer("mongo:3.6")),
+                    Arguments.of(new DatabaseTestContainer("mongo:4.4")),
+                    Arguments.of(new DatabaseTestContainer("mongo:5.0")),
+                    Arguments.of(new DatabaseTestContainer("mongo:6.0")));
+        } else {
+            // If Docker is not available, create a stream of Arguments with only the MemoryBackend
+            return Stream.of(Arguments.of(new DatabaseTestContainer(new MemoryBackend())));
+        }
     }
 
     /**
