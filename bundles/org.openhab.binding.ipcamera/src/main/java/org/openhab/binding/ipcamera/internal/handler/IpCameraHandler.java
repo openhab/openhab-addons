@@ -514,17 +514,16 @@ public class IpCameraHandler extends BaseThingHandler {
     private void checkCameraConnection() {
         if (snapshotPolling) { // Currently polling a real URL for snapshots, so camera must be online.
             return;
-        } else if (ffmpegSnapshotGeneration) { // Use RTSP stream creating snapshots to know camera is online.
+        } else if (ffmpegSnapshotGeneration) {
             Ffmpeg localSnapshot = ffmpegSnapshot;
             if (localSnapshot != null && !localSnapshot.isAlive()) {
                 cameraCommunicationError("FFmpeg Snapshots Stopped: Check that your camera can be reached.");
             }
-            return; // ffmpeg snapshot stream is still alive
+            return; // RTSP stream is creating snapshots, so camera is online.
         }
 
-        // ONVIF cameras get regular event messages from the camera
-        if (supportsOnvifEvents() && onvifCamera.isConnected()) {
-            return;
+        if (supportsOnvifEvents() && onvifCamera.isConnected() && onvifCamera.getEventsSupported()) {
+            return;// ONVIF cameras that are getting event messages must be online
         }
 
         // Open a HTTP connection without sending any requests as we do not need a snapshot.
