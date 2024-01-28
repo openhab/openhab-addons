@@ -96,7 +96,6 @@ public class BroadlinkSocket {
                     logger.warn("Error while receiving data: {}", e.getMessage());
                 }
             }
-            logger.debug("Receiver thread ended");
         }
 
         private ReceiverThread(Logger logger) {
