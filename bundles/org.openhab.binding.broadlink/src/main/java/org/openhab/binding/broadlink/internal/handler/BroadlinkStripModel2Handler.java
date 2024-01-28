@@ -10,22 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.broadlink.handler;
+package org.openhab.binding.broadlink.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.core.thing.Thing;
 
 /**
- * Remote blaster handler for RM mini 3 devices
+ * Multiple power socket strip device
  *
- * @author John Marshall - Initial contribution
+ * @author John Marshall/Cato Sognen - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkRemoteModel3Handler extends BroadlinkRemoteHandler {
+public class BroadlinkStripModel2Handler extends BroadlinkSocketModel2Handler {
 
-    public BroadlinkRemoteModel3Handler(Thing thing,
-            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
-        super(thing, commandDescriptionProvider);
+    public BroadlinkStripModel2Handler(Thing thing) {
+        super(thing, false);
     }
 }

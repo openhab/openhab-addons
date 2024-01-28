@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.broadlink.handler;
+package org.openhab.binding.broadlink.internal.handler;
 
 import java.io.IOException;
 
@@ -22,14 +22,14 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
 /**
- * Multiple power socket plus USB strip device - 3 AC outlets and 2 USB outlets
+ * Multiple power socket strip device
  *
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler {
+public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
 
-    public BroadlinkStripModel11K3S2UHandler(Thing thing) {
+    public BroadlinkStripModel1Handler(Thing thing) {
         super(thing);
     }
 
@@ -50,7 +50,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
             case "s3powerOn":
                 interpretCommandForSocket(3, command);
                 break;
-            case "usbPowerOn":
+            case "s4powerOn":
                 interpretCommandForSocket(4, command);
                 break;
             default:
@@ -66,7 +66,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
                 setStatusOnDevice((byte) sid, (byte) 0);
             }
         } catch (IOException e) {
-            logger.warn("Couldn't interpret command for strip device MP13K2U: {}", e.getMessage());
+            logger.warn("Couldn't interpret command for strip device: {}", e.getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
             payload[14] = 0;
         }
         byte message[] = buildMessage((byte) 106, payload);
-        sendAndReceiveDatagram(message, "Setting MP13K2U status");
+        sendAndReceiveDatagram(message, "Setting MPx status");
     }
 
     @Override
@@ -109,19 +109,18 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
         payload[8] = 1;
         try {
             byte message[] = buildMessage((byte) 106, payload);
-            byte response[] = sendAndReceiveDatagram(message, "status for MP13K2U strip");
+            byte response[] = sendAndReceiveDatagram(message, "status for strip");
             if (response == null) {
-                logger.warn(
-                        "response from MP13K2U strip device was null, did you define the address of the device correctly?");
+                logger.warn("response from strip device was null, did you setup the address of the device correctly?");
                 return false;
             }
             byte decodedPayload[] = decodeDevicePacket(response);
             final int status = decodedPayload[14];
 
-            this.updateState("s1powerOn", (status & 0x01) == 0x01 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s2powerOn", (status & 0x02) == 0x02 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s3powerOn", (status & 0x04) == 0x04 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("usbPowerOn", (status & 0x08) == 0x08 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("s1powerOn", (status & 1) == 1 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("s2powerOn", (status & 2) == 2 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("s3powerOn", (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("s4powerOn", (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
             logger.warn("Exception while getting status from device: {}", ex.getMessage());
             return false;

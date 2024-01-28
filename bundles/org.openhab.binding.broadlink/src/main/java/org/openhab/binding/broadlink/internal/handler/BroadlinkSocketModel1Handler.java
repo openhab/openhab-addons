@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.broadlink.handler;
+package org.openhab.binding.broadlink.internal.handler;
 
 import java.io.IOException;
 

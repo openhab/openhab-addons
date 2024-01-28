@@ -10,26 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.broadlink.handler;
+package org.openhab.binding.broadlink.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.core.thing.Thing;
 
 /**
- * Supports quirks in V44057 firmware.
- * 
- * @author Stewart Cossey - Initial contribution
+ * Remote blaster handler for RM mini 3 devices
+ *
+ * @author John Marshall - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkRemoteModel3V44057Handler extends BroadlinkRemoteModel4MiniHandler {
+public class BroadlinkRemoteModel3Handler extends BroadlinkRemoteHandler {
 
-    public BroadlinkRemoteModel3V44057Handler(Thing thing,
+    public BroadlinkRemoteModel3Handler(Thing thing,
             BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
         super(thing, commandDescriptionProvider);
-    }
-
-    protected boolean getStatusFromDevice() {
-        return true;
     }
 }
