@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.openhab.binding.broadlink.BroadlinkBindingConstants;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 
 /**
  * Tests the Remote Model 2 handler.

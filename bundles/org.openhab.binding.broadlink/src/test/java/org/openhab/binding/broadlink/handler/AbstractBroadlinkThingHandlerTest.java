@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.BROADLINK_AUTH_KEY;
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.BROADLINK_IV;
+import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mockito;
 import org.openhab.binding.broadlink.AbstractBroadlinkTest;
-import org.openhab.binding.broadlink.BroadlinkBindingConstants;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.socket.NetworkTrafficObserver;

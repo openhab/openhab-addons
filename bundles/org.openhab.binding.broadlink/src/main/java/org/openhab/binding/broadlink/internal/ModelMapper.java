@@ -13,7 +13,6 @@
 package org.openhab.binding.broadlink.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.broadlink.BroadlinkBindingConstants;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;

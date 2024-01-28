@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.broadlink.BroadlinkBindingConstants;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocketListener;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;

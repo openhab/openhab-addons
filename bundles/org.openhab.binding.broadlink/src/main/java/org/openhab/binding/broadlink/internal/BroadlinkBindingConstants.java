@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.broadlink;
+package org.openhab.binding.broadlink.internal;
 
 import java.util.HashMap;
 import java.util.Map;

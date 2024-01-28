@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.*;
+import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.*;
 
 import java.io.IOException;
 

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.broadlink.handler;
 
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.*;
+import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlink.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.openhab.binding.broadlink.internal.Utils;

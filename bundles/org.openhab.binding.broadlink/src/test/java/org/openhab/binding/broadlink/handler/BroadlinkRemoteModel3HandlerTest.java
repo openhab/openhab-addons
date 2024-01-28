@@ -15,7 +15,7 @@ package org.openhab.binding.broadlink.handler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static org.openhab.binding.broadlink.BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN;
+import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN;
 
 import java.io.IOException;
 
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.openhab.binding.broadlink.BroadlinkBindingConstants;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 
 /**
  * Tests the Remote Model 3 handler.

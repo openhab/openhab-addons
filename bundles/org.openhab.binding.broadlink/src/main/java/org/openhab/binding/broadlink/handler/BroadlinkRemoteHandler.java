@@ -17,7 +17,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlink.BroadlinkBindingConstants;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkMappingService;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.Utils;

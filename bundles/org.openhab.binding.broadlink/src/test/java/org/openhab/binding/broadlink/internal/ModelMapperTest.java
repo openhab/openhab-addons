@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.openhab.binding.broadlink.BroadlinkBindingConstants;
 import org.slf4j.Logger;
 
 /**
