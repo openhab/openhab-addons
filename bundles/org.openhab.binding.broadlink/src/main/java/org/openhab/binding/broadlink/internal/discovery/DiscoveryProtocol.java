@@ -47,7 +47,6 @@ public class DiscoveryProtocol {
             BroadlinkSocket.registerListener(listener, logger);
             DiscoveryProtocol.discoverDevices(logger);
             DiscoveryProtocol.waitUntilEnded(timeoutMillis, logger);
-            logger.warn("Ended Broadlink device scan...");
             BroadlinkSocket.unregisterListener(listener, logger);
             finishedListener.onDiscoveryFinished();
         }
