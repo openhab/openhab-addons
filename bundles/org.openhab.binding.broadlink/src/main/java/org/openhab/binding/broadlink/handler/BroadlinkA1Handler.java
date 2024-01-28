@@ -53,7 +53,7 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
             updateState("noise", ModelMapper.getNoiseValue(decryptResponse[12]));
             return true;
         } catch (Exception ex) {
-            logger.warn("Failed while getting device status", ex);
+            logger.warn("Failed while getting device status: {}", ex.getMessage());
             return false;
         }
     }
