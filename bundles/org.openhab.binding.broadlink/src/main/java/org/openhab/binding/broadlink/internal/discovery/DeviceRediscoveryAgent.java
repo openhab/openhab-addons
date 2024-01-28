@@ -13,7 +13,7 @@
 package org.openhab.binding.broadlink.internal.discovery;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
+import org.openhab.binding.broadlink.internal.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.socket.BroadlinkSocketListener;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;

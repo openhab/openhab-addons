@@ -21,7 +21,7 @@ import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
+import org.openhab.binding.broadlink.internal.config.BroadlinkDeviceConfiguration;
 import org.slf4j.Logger;
 
 /**

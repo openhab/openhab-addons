@@ -22,11 +22,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlink.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
 import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.openhab.binding.broadlink.internal.Utils;
+import org.openhab.binding.broadlink.internal.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryAgent;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryListener;
 import org.openhab.binding.broadlink.internal.socket.NetworkTrafficObserver;
