@@ -207,10 +207,10 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
 
                 // 3EM: neutral current (emeter_n)
-                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_CURRENT, "system:electric-current", ITEMT_ENERGY))
-                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_IXSUM, "system:electric-current", ITEMT_ENERGY))
-                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_MTRESHHOLD, "system:electric-current", ITEMT_ENERGY))
-                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_MISMATCH, "ncurrentMismatch", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_CURRENT, "ncurrent", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_IXSUM, "ixsum", ITEMT_ENERGY))
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_MISMATCH, "nmismatch", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_MTRESHHOLD, "nmTreshhold", ITEMT_ENERGY))
 
                 // Sensors
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TEMP, "sensorTemp", ITEMT_TEMP))
@@ -273,13 +273,13 @@ public class ShellyChannelDefinitions {
         String group = substringBefore(channelName, "#");
         String channel = substringAfter(channelName, "#");
 
-        if (group.contains(CHANNEL_GROUP_METER)) {
+        if (group.startsWith(CHANNEL_GROUP_METER)) {
             group = CHANNEL_GROUP_METER; // map meter1..n to meter
-        } else if (group.contains(CHANNEL_GROUP_RELAY_CONTROL)) {
+        } else if (group.startsWith(CHANNEL_GROUP_RELAY_CONTROL)) {
             group = CHANNEL_GROUP_RELAY_CONTROL; // map meter1..n to meter
-        } else if (group.contains(CHANNEL_GROUP_LIGHT_CHANNEL)) {
+        } else if (group.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
             group = CHANNEL_GROUP_LIGHT_CHANNEL;
-        } else if (group.contains(CHANNEL_GROUP_STATUS)) {
+        } else if (group.startsWith(CHANNEL_GROUP_STATUS)) {
             group = CHANNEL_GROUP_STATUS; // map status1..n to meter
         }
 

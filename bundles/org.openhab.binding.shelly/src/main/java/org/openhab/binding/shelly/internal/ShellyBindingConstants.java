@@ -180,7 +180,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EMETER_RESETTOTAL = "resetTotals";
     public static final String CHANNEL_GROUP_NMETER = "nmeter";
     public static final String CHANNEL_NMETER_CURRENT = "ncurrent";
-    public static final String CHANNEL_NMETER_IXSUM = "nixsum";
+    public static final String CHANNEL_NMETER_IXSUM = "ixsum";
     public static final String CHANNEL_NMETER_MISMATCH = "nmismatch";
     public static final String CHANNEL_NMETER_MTRESHHOLD = "nmTreshhold";
 

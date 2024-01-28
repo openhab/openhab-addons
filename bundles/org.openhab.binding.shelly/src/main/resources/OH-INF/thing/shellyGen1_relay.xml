@@ -610,10 +610,43 @@
 		<description>@text/channel-type.shelly.meterResetTotals.description</description>
 	</channel-type>
 
-	<channel-type id="ncurrentMismatch">
+	<channel-type id="ncurrent">
+		<item-type>Number:Energy</item-type>
+		<label>@text/channel-type.shelly.ncurrent.label</label>
+		<description>@text/channel-type.shelly.ncurrent.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="ixsum">
+		<item-type>Number:Energy</item-type>
+		<label>@text/channel-type.shelly.ixsum.label</label>
+		<description>@text/channel-type.shelly.ixsum.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="nmTreshhold">
+		<item-type>Number:Energy</item-type>
+		<label>@text/channel-type.shelly.nmTreshhold.label</label>
+		<description>@text/channel-type.shelly.nmTreshhold.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="nmismatch">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.ncurrentMismatch.label</label>
-		<description>@text/channel-type.shelly.ncurrentMismatch.description</description>
+		<label>@text/channel-type.shelly.nmismatch.label</label>
+		<description>@text/channel-type.shelly.nmismatch.description</description>
 	</channel-type>
 
 	<channel-type id="timestamp">
