@@ -492,7 +492,7 @@ In this case the is no real measurement based on power consumption, but the Shel
 |         | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                      |
 |         | button       | Trigger  | yes       | Event trigger, see section Button Events                                        |
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                            |
+|         | lastPower1   | Number   | yes       | The average power for the previous minute                                       |
 |         | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart) |
 |         |              |          |           |                                                                                 |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
