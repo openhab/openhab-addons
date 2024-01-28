@@ -47,6 +47,16 @@ public class TestNegateBit {
     }
 
     @Test
+    public void testNegateHandlingDecimalTrue() {
+        String negateProperty = "1-0_16-7-0:31:0";
+
+        boolean negateStateDot = NegateHandler.shouldNegateState(negateProperty,
+                obis -> new MeterValue<>(obis, "49.0", null));
+
+        assertTrue(negateStateDot);
+    }
+
+    @Test
     public void testNegateHandlingFalse() {
         String negateProperty = "1-0_1-8-0:5:1";
 
