@@ -53,12 +53,14 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         this.commandDescriptionProvider = commandDescriptionProvider;
     }
 
+    @Override
     public void initialize() {
         super.initialize();
         this.mappingService = new BroadlinkMappingService(thingConfig.getMapFilename(), commandDescriptionProvider,
                 new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL));
     }
 
+    @Override
     @SuppressWarnings("null")
     public void dispose() {
         if (this.mappingService != null) {
@@ -118,7 +120,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
             }
         } catch (IOException e) {
-            logger.warn("Exception while attempting to check learnt code", e);
+            logger.warn("Exception while attempting to check learnt code: {}", e.getMessage());
         }
     }
 
@@ -136,6 +138,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
     }
 
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!Utils.isOnline(getThing())) {
             logger.debug("Can't handle command {} because handler for thing {} is not ONLINE", command,

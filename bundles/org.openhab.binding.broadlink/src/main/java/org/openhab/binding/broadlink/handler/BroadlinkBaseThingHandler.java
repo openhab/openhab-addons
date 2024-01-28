@@ -133,7 +133,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload(), -1);
             byte response[] = sendAndReceiveDatagram(authRequest, "authentication");
             if (response == null) {
-                logger.warn("response from device during authentication was null");
+                logger.warn(
+                        "response from device during authentication was null, check if correct mac address is used for device.");
                 return false;
             }
             byte decryptResponse[] = decodeDevicePacket(response);

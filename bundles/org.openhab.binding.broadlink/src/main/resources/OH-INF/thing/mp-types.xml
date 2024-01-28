@@ -24,7 +24,7 @@
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>
 	</thing-type>
-	<thing-type id="mp1_1k3s2u">
+	<thing-type id="mp1-1k3s2u">
 		<label>Broadlink MP1 1K3S2U</label>
 		<description>The Broadlink MP1 1K3S2U Smart Home Wifi Plug Power Strip 3 AC, 2 USB Individual Wireless Remote Control.</description>
 		<channels>

@@ -8,7 +8,7 @@ This binding supports a range of home networking devices made by (and occasional
 |------------|-------------------------------------------------------------------------|
 | a1         | Broadlink A1 multi sensor                                               |
 | mp1        | Broadlink MP1 WiFi Smart Power Strip (4 sockets)                        |
-| mp1_1k3s2u | Broadlink MP1 1K3S2U WiFi Smart Power Strip (3 sockets, 2 USB)          |
+| mp1-1k3s2u | Broadlink MP1 1K3S2U WiFi Smart Power Strip (3 sockets, 2 USB)          |
 | mp2        | Broadlink MP2 WiFi Smart Power Strip (3 sockets, 3 USB)                 |
 | sp1        | Broadlink SP1 WiFi Smart Socket                                         |
 | sp2        | Broadlink SP2 WiFi Smart Socket with night light                        |
