@@ -149,8 +149,8 @@ public class RollershutterValue extends Value {
 
     @Override
     public Type parseMessage(Command command) throws IllegalArgumentException {
-        if (command instanceof StringType string && string.toString().equals("")) {
-            return UnDefType.UNDEF;
+        if (command instanceof StringType string && string.toString().isEmpty()) {
+            return UnDefType.NULL;
         }
         command = parseType(command, upStateString, downStateString);
         if (inverted && command instanceof PercentType percentType) {

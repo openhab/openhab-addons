@@ -148,8 +148,8 @@ public abstract class Value {
      * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
      */
     public Type parseMessage(Command command) throws IllegalArgumentException {
-        if (command instanceof StringType string && string.toString().equals("")) {
-            return UnDefType.UNDEF;
+        if (command instanceof StringType string && string.toString().isEmpty()) {
+            return UnDefType.NULL;
         }
         return parseCommand(command);
     }

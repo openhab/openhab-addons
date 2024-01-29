@@ -38,7 +38,7 @@ public class ValueFactory {
             case MqttBindingConstants.STRING:
                 TextValue textValue = config.allowedStates.isBlank() ? new TextValue()
                         : new TextValue(config.allowedStates.split(","));
-                textValue.setUndefValue(config.undefValue);
+                textValue.setNullValue(config.nullValue);
                 value = textValue;
                 break;
             case MqttBindingConstants.DATETIME:

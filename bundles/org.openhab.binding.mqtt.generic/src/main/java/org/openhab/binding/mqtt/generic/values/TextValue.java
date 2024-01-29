@@ -41,7 +41,7 @@ public class TextValue extends Value {
     private final @Nullable Set<String> states;
     private final @Nullable Set<String> commands;
 
-    protected @Nullable String undefValue = null;
+    protected @Nullable String nullValue = null;
 
     /**
      * Create a string value with a limited number of allowed states and commands.
@@ -83,8 +83,8 @@ public class TextValue extends Value {
         this.commands = null;
     }
 
-    public void setUndefValue(@Nullable String undefValue) {
-        this.undefValue = undefValue;
+    public void setNullValue(@Nullable String nullValue) {
+        this.nullValue = nullValue;
     }
 
     @Override
@@ -99,8 +99,8 @@ public class TextValue extends Value {
 
     @Override
     public State parseMessage(Command command) throws IllegalArgumentException {
-        if (command instanceof StringType string && string.toString().equals(undefValue)) {
-            return UnDefType.UNDEF;
+        if (command instanceof StringType string && string.toString().equals(nullValue)) {
+            return UnDefType.NULL;
         }
 
         final Set<String> states = this.states;

@@ -83,7 +83,7 @@ public class ValueTests {
         hsb = (HSBType) v.parseCommand(p(v, "1"));
         assertThat(hsb.getBrightness().intValue(), is(1));
 
-        assertThat(v.parseMessage(new StringType("")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class ValueTests {
         assertThat(v.getMQTTpublishValue(OnOffType.OFF, "=%s"), is("=fancyOff"));
         assertThat(v.getMQTTpublishValue(OnOffType.ON, "=%s"), is("=fancyON"));
 
-        assertThat(v.parseMessage(new StringType("")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -173,7 +173,7 @@ public class ValueTests {
         assertThat(v.getMQTTpublishValue(OpenClosedType.CLOSED, null), is("fancyOff"));
         assertThat(v.getMQTTpublishValue(OpenClosedType.OPEN, null), is("fancyON"));
 
-        assertThat(v.parseMessage(new StringType("")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -198,7 +198,7 @@ public class ValueTests {
         assertThat(v.parseMessage(new StringType("-NaN")), is(UnDefType.UNDEF));
         assertThat(v.parseMessage(new StringType("-nan")), is(UnDefType.UNDEF));
 
-        assertThat(v.parseMessage(new StringType("")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -252,7 +252,7 @@ public class ValueTests {
         assertThat(v.parseMessage(new StringType("fancyON")), is(UpDownType.UP));
         assertThat(v.parseMessage(new StringType("fancyOff")), is(UpDownType.DOWN));
 
-        assertThat(v.parseMessage(new StringType("")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -321,7 +321,7 @@ public class ValueTests {
             assertThat(v.getMQTTpublishValue(command, null), is("" + i));
         }
 
-        assertThat(v.parseMessage(new StringType("")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -414,12 +414,12 @@ public class ValueTests {
         assertThat(v.parseMessage(new StringType("")), is(new StringType("")));
         assertThat(v.parseMessage(new StringType("NULL")), is(new StringType("NULL")));
 
-        v.setUndefValue("");
-        assertThat(v.parseMessage(new StringType("")), is(UnDefType.UNDEF));
+        v.setNullValue("");
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
         assertThat(v.parseMessage(new StringType("NULL")), is(new StringType("NULL")));
 
-        v.setUndefValue("NULL");
-        assertThat(v.parseMessage(new StringType("NULL")), is(UnDefType.UNDEF));
+        v.setNullValue("NULL");
+        assertThat(v.parseMessage(new StringType("NULL")), is(UnDefType.NULL));
         assertThat(v.parseMessage(new StringType("")), is(new StringType("")));
     }
 }
