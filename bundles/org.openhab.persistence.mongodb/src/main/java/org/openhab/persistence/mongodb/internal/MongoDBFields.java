@@ -24,6 +24,7 @@ public final class MongoDBFields {
     public static final String FIELD_REALNAME = "realName";
     public static final String FIELD_TIMESTAMP = "timestamp";
     public static final String FIELD_VALUE = "value";
+    public static final String FIELD_UNIT = "unit";
     public static final String FIELD_VALUE_DATA = "value.data";
     public static final String FIELD_VALUE_TYPE = "value.type";
 

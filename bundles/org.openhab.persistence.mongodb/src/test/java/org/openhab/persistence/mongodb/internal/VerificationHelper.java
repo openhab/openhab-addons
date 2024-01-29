@@ -106,6 +106,11 @@ public class VerificationHelper {
                 (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
         handlers.put(StringType.class, (ev, doc) -> Pair.of(ev, doc.get(MongoDBFields.FIELD_VALUE)));
         handlers.put(UpDownType.class, (ev, doc) -> Pair.of(ev.toString(), doc.getString(MongoDBFields.FIELD_VALUE)));
+        handlers.put(QuantityType.class, (ev, doc) -> {
+            QuantityType<?> quantityType = (QuantityType<?>) ev;
+            return Pair.of(quantityType.doubleValue() + "--" + quantityType.getUnit(),
+                    doc.getDouble(MongoDBFields.FIELD_VALUE) + "--" + doc.getString(MongoDBFields.FIELD_UNIT));
+        });
         handlers.put(RawType.class, (ev, doc) -> {
             RawType rawType = (RawType) ev;
             Document expectedDoc = new Document();

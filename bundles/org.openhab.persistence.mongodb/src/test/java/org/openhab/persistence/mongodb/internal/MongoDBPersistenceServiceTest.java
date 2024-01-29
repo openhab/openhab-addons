@@ -15,13 +15,16 @@ package org.openhab.persistence.mongodb.internal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -30,6 +33,7 @@ import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.library.items.*;
 import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.osgi.framework.BundleContext;
@@ -692,5 +696,107 @@ public class MongoDBPersistenceServiceTest {
         } finally {
             dbContainer.stop();
         }
+    }
+
+    /**
+     * Tests the writting of NumberItems including units
+     * Each item should be written to the database with the unit information
+     *
+     * @param item The item to store in the database.
+     */
+    @Test
+    public void testStoreNumberItemWithUnit() {
+        // Preparation
+        DatabaseTestContainer dbContainer = new DatabaseTestContainer(new MemoryBackend());
+        try {
+            SetupResult setupResult = DataCreationHelper.setupMongoDB("testCollection", dbContainer);
+            MongoDBPersistenceService service = setupResult.service;
+            MongoDatabase database = setupResult.database;
+
+            service.activate(setupResult.bundleContext, setupResult.config);
+            MongoCollection<Document> collection = database.getCollection("testCollection");
+
+            NumberItem item = DataCreationHelper.createNumberItem("Number:Energy", "TestItem",
+                    new QuantityType("10.1 kWh"));
+
+            // Execution
+            service.store(item, null);
+
+            // Verification
+            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+
+            assertEquals(1, documents.size()); // Assert that there is only one document
+
+            Document insertedDocument = documents.get(0); // Get the first (and only) document
+
+            assertEquals(10.1, insertedDocument.get(MongoDBFields.FIELD_VALUE));
+            assertEquals("kWh", insertedDocument.get(MongoDBFields.FIELD_UNIT));
+        } finally {
+            dbContainer.stop();
+        }
+    }
+
+    /**
+     * Tests the reading of NumberItems including units
+     * Each item should be written to the database with the unit information
+     *
+     * @param item The item to store in the database.
+     */
+    @Test
+    public void testQueryNumberItemWithUnit() {
+        // Preparation
+        DatabaseTestContainer dbContainer = new DatabaseTestContainer(new MemoryBackend());
+        try {
+            SetupResult setupResult = DataCreationHelper.setupMongoDB("testCollection", dbContainer);
+            MongoDBPersistenceService service = setupResult.service;
+            MongoDatabase database = setupResult.database;
+
+            service.activate(setupResult.bundleContext, setupResult.config);
+            MongoCollection<Document> collection = database.getCollection("testCollection");
+
+            NumberItem item = DataCreationHelper.createNumberItem("Number:Energy", "TestItem",
+                    new QuantityType("10.1 MWh"));
+            try {
+                Mockito.when(setupResult.itemRegistry.getItem("TestItem")).thenReturn(item);
+            } catch (ItemNotFoundException e) {
+            }
+
+            Document obj = new Document();
+            obj.put(MongoDBFields.FIELD_ID, new ObjectId());
+            obj.put(MongoDBFields.FIELD_ITEM, "TestItem");
+            obj.put(MongoDBFields.FIELD_REALNAME, "TestItem");
+            obj.put(MongoDBFields.FIELD_TIMESTAMP, new Date());
+            obj.put(MongoDBFields.FIELD_VALUE, 201.5);
+            obj.put(MongoDBFields.FIELD_UNIT, "Wh");
+            collection.insertOne(obj);
+
+            // Execution
+            FilterCriteria filter = DataCreationHelper.createFilterCriteria("TestItem");
+            Iterable<HistoricItem> result = service.query(filter);
+            VerificationHelper.verifyQueryResult(result, new QuantityType("201.5 Wh"));
+        } finally {
+            dbContainer.stop();
+        }
+    }
+
+    /**
+     * Tests the toString of a MongoDBItem
+     * 
+     *
+     * @param item The item to store in the database.
+     */
+    @Test
+    public void testHistoricItemToString() {
+        // Preparation
+        ZonedDateTime now = ZonedDateTime.now();
+        HistoricItem item = new MongoDBItem("TestItem", new DecimalType(10.1), now);
+
+        // Execution
+        String result = item.toString();
+
+        // Verification
+        // Jan 29, 2024, 8:43:26 PM: TestItem -> 10.1
+        String expected = DateFormat.getDateTimeInstance().format(Date.from(now.toInstant())) + ": TestItem -> 10.1";
+        assertEquals(expected, result);
     }
 }

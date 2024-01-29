@@ -32,6 +32,7 @@ import org.openhab.core.library.types.*;
 import org.openhab.core.persistence.FilterCriteria.Operator;
 import org.openhab.core.types.*;
 import org.openhab.core.types.State;
+import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +86,16 @@ public class MongoDBTypeConversions {
             NumberItem numberItem = (NumberItem) item;
             Unit<?> unit = numberItem.getUnit();
             Object value = doc.get(MongoDBFields.FIELD_VALUE);
+            // check whether doc contains MongoDBFields.FIELD_UNIT, if so use this unit, otherwise use the unit from the
+            // item
+            if (doc.containsKey(MongoDBFields.FIELD_UNIT)) {
+                String unitString = doc.getString(MongoDBFields.FIELD_UNIT);
+                Unit<?> docUnit = UnitUtils.parseUnit(unitString);
+                if (docUnit != null) {
+                    unit = docUnit;
+                }
+            }
+
             if (value instanceof String) {
                 return new QuantityType<>(value.toString());
             }

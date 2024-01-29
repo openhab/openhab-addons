@@ -12,13 +12,16 @@
  */
 package org.openhab.persistence.mongodb.internal;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -27,13 +30,18 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.Mockito;
+import org.openhab.core.i18n.UnitProvider;
+import org.openhab.core.internal.i18n.I18nProviderImpl;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.items.*;
 import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.types.State;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.component.ComponentContext;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.DockerClientFactory;
 
@@ -55,6 +63,17 @@ import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
  */
 public class DataCreationHelper {
 
+    protected static final UnitProvider UNIT_PROVIDER;
+    static {
+        ComponentContext context = Mockito.mock(ComponentContext.class);
+        BundleContext bundleContext = Mockito.mock(BundleContext.class);
+        Hashtable<String, Object> properties = new Hashtable<>();
+        properties.put("measurementSystem", SIUnits.MEASUREMENT_SYSTEM_NAME);
+        when(context.getProperties()).thenReturn(properties);
+        when(context.getBundleContext()).thenReturn(bundleContext);
+        UNIT_PROVIDER = new I18nProviderImpl(context);
+    }
+
     /**
      * Creates a NumberItem with a given name and value.
      * 
@@ -75,6 +94,22 @@ public class DataCreationHelper {
      */
     public static StringItem createStringItem(String name, String value) {
         return createItem(StringItem.class, name, new StringType(value));
+    }
+
+    /**
+     * Creates an instance of a NumberItem with a unit type and sets its state.
+     *
+     * @param itemType The Class object representing the type of the item to create.
+     * @param unitType The string representation of the unit type to set on the new item.
+     * @param name The name to give to the new item.
+     * @param state The state to set on the new item.
+     * @return The newly created item.
+     * @throws RuntimeException if an error occurs while creating the item or setting its state.
+     */
+    public static NumberItem createNumberItem(String unitType, String name, State state) {
+        NumberItem item = new NumberItem(unitType, name, UNIT_PROVIDER);
+        item.setState(state);
+        return item;
     }
 
     /**
@@ -151,8 +186,10 @@ public class DataCreationHelper {
                         new StringListType("+49 123 456 789"))),
                 Arguments.of(DataCreationHelper.createItem(ImageItem.class, "ImageItem",
                         new RawType(new byte[] { 0x00, 0x01, 0x02 }, "image/png"))),
-                Arguments.of(DataCreationHelper.createItem(NumberItem.class, "NumberItemCelcius",
-                        new QuantityType<>("25.00 °C"))));
+                Arguments.of(DataCreationHelper.createNumberItem("Number:Energy", "NumberItemCelcius",
+                        new QuantityType<>("25.00 MWh"))),
+                Arguments.of(DataCreationHelper.createNumberItem("Number:Temperature", "NumberItemCelcius",
+                        new QuantityType<>("25.00 °F"))));
     }
 
     /**
@@ -310,6 +347,13 @@ public class DataCreationHelper {
         return value;
     }
 
+    /**
+     * Stores the old data of an item into a MongoDB collection.
+     *
+     * @param collection The MongoDB collection where the data will be stored.
+     * @param realItemName The real name of the item.
+     * @param state The state of the item.
+     */
     public static void storeOldData(MongoCollection<Document> collection, String realItemName, State state) {
         // use the old way to store data
         Object value = convertValue(state);

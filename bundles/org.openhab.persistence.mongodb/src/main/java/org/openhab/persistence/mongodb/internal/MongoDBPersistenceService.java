@@ -168,7 +168,8 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         }
 
         String name = (alias != null) ? alias : realItemName;
-        Object value = MongoDBTypeConversions.convertValue(item.getState());
+        State state = item.getState();
+        Object value = MongoDBTypeConversions.convertValue(state);
 
         Document obj = new Document();
         obj.put(MongoDBFields.FIELD_ID, new ObjectId());
@@ -176,6 +177,9 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
         obj.put(MongoDBFields.FIELD_REALNAME, realItemName);
         obj.put(MongoDBFields.FIELD_TIMESTAMP, new Date());
         obj.put(MongoDBFields.FIELD_VALUE, value);
+        if (item instanceof NumberItem && state instanceof QuantityType<?>) {
+            obj.put(MongoDBFields.FIELD_UNIT, ((QuantityType<?>) state).getUnit().toString());
+        }
         try {
             collection.insertOne(obj);
         } catch (org.bson.BsonMaximumSizeExceededException e) {
