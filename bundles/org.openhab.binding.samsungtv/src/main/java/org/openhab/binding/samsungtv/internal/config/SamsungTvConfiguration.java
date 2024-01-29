@@ -12,15 +12,19 @@
  */
 package org.openhab.binding.samsungtv.internal.config;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
 
 /**
  * Configuration class for {@link SamsungTvHandler}.
  *
  * @author Pauli Anttila - Initial contribution
  * @author Arjan Mels - Added MAC Address
+ * @author Nick Waterton - added Smartthings, subscription, refactoring
  */
+
+@SuppressWarnings("null")
 @NonNullByDefault({})
 public class SamsungTvConfiguration {
     public static final String PROTOCOL = "protocol";
@@ -32,7 +36,10 @@ public class SamsungTvConfiguration {
     public static final String PORT = "port";
     public static final String MAC_ADDRESS = "macAddress";
     public static final String REFRESH_INTERVAL = "refreshInterval";
+    public static final String SUBSCRIPTION = "subscription";
     public static final String WEBSOCKET_TOKEN = "webSocketToken";
+    public static final String SMARTTHINGS_API = "smartThingsApiKey";
+    public static final String SMARTTHINGS_DEVICEID = "smartThingsDeviceId";
     public static final int PORT_DEFAULT_LEGACY = 55000;
     public static final int PORT_DEFAULT_WEBSOCKET = 8001;
     public static final int PORT_DEFAULT_SECUREWEBSOCKET = 8002;
@@ -42,5 +49,48 @@ public class SamsungTvConfiguration {
     public String macAddress;
     public int port;
     public int refreshInterval;
-    public String websocketToken;
+    public String webSocketToken;
+    public String smartThingsApiKey;
+    public String smartThingsDeviceId;
+    public boolean subscription;
+
+    public boolean isWebsocketProtocol() {
+        return PROTOCOL_WEBSOCKET.equals(getProtocol()) || PROTOCOL_SECUREWEBSOCKET.equals(getProtocol());
+    }
+
+    public String getProtocol() {
+        return Optional.ofNullable(protocol).orElse(PROTOCOL_NONE);
+    }
+
+    public String getHostName() {
+        return Optional.ofNullable(hostName).orElse("");
+    }
+
+    public String getMacAddress() {
+        return Optional.ofNullable(macAddress).filter(m -> m.length() == 17).orElse("");
+    }
+
+    public int getPort() {
+        return Optional.ofNullable(port).orElse(PORT_DEFAULT_LEGACY);
+    }
+
+    public int getRefreshInterval() {
+        return Optional.ofNullable(refreshInterval).orElse(1000);
+    }
+
+    public String getWebsocketToken() {
+        return Optional.ofNullable(webSocketToken).orElse("");
+    }
+
+    public String getSmartThingsApiKey() {
+        return Optional.ofNullable(smartThingsApiKey).orElse("");
+    }
+
+    public String getSmartThingsDeviceId() {
+        return Optional.ofNullable(smartThingsDeviceId).orElse("");
+    }
+
+    public boolean getSubscription() {
+        return Optional.ofNullable(subscription).orElse(false);
+    }
 }

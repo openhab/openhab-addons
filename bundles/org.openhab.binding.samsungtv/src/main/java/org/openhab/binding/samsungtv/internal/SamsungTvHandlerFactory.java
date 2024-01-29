@@ -14,6 +14,7 @@ package org.openhab.binding.samsungtv.internal;
 
 import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.SAMSUNG_TV_THING_TYPE;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.samsungtv")
 public class SamsungTvHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SAMSUNG_TV_THING_TYPE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(SAMSUNG_TV_THING_TYPE);
 
     private @NonNullByDefault({}) UpnpIOService upnpIOService;
     private @NonNullByDefault({}) UpnpService upnpService;
