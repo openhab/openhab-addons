@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.philipsair.internal.connection;
 import java.io.IOException;
 
 import org.eclipse.californium.core.CoapClient;
+import org.eclipse.californium.core.CoapHandler;
+import org.eclipse.californium.core.CoapObserveRelation;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.Utils;
 import org.eclipse.californium.core.coap.CoAP.Type;
@@ -56,25 +58,139 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private static final String RESOURCE_PATH_SYNC = "/sys/dev/sync";
     private static final String RESOURCE_PATH_CONTROL = "/sys/dev/control";
     private static final int COAP_PORT = 5683;
-    private static final long TIMEOUT = 5000;
+    private static final long TIMEOUT = 25000;
 
     private final Gson gson = new Gson();
-    private ExpiringCache<String> coapStatus = new ExpiringCache<>(10, this::refreshData);
+    private ExpiringCache<String> coapStatus = new ExpiringCache<>(10000, this::refreshData);
     private String host = "";
     private CoapClient client = new CoapClient();
     private long counter = 1;
     private boolean hasSync = false;
+    private int attempt = -1;
+    private @Nullable CoapObserveRelation observe = null;
 
     private String refreshData() {
+        try {
+            logger.debug("Refreshing data for {}", host);
+            final CoapObserveRelation reuseObserve = this.observe;
+            if (reuseObserve != null && !reuseObserve.isCanceled()) {
+                if (attempt < 2) {
+                    logger.debug("Send COAP ping to {}:{}", client.getURI(), client.ping(TIMEOUT));
+                    logger.debug("Reregister #{},{}", attempt, reuseObserve.reregister());
+                    attempt += 1;
+                    return "";
+                } else {
+                    logger.debug("Cancel request #{}", attempt);
+                    reuseObserve.proactiveCancel();
+                }
+            }
+            attempt = 0;
+
+            String uri = getUriString(host, COAP_PORT, RESOURCE_PATH_STATUS);
+            client.setURI(uri);
+            if (!hasSync) {
+                counter = getSync(counter);
+                logger.debug("Counter {}", counter);
+            }
+            client.setURI(uri);
+
+            Request request = Request.newGet();
+            request.setURI(uri);
+            request.setType(Type.CON);
+            // request.setType(Type.NON);
+
+            request.setObserve();
+            logger.debug("Send COAP ping to {}:{}", client.getURI(), client.ping(TIMEOUT));
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // pass
+            }
+
+            logger.debug("Start Observe request {}", uri);
+            observe = client.observeAndWait(request, new CoapHandler() {
+
+                @Override
+                public void onLoad(@Nullable CoapResponse response) {
+                    if (response != null) {
+                        if (!response.isSuccess()) {
+                            logger.debug("Response is success: {}", response.isSuccess());
+                        }
+                        logger.trace("Response is advanced: {}", response.advanced());
+                        String content = response.getResponseText();
+                        if (content != null) {
+                            String resp = processResponse(content.trim(), uri);
+                            logger.info("Response {}", resp);
+                            if (resp.length() > 2) {
+                                coapStatus.putValue(resp);
+                            }
+                        } else {
+                            logger.debug("Response content null for {}", response.advanced());
+                        }
+
+                    } else {
+                        logger.debug("Response is null for {}", uri);
+                    }
+                }
+
+                @Override
+                public void onError() {
+                    logger.debug("Error for {}", uri);
+                }
+            });
+
+            // logger.debug("Finished refreshdata {}");
+
+        } catch (ConnectorException | IOException e) {
+            logger.debug("Error while refreshing {}: {}", host, e.getMessage());
+        }
+        logger.debug("Finished refreshdata");
+
+        return "";
+    }
+
+    private String processResponse(String rawResponse, String uri) {
+        if (!rawResponse.isBlank()) {
+            hasSync = true;
+            logger.debug("Rawesponse from {}: {}", uri, rawResponse);
+
+            counter = getCounter(rawResponse);
+            String decrypted = PhilipsAirCoapCipher.decryptMsg(rawResponse, logger);
+            logger.debug("Response from {}: {}", uri, decrypted);
+            JsonElement airResponse = JsonParser.parseString(decrypted);
+            if (airResponse.isJsonObject() && airResponse.getAsJsonObject().has("state")) {
+                JsonElement stateObj = airResponse.getAsJsonObject().get("state");
+                if (stateObj.isJsonObject() && stateObj.getAsJsonObject().getAsJsonObject().has("reported")) {
+                    return stateObj.getAsJsonObject().get("reported").toString();
+                } else {
+                    logger.debug("Response does not contain 'reported' element");
+                }
+            } else {
+                logger.debug("Response does not contain 'state' element");
+            }
+        }
+        hasSync = false;
+        logger.debug("No response for {}", uri);
+        return "";
+    }
+
+    private String refreshDataOld() {
         try {
             logger.debug("Refreshing data for {}", host);
             String uri = getUriString(host, COAP_PORT, RESOURCE_PATH_STATUS);
             if (!hasSync) {
                 counter = getSync(counter);
+                logger.debug("Counter {}", counter);
+            }
+            if (!hasSync) {
+
+                logger.debug("Send COAP ping to {}:{}", client.getURI(), client.ping(TIMEOUT));
             }
             String rawResponse = get(client, uri, Type.CON, !hasSync);
             if (!rawResponse.isBlank()) {
                 hasSync = true;
+                logger.debug("Rawesponse from {}: {}", uri, rawResponse);
+
                 counter = getCounter(rawResponse);
                 String decrypted = PhilipsAirCoapCipher.decryptMsg(rawResponse, logger);
                 logger.debug("Response from {}: {}", uri, decrypted);
@@ -226,6 +342,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         Request request = Request.newGet();
         request.setType(type);
         request.setObserve();
+
         CoapResponse response = client.advanced(request);
         if (response != null) {
             logger.trace("Response from {}: {}", response.advanced().getSourceContext().getPeerAddress(),

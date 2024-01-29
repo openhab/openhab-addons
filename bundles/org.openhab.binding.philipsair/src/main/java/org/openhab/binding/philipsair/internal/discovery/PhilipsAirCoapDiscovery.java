@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,10 +68,10 @@ import com.google.gson.JsonSyntaxException;
 
 @Component(service = DiscoveryService.class, configurationPid = "discovery.philipsair")
 public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
-    private static final int DISCOVERY_TIME = 10;
+    private static final int DISCOVERY_TIME = 15;
     private static final String PATH = "sys/dev/info";
     private static final int COAP_PORT = 5683;
-    private static final long BACKGROUND_DISCOVERY_INTERVAL = 600;
+    private static final long BACKGROUND_DISCOVERY_INTERVAL = 1800;
 
     private final Gson gson = new Gson();
 
@@ -98,9 +98,13 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         ScheduledFuture<?> coapDiscoveryJob = this.coapDiscoveryJob;
         if (coapDiscoveryJob == null || coapDiscoveryJob.isCancelled()) {
             logger.debug("Starting PhilipsAir (COAP) background discovery job");
-            coapDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, BACKGROUND_DISCOVERY_INTERVAL,
+            coapDiscoveryJob = scheduler.scheduleWithFixedDelay(this::backgroundScan, 0, BACKGROUND_DISCOVERY_INTERVAL,
                     TimeUnit.SECONDS);
         }
+    }
+
+    private void backgroundScan() {
+        logger.debug("Run PhilipsAir (COAP) background discovery scan");
     }
 
     @Override
@@ -187,7 +191,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         // sends a multicast request
         MultiCoapHandler handler = new MultiCoapHandler(this, logger);
         client.advanced(handler, multicastRequest);
-        while (handler.waitOn(5000)) {
+        while (handler.waitOn(DISCOVERY_TIME - 1 * 1000)) {
             ;
         }
     }
