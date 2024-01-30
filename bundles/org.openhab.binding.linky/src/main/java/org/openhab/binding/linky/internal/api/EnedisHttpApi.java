@@ -114,6 +114,7 @@ public class EnedisHttpApi {
         try {
             Request request = httpClient.newRequest(url);
             request = request.method(HttpMethod.GET);
+            request = request.header("Authorization", config.token);
 
             ContentResponse result = request.send();
             if (result.getStatus() == 307) {
