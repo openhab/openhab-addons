@@ -35,6 +35,9 @@
 			<channel id="parentRatingKey" typeId="parentRatingKey"/>
 			<channel id="grandparentRatingKey" typeId="grandparentRatingKey"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:plex:player"/>
 	</thing-type>
 
