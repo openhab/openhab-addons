@@ -293,8 +293,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return false;
         }
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                messages.get("status.unknown.initializing"));
+        if (profile.alwaysOn || !profile.isInitialized()) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                    messages.get("status.unknown.initializing"));
+        }
 
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
@@ -338,7 +340,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     ? tmpPrf.settings.sleepMode.period * 60 // minutes
                     : tmpPrf.settings.sleepMode.period * 3600; // hours
             tmpPrf.updatePeriod += 60; // give 1min extra
-        } else if ((tmpPrf.settings.coiot != null) && tmpPrf.settings.coiot.updatePeriod != null) {
+        } else if (tmpPrf.settings.coiot != null && tmpPrf.settings.coiot.updatePeriod != null) {
             // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
             tmpPrf.updatePeriod = Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS,
                     2 * getInteger(tmpPrf.settings.coiot.updatePeriod)) + 10;
@@ -513,7 +515,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private double getNumber(Command command) {
-        if (command instanceof QuantityType quantityCommand) {
+        if (command instanceof QuantityType<?> quantityCommand) {
             return quantityCommand.doubleValue();
         }
         if (command instanceof DecimalType decimalCommand) {
@@ -1006,6 +1008,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         config.serviceName = getString(properties.get(PROPERTY_SERVICE_NAME));
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
+        if (config.localIp.startsWith("169.254")) {
+            setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
+                    config.localIp);
+            return;
+        }
+
         if (!profile.isGen2 && config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
             // Gen2 has hard coded user "admin"
             config.userId = bindingConfig.defaultUserId;
@@ -1279,7 +1287,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public double getChannelDouble(String group, String channel) {
         State value = getChannelValue(group, channel);
         if (value != UnDefType.NULL) {
-            if (value instanceof QuantityType quantityCommand) {
+            if (value instanceof QuantityType<?> quantityCommand) {
                 return quantityCommand.toBigDecimal().doubleValue();
             }
             if (value instanceof DecimalType decimalCommand) {
