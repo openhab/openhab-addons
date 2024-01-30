@@ -182,8 +182,8 @@ public class PlexPlayerHandler extends BaseThingHandler {
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getEndTime() : "")));
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_USER),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getUserTitle() : "")));
-        String parentRatingKey = currentSessionData.getParentRatingKey();
-        String grandparentRatingKey = currentSessionData.getGrandparentRatingKey();
+        final String parentRatingKey = currentSessionData.getParentRatingKey();
+        final String grandparentRatingKey = currentSessionData.getGrandparentRatingKey();
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_RATING_KEY),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getRatingKey() : "")));
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_PARENT_RATING_KEY),
