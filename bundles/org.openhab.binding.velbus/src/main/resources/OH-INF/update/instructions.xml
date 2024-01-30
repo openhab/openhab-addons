@@ -6,7 +6,7 @@
 	<thing-type uid="velbus:vmbel1">
 		<instruction-set targetVersion="1">
 			<add-channel id="output" groupIds="output">
-				<type>switch</type>
+				<type>velbus:switch</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -14,7 +14,7 @@
 	<thing-type uid="velbus:vmbel2">
 		<instruction-set targetVersion="1">
 			<add-channel id="output" groupIds="output">
-				<type>switch</type>
+				<type>velbus:switch</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -22,7 +22,7 @@
 	<thing-type uid="velbus:vmbel4">
 		<instruction-set targetVersion="1">
 			<add-channel id="output" groupIds="output">
-				<type>switch</type>
+				<type>velbus:switch</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -30,7 +30,7 @@
 	<thing-type uid="velbus:vmbelo">
 		<instruction-set targetVersion="1">
 			<add-channel id="output" groupIds="output">
-				<type>switch</type>
+				<type>velbus:switch</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
