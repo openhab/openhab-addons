@@ -118,8 +118,9 @@ public class LinkyAuthServlet extends HttpServlet {
             final String reqState = params.getString("state");
             final String reqError = params.getString("error");
 
-            replaceMap.put(KEY_PAGE_REFRESH,
-                    params.isEmpty() ? "" : String.format(HTML_META_REFRESH_CONTENT, servletBaseURL));
+            replaceMap.put(KEY_PAGE_REFRESH, "");
+
+            // params.isEmpty() ? "" : String.format(HTML_META_REFRESH_CONTENT, servletBaseURL)
 
             if (!StringUtil.isBlank(reqError)) {
                 logger.debug("Spotify redirected with an error: {}", reqError);
