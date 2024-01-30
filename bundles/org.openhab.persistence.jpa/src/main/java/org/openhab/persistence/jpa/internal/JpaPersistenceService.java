@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -164,7 +165,13 @@ public class JpaPersistenceService implements QueryablePersistenceService {
             em.getTransaction().commit();
             logger.debug("Persisting item...done");
         } catch (Exception e) {
-            logger.error("Error while persisting item! Rolling back!", e);
+            if (e.getCause() instanceof EntityExistsException) {
+                // there's a UNIQUE constraint in the database, and we tried to write
+                // a duplicate timestamp. Just ignore
+                logger.debug("Failed to persist item {} because of duplicate timestamp", name);
+            } else {
+                logger.error("Error while persisting item! Rolling back!", e);
+            }
             em.getTransaction().rollback();
         } finally {
             em.close();
