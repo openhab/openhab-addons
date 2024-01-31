@@ -97,14 +97,14 @@ public class BroadlinkMappingService {
 
     public void storeIR(String command, String irCommand) {
         irProperties.put(command, irCommand);
+        Path mapFilePath = Paths.get(TRANSFORM_DIR + irMapFileName);
         try {
-            Path mapFilePath = Paths.get(TRANSFORM_DIR + irMapFileName);
             logger.trace("Storing {} to {}", command, mapFilePath);
             FileOutputStream fr = new FileOutputStream(mapFilePath.toFile());
             irProperties.store(fr, "Broadlink IR commands");
             fr.close();
         } catch (IOException ex) {
-            logger.warn("Cannot store IR command to file: " + irMapFileName, ex);
+            logger.warn("Cannot store IR command to file {}: {}", mapFilePath, ex.getMessage());
         }
     }
 
@@ -114,14 +114,14 @@ public class BroadlinkMappingService {
 
     public void storeRF(String command, String rfCommand) {
         rfProperties.put(command, rfCommand);
+        Path mapFilePath = Paths.get(TRANSFORM_DIR + rfMapFileName);
         try {
-            Path mapFilePath = Paths.get(TRANSFORM_DIR + rfMapFileName);
             logger.trace("Storing {} to {}", command, mapFilePath);
             FileOutputStream fr = new FileOutputStream(mapFilePath.toFile());
             irProperties.store(fr, "Broadlink RF commands");
             fr.close();
         } catch (IOException ex) {
-            logger.warn("Cannot store RF command to file: " + rfMapFileName, ex);
+            logger.warn("Cannot store RF command to file {}: {}", mapFilePath, ex.getMessage());
         }
     }
 
