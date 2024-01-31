@@ -2,7 +2,7 @@
 
 This extension adds support for the Studer protocol.
 
-Studer Innotec, founded in 1987 by Roland Studer, is an ISO-certified company that develops and manufactures inverters, inverter/chargers and MPPT solar charge controllers to communicate over the Modbus protocol entirely in Switzerland
+Studer Innotec, founded in 1987 by Roland Studer, is an ISO-certified company that develops and manufactures inverters, inverter/chargers and MPPT solar charge controllers to communicate over the Modbus protocol entirely in Switzerland.
 
 For a list of certified products see this page: <https://www.studer-innotec.com/>
 
