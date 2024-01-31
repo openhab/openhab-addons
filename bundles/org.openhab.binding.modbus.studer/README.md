@@ -13,7 +13,7 @@ Note, that the things will show up under the Modbus binding.
 
 | Thing Type IDs | Description                                                                                                          | Picture                             |
 |----------------|----------------------------------------------------------------------------------------------------------------------|-------------------------------------|
-| bsp            | For BSP that offers a highly precise measuring for Xtender, VarioTrack and VarioString systems                        | ![BSP](doc/bsp.png)                 |
+| bsp            | For BSP that offers a highly precise measuring for Xtender, VarioTrack and VarioString systems                       | ![BSP](doc/bsp.png)                 |
 | xtender        | For the Xtender models for system capacities from 0.5kVA to 72kVA that allow for the optimal use of available energy | ![Xtender](doc/xtender.png)         |
 | variotrack     | For the VarioTrack models of MPPT solar charge controllers for systems with solar PV capacity from 1 - 75kWp         | ![VarioTrack](doc/variotrack.png)   |
 | variostring    | For the VarioString models of MPPT solar charge controllers for systems with solar PV capacity from 4                | ![VarioString](doc/variostring.png) |
