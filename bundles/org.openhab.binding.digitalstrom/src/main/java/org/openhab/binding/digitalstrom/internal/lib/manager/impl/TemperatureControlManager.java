@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.digitalstrom.internal.lib.manager.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,7 +61,8 @@ import org.slf4j.LoggerFactory;
  */
 public class TemperatureControlManager implements EventHandler, TemperatureControlSensorTransmitter {
 
-    private static final List<String> SUPPORTED_EVENTS = Arrays.asList(EventNames.HEATING_CONTROL_OPERATION_MODE);
+    private static final List<String> SUPPORTED_EVENTS = new ArrayList<>(
+            Arrays.asList(EventNames.HEATING_CONTROL_OPERATION_MODE));
 
     private final Logger logger = LoggerFactory.getLogger(TemperatureControlManager.class);
 
