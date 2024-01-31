@@ -134,7 +134,7 @@ String                    evcc_loadpoint0_title                       "Loadpoint
 // Vehicle on loadpoint
 Switch                    evcc_loadpoint0_vehicleConnected            "Vehicle connected [%s]"                             <switch>          {channel="evcc:device:demo:loadpoint0#vehicleConnected"}
 Number:Time               evcc_loadpoint0_vehicleConnectedDuration    "Vehicle connected duration [%.1f h]"                <time>            {channel="evcc:device:demo:loadpoint0#vehicleConnectedDuration"}
-Number:Energy             evcc_loadpoint0_vehicleCapacity             "Vehicle capacity [%.0f kWH]"                        <batterylevel>    {channel="evcc:device:demo:loadpoint0#vehicleCapacity"}
+Number:Energy             evcc_loadpoint0_vehicleCapacity             "Vehicle capacity [%.0f kWh]"                        <batterylevel>    {channel="evcc:device:demo:loadpoint0#vehicleCapacity"}
 Number:Length             evcc_loadpoint0_vehicleOdometer             "Vehicle odometer [%.1f km]"                                           {channel="evcc:device:demo:loadpoint0#vehicleOdometer"}
 Switch                    evcc_loadpoint0_vehiclePresent              "Vehicle present [%s]"                               <switch>          {channel="evcc:device:demo:loadpoint0#vehiclePresent"}
 Number:Length             evcc_loadpoint0_vehicleRange                "Vehicle Range [%.0f km]"                                              {channel="evcc:device:demo:loadpoint0#vehicleRange"}
