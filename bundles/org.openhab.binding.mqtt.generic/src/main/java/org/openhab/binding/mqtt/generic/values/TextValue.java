@@ -29,6 +29,7 @@ import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Implements a text/string value. Allows to restrict the incoming value to a set of states.
@@ -39,6 +40,8 @@ import org.openhab.core.types.StateOption;
 public class TextValue extends Value {
     private final @Nullable Set<String> states;
     private final @Nullable Set<String> commands;
+
+    protected @Nullable String nullValue = null;
 
     /**
      * Create a string value with a limited number of allowed states and commands.
@@ -80,6 +83,10 @@ public class TextValue extends Value {
         this.commands = null;
     }
 
+    public void setNullValue(@Nullable String nullValue) {
+        this.nullValue = nullValue;
+    }
+
     @Override
     public StringType parseCommand(Command command) throws IllegalArgumentException {
         final Set<String> commands = this.commands;
@@ -92,6 +99,10 @@ public class TextValue extends Value {
 
     @Override
     public State parseMessage(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType string && string.toString().equals(nullValue)) {
+            return UnDefType.NULL;
+        }
+
         final Set<String> states = this.states;
         String valueStr = command.toString();
         if (states != null && !states.contains(valueStr)) {
