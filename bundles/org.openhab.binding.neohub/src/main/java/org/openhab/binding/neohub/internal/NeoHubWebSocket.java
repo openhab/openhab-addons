@@ -109,30 +109,16 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
     private synchronized void startSession() throws IOException {
         Session session = this.session;
         if (session == null || !session.isOpen()) {
-            closeSession();
             try {
                 int port = config.portNumber > 0 ? config.portNumber : NeoHubBindingConstants.PORT_WSS;
                 URI uri = new URI(String.format("wss://%s:%d", config.hostName, port));
                 this.session = webSocketClient.connect(this, uri).get();
-                websocketException = null;
-                responses.clear();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new IOException("Error starting session", e);
             } catch (ExecutionException | IOException | URISyntaxException e) {
                 throw new IOException("Error starting session", e);
             }
-        }
-    }
-
-    /**
-     * Close the web socket session.
-     */
-    private synchronized void closeSession() {
-        Session session = this.session;
-        this.session = null;
-        if (session != null) {
-            session.close();
         }
     }
 
@@ -168,6 +154,10 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
 
     @Override
     public String sendMessage(final String requestJson) throws IOException, NeoHubException {
+        if (!closing && websocketException != null) {
+            throw websocketException;
+        }
+
         try (Throttler throttler = new Throttler()) {
             // start the session
             startSession();
@@ -209,10 +199,14 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
             logger.debug("hub '{}' received characters:{}", hubId, responseOuter.length());
             logger.trace("hub '{}' received:{}", hubId, responseOuter);
 
+            // don't throw an exception if already closing
+            if (closing) {
+                return "{}";
+            }
+
             // if an IOException was caught above, re-throw it again
             caughtException = websocketException != null ? websocketException : caughtException;
             if (caughtException != null) {
-                closeSession();
                 throw caughtException;
             }
 
@@ -245,7 +239,10 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
     @Override
     public void close() {
         closing = true;
-        closeSession();
+        Session session = this.session;
+        if (session != null) {
+            session.close();
+        }
         try {
             trustManagerRegistration.unregister();
         } catch (Exception e) {
@@ -266,21 +263,22 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
         String closeMessage = String.format("onClose() statusCode:%d, reason:%s", statusCode, reason);
         logger.debug("hub '{}' {}", hubId, closeMessage);
         websocketException = new IOException(closeMessage);
-        closeSession();
     }
 
     @OnWebSocketError
     public void onError(@Nullable Throwable cause) {
-        if (closing) {
-            return;
-        }
         logger.debug("hub '{}' onError() cause:{}", hubId, cause != null ? cause.getMessage() : "null");
         websocketException = cause instanceof IOException ioCause ? ioCause : new IOException(cause);
-        closeSession();
     }
 
     @OnWebSocketMessage
-    public void onMessage(String msg) {
+    public synchronized void onMessage(String msg) {
+        int responseCount = responses.size();
+        if (responseCount > 0) {
+            String errorMessage = String.format("onMessage() too many responses:%d", responseCount);
+            logger.debug("hub '{}' {}", hubId, errorMessage);
+            websocketException = new IOException(errorMessage);
+        }
         responses.add(msg.strip());
     }
 }
