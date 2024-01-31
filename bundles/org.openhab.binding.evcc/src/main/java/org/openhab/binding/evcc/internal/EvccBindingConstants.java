@@ -64,7 +64,7 @@ public class EvccBindingConstants {
     public static final String CHANNEL_LOADPOINT_VEHICLE_PRESENT = "vehiclePresent";
     public static final String CHANNEL_LOADPOINT_VEHICLE_RANGE = "vehicleRange";
     public static final String CHANNEL_LOADPOINT_VEHICLE_SOC = "vehicleSoC";
-    public static final String CHANNEL_LOADPOINT_VEHICLE_TITLE = "vehicleTitle";
+    public static final String CHANNEL_LOADPOINT_VEHICLE_NAME = "vehicleName";
     public static final String CHANNEL_VEHICLE_TITLE = "vehicleTitle";
     public static final String CHANNEL_VEHICLE_MIN_SOC = "vehicleMinSoC";
     public static final String CHANNEL_VEHICLE_LIMIT_SOC = "vehicleLimitSoC";
@@ -133,8 +133,8 @@ public class EvccBindingConstants {
             CHANNEL_LOADPOINT_VEHICLE_RANGE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_SOC = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_VEHICLE_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_TITLE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_VEHICLE_TITLE);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_NAME = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_VEHICLE_NAME);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_TITLE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_VEHICLE_TITLE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_MIN_SOC = new ChannelTypeUID(BINDING_ID,

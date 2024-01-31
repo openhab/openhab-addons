@@ -85,7 +85,7 @@ public class EvccHandler extends BaseThingHandler {
             if (groupId == null) {
                 return;
             }
-            String channelGroupId = channelUID.getGroupId();
+            String channelGroupId = groupId;
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
             EvccAPI evccAPI = this.evccAPI;
             if (evccAPI == null) {
@@ -385,7 +385,7 @@ public class EvccHandler extends BaseThingHandler {
                 "Number:Length");
         createChannel(CHANNEL_LOADPOINT_VEHICLE_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_SOC,
                 "Number:Dimensionless");
-        createChannel(CHANNEL_LOADPOINT_VEHICLE_TITLE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_TITLE,
+        createChannel(CHANNEL_LOADPOINT_VEHICLE_NAME, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_NAME,
                 CoreItemFactory.STRING);
 
         removeChannel(CHANNEL_LOADPOINT_HAS_VEHICLE, channelGroup);
@@ -559,9 +559,9 @@ public class EvccHandler extends BaseThingHandler {
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_SOC);
         updateState(channel, new QuantityType<>(vehicleSoC, Units.PERCENT));
 
-        String vehicleTitle = loadpoint.getVehicleTitle();
-        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_TITLE);
-        updateState(channel, new StringType(vehicleTitle));
+        String vehicleName = loadpoint.getVehicleName();
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_NAME);
+        updateState(channel, new StringType(vehicleName));
     }
 
     private void updateChannelsVehicle(String vehicleName) {

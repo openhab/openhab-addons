@@ -292,8 +292,15 @@
 		<category>BatteryLevel</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="vehicleName">
+		<item-type>String</item-type>
+		<label>Vehicle Name</label>
+		<description>Name of EV</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
 
-	<!-- Channel Types shared across loadpoints and vehicles -->
+	<!-- Channel Types for vehicles -->
 	<channel-type id="vehicleTitle">
 		<item-type>String</item-type>
 		<label>Vehicle Title</label>
@@ -301,8 +308,6 @@
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
-
-	<!-- Channel Types for vehicles -->
 	<channel-type id="vehicleMinSoC">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Vehicle Min SoC</label>

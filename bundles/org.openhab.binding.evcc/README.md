@@ -78,7 +78,7 @@ Please note that you have to replace _N_ with your loadpoint number.
 | loadpointN#vehiclePresent           | Switch                 | R          | Whether evcc is able to get data from vehicle                             |
 | loadpointN#vehicleRange             | Number:Length          | R          | Battery range for EV                                                      |
 | loadpointN#vehicleSoC               | Number:Dimensionless   | R          | Current State of Charge of EV                                             |
-| loadpointN#loadpointVehicleTitle    | String                 | R          | Name of EV                                                                |
+| loadpointN#vehicleName              | String                 | R          | Name of EV                                                                |
 
 ### Vehicle channels
 
@@ -139,7 +139,7 @@ Number:Length             evcc_loadpoint0_vehicleOdometer             "Vehicle o
 Switch                    evcc_loadpoint0_vehiclePresent              "Vehicle present [%s]"                               <switch>          {channel="evcc:device:demo:loadpoint0#vehiclePresent"}
 Number:Length             evcc_loadpoint0_vehicleRange                "Vehicle Range [%.0f km]"                                              {channel="evcc:device:demo:loadpoint0#vehicleRange"}
 Number:Dimensionless      evcc_loadpoint0_vehicleSoC                  "Vehicle SoC [%d %%]"                                <batterylevel>    {channel="evcc:device:demo:loadpoint0#vehicleSoC"}
-String                    evcc_loadpoint0_loadpointVehicleTitle       "Vehicle name [%s]"                                  <text>            {channel="evcc:device:demo:loadpoint0#loadpointVehicleTitle"}
+String                    evcc_loadpoint0_VehicleName                 "Vehicle name [%s]"                                  <text>            {channel="evcc:device:demo:loadpoint0#vehicleName"}
 
 // Vehicle
 String                    evcc_vehicle0_vehicleTitle                  "Vehicle title [%s]"                                  <text>            {channel="evcc:device:demo:vehicle0#vehicleTitle"}

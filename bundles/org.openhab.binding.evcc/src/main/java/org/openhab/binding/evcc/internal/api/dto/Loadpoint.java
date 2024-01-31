@@ -97,8 +97,8 @@ public class Loadpoint {
     @SerializedName("vehicleSoc")
     private float vehicleSoC;
 
-    @SerializedName("vehicleTitle")
-    private String vehicleTitle;
+    @SerializedName("vehicleName")
+    private String vehicleName;
 
     /**
      * @return number of active phases
@@ -271,7 +271,7 @@ public class Loadpoint {
     /**
      * @return vehicle's title/name
      */
-    public String getVehicleTitle() {
-        return vehicleTitle;
+    public String getVehicleName() {
+        return vehicleName;
     }
 }
