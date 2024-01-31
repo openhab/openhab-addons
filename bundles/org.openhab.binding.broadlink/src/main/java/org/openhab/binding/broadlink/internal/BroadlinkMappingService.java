@@ -96,16 +96,7 @@ public class BroadlinkMappingService {
     }
 
     public void storeIR(String command, String irCommand) {
-        irProperties.put(command, irCommand);
-        Path mapFilePath = Paths.get(TRANSFORM_DIR + irMapFileName);
-        try {
-            logger.trace("Storing {} to {}", command, mapFilePath);
-            FileOutputStream fr = new FileOutputStream(mapFilePath.toFile());
-            irProperties.store(fr, "Broadlink IR commands");
-            fr.close();
-        } catch (IOException ex) {
-            logger.warn("Cannot store IR command to file {}: {}", mapFilePath, ex.getMessage());
-        }
+        storeCommand(command, irCommand, irProperties, irMapFileName, "IR");
     }
 
     public @Nullable String lookupRF(String command) {
@@ -113,15 +104,20 @@ public class BroadlinkMappingService {
     }
 
     public void storeRF(String command, String rfCommand) {
-        rfProperties.put(command, rfCommand);
-        Path mapFilePath = Paths.get(TRANSFORM_DIR + rfMapFileName);
+        storeCommand(command, rfCommand, rfProperties, rfMapFileName, "RF");
+    }
+
+    private void storeCommand(String commandName, String commandValue, Properties prop, String fileName,
+            String nameOfCommandSet) {
+        prop.put(commandName, commandValue);
+        Path mapFilePath = Paths.get(TRANSFORM_DIR + fileName);
         try {
-            logger.trace("Storing {} to {}", command, mapFilePath);
+            logger.trace("Storing {} to {}", commandName, mapFilePath);
             FileOutputStream fr = new FileOutputStream(mapFilePath.toFile());
-            irProperties.store(fr, "Broadlink RF commands");
+            prop.store(fr, "Broadlink " + nameOfCommandSet + " commands");
             fr.close();
         } catch (IOException ex) {
-            logger.warn("Cannot store RF command to file {}: {}", mapFilePath, ex.getMessage());
+            logger.warn("Cannot store {} command to file {}: {}", nameOfCommandSet, mapFilePath, ex.getMessage());
         }
     }
 
@@ -133,10 +129,8 @@ public class BroadlinkMappingService {
                 try {
                     WatchKey key = watchService.take(); // Blocks
                     List<WatchEvent<?>> events = key.pollEvents();
-
                     Stream<WatchEvent<?>> modificationEvents = events.stream()
                             .filter(e -> e.kind() == StandardWatchEventKinds.ENTRY_MODIFY);
-
                     if (modificationEvents
                             .anyMatch(e -> ((WatchEvent<Path>) e).context().toString().equals(irMapFileName))) {
                         logger.debug("File {} has changed - reloading", irMapFileName);
