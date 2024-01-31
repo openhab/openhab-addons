@@ -52,6 +52,7 @@
 			<channel id="rain-raw" typeId="rain-raw"/>
 			<channel id="rain-currenthour" typeId="rain-currenthour"/>
 			<channel id="rain-lasthour" typeId="rain-lasthour"/>
+			<channel id="rain-today" typeId="rain-today"/>
 			<channel id="solar-power" typeId="solar-power"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
@@ -192,6 +193,15 @@
 		<item-type>Number:Length</item-type>
 		<label>Rainfall (60 Minutes)</label>
 		<description>Rainfall in the last 60 minutes</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="rain-today">
+		<item-type>Number:Length</item-type>
+		<label>Rainfall (today)</label>
+		<description>Total rainfall today</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
