@@ -33,6 +33,9 @@ public class Daily {
     private int dt;
     private int sunrise;
     private int sunset;
+    private int moonrise;
+    private int moonset;
+    private double moon_phase;
     private Temp temp;
     @SerializedName("feels_like")
     private FeelsLikeTemp feelsLikeTemp;
@@ -68,6 +71,30 @@ public class Daily {
 
     public void setSunrise(int sunrise) {
         this.sunrise = sunrise;
+    }
+
+    public int getMoonrise() {
+        return moonrise;
+    }
+
+    public void setMoonrise(int moonrise) {
+        this.moonrise = moonrise;
+    }
+
+    public int getMoonset() {
+        return moonset;
+    }
+
+    public void setMoonset(int moonset) {
+        this.moonset = moonset;
+    }
+
+    public int getMoon_phase() {
+        return moon_phase;
+    }
+
+    public void setMoon_phase(double moon_phase) {
+        this.moon_phase = moon_phase;
     }
 
     public int getSunset() {
