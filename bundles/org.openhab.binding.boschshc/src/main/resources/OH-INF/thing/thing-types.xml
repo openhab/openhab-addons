@@ -340,7 +340,7 @@
 			<channel id="key-event-timestamp" typeId="key-event-timestamp"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:boschshc:user-defined-state"/>
+		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
 
 	<thing-type id="universal-switch-2">
@@ -358,7 +358,7 @@
 			<channel id="key-event-timestamp" typeId="key-event-timestamp"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:boschshc:user-defined-state"/>
+		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
 
 	<!-- Channels -->
