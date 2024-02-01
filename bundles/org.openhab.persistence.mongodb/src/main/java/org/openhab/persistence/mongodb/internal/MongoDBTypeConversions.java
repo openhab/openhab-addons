@@ -24,14 +24,36 @@ import javax.measure.Unit;
 
 import org.bson.Document;
 import org.bson.types.Binary;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
-import org.openhab.core.library.items.*;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.items.CallItem;
+import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.items.ContactItem;
+import org.openhab.core.library.items.DateTimeItem;
+import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.ImageItem;
+import org.openhab.core.library.items.LocationItem;
+import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
+import org.openhab.core.library.items.RollershutterItem;
+import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringListType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria.Operator;
-import org.openhab.core.types.*;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +110,9 @@ public class MongoDBTypeConversions {
             NumberItem numberItem = (NumberItem) item;
             Unit<?> unit = numberItem.getUnit();
             Object value = doc.get(MongoDBFields.FIELD_VALUE);
+            if (value == null) {
+                return UnDefType.UNDEF;
+            }
             // check whether doc contains MongoDBFields.FIELD_UNIT, if so use this unit, otherwise use the unit from the
             // item
             if (doc.containsKey(MongoDBFields.FIELD_UNIT)) {
@@ -119,6 +144,9 @@ public class MongoDBTypeConversions {
         });
         ITEM_STATE_CONVERTERS.put(DimmerItem.class, (item, doc) -> {
             Object value = doc.get(MongoDBFields.FIELD_VALUE);
+            if (value == null) {
+                return UnDefType.UNDEF;
+            }
             if (value instanceof Integer) {
                 return new PercentType((Integer) value);
             } else {
@@ -131,6 +159,9 @@ public class MongoDBTypeConversions {
                 (item, doc) -> OpenClosedType.valueOf(doc.getString(MongoDBFields.FIELD_VALUE)));
         ITEM_STATE_CONVERTERS.put(RollershutterItem.class, (item, doc) -> {
             Object value = doc.get(MongoDBFields.FIELD_VALUE);
+            if (value == null) {
+                return UnDefType.UNDEF;
+            }
             if (value instanceof Integer) {
                 return new PercentType((Integer) value);
             } else {
@@ -139,6 +170,9 @@ public class MongoDBTypeConversions {
         });
         ITEM_STATE_CONVERTERS.put(DateTimeItem.class, (item, doc) -> {
             Object value = doc.get(MongoDBFields.FIELD_VALUE);
+            if (value == null) {
+                return UnDefType.UNDEF;
+            }
             if (value instanceof String) {
                 return new DateTimeType(ZonedDateTime.parse(doc.getString(MongoDBFields.FIELD_VALUE)));
             } else {

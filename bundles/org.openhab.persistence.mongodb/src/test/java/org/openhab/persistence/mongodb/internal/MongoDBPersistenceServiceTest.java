@@ -17,11 +17,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.DateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -621,7 +625,6 @@ public class MongoDBPersistenceServiceTest {
         try {
             SetupResult setupResult = DataCreationHelper.setupMongoDB("testCollection", dbContainer);
             MongoDBPersistenceService service = setupResult.service;
-            MongoDatabase database = setupResult.database;
 
             service.activate(setupResult.bundleContext, setupResult.config);
             try {
@@ -717,7 +720,7 @@ public class MongoDBPersistenceServiceTest {
             MongoCollection<Document> collection = database.getCollection("testCollection");
 
             NumberItem item = DataCreationHelper.createNumberItem("Number:Energy", "TestItem",
-                    new QuantityType("10.1 kWh"));
+                    new QuantityType<>("10.1 kWh"));
 
             // Execution
             service.store(item, null);
@@ -755,7 +758,7 @@ public class MongoDBPersistenceServiceTest {
             MongoCollection<Document> collection = database.getCollection("testCollection");
 
             NumberItem item = DataCreationHelper.createNumberItem("Number:Energy", "TestItem",
-                    new QuantityType("10.1 MWh"));
+                    new QuantityType<>("10.1 MWh"));
             try {
                 Mockito.when(setupResult.itemRegistry.getItem("TestItem")).thenReturn(item);
             } catch (ItemNotFoundException e) {
@@ -773,7 +776,7 @@ public class MongoDBPersistenceServiceTest {
             // Execution
             FilterCriteria filter = DataCreationHelper.createFilterCriteria("TestItem");
             Iterable<HistoricItem> result = service.query(filter);
-            VerificationHelper.verifyQueryResult(result, new QuantityType("201.5 Wh"));
+            VerificationHelper.verifyQueryResult(result, new QuantityType<>("201.5 Wh"));
         } finally {
             dbContainer.stop();
         }
@@ -798,5 +801,185 @@ public class MongoDBPersistenceServiceTest {
         // Jan 29, 2024, 8:43:26 PM: TestItem -> 10.1
         String expected = DateFormat.getDateTimeInstance().format(Date.from(now.toInstant())) + ": TestItem -> 10.1";
         assertEquals(expected, result);
+    }
+
+    /*
+     * Test the store method which stores a item state as well as a timestampe (ZonedDateTime) and check the result in
+     * the database
+     */
+    @Test
+    public void testStoreItemWithTimestamp() {
+        // Preparation
+        DatabaseTestContainer dbContainer = new DatabaseTestContainer(new MemoryBackend());
+        try {
+            SetupResult setupResult = DataCreationHelper.setupMongoDB(null, dbContainer);
+            MongoDBPersistenceService service = setupResult.service;
+            MongoDatabase database = setupResult.database;
+
+            service.activate(setupResult.bundleContext, setupResult.config);
+            try {
+                Mockito.when(setupResult.itemRegistry.getItem("TestItem"))
+                        .thenReturn(DataCreationHelper.createNumberItem("TestItem", 0));
+            } catch (ItemNotFoundException e) {
+            }
+
+            // Execution
+            NumberItem item = DataCreationHelper.createNumberItem("TestItem", 10.1);
+            DecimalType historicState = new DecimalType(11110.1);
+            ZonedDateTime now = ZonedDateTime.now();
+            service.store(item, now, historicState);
+
+            // Verification
+            MongoCollection<Document> collection = database.getCollection("TestItem");
+            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+
+            assertEquals(1, documents.size()); // Assert that there is only one document
+
+            Document insertedDocument = documents.get(0); // Get the first (and only) document
+
+            VerificationHelper.verifyDocument(insertedDocument, "TestItem", historicState);
+            assertEquals(Date.from(now.toInstant()), insertedDocument.get(MongoDBFields.FIELD_TIMESTAMP));
+        } finally {
+            dbContainer.stop();
+        }
+    }
+
+    /*
+     * Test the store method which stores a item state as well as a timestampe (ZonedDateTime) and check the result in
+     * the database
+     */
+    @Test
+    public void testStoreItemWithTimestampAndAlias() {
+        // Preparation
+        DatabaseTestContainer dbContainer = new DatabaseTestContainer(new MemoryBackend());
+        try {
+            SetupResult setupResult = DataCreationHelper.setupMongoDB(null, dbContainer);
+            MongoDBPersistenceService service = setupResult.service;
+            MongoDatabase database = setupResult.database;
+
+            service.activate(setupResult.bundleContext, setupResult.config);
+            try {
+                Mockito.when(setupResult.itemRegistry.getItem("TestItem"))
+                        .thenReturn(DataCreationHelper.createNumberItem("TestItem", 0));
+            } catch (ItemNotFoundException e) {
+            }
+
+            // Execution
+            NumberItem item = DataCreationHelper.createNumberItem("TestItem", 10.1);
+            DecimalType historicState = new DecimalType(11110.1);
+            ZonedDateTime now = ZonedDateTime.now();
+            service.store(item, now, historicState, "AliasName");
+
+            // Verification
+            MongoCollection<Document> collection = database.getCollection("TestItem");
+            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+
+            assertEquals(1, documents.size()); // Assert that there is only one document
+
+            Document insertedDocument = documents.get(0); // Get the first (and only) document
+
+            VerificationHelper.verifyDocumentWithAlias(insertedDocument, "AliasName", "TestItem", historicState);
+            assertEquals(Date.from(now.toInstant()), insertedDocument.get(MongoDBFields.FIELD_TIMESTAMP));
+        } finally {
+            dbContainer.stop();
+        }
+    }
+
+    /*
+     * Test the remove method to remove one item from the database
+     */
+    @Test
+    public void testremoveOneItem() {
+        // Preparation
+        DatabaseTestContainer dbContainer = new DatabaseTestContainer(new MemoryBackend());
+        try {
+            SetupResult setupResult = DataCreationHelper.setupMongoDB("testcollection", dbContainer);
+            MongoDBPersistenceService service = setupResult.service;
+            MongoDatabase database = setupResult.database;
+
+            service.activate(setupResult.bundleContext, setupResult.config);
+
+            for (double i = 0; i < 10.00; i += 0.3) {
+                service.store(DataCreationHelper.createNumberItem("TestItem", i));
+            }
+            service.store(DataCreationHelper.createNumberItem("TestItemOther", 10.1));
+
+            // Execution
+            service.remove(DataCreationHelper.createFilterCriteria("TestItem", null, null));
+
+            // Verification
+            MongoCollection<Document> collection = database.getCollection("testcollection");
+
+            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+
+            assertEquals(1, documents.size()); // Assert that there is the other document
+
+            VerificationHelper.verifyDocument(documents.get(0), "TestItemOther", 10.1);
+        } finally {
+            dbContainer.stop();
+        }
+    }
+
+    /*
+     * Test the remove method to remove values of a given timerange for one item
+     */
+    @Test
+    public void testremoveATimeRangeFromOneItem() {
+        // Preparation
+        DatabaseTestContainer dbContainer = new DatabaseTestContainer(new MemoryBackend());
+        try {
+            SetupResult setupResult = DataCreationHelper.setupMongoDB("testcollection", dbContainer);
+            MongoDBPersistenceService service = setupResult.service;
+            MongoDatabase database = setupResult.database;
+
+            service.activate(setupResult.bundleContext, setupResult.config);
+
+            List<PersistenceTestItem> testDataList = DataCreationHelper.createTestData(service, "TestItem",
+                    "TestItemOther");
+
+            // Execution
+            // Calculate the start and end dates
+            ZonedDateTime startDate = ZonedDateTime.now().plusDays(3).truncatedTo(ChronoUnit.DAYS);
+            ZonedDateTime endDate = ZonedDateTime.now().plusDays(17).truncatedTo(ChronoUnit.DAYS).plusDays(1)
+                    .minusNanos(1);
+
+            // Create the filter and remove the data
+            service.remove(DataCreationHelper.createFilterCriteria("TestItem", startDate, endDate));
+
+            // Verification
+            MongoCollection<Document> collection = database.getCollection("testcollection");
+
+            // Query the database for all data points
+            List<Document> documents = (ArrayList<Document>) collection.find().into(new ArrayList<>());
+
+            // Create a set of the returned data points
+            Set<PersistenceTestItem> returnedData = documents.stream()
+                    .map(doc -> new PersistenceTestItem(doc.getString(MongoDBFields.FIELD_ITEM),
+                            ZonedDateTime.ofInstant(doc.getDate(MongoDBFields.FIELD_TIMESTAMP).toInstant(),
+                                    ZoneId.systemDefault()),
+                            doc.getDouble(MongoDBFields.FIELD_VALUE)))
+                    .collect(Collectors.toSet());
+
+            // Create a set of the expected data points
+            Set<PersistenceTestItem> expectedData = testDataList
+                    .stream().filter(testData -> !(testData.itemName.equals("TestItem")
+                            && testData.date.isAfter(startDate) && testData.date.isBefore(endDate)))
+                    .collect(Collectors.toSet());
+
+            for (PersistenceTestItem expectedItem : expectedData) {
+                // Assert that this item is in the returned data
+                assertTrue(returnedData.contains(expectedItem),
+                        "Expected item not found in returned data: " + expectedItem);
+            }
+
+            // Iterate over the returned data
+            for (PersistenceTestItem returnedItem : returnedData) {
+                // Assert that this item is in the expected data
+                assertTrue(expectedData.contains(returnedItem),
+                        "Unexpected item found in returned data: " + returnedItem);
+            }
+        } finally {
+            dbContainer.stop();
+        }
     }
 }

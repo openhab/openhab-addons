@@ -12,17 +12,19 @@
  */
 package org.openhab.persistence.mongodb.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -33,6 +35,7 @@ import org.mockito.Mockito;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.internal.i18n.I18nProviderImpl;
 import org.openhab.core.items.GenericItem;
+import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.items.*;
 import org.openhab.core.library.types.*;
@@ -126,7 +129,13 @@ public class DataCreationHelper {
      */
     public static <T extends GenericItem, S extends State> T createItem(Class<T> itemType, String name, S state) {
         try {
+            if (state == null) {
+                throw new IllegalArgumentException("State must not be null");
+            }
             T item = itemType.getDeclaredConstructor(String.class).newInstance(name);
+            if (item == null) {
+                throw new RuntimeException("Could not create item");
+            }
             item.setState(state);
             return item;
         } catch (Exception e) {
@@ -366,5 +375,43 @@ public class DataCreationHelper {
         obj.put(MongoDBFields.FIELD_TIMESTAMP, new Date());
         obj.put(MongoDBFields.FIELD_VALUE, value);
         collection.insertOne(obj);
+    }
+
+    public static List<PersistenceTestItem> createTestData(MongoDBPersistenceService service, String... itemNames) {
+        // Prepare a list to store the test data for verification
+        List<PersistenceTestItem> testDataList = new ArrayList<>();
+
+        // Prepare a random number generator
+        Random random = new Random();
+
+        // Prepare the start date
+        ZonedDateTime startDate = ZonedDateTime.now();
+
+        // Iterate over the 50 days
+        for (int day = 0; day < 50; day++) {
+            // Calculate the current date
+            ZonedDateTime currentDate = startDate.plusDays(day);
+
+            // Generate a random number of values for each item
+            for (String itemName : itemNames) {
+                int numValues = 2 + random.nextInt(4); // Random number between 2 and 5
+
+                for (int valueIndex = 0; valueIndex < numValues; valueIndex++) {
+                    // Generate a random value between 0.0 and 10.0
+                    double value = 10.0 * random.nextDouble();
+
+                    // Create the item
+                    Item item = DataCreationHelper.createNumberItem(itemName, value);
+
+                    // Store the data
+                    service.store(item, currentDate, new DecimalType(value));
+
+                    // Add the data to the test data list for verification
+                    testDataList.add(new PersistenceTestItem(itemName, currentDate, value));
+                }
+            }
+        }
+
+        return testDataList;
     }
 }

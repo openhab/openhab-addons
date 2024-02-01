@@ -39,9 +39,6 @@ public class DatabaseTestContainer {
     // The MongoServer instance for this DatabaseTestContainer.
     private MongoServer server;
 
-    // The MemoryBackend instance for this DatabaseTestContainer.
-    private MemoryBackend memoryBackend;
-
     // The InetSocketAddress instance for this DatabaseTestContainer.
     private InetSocketAddress serverAddress;
 

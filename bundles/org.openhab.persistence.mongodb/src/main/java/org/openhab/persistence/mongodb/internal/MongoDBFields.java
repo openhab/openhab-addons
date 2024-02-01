@@ -12,12 +12,15 @@
  */
 package org.openhab.persistence.mongodb.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This class defines constant field names used in MongoDB documents.
  * These field names are used to ensure consistent access to document properties.
  *
  * @author René Ulbricht - Initial contribution
  */
+@NonNullByDefault
 public final class MongoDBFields {
     public static final String FIELD_ID = "_id";
     public static final String FIELD_ITEM = "item";
