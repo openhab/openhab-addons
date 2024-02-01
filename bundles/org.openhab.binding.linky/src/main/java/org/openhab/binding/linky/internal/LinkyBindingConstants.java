@@ -60,6 +60,8 @@ public class LinkyBindingConstants {
     public static final String YEAR_MINUS_1 = "yearly#year-1";
     public static final String YEAR_MINUS_2 = "yearly#year-2";
 
+    public static final String TEST_SELECT = "main#linkyTestSelect";
+
     // Authorization related Servlet and resources aliases.
     public static final String LINKY_ALIAS = "/connectlinky";
     public static final String LINKY_IMG_ALIAS = "/img";

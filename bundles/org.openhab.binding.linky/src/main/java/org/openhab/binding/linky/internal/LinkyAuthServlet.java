@@ -48,7 +48,7 @@ public class LinkyAuthServlet extends HttpServlet {
 
     private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
 
-    private static final String HTML_USER_AUTHORIZED = "<p class='block authorized'>Addon authorized for user %s.</p>";
+    private static final String HTML_USER_AUTHORIZED = "<p class='block authorized'>Addon authorized for %s.</p>";
     private static final String HTML_ERROR = "<p class='block error'>Call to Enedis failed with error: %s</p>";
 
     private static final String HTML_META_REFRESH_CONTENT = "<meta http-equiv='refresh' content='10; url=%s'>";
@@ -57,6 +57,7 @@ public class LinkyAuthServlet extends HttpServlet {
     private static final String KEY_AUTHORIZE_URI = "authorize.uri";
     private static final String KEY_RETRIEVE_TOKEN_URI = "retrieveToken.uri";
     private static final String KEY_REDIRECT_URI = "redirectUri";
+    private static final String KEY_PRMID_OPTION = "prmId.Option";
     private static final String KEY_AUTHORIZED_USER = "authorizedUser";
     private static final String KEY_ERROR = "error";
     private static final String KEY_PAGE_REFRESH = "pageRefresh";
@@ -81,15 +82,23 @@ public class LinkyAuthServlet extends HttpServlet {
         String servletBaseURLSecure = servletBaseURL;
         // .replace("http://", "https://");
         // .replace("8080", "8443");
-        servletBaseURLSecure = servletBaseURLSecure + "?state=OK";
 
         handleLinkyRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
 
         LinkyAccountHandler accountHandler = linkyAuthService.getLinkyAccountHandler();
 
         resp.setContentType(CONTENT_TYPE);
+
+        StringBuffer optionBuffer = new StringBuffer();
+
+        String[] prmIds = accountHandler.getAllPrmId();
+        for (String prmId : prmIds) {
+            optionBuffer.append("<option value=\"" + prmId + "\">" + prmId + "</option>");
+        }
+
+        replaceMap.put(KEY_PRMID_OPTION, optionBuffer.toString());
         replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
-        replaceMap.put(KEY_RETRIEVE_TOKEN_URI, servletBaseURLSecure);
+        replaceMap.put(KEY_RETRIEVE_TOKEN_URI, servletBaseURLSecure + "?state=OK");
         replaceMap.put(KEY_AUTHORIZE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
         resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
         resp.getWriter().close();
@@ -128,7 +137,7 @@ public class LinkyAuthServlet extends HttpServlet {
             } else if (!StringUtil.isBlank(reqState)) {
                 try {
                     replaceMap.put(KEY_AUTHORIZED_USER, String.format(HTML_USER_AUTHORIZED,
-                            linkyAuthService.authorize(servletBaseURL, reqState, reqCode)));
+                            reqCode + " / " + linkyAuthService.authorize(servletBaseURL, reqState, reqCode)));
                 } catch (RuntimeException e) {
                     logger.debug("Exception during authorizaton: ", e);
                     replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
