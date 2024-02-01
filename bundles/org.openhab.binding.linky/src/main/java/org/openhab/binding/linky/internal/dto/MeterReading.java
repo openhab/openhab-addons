@@ -45,5 +45,4 @@ public class MeterReading {
     public IntervalReading[] weekValue;
     public IntervalReading[] monthValue;
     public IntervalReading[] yearValue;
-
 }

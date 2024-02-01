@@ -12,31 +12,32 @@
 			https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
 		</description>
 
-        
+
 		<channel-groups>
-            <channel-group typeId="main" id="main"/>
+			<channel-group typeId="main" id="main"/>
 			<channel-group typeId="daily" id="daily"/>
 			<channel-group typeId="weekly" id="weekly"/>
 			<channel-group typeId="monthly" id="monthly"/>
 			<channel-group typeId="yearly" id="yearly"/>
-			
+
 		</channel-groups>
-		
-		
-        
+
+
+
 
 		<config-description>
-		    <parameter name="prmId" type="text" required="true">
-                <label>PrmId</label>
-                <description>Your PrmId</description>
-            </parameter>
+			<parameter name="prmId" type="text" required="true">
+				<label>PrmId</label>
+				<description>Your PrmId</description>
+			</parameter>
 			<parameter name="token" type="text" required="false">
 				<label>Token</label>
-				<description>Your Enedis token (can be left empty, use the connection page to automatically fill it http://youopenhab/connectlinky)</description>
+				<description>Your Enedis token (can be left empty, use the connection page to automatically fill it
+					http://youopenhab/connectlinky)</description>
 			</parameter>
 		</config-description>
-		
-		
+
+
 	</thing-type>
 
 	<channel-group-type id="daily">
@@ -46,26 +47,26 @@
 				<label>Yesterday Consumption</label>
 			</channel>
 			<channel id="day-2" typeId="consumption">
-                <label>Yesterday Consumption</label>
-            </channel>
-            <channel id="day-3" typeId="consumption">
-                <label>Yesterday Consumption</label>
-            </channel>
+				<label>Yesterday Consumption</label>
+			</channel>
+			<channel id="day-3" typeId="consumption">
+				<label>Yesterday Consumption</label>
+			</channel>
 			<channel id="maxPower-day-1" typeId="power"/>
 			<channel id="maxPowerTs-day-1" typeId="timestamp">
 				<label>Peak Timestamp</label>
 				<description>Maximum power usage timestamp</description>
 			</channel>
-            <channel id="maxPower-day-2" typeId="power"/>
-            <channel id="maxPowerTs-day-2" typeId="timestamp">
-                <label>Peak Timestamp</label>
-                <description>Maximum power usage timestamp</description>
-            </channel>
-            <channel id="maxPower-day-3" typeId="power"/>
-            <channel id="maxPowerTs-day-3" typeId="timestamp">
-                <label>Peak Timestamp</label>
-                <description>Maximum power usage timestamp</description>
-            </channel>
+			<channel id="maxPower-day-2" typeId="power"/>
+			<channel id="maxPowerTs-day-2" typeId="timestamp">
+				<label>Peak Timestamp</label>
+				<description>Maximum power usage timestamp</description>
+			</channel>
+			<channel id="maxPower-day-3" typeId="power"/>
+			<channel id="maxPowerTs-day-3" typeId="timestamp">
+				<label>Peak Timestamp</label>
+				<description>Maximum power usage timestamp</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -79,8 +80,8 @@
 				<label>Last Week Consumption</label>
 			</channel>
 			<channel id="week-2" typeId="consumption">
-                <label>Last Week Consumption</label>
-            </channel>
+				<label>Last Week Consumption</label>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -93,9 +94,9 @@
 			<channel id="month-1" typeId="consumption">
 				<label>Last Month Consumption</label>
 			</channel>
-            <channel id="month-2" typeId="consumption">
-                <label>Last Month Consumption</label>
-            </channel>
+			<channel id="month-2" typeId="consumption">
+				<label>Last Month Consumption</label>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -108,27 +109,27 @@
 			<channel id="year-1" typeId="consumption">
 				<label>Last Year Consumption</label>
 			</channel>
-            <channel id="year-2" typeId="consumption">
-                <label>Last Year Consumption</label>
-            </channel>
+			<channel id="year-2" typeId="consumption">
+				<label>Last Year Consumption</label>
+			</channel>
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-group-type id="main">
-        <label>Main</label>
-    
-	    <channels>
-            <channel id="linkyTestSelect" typeId="typeTest">
-                     <label>linkyTestSelect</label>
-            </channel>
-        </channels>
-    </channel-group-type>
-	
+		<label>Main</label>
+
+		<channels>
+			<channel id="linkyTestSelect" typeId="typeTest">
+				<label>linkyTestSelect</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="typeTest">
-        <item-type>String</item-type>
-        <label>Test Select</label>
-        <description>Test Select</description>
-    </channel-type>
+		<item-type>String</item-type>
+		<label>Test Select</label>
+		<description>Test Select</description>
+	</channel-type>
 
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>

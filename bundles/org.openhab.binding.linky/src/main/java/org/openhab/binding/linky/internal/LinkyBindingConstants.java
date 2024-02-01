@@ -81,5 +81,4 @@ public class LinkyBindingConstants {
     public static final String ENEDIS_ACCOUNT_URL = "https://mon-compte-particulier.enedis.fr/";
     public static final String ENEDIS_AUTHORIZE_URL = ENEDIS_ACCOUNT_URL + "dataconnect/v1/oauth2/authorize";
     public static final String ENEDIS_API_TOKEN_URL = ENEDIS_ACCOUNT_URL + "token";
-
 }

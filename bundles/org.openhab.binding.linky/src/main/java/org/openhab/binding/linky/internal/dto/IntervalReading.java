@@ -31,5 +31,4 @@ public class IntervalReading {
 
     @SerializedName("date")
     public LocalDateTime date;
-
 }
