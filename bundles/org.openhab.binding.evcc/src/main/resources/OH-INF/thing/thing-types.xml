@@ -83,7 +83,7 @@
 		<item-type>String</item-type>
 		<label>Battery Mode</label>
 		<description>Current Battery Mode</description>
-		<category></category>
+		<category>Battery</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="prioritySoC">
@@ -340,7 +340,7 @@
 	<channel-type id="vehicleName">
 		<item-type>String</item-type>
 		<label>Vehicle Name</label>
-		<description>Name of EV (former vehicle-id)</description>
+		<description>Name of EV</description>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
