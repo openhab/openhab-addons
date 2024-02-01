@@ -39,6 +39,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2 = new ThingTypeUID(BINDING_ID, "window-contact-2");
     public static final ThingTypeUID THING_TYPE_MOTION_DETECTOR = new ThingTypeUID(BINDING_ID, "motion-detector");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
+    public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL_2 = new ThingTypeUID(BINDING_ID, "shutter-control-2");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
     public static final ThingTypeUID THING_TYPE_CLIMATE_CONTROL = new ThingTypeUID(BINDING_ID, "climate-control");
     public static final ThingTypeUID THING_TYPE_WALL_THERMOSTAT = new ThingTypeUID(BINDING_ID, "wall-thermostat");
@@ -76,6 +77,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_VALVE_TAPPET_POSITION = "valve-tappet-position";
     public static final String CHANNEL_SETPOINT_TEMPERATURE = "setpoint-temperature";
     public static final String CHANNEL_CHILD_LOCK = "child-lock";
+    public static final String CHANNEL_CHILD_PROTECTION = "child-protection";
     public static final String CHANNEL_PRIVACY_MODE = "privacy-mode";
     public static final String CHANNEL_CAMERA_NOTIFICATION = "camera-notification";
     public static final String CHANNEL_SYSTEM_AVAILABILITY = "system-availability";

@@ -12,6 +12,7 @@ Binding for the Bosch Smart Home.
     - [Door/Window Contact II](#door-window-contact-ii)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
+    - [Shutter Control II](#shutter-control-ii)
     - [Thermostat](#thermostat)
     - [Climate Control](#climate-control)
     - [Wall Thermostat](#wall-thermostat)
@@ -136,6 +137,20 @@ Control of your shutter to take any position you desire.
 | Channel Type ID | Item Type     | Writable | Description                              |
 | --------------- | ------------- | :------: | ---------------------------------------- |
 | level           | Rollershutter | &#9745;  | Current open ratio (0 to 100, Step 0.5). |
+
+### Shutter Control II
+
+Second generation shutter control.
+
+**Thing Type ID**: `shutter-control-2`
+
+| Channel Type ID    | Item Type     | Writable | Description                              |
+| ------------------ | ------------- | :------: | ---------------------------------------- |
+| level              | Rollershutter | &#9745;  | Current open ratio (0 to 100, Step 0.5). |
+| signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| child-protection   | Switch        | &#9745;  | Indicates whether the child protection is active. |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.      |
+| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device.  |
 
 ### Thermostat
 
