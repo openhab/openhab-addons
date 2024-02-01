@@ -70,7 +70,7 @@
 	<channel-type id="batteryDischargeControl">
 		<item-type>Switch</item-type>
 		<label>Battery Discharge Control</label>
-		<description>Battery Discharge Control switch</description>
+		<description>Enable or disable battery discharge control</description>
 		<category>Switch</category>
 		<state readOnly="false">
 			<options>

@@ -44,7 +44,7 @@ Please note that some of them are only available when evcc is properly configure
 | general#batteryPower            | Number:Power         | R          | Current power from battery                                                                                   |
 | general#batterySoC              | Number:Dimensionless | R          | Current State of Charge of battery                                                                           |
 | general#batteryPrioritySoC      | Number:Dimensionless | RW         | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv"  |
-| general#batteryDischargeControl | Switch               | RW         | Battery Discharge Control switch                                                                             |
+| general#batteryDischargeControl | Switch               | RW         | Enable or disable battery discharge control                                                                  |
 | general#batteryMode             | String               | R          | Current battery mode                                                                                         |
 | general#gridPower               | Number:Power         | R          | Current power from grid (negative means feed-in)                                                             |
 | general#homePower               | Number:Power         | R          | Current power taken by home                                                                                  |
