@@ -26,5 +26,4 @@ import com.google.gson.annotations.SerializedName;
 public class MeterResponse {
     @SerializedName("meter_reading")
     public MeterReading meterReading;
-
 }
