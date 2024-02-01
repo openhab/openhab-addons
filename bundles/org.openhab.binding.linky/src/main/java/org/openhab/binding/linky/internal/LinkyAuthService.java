@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,8 +51,6 @@ public class LinkyAuthService {
 
     private final Logger logger = LoggerFactory.getLogger(LinkyAuthService.class);
 
-    // private final List<SpotifyAccountHandler> handlers = new ArrayList<>();
-
     private @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) BundleContext bundleContext;
     private @Nullable LinkyAccountHandler accountHandler;
@@ -66,7 +64,7 @@ public class LinkyAuthService {
             httpService.registerResources(LinkyBindingConstants.LINKY_ALIAS + LinkyBindingConstants.LINKY_IMG_ALIAS,
                     "web", null);
         } catch (NamespaceException | ServletException | IOException e) {
-            logger.warn("Error during spotify servlet startup", e);
+            logger.warn("Error during linky servlet startup", e);
         }
     }
 
@@ -77,7 +75,7 @@ public class LinkyAuthService {
     }
 
     /**
-     * Creates a new {@link SpotifyAuthServlet}.
+     * Creates a new {@link LinkyAuthServlet}.
      *
      * @return the newly created servlet
      * @throws IOException thrown when an HTML template could not be read
@@ -107,13 +105,13 @@ public class LinkyAuthService {
     }
 
     /**
-     * Call with Spotify redirect uri returned State and Code values to get the refresh and access tokens and persist
+     * Call with Linky redirect uri returned State and Code values to get the refresh and access tokens and persist
      * these values
      *
-     * @param servletBaseURL the servlet base, which will be the Spotify redirect url
-     * @param state The Spotify returned state value
-     * @param code The Spotify returned code value
-     * @return returns the name of the Spotify user that is authorized
+     * @param servletBaseURL the servlet base, which will be the Linky redirect url
+     * @param state The Linky returned state value
+     * @param code The Linky returned code value
+     * @return returns the name of the Linky user that is authorized
      */
     public String authorize(String servletBaseURL, String state, String code) {
         LinkyAccountHandler accountHandler = getLinkyAccountHandler();
@@ -147,49 +145,6 @@ public class LinkyAuthService {
     public @Nullable LinkyAccountHandler getLinkyAccountHandler() {
         return this.accountHandler;
     }
-
-    /**
-     * @param listener Adds the given handler
-     */
-    /*
-     * public void addSpotifyAccountHandler(SpotifyAccountHandler listener) {
-     * if (!handlers.contains(listener)) {
-     * handlers.add(listener);
-     * }
-     * }
-     */
-
-    /**
-     * @param handler Removes the given handler
-     */
-    /*
-     * public void removeSpotifyAccountHandler(SpotifyAccountHandler handler) {
-     * handlers.remove(handler);
-     * }
-     */
-
-    /**
-     * @return Returns all {@link SpotifyAccountHandler}s.
-     */
-    /*
-     * public List<SpotifyAccountHandler> getSpotifyAccountHandlers() {
-     * return handlers;
-     * }
-     */
-
-    /**
-     * Get the {@link SpotifyAccountHandler} that matches the given thing UID.
-     *
-     * @param thingUID UID of the thing to match the handler with
-     * @return the {@link SpotifyAccountHandler} matching the thing UID or null
-     */
-    /*
-     * private @Nullable SpotifyAccountHandler getSpotifyAuthListener(String thingUID) {
-     * final Optional<SpotifyAccountHandler> maybeListener = handlers.stream().filter(l -> l.equalsThingUID(thingUID))
-     * .findFirst();
-     * return maybeListener.isPresent() ? maybeListener.get() : null;
-     * }
-     */
 
     @Reference
     protected void setHttpService(HttpService httpService) {
