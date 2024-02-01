@@ -35,6 +35,7 @@ import org.openhab.binding.linky.internal.dto.IdentityInfo;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.MeterResponse;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
+import org.openhab.binding.linky.internal.dto.TempoResponse;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,7 @@ public class EnedisHttpApi {
     private static final String CONTACT_URL = BASE_URL + "contact";
     private static final String ADDRESS_URL = BASE_URL + "addresses";
     private static final String MEASURE_URL = BASE_URL + "%s/%s/start/%s/end/%s/cache";
+    private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
 
     private static final String TOKEN_URL = BASE_URL
             + "v1/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=na&user_type=na&state=na&person_id=-1&usage_points_id=%s";
@@ -98,10 +100,16 @@ public class EnedisHttpApi {
     }
 
     private String getData(String url) throws LinkyException {
+        return getData(url, httpClient, config.token);
+    }
+
+    private static String getData(String url, HttpClient httpClient, String token) throws LinkyException {
         try {
             Request request = httpClient.newRequest(url);
             request = request.method(HttpMethod.GET);
-            request = request.header("Authorization", config.token);
+            if (!("".equals(token))) {
+                request = request.header("Authorization", token);
+            }
 
             ContentResponse result = request.send();
             if (result.getStatus() == 307) {
@@ -258,10 +266,37 @@ public class EnedisHttpApi {
         return getMeasures(userId, prmId, from, to, "daily_consumption_max_power");
     }
 
-    public String getToken(String clientId, String prmId) {
+    public String getTempoData() throws LinkyException {
+        String url = String.format(TEMPO_URL, "2024-01-01", "2024-01-31");
+        if (!connected) {
+            initialize();
+        }
+        String data = getData(url);
+        if (data.isEmpty()) {
+            throw new LinkyException("Requesting '%s' returned an empty response", url);
+        }
+        logger.trace("getData returned {}", data);
+
+        try {
+            TempoResponse tempResponse = gson.fromJson(data, TempoResponse.class);
+            if (tempResponse == null) {
+                throw new LinkyException("No report data received");
+            }
+
+            return "{\"2024-01-20\":\"WHITE\",\"2024-01-21\":\"RED\",\"array\":[\"2024-01-20\",\"2024-01-21\"]}";
+            // return tempResponse.tempoDayInfo;
+        } catch (JsonSyntaxException e) {
+            logger.debug("invalid JSON response not matching ConsumptionReport.class: {}", data);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
+        }
+
+        // return data;
+    }
+
+    public static String getToken(HttpClient httpClient, String clientId, String prmId) {
         try {
             String url = String.format(TOKEN_URL, clientId, prmId);
-            String token = getData(url);
+            String token = getData(url, httpClient, "");
             return token;
         } catch (LinkyException e) {
             return "";

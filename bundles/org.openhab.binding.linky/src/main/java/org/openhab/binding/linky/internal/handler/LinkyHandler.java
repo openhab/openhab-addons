@@ -37,9 +37,11 @@ import org.openhab.binding.linky.internal.dto.IntervalReading;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -136,13 +138,13 @@ public class LinkyHandler extends BaseThingHandler {
         config = getConfigAs(LinkyConfiguration.class);
         if (config.seemsValid()) {
             enedisApi = new EnedisHttpApi(config, gson, httpClient);
+
             scheduler.submit(() -> {
                 try {
-                    EnedisHttpApi api = this.enedisApi;
-                    api.initialize();
+                    enedisApi.initialize();
                     updateStatus(ThingStatus.ONLINE);
 
-                    PrmInfo prmInfo = api.getPrmInfo();
+                    PrmInfo prmInfo = enedisApi.getPrmInfo();
                     updateProperties(Map.of(USER_ID, prmInfo.customerId, PUISSANCE,
                             prmInfo.contractInfo.subscribedPower, PRM_ID, prmInfo.prmId));
 
@@ -178,6 +180,24 @@ public class LinkyHandler extends BaseThingHandler {
 
         updateEnergyData();
         updatePowerData();
+
+        String tempoData = getTempoData();
+
+        // LinkedTreeMap<String, String> obj = gson.fromJson(tempoData, LinkedTreeMap.class);
+
+        /*
+         *
+         *
+         * ArrayList<Object> list = new ArrayList<Object>();
+         * for (Object key : obj.keySet()) {
+         * Object val = obj.get(key);
+         *
+         * Pair<String, String> keyValue = new ImmutablePair(key, val);
+         * list.add(keyValue);
+         * }
+         */
+
+        updateState(TEST_SELECT, new StringType(tempoData));
 
         if (!connectedBefore && isConnected()) {
             disconnect();
@@ -366,6 +386,23 @@ public class LinkyHandler extends BaseThingHandler {
         return null;
     }
 
+    private @Nullable String getTempoData() {
+        logger.debug("getTempoData from");
+
+        EnedisHttpApi api = this.enedisApi;
+        if (api != null) {
+            try {
+                String result = api.getTempoData();
+                updateStatus(ThingStatus.ONLINE);
+                return result;
+            } catch (LinkyException e) {
+                logger.debug("Exception when getting power data: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+        return null;
+    }
+
     private boolean isConnected() {
         EnedisHttpApi api = this.enedisApi;
         return api == null ? false : api.isConnected();
@@ -506,6 +543,10 @@ public class LinkyHandler extends BaseThingHandler {
     private void logData(IntervalReading[] ivArray, int index, String title, DateTimeFormatter dateTimeFormatter) {
         IntervalReading iv = ivArray[index];
         logger.debug("{} {} value {}", title, iv.date.format(dateTimeFormatter), iv.value);
+    }
+
+    public void saveConfiguration(Configuration config) {
+        updateConfiguration(config);
     }
 
 }

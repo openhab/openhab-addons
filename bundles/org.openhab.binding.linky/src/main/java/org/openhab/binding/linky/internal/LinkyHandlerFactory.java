@@ -19,7 +19,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -28,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -215,15 +218,27 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
         }
         // Fallback for MyElectricalData
         else {
-            String token = "";
-            /*
-             * String token = enedisApi.getToken(clientId, config.prmId);
-             * config.token = token;
-             *
-             * Configuration configuration = getConfig();
-             * configuration.put("token", token);
-             * updateConfiguration(configuration);
-             */
+            String token = EnedisHttpApi.getToken(httpClient, clientId, reqCode);
+
+            logger.debug("token:" + token);
+
+            Collection<Thing> col = this.thingRegistry.getAll();
+            for (Thing thing : col) {
+                if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
+
+                    Configuration config = thing.getConfiguration();
+                    String prmId = (String) config.get("prmId");
+
+                    if (!prmId.equals(reqCode)) {
+                        continue;
+                    }
+
+                    config.put("token", token);
+                    LinkyHandler handler = (LinkyHandler) thing.getHandler();
+                    handler.saveConfiguration(config);
+                }
+            }
+
             return token;
         }
     }
@@ -264,18 +279,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
         }
         // Fallback for MyElectricalData
         else {
-            Collection<Thing> col = this.thingRegistry.getAll();
-            for (Thing thing : col) {
-                if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
-
-                    Configuration config = thing.getConfiguration();
-
-                    String prmId = (String) config.get("prmId");
-                    prmId = prmId + "";
-
-                }
-            }
-
             String uri = LinkyBindingConstants.ENEDIS_AUTHORIZE_URL;
             uri = uri + "?";
             uri = uri + "&client_id=" + clientId;
@@ -284,6 +287,24 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
             return uri;
         }
 
+    }
+
+    @Override
+    public String[] getAllPrmId() {
+        Collection<Thing> col = this.thingRegistry.getAll();
+        List<String> result = new ArrayList<String>();
+        for (Thing thing : col) {
+            if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
+
+                Configuration config = thing.getConfiguration();
+
+                String prmId = (String) config.get("prmId");
+                result.add(prmId);
+
+            }
+        }
+
+        return result.toArray(new String[0]);
     }
 
 }
