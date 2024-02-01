@@ -35,5 +35,4 @@ public class AddressInfo {
 
     public String city;
     public String country;
-
 }

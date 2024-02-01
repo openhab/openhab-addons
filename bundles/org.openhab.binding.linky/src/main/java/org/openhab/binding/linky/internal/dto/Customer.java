@@ -29,5 +29,4 @@ public class Customer {
 
     @SerializedName("usage_points")
     public UsagePoint[] usagePoints;
-
 }

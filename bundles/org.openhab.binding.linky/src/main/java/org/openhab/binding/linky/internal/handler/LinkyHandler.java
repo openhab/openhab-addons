@@ -501,7 +501,6 @@ public class LinkyHandler extends BaseThingHandler {
         // if (meterReading.intervalReading.length != 1095) {
         // throw new LinkyException("Imcomplete meterReading data < 1095 days");
         // }
-
     }
 
     /*
@@ -548,5 +547,4 @@ public class LinkyHandler extends BaseThingHandler {
     public void saveConfiguration(Configuration config) {
         updateConfiguration(config);
     }
-
 }
