@@ -1,11 +1,27 @@
 # Warmup Binding
 
-This binding integrates the Warmup 4iE Thermostat <https://www.warmup.co.uk/thermostats/smart/4ie-underfloor-heating>, via the API at <https://my.warmup.com/>.
+This binding integrates [Warmup](https://www.warmup.co.uk) Wifi enabled Thermostats via the API at <https://my.warmup.com/>.
 
-Any Warmup 4iE device(s) must be registered at <https://my.warmup.com/> prior to usage.
+Devices known to work with the binding:
+* [Warmup 4iE](https://www.warmup.co.uk/thermostats/smart/4ie-underfloor-heating)
+* [Warmup Element](https://www.warmup.co.uk/thermostats/smart/element-wifi-thermostat)
+
+Device expected to work with the binding:
+* [Warmup 6iE](https://www.warmup.co.uk/thermostats/smart/6ie-underfloor-heating)
+
+Devices which might work with the binding:
+* Other similar looking devices marketed under different brands, mentioned in the API
+  * [Laticrete](https://laticrete.com/)
+  * [Rointe](https://rointe.com/)
+  * [Porcelanosa](https://www.porcelanosa.com/)
+  * Equus
+  * [Savant](https://www.savant.com/)
+
+Any Warmup device must be registered at <https://my.warmup.com/> prior to usage, or connected through the [MyHeating app](https://www.warmup.co.uk/thermostats/smart/myheating-app).
 
 This API is not known to be documented publicly.
-The binding api implementation has been derived from the implementations at <https://github.com/alyc100/SmartThingsPublic/blob/master/devicetypes/alyc100/warmup-4ie.src/warmup-4ie.groovy> and <https://github.com/alex-0103/warmup4IE/blob/master/warmup4ie/warmup4ie.py>, and enhanced by inspecting the GraphQL endpoint.
+The binding api implementation has been derived from the implementations at <https://github.com/alyc100/SmartThingsPublic/blob/master/devicetypes/alyc100/warmup-4ie.src/warmup-4ie.groovy> and <https://github.com/alex-0103/warmup4IE/blob/master/warmup4ie/warmup4ie.py>, and enhanced by inspecting the [GraphQL endpoint](https://apil.warmup.com/graphql).
+
 
 ## Supported Things
 
@@ -15,9 +31,9 @@ The Warmup binding supports the following thing types:
 |----------------|-------------------|----------------------------------------------------------------------------------------|
 | `my-warmup`    | My Warmup Account | The account credentials for my.warmup.com which acts as an API to the Warmup device(s) |
 
-| Thing    | Label | Description                                                                                                          |
-|----------|-------|----------------------------------------------------------------------------------------------------------------------|
-| `room`   | Room  | A room containing an individual Warmup 4iE device which is a WiFi connected device which controls a heating circuit. |
+| Thing    | Label | Description                                                                                    |
+|----------|-------|------------------------------------------------------------------------------------------------|
+| `room`   | Room  | A room containing an individual Warmup WiFi connected device which controls a heating circuit. |
 
 ### Room
 

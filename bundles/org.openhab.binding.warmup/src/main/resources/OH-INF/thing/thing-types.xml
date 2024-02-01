@@ -33,7 +33,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Room</label>
-		<description>Warmup 4iE Device controlling a room</description>
+		<description>Warmup WiFi connected Thermostat(s) controlling a room</description>
 		<category>RadiatorControl</category>
 
 		<channels>
