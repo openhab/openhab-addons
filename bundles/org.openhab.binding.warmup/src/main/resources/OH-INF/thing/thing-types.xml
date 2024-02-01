@@ -37,7 +37,7 @@
 		<category>RadiatorControl</category>
 
 		<channels>
-			<channel id="currentTemperature" typeId="currentTemperature"/>
+			<channel id="currentTemperature" typeId="system.indoor-temperature"/>
 			<channel id="targetTemperature" typeId="targetTemperature"/>
 			<channel id="overrideRemaining" typeId="overrideRemaining"/>
 			<channel id="runMode" typeId="runMode"/>
@@ -57,14 +57,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="currentTemperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Current Temperature</label>
-		<description>Current temperature in room, may be air or floor dependent on Heating Target</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
 
 	<channel-type id="targetTemperature">
 		<item-type>Number:Temperature</item-type>
