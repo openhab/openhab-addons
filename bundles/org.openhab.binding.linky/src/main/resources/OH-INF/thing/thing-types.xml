@@ -13,12 +13,18 @@
 		</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
+        
 		<channel-groups>
+            <channel-group typeId="main" id="main"/>
 			<channel-group typeId="daily" id="daily"/>
 			<channel-group typeId="weekly" id="weekly"/>
 			<channel-group typeId="monthly" id="monthly"/>
 			<channel-group typeId="yearly" id="yearly"/>
+			
 		</channel-groups>
+		
+		
+        
 
 		<config-description>
 		    <parameter name="prmId" type="text" required="true">
@@ -40,6 +46,8 @@
 			</parameter>
 
 		</config-description>
+		
+		
 	</thing-type>
 
 	<channel-group-type id="daily">
@@ -116,6 +124,22 @@
             </channel>
 		</channels>
 	</channel-group-type>
+	
+	<channel-group-type id="main">
+        <label>Main</label>
+    
+	    <channels>
+            <channel id="linkyTestSelect" typeId="typeTest">
+                     <label>linkyTestSelect</label>
+            </channel>
+        </channels>
+    </channel-group-type>
+	
+	<channel-type id="typeTest">
+        <item-type>String</item-type>
+        <label>Test Select</label>
+        <description>Test Select</description>
+    </channel-type>
 
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>

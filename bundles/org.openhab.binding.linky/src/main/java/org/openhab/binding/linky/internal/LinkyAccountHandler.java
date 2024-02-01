@@ -42,4 +42,6 @@ public interface LinkyAccountHandler {
      * @return the formatted url that should be used to call Smartthings Web Api with
      */
     String formatAuthorizationUrl(String redirectUri);
+
+    String[] getAllPrmId();
 }
