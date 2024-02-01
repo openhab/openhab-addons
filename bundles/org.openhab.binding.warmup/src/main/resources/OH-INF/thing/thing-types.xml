@@ -81,7 +81,7 @@
 		<item-type>String</item-type>
 		<label>Run Mode</label>
 		<description>The heat regulation mode of the thermostat</description>
-		<state readOnly="true">
+		<state>
 			<options>
 				<option value="not_set">Not Set</option>
 				<option value="off">Off</option>

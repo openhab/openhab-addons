@@ -24,6 +24,7 @@ import org.openhab.binding.warmup.internal.model.query.QueryResponseDTO;
 import org.openhab.binding.warmup.internal.model.query.RoomDTO;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -66,6 +67,9 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         }
         if (CHANNEL_FROST_PROTECTION_MODE.equals(channelUID.getId()) && command instanceof OnOffType onOffCommand) {
             toggleFrostProtectionMode(onOffCommand);
+        }
+        if (CHANNEL_RUN_MODE.equals(channelUID.getId()) && command instanceof StringType stringCommand) {
+            setRoomMode(stringCommand);
         }
     }
 
@@ -153,6 +157,26 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
             }
         } catch (MyWarmupApiException e) {
             logger.debug("Toggle Frost Protection failed: {}", e.getMessage());
+        }
+    }
+
+    private void setRoomMode(StringType command) {
+        String roomId = getThing().getProperties().get(PROPERTY_ROOM_ID);
+        String locationId = getThing().getProperties().get(PROPERTY_LOCATION_ID);
+        try {
+            final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
+            if (bridgeHandler != null && locationId != null && roomId != null) {
+                try {
+                    RoomMode mode = RoomMode.valueOf(command.toString().trim().toUpperCase());
+                    bridgeHandler.getApi().setRoomMode(locationId, roomId, mode);
+                    refreshFromServer();
+
+                } catch (IllegalArgumentException ex) {
+                    logger.error("Unable to set room mode: {}", command.toString());
+                }
+            }
+        } catch (MyWarmupApiException e) {
+            logger.debug("Set Room Mode failed: {}", e.getMessage());
         }
     }
 }

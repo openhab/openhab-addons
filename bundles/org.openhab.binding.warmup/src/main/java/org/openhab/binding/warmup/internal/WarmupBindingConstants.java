@@ -64,4 +64,9 @@ public class WarmupBindingConstants {
 
     public static final String AUTH_METHOD = "userLogin";
     public static final String AUTH_APP_ID = "WARMUP-APP-V001";
+
+    public enum RoomMode {
+        PROGRAM,
+        FIXED
+    }
 }

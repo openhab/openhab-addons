@@ -109,6 +109,20 @@ public class MyWarmupApi {
     }
 
     /**
+     * Call the API to set the room mode to fixed or program
+     *
+     * @param locationId Id of the location
+     * @param roomId Id of the room
+     * @param mode RoomMode defined in enum
+     * @throws MyWarmupApiException API callout error
+     */
+    public void setRoomMode(String locationId, String roomId, WarmupBindingConstants.RoomMode mode)
+            throws MyWarmupApiException {
+        callWarmupGraphQL(String.format("mutation{setRoomMode(lid:%s,rid:%s,roomMode:%s)}", locationId, roomId,
+                mode.name().toLowerCase()));
+    }
+
+    /**
      * Call the API to set a temperature override on a specific room
      *
      * @param locationId Id of the location

@@ -71,7 +71,7 @@ Rooms are configured automatically with a Serial Number on discovery, or can be 
 | currentTemperature  | Number:Temperature | Currently reported temperature                                                                                                               | true      |
 | targetTemperature   | Number:Temperature | Target temperature                                                                                                                           | false     |
 | overrideRemaining   | Number:Time        | Duration remaining of the configured override                                                                                                | true      |
-| runMode             | String             | Current operating mode of the thermostat, options listed below                                                                               | true      |
+| runMode             | String             | Current operating mode of the thermostat, options listed below                                                                               | false     |
 | frostProtectionMode | Switch             | Toggles between the "Frost Protection" run mode and the previously configured "active" run mode (known options are either Fixed or Schedule) | false     |
 | airTemperature      | Number:Temperature | Currently reported air temperature at the device                                                                                             | true      |
 | floor1Temperature   | Number:Temperature | Currently reported temperature from floor probe 1 on the device                                                                              | true      |
@@ -79,7 +79,7 @@ Rooms are configured automatically with a Serial Number on discovery, or can be 
 
 ### Run Mode Statuses
 
-These run mode statuses are defined for the API. The descriptions are based on inspection of the device behaviour and are not sourced from documentation.
+These run mode statuses are defined for the API. The descriptions are based on inspection of the device behaviour and are not sourced from documentation. Only "schedule" or "fixed" are writeable.
 
 | api value  | ui name          | description                                                                     |
 |------------|------------------|---------------------------------------------------------------------------------|
