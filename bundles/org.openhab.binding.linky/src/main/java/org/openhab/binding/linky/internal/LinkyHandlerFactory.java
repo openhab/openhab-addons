@@ -134,7 +134,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
                 LinkyBindingConstants.LINKY_AUTHORIZE_URL, clientId, clientSecret, LinkyBindingConstants.LINKY_SCOPES,
                 true);
         this.authService.setLinkyAccountHandler(this);
-
     }
 
     @Override
@@ -181,7 +180,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
 
         return accessTokenResponse != null && accessTokenResponse.getAccessToken() != null
                 && accessTokenResponse.getRefreshToken() != null;
-
     }
 
     private @Nullable AccessTokenResponse getAccessTokenResponse() {
@@ -288,7 +286,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
             uri = uri + "&response_type=" + "code";
             return uri;
         }
-
     }
 
     @Override
@@ -308,5 +305,4 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
 
         return result.toArray(new String[0]);
     }
-
 }

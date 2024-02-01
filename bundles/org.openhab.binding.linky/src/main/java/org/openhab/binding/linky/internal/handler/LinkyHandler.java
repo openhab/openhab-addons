@@ -39,11 +39,7 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.QuantityType;
-<<<<<<< HEAD
-import org.openhab.core.library.unit.MetricPrefix;
-=======
 import org.openhab.core.library.types.StringType;
->>>>>>> 8179e0592f (some fixes on connectlinky page)
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -594,10 +590,9 @@ public class LinkyHandler extends BaseThingHandler {
         if (meterReading.intervalReading.length == 0) {
             throw new LinkyException("Invalid meterReading data: no day period");
         }
-        if (meterReading.intervalReading.length != 1095) {
-            throw new LinkyException("Imcomplete meterReading data < 1095 days");
-        }
-
+        // if (meterReading.intervalReading.length != 1095) {
+        // throw new LinkyException("Imcomplete meterReading data < 1095 days");
+        // }
     }
 
     /*
@@ -687,5 +682,4 @@ public class LinkyHandler extends BaseThingHandler {
     public void saveConfiguration(Configuration config) {
         updateConfiguration(config);
     }
-
 }
