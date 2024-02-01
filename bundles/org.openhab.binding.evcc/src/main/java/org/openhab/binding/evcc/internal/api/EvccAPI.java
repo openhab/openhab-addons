@@ -87,8 +87,20 @@ public class EvccAPI {
     }
 
     // Site API calls.
-    public String setBatteryPrioritySoC(int prioritySoc) throws EvccApiException {
+    public String setPrioritySoC(int prioritySoc) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "prioritysoc/" + prioritySoc, "POST");
+    }
+
+    public String setBufferSoC(int bufferSoC) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "buffersoc/" + bufferSoC, "POST");
+    }
+
+    public String setBufferStartSoC(int bufferStartSoC) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "bufferstartsoc/" + bufferStartSoC, "POST");
+    }
+
+    public String setResidualPower(int residualPower) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "residualpower/" + residualPower, "POST");
     }
 
     public String setBatteryDischargeControl(boolean batteryDischargeControl) throws EvccApiException {

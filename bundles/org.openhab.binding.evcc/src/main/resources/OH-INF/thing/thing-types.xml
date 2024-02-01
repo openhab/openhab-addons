@@ -67,14 +67,6 @@
 		<category>BatteryLevel</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="batteryPrioritySoC">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Battery Priority SoC</label>
-		<description>State of Charge for which the battery has priority over charging the EV when charging mode is "pv".
-		</description>
-		<category>BatteryLevel</category>
-		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
-	</channel-type>
 	<channel-type id="batteryDischargeControl">
 		<item-type>Switch</item-type>
 		<label>Battery Discharge Control</label>
@@ -93,6 +85,40 @@
 		<description>Current Battery Mode</description>
 		<category></category>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="prioritySoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Priority SoC</label>
+		<description>State of Charge for which the battery has priority over charging the EV when charging mode is "pv".
+		</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="bufferSoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Buffer SoC</label>
+		<description>Until this State of Charge the discharging of a house battery is allowed in "pv" mode, when there is
+			insufficient solar surplus (below the minimum charging power).
+		</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="bufferStartSoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Buffer Start SoC</label>
+		<description>State of Charge for which a charging session in "pv" mode is started, even if there is insufficient solar
+			surplus.
+		</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="residualPower">
+		<item-type>Number:Power</item-type>
+		<label>Grid Residual Power</label>
+		<description>Target operating point of the surplus regulation at the grid connection (grid meter).
+		</description>
+		<category>Energy</category>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="gridPower">
 		<item-type>Number:Power</item-type>

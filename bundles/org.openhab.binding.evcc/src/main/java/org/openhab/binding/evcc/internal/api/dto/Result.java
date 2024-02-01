@@ -60,7 +60,16 @@ public class Result {
     private Loadpoint[] loadpoints;
 
     @SerializedName("prioritySoc")
-    private float batteryPrioritySoC;
+    private float prioritySoC;
+
+    @SerializedName("bufferSoc")
+    private float bufferSoC;
+
+    @SerializedName("bufferStartSoc")
+    private float bufferStartSoC;
+
+    @SerializedName("residualPower")
+    private float residualPower;
 
     @SerializedName("pvConfigured")
     private boolean pvConfigured;
@@ -98,8 +107,29 @@ public class Result {
     /**
      * @return battery's priority state of charge
      */
-    public float getBatteryPrioritySoC() {
-        return batteryPrioritySoC;
+    public float getPrioritySoC() {
+        return prioritySoC;
+    }
+
+    /**
+     * @return Battery Buffer SoC
+     */
+    public float getBufferSoC() {
+        return bufferSoC;
+    }
+
+    /**
+     * @return Battery Buffer Start SoC
+     */
+    public float getBufferStartSoC() {
+        return bufferStartSoC;
+    }
+
+    /**
+     * @return Grid Residual Power
+     */
+    public float getResidualPower() {
+        return residualPower;
     }
 
     /**
