@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.digitalstrom.internal.lib.manager.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.openhab.binding.digitalstrom.internal.lib.climate.TemperatureControlSensorTransmitter;
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus;
@@ -61,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TemperatureControlManager implements EventHandler, TemperatureControlSensorTransmitter {
 
-    private static final List<String> SUPPORTED_EVENTS = new ArrayList<>(
+    private static final Set<String> SUPPORTED_EVENTS = new HashSet<>(
             Arrays.asList(EventNames.HEATING_CONTROL_OPERATION_MODE));
 
     private final Logger logger = LoggerFactory.getLogger(TemperatureControlManager.class);
@@ -369,7 +370,7 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
 
     @Override
     public List<String> getSupportedEvents() {
-        return SUPPORTED_EVENTS;
+        return List.copyOf(SUPPORTED_EVENTS);
     }
 
     @Override
