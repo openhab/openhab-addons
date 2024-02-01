@@ -73,7 +73,7 @@ public class LinkyBindingConstants {
             "r:locations:*", "w:locations:*", "x:locations:*", "r:scenes:*", "x:scenes:*", "r:rules:*", "w:rules:*",
             "r:installedapps", "w:installedapps").collect(Collectors.joining(" "));
 
-    // List of Spotify services related urls, information
+    // List of Linky services related urls, information
     public static final String LINKY_ACCOUNT_URL = "https://www.myelectricaldata.fr/";
     public static final String LINKY_AUTHORIZE_URL = LINKY_ACCOUNT_URL + "v1/oauth2/authorize";
     public static final String LINKY_API_TOKEN_URL = LINKY_ACCOUNT_URL + "token";
