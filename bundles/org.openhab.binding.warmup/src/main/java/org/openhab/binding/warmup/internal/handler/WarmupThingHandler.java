@@ -79,6 +79,15 @@ public class WarmupThingHandler extends BaseThingHandler {
 
     /**
      *
+     * @param temperature value returned from the API as a String * 10. i.e. "215" = 21.5 degrees C
+     * @return the temperature as a {@link QuantityType}
+     */
+    protected State parseTemperature(@Nullable String temperature) {
+        return temperature != null ? parseTemperature(Integer.parseInt(temperature)) : UnDefType.UNDEF;
+    }
+
+    /**
+     *
      * @param temperature value returned from the API as an Integer * 10. i.e. 215 = 21.5 degrees C
      * @return the temperature as a {@link QuantityType}
      */

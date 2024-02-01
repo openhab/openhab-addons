@@ -97,6 +97,12 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
 
                             updateState(CHANNEL_CURRENT_TEMPERATURE, parseTemperature(room.getCurrentTemperature()));
                             updateState(CHANNEL_TARGET_TEMPERATURE, parseTemperature(room.getTargetTemperature()));
+                            updateState(CHANNEL_AIR_TEMPERATURE,
+                                    parseTemperature(room.getThermostat4ies().get(0).getAirTemp()));
+                            updateState(CHANNEL_FLOOR1_TEMPERATURE,
+                                    parseTemperature(room.getThermostat4ies().get(0).getFloor1Temp()));
+                            updateState(CHANNEL_FLOOR2_TEMPERATURE,
+                                    parseTemperature(room.getThermostat4ies().get(0).getFloor2Temp()));
                             updateState(CHANNEL_OVERRIDE_DURATION, parseDuration(room.getOverrideDuration()));
                             updateState(CHANNEL_RUN_MODE, parseString(room.getRunMode()));
                             updateState(CHANNEL_FROST_PROTECTION_MODE,

@@ -42,6 +42,9 @@
 			<channel id="overrideRemaining" typeId="overrideRemaining"/>
 			<channel id="runMode" typeId="runMode"/>
 			<channel id="frostProtectionMode" typeId="frostProtectionMode"/>
+			<channel id="airTemperature" typeId="system.indoor-temperature"/>
+			<channel id="floor1Temperature" typeId="system.indoor-temperature"/>
+			<channel id="floor2Temperature" typeId="system.indoor-temperature"/>
 		</channels>
 
 		<representation-property>serialNumber</representation-property>

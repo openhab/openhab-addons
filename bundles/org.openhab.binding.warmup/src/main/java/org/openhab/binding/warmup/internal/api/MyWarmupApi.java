@@ -104,7 +104,7 @@ public class MyWarmupApi {
         return callWarmupGraphQL("""
                 query QUERY { user { locations{ id name \
                  rooms { id roomName runMode overrideDur targetTemp currentTemp \
-                 thermostat4ies{ deviceSN lastPoll }}}}}\
+                 thermostat4ies{ deviceSN lastPoll airTemp floor1Temp floor2Temp }}}}}\
                 """);
     }
 

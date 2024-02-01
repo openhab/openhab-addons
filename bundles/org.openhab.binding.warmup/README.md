@@ -39,7 +39,7 @@ The Warmup binding supports the following thing types:
 
 The device is optimised for controlling underfloor heating (electric or hydronic), although it can also control central heating circuits.
 The device reports the temperature from one of two thermostats, either a floor temperature probe or the air temperature at the device.
-The separate temperatures do not appear to be reported through the API. It appears to be possible to configure two devices in a primary / secondary configuration, but it is not clear how this might be represented by the API and hasn't been implemented.
+It appears to be possible to configure two devices in a primary / secondary configuration, but it is not clear how this might be represented by the API and hasn't been implemented.
 
 ## Discovery
 
@@ -73,6 +73,9 @@ Rooms are configured automatically with a Serial Number on discovery, or can be 
 | overrideRemaining   | Number:Time        | Duration remaining of the configured override                                                                                                | true      |
 | runMode             | String             | Current operating mode of the thermostat, options listed below                                                                               | true      |
 | frostProtectionMode | Switch             | Toggles between the "Frost Protection" run mode and the previously configured "active" run mode (known options are either Fixed or Schedule) | false     |
+| airTemperature      | Number:Temperature | Currently reported air temperature at the device                                                                                             | true      |
+| floor1Temperature   | Number:Temperature | Currently reported temperature from floor probe 1 on the device                                                                              | true      |
+| floor2Temperature   | Number:Temperature | Currently reported temperature from floor probe 2 on the device                                                                              | true      |
 
 ### Run Mode Statuses
 

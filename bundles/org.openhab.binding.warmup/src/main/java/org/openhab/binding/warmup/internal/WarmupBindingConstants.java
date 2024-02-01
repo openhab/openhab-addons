@@ -43,7 +43,8 @@ public class WarmupBindingConstants {
     public static final String CHANNEL_FROST_PROTECTION_MODE = "frostProtectionMode";
     public static final String CHANNEL_HEATING_TARGET = "heatingTarget";
     public static final String CHANNEL_AIR_TEMPERATURE = "airTemperature";
-    public static final String CHANNEL_FLOOR_TEMPERATURE = "floorTemperature";
+    public static final String CHANNEL_FLOOR1_TEMPERATURE = "floor1Temperature";
+    public static final String CHANNEL_FLOOR2_TEMPERATURE = "floor2Temperature";
 
     public static final String FROST_PROTECTION_MODE = "anti_frost";
 
