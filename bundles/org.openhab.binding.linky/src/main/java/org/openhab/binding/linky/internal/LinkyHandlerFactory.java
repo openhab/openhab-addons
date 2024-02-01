@@ -218,7 +218,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
         else {
             String token = EnedisHttpApi.getToken(httpClient, clientId, reqCode);
 
-            logger.debug("token:" + token);
+            logger.debug("token: {}", token);
 
             Collection<Thing> col = this.thingRegistry.getAll();
             for (Thing thing : col) {
@@ -242,18 +242,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
     }
 
     private String updateProperties(AccessTokenResponse credentials) {
-        /*
-         * if (spotifyApi != null) {
-         *
-         * final Me me = spotifyApi.getMe();
-         * final String user = me.getDisplayName() == null ? me.getId() : me.getDisplayName();
-         * final Map<String, String> props = editProperties();
-         *
-         * props.put(PROPERTY_SPOTIFY_USER, user);
-         * updateProperties(props);
-         * return user;
-         * }
-         */
         return "";
     }
 

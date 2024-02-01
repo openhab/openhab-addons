@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,13 +105,13 @@ public class LinkyAuthServlet extends HttpServlet {
     }
 
     /**
-     * Handles a possible call from Enedis to the redirect_uri. If that is the case Spotify will pass the authorization
+     * Handles a possible call from Enedis to the redirect_uri. If that is the case Linky will pass the authorization
      * codes via the url and these are processed. In case of an error this is shown to the user. If the user was
      * authorized this is passed on to the handler. Based on all these different outcomes the HTML is generated to
      * inform the user.
      *
      * @param replaceMap a map with key String values that will be mapped in the HTML templates.
-     * @param servletBaseURL the servlet base, which should be used as the Spotify redirect_uri value
+     * @param servletBaseURL the servlet base, which should be used as the Linky redirect_uri value
      * @param queryString the query part of the GET request this servlet is processing
      */
     private void handleLinkyRedirect(Map<String, String> replaceMap, String servletBaseURL,
@@ -132,7 +132,7 @@ public class LinkyAuthServlet extends HttpServlet {
             // params.isEmpty() ? "" : String.format(HTML_META_REFRESH_CONTENT, servletBaseURL)
 
             if (!StringUtil.isBlank(reqError)) {
-                logger.debug("Spotify redirected with an error: {}", reqError);
+                logger.debug("Linky redirected with an error: {}", reqError);
                 replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, reqError));
             } else if (!StringUtil.isBlank(reqState)) {
                 try {

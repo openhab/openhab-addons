@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface LinkyAccountHandler {
 
     /**
-     * @return Returns true if the Spotify Bridge is authorized.
+     * @return Returns true if the Linky Bridge is authorized.
      */
     boolean isAuthorized();
 
