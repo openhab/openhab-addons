@@ -38,17 +38,20 @@ Default value for _refreshInterval_ is 60 seconds.
 Those channels exist only once.
 Please note that some of them are only available when evcc is properly configured.
 
-| Channel                         | Type                 | Read/Write | Description                                                                                                  |
-|---------------------------------|----------------------|------------|--------------------------------------------------------------------------------------------------------------|
-| general#batteryCapacity         | Number:Energy        | R          | Capacity of (home) battery                                                                                   |
-| general#batteryPower            | Number:Power         | R          | Current power from battery                                                                                   |
-| general#batterySoC              | Number:Dimensionless | R          | Current State of Charge of battery                                                                           |
-| general#batteryPrioritySoC      | Number:Dimensionless | RW         | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv"  |
-| general#batteryDischargeControl | Switch               | RW         | Enable or disable battery discharge control                                                                  |
-| general#batteryMode             | String               | R          | Current battery mode                                                                                         |
-| general#gridPower               | Number:Power         | R          | Current power from grid (negative means feed-in)                                                             |
-| general#homePower               | Number:Power         | R          | Current power taken by home                                                                                  |
-| general#pvPower                 | Number:Power         | R          | Current power from photovoltaik                                                                              |
+| Channel                         | Type                 | Read/Write | Description                                                                                                       |
+|---------------------------------|----------------------|------------|-------------------------------------------------------------------------------------------------------------------|
+| general#batteryCapacity         | Number:Energy        | R          | Capacity of (home) battery                                                                                        |
+| general#batteryPower            | Number:Power         | R          | Current power from battery                                                                                        |
+| general#batterySoC              | Number:Dimensionless | R          | Current State of Charge of battery                                                                                |
+| general#batteryDischargeControl | Switch               | RW         | Enable or disable battery discharge control                                                                       |
+| general#batteryMode             | String               | R          | Current battery mode                                                                                              |
+| general#prioritySoC             | Number:Dimensionless | RW         | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv"       |
+| general#bufferSoC               | Number:Dimensionless | RW         | Until this State of Charge the discharging of a house battery is allowed in "pv" mode, when there is insufficient solar surplus (below the minimum charging power) |
+| general#bufferStartSoC          | Number:Dimensionless | RW         | State of Charge for which a charging session in "pv" mode is started, even if there is insufficient solar surplus |
+| general#residualPower           | Number:Power         | RW         | Target operating point of the surplus regulation at the grid connection (grid meter)                              |
+| general#gridPower               | Number:Power         | R          | Current power from grid (negative means feed-in)                                                                  |
+| general#homePower               | Number:Power         | R          | Current power taken by home                                                                                       |
+| general#pvPower                 | Number:Power         | R          | Current power from photovoltaik                                                                                   |
 
 ### Loadpoint channels
 
@@ -111,9 +114,12 @@ Thing evcc:device:demo "evcc Demo" [url="https://demo.evcc.io", refreshInterval=
 Number:Energy             evcc_batteryCapacity                        "Battery Capacity [%.0f kWh]"                        <energy>          {channel="evcc:device:demo:general#batteryCapacity"}
 Number:Power              evcc_batteryPower                           "Battery Power [%.1f kW]"                            <energy>          {channel="evcc:device:demo:general#batteryPower"}
 Number:Dimensionless      evcc_batterySoC                             "Battery SoC [%d %%]"                                <batterylevel>    {channel="evcc:device:demo:general#batterySoC"}
-Number:Dimensionless      evcc_batteryPrioritySoC                     "Battery Priority SoC [%d %%]"                       <batterylevel>    {channel="evcc:device:demo:general#batteryPrioritySoC"}
 Switch                    evcc_batteryDischargeControl                "Battery Discharge Control [%s]"                     <switch>          {channel="evcc:device:demo:general#batteryDischargeControl"}
 String                    evcc_batteryMode                            "Battery Mode [%s]"                                  <battery>         {channel="evcc:device:demo:general#batteryMode"}
+Number:Dimensionless      evcc_prioritySoC                            "Battery Priority SoC [%d %%]"                       <batterylevel>    {channel="evcc:device:demo:general#prioritySoC"}
+Number:Dimensionless      evcc_bufferSoC                              "Battery Buffer SoC [%d %%]"                         <batterylevel>    {channel="evcc:device:demo:general#bufferSoC"}
+Number:Dimensionless      evcc_bufferStartSoC                         "Battery Buffer Start SoC [%d %%]"                   <batterylevel>    {channel="evcc:device:demo:general#bufferStartSoC"}
+Number:Power              evcc_residualPower                          "Grid Residual Power [%.1f kW]"                      <energy>          {channel="evcc:device:demo:general#residualPower"}
 Number:Power              evcc_gridPower                              "Grid Power [%.1f kW]"                               <energy>          {channel="evcc:device:demo:general#gridPower"}
 Number:Power              evcc_homePower                              "Home Power [%.1f kW]"                               <energy>          {channel="evcc:device:demo:general#homePower"}
 Number:Power              evcc_pvPower                                "PV Power [%.1f kW]"                                 <energy>          {channel="evcc:device:demo:general#pvPower"}
