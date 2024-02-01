@@ -38,15 +38,17 @@ Default value for _refreshInterval_ is 60 seconds.
 Those channels exist only once.
 Please note that some of them are only available when evcc is properly configured.
 
-| Channel                    | Type                 | Read/Write | Description                                                                                                  |
-|----------------------------|----------------------|------------|--------------------------------------------------------------------------------------------------------------|
-| general#batteryCapacity    | Number:Energy        | R          | Capacity of (home) battery.                                                                                  |
-| general#batteryPower       | Number:Power         | R          | Current power from battery.                                                                                  |
-| general#batterySoC         | Number:Dimensionless | R          | Current State of Charge of battery.                                                                          |
-| general#batteryPrioritySoC | Number:Dimensionless | RW         | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv". |
-| general#gridPower          | Number:Power         | R          | Current power from grid (negative means feed-in)                                                             |
-| general#homePower          | Number:Power         | R          | Current power taken by home.                                                                                 |
-| general#pvPower            | Number:Power         | R          | Current power from photovoltaik.                                                                             |
+| Channel                         | Type                 | Read/Write | Description                                                                                                  |
+|---------------------------------|----------------------|------------|--------------------------------------------------------------------------------------------------------------|
+| general#batteryCapacity         | Number:Energy        | R          | Capacity of (home) battery                                                                                   |
+| general#batteryPower            | Number:Power         | R          | Current power from battery                                                                                   |
+| general#batterySoC              | Number:Dimensionless | R          | Current State of Charge of battery                                                                           |
+| general#batteryPrioritySoC      | Number:Dimensionless | RW         | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv"  |
+| general#batteryDischargeControl | Switch               | RW         | Battery Discharge Control switch                                                                             |
+| general#batteryMode             | String               | R          | Current battery mode                                                                                         |
+| general#gridPower               | Number:Power         | R          | Current power from grid (negative means feed-in)                                                             |
+| general#homePower               | Number:Power         | R          | Current power taken by home                                                                                  |
+| general#pvPower                 | Number:Power         | R          | Current power from photovoltaik                                                                              |
 
 ### Loadpoint channels
 
@@ -78,7 +80,7 @@ Please note that you have to replace _N_ with your loadpoint number.
 | loadpointN#vehiclePresent           | Switch                 | R          | Whether evcc is able to get data from vehicle                             |
 | loadpointN#vehicleRange             | Number:Length          | R          | Battery range for EV                                                      |
 | loadpointN#vehicleSoC               | Number:Dimensionless   | R          | Current State of Charge of EV                                             |
-| loadpointN#vehicleName              | String                 | R          | Name of EV                                                                |
+| loadpointN#vehicleName              | String                 | R          | Name of EV (former vehicle-id)                                            |
 
 ### Vehicle channels
 
@@ -110,6 +112,8 @@ Number:Energy             evcc_batteryCapacity                        "Battery C
 Number:Power              evcc_batteryPower                           "Battery Power [%.1f kW]"                            <energy>          {channel="evcc:device:demo:general#batteryPower"}
 Number:Dimensionless      evcc_batterySoC                             "Battery SoC [%d %%]"                                <batterylevel>    {channel="evcc:device:demo:general#batterySoC"}
 Number:Dimensionless      evcc_batteryPrioritySoC                     "Battery Priority SoC [%d %%]"                       <batterylevel>    {channel="evcc:device:demo:general#batteryPrioritySoC"}
+Switch                    evcc_batteryDischargeControl                "Battery Discharge Control [%s]"                     <switch>          {channel="evcc:device:demo:general#batteryDischargeControl"}
+String                    evcc_batteryMode                            "Battery Mode [%s]"                                  <battery>         {channel="evcc:device:demo:general#batteryMode"}
 Number:Power              evcc_gridPower                              "Grid Power [%.1f kW]"                               <energy>          {channel="evcc:device:demo:general#gridPower"}
 Number:Power              evcc_homePower                              "Home Power [%.1f kW]"                               <energy>          {channel="evcc:device:demo:general#homePower"}
 Number:Power              evcc_pvPower                                "PV Power [%.1f kW]"                                 <energy>          {channel="evcc:device:demo:general#pvPower"}
@@ -142,12 +146,12 @@ Number:Dimensionless      evcc_loadpoint0_vehicleSoC                  "Vehicle S
 String                    evcc_loadpoint0_VehicleName                 "Vehicle name [%s]"                                  <text>            {channel="evcc:device:demo:loadpoint0#vehicleName"}
 
 // Vehicle
-String                    evcc_vehicle0_vehicleTitle                  "Vehicle title [%s]"                                  <text>            {channel="evcc:device:demo:vehicle0#vehicleTitle"}
-Number:Dimensionless      evcc_vehicle0_vehicleMinSoC                 "Vehicle minimum SoC [%d %%]"                         <batterylevel>    {channel="evcc:device:demo:vehicle0#vehicleMinSoC"}
-Number:Dimensionless      evcc_vehicle0_vehicleLimitSoC               "Vehicle limit SoC [%d %%]"                           <batterylevel>    {channel="evcc:device:demo:vehicle0#vehicleLimitSoC"}
-Switch                    evcc_vehicle0_vehiclePlanEnabled            "Vehicle plan enabled [%s]"                           <switch>          {channel="evcc:device:demo:vehicle0#vehiclePlanEnabled"}
-Number:Dimensionless      evcc_vehicle0_vehiclePlanSoC                "Vehicle plan SoC [%d %%]"                            <batterylevel>    {channel="evcc:device:demo:vehicle0#vehiclePlanSoC"}
-DateTime                  evcc_vehicle0_vehiclePlanTime               "Vehicle plan time [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]"  <time>            {channel="evcc:device:demo:loadpoint0#targetTime"}
+String                    evcc_vehicle0_vehicleTitle                  "Vehicle title [%s]"                                  <text>           {channel="evcc:device:demo:vehicle0#vehicleTitle"}
+Number:Dimensionless      evcc_vehicle0_vehicleMinSoC                 "Vehicle minimum SoC [%d %%]"                         <batterylevel>   {channel="evcc:device:demo:vehicle0#vehicleMinSoC"}
+Number:Dimensionless      evcc_vehicle0_vehicleLimitSoC               "Vehicle limit SoC [%d %%]"                           <batterylevel>   {channel="evcc:device:demo:vehicle0#vehicleLimitSoC"}
+Switch                    evcc_vehicle0_vehiclePlanEnabled            "Vehicle plan enabled [%s]"                           <switch>         {channel="evcc:device:demo:vehicle0#vehiclePlanEnabled"}
+Number:Dimensionless      evcc_vehicle0_vehiclePlanSoC                "Vehicle plan SoC [%d %%]"                            <batterylevel>   {channel="evcc:device:demo:vehicle0#vehiclePlanSoC"}
+DateTime                  evcc_vehicle0_vehiclePlanTime               "Vehicle plan time [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]"  <time>           {channel="evcc:device:demo:loadpoint0#targetTime"}
 ```
 
 ### Sitemap

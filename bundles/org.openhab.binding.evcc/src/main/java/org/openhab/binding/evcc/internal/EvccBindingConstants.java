@@ -37,6 +37,8 @@ public class EvccBindingConstants {
     public static final String CHANNEL_BATTERY_POWER = "batteryPower";
     public static final String CHANNEL_BATTERY_SOC = "batterySoC";
     public static final String CHANNEL_BATTERY_PRIORITY_SOC = "batteryPrioritySoC";
+    public static final String CHANNEL_BATTERY_DISCHARGE_CONTROL = "batteryDischargeControl";
+    public static final String CHANNEL_BATTERY_MODE = "batteryMode";
     public static final String CHANNEL_GRID_POWER = "gridPower";
     public static final String CHANNEL_HOME_POWER = "homePower";
     public static final String CHANNEL_PV_POWER = "pvPower";
@@ -84,6 +86,10 @@ public class EvccBindingConstants {
             CHANNEL_BATTERY_SOC);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_PRIORITY_SOC = new ChannelTypeUID(BINDING_ID,
             CHANNEL_BATTERY_PRIORITY_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_DISCHARGE_CONTROL = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_BATTERY_DISCHARGE_CONTROL);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_MODE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_BATTERY_MODE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_GRID_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_GRID_POWER);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_HOME_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_HOME_POWER);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_PV_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_PV_POWER);

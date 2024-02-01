@@ -93,15 +93,29 @@ public class EvccHandler extends BaseThingHandler {
             }
             try {
                 if (channelGroupId.equals(CHANNEL_GROUP_ID_GENERAL)) {
-                    if (!channelIdWithoutGroup.equals(CHANNEL_BATTERY_PRIORITY_SOC)) {
-                        return;
-                    }
-                    if (command instanceof QuantityType<?> qt) {
-                        evccAPI.setBatteryPrioritySoC(qt.toUnit(Units.PERCENT).intValue());
-                    } else if (command instanceof DecimalType dt) {
-                        evccAPI.setBatteryPrioritySoC(dt.intValue());
-                    } else {
-                        logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                    switch (channelIdWithoutGroup) {
+                        case CHANNEL_BATTERY_PRIORITY_SOC -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setBatteryPrioritySoC(qt.toUnit(Units.PERCENT).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setBatteryPrioritySoC(dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
+                        }
+                        case CHANNEL_BATTERY_DISCHARGE_CONTROL -> {
+                            if (command == OnOffType.ON) {
+                                evccAPI.setBatteryDischargeControl(true);
+                            } else if (command == OnOffType.OFF) {
+                                evccAPI.setBatteryDischargeControl(false);
+                            } else {
+                                logger.debug("Command has wrong type, OnOffType required!");
+                            }
+                            updateChannelsGeneral();
+                        }
+                        default -> {
+                            return;
+                        }
                     }
                 } else if (channelGroupId.startsWith(CHANNEL_GROUP_ID_LOADPOINT)) {
                     int loadpoint = Integer.parseInt(groupId.substring(9)) + 1;
@@ -329,6 +343,9 @@ public class EvccHandler extends BaseThingHandler {
                     "Number:Dimensionless");
             createChannel(CHANNEL_BATTERY_PRIORITY_SOC, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_BATTERY_PRIORITY_SOC,
                     "Number:Dimensionless");
+            createChannel(CHANNEL_BATTERY_DISCHARGE_CONTROL, CHANNEL_GROUP_ID_GENERAL,
+                    CHANNEL_TYPE_UID_BATTERY_DISCHARGE_CONTROL, "Switch");
+            createChannel(CHANNEL_BATTERY_MODE, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_BATTERY_MODE, "String");
         }
         if (gridConfigured) {
             createChannel(CHANNEL_GRID_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_GRID_POWER, "Number:Power");
@@ -439,6 +456,14 @@ public class EvccHandler extends BaseThingHandler {
             float batteryPrioritySoC = result.getBatteryPrioritySoC();
             channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_BATTERY_PRIORITY_SOC);
             updateState(channel, new QuantityType<>(batteryPrioritySoC, Units.PERCENT));
+
+            boolean batteryDischargeControl = result.getBatteryDischargeControl();
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_BATTERY_DISCHARGE_CONTROL);
+            updateState(channel, OnOffType.from(batteryDischargeControl));
+
+            String batteryMode = result.getBatteryMode();
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_BATTERY_MODE);
+            updateState(channel, new StringType(batteryMode));
         }
         boolean gridConfigured = this.gridConfigured;
         if (gridConfigured) {

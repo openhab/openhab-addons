@@ -75,6 +75,25 @@
 		<category>BatteryLevel</category>
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
+	<channel-type id="batteryDischargeControl">
+		<item-type>Switch</item-type>
+		<label>Battery Discharge Control</label>
+		<description>Battery Discharge Control switch</description>
+		<category>Switch</category>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="batteryMode">
+		<item-type>String</item-type>
+		<label>Battery Mode</label>
+		<description>Current Battery Mode</description>
+		<category></category>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="gridPower">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power</label>
@@ -295,7 +314,7 @@
 	<channel-type id="vehicleName">
 		<item-type>String</item-type>
 		<label>Vehicle Name</label>
-		<description>Name of EV</description>
+		<description>Name of EV (former vehicle-id)</description>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>

@@ -41,6 +41,12 @@ public class Result {
     @SerializedName("batterySoc")
     private float batterySoC;
 
+    @SerializedName("batteryDischargeControl")
+    private boolean batteryDischargeControl;
+
+    @SerializedName("batteryMode")
+    private String batteryMode;
+
     @SerializedName("gridConfigured")
     private boolean gridConfigured;
 
@@ -101,6 +107,20 @@ public class Result {
      */
     public float getBatterySoC() {
         return batterySoC;
+    }
+
+    /**
+     * @return battery discharge control
+     */
+    public boolean getBatteryDischargeControl() {
+        return batteryDischargeControl;
+    }
+
+    /**
+     * @return battery mode
+     */
+    public String getBatteryMode() {
+        return batteryMode;
     }
 
     /**

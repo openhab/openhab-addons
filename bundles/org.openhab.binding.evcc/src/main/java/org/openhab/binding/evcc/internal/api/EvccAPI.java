@@ -91,6 +91,10 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "prioritysoc/" + prioritySoc, "POST");
     }
 
+    public String setBatteryDischargeControl(boolean batteryDischargeControl) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "batterydischargecontrol/" + batteryDischargeControl, "POST");
+    }
+
     // Loadpoint specific API calls.
     public String setMode(int loadpoint, String mode) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mode/" + mode, "POST");
