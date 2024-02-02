@@ -29,43 +29,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * openwebnet4j SerialPort implementation based on
- * org.openhab.core.io.transport.serial.SerialPort
+ * openwebnet4j SerialPort implementation based on OH serial transport
  *
  * @author M. Valla - Initial contribution
  */
 
 @NonNullByDefault
-// FIXME rename SerialPortImpl
 public class SerialPortAdapter implements org.openwebnet4j.communication.serial.spi.SerialPort {
 
     private static final Logger logger = LoggerFactory.getLogger(SerialPortAdapter.class);
-
-    private class AdapterEvListener implements SerialPortEventListener {
-
-        org.openwebnet4j.communication.serial.spi.@Nullable SerialPortEventListener lsnr;
-
-        void subscribe(org.openwebnet4j.communication.serial.spi.SerialPortEventListener listener) {
-            lsnr = listener;
-        }
-
-        @Override
-        public void serialEvent(SerialPortEvent event) {
-            org.openwebnet4j.communication.serial.spi.SerialPortEventListener localLsnr = lsnr;
-            if (event != null && localLsnr != null) {
-                localLsnr.serialEvent(new SerialPortEventAdapter(event));
-            }
-        }
-    }
 
     private static final int OPEN_TIMEOUT_MS = 200;
 
     private final SerialPortIdentifier spid;
 
     private @Nullable SerialPort sp = null;
-
-    @Nullable
-    AdapterEvListener adaptListener = null;
 
     public SerialPortAdapter(final SerialPortIdentifier spid) {
         logger.debug(
@@ -99,17 +77,20 @@ public class SerialPortAdapter implements org.openwebnet4j.communication.serial.
         @Nullable
         SerialPort lsp = sp;
         if (lsp != null) {
-            adaptListener = new AdapterEvListener();
-            AdapterEvListener lsnr = adaptListener;
-            if (lsnr != null) {
-                lsnr.subscribe(listener);
-                try {
-                    lsp.notifyOnDataAvailable(true);
-                    lsp.addEventListener(lsnr);
-                    return true;
-                } catch (TooManyListenersException e) {
-                    logger.error("TooManyListenersException while adding event listener: {}", e.getMessage());
-                }
+            try {
+                lsp.addEventListener(new SerialPortEventListener() {
+
+                    @Override
+                    public void serialEvent(SerialPortEvent event) {
+                        if (event != null) {
+                            listener.serialEvent(new SerialPortEventAdapter(event));
+                        }
+                    }
+                });
+                lsp.notifyOnDataAvailable(true);
+                return true;
+            } catch (TooManyListenersException e) {
+                logger.error("TooManyListenersException while adding event listener: {}", e.getMessage());
             }
         }
         return false;

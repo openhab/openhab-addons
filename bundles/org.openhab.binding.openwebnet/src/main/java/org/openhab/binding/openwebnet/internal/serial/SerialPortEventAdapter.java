@@ -16,8 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openwebnet4j.communication.serial.spi.SerialPortEvent;
 
 /**
- * openwebnet4j SerialPortEvent implementation based on
- * org.openhab.core.io.transport.serial.SerialPortEvent
+ * openwebnet4j SerialPortEvent implementation based on OH serial transport
  *
  * @author M. Valla - Initial contribution
  */

@@ -27,8 +27,7 @@ import org.slf4j.LoggerFactory;
 import aQute.bnd.annotation.spi.ServiceProvider;
 
 /**
- * openwebnet4j SerialPortProvider implementation based on
- * org.openhab.core.io.transport.serial.SerialPortManager
+ * openwebnet4j SerialPortProvider implementation based on OH serial transport
  *
  * @author M. Valla - Initial contribution
  */
