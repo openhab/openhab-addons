@@ -41,7 +41,7 @@ public class EvccBindingConstants {
     public static final String CHANNEL_PRIORITY_SOC = "prioritySoC";
     public static final String CHANNEL_BUFFER_SOC = "bufferSoC";
     public static final String CHANNEL_BUFFER_START_SOC = "bufferStartSoC";
-    public static final String CHANNEL_RESIDUAL_POWER_SOC = "residualPower";
+    public static final String CHANNEL_RESIDUAL_POWER = "residualPower";
     public static final String CHANNEL_GRID_POWER = "gridPower";
     public static final String CHANNEL_HOME_POWER = "homePower";
     public static final String CHANNEL_PV_POWER = "pvPower";
@@ -96,8 +96,8 @@ public class EvccBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_UID_BUFFER_SOC = new ChannelTypeUID(BINDING_ID, CHANNEL_BUFFER_SOC);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_BUFFER_START_SOC = new ChannelTypeUID(BINDING_ID,
             CHANNEL_BUFFER_START_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_RESIDUAL_POWER_SOC = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_RESIDUAL_POWER_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_RESIDUAL_POWER = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_RESIDUAL_POWER);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_GRID_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_GRID_POWER);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_HOME_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_HOME_POWER);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_PV_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_PV_POWER);

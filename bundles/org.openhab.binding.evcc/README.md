@@ -58,32 +58,32 @@ Please note that some of them are only available when evcc is properly configure
 Those channels exist per configured loadpoint.
 Please note that you have to replace _N_ with your loadpoint number.
 
-| Channel                             | Type                   | Read/Write | Description                                                               |
-|-------------------------------------|------------------------|------------|---------------------------------------------------------------------------|
-| loadpointN#activePhases             | Number                 | R          | Current number of active phases while charging                            |
-| loadpointN#chargeCurrent            | Number:ElectricCurrent | R          | Current amperage per connected phase while charging                       |
-| loadpointN#chargeDuration           | Number:Time            | R          | Charging duration                                                         |
-| loadpointN#chargeRemainingDuration  | Number:Time            | R          | Remaining duration until limit SoC is reached                             |
-| loadpointN#chargeRemainingEnergy    | Number:Energy          | R          | Remaining energy until limit SoC is reached                               |
-| loadpointN#chargePower              | Number:Power           | R          | Current power of charging                                                 |
-| loadpointN#chargedEnergy            | Number:Energy          | R          | Energy charged since plugged-in                                           |
-| loadpointN#charging                 | Switch                 | R          | Loadpoint is currently charging                                           |
-| loadpointN#enabled                  | Switch                 | R          | Charging enabled (mode is not "off")                                      |
-| loadpointN#maxCurrent               | Number:ElectricCurrent | RW         | Maximum amperage per connected phase with which the car should be charged |
-| loadpointN#minCurrent               | Number:ElectricCurrent | RW         | Minimum amperage per connected phase with which the car should be charged |
-| loadpointN#mode                     | String                 | RW         | Charging mode: "off", "now", "minpv", "pv"                                |
-| loadpointN#phases                   | Number                 | RW         | The maximum number of phases which can be used                            |
-| loadpointN#limitEnergy              | Number:Energy          | RW         | Amount of energy to charge the vehicle with                               |
-| loadpointN#limitSoC                 | Number:Dimensionless   | RW         | Until which state of charge (SoC) should the vehicle be charged           |
-| loadpointN#title                    | String                 | R          | Title of loadpoint                                                        |
-| loadpointN#vehicleConnected         | Switch                 | R          | Whether vehicle is connected to loadpoint                                 |
-| loadpointN#vehicleConnectedDuration | Number:Time            | R          | Duration the vehicle is connected to loadpoint                            |
-| loadpointN#vehicleCapacity          | Number:Energy          | R          | Capacity of EV battery                                                    |
-| loadpointN#vehicleOdometer          | Number:Length          | R          | Total distance travelled by EV                                            |
-| loadpointN#vehiclePresent           | Switch                 | R          | Whether evcc is able to get data from vehicle                             |
-| loadpointN#vehicleRange             | Number:Length          | R          | Battery range for EV                                                      |
-| loadpointN#vehicleSoC               | Number:Dimensionless   | R          | Current State of Charge of EV                                             |
-| loadpointN#vehicleName              | String                 | R          | Name of EV (former vehicle-id)                                            |
+| Channel                             | Type                   | Read/Write | Description                                                                                                       |
+|-------------------------------------|------------------------|------------|-------------------------------------------------------------------------------------------------------------------|
+| loadpointN#activePhases             | Number                 | R          | Current number of active phases while charging                                                                    |
+| loadpointN#chargeCurrent            | Number:ElectricCurrent | R          | Current amperage per connected phase while charging                                                               |
+| loadpointN#chargeDuration           | Number:Time            | R          | Charging duration                                                                                                 |
+| loadpointN#chargeRemainingDuration  | Number:Time            | R          | Remaining duration until limit SoC is reached                                                                     |
+| loadpointN#chargeRemainingEnergy    | Number:Energy          | R          | Remaining energy until limit SoC is reached                                                                       |
+| loadpointN#chargePower              | Number:Power           | R          | Current power of charging                                                                                         |
+| loadpointN#chargedEnergy            | Number:Energy          | R          | Energy charged since plugged-in                                                                                   |
+| loadpointN#charging                 | Switch                 | R          | Loadpoint is currently charging                                                                                   |
+| loadpointN#enabled                  | Switch                 | R          | Charging enabled (mode is not "off")                                                                              |
+| loadpointN#maxCurrent               | Number:ElectricCurrent | RW         | Maximum amperage per connected phase with which the car should be charged                                         |
+| loadpointN#minCurrent               | Number:ElectricCurrent | RW         | Minimum amperage per connected phase with which the car should be charged                                         |
+| loadpointN#mode                     | String                 | RW         | Charging mode: "off", "now", "minpv", "pv"                                                                        |
+| loadpointN#phases                   | Number                 | RW         | The maximum number of phases which can be used                                                                    |
+| loadpointN#limitEnergy              | Number:Energy          | RW         | Amount of energy to charge the vehicle with                                                                       |
+| loadpointN#limitSoC                 | Number:Dimensionless   | RW         | Until which state of charge (SoC) should the vehicle be charged                                                   |
+| loadpointN#title                    | String                 | R          | Title of loadpoint                                                                                                |
+| loadpointN#vehicleConnected         | Switch                 | R          | Whether vehicle is connected to loadpoint                                                                         |
+| loadpointN#vehicleConnectedDuration | Number:Time            | R          | Duration the vehicle is connected to loadpoint                                                                    |
+| loadpointN#vehicleCapacity          | Number:Energy          | R          | Capacity of EV battery                                                                                            |
+| loadpointN#vehicleOdometer          | Number:Length          | R          | Total distance travelled by EV                                                                                    |
+| loadpointN#vehiclePresent           | Switch                 | R          | Whether evcc is able to get data from vehicle                                                                     |
+| loadpointN#vehicleRange             | Number:Length          | R          | Battery range for EV                                                                                              |
+| loadpointN#vehicleSoC               | Number:Dimensionless   | R          | Current State of Charge of EV                                                                                     |
+| loadpointN#vehicleName              | String                 | R          | The unique identifier of the EV used in the evcc configuration (containing no whitespaces nor special characters) |
 
 ### Vehicle channels
 

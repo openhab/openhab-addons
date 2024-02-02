@@ -102,7 +102,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                            updateChannelsGeneral();
                         }
                         case CHANNEL_BUFFER_SOC -> {
                             if (command instanceof QuantityType<?> qt) {
@@ -112,7 +111,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                            updateChannelsGeneral();
                         }
                         case CHANNEL_BUFFER_START_SOC -> {
                             if (command instanceof QuantityType<?> qt) {
@@ -122,9 +120,8 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                            updateChannelsGeneral();
                         }
-                        case CHANNEL_RESIDUAL_POWER_SOC -> {
+                        case CHANNEL_RESIDUAL_POWER -> {
                             if (command instanceof QuantityType<?> qt) {
                                 evccAPI.setResidualPower(qt.toUnit(Units.WATT).intValue());
                             } else if (command instanceof DecimalType dt) {
@@ -132,7 +129,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                            updateChannelsGeneral();
                         }
                         case CHANNEL_BATTERY_DISCHARGE_CONTROL -> {
                             if (command == OnOffType.ON) {
@@ -142,7 +138,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, OnOffType required!");
                             }
-                            updateChannelsGeneral();
                         }
                         default -> {
                             return;
@@ -157,7 +152,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, StringType required!");
                             }
-                            updateChannelsLoadpoint(loadpoint);
                         }
                         case CHANNEL_LOADPOINT_LIMIT_ENERGY -> {
                             if (command instanceof QuantityType<?> qt) {
@@ -165,7 +159,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, QuantityType required!");
                             }
-                            updateChannelsLoadpoint(loadpoint);
                         }
                         case CHANNEL_LOADPOINT_LIMIT_SOC -> {
                             if (command instanceof QuantityType<?> qt) {
@@ -175,7 +168,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                            updateChannelsLoadpoint(loadpoint);
                         }
                         case CHANNEL_LOADPOINT_PHASES -> {
                             if (command instanceof DecimalType dt) {
@@ -183,7 +175,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, DecimalType required!");
                             }
-                            updateChannelsLoadpoint(loadpoint);
                         }
                         case CHANNEL_LOADPOINT_MIN_CURRENT -> {
                             if (command instanceof QuantityType<?> qt) {
@@ -193,7 +184,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                            updateChannelsLoadpoint(loadpoint);
                         }
                         case CHANNEL_LOADPOINT_MAX_CURRENT -> {
                             if (command instanceof QuantityType<?> qt) {
@@ -203,7 +193,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                            updateChannelsLoadpoint(loadpoint);
                         }
                         default -> {
                             return;
@@ -220,7 +209,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                            updateChannelsVehicle(vehicleName);
                         }
                         case CHANNEL_VEHICLE_LIMIT_SOC -> {
                             if (command instanceof QuantityType<?> qt) {
@@ -230,7 +218,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                            updateChannelsVehicle(vehicleName);
                         }
                         case CHANNEL_VEHICLE_PLAN_ENABLED -> {
                             Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
@@ -246,7 +233,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, OnOffType required!");
                             }
-                            updateChannelsVehicle(vehicleName);
                         }
                         case CHANNEL_VEHICLE_PLAN_SOC -> {
                             Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
@@ -266,7 +252,6 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
-                            updateChannelsVehicle(vehicleName);
                         }
                         case CHANNEL_VEHICLE_PLAN_TIME -> {
                             Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
@@ -284,7 +269,9 @@ public class EvccHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("Command has wrong type, DateTimeType required!");
                             }
-                            updateChannelsVehicle(vehicleName);
+                        }
+                        default -> {
+                            return;
                         }
                     }
                 }
@@ -389,7 +376,7 @@ public class EvccHandler extends BaseThingHandler {
                     "Number:Dimensionless");
             createChannel(CHANNEL_BUFFER_START_SOC, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_BUFFER_START_SOC,
                     "Number:Dimensionless");
-            createChannel(CHANNEL_RESIDUAL_POWER_SOC, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_RESIDUAL_POWER_SOC,
+            createChannel(CHANNEL_RESIDUAL_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_RESIDUAL_POWER,
                     "Number:Power");
         }
         if (gridConfigured) {
@@ -520,7 +507,7 @@ public class EvccHandler extends BaseThingHandler {
             updateState(channel, new QuantityType<>(bufferStartSoC, Units.PERCENT));
 
             float residualPower = result.getResidualPower();
-            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_RESIDUAL_POWER_SOC);
+            channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_RESIDUAL_POWER);
             updateState(channel, new QuantityType<>(residualPower, Units.WATT));
         }
         boolean gridConfigured = this.gridConfigured;

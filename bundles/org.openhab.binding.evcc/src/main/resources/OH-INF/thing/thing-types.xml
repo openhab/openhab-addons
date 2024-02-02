@@ -340,7 +340,8 @@
 	<channel-type id="vehicleName">
 		<item-type>String</item-type>
 		<label>Vehicle Name</label>
-		<description>Name of EV</description>
+		<description>The unique identifier of the EV used in the evcc configuration (containing no whitespaces nor special
+			characters)</description>
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
