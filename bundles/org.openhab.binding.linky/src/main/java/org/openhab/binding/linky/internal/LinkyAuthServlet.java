@@ -82,29 +82,36 @@ public class LinkyAuthServlet extends HttpServlet {
 
         String servletBaseURLSecure = servletBaseURL;
 
-        handleLinkyRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
+        try {
+            handleLinkyRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
 
-        LinkyAccountHandler accountHandler = linkyAuthService.getLinkyAccountHandler();
+            LinkyAccountHandler accountHandler = linkyAuthService.getLinkyAccountHandler();
 
-        resp.setContentType(CONTENT_TYPE);
+            resp.setContentType(CONTENT_TYPE);
 
-        StringBuffer optionBuffer = new StringBuffer();
+            StringBuffer optionBuffer = new StringBuffer();
 
-        if (accountHandler != null) {
-            String[] prmIds = accountHandler.getAllPrmId();
-            for (String prmId : prmIds) {
-                optionBuffer.append("<option value=\"" + prmId + "\">" + prmId + "</option>");
+            if (accountHandler != null) {
+                String[] prmIds = accountHandler.getAllPrmId();
+                for (String prmId : prmIds) {
+                    optionBuffer.append("<option value=\"" + prmId + "\">" + prmId + "</option>");
+                }
             }
-        }
 
-        replaceMap.put(KEY_PRMID_OPTION, optionBuffer.toString());
-        replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
-        replaceMap.put(KEY_RETRIEVE_TOKEN_URI, servletBaseURLSecure + "?state=OK");
-        if (accountHandler != null) {
-            replaceMap.put(KEY_AUTHORIZE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
+            replaceMap.put(KEY_PRMID_OPTION, optionBuffer.toString());
+            replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
+            replaceMap.put(KEY_RETRIEVE_TOKEN_URI, servletBaseURLSecure + "?state=OK");
+            if (accountHandler != null) {
+                replaceMap.put(KEY_AUTHORIZE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
+            }
+            resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
+            resp.getWriter().close();
+        } catch (LinkyException ex) {
+            resp.setContentType(CONTENT_TYPE);
+            replaceMap.put(KEY_ERROR, "Error during request handling : " + ex.getMessage());
+            resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
+            resp.getWriter().close();
         }
-        resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
-        resp.getWriter().close();
     }
 
     /**
@@ -118,7 +125,7 @@ public class LinkyAuthServlet extends HttpServlet {
      * @param queryString the query part of the GET request this servlet is processing
      */
     private void handleLinkyRedirect(Map<String, String> replaceMap, String servletBaseURL,
-            @Nullable String queryString) {
+            @Nullable String queryString) throws LinkyException {
         replaceMap.put(KEY_AUTHORIZED_USER, "");
         replaceMap.put(KEY_ERROR, "");
         replaceMap.put(KEY_PAGE_REFRESH, "");

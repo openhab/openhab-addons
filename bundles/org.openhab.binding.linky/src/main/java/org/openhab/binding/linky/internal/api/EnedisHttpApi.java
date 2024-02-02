@@ -227,7 +227,6 @@ public class EnedisHttpApi {
 
     private MeterReading getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)
             throws LinkyException {
-
         String dtStart = from.format(API_DATE_FORMAT);
         String dtEnd = to.format(API_DATE_FORMAT);
 

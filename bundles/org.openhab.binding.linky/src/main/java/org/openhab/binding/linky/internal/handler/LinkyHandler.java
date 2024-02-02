@@ -127,7 +127,6 @@ public class LinkyHandler extends BaseThingHandler {
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
         if (config.seemsValid()) {
-
             EnedisHttpApi api = new EnedisHttpApi(config, gson, httpClient);
             this.enedisApi = api;
 
@@ -307,7 +306,6 @@ public class LinkyHandler extends BaseThingHandler {
             // All values in the same month
             MeterReading meterReading = getConsumptionData(startDay, endDay.plusDays(1));
             if (meterReading != null) {
-
                 IntervalReading[] days = meterReading.dayValue;
 
                 int size = days.length;
@@ -512,7 +510,6 @@ public class LinkyHandler extends BaseThingHandler {
      */
 
     private void logData(IntervalReading[] ivArray, String title, DateTimeFormatter dateTimeFormatter, Target target) {
-
         if (logger.isDebugEnabled()) {
             int size = ivArray.length;
 
