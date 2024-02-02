@@ -46,10 +46,14 @@ public class AirGradientBindingConstants {
     public static final String PROPERTY_FIRMWARE_VERSION = "firmwareVersion";
     public static final String PROPERTY_SERIAL_NO = "serialNo";
 
+    // All configurations
+    public static final String CONFIG_LOCATION = "location";
+
     // URLs for API
     public static final String PING_PATH = "/public/api/v1/ping";
     public static final String CURRENT_MEASURES_PATH = "/public/api/v1/locations/measures/current?token=%s";
 
     // Discovery
     public static final int SEARCH_TIME = 15;
+    public static final boolean BACKGROUND_DISCOVERY = true;
 }
