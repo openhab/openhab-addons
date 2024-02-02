@@ -24,6 +24,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.UnDefType;
@@ -156,6 +158,18 @@ class KNXChannelTest {
         assertEquals(2, writeAddresses.size());
         assertTrue(writeAddresses.contains(new GroupAddress("1/2/3")));
         assertTrue(writeAddresses.contains(new GroupAddress("7/1/9")));
+    }
+
+    @Test
+    void testSubTypeMapping() throws KNXFormatException {
+        Channel channel = Objects.requireNonNull(mock(Channel.class));
+        Configuration configuration = new Configuration(Map.of("key1", "1.001:1/2/3"));
+        when(channel.getChannelTypeUID()).thenReturn(new ChannelTypeUID("a:b:c"));
+        when(channel.getConfiguration()).thenReturn(configuration);
+        when(channel.getAcceptedItemType()).thenReturn(ColorItem.class.getName());
+        MyKNXChannel knxChannel = new MyKNXChannel(channel);
+        assertNotNull(knxChannel.getCommandSpec(new HSBType("0,100,100")));
+        assertEquals(knxChannel.getCommandSpec(new HSBType("0,100,100")).getDPT(), "1.001");
     }
 
     private static class MyKNXChannel extends KNXChannel {
