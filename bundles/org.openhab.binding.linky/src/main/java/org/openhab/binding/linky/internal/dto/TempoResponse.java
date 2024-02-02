@@ -24,5 +24,7 @@ import org.eclipse.jetty.jaas.spi.UserInfo;
  */
 
 public class TempoResponse extends HashMap<String, String> {
+    @java.io.Serial
+    private static final long serialVersionUID = 362498820763181264L;
 
 }

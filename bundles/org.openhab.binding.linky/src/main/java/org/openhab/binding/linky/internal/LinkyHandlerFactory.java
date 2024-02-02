@@ -99,7 +99,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
 
     private final LocaleProvider localeProvider;
     private final HttpClient httpClient;
-    private final OAuthFactory oAuthFactory;
     private final LinkyAuthService authService;
     private final boolean oAuthSupport = false;
     private @Nullable OAuthClientService oAuthService;
@@ -125,7 +124,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);
         httpClient.setFollowRedirects(false);
         httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
-        this.oAuthFactory = oAuthFactory;
         this.authService = authService;
 
         this.oAuthService = oAuthFactory.createOAuthClientService("Linky", LinkyBindingConstants.LINKY_API_TOKEN_URL,
@@ -163,7 +161,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
     protected @Nullable ThingHandler createHandler(Thing thing) {
 
         if (supportsThingType(thing.getThingTypeUID())) {
-            LinkyHandler handler = new LinkyHandler(thing, localeProvider, gson, httpClient, oAuthFactory);
+            LinkyHandler handler = new LinkyHandler(thing, localeProvider, gson, httpClient);
             return handler;
         }
 
@@ -233,7 +231,9 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
 
                     config.put("token", token);
                     LinkyHandler handler = (LinkyHandler) thing.getHandler();
-                    handler.saveConfiguration(config);
+                    if (handler != null) {
+                        handler.saveConfiguration(config);
+                    }
                 }
             }
 

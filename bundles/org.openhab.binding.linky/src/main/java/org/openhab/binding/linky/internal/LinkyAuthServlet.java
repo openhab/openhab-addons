@@ -51,8 +51,6 @@ public class LinkyAuthServlet extends HttpServlet {
     private static final String HTML_USER_AUTHORIZED = "<p class='block authorized'>Addon authorized for %s.</p>";
     private static final String HTML_ERROR = "<p class='block error'>Call to Enedis failed with error: %s</p>";
 
-    private static final String HTML_META_REFRESH_CONTENT = "<meta http-equiv='refresh' content='10; url=%s'>";
-
     // Keys present in the index.html
     private static final String KEY_AUTHORIZE_URI = "authorize.uri";
     private static final String KEY_RETRIEVE_TOKEN_URI = "retrieveToken.uri";
@@ -72,16 +70,17 @@ public class LinkyAuthServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         logger.debug("Linky auth callback servlet received GET request {}.", req.getRequestURI());
         final Map<String, String> replaceMap = new HashMap<>();
 
-        final String servletBaseURL = req.getRequestURL().toString();
+        String servletBaseURL = "";
+        StringBuffer requestURL = req.getRequestURL();
+        if (requestURL != null) {
+            servletBaseURL = requestURL.toString();
+        }
 
         String servletBaseURLSecure = servletBaseURL;
-        // .replace("http://", "https://");
-        // .replace("8080", "8443");
 
         handleLinkyRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
 
@@ -91,15 +90,19 @@ public class LinkyAuthServlet extends HttpServlet {
 
         StringBuffer optionBuffer = new StringBuffer();
 
-        String[] prmIds = accountHandler.getAllPrmId();
-        for (String prmId : prmIds) {
-            optionBuffer.append("<option value=\"" + prmId + "\">" + prmId + "</option>");
+        if (accountHandler != null) {
+            String[] prmIds = accountHandler.getAllPrmId();
+            for (String prmId : prmIds) {
+                optionBuffer.append("<option value=\"" + prmId + "\">" + prmId + "</option>");
+            }
         }
 
         replaceMap.put(KEY_PRMID_OPTION, optionBuffer.toString());
         replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
         replaceMap.put(KEY_RETRIEVE_TOKEN_URI, servletBaseURLSecure + "?state=OK");
-        replaceMap.put(KEY_AUTHORIZE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
+        if (accountHandler != null) {
+            replaceMap.put(KEY_AUTHORIZE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
+        }
         resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
         resp.getWriter().close();
     }

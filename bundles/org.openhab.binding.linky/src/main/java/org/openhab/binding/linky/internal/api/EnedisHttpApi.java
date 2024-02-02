@@ -18,11 +18,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
@@ -67,21 +65,17 @@ public class EnedisHttpApi {
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
-    private @Nullable LinkyConfiguration config;
+    private LinkyConfiguration config;
 
     private boolean connected = false;
 
-    public EnedisHttpApi(@Nullable LinkyConfiguration config, Gson gson, HttpClient httpClient) {
+    public EnedisHttpApi(LinkyConfiguration config, Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.httpClient = httpClient;
         this.config = config;
     }
 
     public void initialize() throws LinkyException {
-    }
-
-    private String getLocation(ContentResponse response) {
-        return response.getHeaders().get(HttpHeader.LOCATION);
     }
 
     private void disconnect() throws LinkyException {
@@ -114,8 +108,8 @@ public class EnedisHttpApi {
             ContentResponse result = request.send();
             if (result.getStatus() == 307) {
                 String loc = result.getHeaders().get("Location");
-                url = BASE_URL + loc.substring(1);
-                request = httpClient.newRequest(url);
+                String newUrl = BASE_URL + loc.substring(1);
+                request = httpClient.newRequest(newUrl);
                 request = request.method(HttpMethod.GET);
                 result = request.send();
 
