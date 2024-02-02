@@ -18,7 +18,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,6 @@ import org.openhab.binding.linky.internal.api.ExpiringDayCache;
 import org.openhab.binding.linky.internal.dto.IntervalReading;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.QuantityType;
@@ -70,16 +68,11 @@ public class LinkyHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
     private final HttpClient httpClient;
     private final Gson gson;
-    private final WeekFields weekFields;
 
     private final ExpiringDayCache<MeterReading> dailyConsumption;
 
-    private @Nullable LinkyConfiguration config;
-
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable EnedisHttpApi enedisApi;
-
-    private final OAuthFactory oAuthFactory;
 
     private @NonNullByDefault({}) String prmId;
     private @NonNullByDefault({}) String userId;
@@ -90,13 +83,10 @@ public class LinkyHandler extends BaseThingHandler {
         ALL
     }
 
-    public LinkyHandler(Thing thing, LocaleProvider localeProvider, Gson gson, HttpClient httpClient,
-            OAuthFactory oAuthFactory) {
+    public LinkyHandler(Thing thing, LocaleProvider localeProvider, Gson gson, HttpClient httpClient) {
         super(thing);
         this.gson = gson;
         this.httpClient = httpClient;
-        this.weekFields = WeekFields.of(localeProvider.getLocale());
-        this.oAuthFactory = oAuthFactory;
 
         this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
@@ -158,16 +148,18 @@ public class LinkyHandler extends BaseThingHandler {
         logger.debug("Initializing Linky handler.");
         updateStatus(ThingStatus.UNKNOWN);
 
-        config = getConfigAs(LinkyConfiguration.class);
+        LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
         if (config.seemsValid()) {
-            enedisApi = new EnedisHttpApi(config, gson, httpClient);
+
+            EnedisHttpApi api = new EnedisHttpApi(config, gson, httpClient);
+            this.enedisApi = api;
 
             scheduler.submit(() -> {
                 try {
-                    enedisApi.initialize();
+                    api.initialize();
                     updateStatus(ThingStatus.ONLINE);
 
-                    PrmInfo prmInfo = enedisApi.getPrmInfo();
+                    PrmInfo prmInfo = api.getPrmInfo();
                     updateProperties(Map.of(USER_ID, prmInfo.customerId, PUISSANCE,
                             prmInfo.contractInfo.subscribedPower, PRM_ID, prmInfo.prmId));
 
@@ -547,52 +539,53 @@ public class LinkyHandler extends BaseThingHandler {
             return null;
         }
 
-        meterReading.WeekValue = new IntervalReading[208];
-        meterReading.MonthValue = new IntervalReading[48];
-        meterReading.YearValue = new IntervalReading[4];
+        if (meterReading != null) {
+            meterReading.weekValue = new IntervalReading[208];
+            meterReading.monthValue = new IntervalReading[48];
+            meterReading.yearValue = new IntervalReading[4];
 
-        for (int idx = 0; idx < 208; idx++) {
-            meterReading.WeekValue[idx] = new IntervalReading();
-        }
-        for (int idx = 0; idx < 48; idx++) {
-            meterReading.MonthValue[idx] = new IntervalReading();
-        }
-        for (int idx = 0; idx < 4; idx++) {
-            meterReading.YearValue[idx] = new IntervalReading();
-        }
+            for (int idx = 0; idx < 208; idx++) {
+                meterReading.weekValue[idx] = new IntervalReading();
+            }
+            for (int idx = 0; idx < 48; idx++) {
+                meterReading.monthValue[idx] = new IntervalReading();
+            }
+            for (int idx = 0; idx < 4; idx++) {
+                meterReading.yearValue[idx] = new IntervalReading();
+            }
 
-        int size = meterReading.intervalReading.length;
-        int baseYear = meterReading.intervalReading[0].date.getYear();
+            int size = meterReading.dayValue.length;
+            int baseYear = meterReading.dayValue[0].date.getYear();
 
-        for (int idx = 0; idx < size; idx++) {
-            IntervalReading ir = meterReading.intervalReading[idx];
-            LocalDate dt = ir.date;
-            double value = ir.value;
+            for (int idx = 0; idx < size; idx++) {
+                IntervalReading ir = meterReading.dayValue[idx];
+                LocalDateTime dt = ir.date;
+                double value = ir.value;
 
-            int idxYear = dt.getYear() - baseYear;
+                int idxYear = dt.getYear() - baseYear;
 
-            int dayOfYear = dt.getDayOfYear();
-            int week = (dayOfYear / 7) + 1;
-            int month = dt.getMonthValue();
+                int dayOfYear = dt.getDayOfYear();
+                int week = ((dayOfYear - 1) / 7) + 1;
+                int month = dt.getMonthValue();
 
-            int idxMonth = (idxYear * 12) + month;
-            int idxWeek = (idxYear * 52) + week;
+                int idxMonth = (idxYear * 12) + month;
+                int idxWeek = (idxYear * 52) + week;
 
-            meterReading.WeekValue[idxWeek].value += value;
-            meterReading.MonthValue[idxMonth].value += value;
-            meterReading.YearValue[idxYear].value += value;
+                meterReading.weekValue[idxWeek].value += value;
+                meterReading.monthValue[idxMonth].value += value;
+                meterReading.yearValue[idxYear].value += value;
+            }
         }
 
         return meterReading;
     }
 
     private void checkData(@Nullable MeterReading meterReading) throws LinkyException {
-        if (meterReading.intervalReading.length == 0) {
-            throw new LinkyException("Invalid meterReading data: no day period");
+        if (meterReading != null) {
+            if (meterReading.dayValue.length == 0) {
+                throw new LinkyException("Invalid meterReading data: no day period");
+            }
         }
-        // if (meterReading.intervalReading.length != 1095) {
-        // throw new LinkyException("Imcomplete meterReading data < 1095 days");
-        // }
     }
 
     /*
