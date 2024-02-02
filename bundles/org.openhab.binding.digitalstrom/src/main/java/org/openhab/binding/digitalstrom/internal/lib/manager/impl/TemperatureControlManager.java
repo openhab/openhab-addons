@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.digitalstrom.internal.lib.manager.impl;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,8 +61,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TemperatureControlManager implements EventHandler, TemperatureControlSensorTransmitter {
 
-    private static final Set<String> SUPPORTED_EVENTS = new HashSet<>(
-            Arrays.asList(EventNames.HEATING_CONTROL_OPERATION_MODE));
+    private final Set<String> supportedEvents;
 
     private final Logger logger = LoggerFactory.getLogger(TemperatureControlManager.class);
 
@@ -152,12 +150,14 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
         this.systemStateChangeListener = systemStateChangeListener;
         this.discovery = discovery;
         this.eventListener = eventListener;
+        this.supportedEvents = new HashSet<>();
+        this.supportedEvents.add(EventNames.HEATING_CONTROL_OPERATION_MODE);
         checkZones();
         if (eventListener != null) {
             if (isConfigured) {
-                SUPPORTED_EVENTS.add(EventNames.ZONE_SENSOR_VALUE);
+                supportedEvents.add(EventNames.ZONE_SENSOR_VALUE);
                 if (systemStateChangeListener != null) {
-                    SUPPORTED_EVENTS.add(EventNames.STATE_CHANGED);
+                    supportedEvents.add(EventNames.STATE_CHANGED);
                 }
             }
             eventListener.addEventHandler(this);
@@ -370,12 +370,12 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
 
     @Override
     public List<String> getSupportedEvents() {
-        return List.copyOf(SUPPORTED_EVENTS);
+        return List.copyOf(supportedEvents);
     }
 
     @Override
     public boolean supportsEvent(String eventName) {
-        return SUPPORTED_EVENTS.contains(eventName);
+        return supportedEvents.contains(eventName);
     }
 
     @Override
@@ -445,7 +445,7 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
      */
     public void registerSystemStateChangeListener(SystemStateChangeListener systemStateChangeListener) {
         if (eventListener != null) {
-            SUPPORTED_EVENTS.add(EventNames.STATE_CHANGED);
+            supportedEvents.add(EventNames.STATE_CHANGED);
             eventListener.addSubscribe(EventNames.STATE_CHANGED);
         }
         this.systemStateChangeListener = systemStateChangeListener;
