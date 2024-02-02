@@ -85,14 +85,13 @@ public class EvccHandler extends BaseThingHandler {
             if (groupId == null) {
                 return;
             }
-            String channelGroupId = groupId;
             String channelIdWithoutGroup = channelUID.getIdWithoutGroup();
             EvccAPI evccAPI = this.evccAPI;
             if (evccAPI == null) {
                 return;
             }
             try {
-                if (channelGroupId.equals(CHANNEL_GROUP_ID_GENERAL)) {
+                if (groupId.equals(CHANNEL_GROUP_ID_GENERAL)) {
                     switch (channelIdWithoutGroup) {
                         case CHANNEL_PRIORITY_SOC -> {
                             if (command instanceof QuantityType<?> qt) {
@@ -143,7 +142,7 @@ public class EvccHandler extends BaseThingHandler {
                             return;
                         }
                     }
-                } else if (channelGroupId.startsWith(CHANNEL_GROUP_ID_LOADPOINT)) {
+                } else if (groupId.startsWith(CHANNEL_GROUP_ID_LOADPOINT)) {
                     int loadpoint = Integer.parseInt(groupId.substring(9)) + 1;
                     switch (channelIdWithoutGroup) {
                         case CHANNEL_LOADPOINT_MODE -> {
@@ -156,6 +155,9 @@ public class EvccHandler extends BaseThingHandler {
                         case CHANNEL_LOADPOINT_LIMIT_ENERGY -> {
                             if (command instanceof QuantityType<?> qt) {
                                 evccAPI.setLimitEnergy(loadpoint, qt.toUnit(Units.WATT_HOUR).floatValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setLimitEnergy(loadpoint, dt.intValue() * 1000); // DecimalType commands are
+                                                                                         // interpreted as 'kWh'
                             } else {
                                 logger.debug("Command has wrong type, QuantityType required!");
                             }
@@ -198,7 +200,7 @@ public class EvccHandler extends BaseThingHandler {
                             return;
                         }
                     }
-                } else if (channelGroupId.startsWith(CHANNEL_GROUP_ID_VEHICLE)) {
+                } else if (groupId.startsWith(CHANNEL_GROUP_ID_VEHICLE)) {
                     String vehicleName = groupId.substring(7);
                     switch (channelIdWithoutGroup) {
                         case CHANNEL_VEHICLE_MIN_SOC -> {
@@ -390,7 +392,7 @@ public class EvccHandler extends BaseThingHandler {
     }
 
     private void createChannelsLoadpoint(int loadpointId) {
-        final String channelGroup = "loadpoint" + loadpointId;
+        final String channelGroup = CHANNEL_GROUP_ID_LOADPOINT + loadpointId;
         createChannel(CHANNEL_LOADPOINT_ACTIVE_PHASES, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_ACTIVE_PHASES,
                 CoreItemFactory.NUMBER);
         createChannel(CHANNEL_LOADPOINT_CHARGE_CURRENT, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_CHARGE_CURRENT,
@@ -438,7 +440,7 @@ public class EvccHandler extends BaseThingHandler {
         createChannel(CHANNEL_LOADPOINT_VEHICLE_NAME, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_NAME,
                 CoreItemFactory.STRING);
 
-        removeChannel(CHANNEL_LOADPOINT_HAS_VEHICLE, channelGroup);
+        removeChannel("hasVehicle", channelGroup);
         removeChannel("minSoC", channelGroup);
         removeChannel("targetEnergy", channelGroup);
         removeChannel("targetSoC", channelGroup);
@@ -533,7 +535,7 @@ public class EvccHandler extends BaseThingHandler {
             return;
         }
         final ThingUID uid = getThing().getUID();
-        final String channelGroup = "loadpoint" + loadpointId;
+        final String channelGroup = CHANNEL_GROUP_ID_LOADPOINT + loadpointId;
         ChannelUID channel;
         Loadpoint loadpoint = result.getLoadpoints()[loadpointId];
 
@@ -640,7 +642,7 @@ public class EvccHandler extends BaseThingHandler {
             return;
         }
         final ThingUID uid = getThing().getUID();
-        final String channelGroup = "vehicle" + vehicleName;
+        final String channelGroup = CHANNEL_GROUP_ID_VEHICLE + vehicleName;
         ChannelUID channel;
         Vehicle vehicle = result.getVehicles().get(vehicleName);
 

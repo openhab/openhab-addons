@@ -17,7 +17,7 @@ import java.util.Map;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * This class represents a loadpoint object of the status response (/api/state).
+ * This class represents the result object of the status response (/api/state).
  * This DTO was written for evcc version 0.123.1
  *
  * @author Florian Hotze - Initial contribution

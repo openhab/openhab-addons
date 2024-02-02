@@ -38,20 +38,20 @@ Default value for _refreshInterval_ is 60 seconds.
 Those channels exist only once.
 Please note that some of them are only available when evcc is properly configured.
 
-| Channel                         | Type                 | Read/Write | Description                                                                                                       |
-|---------------------------------|----------------------|------------|-------------------------------------------------------------------------------------------------------------------|
-| general#batteryCapacity         | Number:Energy        | R          | Capacity of (home) battery                                                                                        |
-| general#batteryPower            | Number:Power         | R          | Current power from battery                                                                                        |
-| general#batterySoC              | Number:Dimensionless | R          | Current State of Charge of battery                                                                                |
-| general#batteryDischargeControl | Switch               | RW         | Enable or disable battery discharge control                                                                       |
-| general#batteryMode             | String               | R          | Current battery mode                                                                                              |
-| general#prioritySoC             | Number:Dimensionless | RW         | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv"       |
+| Channel                         | Type                 | Read/Write | Description                                                                                                                                                        |
+|---------------------------------|----------------------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| general#batteryCapacity         | Number:Energy        | R          | Capacity of (home) battery                                                                                                                                         |
+| general#batteryPower            | Number:Power         | R          | Current power from battery                                                                                                                                         |
+| general#batterySoC              | Number:Dimensionless | R          | Current State of Charge of battery                                                                                                                                 |
+| general#batteryDischargeControl | Switch               | RW         | Enable or disable battery discharge control                                                                                                                        |
+| general#batteryMode             | String               | R          | Current battery mode                                                                                                                                               |
+| general#prioritySoC             | Number:Dimensionless | RW         | State of State of Charge for which the battery has priority over charging the ev when charging mode is "pv"                                                        |
 | general#bufferSoC               | Number:Dimensionless | RW         | Until this State of Charge the discharging of a house battery is allowed in "pv" mode, when there is insufficient solar surplus (below the minimum charging power) |
-| general#bufferStartSoC          | Number:Dimensionless | RW         | State of Charge for which a charging session in "pv" mode is started, even if there is insufficient solar surplus |
-| general#residualPower           | Number:Power         | RW         | Target operating point of the surplus regulation at the grid connection (grid meter)                              |
-| general#gridPower               | Number:Power         | R          | Current power from grid (negative means feed-in)                                                                  |
-| general#homePower               | Number:Power         | R          | Current power taken by home                                                                                       |
-| general#pvPower                 | Number:Power         | R          | Current power from photovoltaik                                                                                   |
+| general#bufferStartSoC          | Number:Dimensionless | RW         | State of Charge for which a charging session in "pv" mode is started, even if there is insufficient solar surplus                                                  |
+| general#residualPower           | Number:Power         | RW         | Target operating point of the surplus regulation at the grid connection (grid meter)                                                                               |
+| general#gridPower               | Number:Power         | R          | Current power from grid (negative means feed-in)                                                                                                                   |
+| general#homePower               | Number:Power         | R          | Current power taken by home                                                                                                                                        |
+| general#pvPower                 | Number:Power         | R          | Current power from photovoltaik                                                                                                                                    |
 
 ### Loadpoint channels
 
