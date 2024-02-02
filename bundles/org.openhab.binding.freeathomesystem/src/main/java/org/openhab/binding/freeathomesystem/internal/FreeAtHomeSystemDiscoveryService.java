@@ -40,44 +40,39 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeSystemDiscoveryService.class);
 
-    private @NonNullByDefault({}) FreeAtHomeBridgeHandler bridgeHandler;
-
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if (bridgeHandler != null) {
-                ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+            ThingUID bridgeUID = thingHandler.getThing().getUID();
 
-                List<String> deviceList;
-                try {
-                    deviceList = bridgeHandler.getDeviceDeviceList();
+            List<String> deviceList;
+            try {
+                deviceList = thingHandler.getDeviceDeviceList();
 
-                    for (int i = 0; i < deviceList.size(); i++) {
-                        FreeAtHomeDeviceDescription device = bridgeHandler
-                                .getFreeatHomeDeviceDescription(deviceList.get(i));
+                for (int i = 0; i < deviceList.size(); i++) {
+                    FreeAtHomeDeviceDescription device = thingHandler.getFreeatHomeDeviceDescription(deviceList.get(i));
 
-                        ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.FREEATHOMEDEVICE_TYPE_UID,
-                                bridgeUID, device.deviceId);
-                        Map<String, Object> properties = new HashMap<>(1);
-                        properties.put("deviceId", device.deviceId);
-                        properties.put("interface", device.interfaceType);
+                    ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.FREEATHOMEDEVICE_TYPE_UID, bridgeUID,
+                            device.deviceId);
+                    Map<String, Object> properties = new HashMap<>(1);
+                    properties.put("deviceId", device.deviceId);
+                    properties.put("interface", device.interfaceType);
 
-                        String deviceLabel = device.deviceLabel;
+                    String deviceLabel = device.deviceLabel;
 
-                        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(deviceLabel)
-                                .withBridge(bridgeUID).withProperties(properties).build();
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(deviceLabel)
+                            .withBridge(bridgeUID).withProperties(properties).build();
 
-                        thingDiscovered(discoveryResult);
+                    thingDiscovered(discoveryResult);
 
-                        logger.debug("Thing discovered - DeviceId: {} - Device label: {}", device.getDeviceId(),
-                                device.getDeviceLabel());
-                    }
-
-                    stopScan();
-                } catch (FreeAtHomeHttpCommunicationException e) {
-                    logger.debug("Communication error in device discovery with the bridge: {}",
-                            bridgeHandler.getThing().getLabel());
+                    logger.debug("Thing discovered - DeviceId: {} - Device label: {}", device.getDeviceId(),
+                            device.getDeviceLabel());
                 }
+
+                stopScan();
+            } catch (FreeAtHomeHttpCommunicationException e) {
+                logger.debug("Communication error in device discovery with the bridge: {}",
+                        thingHandler.getThing().getLabel());
             }
         }
     };
@@ -99,8 +94,6 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
     @Override
     protected void startScan() {
         this.removeOlderResults(Instant.now().toEpochMilli());
-
-        bridgeHandler = this.thingHandler;
 
         scheduler.execute(runnable);
     }

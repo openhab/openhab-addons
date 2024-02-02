@@ -19,8 +19,10 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -28,6 +30,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,8 +43,10 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.StatusCode;
+import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.freeathomesystem.internal.FreeAtHomeSystemDiscoveryService;
@@ -71,18 +78,18 @@ import com.google.gson.stream.JsonReader;
  *
  */
 @NonNullByDefault
-public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
+public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSocketListener {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeBridgeHandler.class);
 
-    public ChannelUpdateHandler channelUpdateHandler = new ChannelUpdateHandler();
+    private Map<String, FreeAtHomeDeviceHandler> mapEventListeners = new HashMap<String, FreeAtHomeDeviceHandler>();
 
     // Clients for the network communication
     private HttpClient httpClient;
-    private EventSocket socket = new EventSocket();
     private @Nullable WebSocketClient websocketClient = null;
     private FreeAtHomeWebsocketMonitorThread socketMonitor = new FreeAtHomeWebsocketMonitorThread();
     private @Nullable QueuedThreadPool jettyThreadPool = null;
+    private volatile @Nullable Session websocketSession = null;
 
     private String sysApUID = "00000000-0000-0000-0000-000000000000";
     private String ipAddress = "";
@@ -93,7 +100,9 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
     private String authField = "";
 
+    private Lock lock = new ReentrantLock();
     private AtomicBoolean httpConnectionOK = new AtomicBoolean(false);
+    private Condition websocketSessionEstablished = lock.newCondition();
 
     int numberOfComponents = 0;
 
@@ -390,16 +399,9 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Obtait the valid channel update handler
-     */
-    public ChannelUpdateHandler getChannelUpdateHandler() {
-        return channelUpdateHandler;
-    }
-
-    /**
      * Method to process socket events
      */
-    public void processSocketEvent(String receivedText) {
+    public void setDatapointOnWebsocketFeedback(String receivedText) {
         JsonReader reader = new JsonReader(new StringReader(receivedText));
         reader.setLenient(true);
         JsonElement jsonTree = JsonParser.parseReader(reader);
@@ -421,11 +423,27 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 JsonElement element = jsonObject.get(eventDatapointID);
                 String value = element.getAsString();
 
-                channelUpdateHandler.updateChannelByDatapointEvent(eventDatapointID, value);
+                // channelUpdateHandler.updateChannelByDatapointEvent(eventDatapointID, value);
+
+                String[] parts = eventDatapointID.split("/");
+
+                FreeAtHomeDeviceHandler deviceHandler = mapEventListeners.get(parts[0]);
+
+                if (deviceHandler != null) {
+                    deviceHandler.onDeviceStateChanged(eventDatapointID, value);
+                }
 
                 logger.debug("Socket event processed: event-datapoint-ID {} value {}", eventDatapointID, value);
             }
         }
+    }
+
+    public void registerDeviceStateListener(String deviceID, FreeAtHomeDeviceHandler deviceHandler) {
+        mapEventListeners.put(deviceID, deviceHandler);
+    }
+
+    public void unRegisterDeviceStateListener(String deviceID) {
+        mapEventListeners.remove(deviceID);
     }
 
     /**
@@ -445,67 +463,47 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
         try {
             // Start HttpClient.
-            switch (httpClient.getState()) {
-                case AbstractLifeCycle.FAILED:
-                case AbstractLifeCycle.STOPPED: {
-                    httpClient.start();
-                    break;
-                }
-                case AbstractLifeCycle.STARTING:
-                case AbstractLifeCycle.STARTED:
-                case AbstractLifeCycle.STOPPING: {
-                    // nothing to do
-                    break;
-                }
-            }
-
-            logger.debug("Start http client");
-
-            ret = true;
+            httpClient.start();
         } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/comm-error.not-able-start-httpclient");
-
-            ret = false;
+            return false;
         }
 
-        if (ret) {
-            // Add authentication credentials and make a check.
-            try {
-                // Add authentication credentials.
-                AuthenticationStore auth = httpClient.getAuthenticationStore();
+        try {
+            // Add authentication credentials.
+            AuthenticationStore auth = httpClient.getAuthenticationStore();
 
-                URI uri1 = new URI("http://" + ipAddress + "/fhapi/v1");
-                auth.addAuthenticationResult(new BasicAuthentication.BasicResult(uri1, username, password));
+            URI uri1 = new URI("http://" + ipAddress + "/fhapi/v1");
+            auth.addAuthenticationResult(new BasicAuthentication.BasicResult(uri1, username, password));
 
-                String url = baseUrl + "/rest/devicelist";
+            String url = baseUrl + "/rest/devicelist";
 
-                Request req = httpClient.newRequest(url);
-                ContentResponse res = req.send();
+            Request req = httpClient.newRequest(url);
+            ContentResponse res = req.send();
 
-                // check status
-                if (res.getStatus() == 200) {
-                    // response OK
-                    httpConnectionOK.set(true);
+            // check status
+            if (res.getStatus() == 200) {
+                // response OK
+                httpConnectionOK.set(true);
 
-                    ret = true;
+                ret = true;
 
-                    logger.debug("HTTP connection to SysAP is OK");
-                } else {
-                    // response NOK, set error
-                    httpConnectionOK.set(false);
-
-                    ret = false;
-
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/comm-error.wrong-credentials");
-                }
-            } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error.not-able-open-httpconnection");
+                logger.debug("HTTP connection to SysAP is OK");
+            } else {
+                // response NOK, set error
+                httpConnectionOK.set(false);
 
                 ret = false;
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/comm-error.wrong-credentials");
             }
+        } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException ex) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.not-able-open-httpconnection");
+
+            ret = false;
         }
 
         return ret;
@@ -519,18 +517,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
         try {
             // Stop HttpClient.
-            switch (httpClient.getState()) {
-                case AbstractLifeCycle.FAILED:
-                case AbstractLifeCycle.STOPPING:
-                case AbstractLifeCycle.STOPPED: {
-                    break;
-                }
-                case AbstractLifeCycle.STARTING:
-                case AbstractLifeCycle.STARTED: {
-                    httpClient.stop();
-                    break;
-                }
-            }
+            httpClient.stop();
 
             logger.debug("Stop http client");
 
@@ -556,6 +543,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
         if (ret) {
             ret = openHttpConnection();
         }
+
+        logger.debug("Restart HTTP connection!");
 
         return ret;
     }
@@ -590,7 +579,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 ClientUpgradeRequest request = new ClientUpgradeRequest();
                 request.setHeader("Authorization", authField);
                 request.setTimeout(BRIDGE_WEBSOCKET_TIMEOUT, TimeUnit.MINUTES);
-                localWebsocketClient.connect(socket, uri, request);
+                localWebsocketClient.connect(this, uri, request);
 
                 logger.debug("Websocket connection to SysAP is OK, timeout: {}", BRIDGE_WEBSOCKET_TIMEOUT);
 
@@ -679,19 +668,14 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
             if (localWebSocketClient != null) {
                 localWebSocketClient.setExecutor(jettyThreadPool);
 
+                socketMonitor.start();
+
                 ret = true;
             } else {
                 ret = false;
             }
         } else {
             ret = true;
-        }
-
-        // set bridge for the socket event handler
-        if (ret == true) {
-            socket.setBridge(this);
-
-            socketMonitor.start();
         }
 
         return ret;
@@ -760,6 +744,10 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         // let run out the thread
         socketMonitor.interrupt();
+
+        closeWebSocketConnection();
+
+        closeHttpConnection();
     }
 
     /**
@@ -782,21 +770,22 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 while (!isInterrupted()) {
                     if (httpConnectionOK.get()) {
                         if (connectSession()) {
-                            while (!socket.isSocketClosed()) {
+                            while (isSocketConnectionAlive()) {
                                 TimeUnit.SECONDS.sleep(BRIDGE_WEBSOCKET_KEEPALIVE);
 
                                 logger.debug("Sending keep-alive message {}", System.currentTimeMillis());
-                                socket.sendKeepAliveMessage("keep-alive");
+                                sendWebsocketKeepAliveMessage("keep-alive");
                             }
-
-                            logger.debug("Socket connection closed");
-                            reconnectDelay.set(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
                         }
+                        logger.debug("Socket connection closed");
+                        reconnectDelay.set(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
                     } else {
                         TimeUnit.SECONDS.sleep(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
                     }
                 }
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/comm-error.general-websocket-issue");
             } catch (IOException e) {
@@ -815,8 +804,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
 
             logger.debug("Server connecting to websocket");
 
-            socket.resetEventSocket();
-
             if (!connectWebsocketSession()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/comm-error.general-websocket-issue");
@@ -826,7 +813,120 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler {
                 return false;
             }
 
+            if (websocketSession == null) {
+                lock.lock();
+                try {
+                    websocketSessionEstablished.await();
+                } finally {
+                    lock.unlock();
+                }
+            }
+
             return true;
+        }
+    }
+
+    /**
+     * Send keep-alive message to SysAp
+     */
+    public void sendWebsocketKeepAliveMessage(String message) throws IOException {
+        Session localSession = websocketSession;
+
+        if (localSession != null) {
+            localSession.getRemote().sendString(message);
+        }
+    }
+
+    /**
+     * Get socket alive state
+     * 
+     * @throws InterruptedException
+     */
+    public boolean isSocketConnectionAlive() throws InterruptedException {
+        Session localSession = websocketSession;
+
+        return (localSession != null) ? localSession.isOpen() : false;
+    }
+
+    /**
+     * Socket closed. Report the state
+     */
+    @Override
+    public void onWebSocketClose(int statusCode, @Nullable String reason) {
+        websocketSession = null;
+        logger.debug("Socket Closed: [ {} ] {}", statusCode, reason);
+    }
+
+    /**
+     * Socket connected. store the session for later use
+     */
+    @Override
+    public void onWebSocketConnect(@Nullable Session session) {
+        Session localSession = session;
+
+        if (localSession != null) {
+            websocketSession = localSession;
+
+            localSession.setIdleTimeout(-1);
+
+            logger.debug("Socket Connected - Timeout {} - sesson: {}", localSession.getIdleTimeout(), session);
+        } else {
+            logger.debug("Socket Connected - Timeout (invalid) - sesson: (invalid)");
+        }
+
+        lock.lock();
+        try {
+            websocketSessionEstablished.signal();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Error caused. Report the state
+     */
+    @Override
+    public void onWebSocketError(@Nullable Throwable cause) {
+        websocketSession = null;
+
+        if (cause != null) {
+            logger.debug("Socket Error: {}", cause.getLocalizedMessage());
+        } else {
+            logger.debug("Socket Error: unknown");
+        }
+    }
+
+    /**
+     * Binary message received. It shall not happen with the free@home SysAp
+     */
+    @Override
+    @NonNullByDefault({})
+    public void onWebSocketBinary(byte[] payload, int offset, int len) {
+        logger.debug("Binary message received via websocket");
+    }
+
+    /**
+     * Text message received. Processing will be started
+     */
+    @Override
+    public void onWebSocketText(@Nullable String message) {
+
+        if (message != null) {
+            if (message.toLowerCase(Locale.US).contains("bye")) {
+                Session localSession = websocketSession;
+
+                if (localSession != null) {
+                    localSession.close(StatusCode.NORMAL, "Thanks");
+                }
+
+                logger.debug("Websocket connection closed: {} ", message);
+            } else {
+                logger.debug("Received websocket text: {} ", message);
+
+                setDatapointOnWebsocketFeedback(message);
+            }
+        } else {
+            logger.debug("Invalid message string");
         }
     }
 }

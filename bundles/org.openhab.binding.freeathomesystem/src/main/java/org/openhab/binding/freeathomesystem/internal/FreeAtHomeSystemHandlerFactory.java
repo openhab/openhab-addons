@@ -63,7 +63,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
     private final FreeAtHomeChannelGroupTypeProvider channelGroupsTypeProvider;
 
     private void generateThingTypes() {
-        String label = "free-at-home-device";
+        String label = "device";
         String description = "Generic free@home device";
 
         List<String> supportedBridgeTypeUids = new ArrayList<>();

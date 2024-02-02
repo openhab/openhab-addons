@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class FreeAtHomeDeviceHandler extends BaseThingHandler {
+public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtHomeDeviceStateListener {
 
     private static final String CHANNEL_URI = "channel-type:freeathomesystem:config";
 
@@ -71,10 +71,8 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
     private FreeAtHomeDeviceDescription device = new FreeAtHomeDeviceDescription();
     private FreeAtHomeChannelTypeProvider channelTypeProvider;
 
-    private String deviceID = "unknownID";
-
     private Map<ChannelUID, FreeAtHomeDatapointGroup> mapChannelUID = new HashMap<ChannelUID, FreeAtHomeDatapointGroup>();
-    private Map<ChannelUID, String> mapChannelUIDVal = new HashMap<ChannelUID, String>();
+    private Map<String, ChannelUID> mapEventToChannelUID = new HashMap<String, ChannelUID>();
 
     public FreeAtHomeDeviceHandler(Thing thing, FreeAtHomeChannelTypeProvider channelTypeProvider,
             FreeAtHomeChannelGroupTypeProvider channelGroupTypeProvider) {
@@ -88,22 +86,49 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
+            FreeAtHomeBridgeHandler freeAtHomeBridge = null;
             Map<String, String> properties = getThing().getProperties();
+            Bridge bridge = this.getBridge();
 
-            String locDeviceId = properties.get("deviceId");
+            logger.debug("Start creating device - device id: {}", device.getDeviceId());
 
-            if (locDeviceId != null) {
-                deviceID = locDeviceId;
+            if (bridge != null) {
+                ThingHandler handler = bridge.getHandler();
 
-                logger.debug("Start creating device - device id: {}", deviceID);
+                if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
+                    freeAtHomeBridge = bridgeHandler;
 
-                updateChannels();
+                    if (freeAtHomeBridge != null) {
+                        String locDeviceId = properties.get("deviceId");
 
-                updateStatus(ThingStatus.ONLINE);
+                        if (locDeviceId != null) {
 
-                logger.debug("Device created - device id: {}", deviceID);
+                            try {
+                                device = freeAtHomeBridge.getFreeatHomeDeviceDescription(locDeviceId);
+                            } catch (FreeAtHomeHttpCommunicationException e) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "@text/comm-error.error-in-sysap-com");
+                            }
+
+                            // update or reload channels
+                            updateChannels();
+
+                            // register device for status updates
+                            freeAtHomeBridge.registerDeviceStateListener(device.getDeviceId(), this);
+
+                            updateStatus(ThingStatus.ONLINE);
+
+                            logger.debug("Device created - device id: {}", device.getDeviceId());
+                        } else {
+                            logger.debug("Device cannot be created: device ID is null");
+                        }
+                    }
+
+                }
             } else {
-                logger.debug("Device cannot be created: device ID is null");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "@text/conf-error.bridge-not-configured");
+                return;
             }
         });
     }
@@ -113,7 +138,21 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         // Unregister device and specific channel for event based state updated
         removeChannels();
 
-        logger.debug("Device removed - device id: {}", deviceID);
+        Bridge bridge = this.getBridge();
+
+        logger.debug("Start creating device - device id: {}", device.getDeviceId());
+
+        if (bridge != null) {
+            ThingHandler handler = bridge.getHandler();
+
+            if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
+                FreeAtHomeBridgeHandler freeAtHomeBridge = bridgeHandler;
+
+                freeAtHomeBridge.unRegisterDeviceStateListener(device.getDeviceId());
+            }
+        }
+
+        logger.debug("Device removed - device id: {}", device.getDeviceId());
     }
 
     public void handleRefreshCommand(FreeAtHomeBridgeHandler freeAtHomeBridge, FreeAtHomeDatapointGroup dpg,
@@ -122,48 +161,36 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         String channelID = "ch000";
         String datapointID = "0";
 
-        if (dpg != null) {
-            // Check whether it is a INPUT only datapoint group
+        // Check whether it is a INPUT only datapoint group
 
-            if (dpg.getDirection() == FreeAtHomeDatapointGroup.DatapointGroupDirection.INPUT) {
-                FreeAtHomeDatapoint datapoint = dpg.getInputDatapoint();
+        if (dpg.getDirection() == FreeAtHomeDatapointGroup.DatapointGroupDirection.INPUT) {
+            FreeAtHomeDatapoint datapoint = dpg.getInputDatapoint();
 
-                if (datapoint != null) {
-                    channelID = datapoint.channelId;
-                    datapointID = datapoint.getDatapointId();
-                }
-            } else {
-                FreeAtHomeDatapoint datapoint = dpg.getOutputDatapoint();
-
-                if (datapoint != null) {
-                    channelID = datapoint.channelId;
-                    datapointID = datapoint.getDatapointId();
-                }
-            }
-
-            try {
-                valueStr = freeAtHomeBridge.getDatapoint(deviceID, channelID, datapointID);
-
-                ValueStateConverter vsc = dpg.getValueStateConverter();
-
-                updateState(channelUID, vsc.convertToState(valueStr));
-
-                // in case of virtual channels store the current value string
-                if (device.isVirtual()) {
-                    mapChannelUIDVal.put(channelUID, valueStr);
-                }
-            } catch (FreeAtHomeHttpCommunicationException e) {
-                logger.debug("Communication error during refresh command {} - at channel {} - Error string {}",
-                        deviceID, channelUID.getAsString(), e.getMessage());
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error.error-in-sysap-com");
+            if (datapoint != null) {
+                channelID = datapoint.channelId;
+                datapointID = datapoint.getDatapointId();
             }
         } else {
-            logger.debug("Invalid parameter in handleRefreshCommand - deviceID - {} - at channel {}", deviceID,
-                    channelUID.getAsString());
+            FreeAtHomeDatapoint datapoint = dpg.getOutputDatapoint();
 
-            updateStatus(ThingStatus.OFFLINE);
+            if (datapoint != null) {
+                channelID = datapoint.channelId;
+                datapointID = datapoint.getDatapointId();
+            }
+        }
+
+        try {
+            valueStr = freeAtHomeBridge.getDatapoint(device.getDeviceId(), channelID, datapointID);
+
+            ValueStateConverter vsc = dpg.getValueStateConverter();
+
+            updateState(channelUID, vsc.convertToState(valueStr));
+        } catch (FreeAtHomeHttpCommunicationException e) {
+            logger.debug("Communication error during refresh command {} - at channel {} - Error string {}",
+                    device.getDeviceId(), channelUID.getAsString(), e.getMessage());
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error.error-in-sysap-com");
         }
     }
 
@@ -184,14 +211,15 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         FreeAtHomeDatapoint datapoint = dpg.getInputDatapoint();
 
         if (datapoint == null) {
-            logger.debug("Invalid parameter in handleSetCommand - deviceID - {} - at channel {}", deviceID,
+            logger.debug("Invalid parameter in handleSetCommand - DeviceId - {} - at channel {}", device.getDeviceId(),
                     channelUID.getAsString());
 
             return;
         }
 
         try {
-            freeAtHomeBridge.setDatapoint(deviceID, datapoint.channelId, datapoint.getDatapointId(), valueString);
+            freeAtHomeBridge.setDatapoint(device.getDeviceId(), datapoint.channelId, datapoint.getDatapointId(),
+                    valueString);
 
             if (state != null) {
                 updateState(channelUID, state);
@@ -199,21 +227,14 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                 updateState(channelUID, new StringType("STOP"));
             }
 
-            // in case of virtual channels store the current value string
-            if (device.isVirtual()) {
-                logger.debug("refresh virtual device state device: {} ch: {} val: {}", deviceID,
-                        channelUID.getAsString(), valueString);
-
-                mapChannelUIDVal.put(channelUID, valueString);
-            }
-
+            // in case of of a scene, simulate the button push state
             if (device.isScene()) {
-                // the scene can be triggered only therefore reset after 5 seconds
+                // the scene can be triggered only therefore reset after 3 seconds
                 scheduler.execute(() -> {
                     try {
                         Thread.sleep(3000);
                     } catch (InterruptedException e) {
-                        logger.debug("Handle wait for scene {} - at channel {} - full command {}", deviceID,
+                        logger.debug("Handle wait for scene {} - at channel {} - full command {}", device.getDeviceId(),
                                 channelUID.getAsString(), command.toFullString());
                     }
 
@@ -223,7 +244,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         } catch (FreeAtHomeHttpCommunicationException e) {
             logger.debug(
                     "Communication error during set command {} - at channel {} - full command {} - Error string {}",
-                    deviceID, channelUID.getAsString(), command.toFullString(), e.getMessage());
+                    device.getDeviceId(), channelUID.getAsString(), command.toFullString(), e.getMessage());
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/comm-error.error-in-sysap-com");
@@ -257,7 +278,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
         // is the datapointgroup invalid
         if (dpg == null) {
             logger.debug("Handle command for device (but invalid datapointgroup) {} - at channel {} - full command {}",
-                    deviceID, channelUID.getAsString(), command.toFullString());
+                    device.getDeviceId(), channelUID.getAsString(), command.toFullString());
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error.invalid-deviceconfig");
@@ -268,8 +289,36 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                 handleSetCommand(freeAtHomeBridge, dpg, channelUID, command);
             }
 
-            logger.debug("Handle command for device {} - at channel {} - full command {}", deviceID,
+            logger.debug("Handle command for device {} - at channel {} - full command {}", device.getDeviceId(),
                     channelUID.getAsString(), command.toFullString());
+        }
+    }
+
+    @Override
+    public void onDeviceRemoved(String event) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.GONE);
+    }
+
+    @Override
+    public void onDeviceStateChanged(String event, String valueString) {
+        // Get the channle UID belonging to this event
+        ChannelUID channelUID = mapEventToChannelUID.get(event);
+
+        if (channelUID != null) {
+            // get the value State Converter for the channel
+            FreeAtHomeDatapointGroup dpg = mapChannelUID.get(channelUID);
+
+            if (dpg != null) {
+                State state = dpg.getValueStateConverter().convertToState(valueString);
+
+                // Handle state change
+                handleEventBasedUpdate(channelUID, state);
+
+                // if it is virtual device, give a feedback to free@home also
+                if (isThingHandlesVirtualDevice()) {
+                    feedbackForVirtualDevice(channelUID, valueString);
+                }
+            }
         }
     }
 
@@ -313,21 +362,21 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
         if ((dpg.getDirection() != FreeAtHomeDatapointGroup.DatapointGroupDirection.INPUT)
                 || (dpg.getDirection() != FreeAtHomeDatapointGroup.DatapointGroupDirection.INPUTOUTPUT)) {
-            logger.debug("Handle feedback for virtual device {} - at channel {} - but wrong config", deviceID,
-                    channelUID.getAsString());
+            logger.debug("Handle feedback for virtual device {} - at channel {} - but wrong config",
+                    device.getDeviceId(), channelUID.getAsString());
         }
 
         try {
-            freeAtHomeBridge.setDatapoint(deviceID, inputDatapoint.channelId, inputDatapoint.getDatapointId(),
-                    valueString);
+            freeAtHomeBridge.setDatapoint(device.getDeviceId(), inputDatapoint.channelId,
+                    inputDatapoint.getDatapointId(), valueString);
 
             updateStatus(ThingStatus.ONLINE);
 
-            logger.debug("Handle feedback for virtual device {} - at channel {} - value {}", deviceID,
+            logger.debug("Handle feedback for virtual device {} - at channel {} - value {}", device.getDeviceId(),
                     channelUID.getAsString(), valueString);
         } catch (FreeAtHomeHttpCommunicationException e) {
             logger.debug("Communication error during set command {} - at channel {} - value {} - Error string {}",
-                    deviceID, channelUID.getAsString(), valueString, e.getMessage());
+                    device.getDeviceId(), channelUID.getAsString(), valueString, e.getMessage());
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/comm-error.not-able-open-httpconnection");
@@ -374,25 +423,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
     }
 
     public void updateChannels() {
-        FreeAtHomeBridgeHandler freeAtHomeBridge = null;
-
-        Bridge bridge = this.getBridge();
-
-        try {
-            if (bridge != null) {
-                ThingHandler handler = bridge.getHandler();
-
-                if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
-                    freeAtHomeBridge = bridgeHandler;
-
-                    device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
-                }
-            }
-        } catch (FreeAtHomeHttpCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error.error-in-sysap-com");
-        }
-
         // Initialize channels
         List<Channel> thingChannels = new ArrayList<>(this.getThing().getChannels());
 
@@ -445,16 +475,13 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
                     // in case of output channel, register it for updates
                     if (outputDatapoint != null) {
-                        // Register channel for event based state updated
-                        if (freeAtHomeBridge != null) {
-                            ChannelUpdateHandler updateHandler = freeAtHomeBridge.channelUpdateHandler;
+                        String eventDatapointID = new String(device.getDeviceId() + "/" + channel.getChannelId() + "/"
+                                + outputDatapoint.getDatapointId());
 
-                            updateHandler.registerChannel(device.getDeviceId(), channel.getChannelId(),
-                                    outputDatapoint.getDatapointId(), this, channelUID, dpg.getValueStateConverter());
-                        }
+                        mapEventToChannelUID.put(eventDatapointID, channelUID);
                     }
 
-                    // add the datapoint group to the maping channel
+                    // add the datapoint group to the mapping channel
                     mapChannelUID.put(channelUID, dpg);
 
                     if (dpg.getInputDatapoint() == null) {
@@ -499,7 +526,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                 if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
                     freeAtHomeBridge = bridgeHandler;
 
-                    device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
+                    device = freeAtHomeBridge.getFreeatHomeDeviceDescription(device.getDeviceId());
                 }
             }
         } catch (FreeAtHomeHttpCommunicationException e) {
@@ -526,16 +553,13 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
 
                 // in case of output channel, register it for updates
                 if (outputDatapoint != null) {
-                    // Register channel for event based state updated
-                    if (freeAtHomeBridge != null) {
-                        ChannelUpdateHandler updateHandler = freeAtHomeBridge.channelUpdateHandler;
+                    String eventDatapointID = new String(device.getDeviceId() + "/" + channel.getChannelId() + "/"
+                            + outputDatapoint.getDatapointId());
 
-                        updateHandler.registerChannel(device.getDeviceId(), channel.getChannelId(),
-                                outputDatapoint.getDatapointId(), this, channelUID, dpg.getValueStateConverter());
-                    }
+                    mapEventToChannelUID.put(eventDatapointID, channelUID);
                 }
 
-                // add the datapoint group to the maping channel
+                // add the datapoint group to the mapping channel
                 mapChannelUID.put(channelUID, dpg);
 
                 logger.debug("Thing channelType reloaded - Device: {} - channelTypeUID: {}",
@@ -556,7 +580,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                 if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
                     freeAtHomeBridge = bridgeHandler;
 
-                    device = freeAtHomeBridge.getFreeatHomeDeviceDescription(deviceID);
+                    device = freeAtHomeBridge.getFreeatHomeDeviceDescription(device.getDeviceId());
                 }
             }
         } catch (FreeAtHomeHttpCommunicationException e) {
@@ -564,32 +588,9 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler {
                     "@text/comm-error.error-in-sysap-com");
         }
 
-        // Initialize channels
-        List<Channel> thingChannels = new ArrayList<>(this.getThing().getChannels());
-
-        if (thingChannels.isEmpty()) {
-            for (int i = 0; i < device.getNumberOfChannels(); i++) {
-                FreeAtHomeDeviceChannel channel = device.getChannel(i);
-
-                for (int j = 0; j < channel.getNumberOfDatapointGroup(); j++) {
-                    FreeAtHomeDatapointGroup dpg = channel.getDatapointGroup(j);
-                    FreeAtHomeDatapoint outputDatapoint = dpg.getOutputDatapoint();
-
-                    // in case of output channel, unregister it for updates
-                    if (outputDatapoint != null) {
-                        // Register channel for event based state updated
-                        if (freeAtHomeBridge != null) {
-                            ChannelUpdateHandler updateHandler = freeAtHomeBridge.getChannelUpdateHandler();
-
-                            updateHandler.unregisterChannel(device.getDeviceId(), channel.getChannelId(),
-                                    outputDatapoint.getDatapointId());
-                        }
-                    }
-                }
-            }
-        }
-
         mapChannelUID.clear();
+
+        mapEventToChannelUID.clear();
     }
 
     public boolean isThingHandlesVirtualDevice() {
