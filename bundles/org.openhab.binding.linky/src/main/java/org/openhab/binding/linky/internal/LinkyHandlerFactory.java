@@ -159,7 +159,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-
         if (supportsThingType(thing.getThingTypeUID())) {
             LinkyHandler handler = new LinkyHandler(thing, localeProvider, gson, httpClient);
             return handler;
@@ -189,7 +188,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
     }
 
     @Override
-    public String authorize(String redirectUri, String reqCode) {
+    public String authorize(String redirectUri, String reqCode) throws LinkyException {
         // Will work only in case of direct oAuth2 authentification to enedis
         // this is not the case in v1 as we go trough MyElectricalData
 
@@ -207,9 +206,9 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
                 return user;
             } catch (RuntimeException | OAuthException | IOException e) {
                 // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-                throw new RuntimeException(e.getMessage(), e);
+                throw new LinkyException("Error during oAuth authorize :" + e.getMessage(), e);
             } catch (final OAuthResponseException e) {
-                throw new RuntimeException(e.getMessage(), e);
+                throw new LinkyException("\"Error during oAuth authorize :" + e.getMessage(), e);
             }
         }
         // Fallback for MyElectricalData
@@ -221,7 +220,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
             Collection<Thing> col = this.thingRegistry.getAll();
             for (Thing thing : col) {
                 if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
-
                     Configuration config = thing.getConfiguration();
                     String prmId = (String) config.get("prmId");
 
@@ -280,12 +278,10 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
         List<String> result = new ArrayList<String>();
         for (Thing thing : col) {
             if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
-
                 Configuration config = thing.getConfiguration();
 
                 String prmId = (String) config.get("prmId");
                 result.add(prmId);
-
             }
         }
 

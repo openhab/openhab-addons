@@ -113,13 +113,13 @@ public class LinkyAuthService {
      * @param code The Linky returned code value
      * @return returns the name of the Linky user that is authorized
      */
-    public String authorize(String servletBaseURL, String state, String code) {
+    public String authorize(String servletBaseURL, String state, String code) throws LinkyException {
         LinkyAccountHandler accountHandler = getLinkyAccountHandler();
         if (accountHandler == null) {
             logger.debug(
                     "Linky redirected with state '{}' but no matching bridge was found. Possible bridge has been removed.",
                     state);
-            throw new RuntimeException(ERROR_UKNOWN_BRIDGE);
+            throw new LinkyException(ERROR_UKNOWN_BRIDGE);
         } else {
             return accountHandler.authorize(servletBaseURL, code);
         }
