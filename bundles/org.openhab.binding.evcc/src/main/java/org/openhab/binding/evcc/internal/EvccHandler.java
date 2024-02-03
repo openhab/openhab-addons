@@ -156,8 +156,8 @@ public class EvccHandler extends BaseThingHandler {
                             if (command instanceof QuantityType<?> qt) {
                                 evccAPI.setLimitEnergy(loadpoint, qt.toUnit(Units.WATT_HOUR).floatValue());
                             } else if (command instanceof DecimalType dt) {
-                                evccAPI.setLimitEnergy(loadpoint, dt.intValue() * 1000); // DecimalType commands are
-                                                                                         // interpreted as 'kWh'
+                                // DecimalType commands are interpreted as 'kWh'
+                                evccAPI.setLimitEnergy(loadpoint, dt.intValue() * 1000);
                             } else {
                                 logger.debug("Command has wrong type, QuantityType required!");
                             }
@@ -664,13 +664,13 @@ public class EvccHandler extends BaseThingHandler {
         } else if (plan != null) {
             vehiclePlans.put(vehicleName, new Triple<>(true, plan.getSoC(), ZonedDateTime.parse(plan.getTime())));
         }
-        updateVehiclePlanChannel(vehicleName, uid, channelGroup, channel);
+        updateVehiclePlanChannel(vehicleName, uid, channelGroup);
     }
 
-    private void updateVehiclePlanChannel(String vehicleName, ThingUID uid, String channelGroup, ChannelUID channel) {
+    private void updateVehiclePlanChannel(String vehicleName, ThingUID uid, String channelGroup) {
         Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
 
-        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_ENABLED);
+        ChannelUID channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_ENABLED);
         updateState(channel, planValues.getLeft() ? OnOffType.ON : OnOffType.OFF);
         channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_SOC);
         updateState(channel, new QuantityType<>(planValues.getMiddle(), Units.PERCENT));
