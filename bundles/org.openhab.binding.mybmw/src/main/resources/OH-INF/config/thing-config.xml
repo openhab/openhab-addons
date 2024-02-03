@@ -9,7 +9,7 @@
 			<label>Vehicle Identification Number (VIN)</label>
 			<description>Unique VIN given by BMW</description>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
+		<parameter name="refreshInterval" type="integer" min="0" unit="min" required="true">
 			<label>Refresh Interval</label>
 			<description>Data refresh rate for your vehicle data</description>
 			<default>5</default>

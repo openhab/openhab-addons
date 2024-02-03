@@ -24,6 +24,7 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_RE
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_SERVICE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_STATUS;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_TIRES;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_UPDATE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHANNEL_GROUP_VEHICLE_IMAGE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_ENABLED;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_CLIMATE;
@@ -34,6 +35,7 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_P
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_PROFILE_TARGET;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_REMAINING;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGE_STATUS;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHARGING_UPDATE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.CHECK_CONTROL;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DATE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.DETAILS;
@@ -54,6 +56,7 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.HEADING;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.HOME_DISTANCE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.HOOD;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.IMAGE_FORMAT;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.IMAGE_UPDATE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.IMAGE_VIEWPORT;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.ISSUE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.LAST_FETCHED;
@@ -81,6 +84,7 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.SERVICE_MILEAGE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.SESSIONS;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.SEVERITY;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.SOC;
+import static org.openhab.binding.mybmw.internal.MyBMWConstants.STATE_UPDATE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.STATUS;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.SUBTITLE;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.SUNROOF;
@@ -257,19 +261,25 @@ public class VehicleHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, Converter.toTitleCase(imageProperties.viewport),
                 null);
 
-        // start update schedule
-        startSchedule(vehicleConfiguration.get().getRefreshInterval());
+        // start update schedule only if the refreshInterval is not 0
+        int refreshInterval = vehicleConfiguration.get().getRefreshInterval();
+
+        if (refreshInterval > 0) {
+            startSchedule(refreshInterval);
+        } else {
+            logger.info("VehicleHandler initialize: don't start schedule as interval is 0");
+        }
     }
 
     private void startSchedule(int interval) {
-        logger.trace("VehicleHandler.startSchedule");
+        logger.info("VehicleHandler.startSchedule with interval {}min", interval);
         refreshJob.ifPresentOrElse(job -> {
             if (job.isCancelled()) {
                 refreshJob = Optional
-                        .of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
+                        .of(scheduler.scheduleWithFixedDelay(this::updateData, 0, interval, TimeUnit.MINUTES));
             } // else - scheduler is already running!
         }, () -> {
-            refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
+            refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::updateData, 0, interval, TimeUnit.MINUTES));
         });
     }
 
@@ -281,25 +291,42 @@ public class VehicleHandler extends BaseThingHandler {
         remote.ifPresent(RemoteServiceExecutor::cancel);
     }
 
-    public void getData() {
-        logger.trace("VehicleHandler.getData");
+    /**
+     * update all data
+     */
+    void updateData() {
+        logger.trace("VehicleHandler.updateData");
+        updateState();
+        if (isElectric) {
+            updateCharging();
+        }
+        updateImage();
+    }
+
+    private void updateState() {
         proxy.ifPresentOrElse(prox -> {
             vehicleConfiguration.ifPresentOrElse(config -> {
-
-                boolean stateError = false;
                 try {
                     VehicleStateContainer vehicleState = prox.requestVehicleState(config.getVin(),
                             config.getVehicleBrand());
                     triggerVehicleStatusUpdate(vehicleState, null);
-                    stateError = false;
                 } catch (NetworkException e) {
                     logger.debug("{}", e.toString());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Vehicle State Update failed");
-                    stateError = true;
                 }
+            }, () -> {
+                logger.warn("MyBMW Vehicle Configuration isn't present");
+            });
+        }, () -> {
+            logger.warn("MyBMWProxy isn't present");
+        });
+    }
 
-                if (!stateError && isElectric) {
+    private void updateCharging() {
+        proxy.ifPresentOrElse(prox -> {
+            vehicleConfiguration.ifPresentOrElse(config -> {
+                if (isElectric) {
                     try {
                         updateChargingStatistics(
                                 prox.requestChargeStatistics(config.getVin(), config.getVehicleBrand()), null);
@@ -309,7 +336,18 @@ public class VehicleHandler extends BaseThingHandler {
                         logger.debug("{}", e.toString());
                     }
                 }
-                if (!stateError && !imageCache.isPresent() && !imageProperties.failLimitReached()) {
+            }, () -> {
+                logger.warn("MyBMW Vehicle Configuration isn't present");
+            });
+        }, () -> {
+            logger.warn("MyBMWProxy isn't present");
+        });
+    }
+
+    private void updateImage() {
+        proxy.ifPresentOrElse(prox -> {
+            vehicleConfiguration.ifPresentOrElse(config -> {
+                if (!imageCache.isPresent() && !imageProperties.failLimitReached()) {
                     try {
                         updateImage(prox.requestImage(config.getVin(), config.getVehicleBrand(), imageProperties));
                     } catch (NetworkException e) {
@@ -950,6 +988,25 @@ public class VehicleHandler extends BaseThingHandler {
                 default:
                     logger.debug("Cannot handle command {}, channel {} in group {} not a command channel",
                             command.toFullString(), channelUID.getAsString(), group);
+            }
+        } else if (command instanceof OnOffType) {
+            if (CHANNEL_GROUP_UPDATE.equals(group) && OnOffType.ON.equals(command)) {
+                // triggering the update of the respective channel
+                switch (channelUID.getIdWithoutGroup()) {
+                    case STATE_UPDATE:
+                        updateState();
+                        break;
+                    case CHARGING_UPDATE:
+                        updateCharging();
+                        break;
+                    case IMAGE_UPDATE:
+                        updateImage();
+                        break;
+                    default:
+                        break;
+                }
+                // immediately set the switch back to off
+                updateChannel(group, channelUID.getIdWithoutGroup(), OnOffType.OFF, null);
             }
         }
     }
