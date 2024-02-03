@@ -15,7 +15,9 @@ package org.openhab.binding.airgradient.internal.handler;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.*;
 
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +37,8 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfiguration;
 import org.openhab.binding.airgradient.internal.discovery.AirGradientLocationDiscoveryService;
 import org.openhab.binding.airgradient.internal.model.Measure;
+import org.openhab.binding.airgradient.internal.prometheus.PrometheusMetric;
+import org.openhab.binding.airgradient.internal.prometheus.PrometheusTextParser;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -153,44 +157,86 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
     public List<Measure> getMeasures() {
         try {
             ContentResponse response = httpClient.GET(generateMeasuresUrl());
-            logger.debug("Got measurements with status {}: {}", response.getStatus(), response.getContentAsString());
+            String contentType = response.getMediaType();
+            logger.debug("Got measurements with status {}: {} ({})", response.getStatus(),
+                    response.getContentAsString(), contentType);
             if (response.getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
-
                 String stringResponse = response.getContentAsString().trim();
-                List<@Nullable Measure> measures = null;
-                if (stringResponse.startsWith("[")) {
-                    // Array of measures, like returned from the AirGradients API
-                    Type measuresType = new TypeToken<List<@Nullable Measure>>() {
-                    }.getType();
-                    measures = gson.fromJson(stringResponse, measuresType);
-                } else if (stringResponse.startsWith("{")) {
-                    // Single measure e.g. if you read directly from the device
-                    Type measureType = new TypeToken<Measure>() {
-                    }.getType();
-                    Measure measure = gson.fromJson(stringResponse, measureType);
-                    measures = new ArrayList<@Nullable Measure>(1);
-                    measures.add(measure);
+
+                if (CONTENTTYPE_JSON.equals(contentType)) {
+                    return parseJson(stringResponse);
+                } else if (CONTENTTYPE_TEXT.equals(contentType)) {
+                    return parsePrometheus(stringResponse);
                 }
 
-                if (measures != null) {
-                    List<@Nullable Measure> nullableMeasuresWithoutNulls = measures.stream().filter(Objects::nonNull)
-                            .toList();
-                    List<Measure> measuresWithoutNulls = new ArrayList<Measure>(nullableMeasuresWithoutNulls.size());
-                    for (@Nullable
-                    Measure m : nullableMeasuresWithoutNulls) {
-                        if (m != null) {
-                            measuresWithoutNulls.add(m);
-                        }
-                    }
-
-                    return measuresWithoutNulls;
-                }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.getContentAsString());
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+
+        return Collections.emptyList();
+    }
+
+    private List<Measure> parsePrometheus(String stringResponse) {
+        List<PrometheusMetric> metrics = PrometheusTextParser.parse(stringResponse);
+        Measure measure = new Measure();
+
+        for (PrometheusMetric metric : metrics) {
+            if (metric.getMetricName().equals("pm02")) {
+                measure.pm02 = metric.getValue();
+            } else if (metric.getMetricName().equals("rco2")) {
+                measure.rco2 = metric.getValue();
+            } else if (metric.getMetricName().equals("atmp")) {
+                measure.atmp = metric.getValue();
+            } else if (metric.getMetricName().equals("rhum")) {
+                measure.rhum = metric.getValue();
+            } else if (metric.getMetricName().equals("tvoc")) {
+                measure.tvoc = metric.getValue();
+            } else if (metric.getMetricName().equals("nox")) {
+                measure.noxIndex = metric.getValue();
+            }
+
+            if (metric.getLabels().containsKey("id")) {
+                String id = metric.getLabels().get("id");
+                measure.serialno = id;
+                measure.locationId = id;
+                measure.locationName = id;
+            }
+        }
+
+        return Arrays.asList(measure);
+    }
+
+    private List<Measure> parseJson(String stringResponse) {
+        List<@Nullable Measure> measures = null;
+        if (stringResponse.startsWith("[")) {
+            // Array of measures, like returned from the AirGradients API
+            Type measuresType = new TypeToken<List<@Nullable Measure>>() {
+            }.getType();
+            measures = gson.fromJson(stringResponse, measuresType);
+        } else if (stringResponse.startsWith("{")) {
+            // Single measure e.g. if you read directly from the device
+            Type measureType = new TypeToken<Measure>() {
+            }.getType();
+            Measure measure = gson.fromJson(stringResponse, measureType);
+            measures = new ArrayList<@Nullable Measure>(1);
+            measures.add(measure);
+        }
+
+        if (measures != null) {
+            List<@Nullable Measure> nullableMeasuresWithoutNulls = measures.stream().filter(Objects::nonNull).toList();
+            List<Measure> measuresWithoutNulls = new ArrayList<Measure>(nullableMeasuresWithoutNulls.size());
+            for (@Nullable
+            Measure m : nullableMeasuresWithoutNulls) {
+                if (m != null) {
+                    measuresWithoutNulls.add(m);
+                }
+            }
+
+            return measuresWithoutNulls;
         }
 
         return Collections.emptyList();
@@ -206,12 +252,31 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
     }
 
     private @Nullable String generatePingUrl() {
-        return getConfiguration().hostname + PING_PATH;
+        AirGradientAPIConfiguration config = getConfiguration();
+        if (hasCloudUrl(config)) {
+            return config.hostname + PING_PATH;
+        } else {
+            return config.hostname;
+        }
     }
 
     private @Nullable String generateMeasuresUrl() {
         AirGradientAPIConfiguration config = getConfiguration();
-        return config.hostname + String.format(CURRENT_MEASURES_PATH, config.token);
+        if (hasCloudUrl(config)) {
+            return config.hostname + String.format(CURRENT_MEASURES_PATH, config.token);
+        } else {
+            return config.hostname;
+        }
+    }
+
+    /**
+     * Returns true if this is a URL against the cloud.
+     *
+     * @return true if this is a URL against the cloud API
+     */
+    private boolean hasCloudUrl(AirGradientAPIConfiguration config) {
+        URI url = URI.create(config.hostname);
+        return url.getPath().equals("/");
     }
 
     private AirGradientAPIConfiguration getConfiguration() {

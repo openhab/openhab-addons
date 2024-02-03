@@ -56,4 +56,8 @@ public class AirGradientBindingConstants {
     // Discovery
     public static final int SEARCH_TIME = 15;
     public static final boolean BACKGROUND_DISCOVERY = true;
+
+    // Media types
+    public static final String CONTENTTYPE_JSON = "application/json";
+    public static final String CONTENTTYPE_TEXT = "text/plain";
 }
