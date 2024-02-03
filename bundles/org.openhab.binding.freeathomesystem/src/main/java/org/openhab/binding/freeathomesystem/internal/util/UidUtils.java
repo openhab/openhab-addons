@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
@@ -28,16 +27,6 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class UidUtils {
-
-    public static ChannelGroupTypeUID generateChannelGroupTypeUID(String groupLabel) {
-        String channelNameString;
-
-        channelNameString = groupLabel + "-channelgroupstype";
-
-        ChannelGroupTypeUID channelGroupTypeUID = new ChannelGroupTypeUID(BINDING_ID, channelNameString);
-
-        return channelGroupTypeUID;
-    }
 
     public static ChannelTypeUID generateChannelTypeUID(String valueType, boolean isReadOnly) {
         String channelNameString;

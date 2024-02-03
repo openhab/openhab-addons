@@ -25,7 +25,6 @@ import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapoi
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapointGroup;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceChannel;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
-import org.openhab.binding.freeathomesystem.internal.type.FreeAtHomeChannelGroupTypeProvider;
 import org.openhab.binding.freeathomesystem.internal.type.FreeAtHomeChannelTypeProvider;
 import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeHttpCommunicationException;
 import org.openhab.binding.freeathomesystem.internal.util.UidUtils;
@@ -74,8 +73,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
     private Map<ChannelUID, FreeAtHomeDatapointGroup> mapChannelUID = new HashMap<ChannelUID, FreeAtHomeDatapointGroup>();
     private Map<String, ChannelUID> mapEventToChannelUID = new HashMap<String, ChannelUID>();
 
-    public FreeAtHomeDeviceHandler(Thing thing, FreeAtHomeChannelTypeProvider channelTypeProvider,
-            FreeAtHomeChannelGroupTypeProvider channelGroupTypeProvider) {
+    public FreeAtHomeDeviceHandler(Thing thing, FreeAtHomeChannelTypeProvider channelTypeProvider) {
         super(thing);
 
         this.channelTypeProvider = channelTypeProvider;

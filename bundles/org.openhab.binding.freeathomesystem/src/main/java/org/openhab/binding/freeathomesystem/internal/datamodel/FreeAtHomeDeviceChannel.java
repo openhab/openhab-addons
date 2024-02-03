@@ -21,7 +21,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeathomesystem.internal.util.FidTranslationUtils;
-import org.openhab.binding.freeathomesystem.internal.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +69,7 @@ public class FreeAtHomeDeviceChannel {
             channelFunctionID = channelFunctionID.substring(0, channelFunctionID.length() - 1) + "0";
         }
 
-        switch (HexUtils.getIntegerFromHex(channelFunctionID)) {
+        switch (Integer.parseInt(channelFunctionID, 16)) {
             case FID_PANEL_SWITCH_SENSOR:
             case FID_SWITCH_SENSOR: {
                 this.channelId = channelId;
@@ -149,7 +148,7 @@ public class FreeAtHomeDeviceChannel {
             case FID_RADIATOR_ACTUATOR_MASTER: {
                 this.channelId = channelId;
 
-                if (HexUtils.getIntegerFromHex(channelFunctionID) == FID_RADIATOR_ACTUATOR_MASTER) {
+                if (Integer.parseInt(channelFunctionID, 16) == FID_RADIATOR_ACTUATOR_MASTER) {
                     logger.debug("Radiator actuator channel - Channel FID: {}", channelFunctionID);
                 } else {
                     logger.debug("Room temperature actuator channel - Channel FID: {}", channelFunctionID);
@@ -187,8 +186,7 @@ public class FreeAtHomeDeviceChannel {
                 datapointGroups.add(newDatapointGroup);
 
                 // Additional channel for RTC device
-                if (HexUtils
-                        .getIntegerFromHex(channelFunctionID) == FID_ROOM_TEMPERATURE_CONTROLLER_MASTER_WITHOUT_FAN) {
+                if (Integer.parseInt(channelFunctionID, 16) == FID_ROOM_TEMPERATURE_CONTROLLER_MASTER_WITHOUT_FAN) {
                     newDatapointGroup = new FreeAtHomeDatapointGroup();
                     newDatapointGroup.addDatapointToGroup(DATAPOINT_DIRECTION_OUTPUT, 48, channelId, channelObject);
                     datapointGroups.add(newDatapointGroup);
@@ -524,7 +522,7 @@ public class FreeAtHomeDeviceChannel {
 
     public @Nullable String getFunctionIdText() {
         String functionIdText = FidTranslationUtils
-                .getFunctionIdText(String.format("0x%04X", HexUtils.getIntegerFromHex(channelFunctionID)));
+                .getFunctionIdText(String.format("0x%04X", Integer.parseInt(channelFunctionID, 16)));
         return functionIdText;
     }
 

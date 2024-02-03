@@ -474,7 +474,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             // Add authentication credentials.
             AuthenticationStore auth = httpClient.getAuthenticationStore();
 
-            URI uri1 = new URI("http://" + ipAddress + "/fhapi/v1");
+            URI uri1 = new URI(baseUrl);
             auth.addAuthenticationResult(new BasicAuthentication.BasicResult(uri1, username, password));
 
             String url = baseUrl + "/rest/devicelist";
