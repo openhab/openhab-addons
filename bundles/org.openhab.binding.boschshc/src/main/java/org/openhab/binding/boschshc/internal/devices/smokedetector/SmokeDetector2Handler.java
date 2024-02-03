@@ -22,8 +22,6 @@ import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.communicationquality.CommunicationQualityService;
 import org.openhab.binding.boschshc.internal.services.communicationquality.dto.CommunicationQualityServiceState;
 import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The smoke detector 2 warns you in case of fire.
@@ -32,8 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SmokeDetector2Handler extends AbstractSmokeDetectorHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public SmokeDetector2Handler(Thing thing) {
         super(thing);
@@ -48,7 +44,6 @@ public class SmokeDetector2Handler extends AbstractSmokeDetectorHandler {
     }
 
     private void updateChannels(CommunicationQualityServiceState communicationQualityServiceState) {
-        logger.debug("***** update communication quality with {}", communicationQualityServiceState.quality);
         updateState(CHANNEL_SIGNAL_STRENGTH, communicationQualityServiceState.quality.toSystemSignalStrength());
     }
 }
