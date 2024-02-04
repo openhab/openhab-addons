@@ -31,40 +31,42 @@ public class FreeAtHomeDatapoint {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDatapoint.class);
 
-    public static final int DATAPOINT_DIRECTION_UNKNOWN = 0;
-    public static final int DATAPOINT_DIRECTION_INPUT = 1;
-    public static final int DATAPOINT_DIRECTION_OUTPUT = 2;
-    public static final int DATAPOINT_DIRECTION_INPUTOUTPUT = 3;
-    public static final int DATAPOINT_DIRECTION_INPUT_AS_OUTPUT = 4;
+    enum DatapointDirection {
+        UNKNOWN,
+        INPUT,
+        OUTPUT,
+        INPUTOUTPUT,
+        INPUT_AS_OUTPUT
+    };
 
     public String channelId = "";
     private String datapointId = "";
 
-    int searchForDatapoint(int direction, int neededPairingIDFunction, String channelId,
+    DatapointDirection searchForDatapoint(DatapointDirection direction, int neededPairingIDFunction, String channelId,
             JsonObject jsonObjectOfChannel) {
-        int resultingDirection = DATAPOINT_DIRECTION_UNKNOWN;
+        DatapointDirection resultingDirection = DatapointDirection.UNKNOWN;
         boolean foundId = false;
         JsonObject localDatapoints = null;
 
         switch (direction) {
-            case DATAPOINT_DIRECTION_INPUT: {
+            case INPUT: {
                 localDatapoints = jsonObjectOfChannel.getAsJsonObject("inputs");
-                resultingDirection = DATAPOINT_DIRECTION_INPUT;
+                resultingDirection = DatapointDirection.INPUT;
                 break;
             }
-            case DATAPOINT_DIRECTION_INPUT_AS_OUTPUT: {
+            case INPUT_AS_OUTPUT: {
                 localDatapoints = jsonObjectOfChannel.getAsJsonObject("inputs");
-                resultingDirection = DATAPOINT_DIRECTION_OUTPUT;
+                resultingDirection = DatapointDirection.OUTPUT;
                 break;
             }
-            case DATAPOINT_DIRECTION_OUTPUT: {
+            case OUTPUT: {
                 localDatapoints = jsonObjectOfChannel.getAsJsonObject("outputs");
-                resultingDirection = DATAPOINT_DIRECTION_OUTPUT;
+                resultingDirection = DatapointDirection.OUTPUT;
                 break;
             }
             default: {
                 localDatapoints = jsonObjectOfChannel.getAsJsonObject("outputs");
-                resultingDirection = DATAPOINT_DIRECTION_OUTPUT;
+                resultingDirection = DatapointDirection.OUTPUT;
                 break;
             }
         }
@@ -95,7 +97,7 @@ public class FreeAtHomeDatapoint {
         if (!foundId) {
             this.channelId = "";
             this.datapointId = "";
-            resultingDirection = DATAPOINT_DIRECTION_UNKNOWN;
+            resultingDirection = DatapointDirection.UNKNOWN;
 
             logger.debug("Needed datapoint is not found - channel {} - pairingId {}", channelId,
                     neededPairingIDFunction);

@@ -57,22 +57,23 @@ public class FreeAtHomeDatapointGroup {
         outputDatapoint = null;
     }
 
-    boolean addDatapointToGroup(int direction, int neededPairingId, String channelId, JsonObject jsonObjectOfChannel) {
+    boolean addDatapointToGroup(DatapointDirection direction, int neededPairingId, String channelId,
+            JsonObject jsonObjectOfChannel) {
         FreeAtHomeDatapoint newDatapoint = new FreeAtHomeDatapoint();
 
-        int resultingDirection = newDatapoint.searchForDatapoint(direction, neededPairingId, channelId,
+        DatapointDirection resultingDirection = newDatapoint.searchForDatapoint(direction, neededPairingId, channelId,
                 jsonObjectOfChannel);
 
-        if (resultingDirection != DATAPOINT_DIRECTION_UNKNOWN) {
+        if (resultingDirection != DatapointDirection.UNKNOWN) {
             switch (resultingDirection) {
-                case DATAPOINT_DIRECTION_INPUT: {
+                case INPUT: {
                     inputDatapoint = newDatapoint;
 
                     pairingId = neededPairingId;
 
                     break;
                 }
-                case DATAPOINT_DIRECTION_OUTPUT: {
+                case OUTPUT: {
                     outputDatapoint = newDatapoint;
 
                     if (inputDatapoint == null) {
@@ -98,7 +99,7 @@ public class FreeAtHomeDatapointGroup {
             }
         }
 
-        return resultingDirection != DATAPOINT_DIRECTION_UNKNOWN;
+        return resultingDirection != DatapointDirection.UNKNOWN;
     }
 
     public void applyChangesForVirtualDevice() {
