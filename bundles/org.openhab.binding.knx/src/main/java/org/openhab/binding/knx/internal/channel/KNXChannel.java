@@ -133,7 +133,7 @@ public abstract class KNXChannel {
                     if (command instanceof State state && State.class.isAssignableFrom(expectedTypeClass)) {
                         if (state.as(expectedTypeClass.asSubclass(State.class)) != null) {
                             logger.trace(
-                                    "getCommandSpec command class {} is a sub-class of the expected type class {} for key {}",
+                                    "getCommandSpec command class '{}' is a sub-class of the expectedTypeClass '{}' for key '{}'",
                                     command.getClass(), expectedTypeClass, entry.getKey());
                             Class<? extends State> expectedTypeAsStateClass = expectedTypeClass.asSubclass(State.class);
                             State convertedState = state.as(expectedTypeAsStateClass);
@@ -145,7 +145,9 @@ public abstract class KNXChannel {
                 }
             }
         }
-        logger.error("getCommandSpec no Spec found!");
+        logger.trace(
+                "getCommandSpec could not match command class '{}' with expectedTypeClasses for any of the checked keys '{}', discarding command",
+                command.getClass(), gaKeys);
         return null;
     }
 
