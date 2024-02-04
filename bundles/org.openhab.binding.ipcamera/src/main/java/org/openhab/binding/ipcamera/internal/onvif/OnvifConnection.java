@@ -131,9 +131,10 @@ public class OnvifConnection {
     private String subscriptionXAddr = "http://" + ipAddress + "/onvif/device_service";
     private boolean isConnected = false;
     private int mediaProfileIndex = 0;
-    // private String snapshotUri = "";
     private String rtspUri = "";
     private IpCameraHandler ipCameraHandler;
+    private boolean supportsEvents = false; // camera has replied that it can do events
+    // Use/skip events even if camera support them. API cameras skip, as their own methods give better results.
     private boolean usingEvents = false;
 
     // These hold the cameras PTZ position in the range that the camera uses, ie
@@ -312,7 +313,7 @@ public class OnvifConnection {
         } else if (message.contains("RenewResponse")) {
             sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
         } else if (message.contains("GetSystemDateAndTimeResponse")) {// 1st to be sent.
-            setIsConnected(true);
+            setIsConnected(true);// Instar profile T only cameras need this
             parseDateAndTime(message);
             logger.debug("openHAB UTC dateTime is: {}", getUTCdateTime());
         } else if (message.contains("GetCapabilitiesResponse")) {// 2nd to be sent.
@@ -337,6 +338,7 @@ public class OnvifConnection {
         } else if (message.contains("GetEventPropertiesResponse")) {
             sendOnvifRequest(RequestType.CreatePullPointSubscription, eventXAddr);
         } else if (message.contains("CreatePullPointSubscriptionResponse")) {
+            supportsEvents = true;
             subscriptionXAddr = Helper.fetchXML(message, "SubscriptionReference>", "Address>");
             logger.debug("subscriptionXAddr={}", subscriptionXAddr);
             sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
@@ -956,6 +958,10 @@ public class OnvifConnection {
         } finally {
             connecting.unlock();
         }
+    }
+
+    public boolean getEventsSupported() {
+        return supportsEvents;
     }
 
     public void setIsConnected(boolean isConnected) {
