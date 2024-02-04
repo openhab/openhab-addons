@@ -23,7 +23,7 @@ For more information on the available APIs in scripts see the [JSR223 Scripting]
 
 ## Code reuse
 
-One can place *.groovy files with groovy classes under `automation/groovy` configuration directory.  
+One can place *.groovy files with Groovy classes under `automation/groovy` configuration directory.  
 Those classes can be imported in JSR-223 scripts or UI rules action with usual Groovy `import` statement.
 
 To apply shared code changes, one has to restart `openHAB Core :: Bundles :: Automation` or an OpenHAB instance altogether.
