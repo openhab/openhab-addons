@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hubspot.jinjava.Jinjava;
-import com.hubspot.jinjava.JinjavaConfig;
 import com.hubspot.jinjava.interpret.FatalTemplateErrorsException;
 
 /**
@@ -47,8 +46,7 @@ public class JinjaTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(JinjaTransformationService.class);
 
-    private final JinjavaConfig config = JinjavaConfig.newBuilder().withFailOnUnknownTokens(true).build();
-    private final Jinjava jinjava = new Jinjava(config);
+    private final Jinjava jinjava = new Jinjava();
 
     /**
      * Transforms the input <code>value</code> by Jinja template.
