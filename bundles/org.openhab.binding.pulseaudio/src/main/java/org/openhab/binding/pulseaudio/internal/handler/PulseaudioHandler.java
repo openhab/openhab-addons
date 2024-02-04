@@ -469,39 +469,50 @@ public class PulseaudioHandler extends BaseThingHandler {
                 .orElse(simpleTcpPort);
     }
 
-    public @Nullable AudioFormat getSourceAudioFormat() {
+    public AudioFormat getSourceAudioFormat() {
         String simpleFormat = ((String) getThing().getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOURCE_FORMAT));
         BigDecimal simpleRate = ((BigDecimal) getThing().getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOURCE_RATE));
         BigDecimal simpleChannels = ((BigDecimal) getThing().getConfiguration()
                 .get(DEVICE_PARAMETER_AUDIO_SOURCE_CHANNELS));
+        AudioFormat fallback = new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, 16,
+                16 * 16000, 16000L, 1);
         if (simpleFormat == null || simpleRate == null || simpleChannels == null) {
-            return null;
+            return fallback;
         }
+        int sampleRateAllChannels = simpleRate.intValue() * simpleChannels.intValue();
         switch (simpleFormat) {
-            case "u8":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, null, 8, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s16le":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s16be":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, true, 16, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s24le":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 24, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s24be":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, true, 24, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s32le":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 32, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s32be":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, true, 32, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            default:
+            case "u8" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_UNSIGNED, null, 8,
+                        8 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s16le" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, 16,
+                        16 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s16be" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, true, 16,
+                        16 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s24le" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, 24,
+                        24 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s24be" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, true, 24,
+                        24 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s32le" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, 32,
+                        32 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s32be" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, true, 32,
+                        32 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            default -> {
                 logger.warn("unsupported format {}", simpleFormat);
-                return null;
+                return fallback;
+            }
         }
     }
 
