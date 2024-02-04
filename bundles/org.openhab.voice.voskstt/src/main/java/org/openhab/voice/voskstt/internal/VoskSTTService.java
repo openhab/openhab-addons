@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
@@ -159,6 +160,7 @@ public class VoskSTTService implements STTService {
     @Override
     public Set<AudioFormat> getSupportedFormats() {
         return Set.of(
+                new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, 16000L),
                 new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, 16000L));
     }
 
@@ -167,9 +169,13 @@ public class VoskSTTService implements STTService {
             throws STTException {
         AtomicBoolean aborted = new AtomicBoolean(false);
         try {
-            var frequency = audioStream.getFormat().getFrequency();
+            AudioFormat format = audioStream.getFormat();
+            var frequency = format.getFrequency();
             if (frequency == null) {
                 throw new IOException("missing audio stream frequency");
+            }
+            if (AudioFormat.CONTAINER_WAVE.equals(format.getContainer())) {
+                AudioWaveUtils.removeFMT(audioStream);
             }
             backgroundRecognize(sttListener, audioStream, frequency, aborted);
         } catch (IOException e) {

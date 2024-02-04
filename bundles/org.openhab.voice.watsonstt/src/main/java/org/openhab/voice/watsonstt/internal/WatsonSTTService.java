@@ -14,6 +14,7 @@ package org.openhab.voice.watsonstt.internal;
 
 import static org.openhab.voice.watsonstt.internal.WatsonSTTConstants.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
@@ -122,8 +124,7 @@ public class WatsonSTTService implements STTService {
 
     @Override
     public Set<AudioFormat> getSupportedFormats() {
-        return Set.of(AudioFormat.WAV, AudioFormat.OGG, new AudioFormat("OGG", "OPUS", null, null, null, null),
-                AudioFormat.MP3);
+        return Set.of(AudioFormat.PCM_SIGNED, AudioFormat.WAV);
     }
 
     @Override
@@ -147,6 +148,13 @@ public class WatsonSTTService implements STTService {
         final AtomicReference<@Nullable WebSocket> socketRef = new AtomicReference<>();
         final AtomicBoolean aborted = new AtomicBoolean(false);
         executor.submit(() -> {
+            if (AudioFormat.CONTAINER_WAVE.equals(audioStream.getFormat().getContainer())) {
+                try {
+                    AudioWaveUtils.removeFMT(audioStream);
+                } catch (IOException e) {
+                    logger.warn("Error removing format header: {}", e.getMessage());
+                }
+            }
             socketRef.set(stt.recognizeUsingWebSocket(wsOptions,
                     new TranscriptionListener(socketRef, sttListener, config, aborted)));
         });
