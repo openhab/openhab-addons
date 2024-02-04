@@ -211,6 +211,8 @@ public class VehicleHandler extends BaseThingHandler {
 
     private ImageProperties imageProperties = new ImageProperties();
 
+    private ThingStatus currentStatus = ThingStatus.UNKNOWN;
+
     public VehicleHandler(Thing thing, MyBMWCommandOptionProvider commandOptionProvider,
             LocationProvider locationProvider, TimeZoneProvider timeZoneProvider, String driveTrain) {
         super(thing);
@@ -241,7 +243,8 @@ public class VehicleHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.trace("VehicleHandler.initialize");
-        updateStatus(ThingStatus.UNKNOWN);
+        currentStatus = ThingStatus.UNKNOWN;
+        updateStatus(currentStatus);
         vehicleConfiguration = Optional.of(getConfigAs(MyBMWVehicleConfiguration.class));
 
         Bridge bridge = getBridge();
@@ -261,26 +264,26 @@ public class VehicleHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, Converter.toTitleCase(imageProperties.viewport),
                 null);
 
-        // start update schedule only if the refreshInterval is not 0
-        int refreshInterval = vehicleConfiguration.get().getRefreshInterval();
-
-        if (refreshInterval > 0) {
-            startSchedule(refreshInterval);
-        } else {
-            logger.info("VehicleHandler initialize: don't start schedule as interval is 0");
-        }
+        startSchedule(vehicleConfiguration.get().getRefreshInterval());
     }
 
     private void startSchedule(int interval) {
-        logger.info("VehicleHandler.startSchedule with interval {}min", interval);
-        refreshJob.ifPresentOrElse(job -> {
-            if (job.isCancelled()) {
+        // start update schedule only if the refreshInterval is not 0
+        if (interval > 0) {
+            logger.info("VehicleHandler.startSchedule with interval {}min", interval);
+            refreshJob.ifPresentOrElse(job -> {
+                if (job.isCancelled()) {
+                    refreshJob = Optional
+                            .of(scheduler.scheduleWithFixedDelay(this::updateData, 0, interval, TimeUnit.MINUTES));
+                } // else - scheduler is already running!
+            }, () -> {
                 refreshJob = Optional
                         .of(scheduler.scheduleWithFixedDelay(this::updateData, 0, interval, TimeUnit.MINUTES));
-            } // else - scheduler is already running!
-        }, () -> {
-            refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::updateData, 0, interval, TimeUnit.MINUTES));
-        });
+            });
+        } else {
+            logger.info("VehicleHandler initialize: don't start schedule as interval is 0");
+            updateData();
+        }
     }
 
     @Override
@@ -296,24 +299,26 @@ public class VehicleHandler extends BaseThingHandler {
      */
     void updateData() {
         logger.trace("VehicleHandler.updateData");
-        updateState();
+        updateVehicleStatus();
         if (isElectric) {
             updateCharging();
         }
         updateImage();
     }
 
-    private void updateState() {
+    private void updateVehicleStatus() {
         proxy.ifPresentOrElse(prox -> {
             vehicleConfiguration.ifPresentOrElse(config -> {
                 try {
                     VehicleStateContainer vehicleState = prox.requestVehicleState(config.getVin(),
                             config.getVehicleBrand());
                     triggerVehicleStatusUpdate(vehicleState, null);
+                    currentStatus = ThingStatus.ONLINE;
+                    updateStatus(currentStatus);
                 } catch (NetworkException e) {
                     logger.debug("{}", e.toString());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Vehicle State Update failed");
+                    currentStatus = ThingStatus.OFFLINE;
+                    updateStatus(currentStatus, ThingStatusDetail.COMMUNICATION_ERROR, "Vehicle State Update failed");
                 }
             }, () -> {
                 logger.warn("MyBMW Vehicle Configuration isn't present");
@@ -326,7 +331,7 @@ public class VehicleHandler extends BaseThingHandler {
     private void updateCharging() {
         proxy.ifPresentOrElse(prox -> {
             vehicleConfiguration.ifPresentOrElse(config -> {
-                if (isElectric) {
+                if (isElectric && ThingStatus.ONLINE.equals(currentStatus)) {
                     try {
                         updateChargingStatistics(
                                 prox.requestChargeStatistics(config.getVin(), config.getVehicleBrand()), null);
@@ -347,7 +352,8 @@ public class VehicleHandler extends BaseThingHandler {
     private void updateImage() {
         proxy.ifPresentOrElse(prox -> {
             vehicleConfiguration.ifPresentOrElse(config -> {
-                if (!imageCache.isPresent() && !imageProperties.failLimitReached()) {
+                if (!imageCache.isPresent() && !imageProperties.failLimitReached()
+                        && ThingStatus.ONLINE.equals(currentStatus)) {
                     try {
                         updateImage(prox.requestImage(config.getVin(), config.getVehicleBrand(), imageProperties));
                     } catch (NetworkException e) {
@@ -372,8 +378,6 @@ public class VehicleHandler extends BaseThingHandler {
             if (isElectric) {
                 updateChargingProfile(vehicleState.getState().getChargingProfile(), channelToBeUpdated);
             }
-
-            updateStatus(ThingStatus.ONLINE);
         } else {
             logger.debug("configuration not present");
         }
@@ -994,7 +998,7 @@ public class VehicleHandler extends BaseThingHandler {
                 // triggering the update of the respective channel
                 switch (channelUID.getIdWithoutGroup()) {
                     case STATE_UPDATE:
-                        updateState();
+                        updateVehicleStatus();
                         break;
                     case CHARGING_UPDATE:
                         updateCharging();
