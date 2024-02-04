@@ -403,12 +403,12 @@ public class ShellyDeviceProfile {
     }
 
     public static boolean isGeneration2(String thingType) {
-        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro")
-                || thingType.startsWith("shellymini") || isBluSeries(thingType);
+        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || thingType.contains("mini")
+                || isBluSeries(thingType);
     }
 
     public static boolean isBluSeries(String thingType) {
-        return thingType.startsWith("shellyblu");
+        return thingType.startsWith("shellyblu") && !thingType.startsWith(THING_TYPE_SHELLYBLUGW_STR);
     }
 
     public boolean coiotEnabled() {
