@@ -73,6 +73,18 @@ public class TeleinfoDiscoveryService extends AbstractThingHandlerDiscoveryServi
     }
 
     @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Start Teleinfo device background discovery");
+        thingHandler.addListener(this);
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stop Teleinfo device background discovery");
+        thingHandler.removeListener(this);
+    }
+
+    @Override
     protected void startScan() {
         logger.debug("Teleinfo discovery: Start {}", thingHandler.getThing().getUID());
 
