@@ -76,10 +76,6 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                     var audioStream = streamGroup.getAudioStreamInGroup();
                     audioStream.onClose(() -> {
                         minusClientCount();
-                        try {
-                            Thread.sleep(0);
-                        } catch (InterruptedException ignored) {
-                        }
                         stopPipeWriteTask();
                     });
                     addClientCount();
