@@ -90,24 +90,6 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="uvindex">
-		<label>Current UV Index</label>
-		<description>This is the current UV Index.</description>
-		<channels>
-			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
-			<channel id="uvindex" typeId="uvindex"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="uvindexForecast">
-		<label>Forecasted UV Index</label>
-		<description>This is the forecasted UV Index.</description>
-		<channels>
-			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
-			<channel id="uvindex" typeId="forecasted-uvindex"/>
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="airPollution">
 		<label>Current Air Pollution</label>
 		<description>This is the current air pollution.</description>
@@ -317,7 +299,7 @@
 			<channel id="icon-id" typeId="condition-icon-id"/>
 			<channel id="temperature" typeId="system.outdoor-temperature"/>
 			<channel id="apparent-temperature" typeId="apparent-temperature"/>
-			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="pressure" typeId="systembarometric-pressure"/>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
 			<channel id="dew-point" typeId="dew-point"/>
 			<channel id="uvindex" typeId="uvindex"/>
