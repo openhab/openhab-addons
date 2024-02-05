@@ -164,7 +164,7 @@ public class GrowattChannels {
             new AbstractMap.SimpleEntry<String, UoM>("battery-type", new UoM(Units.ONE, 1)),
             new AbstractMap.SimpleEntry<String, UoM>("battery-voltage", new UoM(Units.VOLT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("battery-temperature", new UoM(SIUnits.CELSIUS, 10)),
-            new AbstractMap.SimpleEntry<String, UoM>("battery-display", new UoM(Units.ONE, 10)),
+            new AbstractMap.SimpleEntry<String, UoM>("battery-display", new UoM(Units.VOLT, 10)),
             new AbstractMap.SimpleEntry<String, UoM>("battery-soc", new UoM(Units.PERCENT, 1)),
 
             // fault codes
