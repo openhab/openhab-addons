@@ -364,9 +364,9 @@
 				<label>Battery Voltage</label>
 				<description>Battery voltage.</description>
 			</channel>
-			<channel id="battery-display" typeId="advanced-status-code">
+			<channel id="battery-display" typeId="advanced-electric-voltage">
 				<label>Battery Display</label>
-				<description>Battery display code.</description>
+				<description>Battery display voltage.</description>
 			</channel>
 			<channel id="battery-soc" typeId="advanced-percent">
 				<label>Battery Charge</label>
