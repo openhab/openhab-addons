@@ -16,9 +16,10 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents a loadpoint object of the status response (/api/state).
- * This DTO was written for evcc version 0.117.0
+ * This DTO was written for evcc version 0.123.1
  *
  * @author Florian Hotze - Initial contribution
+ * @author Luca Arnecke - Update to evcc version 0.123.1
  */
 public class Loadpoint {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
@@ -63,23 +64,17 @@ public class Loadpoint {
     @SerializedName("minCurrent")
     private float minCurrent;
 
-    @SerializedName("minSoc")
-    private float minSoC;
-
     @SerializedName("mode")
     private String mode;
 
     @SerializedName("phasesEnabled")
     private int phases;
 
-    @SerializedName("planActive")
-    private boolean planActive;
+    @SerializedName("limitEnergy")
+    private float limitEnergy;
 
-    @SerializedName("targetEnergy")
-    private float targetEnergy;
-
-    @SerializedName("targetSoc")
-    private float targetSoC;
+    @SerializedName("limitSoc")
+    private float limitSoC;
 
     @SerializedName("targetTime")
     private String targetTime;
@@ -102,8 +97,8 @@ public class Loadpoint {
     @SerializedName("vehicleSoc")
     private float vehicleSoC;
 
-    @SerializedName("vehicleTitle")
-    private String vehicleTitle;
+    @SerializedName("vehicleName")
+    private String vehicleName;
 
     /**
      * @return number of active phases
@@ -197,13 +192,6 @@ public class Loadpoint {
     }
 
     /**
-     * @return minimum state of charge
-     */
-    public float getMinSoC() {
-        return minSoC;
-    }
-
-    /**
      * @return charging mode: off, now, minpv, pv
      */
     public String getMode() {
@@ -218,24 +206,17 @@ public class Loadpoint {
     }
 
     /**
-     * @return whether charging plan is active
+     * @return limit energy
      */
-    public boolean getPlanActive() {
-        return planActive;
+    public float getLimitEnergy() {
+        return limitEnergy;
     }
 
     /**
-     * @return target energy
+     * @return limit state of charge (SoC)
      */
-    public float getTargetEnergy() {
-        return targetEnergy;
-    }
-
-    /**
-     * @return target state of charge (SoC)
-     */
-    public float getTargetSoC() {
-        return targetSoC;
+    public float getLimitSoC() {
+        return limitSoC;
     }
 
     /**
@@ -290,7 +271,7 @@ public class Loadpoint {
     /**
      * @return vehicle's title/name
      */
-    public String getVehicleTitle() {
-        return vehicleTitle;
+    public String getVehicleName() {
+        return vehicleName;
     }
 }
