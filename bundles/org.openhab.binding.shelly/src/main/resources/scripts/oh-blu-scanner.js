@@ -94,7 +94,7 @@ let BTHomeDecoder = {
     let _value;
     while (buffer.length > 0) {
       _bth = BTH[buffer.at(0)];
-      if (_bth === "undefined") {
+      if (typeof _bth === "undefined") {
         console.log("BTH: unknown type");
         break;
       }
