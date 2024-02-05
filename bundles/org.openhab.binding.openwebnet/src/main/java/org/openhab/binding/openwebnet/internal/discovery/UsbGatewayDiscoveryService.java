@@ -50,7 +50,8 @@ import org.slf4j.LoggerFactory;
  * open each one to test if a OpenWebNet Zigbee USB gateway is connected. On
  * successful connection, a new DiscoveryResult is created.
  *
- * @author Massimo Valla - Initial contribution
+ * @author Massimo Valla - Initial contribution. Inject SerialPortManager to
+ *         openwebnet4j lib.
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.openwebnet")

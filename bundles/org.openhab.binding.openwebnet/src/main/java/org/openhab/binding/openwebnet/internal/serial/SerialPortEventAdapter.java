@@ -45,5 +45,4 @@ public class SerialPortEventAdapter implements SerialPortEvent {
             return event.getEventType();
         }
     }
-
 }
