@@ -397,6 +397,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         }
 
         return CompletableFuture.supplyAsync(() -> {
+            Thread.currentThread().setName("presenceDetectionResult_" + hostname);
             logger.debug("Waiting for {} detection futures for {} to complete", completableFutures.size(), hostname);
             completableFutures.forEach(completableFuture -> {
                 try {
