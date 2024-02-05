@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
-import org.openhab.binding.openwebnet.internal.serial.SerialTransportAdapter;
+import org.openhab.binding.openwebnet.internal.serial.SerialPortProviderAdapter;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -66,7 +66,7 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
     private @Nullable ScheduledFuture<?> connectTimeout;
 
     private final SerialPortManager serialPortManager;
-    private final SerialTransportAdapter transportAdapter;
+    private final SerialPortProviderAdapter transportAdapter;
 
     private @Nullable USBGateway zbGateway;
 
@@ -86,9 +86,9 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
         super(Set.of(OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY), DISCOVERY_TIMEOUT_SECONDS, false);
         // Inject the SerialPortManager passed via @Reference into the adapter
         serialPortManager = spm;
-        SerialTransportAdapter.setSerialPortManager(spm);
-        this.transportAdapter = new SerialTransportAdapter();
-        logger.debug("**** -SPI- **** Set SerialPortManager to: {}", SerialTransportAdapter.serialPortManager);
+        SerialPortProviderAdapter.setSerialPortManager(spm);
+        this.transportAdapter = new SerialPortProviderAdapter();
+        logger.debug("**** -SPI- **** Set SerialPortManager to: {}", SerialPortProviderAdapter.serialPortManager);
     }
 
     /**

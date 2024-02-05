@@ -46,12 +46,6 @@ public class SerialPortAdapter implements org.openwebnet4j.communication.serial.
     private @Nullable SerialPort sp = null;
 
     public SerialPortAdapter(final SerialPortIdentifier spid) {
-        logger.debug(
-                "*************************************************************************************************************");
-        logger.debug(
-                "************* org.openhab.binding.openwebnet.internal.serial.SerialPortAdapter *** Constructor **************");
-        logger.debug(
-                "*************************************************************************************************************");
         this.spid = spid;
     }
 

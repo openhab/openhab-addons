@@ -33,15 +33,14 @@ import aQute.bnd.annotation.spi.ServiceProvider;
  */
 @ServiceProvider(value = SerialPortProvider.class)
 @NonNullByDefault
-// FIXME rename SerialPortProviderImpl
-public class SerialTransportAdapter implements SerialPortProvider {
+public class SerialPortProviderAdapter implements SerialPortProvider {
 
-    private Logger logger = LoggerFactory.getLogger(SerialTransportAdapter.class);
+    private Logger logger = LoggerFactory.getLogger(SerialPortProviderAdapter.class);
     @Nullable
     public static SerialPortManager serialPortManager = null;
 
     public static void setSerialPortManager(SerialPortManager serialPortManager) {
-        SerialTransportAdapter.serialPortManager = serialPortManager;
+        SerialPortProviderAdapter.serialPortManager = serialPortManager;
     }
 
     @Override

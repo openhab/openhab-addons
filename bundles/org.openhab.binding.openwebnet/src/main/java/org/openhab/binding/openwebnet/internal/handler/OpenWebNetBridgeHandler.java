@@ -32,7 +32,7 @@ import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetBusBridgeConfig;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetZigBeeBridgeConfig;
-import org.openhab.binding.openwebnet.internal.serial.SerialTransportAdapter;
+import org.openhab.binding.openwebnet.internal.serial.SerialPortProviderAdapter;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -181,7 +181,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return null;
         } else {
             USBGateway tmpUSBGateway = new USBGateway(serialPort);
-            tmpUSBGateway.setSerialPortProvider(new SerialTransportAdapter());
+            tmpUSBGateway.setSerialPortProvider(new SerialPortProviderAdapter());
             logger.debug("**** -SPI- ****  OpenWebNetBridgeHandler :: setSerialPortProvider to: {}",
                     tmpUSBGateway.getSerialPortProvider());
             return tmpUSBGateway;
