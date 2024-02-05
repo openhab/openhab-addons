@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -85,19 +84,16 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
     @Activate
     public UsbGatewayDiscoveryService(final @Reference SerialPortManager spm) {
         super(Set.of(OpenWebNetBindingConstants.THING_TYPE_ZB_GATEWAY), DISCOVERY_TIMEOUT_SECONDS, false);
-        // FIXME check
-        // Obtain the serial port manager service using an OSGi reference
+        // Inject the SerialPortManager passed via @Reference into the adapter
         serialPortManager = spm;
-
         SerialTransportAdapter.setSerialPortManager(spm);
         this.transportAdapter = new SerialTransportAdapter();
-        logger.debug("*********************************************************************************");
-        logger.debug("********************* set SerialPortManager: {}", SerialTransportAdapter.serialPortManager);
-        logger.debug("*********************************************************************************");
+        logger.debug("**** -SPI- **** Set SerialPortManager to: {}", SerialTransportAdapter.serialPortManager);
     }
 
     /**
-     * Starts a new discovery scan. All available Serial Ports are scanned.
+     * Starts a new discovery scan. All available SerialPortsIdentifiers returned by
+     * SerialPortManager are scanned.
      */
     @Override
     protected void startScan() {
@@ -105,18 +101,12 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
         removeOlderResults(getTimestampOfLastScan());
         scanning = true;
 
-        /// FIXME remove and rename portEnum variable
-
-        Stream<SerialPortIdentifier> portEnum = serialPortManager.getIdentifiers();
-        SerialPortIdentifier[] portEnumArr = portEnum.toArray(SerialPortIdentifier[]::new);
-        // FIXME remove
-        for (SerialPortIdentifier pI : portEnumArr) {
-            logger.debug("################# Found SerialPortIndetifier: {}", pI.getName());
-        }
+        SerialPortIdentifier[] foundSerialPortIds = serialPortManager.getIdentifiers()
+                .toArray(SerialPortIdentifier[]::new);
 
         // Check each available serial port
         try {
-            for (SerialPortIdentifier portIdentifier : portEnumArr) {
+            for (SerialPortIdentifier portIdentifier : foundSerialPortIds) {
                 if (scanning) {
                     currentScannedPortName = portIdentifier.getName();
                     logger.debug("[{}] == checking serial port", currentScannedPortName);
@@ -126,10 +116,7 @@ public class UsbGatewayDiscoveryService extends AbstractDiscoveryService impleme
                     } else {
                         logger.debug("[{}] trying to connect to a Zigbee USB Gateway...", currentScannedPortName);
                         USBGateway gw = new USBGateway(currentScannedPortName);
-
-                        // FIXME just added
                         gw.setSerialPortProvider(transportAdapter);
-
                         zbGateway = gw;
                         gw.subscribe(this);
                         portCheckLatch = new CountDownLatch(1);

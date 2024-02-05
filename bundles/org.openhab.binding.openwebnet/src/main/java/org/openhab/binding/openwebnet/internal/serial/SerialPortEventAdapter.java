@@ -37,11 +37,13 @@ public class SerialPortEventAdapter implements SerialPortEvent {
 
     @Override
     public int getEventType() {
-        if (event.getEventType() == 11) { // TODO to be changed to constant when defined in
-                                          // org.openhab.core.io.transport.serial.SerialPortEvent
+        if (event.getEventType() == org.openhab.core.io.transport.serial.SerialPortEvent.PORT_DISCONNECTED) {
             return SerialPortEvent.EVENT_PORT_DISCONNECTED;
+        } else if (event.getEventType() == org.openhab.core.io.transport.serial.SerialPortEvent.DATA_AVAILABLE) {
+            return SerialPortEvent.EVENT_DATA_AVAILABLE;
         } else {
             return event.getEventType();
         }
     }
+
 }

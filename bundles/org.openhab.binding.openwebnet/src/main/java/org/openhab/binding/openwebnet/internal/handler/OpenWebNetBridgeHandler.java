@@ -180,15 +180,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     "@text/offline.conf-error-no-serial-port");
             return null;
         } else {
-
-            // FIXME modified - test no SPI
             USBGateway tmpUSBGateway = new USBGateway(serialPort);
-
             tmpUSBGateway.setSerialPortProvider(new SerialTransportAdapter());
-            logger.info("===================================================================================");
-            logger.info("===================== OpenWebNetBridgeHandler :: setSerialPortProvider to: {}",
-                    tmpUSBGateway.serialPortProvider);
-            logger.info("===================================================================================");
+            logger.debug("**** -SPI- ****  OpenWebNetBridgeHandler :: setSerialPortProvider to: {}",
+                    tmpUSBGateway.getSerialPortProvider());
             return tmpUSBGateway;
         }
     }
@@ -396,7 +391,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Register a device ThingHandler to this BridgHandler
      *
-     * @param ownId the device OpenWebNet id
+     * @param ownId        the device OpenWebNet id
      * @param thingHandler the thing handler to be registered
      */
     protected void registerDevice(String ownId, OpenWebNetThingHandler thingHandler) {
@@ -687,7 +682,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Return a ownId string (=WHO.WHERE) from the device Where address and handler
      *
-     * @param where the Where address (to be normalized)
+     * @param where   the Where address (to be normalized)
      * @param handler the device handler
      * @return the ownId String
      */
@@ -698,7 +693,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Returns a ownId string (=WHO.WHERE) from a Who and Where address
      *
-     * @param who the Who
+     * @param who   the Who
      * @param where the Where address (to be normalized)
      * @return the ownId String
      */

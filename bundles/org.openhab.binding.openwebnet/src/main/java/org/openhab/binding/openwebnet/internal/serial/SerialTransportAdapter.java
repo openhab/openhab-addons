@@ -34,30 +34,14 @@ import aQute.bnd.annotation.spi.ServiceProvider;
 @ServiceProvider(value = SerialPortProvider.class)
 @NonNullByDefault
 // FIXME rename SerialPortProviderImpl
-
 public class SerialTransportAdapter implements SerialPortProvider {
 
     private Logger logger = LoggerFactory.getLogger(SerialTransportAdapter.class);
     @Nullable
-    // FIXME
     public static SerialPortManager serialPortManager = null;
-    // @Nullable
-    // private SerialPort serialPort = null;
-
-    public SerialTransportAdapter() {
-        // FIXME remove logs
-        logger.info("#### ***********************************************");
-        logger.info("#### **** SerialTransportAdapter *** Constructor ***");
-        logger.info("#### ***********************************************");
-    }
 
     public static void setSerialPortManager(SerialPortManager serialPortManager) {
         SerialTransportAdapter.serialPortManager = serialPortManager;
-        // FIXME remove logs
-        System.out.println("*************************************************************************");
-        System.out.println("********* SerialTransportAdapter *** Set static SerialPortManager to: "
-                + SerialTransportAdapter.serialPortManager);
-        System.out.println("*************************************************************************");
     }
 
     @Override
@@ -77,14 +61,6 @@ public class SerialTransportAdapter implements SerialPortProvider {
 
     @Override
     public Stream<SerialPort> getSerialPorts() {
-
-        // FIXME remove
-        // Enumeration<CommPortIdentifier> identifiers =
-        // CommPortIdentifier.getPortIdentifiers();
-        // Stream<CommPortIdentifier> ids = Collections.list(identifiers).stream();
-        // return ids.filter(id -> id.getPortType() ==
-        // CommPortIdentifier.PORT_SERIAL).map(sid -> new RxTxSerialPort(sid));
-
         final @Nullable SerialPortManager spm = serialPortManager;
         if (spm == null) {
             return Stream.empty();
