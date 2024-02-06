@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="radiobrowser"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="radio">
+		<label>RadioBrowser Binding Thing</label>
+		<description>RadioBrowser Cloud Connection</description>
+
+		<channels>
+			<channel id="country" typeId="country"/>
+			<channel id="language" typeId="language"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the device</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="country">
+		<item-type>String</item-type>
+		<label>Country</label>
+		<description>Show only stations located in selected country</description>
+	</channel-type>
+
+	<channel-type id="language">
+		<item-type>String</item-type>
+		<label>Language</label>
+		<description>Show only stations spoken in a selected language</description>
+	</channel-type>
+
+</thing:thing-descriptions>
