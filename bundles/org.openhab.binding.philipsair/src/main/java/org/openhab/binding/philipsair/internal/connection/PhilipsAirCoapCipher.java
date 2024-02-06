@@ -68,7 +68,7 @@ public class PhilipsAirCoapCipher {
             return decryptedMsg;
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-            logger.trace("Error decoding message: {}", e.getMessage(), e);
+            logger.debug("Error decrypting message: {}. Message Text: '{}'", e.getMessage(), responseText);
         }
         return "Could not decrypt";
     }

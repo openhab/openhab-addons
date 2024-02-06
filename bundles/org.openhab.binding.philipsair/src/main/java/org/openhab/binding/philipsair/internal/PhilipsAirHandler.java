@@ -179,12 +179,13 @@ public class PhilipsAirHandler extends BaseThingHandler {
         logger.debug("Start initializing!");
         final PhilipsAirConfiguration config = getAirPurifierConfig();
         int refreshInterval = config.getRefreshInterval();
-        if (refreshInterval < PhilipsAirConfiguration.MIN_REFESH_INTERVAL) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "refreshInterval too low");
-            return;
+        if (refreshInterval < PhilipsAirConfiguration.MIN_REFESH_INTERVAL
+                && !(SUPPORTED_COAP_THING_TYPES_UIDS.contains(getThing().getThingTypeUID()))) {
+            logger.info("refreshInterval too low. Using {}", PhilipsAirConfiguration.MIN_REFESH_INTERVAL);
+            refreshInterval = PhilipsAirConfiguration.MIN_REFESH_INTERVAL;
         }
-
-        this.getConfig().put(PhilipsAirConfiguration.CONFIG_DEF_REFRESH_INTERVAL, config.getRefreshInterval());
+        // TODO: disabling this, as it may cause start delays
+        // this.getConfig().put(PhilipsAirConfiguration.CONFIG_DEF_REFRESH_INTERVAL, config.getRefreshInterval());
         ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             callback.configurationUpdated(thing);

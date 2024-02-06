@@ -104,7 +104,8 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     }
 
     private void backgroundScan() {
-        logger.debug("Run PhilipsAir (COAP) background discovery scan");
+        logger.debug("Initiated PhilipsAir (COAP) background discovery scan");
+        startScan();
     }
 
     @Override
@@ -191,7 +192,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         // sends a multicast request
         MultiCoapHandler handler = new MultiCoapHandler(this, logger);
         client.advanced(handler, multicastRequest);
-        while (handler.waitOn(DISCOVERY_TIME - 1 * 1000)) {
+        while (handler.waitOn(DISCOVERY_TIME * 1000)) {
             ;
         }
     }

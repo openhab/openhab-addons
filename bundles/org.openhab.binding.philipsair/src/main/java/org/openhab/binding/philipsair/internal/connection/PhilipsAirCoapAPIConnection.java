@@ -61,17 +61,19 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private static final long TIMEOUT = 25000;
 
     private final Gson gson = new Gson();
-    private ExpiringCache<String> coapStatus = new ExpiringCache<>(10000, this::refreshData);
+    private ExpiringCache<String> coapStatus = new ExpiringCache<>(20000, this::refreshData);
     private String host = "";
     private CoapClient client = new CoapClient();
     private long counter = 1;
     private boolean hasSync = false;
+    private long syncCounter = 0;
     private int attempt = -1;
     private @Nullable CoapObserveRelation observe = null;
 
     private String refreshData() {
         try {
             logger.debug("Refreshing data for {}", host);
+
             final CoapObserveRelation reuseObserve = this.observe;
             if (reuseObserve != null && !reuseObserve.isCanceled()) {
                 if (attempt < 2) {
@@ -90,7 +92,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             client.setURI(uri);
             if (!hasSync) {
                 counter = getSync(counter);
-                logger.debug("Counter {}", counter);
+                logger.debug("Counter for {}: {}", host, counter);
             }
             client.setURI(uri);
 
@@ -112,25 +114,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
 
                 @Override
                 public void onLoad(@Nullable CoapResponse response) {
-                    if (response != null) {
-                        if (!response.isSuccess()) {
-                            logger.debug("Response is success: {}", response.isSuccess());
-                        }
-                        logger.trace("Response is advanced: {}", response.advanced());
-                        String content = response.getResponseText();
-                        if (content != null) {
-                            String resp = processResponse(content.trim(), uri);
-                            logger.info("Response {}", resp);
-                            if (resp.length() > 2) {
-                                coapStatus.putValue(resp);
-                            }
-                        } else {
-                            logger.debug("Response content null for {}", response.advanced());
-                        }
-
-                    } else {
-                        logger.debug("Response is null for {}", uri);
-                    }
+                    processCoapResponse(uri, response);
                 }
 
                 @Override
@@ -139,20 +123,42 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                 }
             });
 
-            // logger.debug("Finished refreshdata {}");
+            logger.debug("Finished refreshdata for {}", host);
+            return processCoapResponse(uri, observe.getCurrent());
 
         } catch (ConnectorException | IOException e) {
             logger.debug("Error while refreshing {}: {}", host, e.getMessage());
         }
-        logger.debug("Finished refreshdata");
+        return "";
+    }
 
+    private String processCoapResponse(String uri, @Nullable CoapResponse response) {
+        if (response != null) {
+            if (!response.isSuccess()) {
+                logger.debug("Response is success: {}", response.isSuccess());
+            }
+            logger.trace("Response is advanced: {}", response.advanced());
+            String content = response.getResponseText();
+            if (content != null) {
+                String resp = processResponse(content.trim(), uri);
+                logger.info("Response {}", resp);
+                if (resp.length() > 2) {
+                    coapStatus.putValue(resp);
+                    return resp;
+                }
+            } else {
+                logger.debug("Response content null for {}", response.advanced());
+            }
+        } else {
+            logger.debug("Response is null for {}", uri);
+        }
         return "";
     }
 
     private String processResponse(String rawResponse, String uri) {
         if (!rawResponse.isBlank()) {
             hasSync = true;
-            logger.debug("Rawesponse from {}: {}", uri, rawResponse);
+            logger.trace("Raw Response from {}: {}", uri, rawResponse);
 
             counter = getCounter(rawResponse);
             String decrypted = PhilipsAirCoapCipher.decryptMsg(rawResponse, logger);
@@ -169,7 +175,11 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                 logger.debug("Response does not contain 'state' element");
             }
         }
-        hasSync = false;
+        syncCounter += 1;
+        if (syncCounter > 3) {
+            hasSync = false;
+            syncCounter = 0;
+        }
         logger.debug("No response for {}", uri);
         return "";
     }
@@ -245,8 +255,49 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         NetworkConfig netConfig = NetworkConfig.createStandardWithoutFile();
         NetworkConfig.getStandard().setString(NetworkConfig.Keys.DEDUPLICATOR, NetworkConfig.Keys.NO_DEDUPLICATOR);
         netConfig.setString(NetworkConfig.Keys.DEDUPLICATOR, NetworkConfig.Keys.NO_DEDUPLICATOR);
-
         CoapEndpoint endpoint = new CoapEndpoint.Builder().setNetworkConfig(netConfig).build();
+        /*
+         * MessageInterceptor interceptor = new MessageInterceptor() {
+         * 
+         * @Override
+         * public void sendResponse(@Nullable Response response) {
+         * String content = response.getPayloadString();
+         * System.out.println("-CO04----------");
+         * System.out.println(content);
+         * }
+         * 
+         * @Override
+         * public void sendRequest(@Nullable Request request) {
+         * String content = request.getPayloadString();
+         * System.out.println("-REQO04----------");
+         * System.out.println(content);
+         * }
+         * 
+         * @Override
+         * public void sendEmptyMessage(@Nullable EmptyMessage message) {
+         * // TODO Auto-generated method stub
+         * }
+         * 
+         * @Override
+         * public void receiveResponse(@Nullable Response response) {
+         * String content = response.getPayloadString();
+         * System.out.println("-RECECO04----------");
+         * System.out.println(content);
+         * System.out.println(Utils.prettyPrint(response));
+         * }
+         * 
+         * @Override
+         * public void receiveRequest(@Nullable Request request) {
+         * // TODO Auto-generated method stub
+         * }
+         * 
+         * @Override
+         * public void receiveEmptyMessage(@Nullable EmptyMessage message) {
+         * // TODO Auto-generated method stub
+         * }
+         * };
+         * endpoint.addInterceptor(interceptor);
+         */
         client.setEndpoint(endpoint);
         client.setTimeout(TIMEOUT);
         logger.debug("PhilipsAirCoapAPIConnection initialized using host {}", host);
