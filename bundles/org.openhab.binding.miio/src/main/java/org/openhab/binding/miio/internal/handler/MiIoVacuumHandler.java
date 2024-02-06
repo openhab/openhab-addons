@@ -541,12 +541,14 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private void updateHistoryRecord(HistoryRecordDTO historyRecordDTO) {
         JsonObject historyRecord = GSON.toJsonTree(historyRecordDTO).getAsJsonObject();
         if (historyRecordDTO.getStart() != null) {
-            historyRecord.addProperty("start", historyRecordDTO.getStart().split("\\+")[0]);
-            updateState(CHANNEL_HISTORY_START_TIME, new DateTimeType(historyRecordDTO.getStart().split("\\+")[0]));
+            historyRecord.addProperty("start", historyRecordDTO.getStart().split("\\+")[0].split("\\-")[0]);
+            updateState(CHANNEL_HISTORY_START_TIME,
+                    new DateTimeType(historyRecordDTO.getStart().split("\\+")[0].split("\\-")[0]));
         }
         if (historyRecordDTO.getEnd() != null) {
-            historyRecord.addProperty("end", historyRecordDTO.getEnd().split("\\+")[0]);
-            updateState(CHANNEL_HISTORY_END_TIME, new DateTimeType(historyRecordDTO.getEnd().split("\\+")[0]));
+            historyRecord.addProperty("end", historyRecordDTO.getEnd().split("\\+")[0].split("\\-")[0]);
+            updateState(CHANNEL_HISTORY_END_TIME,
+                    new DateTimeType(historyRecordDTO.getEnd().split("\\+")[0].split("\\-")[0]));
         }
         if (historyRecordDTO.getDuration() != null) {
             long duration = TimeUnit.SECONDS.toMinutes(historyRecordDTO.getDuration().longValue());
