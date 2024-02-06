@@ -494,6 +494,10 @@ public class EvccHandler extends BaseThingHandler {
                     CHANNEL_TYPE_UID_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE, "Number:Temperature");
             createChannel(CHANNEL_LOADPOINT_VEHICLE_TEMPERATURE, channelGroup,
                     CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_TEMPERATURE, "Number:Temperature");
+
+            removeChannel(CHANNEL_LOADPOINT_LIMIT_SOC, channelGroup);
+            removeChannel(CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_SOC, channelGroup);
+            removeChannel(CHANNEL_LOADPOINT_VEHICLE_SOC, channelGroup);
         } else {
             createChannel(CHANNEL_LOADPOINT_LIMIT_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_LIMIT_SOC,
                     "Number:Dimensionless");
@@ -501,6 +505,10 @@ public class EvccHandler extends BaseThingHandler {
                     CHANNEL_TYPE_UID_LOADPOINT_EFFECTIVE_LIMIT_SOC, "Number:Dimensionless");
             createChannel(CHANNEL_LOADPOINT_VEHICLE_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_SOC,
                     "Number:Dimensionless");
+
+            removeChannel(CHANNEL_LOADPOINT_LIMIT_TEMPERATURE, channelGroup);
+            removeChannel(CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE, channelGroup);
+            removeChannel(CHANNEL_LOADPOINT_VEHICLE_TEMPERATURE, channelGroup);
         }
 
         createChannel(CHANNEL_LOADPOINT_TITLE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_TITLE, CoreItemFactory.STRING);
@@ -525,14 +533,10 @@ public class EvccHandler extends BaseThingHandler {
         removeChannel("targetSoC", channelGroup);
         removeChannel("targetTime", channelGroup);
         removeChannel("targetTimeEnabled", channelGroup);
-
-        removeChannel("limitSoCHeating", channelGroup);
-        removeChannel("effectiveLimitSoCHeating", channelGroup);
-        removeChannel("vehicleSoCHeating", channelGroup);
     }
 
     private void createChannelsVehicle(String vehicleName) {
-        final String channelGroup;
+        String channelGroup;
         if (vehicleFeatureHeating.contains(vehicleName)) {
             channelGroup = CHANNEL_GROUP_ID_HEATING + vehicleName;
             createChannel(CHANNEL_HEATING_MIN_TEMPERATURE, channelGroup, CHANNEL_TYPE_UID_HEATING_MIN_TEMPERATURE,
@@ -548,6 +552,15 @@ public class EvccHandler extends BaseThingHandler {
                     CoreItemFactory.SWITCH);
             createChannel(CHANNEL_HEATING_PLAN_TIME, channelGroup, CHANNEL_TYPE_UID_HEATING_PLAN_TIME,
                     CoreItemFactory.DATETIME);
+
+            channelGroup = CHANNEL_GROUP_ID_VEHICLE + vehicleName;
+            removeChannel(CHANNEL_VEHICLE_MIN_SOC, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_LIMIT_SOC, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_PLAN_SOC, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_TITLE, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_PLAN_TIME, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_PLAN_ENABLED, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_PLAN_TIME, channelGroup);
         } else {
             channelGroup = CHANNEL_GROUP_ID_VEHICLE + vehicleName;
             createChannel(CHANNEL_VEHICLE_MIN_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_MIN_SOC,
@@ -563,6 +576,15 @@ public class EvccHandler extends BaseThingHandler {
                     CoreItemFactory.SWITCH);
             createChannel(CHANNEL_VEHICLE_PLAN_TIME, channelGroup, CHANNEL_TYPE_UID_VEHICLE_PLAN_TIME,
                     CoreItemFactory.DATETIME);
+
+            channelGroup = CHANNEL_GROUP_ID_HEATING + vehicleName;
+            removeChannel(CHANNEL_HEATING_MIN_TEMPERATURE, channelGroup);
+            removeChannel(CHANNEL_HEATING_LIMIT_TEMPERATURE, channelGroup);
+            removeChannel(CHANNEL_HEATING_PLAN_TEMPERATURE, channelGroup);
+            removeChannel(CHANNEL_HEATING_TITLE, channelGroup);
+            removeChannel(CHANNEL_HEATING_PLAN_TIME, channelGroup);
+            removeChannel(CHANNEL_HEATING_PLAN_ENABLED, channelGroup);
+            removeChannel(CHANNEL_HEATING_PLAN_TIME, channelGroup);
         }
     }
 
