@@ -3,13 +3,16 @@
 This binding integrates [Warmup](https://www.warmup.co.uk) Wifi enabled Thermostats via the API at <https://my.warmup.com/>.
 
 Devices known to work with the binding:
+
 * [Warmup 4iE](https://www.warmup.co.uk/thermostats/smart/4ie-underfloor-heating)
 * [Warmup Element](https://www.warmup.co.uk/thermostats/smart/element-wifi-thermostat)
 
 Device expected to work with the binding:
+
 * [Warmup 6iE](https://www.warmup.co.uk/thermostats/smart/6ie-underfloor-heating)
 
 Devices which might work with the binding:
+
 * Other similar looking devices marketed under different brands, mentioned in the API
   * [Laticrete](https://laticrete.com/)
   * [Rointe](https://rointe.com/)

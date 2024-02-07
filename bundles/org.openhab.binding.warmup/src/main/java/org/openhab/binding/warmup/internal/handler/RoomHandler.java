@@ -194,7 +194,6 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
                     RoomMode mode = RoomMode.valueOf(command.toString().trim().toUpperCase());
                     bridgeHandler.getApi().setRoomMode(locationId, roomId, mode);
                     refreshFromServer();
-
                 } catch (IllegalArgumentException ex) {
                     logger.error("Unable to set room mode: {}", command.toString());
                 }
