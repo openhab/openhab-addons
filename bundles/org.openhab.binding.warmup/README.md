@@ -99,6 +99,19 @@ These run mode statuses are defined for the API. The descriptions are based on i
 | relay      | Relay            | Unknown                                                                         |
 | previous   | Previous         | Unknown                                                                         |
 
+## Rule Actions
+
+### setOverride(temperature, duration)
+
+Sets a temporary temperature override on the device
+
+ Parameters:
+
+| Name        | Type                      | Description                                                             |
+|-------------|---------------------------|-------------------------------------------------------------------------|
+| temperature | QuantityType<Temperature> | Override temperature. Must be between 5°C and 30°C                      |
+| duration    | QuantityType<Time>        | Duration of the override. Must be between 0 and 1440 minutes (24 hours) |
+
 ## Full Example
 
 ### .things file

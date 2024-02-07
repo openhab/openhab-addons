@@ -14,8 +14,12 @@ package org.openhab.binding.warmup.internal.handler;
 
 import static org.openhab.binding.warmup.internal.WarmupBindingConstants.*;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.warmup.internal.action.WarmupActions;
 import org.openhab.binding.warmup.internal.api.MyWarmupApiException;
 import org.openhab.binding.warmup.internal.model.query.LocationDTO;
 import org.openhab.binding.warmup.internal.model.query.QueryResponseDTO;
@@ -23,11 +27,12 @@ import org.openhab.binding.warmup.internal.model.query.RoomDTO;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,26 +130,37 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         }
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(WarmupActions.class);
+    }
+
     private void setOverride(final QuantityType<?> command) {
+        setOverride(command, new QuantityType<>(config.getOverrideDuration(), Units.MINUTE));
+    }
+
+    public void setOverride(final QuantityType<?> temperature, final QuantityType<?> duration) {
+        setOverride(formatTemperature(temperature), duration.toUnit(Units.MINUTE).intValue());
+    }
+
+    private void setOverride(final int temperature, final int duration) {
         String roomId = getThing().getProperties().get(PROPERTY_ROOM_ID);
         String locationId = getThing().getProperties().get(PROPERTY_LOCATION_ID);
 
-        QuantityType<?> temp = command.toUnit(SIUnits.CELSIUS);
-
-        if (temp != null) {
-            final int value = (int) (temp.doubleValue() * 10);
-
+        if (duration > 1440 || duration <= 0) {
+            logger.info("Set Override failed: duration must be between 0 and 1440 minutes");
+        }
+        if (temperature > 600 || temperature < 50) {
+            logger.info("Set Override failed: temperature must be between 0.5 and 60 degrees C");
+        } else {
             try {
                 final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
-                if (bridgeHandler != null && config != null) {
-                    final int overrideDuration = config.getOverrideDuration();
-                    if (overrideDuration > 0 && locationId != null && roomId != null) {
-                        bridgeHandler.getApi().setOverride(locationId, roomId, value, overrideDuration);
-                        refreshFromServer();
-                    }
+                if (bridgeHandler != null && locationId != null && roomId != null) {
+                    bridgeHandler.getApi().setOverride(locationId, roomId, temperature, duration);
+                    refreshFromServer();
                 }
             } catch (MyWarmupApiException e) {
-                logger.debug("Set Override failed: {}", e.getMessage());
+                logger.info("Set Override failed: {}", e.getMessage());
             }
         }
     }
@@ -153,20 +169,16 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         String roomId = getThing().getProperties().get(PROPERTY_ROOM_ID);
         String locationId = getThing().getProperties().get(PROPERTY_LOCATION_ID);
 
-        QuantityType<?> temp = command.toUnit(SIUnits.CELSIUS);
+        final int value = formatTemperature(command);
 
-        if (locationId != null && roomId != null && temp != null) {
-            final int value = (int) (temp.doubleValue() * 10);
-
-            try {
-                final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
-                if (bridgeHandler != null && config != null) {
-                    bridgeHandler.getApi().setFixed(locationId, roomId, value);
-                    refreshFromServer();
-                }
-            } catch (MyWarmupApiException e) {
-                logger.debug("Set Fixed failed: {}", e.getMessage());
+        try {
+            final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
+            if (bridgeHandler != null && locationId != null && roomId != null) {
+                bridgeHandler.getApi().setFixed(locationId, roomId, value);
+                refreshFromServer();
             }
+        } catch (MyWarmupApiException e) {
+            logger.debug("Set Fixed failed: {}", e.getMessage());
         }
     }
 

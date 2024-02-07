@@ -97,6 +97,15 @@ public class WarmupThingHandler extends BaseThingHandler {
 
     /**
      *
+     * @param temperature {@link QuantityType} a temperature
+     * @return the temperature as an int in degrees C * 10. i.e. 21.5 degrees C = 215
+     */
+    protected int formatTemperature(QuantityType<?> temperature) {
+        return (int) (temperature.toUnit(SIUnits.CELSIUS).doubleValue() * 10);
+    }
+
+    /**
+     *
      * @param value a string to convert to {@link StringType}
      * @return the string as a {@link StringType}
      */
