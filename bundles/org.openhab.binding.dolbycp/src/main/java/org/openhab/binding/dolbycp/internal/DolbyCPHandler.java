@@ -146,7 +146,7 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
                     }
                 }
             } catch (IOException e) {
-                disposeClient(e);
+                releaseAndReconnect(e.getMessage());
             }
         }
     }
@@ -159,40 +159,31 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
 
         scheduler.execute(() -> {
             try {
-                ScheduledFuture<?> scheduleFuture = this.scheduleFuture;
-                this.scheduleFuture = null;
-                if (scheduleFuture != null) {
-                    scheduleFuture.cancel(true);
-                }
-
-                CP750Client client = this.client;
-                this.client = null;
-                if (client != null) {
-                    client.close();
-                }
-
-                client = new CP750Client(config.hostname, config.port);
+                CP750Client client = new CP750Client(config.hostname, config.port);
                 this.client = client;
                 for (CP750Field field : CP750Field.values()) {
                     client.addListener(field, this);
                 }
-                client.refresh();
                 updateStatus(ThingStatus.ONLINE);
 
-                // Start scheduler
-                this.scheduleFuture = scheduler.scheduleWithFixedDelay(this::refresh, config.refreshInterval,
-                        config.refreshInterval, TimeUnit.SECONDS);
+                // Schedule first refresh by now and more after configured refresh interval
+                this.scheduleFuture = scheduler.scheduleWithFixedDelay(this::refresh, 100, config.refreshInterval,
+                        TimeUnit.SECONDS);
             } catch (IOException e) {
-                disposeClient(e);
+                releaseAndReconnect(e.getMessage());
             }
         });
     }
 
-    private void disposeClient(@Nullable Exception e) {
+    /**
+     * Cancel scheduled futures and close the client connection.
+     * Will not update status, this has to be done by the invoking method.
+     */
+    private void releaseResources() {
         ScheduledFuture<?> scheduleFuture = this.scheduleFuture;
         this.scheduleFuture = null;
         if (scheduleFuture != null) {
-                scheduleFuture.cancel(true);
+            scheduleFuture.cancel(true);
         }
         CP750Client client = this.client;
         this.client = null;
@@ -203,30 +194,22 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
             } catch (Exception ignore) {
             }
         }
-        if (e == null) {
-            updateStatus(ThingStatus.OFFLINE);
-        } else {
-            DolbyCPConfiguration config = this.config;
-            String hostname = config == null ? "unknown" : config.hostname;
-            int port = config == null ? -1 : config.port;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error to " + hostname + ":" + port);
-            logger.error("CP750 on {}:{}", hostname, port, e);
-            tryToReconnect();
-        }
     }
 
     /**
-     * Tries to reconnect until the device becomes available
+     * Release resources and, if greater 0, tries to reconnect
+     * after configured time in seconds.
      */
-    private void tryToReconnect() {
+    private void releaseAndReconnect(@Nullable String errorMessage) {
+        releaseResources();
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         DolbyCPConfiguration config = this.config;
         if (config != null && config.reconnectInterval > 0) {
             logger.debug("DolbyCP at {}:{} try to reconnect in {} seconds", config.hostname, config.port,
                     config.reconnectInterval);
             scheduler.schedule(() -> {
                 if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                    // Will call tryToReconnect if something goes wrong
+                    // Will call disposeAndReconnect() if something goes wrong
                     initialize();
                 }
             }, config.reconnectInterval, TimeUnit.SECONDS);
@@ -235,7 +218,8 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
 
     @Override
     public void dispose() {
-        disposeClient(null);
+        releaseResources();
+        updateStatus(ThingStatus.OFFLINE);
         super.dispose();
     }
 
@@ -246,7 +230,7 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
                 client.refresh();
             }
         } catch (IOException e) {
-            disposeClient(e);
+            releaseAndReconnect(e.getMessage());
         }
     }
 
