@@ -57,12 +57,12 @@ Once credentials are successfully added to the bridge, any rooms (devices) detec
 
 ### Room
 
-Rooms are configured automatically with a Serial Number on discovery, or can be added manually using the "Device Number" from the device, excluding the last 3 characters. The only supported temperature change is an override, through a default duration configured on the thing. This defaults to 60 minutes.
+Rooms are configured automatically with a Serial Number on discovery, or can be added manually using the "Device Number" from the device, excluding the last 3 characters. Changing the target temperature results in a temporary override to that temperature, for the duration configured on the thing. This defaults to 60 minutes.
 
 | config parameter | type    | description                                                        | required | default |
 |------------------|---------|--------------------------------------------------------------------|----------|---------|
 | serialNumber     | String  | Device Serial Number, excluding last 3 characters                  | true     |         |
-| overrideDuration | Integer | Duration in minutes of override when target temperature is changed | true     | 60      |
+| overrideDuration | Integer | Duration in minutes of override when target temperature is changed | false    | 60      |
 
 ## Channels
 
@@ -71,6 +71,7 @@ Rooms are configured automatically with a Serial Number on discovery, or can be 
 | currentTemperature  | Number:Temperature | Currently reported temperature                                                                                                               | true      |
 | targetTemperature   | Number:Temperature | Target temperature                                                                                                                           | false     |
 | overrideRemaining   | Number:Time        | Duration remaining of the configured override                                                                                                | true      |
+| fixedTemperature    | Number:Temperature | Target temperature for fixed mode                                                                                                            | false     |
 | runMode             | String             | Current operating mode of the thermostat, options listed below                                                                               | false     |
 | frostProtectionMode | Switch             | Toggles between the "Frost Protection" run mode and the previously configured "active" run mode (known options are either Fixed or Schedule) | false     |
 | airTemperature      | Number:Temperature | Currently reported air temperature at the device                                                                                             | true      |
@@ -79,7 +80,7 @@ Rooms are configured automatically with a Serial Number on discovery, or can be 
 
 ### Run Mode Statuses
 
-These run mode statuses are defined for the API. The descriptions are based on inspection of the device behaviour and are not sourced from documentation. Only "schedule" or "fixed" are writeable.
+These run mode statuses are defined for the API. The descriptions are based on inspection of the device behaviour and are not sourced from documentation. Only the value `schedule` is writeable, this reverts the device to the program/schedule configured on the device. The value `fixed` can be set by commanding the `fixedTemperature` channel. The value `override` can be set by commanding the `targetTemperature` channel. 
 
 | api value  | ui name          | description                                                                     |
 |------------|------------------|---------------------------------------------------------------------------------|

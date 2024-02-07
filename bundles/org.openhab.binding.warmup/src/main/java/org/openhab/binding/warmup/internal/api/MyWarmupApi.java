@@ -103,13 +103,13 @@ public class MyWarmupApi {
     public synchronized QueryResponseDTO getStatus() throws MyWarmupApiException {
         return callWarmupGraphQL("""
                 query QUERY { user { locations{ id name \
-                 rooms { id roomName runMode overrideDur targetTemp currentTemp \
+                 rooms { id roomName runMode overrideDur targetTemp currentTemp fixedTemp \
                  thermostat4ies{ deviceSN lastPoll airTemp floor1Temp floor2Temp }}}}}\
                 """);
     }
 
     /**
-     * Call the API to set the room mode to fixed or program
+     * Call the API to set the room mode to program
      *
      * @param locationId Id of the location
      * @param roomId Id of the room
@@ -118,8 +118,22 @@ public class MyWarmupApi {
      */
     public void setRoomMode(String locationId, String roomId, WarmupBindingConstants.RoomMode mode)
             throws MyWarmupApiException {
-        callWarmupGraphQL(String.format("mutation{setRoomMode(lid:%s,rid:%s,roomMode:%s)}", locationId, roomId,
-                mode.name().toLowerCase()));
+        if (mode == WarmupBindingConstants.RoomMode.SCHEDULE) {
+            callWarmupGraphQL(String.format("mutation{deviceProgram(lid:%s,rid:%s)}", locationId, roomId));
+        }
+    }
+
+    /**
+     * Call the API to set the room mode to fixed with a specific temperature
+     *
+     * @param locationId Id of the location
+     * @param roomId Id of the room
+     * @param temperature Temperature to set * 10
+     * @throws MyWarmupApiException API callout error
+     */
+    public void setFixed(String locationId, String roomId, int temperature) throws MyWarmupApiException {
+        callWarmupGraphQL(
+                String.format("mutation{deviceFixed(lid:%s,rid:%s,temperature:%d)}", locationId, roomId, temperature));
     }
 
     /**

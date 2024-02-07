@@ -23,6 +23,7 @@ public class RoomDTO {
     private String roomName;
     private Integer currentTemp;
     private Integer targetTemp;
+    private Integer fixedTemp;
     private String runMode;
     private Integer overrideDur;
     private List<DeviceDTO> thermostat4ies;
@@ -41,6 +42,10 @@ public class RoomDTO {
 
     public Integer getTargetTemperature() {
         return targetTemp;
+    }
+
+    public Integer getFixedTemperature() {
+        return fixedTemp;
     }
 
     public String getRunMode() {

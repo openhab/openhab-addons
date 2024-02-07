@@ -14,8 +14,6 @@ package org.openhab.binding.warmup.internal.handler;
 
 import static org.openhab.binding.warmup.internal.WarmupBindingConstants.*;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.warmup.internal.api.MyWarmupApiException;
@@ -65,6 +63,10 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
                 && command instanceof QuantityType<?> quantityCommand) {
             setOverride(quantityCommand);
         }
+        if (CHANNEL_FIXED_TEMPERATURE.equals(channelUID.getId())
+                && command instanceof QuantityType<?> quantityCommand) {
+            setFixed(quantityCommand);
+        }
         if (CHANNEL_FROST_PROTECTION_MODE.equals(channelUID.getId()) && command instanceof OnOffType onOffCommand) {
             toggleFrostProtectionMode(onOffCommand);
         }
@@ -101,6 +103,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
 
                             updateState(CHANNEL_CURRENT_TEMPERATURE, parseTemperature(room.getCurrentTemperature()));
                             updateState(CHANNEL_TARGET_TEMPERATURE, parseTemperature(room.getTargetTemperature()));
+                            updateState(CHANNEL_FIXED_TEMPERATURE, parseTemperature(room.getFixedTemperature()));
                             updateState(CHANNEL_AIR_TEMPERATURE,
                                     parseTemperature(room.getThermostat4ies().get(0).getAirTemp()));
                             updateState(CHANNEL_FLOOR1_TEMPERATURE,
@@ -129,7 +132,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         QuantityType<?> temp = command.toUnit(SIUnits.CELSIUS);
 
         if (temp != null) {
-            final int value = temp.multiply(BigDecimal.TEN).intValue();
+            final int value = (int) (temp.doubleValue() * 10);
 
             try {
                 final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
@@ -142,6 +145,27 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
                 }
             } catch (MyWarmupApiException e) {
                 logger.debug("Set Override failed: {}", e.getMessage());
+            }
+        }
+    }
+
+    private void setFixed(final QuantityType<?> command) {
+        String roomId = getThing().getProperties().get(PROPERTY_ROOM_ID);
+        String locationId = getThing().getProperties().get(PROPERTY_LOCATION_ID);
+
+        QuantityType<?> temp = command.toUnit(SIUnits.CELSIUS);
+
+        if (locationId != null && roomId != null && temp != null) {
+            final int value = (int) (temp.doubleValue() * 10);
+
+            try {
+                final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
+                if (bridgeHandler != null && config != null) {
+                    bridgeHandler.getApi().setFixed(locationId, roomId, value);
+                    refreshFromServer();
+                }
+            } catch (MyWarmupApiException e) {
+                logger.debug("Set Fixed failed: {}", e.getMessage());
             }
         }
     }
