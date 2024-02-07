@@ -28,6 +28,12 @@ Normally, only the hostname or IP address must be configured.
 | refreshInterval   | integer | Interval the device is polled in seconds                     | 5       | no       | no       |
 | reconnectInterval | integer | Interval a new connection is tried after IO error in seconds | 10      | no       | no       |
 
+## Properties
+
+| Name              | Description                                              |
+|-------------------|----------------------------------------------------------|
+| osversion         | The operating system's version as returned by the device |
+
 ## Channels
 
 These channels can be used to retrieve the current device state and change the controls.
@@ -36,7 +42,6 @@ The input mode can be either be controlled by the "input" string channel, or by 
 
 | Channel    | Type   | Read/Write | Description                                                                                                     |
 |------------|--------|------------|-----------------------------------------------------------------------------------------------------------------|
-| os-version | Switch | R          | Version as reported by the device                                                                               |
 | fader      | Dimmer | RW         | Fader value (0 to 100)                                                                                          | 
 | mute       | Switch | RW         | Mute (ON or OFF)                                                                                                |
 | input      | String | RW         | Input channel as string (one of "analog", "dig_1", "dig_2", "dig_3", "dig_4", "non-sync" or "mic")              |

@@ -19,8 +19,11 @@
 			<channel id="dig4" typeId="input-dig4"/>
 			<channel id="nonsync" typeId="input-non_sync"/>
 			<channel id="mic" typeId="input-mic"/>
-			<channel id="osversion" typeId="os-version"/>
 		</channels>
+
+		<properties>
+			<property name="osversion"></property>
+		</properties>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -110,10 +113,5 @@
 		<item-type>Switch</item-type>
 		<label>Mic Input</label>
 		<description>Handles the state of INPUT_MODE=mic</description>
-	</channel-type>
-	<channel-type id="os-version">
-		<item-type>String</item-type>
-		<label>CP750 operating system version</label>
-		<description>Returns the OS version of the CP750 (read-only)</description>
 	</channel-type>
 </thing:thing-descriptions>

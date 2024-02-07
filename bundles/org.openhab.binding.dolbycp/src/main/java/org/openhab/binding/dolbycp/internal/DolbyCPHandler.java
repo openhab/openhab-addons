@@ -162,7 +162,12 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
                 CP750Client client = new CP750Client(config.hostname, config.port);
                 this.client = client;
                 for (CP750Field field : CP750Field.values()) {
-                    client.addListener(field, this);
+                    if (field == CP750Field.SYSINFO_VERSION) {
+                        // This needs to be only updated once
+                        client.addOnetimeListener(field, this);
+                    } else {
+                        client.addListener(field, this);
+                    }
                 }
                 updateStatus(ThingStatus.ONLINE);
 
@@ -249,8 +254,8 @@ public class DolbyCPHandler extends BaseThingHandler implements CP750Listener {
         }
 
         switch (field) {
+            case SYSINFO_VERSION -> updateProperty(PROPERTY_VERSION, value);
             case SYS_MUTE -> updateState(CHANNEL_MUTE, OnOffType.from(value));
-            case SYSINFO_VERSION -> updateState(CHANNEL_VERSION, StringType.valueOf(value));
             case SYS_FADER -> updateState(CHANNEL_FADER, PercentType.valueOf(value));
             case SYS_INPUT_MODE -> {
                 CP750InputMode mode = CP750InputMode.byValue(value);
