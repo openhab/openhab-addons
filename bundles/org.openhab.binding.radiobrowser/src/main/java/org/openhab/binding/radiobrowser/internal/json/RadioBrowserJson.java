@@ -14,6 +14,8 @@ package org.openhab.binding.radiobrowser.internal.json;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link RadioBrowserJson} DTO holds the state and GSON parsed replies from the Radio Stations API.
  *
@@ -23,8 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class RadioBrowserJson {
     public class Country {
         public String name = "";
-        // @SerializedName(value = "countryCode", alternate = { "iso_3166_1" }) // iso_3166_1 is used in json
-        // public String countryCode = "";
+        @SerializedName(value = "countryCode", alternate = { "iso_3166_1" }) // iso_3166_1 is used in json
+        public String countryCode = "";
         public int stationcount;
     }
 
@@ -33,5 +35,12 @@ public class RadioBrowserJson {
         // @SerializedName(value = "languageCode", alternate = { "iso_639" }) // iso_3166_1 is used in json
         // public String languageCode = "";
         public int stationcount;
+    }
+
+    public class Station {
+        public String name = "";
+        public String stationuuid = "";
+        public String url = "";
+        public String favicon = "";
     }
 }

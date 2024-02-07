@@ -5,29 +5,38 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="radio">
-		<label>RadioBrowser Binding Thing</label>
+		<label>RadioBrowser Thing</label>
 		<description>RadioBrowser Cloud Connection</description>
 
 		<channels>
-			<channel id="country" typeId="country"/>
 			<channel id="language" typeId="language"/>
+			<channel id="country" typeId="country"/>
+			<channel id="state" typeId="state"/>
+			<channel id="station" typeId="station"/>
+			<channel id="stream" typeId="stream"/>
+			<channel id="name" typeId="name"/>
+			<channel id="icon" typeId="icon"/>
+			<channel id="favorites" typeId="favorites"/>
+			<channel id="addFavorite" typeId="addFavorite"/>
+			<channel id="removeFavorite" typeId="removeFavorite"/>
 		</channels>
 
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
-				<context>network-address</context>
-				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+			<parameter name="filters" type="text">
+				<label>Filters</label>
+				<description>Enter your own custom filter to ensure a stream that works with your device</description>
+				<default>hidebroken=true&amp;order=clickcount</default>
 			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the device</description>
+			<parameter name="clicks" type="boolean" required="true">
+				<label>Clicks</label>
+				<description>Send the server what stations are clicked</description>
+				<default>true</default>
+				<advanced>true</advanced>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
+			<parameter name="stationCount" type="integer" min="1">
+				<label>Station Count</label>
+				<description>The minimum stations a language or country needs to have before the binding lists it as an option.</description>
+				<default>3</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -36,13 +45,61 @@
 	<channel-type id="country">
 		<item-type>String</item-type>
 		<label>Country</label>
-		<description>Show only stations located in selected country</description>
+		<description>Show only stations located in the selected country</description>
 	</channel-type>
 
 	<channel-type id="language">
 		<item-type>String</item-type>
 		<label>Language</label>
-		<description>Show only stations spoken in a selected language</description>
+		<description>Show only stations spoken in the selected language</description>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>Show only stations located in the selected state, requires country to be selected first</description>
+	</channel-type>
+
+	<channel-type id="station">
+		<item-type>String</item-type>
+		<label>Station</label>
+		<description>A list of stations that you can select from to fetch the URI for</description>
+	</channel-type>
+
+	<channel-type id="stream">
+		<item-type>String</item-type>
+		<label>Stream</label>
+		<description>The stations URI that can be sent to a openHAB audio sink</description>
+	</channel-type>
+
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>The currently selected stations name</description>
+	</channel-type>
+
+	<channel-type id="icon">
+		<item-type>String</item-type>
+		<label>Icon</label>
+		<description>The currently selected stations icon</description>
+	</channel-type>
+
+	<channel-type id="favorites">
+		<item-type>String</item-type>
+		<label>Favorites</label>
+		<description>The stations you have liked and added to this list</description>
+	</channel-type>
+
+	<channel-type id="addFavorite">
+		<item-type>Switch</item-type>
+		<label>Add Favorite</label>
+		<description>Add the currently selected station to the favorite list</description>
+	</channel-type>
+
+	<channel-type id="removeFavorite">
+		<item-type>Switch</item-type>
+		<label>Remove Favorite</label>
+		<description>Add the currently selected station to the favorite list</description>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class RadioBrowserBindingConstants {
     private static final String BINDING_ID = "radiobrowser";
-    public static final int HTTP_TIMEOUT_SECONDS = 5;
+    public static final int HTTP_TIMEOUT_SECONDS = 50;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RADIO = new ThingTypeUID(BINDING_ID, "radio");
@@ -32,4 +32,12 @@ public class RadioBrowserBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_COUNTRY = "country";
     public static final String CHANNEL_LANGUAGE = "language";
+    public static final String CHANNEL_STATE = "state";
+    public static final String CHANNEL_STATION = "station";
+    public static final String CHANNEL_NAME = "name";
+    public static final String CHANNEL_ICON = "icon";
+    public static final String CHANNEL_STREAM = "stream";
+    public static final String CHANNEL_FAVORITES = "favorites";
+    public static final String CHANNEL_ADD_FAVORITE = "addFavorite";
+    public static final String CHANNEL_REMOVE_FAVORITE = "removeFavorite";
 }

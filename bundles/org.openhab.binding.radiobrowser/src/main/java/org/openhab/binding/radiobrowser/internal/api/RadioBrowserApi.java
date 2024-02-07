@@ -17,8 +17,9 @@ import static org.openhab.binding.radiobrowser.internal.RadioBrowserBindingConst
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +33,8 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.radiobrowser.internal.RadioBrowserHandler;
 import org.openhab.binding.radiobrowser.internal.json.RadioBrowserJson.Country;
 import org.openhab.binding.radiobrowser.internal.json.RadioBrowserJson.Language;
+import org.openhab.binding.radiobrowser.internal.json.RadioBrowserJson.Station;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
@@ -52,6 +55,10 @@ public class RadioBrowserApi {
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
     private String server = "";
+    private String language = "";
+    private String countryCode = "";
+    private String state = "";
+    private Map<String, Station> stationMap = new HashMap<>();
 
     public RadioBrowserApi(RadioBrowserHandler handler, HttpClient httpClient) {
         this.handler = handler;
@@ -107,18 +114,19 @@ public class RadioBrowserApi {
 
     private List<StateOption> getCountries() throws ApiException {
         try {
-            String returnContent = sendGetRequest("/json/countries");
+            String returnContent = sendGetRequest("/json/countries?hidebroken=true");
             Country[] countries = gson.fromJson(returnContent, Country[].class);
             if (countries == null) {
-                throw new ApiException("Could not GET:/json/countries");
+                throw new ApiException("Could not get countries");
             }
             List<StateOption> countryOptions = new ArrayList<>();
-            int counter = 0;
             for (Country country : countries) {
-                countryOptions.add(
-                        new StateOption(Integer.toString(counter++), country.name + " (" + country.stationcount + ")"));
+                if (country.stationcount >= handler.config.stationCount) {
+                    countryOptions.add(
+                            new StateOption(country.countryCode, country.name + " (" + country.stationcount + ")"));
+                }
             }
-            countryOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
+            // countryOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
             return countryOptions;
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
@@ -127,26 +135,95 @@ public class RadioBrowserApi {
 
     private List<StateOption> getLanguages() throws ApiException {
         try {
-            String returnContent = sendGetRequest("/json/languages");
+            String returnContent = sendGetRequest("/json/languages?hidebroken=true");
             Language[] languages = gson.fromJson(returnContent, Language[].class);
             if (languages == null) {
-                throw new ApiException("Could not GET:/json/languages");
+                throw new ApiException("Could not get languages");
             }
             List<StateOption> languageOptions = new ArrayList<>();
-            int counter = 0;
             for (Language language : languages) {
-                languageOptions.add(new StateOption(Integer.toString(counter++),
-                        language.name + " (" + language.stationcount + ")"));
+                if (language.stationcount >= handler.config.stationCount) {
+                    languageOptions
+                            .add(new StateOption(language.name, language.name + " (" + language.stationcount + ")"));
+                }
             }
-            languageOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
+            // languageOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
             return languageOptions;
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
         }
     }
 
-    public void searchStations(String arguments) throws ApiException {
-        sendGetRequest("/json/stations/search?" + arguments);
+    private void searchStations(String arguments) throws ApiException {
+        stationMap.clear();
+        try {
+            String returnContent = sendGetRequest("/json/stations/search" + arguments);
+            Station[] stations = gson.fromJson(returnContent, Station[].class);
+            if (stations == null) {
+                throw new ApiException("Could not get stations");
+            }
+            List<StateOption> stationOptions = new ArrayList<>();
+            for (Station station : stations) {
+                stationMap.put(station.name, station);
+                stationOptions.add(new StateOption(station.name, station.name));
+            }
+            logger.debug("Found {} Stations that match", stationMap.size());
+            // languageOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
+            handler.stateDescriptionProvider
+                    .setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATION), stationOptions);
+        } catch (JsonSyntaxException e) {
+            throw new ApiException("Server did not reply with a valid json");
+        } catch (IllegalArgumentException e) {
+            logger.warn("Found too many {} Stations that match", stationMap.size());
+        }
+    }
+
+    public void updateStations() throws ApiException {
+        searchStations(updateFilter());
+    }
+
+    public void selectStation(String name) throws ApiException {
+        Station station = stationMap.get(name);
+        if (station == null) {
+            return;
+        }
+        handler.setChannelState(CHANNEL_NAME, new StringType(name));
+        handler.setChannelState(CHANNEL_ICON, new StringType(station.favicon));
+        handler.setChannelState(CHANNEL_STREAM, new StringType(station.url));
+        logger.debug("Selected stationUUID:{}", station.stationuuid);
+        if (handler.config.clicks) {
+            sendGetRequest("/json/url/" + station.stationuuid);
+        }
+    }
+
+    private String updateFilter() {
+        String filter = "";
+        if (!language.isEmpty()) {
+            filter = "?language=" + language;
+        }
+        if (filter.isEmpty() && !countryCode.isEmpty()) {
+            filter = "?countrycode=" + countryCode;
+        } else if (!countryCode.isEmpty()) {
+            filter = filter + "&countrycode=" + countryCode;
+        }
+        if (filter.isEmpty()) {
+            filter = "?" + handler.config.filters;
+        } else {
+            filter = filter + "&" + handler.config.filters;
+        }
+        return filter;
+    }
+
+    public void setLanguage(String language) throws ApiException {
+        logger.debug("Changing to language:{}", language);
+        this.language = language;
+        searchStations(updateFilter());
+    }
+
+    public void setCountry(String countryCode) throws ApiException {
+        logger.debug("Changing to countryCode:{}", countryCode);
+        this.countryCode = countryCode;
+        searchStations(updateFilter());
     }
 
     public void initialize() throws ApiException {
