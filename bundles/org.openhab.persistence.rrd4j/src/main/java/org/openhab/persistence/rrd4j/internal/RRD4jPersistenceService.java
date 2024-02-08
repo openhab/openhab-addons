@@ -491,9 +491,21 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             long ts = result.getFirstTimestamp();
             ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault());
             long step = result.getRowCount() > 1 ? result.getStep() : 0;
+
+            double prevValue = Double.NaN;
+            State prevState = null;
             for (double value : result.getValues(DATASOURCE_STATE)) {
                 if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
-                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, toState.apply(value), zdt);
+                    State state;
+
+                    if (prevValue == value) {
+                        state = prevState;
+                    } else {
+                        prevState = state = toState.apply(value);
+                        prevValue = value;
+                    }
+
+                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, state, zdt);
                     items.add(rrd4jItem);
                 }
                 zdt = zdt.plusSeconds(step);
