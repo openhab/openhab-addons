@@ -642,7 +642,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 }
             }
             for (RobotCababilities cmd : FEATURES_CHANNELS) {
-                if (isLinked(cmd.getChannel())) {
+                if (isLinked(cmd.getChannel()) && !cmd.getCommand().isBlank()) {
                     sendCommand(cmd.getCommand());
                 }
             }
