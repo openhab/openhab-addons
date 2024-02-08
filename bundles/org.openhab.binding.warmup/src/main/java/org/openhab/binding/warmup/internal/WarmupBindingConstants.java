@@ -39,6 +39,7 @@ public class WarmupBindingConstants {
     public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature";
     public static final String CHANNEL_TARGET_TEMPERATURE = "targetTemperature";
     public static final String CHANNEL_FIXED_TEMPERATURE = "fixedTemperature";
+    public static final String CHANNEL_ENERGY = "energyToday";
     public static final String CHANNEL_OVERRIDE_DURATION = "overrideRemaining";
     public static final String CHANNEL_RUN_MODE = "runMode";
     public static final String CHANNEL_FROST_PROTECTION_MODE = "frostProtectionMode";

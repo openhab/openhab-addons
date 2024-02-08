@@ -75,6 +75,7 @@ Rooms are configured automatically with a Serial Number on discovery, or can be 
 | targetTemperature   | Number:Temperature | Target temperature                                                                                                                           | false     |
 | overrideRemaining   | Number:Time        | Duration remaining of the configured override                                                                                                | true      |
 | fixedTemperature    | Number:Temperature | Target temperature for fixed mode                                                                                                            | false     |
+| energyToday         | Number:Energy      | Today's current energy consumption.                                                                                                          | true      |
 | runMode             | String             | Current operating mode of the thermostat, options listed below                                                                               | false     |
 | frostProtectionMode | Switch             | Toggles between the "Frost Protection" run mode and the previously configured "active" run mode (known options are either Fixed or Schedule) | false     |
 | airTemperature      | Number:Temperature | Currently reported air temperature at the device                                                                                             | true      |

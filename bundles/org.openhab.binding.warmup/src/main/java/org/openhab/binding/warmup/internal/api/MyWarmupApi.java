@@ -103,7 +103,7 @@ public class MyWarmupApi {
     public synchronized QueryResponseDTO getStatus() throws MyWarmupApiException {
         return callWarmupGraphQL("""
                 query QUERY { user { locations{ id name \
-                 rooms { id roomName runMode overrideDur targetTemp currentTemp fixedTemp \
+                 rooms { id roomName energy runMode overrideDur targetTemp currentTemp fixedTemp \
                  thermostat4ies{ deviceSN lastPoll airTemp floor1Temp floor2Temp }}}}}\
                 """);
     }

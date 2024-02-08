@@ -41,6 +41,7 @@
 			<channel id="targetTemperature" typeId="targetTemperature"/>
 			<channel id="fixedTemperature" typeId="fixedTemperature"/>
 			<channel id="overrideRemaining" typeId="overrideRemaining"/>
+			<channel id="energyToday" typeId="system.electric-energy"/>
 			<channel id="runMode" typeId="runMode"/>
 			<channel id="frostProtectionMode" typeId="frostProtectionMode"/>
 			<channel id="airTemperature" typeId="system.indoor-temperature"/>

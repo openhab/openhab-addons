@@ -106,6 +106,15 @@ public class WarmupThingHandler extends BaseThingHandler {
 
     /**
      *
+     * @param enery value returned from the API as a string "10.5" = 10.5 kWh
+     * @return the energy as a {@link QuantityType}
+     */
+    protected State parseEnergy(@Nullable String energy) {
+        return energy != null ? new QuantityType<>(Float.parseFloat(energy), Units.KILOWATT_HOUR) : UnDefType.UNDEF;
+    }
+
+    /**
+     *
      * @param value a string to convert to {@link StringType}
      * @return the string as a {@link StringType}
      */
