@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.radiobrowser.internal.api.ApiException;
 import org.openhab.binding.radiobrowser.internal.api.RadioBrowserApi;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -40,14 +41,16 @@ import org.slf4j.LoggerFactory;
 public class RadioBrowserHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final HttpClient httpClient;
+    private final LocaleProvider localeProvider;
     public final RadioBrowserStateDescriptionProvider stateDescriptionProvider;
     public RadioBrowserConfiguration config = new RadioBrowserConfiguration();
     private RadioBrowserApi radioBrowserApi;
 
     public RadioBrowserHandler(Thing thing, HttpClient httpClient,
-            RadioBrowserStateDescriptionProvider stateDescriptionProvider) {
+            RadioBrowserStateDescriptionProvider stateDescriptionProvider, LocaleProvider localeProvider) {
         super(thing);
         this.httpClient = httpClient;
+        this.localeProvider = localeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         radioBrowserApi = new RadioBrowserApi(this, httpClient);
     }
@@ -88,14 +91,14 @@ public class RadioBrowserHandler extends BaseThingHandler {
                 }
             } else if (command instanceof StringType) {
                 switch (channelUID.getId()) {
-                    case CHANNEL_COUNTRY:
-                        radioBrowserApi.setCountry(command.toString());
-                        return;
                     case CHANNEL_LANGUAGE:
                         radioBrowserApi.setLanguage(command.toString());
                         return;
+                    case CHANNEL_COUNTRY:
+                        radioBrowserApi.setCountry(command.toString());
+                        return;
                     case CHANNEL_STATE:
-
+                        radioBrowserApi.setState(command.toString());
                         return;
                     case CHANNEL_STATION:
                         radioBrowserApi.selectStation(command.toString());
@@ -115,6 +118,7 @@ public class RadioBrowserHandler extends BaseThingHandler {
                 }
             }
         } catch (ApiException e) {
+            logger.info("Radio Browser Exception: {}", e.getMessage());
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -128,13 +132,17 @@ public class RadioBrowserHandler extends BaseThingHandler {
             try {
                 radioBrowserApi.initialize();
                 updateStatus(ThingStatus.ONLINE);
-                updateState(CHANNEL_LANGUAGE, new StringType());
-                updateState(CHANNEL_COUNTRY, new StringType());
                 updateState(CHANNEL_STATION, new StringType());
                 updateState(CHANNEL_STATE, new StringType());
                 updateState(CHANNEL_STREAM, new StringType());
                 updateState(CHANNEL_ICON, new StringType());
                 updateState(CHANNEL_NAME, new StringType());
+                String countryCode = localeProvider.getLocale().getCountry();
+                updateState(CHANNEL_COUNTRY, new StringType(radioBrowserApi.countryMap.get(countryCode).name));
+                radioBrowserApi.setCountry(countryCode);
+                String language = localeProvider.getLocale().getLanguage();
+                updateState(CHANNEL_LANGUAGE, new StringType(language));
+                radioBrowserApi.setLanguage(language);
             } catch (ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }

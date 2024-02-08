@@ -14,7 +14,9 @@ package org.openhab.binding.radiobrowser.internal.api;
 
 import static org.openhab.binding.radiobrowser.internal.RadioBrowserBindingConstants.*;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +35,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.radiobrowser.internal.RadioBrowserHandler;
 import org.openhab.binding.radiobrowser.internal.json.RadioBrowserJson.Country;
 import org.openhab.binding.radiobrowser.internal.json.RadioBrowserJson.Language;
+import org.openhab.binding.radiobrowser.internal.json.RadioBrowserJson.State;
 import org.openhab.binding.radiobrowser.internal.json.RadioBrowserJson.Station;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -59,6 +62,7 @@ public class RadioBrowserApi {
     private String countryCode = "";
     private String state = "";
     private Map<String, Station> stationMap = new HashMap<>();
+    public Map<String, Country> countryMap = new HashMap<>();
 
     public RadioBrowserApi(RadioBrowserHandler handler, HttpClient httpClient) {
         this.handler = handler;
@@ -112,6 +116,25 @@ public class RadioBrowserApi {
         return listResult;
     }
 
+    private List<StateOption> getStates() throws ApiException {
+        try {
+            String returnContent = sendGetRequest(
+                    "/json/states/" + URLEncoder.encode(countryMap.get(countryCode).name, "UTF-8").replace("+", "%20")
+                            + "/?hidebroken=true");
+            State[] states = gson.fromJson(returnContent, State[].class);
+            if (states == null) {
+                throw new ApiException("Could not get states");
+            }
+            List<StateOption> stateOptions = new ArrayList<>();
+            for (State state : states) {
+                stateOptions.add(new StateOption(state.name, state.name));
+            }
+            return stateOptions;
+        } catch (JsonSyntaxException | UnsupportedEncodingException e) {
+            throw new ApiException("Server did not reply with a valid json");
+        }
+    }
+
     private List<StateOption> getCountries() throws ApiException {
         try {
             String returnContent = sendGetRequest("/json/countries?hidebroken=true");
@@ -121,12 +144,12 @@ public class RadioBrowserApi {
             }
             List<StateOption> countryOptions = new ArrayList<>();
             for (Country country : countries) {
-                if (country.stationcount >= handler.config.stationCount) {
+                countryMap.put(country.countryCode, country);
+                if (country.stationcount > 4) {
                     countryOptions.add(
                             new StateOption(country.countryCode, country.name + " (" + country.stationcount + ")"));
                 }
             }
-            // countryOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
             return countryOptions;
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
@@ -141,13 +164,13 @@ public class RadioBrowserApi {
                 throw new ApiException("Could not get languages");
             }
             List<StateOption> languageOptions = new ArrayList<>();
+            languageOptions.add(new StateOption("ALL", "Show All Languages"));
             for (Language language : languages) {
-                if (language.stationcount >= handler.config.stationCount) {
+                if (language.stationcount >= handler.config.languageCount) {
                     languageOptions
                             .add(new StateOption(language.name, language.name + " (" + language.stationcount + ")"));
                 }
             }
-            // languageOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
             return languageOptions;
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
@@ -167,14 +190,19 @@ public class RadioBrowserApi {
                 stationMap.put(station.name, station);
                 stationOptions.add(new StateOption(station.name, station.name));
             }
-            logger.debug("Found {} Stations that match", stationMap.size());
-            // languageOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
             handler.stateDescriptionProvider
                     .setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATION), stationOptions);
+            if (stationMap.isEmpty()) {
+                handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " matches found"));
+            } else {
+                handler.setChannelState(CHANNEL_STATION,
+                        new StringType(stationMap.size() + " stations, click to select"));
+            }
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
         } catch (IllegalArgumentException e) {
-            logger.warn("Found too many {} Stations that match", stationMap.size());
+            // occurs when there are 0 matches
+            handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " matches found"));
         }
     }
 
@@ -197,32 +225,45 @@ public class RadioBrowserApi {
     }
 
     private String updateFilter() {
-        String filter = "";
+        String filter = "?" + handler.config.filters;
         if (!language.isEmpty()) {
-            filter = "?language=" + language;
+            filter = filter + "&language=" + language;
         }
-        if (filter.isEmpty() && !countryCode.isEmpty()) {
-            filter = "?countrycode=" + countryCode;
-        } else if (!countryCode.isEmpty()) {
+        if (!countryCode.isEmpty()) {
             filter = filter + "&countrycode=" + countryCode;
         }
-        if (filter.isEmpty()) {
-            filter = "?" + handler.config.filters;
-        } else {
-            filter = filter + "&" + handler.config.filters;
+        if (!state.isEmpty()) {
+            filter = filter + "&state=" + state;
+        }
+        try {
+            filter = URLEncoder.encode(filter, "UTF-8").replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Filter contains bad characters?:{}", filter);
         }
         return filter;
     }
 
     public void setLanguage(String language) throws ApiException {
         logger.debug("Changing to language:{}", language);
-        this.language = language;
+        if ("ALL".equals(language)) {
+            this.language = "";
+        } else {
+            this.language = language;
+        }
         searchStations(updateFilter());
     }
 
     public void setCountry(String countryCode) throws ApiException {
         logger.debug("Changing to countryCode:{}", countryCode);
         this.countryCode = countryCode;
+        handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATE),
+                getStates());
+        searchStations(updateFilter());
+    }
+
+    public void setState(String state) throws ApiException {
+        logger.debug("Changing to state:{}", state);
+        this.state = state;
         searchStations(updateFilter());
     }
 

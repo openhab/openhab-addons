@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -39,12 +40,15 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.radiobrowser", service = ThingHandlerFactory.class)
 public class RadioBrowserHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
+    private final LocaleProvider localeProvider;
     private final RadioBrowserStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
     public RadioBrowserHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference RadioBrowserStateDescriptionProvider stateDescriptionProvider) {
+            final @Reference RadioBrowserStateDescriptionProvider stateDescriptionProvider,
+            @Reference LocaleProvider localeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.localeProvider = localeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -60,7 +64,7 @@ public class RadioBrowserHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_RADIO.equals(thingTypeUID)) {
-            return new RadioBrowserHandler(thing, httpClient, stateDescriptionProvider);
+            return new RadioBrowserHandler(thing, httpClient, stateDescriptionProvider, localeProvider);
         }
 
         return null;

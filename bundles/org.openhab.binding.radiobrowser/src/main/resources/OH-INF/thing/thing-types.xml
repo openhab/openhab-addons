@@ -22,22 +22,22 @@
 		</channels>
 
 		<config-description>
-			<parameter name="filters" type="text">
+			<parameter name="filters" type="text" required="true">
 				<label>Filters</label>
-				<description>Enter your own custom filter to ensure a stream that works with your device</description>
-				<default>hidebroken=true&amp;order=clickcount</default>
+				<description>Enter your own custom filter starting with ?, to ensure a stream that works with your device</description>
+				<default>?hidebroken=true&amp;order=clickcount</default>
 			</parameter>
 			<parameter name="clicks" type="boolean" required="true">
 				<label>Clicks</label>
-				<description>Send the server what stations are clicked</description>
+				<description>Send a click for every station you select. This helps to mark stations as popular and makes the
+					database more useful to other people.</description>
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="stationCount" type="integer" min="1">
-				<label>Station Count</label>
-				<description>The minimum stations a language or country needs to have before the binding lists it as an option.</description>
-				<default>3</default>
-				<advanced>true</advanced>
+			<parameter name="languageCount" type="integer" min="1">
+				<label>Language Count</label>
+				<description>The minimum stations a language needs to have before the binding lists it as an option.</description>
+				<default>14</default>
 			</parameter>
 		</config-description>
 	</thing-type>

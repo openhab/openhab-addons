@@ -43,4 +43,9 @@ public class RadioBrowserJson {
         public String url = "";
         public String favicon = "";
     }
+
+    public class State {
+        public String name = "";
+        public int stationcount;
+    }
 }

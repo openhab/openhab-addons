@@ -22,6 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class RadioBrowserConfiguration {
     public boolean clicks = true;
-    public int stationCount;
+    public int languageCount;
     public String filters = "";
 }
