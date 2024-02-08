@@ -52,6 +52,8 @@ Please note that some of them are only available when evcc is properly configure
 | general#gridPower               | Number:Power         | R          | Current power from grid (negative means feed-in)                                                                                                                   |
 | general#homePower               | Number:Power         | R          | Current power taken by home                                                                                                                                        |
 | general#pvPower                 | Number:Power         | R          | Current power from photovoltaik                                                                                                                                    |
+| general#version                 | String               | R          | Current evcc version                                                                                                                                               |
+| general#availableVersion        | String               | R          | Available evcc update version                                                                                                                                      |
 
 ### Loadpoint channels
 
@@ -153,6 +155,8 @@ Number:Power           evcc_residualPower                             "Grid Resi
 Number:Power           evcc_gridPower                                 "Grid Power [%.1f kW]"                               <energy>       {channel="evcc:device:demo:general#gridPower"}
 Number:Power           evcc_homePower                                 "Home Power [%.1f kW]"                               <energy>       {channel="evcc:device:demo:general#homePower"}
 Number:Power           evcc_pvPower                                   "PV Power [%.1f kW]"                                 <energy>       {channel="evcc:device:demo:general#pvPower"}
+String                 evcc_version                                   "Version [%s]"                                       <text>         {channel="evcc:device:demo:general#version"}
+String                 evcc_availableVersion                          "Available Version [%s]"                             <text>         {channel="evcc:device:demo:general#availableVersion"}
 
 // Loadpoint
 Number                 evcc_loadpoint0_activePhases                   "Active Phases [%d]"                                                {channel="evcc:device:demo:loadpoint0#activePhases"}

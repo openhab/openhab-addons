@@ -46,6 +46,8 @@ public class EvccBindingConstants {
     public static final String CHANNEL_GRID_POWER = "gridPower";
     public static final String CHANNEL_HOME_POWER = "homePower";
     public static final String CHANNEL_PV_POWER = "pvPower";
+    public static final String CHANNEL_VERSION = "version";
+    public static final String CHANNEL_AVAILABLE_VERSION = "availableVersion";
 
     public static final String CHANNEL_LOADPOINT_ACTIVE_PHASES = "activePhases";
     public static final String CHANNEL_LOADPOINT_CHARGE_CURRENT = "chargeCurrent";
@@ -115,6 +117,10 @@ public class EvccBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_UID_GRID_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_GRID_POWER);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_HOME_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_HOME_POWER);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_PV_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_PV_POWER);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_VERSION = new ChannelTypeUID(BINDING_ID, CHANNEL_VERSION);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_AVAILABLE_VERSION = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_AVAILABLE_VERSION);
+
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_ACTIVE_PHASES = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_ACTIVE_PHASES);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_CURRENT = new ChannelTypeUID(BINDING_ID,

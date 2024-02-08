@@ -141,7 +141,20 @@
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-
+	<channel-type id="version">
+		<item-type>String</item-type>
+		<label>Version</label>
+		<description>Current evcc version</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="availableVersion">
+		<item-type>String</item-type>
+		<label>Available Version</label>
+		<description>Available evcc update version</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
 	<!-- Channel Types for loadpoints -->
 	<channel-type id="activePhases">
 		<item-type>Number</item-type>

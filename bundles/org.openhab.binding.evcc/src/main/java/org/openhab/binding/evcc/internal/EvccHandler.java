@@ -436,6 +436,7 @@ public class EvccHandler extends BaseThingHandler {
             createChannel(CHANNEL_RESIDUAL_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_RESIDUAL_POWER,
                     "Number:Power");
         }
+
         if (gridConfigured) {
             createChannel(CHANNEL_GRID_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_GRID_POWER, "Number:Power");
         }
@@ -443,6 +444,11 @@ public class EvccHandler extends BaseThingHandler {
         if (pvConfigured) {
             createChannel(CHANNEL_PV_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_PV_POWER, "Number:Power");
         }
+
+        createChannel(CHANNEL_VERSION, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_VERSION, CoreItemFactory.STRING);
+        createChannel(CHANNEL_AVAILABLE_VERSION, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_AVAILABLE_VERSION,
+                CoreItemFactory.STRING);
+
         removeChannel("batteryPrioritySoC", CHANNEL_GROUP_ID_GENERAL);
     }
 
@@ -649,6 +655,14 @@ public class EvccHandler extends BaseThingHandler {
             channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_PV_POWER);
             updateState(channel, new QuantityType<>(pvPower, Units.WATT));
         }
+
+        String version = result.getVersion();
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_VERSION);
+        updateState(channel, new StringType(version));
+
+        String availableVersion = result.getAvailableVersion();
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_AVAILABLE_VERSION);
+        updateState(channel, new StringType(availableVersion));
     }
 
     private void updateChannelsLoadpoint(int loadpointId) {
