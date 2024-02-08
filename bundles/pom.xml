@@ -192,6 +192,7 @@
     <module>org.openhab.binding.hpprinter</module>
     <module>org.openhab.binding.http</module>
     <module>org.openhab.binding.hue</module>
+    <module>org.openhab.binding.huesync</module>
     <module>org.openhab.binding.hydrawise</module>
     <module>org.openhab.binding.hyperion</module>
     <module>org.openhab.binding.iammeter</module>
@@ -486,7 +487,7 @@
 
   <properties>
     <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
-    <dep.noembedding/>
+    <dep.noembedding />
   </properties>
 
   <dependencies>
