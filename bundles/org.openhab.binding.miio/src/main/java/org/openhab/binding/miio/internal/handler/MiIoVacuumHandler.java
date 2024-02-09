@@ -506,7 +506,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                                 .toString());
                         break;
                     case 1:
-                        historyRecord.setStart(ZonedDateTime
+                        historyRecord.setEnd(ZonedDateTime
                                 .ofInstant(Instant.ofEpochSecond(value.longValue()), ZoneId.systemDefault())
                                 .toString());
                         break;
