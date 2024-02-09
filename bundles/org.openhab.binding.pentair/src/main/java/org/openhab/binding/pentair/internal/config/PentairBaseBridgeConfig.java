@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.pentair.internal.config;
 
+import static org.openhab.binding.pentair.internal.PentairBindingConstants.DEFAULT_PENTAIR_ID;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PentairIPBridgeConfig } class contains the parameters for IP Bridge
+ * The {@link PentairBaseBridgeConfig } class contains the base parameters in all bridges
  *
- * @author Jeff James - initial contribution
- *
+ * @author Jeff James - Initial contribution
  */
 @NonNullByDefault
-public class PentairIPBridgeConfig {
-    public String address = "";
-    public int port = 10000;
+public class PentairBaseBridgeConfig {
+    /** ID to use when sending commands on the Pentair RS485 bus. */
+    public int id = DEFAULT_PENTAIR_ID;
+    /** enable automatic discovery */
+    public boolean discovery = true;
 }

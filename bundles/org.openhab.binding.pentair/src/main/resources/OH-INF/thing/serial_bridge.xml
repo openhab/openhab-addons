@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="pentair_serial_bridge">
-		<label>Serial Bridge</label>
-		<description>This bridge is used when using a USB->RS485 interface.</description>
+	<bridge-type id="serial_bridge">
+		<label>Pentair-RS485 Serial Bridge</label>
+		<description>This bridge should be configured when using a USB->RS485 interface.</description>
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<label>Serial Port</label>
@@ -17,6 +17,12 @@
 				<label>Pentair ID</label>
 				<description>The ID to use to send commands on the Pentair bus (default: 34)</description>
 				<default>34</default>
+			</parameter>
+
+			<parameter name="discovery" type="boolean">
+				<label>Enable Discovery</label>
+				<description>Enable automatic discovery of devices</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
