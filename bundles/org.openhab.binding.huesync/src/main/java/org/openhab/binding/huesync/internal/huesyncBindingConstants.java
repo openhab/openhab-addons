@@ -19,7 +19,8 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link huesyncBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Patrik Gfeller - Initial contribution
+ * @author Marco Kawon - Initial contribution
+ * @author Patrik Gfeller - Integration into official repository, update to 4.x infrastructure
  */
 @NonNullByDefault
 public class huesyncBindingConstants {

@@ -29,7 +29,8 @@ import org.slf4j.LoggerFactory;
  * The {@link huesyncHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Patrik Gfeller - Initial contribution
+ * @author Marco Kawon - Initial contribution
+ * @author Patrik Gfeller - Integration into official repository, update to 4.x infrastructure
  */
 @NonNullByDefault
 public class huesyncHandler extends BaseThingHandler {

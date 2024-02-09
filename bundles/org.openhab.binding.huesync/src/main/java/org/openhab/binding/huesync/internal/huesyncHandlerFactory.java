@@ -29,7 +29,8 @@ import org.osgi.service.component.annotations.Component;
  * The {@link huesyncHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Patrik Gfeller - Initial contribution
+ * @author Marco Kawon - Initial contribution
+ * @author Patrik Gfeller - Integration into official repository, update to 4.x infrastructure
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.huesync", service = ThingHandlerFactory.class)

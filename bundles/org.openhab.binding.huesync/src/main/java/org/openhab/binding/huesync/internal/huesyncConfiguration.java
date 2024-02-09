@@ -17,7 +17,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link huesyncConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Patrik Gfeller - Initial contribution
+ * @author Marco Kawon - Initial contribution
+ * @author Patrik Gfeller - Integration into official repository, update to 4.x infrastructure
  */
 @NonNullByDefault
 public class huesyncConfiguration {
