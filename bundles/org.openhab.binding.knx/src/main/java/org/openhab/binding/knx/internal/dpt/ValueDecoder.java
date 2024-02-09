@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,6 +81,28 @@ public class ValueDecoder {
     public static final Pattern XYY_PATTERN = Pattern
             .compile("(?:\\((?<x>\\d+(?:[,.]\\d+)?) (?<y>\\d+(?:[,.]\\d+)?)\\))?\\s*(?:(?<Y>\\d+(?:[,.]\\d+)?)\\s%)?");
 
+    private static boolean check235001(byte[] data) throws KNXException {
+        if (data.length != 6) {
+            throw new KNXFormatException("DPT235 broken frame");
+        }
+        if ((data[5] & 2) == 0) {
+            LOGGER.trace("DPT235.001 w/o ActiveEnergy ignored");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean check23561001(byte[] data) throws KNXException {
+        if (data.length != 6) {
+            throw new KNXFormatException("DPT235 broken frame");
+        }
+        if ((data[5] & 1) == 0) {
+            LOGGER.trace("DPT235.61001 w/o Tariff ignored");
+            return false;
+        }
+        return true;
+    }
+
     /**
      * convert the raw value received to the corresponding openHAB value
      *
@@ -91,18 +113,46 @@ public class ValueDecoder {
      */
     public static @Nullable Type decode(String dptId, byte[] data, Class<? extends Type> preferredType) {
         try {
-            DPTXlator translator = TranslatorTypes.createTranslator(0,
-                    DPTUtil.NORMALIZED_DPT.getOrDefault(dptId, dptId));
-            translator.setData(data);
-            String value = translator.getValue();
-
+            String value = "";
+            String translatorDptId = dptId;
+            DPTXlator translator;
+            try {
+                translator = TranslatorTypes.createTranslator(0, DPTUtil.NORMALIZED_DPT.getOrDefault(dptId, dptId));
+                translator.setData(data);
+                value = translator.getValue();
+                translatorDptId = translator.getType().getID();
+            } catch (KNXException e) {
+                // special handling for decoding DPTs not yet supported by Calimero
+                if ("235.001".equals(dptId)) {
+                    if (!check235001(data)) {
+                        return null;
+                    }
+                    translator = TranslatorTypes.createTranslator(0, "13.010");
+                    translator.setData(data);
+                    value = translator.getValue();
+                    dptId = "13.010";
+                    translatorDptId = dptId;
+                } else if ("235.61001".equals(dptId)) {
+                    if (!check23561001(data)) {
+                        return null;
+                    }
+                    translator = TranslatorTypes.createTranslator(0, "5.006");
+                    translator.setData(new byte[] { data[4] });
+                    value = translator.getValue();
+                    dptId = "5.006";
+                    translatorDptId = dptId;
+                } else {
+                    // no known special case, handle unknown translator outer try block
+                    throw e;
+                }
+            }
             String id = dptId; // prefer using the user-supplied DPT
 
             Matcher m = DPTUtil.DPT_PATTERN.matcher(id);
             if (!m.matches() || m.groupCount() != 2) {
                 LOGGER.trace("User-Supplied DPT '{}' did not match for sub-type, using DPT returned from Translator",
                         id);
-                id = translator.getType().getID();
+                id = translatorDptId;
                 m = DPTUtil.DPT_PATTERN.matcher(id);
                 if (!m.matches() || m.groupCount() != 2) {
                     LOGGER.warn("Couldn't identify main/sub number in dptID '{}'", id);
@@ -116,7 +166,7 @@ public class ValueDecoder {
 
             switch (mainType) {
                 case "1":
-                    return handleDpt1(subType, translator);
+                    return handleDpt1(subType, translator, preferredType);
                 case "2":
                     DPTXlator1BitControlled translator1BitControlled = (DPTXlator1BitControlled) translator;
                     int decValue = (translator1BitControlled.getControlBit() ? 2 : 0)
@@ -158,7 +208,7 @@ public class ValueDecoder {
                 case "242":
                     return handleDpt242(value);
                 case "251":
-                    return handleDpt251(value, preferredType);
+                    return handleDpt251(value, subType, preferredType);
                 default:
                     return handleNumericDpt(id, translator, preferredType);
                 // TODO 6.001 is mapped to PercentType, which can only cover 0-100%, not -128..127%
@@ -172,13 +222,18 @@ public class ValueDecoder {
         return null;
     }
 
-    private static Type handleDpt1(String subType, DPTXlator translator) {
+    private static Type handleDpt1(String subType, DPTXlator translator, Class<? extends Type> preferredType) {
         DPTXlatorBoolean translatorBoolean = (DPTXlatorBoolean) translator;
         switch (subType) {
             case "008":
                 return translatorBoolean.getValueBoolean() ? UpDownType.DOWN : UpDownType.UP;
             case "009":
             case "019":
+                // default is OpenClosedType (Contact), but it may be mapped to OnOffType as well
+                if (OnOffType.class.equals(preferredType)) {
+                    return OnOffType.from(translatorBoolean.getValueBoolean());
+                }
+
                 // This is wrong for DPT 1.009. It should be true -> CLOSE, false -> OPEN, but unfortunately
                 // can't be fixed without breaking a lot of working installations.
                 // The documentation has been updated to reflect that. / @J-N-K
@@ -188,6 +243,11 @@ public class ValueDecoder {
             case "022":
                 return DecimalType.valueOf(translatorBoolean.getValueBoolean() ? "1" : "0");
             default:
+                // default is OnOffType (Switch), but it may be mapped to OpenClosedType as well
+                if (OpenClosedType.class.equals(preferredType)) {
+                    return translatorBoolean.getValueBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                }
+
                 return OnOffType.from(translatorBoolean.getValueBoolean());
         }
     }
@@ -358,7 +418,7 @@ public class ValueDecoder {
         return null;
     }
 
-    private static @Nullable Type handleDpt251(String value, Class<? extends Type> preferredType) {
+    private static @Nullable Type handleDpt251(String value, String subType, Class<? extends Type> preferredType) {
         Matcher rgbw = RGBW_PATTERN.matcher(value);
         if (rgbw.matches()) {
             String rString = rgbw.group("r");
@@ -366,19 +426,39 @@ public class ValueDecoder {
             String bString = rgbw.group("b");
             String wString = rgbw.group("w");
 
-            if (rString != null && gString != null && bString != null && HSBType.class.equals(preferredType)) {
-                // does not support PercentType and r,g,b valid -> HSBType
-                int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
-                int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
-                int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
+            switch (subType) {
+                case "600":
+                    if (rString != null && gString != null && bString != null && HSBType.class.equals(preferredType)) {
+                        // does not support PercentType and r,g,b valid -> HSBType
+                        int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
+                        int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
+                        int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
 
-                return HSBType.fromRGB(r, g, b);
-            } else if (wString != null && PercentType.class.equals(preferredType)) {
-                // does support PercentType and w valid -> PercentType
-                BigDecimal w = new BigDecimal(wString.replace(",", "."));
+                        return HSBType.fromRGB(r, g, b);
+                    } else if (wString != null && PercentType.class.equals(preferredType)) {
+                        // does support PercentType and w valid -> PercentType
+                        BigDecimal w = new BigDecimal(wString.replace(",", "."));
 
-                return new PercentType(w);
+                        return new PercentType(w);
+                    }
+                case "60600":
+                    // special type used by OH for .600 indicating that RGBW should be handled with a single HSBType,
+                    // typically we use HSBType for RGB and PercentType for W.
+                    if (rString != null && gString != null && bString != null && wString != null
+                            && HSBType.class.equals(preferredType)) {
+                        // does support PercentType and w valid -> PercentType
+                        int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
+                        int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
+                        int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
+                        int w = coerceToRange((int) (Double.parseDouble(wString.replace(",", ".")) * 2.55), 0, 255);
+
+                        return ColorUtil.rgbToHsb(new int[] { r, g, b, w });
+                    }
+                default:
+                    LOGGER.warn("Unknown subtype '251.{}', no conversion possible.", subType);
+                    return null;
             }
+
         }
         LOGGER.warn("Failed to convert '{}' (DPT 251): Pattern does not match or invalid content", value);
         return null;

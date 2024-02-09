@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
     private final ResponseListener<T> defaultResponseListener = createResponseListener();
 
     protected <Y> ResponseListener<Y> createResponseListener() {
-        return new ResponseListener<Y>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(String error) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -342,7 +342,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     }
 
     private static Set<Integer> csvStringToSetInt(String s) {
-        TreeSet<Integer> intSet = new TreeSet<Integer>();
+        TreeSet<Integer> intSet = new TreeSet<>();
         String sNorm = s.replaceAll("\\s", "");
         Scanner sc = new Scanner(sNorm);
         sc.useDelimiter(",");
@@ -380,7 +380,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     @Override
     protected long getRefreshAllLastTS() {
         return lastAllDevicesRefreshTS;
-    };
+    }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,7 +119,7 @@ public class GroupePSAHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
-    };
+    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -398,7 +398,7 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     protected <T extends Quantity<T>> void updateState(String channelID, @Nullable BigDecimal number, Unit<T> unit) {
         if (number != null) {
-            updateState(channelID, new QuantityType<T>(number, unit));
+            updateState(channelID, new QuantityType<>(number, unit));
         } else {
             updateState(channelID, UnDefType.UNDEF);
         }

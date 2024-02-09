@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,14 +20,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openwebnet4j.OpenDeviceType;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.Where;
@@ -35,6 +32,8 @@ import org.openwebnet4j.message.WhereAlarm;
 import org.openwebnet4j.message.WhereThermo;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,22 +46,20 @@ import org.slf4j.LoggerFactory;
  * @author Gilberto Cocchi - Thermoregulation
  * @author Giovanni Fabiani - Aux support
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = OpenWebNetDeviceDiscoveryService.class)
 @NonNullByDefault
-public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
-
+public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<OpenWebNetBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetDeviceDiscoveryService.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.DEVICE_SUPPORTED_THING_TYPES;
     private static final int SEARCH_TIME_SEC = 60;
 
-    private @NonNullByDefault({}) OpenWebNetBridgeHandler bridgeHandler;
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
     private boolean cuFound = false;
 
     public OpenWebNetDeviceDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, SEARCH_TIME_SEC);
+        super(OpenWebNetBridgeHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME_SEC);
     }
 
     @Override
@@ -72,22 +69,22 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     protected void startScan() {
-        logger.info("------ SEARCHING for DEVICES on bridge '{}' ({}) ...", bridgeHandler.getThing().getLabel(),
+        logger.info("------ SEARCHING for DEVICES on bridge '{}' ({}) ...", thingHandler.getThing().getLabel(),
                 bridgeUID);
         cuFound = false;
-        bridgeHandler.searchDevices();
+        thingHandler.searchDevices();
     }
 
     @Override
     protected void stopScan() {
         logger.debug("------ stopScan() on bridge '{}'", bridgeUID);
-        bridgeHandler.scanStopped();
+        thingHandler.scanStopped();
     }
 
     @Override
     public void abortScan() {
         logger.debug("------ abortScan() on bridge '{}'", bridgeUID);
-        bridgeHandler.scanStopped();
+        thingHandler.scanStopped();
     }
 
     /**
@@ -225,15 +222,15 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
             return;
         }
 
-        String ownId = bridgeHandler.ownIdFromWhoWhere(deviceWho, w);
+        String ownId = thingHandler.ownIdFromWhoWhere(deviceWho, w);
         if (OpenWebNetBindingConstants.THING_TYPE_BUS_ON_OFF_SWITCH.equals(thingTypeUID)) {
-            if (bridgeHandler.getRegisteredDevice(ownId) != null) {
+            if (thingHandler.getRegisteredDevice(ownId) != null) {
                 logger.debug("dimmer/switch with WHERE={} already registered, skipping this discovery result", w);
                 return;
             }
         }
 
-        String tId = bridgeHandler.thingIdFromWhere(w);
+        String tId = thingHandler.thingIdFromWhere(w);
         ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, tId);
 
         DiscoveryResult discoveryResult = null;
@@ -296,22 +293,9 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof OpenWebNetBridgeHandler openWebNetBridgeHandler) {
-            logger.debug("attaching {} to handler {} ", this, handler);
-            bridgeHandler = openWebNetBridgeHandler;
-            bridgeHandler.deviceDiscoveryService = this;
-            bridgeUID = bridgeHandler.getThing().getUID();
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+    public void initialize() {
+        thingHandler.deviceDiscoveryService = this;
+        bridgeUID = thingHandler.getThing().getUID();
+        super.initialize();
     }
 }

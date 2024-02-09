@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.pilight.internal.types;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OpenClosedType;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.core.library.types.OpenClosedType;
  * @author Stefan Röllin - Port to openHAB 2 pilight binding
  * @author Niklas Dörfler - Port pilight binding to openHAB 3 + add device discovery
  */
+@NonNullByDefault
 public enum PilightContactType {
     OPENED,
     CLOSED;

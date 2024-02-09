@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,6 +82,8 @@ public class ValueTests {
         assertThat(hsb.getBrightness().intValue(), is(0));
         hsb = (HSBType) v.parseCommand(p(v, "1"));
         assertThat(hsb.getBrightness().intValue(), is(1));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -137,6 +139,18 @@ public class ValueTests {
         // Test custom formatting
         assertThat(v.getMQTTpublishValue(OnOffType.OFF, "=%s"), is("=fancyOff"));
         assertThat(v.getMQTTpublishValue(OnOffType.ON, "=%s"), is("=fancyON"));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
+    }
+
+    @Test
+    public void onoffMultiStates() {
+        OnOffValue v = new OnOffValue(new String[] { "LOCKED" }, new String[] { "UNLOCKED", "JAMMED" }, "LOCK",
+                "UNLOCK");
+
+        assertThat(v.parseCommand(new StringType("LOCKED")), is(OnOffType.ON));
+        assertThat(v.parseCommand(new StringType("UNLOCKED")), is(OnOffType.OFF));
+        assertThat(v.parseCommand(new StringType("JAMMED")), is(OnOffType.OFF));
     }
 
     @Test
@@ -158,6 +172,8 @@ public class ValueTests {
         // Test basic formatting
         assertThat(v.getMQTTpublishValue(OpenClosedType.CLOSED, null), is("fancyOff"));
         assertThat(v.getMQTTpublishValue(OpenClosedType.OPEN, null), is("fancyON"));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -179,6 +195,10 @@ public class ValueTests {
 
         assertThat(v.parseMessage(new StringType("NaN")), is(UnDefType.UNDEF));
         assertThat(v.parseMessage(new StringType("nan")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("-NaN")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("-nan")), is(UnDefType.UNDEF));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -231,6 +251,8 @@ public class ValueTests {
         // Test parsing from MQTT
         assertThat(v.parseMessage(new StringType("fancyON")), is(UpDownType.UP));
         assertThat(v.parseMessage(new StringType("fancyOff")), is(UpDownType.DOWN));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -298,6 +320,8 @@ public class ValueTests {
             command = v.parseCommand(new DecimalType(i));
             assertThat(v.getMQTTpublishValue(command, null), is("" + i));
         }
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -381,5 +405,21 @@ public class ValueTests {
         PercentageValue v = new PercentageValue(new BigDecimal(10.0), new BigDecimal(110.0), new BigDecimal(1.0), null,
                 null);
         assertThrows(IllegalArgumentException.class, () -> v.parseCommand(new DecimalType(9.0)));
+    }
+
+    @Test
+    public void textUpdate() {
+        TextValue v = new TextValue();
+
+        assertThat(v.parseMessage(new StringType("")), is(new StringType("")));
+        assertThat(v.parseMessage(new StringType("NULL")), is(new StringType("NULL")));
+
+        v.setNullValue("");
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
+        assertThat(v.parseMessage(new StringType("NULL")), is(new StringType("NULL")));
+
+        v.setNullValue("NULL");
+        assertThat(v.parseMessage(new StringType("NULL")), is(UnDefType.NULL));
+        assertThat(v.parseMessage(new StringType("")), is(new StringType("")));
     }
 }

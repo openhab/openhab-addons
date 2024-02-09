@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ public class Mapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(Mapper.class);
 
     public static final ChannelStateMap INVALID_MAP = new ChannelStateMap(EMPTY, EMPTY, UnDefType.UNDEF, -1);
-    public static final Map<String, String[]> CHANNELS = new HashMap<String, String[]>();
+    public static final Map<String, String[]> CHANNELS = new HashMap<>();
     public static final String TIMESTAMP = "timestamp";
     public static final String VALUE = "value";
 

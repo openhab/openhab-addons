@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager;
@@ -47,15 +46,15 @@ import org.openhab.binding.freeboxos.internal.config.FreeplugConfigurationBuilde
 import org.openhab.binding.freeboxos.internal.config.NodeConfigurationBuilder;
 import org.openhab.binding.freeboxos.internal.config.PhoneConfigurationBuilder;
 import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,48 +66,28 @@ import inet.ipaddr.mac.MACAddress;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = FreeboxOsDiscoveryService.class)
 @NonNullByDefault
-public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryService<FreeboxOsHandler> {
     private static final int DISCOVERY_TIME_SECONDS = 10;
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsDiscoveryService.class);
 
     private Optional<ScheduledFuture<?>> backgroundFuture = Optional.empty();
-    private @Nullable FreeboxOsHandler bridgeHandler;
 
     public FreeboxOsDiscoveryService() {
-        super(Stream.of(THINGS_TYPES_UIDS, HOME_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet()),
+        super(FreeboxOsHandler.class,
+                Stream.of(THINGS_TYPES_UIDS, HOME_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet()),
                 DISCOVERY_TIME_SECONDS);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof FreeboxOsHandler freeboxosHandler) {
-            bridgeHandler = freeboxosHandler;
-            activate(null);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
     }
 
     @Override
     protected void startBackgroundDiscovery() {
         stopBackgroundDiscovery();
-        FreeboxOsHandler handler = bridgeHandler;
-        if (handler != null) {
-            int interval = handler.getConfiguration().discoveryInterval;
-            if (interval > 0) {
-                backgroundFuture = Optional
-                        .of(scheduler.scheduleWithFixedDelay(this::startScan, 1, interval, TimeUnit.MINUTES));
-            }
+        int interval = thingHandler.getConfiguration().discoveryInterval;
+        if (interval > 0) {
+            backgroundFuture = Optional
+                    .of(scheduler.scheduleWithFixedDelay(this::startScan, 1, interval, TimeUnit.MINUTES));
         }
     }
 
@@ -121,23 +100,22 @@ public class FreeboxOsDiscoveryService extends AbstractDiscoveryService implemen
     @Override
     protected void startScan() {
         logger.debug("Starting Freebox discovery scan");
-        FreeboxOsHandler handler = bridgeHandler;
-        if (handler != null && handler.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
-                ThingUID bridgeUID = handler.getThing().getUID();
+                ThingUID bridgeUID = thingHandler.getThing().getUID();
 
-                List<LanHost> lanHosts = new ArrayList<>(handler.getManager(LanBrowserManager.class).getHosts().stream()
-                        .filter(LanHost::reachable).toList());
+                List<LanHost> lanHosts = new ArrayList<>(thingHandler.getManager(LanBrowserManager.class).getHosts()
+                        .stream().filter(LanHost::reachable).toList());
 
-                discoverServer(handler.getManager(SystemManager.class), bridgeUID);
-                discoverPhone(handler.getManager(PhoneManager.class), bridgeUID);
-                discoverPlugs(handler.getManager(FreeplugManager.class), bridgeUID);
-                discoverRepeater(handler.getManager(RepeaterManager.class), bridgeUID, lanHosts);
-                discoverPlayer(handler.getManager(PlayerManager.class), bridgeUID, lanHosts);
-                discoverVM(handler.getManager(VmManager.class), bridgeUID, lanHosts);
-                discoverHome(handler.getManager(HomeManager.class), bridgeUID);
-                if (handler.getConfiguration().discoverNetDevice) {
-                    discoverHosts(handler, bridgeUID, lanHosts);
+                discoverServer(thingHandler.getManager(SystemManager.class), bridgeUID);
+                discoverPhone(thingHandler.getManager(PhoneManager.class), bridgeUID);
+                discoverPlugs(thingHandler.getManager(FreeplugManager.class), bridgeUID);
+                discoverRepeater(thingHandler.getManager(RepeaterManager.class), bridgeUID, lanHosts);
+                discoverPlayer(thingHandler.getManager(PlayerManager.class), bridgeUID, lanHosts);
+                discoverVM(thingHandler.getManager(VmManager.class), bridgeUID, lanHosts);
+                discoverHome(thingHandler.getManager(HomeManager.class), bridgeUID);
+                if (thingHandler.getConfiguration().discoverNetDevice) {
+                    discoverHosts(thingHandler, bridgeUID, lanHosts);
                 }
             } catch (FreeboxException e) {
                 logger.warn("Error while requesting data for things discovery: {}", e.getMessage());

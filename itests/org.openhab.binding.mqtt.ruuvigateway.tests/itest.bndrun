@@ -106,7 +106,6 @@ Import-Package: \
 	org.openhab.core.test;version='[4.2.0,4.2.1)',\
 	org.openhab.core.thing;version='[4.2.0,4.2.1)',\
 	org.openhab.core.transform;version='[4.2.0,4.2.1)',\
-	jakarta.ws.rs-api;version='[2.1.6,2.1.7)',\
 	io.netty.buffer;version='[4.1.104,4.1.105)',\
 	io.netty.codec;version='[4.1.104,4.1.105)',\
 	io.netty.codec-mqtt;version='[4.1.104,4.1.105)',\
@@ -116,4 +115,5 @@ Import-Package: \
 	io.netty.handler-proxy;version='[4.1.104,4.1.105)',\
 	io.netty.resolver;version='[4.1.104,4.1.105)',\
 	io.netty.transport;version='[4.1.104,4.1.105)',\
-	io.netty.transport-native-unix-common;version='[4.1.104,4.1.105)'
+	io.netty.transport-native-unix-common;version='[4.1.104,4.1.105)',\
+	org.osgi.service.component.annotations;version='[1.5.0,1.5.1)'

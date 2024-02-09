@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.measure.Unit;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Power;
 import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
 
@@ -242,7 +240,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
 
                 if (batteryLevel != null) {
                     batteryLevel = batteryLevel * 100;
-                    state = new QuantityType<Dimensionless>(batteryLevel.intValue(), Units.PERCENT);
+                    state = new QuantityType<>(batteryLevel.intValue(), Units.PERCENT);
                     if (batteryLevel <= config.getLowBatteryPercentage()) {
                         updateState(APPLIANCE_BATTERYLEVELLOW_CHANNEL, OnOffType.ON);
                     } else {
@@ -285,7 +283,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                     Unit<Temperature> unit = entity.getOffsetTemperatureUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
-                    state = new QuantityType<Temperature>(entity.getOffsetTemperature().get(), unit);
+                    state = new QuantityType<>(entity.getOffsetTemperature().get(), unit);
                 }
                 break;
             case APPLIANCE_POWER_CHANNEL:
@@ -295,14 +293,14 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 break;
             case APPLIANCE_POWER_USAGE_CHANNEL:
                 if (entity.getPowerUsage().isPresent()) {
-                    state = new QuantityType<Power>(entity.getPowerUsage().get(), Units.WATT);
+                    state = new QuantityType<>(entity.getPowerUsage().get(), Units.WATT);
                 }
                 break;
             case APPLIANCE_SETPOINT_CHANNEL:
                 if (entity.getSetpointTemperature().isPresent()) {
                     Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
                             .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
-                    state = new QuantityType<Temperature>(entity.getSetpointTemperature().get(), unit);
+                    state = new QuantityType<>(entity.getSetpointTemperature().get(), unit);
                 }
                 break;
             case APPLIANCE_TEMPERATURE_CHANNEL:
@@ -310,19 +308,19 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                     Unit<Temperature> unit = entity.getTemperatureUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
-                    state = new QuantityType<Temperature>(entity.getTemperature().get(), unit);
+                    state = new QuantityType<>(entity.getTemperature().get(), unit);
                 }
                 break;
             case APPLIANCE_VALVEPOSITION_CHANNEL:
                 if (entity.getValvePosition().isPresent()) {
                     Double valvePosition = entity.getValvePosition().get() * 100;
-                    state = new QuantityType<Dimensionless>(valvePosition.intValue(), Units.PERCENT);
+                    state = new QuantityType<>(valvePosition.intValue(), Units.PERCENT);
                 }
                 break;
             case APPLIANCE_WATERPRESSURE_CHANNEL:
                 if (entity.getWaterPressure().isPresent()) {
                     Unit<Pressure> unit = HECTO(SIUnits.PASCAL);
-                    state = new QuantityType<Pressure>(entity.getWaterPressure().get(), unit);
+                    state = new QuantityType<>(entity.getWaterPressure().get(), unit);
                 }
                 break;
             case APPLIANCE_COOLINGSTATE_CHANNEL:
@@ -334,7 +332,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                 if (entity.getIntendedBoilerTemp().isPresent()) {
                     Unit<Temperature> unit = entity.getIntendedBoilerTempUnit().orElse(UNIT_CELSIUS)
                             .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
-                    state = new QuantityType<Temperature>(entity.getIntendedBoilerTemp().get(), unit);
+                    state = new QuantityType<>(entity.getIntendedBoilerTemp().get(), unit);
                 }
                 break;
             case APPLIANCE_FLAMESTATE_CHANNEL:
@@ -350,12 +348,12 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
             case APPLIANCE_MODULATIONLEVEL_CHANNEL:
                 if (entity.getModulationLevel().isPresent()) {
                     Double modulationLevel = entity.getModulationLevel().get() * 100;
-                    state = new QuantityType<Dimensionless>(modulationLevel.intValue(), Units.PERCENT);
+                    state = new QuantityType<>(modulationLevel.intValue(), Units.PERCENT);
                 }
                 break;
             case APPLIANCE_OTAPPLICATIONFAULTCODE_CHANNEL:
                 if (entity.getOTAppFaultCode().isPresent()) {
-                    state = new QuantityType<Dimensionless>(entity.getOTAppFaultCode().get().intValue(), Units.PERCENT);
+                    state = new QuantityType<>(entity.getOTAppFaultCode().get().intValue(), Units.PERCENT);
                 }
                 break;
             case APPLIANCE_RETURNWATERTEMPERATURE_CHANNEL:
@@ -363,7 +361,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                     Unit<Temperature> unit = entity.getReturnWaterTempUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
-                    state = new QuantityType<Temperature>(entity.getReturnWaterTemp().get(), unit);
+                    state = new QuantityType<>(entity.getReturnWaterTemp().get(), unit);
                 }
                 break;
             case APPLIANCE_DHWTEMPERATURE_CHANNEL:
@@ -371,12 +369,12 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                     Unit<Temperature> unit = entity.getDHWTempUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
-                    state = new QuantityType<Temperature>(entity.getDHWTemp().get(), unit);
+                    state = new QuantityType<>(entity.getDHWTemp().get(), unit);
                 }
                 break;
             case APPLIANCE_OTOEMFAULTCODE_CHANNEL:
                 if (entity.getOTOEMFaultcode().isPresent()) {
-                    state = new QuantityType<Dimensionless>(entity.getOTOEMFaultcode().get().intValue(), Units.PERCENT);
+                    state = new QuantityType<>(entity.getOTOEMFaultcode().get().intValue(), Units.PERCENT);
                 }
                 break;
             case APPLIANCE_BOILERTEMPERATURE_CHANNEL:
@@ -384,7 +382,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                     Unit<Temperature> unit = entity.getBoilerTempUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
-                    state = new QuantityType<Temperature>(entity.getBoilerTemp().get(), unit);
+                    state = new QuantityType<>(entity.getBoilerTemp().get(), unit);
                 }
                 break;
             case APPLIANCE_DHWSETPOINT_CHANNEL:
@@ -392,7 +390,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                     Unit<Temperature> unit = entity.getDHTSetpointUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
-                    state = new QuantityType<Temperature>(entity.getDHTSetpoint().get(), unit);
+                    state = new QuantityType<>(entity.getDHTSetpoint().get(), unit);
                 }
                 break;
             case APPLIANCE_MAXBOILERTEMPERATURE_CHANNEL:
@@ -400,7 +398,7 @@ public class PlugwiseHAApplianceHandler extends PlugwiseHABaseHandler<Appliance,
                     Unit<Temperature> unit = entity.getMaxBoilerTempUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
-                    state = new QuantityType<Temperature>(entity.getMaxBoilerTemp().get(), unit);
+                    state = new QuantityType<>(entity.getMaxBoilerTemp().get(), unit);
                 }
                 break;
             case APPLIANCE_DHWCOMFORTMODE_CHANNEL:

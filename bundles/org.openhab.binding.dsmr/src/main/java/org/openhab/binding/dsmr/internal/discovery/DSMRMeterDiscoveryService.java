@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,10 +30,15 @@ import org.openhab.binding.dsmr.internal.handler.DSMRBridgeHandler;
 import org.openhab.binding.dsmr.internal.handler.DSMRMeterHandler;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Refactored code to detect meters during actual discovery phase.
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = DSMRMeterDiscoveryService.class)
 @NonNullByDefault
 public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P1TelegramListener, ThingHandlerService {
 
@@ -53,13 +59,14 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
      */
     private @NonNullByDefault({}) DSMRBridgeHandler dsmrBridgeHandler;
 
-    /**
-     * Constructs a new {@link DSMRMeterDiscoveryService} attached to the give bridge handler.
-     */
-    public DSMRMeterDiscoveryService() {
-        super();
-        this.i18nProvider = DSMRI18nProviderTracker.i18nProvider;
-        this.localeProvider = DSMRI18nProviderTracker.localeProvider;
+    @Reference(unbind = "-")
+    public void bindTranslationProvider(TranslationProvider translationProvider) {
+        this.i18nProvider = translationProvider;
+    }
+
+    @Reference(unbind = "-")
+    public void bindLocaleProvider(LocaleProvider localeProvider) {
+        this.localeProvider = localeProvider;
     }
 
     @Override

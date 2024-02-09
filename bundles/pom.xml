@@ -147,6 +147,7 @@
     <module>org.openhab.binding.foobot</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.freeboxos</module>
+    <module>org.openhab.binding.freecurrency</module>
     <module>org.openhab.binding.fronius</module>
     <module>org.openhab.binding.fsinternetradio</module>
     <module>org.openhab.binding.ftpupload</module>
@@ -159,8 +160,9 @@
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
-    <module>org.openhab.binding.groupepsa</module>
     <module>org.openhab.binding.groheondus</module>
+    <module>org.openhab.binding.groupepsa</module>
+    <module>org.openhab.binding.growatt</module>
     <module>org.openhab.binding.guntamatic</module>
     <module>org.openhab.binding.haassohnpelletstove</module>
     <module>org.openhab.binding.harmonyhub</module>
@@ -296,6 +298,7 @@
     <module>org.openhab.binding.oppo</module>
     <module>org.openhab.binding.orbitbhyve</module>
     <module>org.openhab.binding.orvibo</module>
+    <module>org.openhab.binding.panasonicbdp</module>
     <module>org.openhab.binding.paradoxalarm</module>
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>

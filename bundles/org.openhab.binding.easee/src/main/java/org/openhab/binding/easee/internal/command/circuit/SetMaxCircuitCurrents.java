@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class SetMaxCircuitCurrents extends SetCircuitSettings {
      */
     @Override
     protected String getJsonContent() throws ValidationException {
-        Map<String, String> content = new HashMap<String, String>(3);
+        Map<String, String> content = new HashMap<>(3);
         String rawCommand = getCommandValue();
         String[] tokens = rawCommand.split(";");
         if (tokens.length == 3) {

@@ -115,6 +115,7 @@
 /bundles/org.openhab.binding.foobot/ @airboxlab @Hilbrand
 /bundles/org.openhab.binding.freebox/ @lolodomo
 /bundles/org.openhab.binding.freeboxos/ @clinique
+/bundles/org.openhab.binding.freecurrency/ @J-N-K
 /bundles/org.openhab.binding.fronius/ @trokohl
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
 /bundles/org.openhab.binding.ftpupload/ @paulianttila
@@ -129,6 +130,7 @@
 /bundles/org.openhab.binding.gree/ @markus7017
 /bundles/org.openhab.binding.groheondus/ @FlorianSW
 /bundles/org.openhab.binding.groupepsa/ @arjanmels
+/bundles/org.openhab.binding.growatt/ @andrewfg
 /bundles/org.openhab.binding.guntamatic/ @MikeTheTux
 /bundles/org.openhab.binding.haassohnpelletstove/ @chingon007
 /bundles/org.openhab.binding.harmonyhub/ @digitaldan
@@ -264,6 +266,7 @@
 /bundles/org.openhab.binding.oppo/ @mlobstein
 /bundles/org.openhab.binding.orbitbhyve/ @octa22
 /bundles/org.openhab.binding.orvibo/ @tavalin
+/bundles/org.openhab.binding.panasonicbdp/ @mlobstein
 /bundles/org.openhab.binding.paradoxalarm/ @theater
 /bundles/org.openhab.binding.pentair/ @jsjames
 /bundles/org.openhab.binding.phc/ @gnlpfjh

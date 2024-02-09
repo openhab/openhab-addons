@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
 
     @Override
     public ReadingPublisher<LaCrosseTemperatureReading> createPublisher() {
-        return new ReadingPublisher<LaCrosseTemperatureReading>() {
+        return new ReadingPublisher<>() {
             private final Map<Integer, ReadingPublisher<LaCrosseTemperatureReading>> channelPublishers = new HashMap<>();
 
             @Override
@@ -120,7 +120,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
     }
 
     public ReadingPublisher<LaCrosseTemperatureReading> createPublisherForChannel(int channelNo) {
-        ReadingPublisher<LaCrosseTemperatureReading> publisher = new ReadingPublisher<LaCrosseTemperatureReading>() {
+        ReadingPublisher<LaCrosseTemperatureReading> publisher = new ReadingPublisher<>() {
             @Override
             public void publish(LaCrosseTemperatureReading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {
@@ -154,8 +154,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
 
         LaCrosseTemperatureSensorConfig cfg = getConfigAs(LaCrosseTemperatureSensorConfig.class);
         if (cfg.bufferSize > 1 && cfg.updateInterval > 0) {
-            publisher = new RollingAveragePublisher<LaCrosseTemperatureReading>(cfg.bufferSize, cfg.updateInterval,
-                    publisher, scheduler) {
+            publisher = new RollingAveragePublisher<>(cfg.bufferSize, cfg.updateInterval, publisher, scheduler) {
                 @Override
                 public RollingReadingAverage<LaCrosseTemperatureReading> createRollingReadingAverage(int bufferSize) {
                     return new LaCrosseRollingReadingAverage(bufferSize);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,7 +80,7 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
     private final DynamoDBPersistenceService service;
     private T dto;
     private DynamoDbAsyncTable<T> table;
-    private CompletableFuture<Void> aggregateFuture = new CompletableFuture<Void>();
+    private CompletableFuture<Void> aggregateFuture = new CompletableFuture<>();
     private Instant start = Instant.now();
     private ExecutorService executor;
     private DynamoDbAsyncClient lowLevelClient;

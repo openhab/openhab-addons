@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,23 +12,20 @@
  */
 package org.openhab.binding.tesla.internal.discovery;
 
-import java.util.Map;
-
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.tesla.internal.TeslaBindingConstants;
 import org.openhab.binding.tesla.internal.TeslaHandlerFactory;
 import org.openhab.binding.tesla.internal.handler.TeslaAccountHandler;
 import org.openhab.binding.tesla.internal.handler.VehicleListener;
 import org.openhab.binding.tesla.internal.protocol.Vehicle;
 import org.openhab.binding.tesla.internal.protocol.VehicleConfig;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,44 +36,30 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution
  *
  */
-@Component(service = ThingHandlerService.class)
-public class TeslaVehicleDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, VehicleListener, ThingHandlerService {
+@Component(scope = ServiceScope.PROTOTYPE, service = TeslaVehicleDiscoveryService.class)
+public class TeslaVehicleDiscoveryService extends AbstractThingHandlerDiscoveryService<@NonNull TeslaAccountHandler>
+        implements VehicleListener {
     private final Logger logger = LoggerFactory.getLogger(TeslaVehicleDiscoveryService.class);
 
     public TeslaVehicleDiscoveryService() throws IllegalArgumentException {
-        super(TeslaHandlerFactory.SUPPORTED_THING_TYPES_UIDS, 10, true);
-    }
-
-    private TeslaAccountHandler handler;
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        this.handler = (TeslaAccountHandler) handler;
-        this.handler.addVehicleListener(this);
+        super(TeslaAccountHandler.class, TeslaHandlerFactory.SUPPORTED_THING_TYPES_UIDS, 10, true);
     }
 
     @Override
-    public ThingHandler getThingHandler() {
-        return handler;
+    public void initialize() {
+        thingHandler.addVehicleListener(this);
+        super.initialize();
     }
 
     @Override
     protected void startScan() {
-        handler.scanForVehicles();
+        thingHandler.scanForVehicles();
     }
 
     @Override
-    public void activate(Map<String, Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
-        if (handler != null) {
-            handler.removeVehicleListener(this);
-        }
+    public void dispose() {
+        super.dispose();
+        thingHandler.removeVehicleListener(this);
     }
 
     @Override
@@ -85,9 +68,9 @@ public class TeslaVehicleDiscoveryService extends AbstractDiscoveryService
                 : vehicleConfig.identifyModel();
         if (type != null) {
             logger.debug("Found a {} vehicle", type.getId());
-            ThingUID thingUID = new ThingUID(type, handler.getThing().getUID(), vehicle.vin);
+            ThingUID thingUID = new ThingUID(type, thingHandler.getThing().getUID(), vehicle.vin);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(vehicle.display_name)
-                    .withBridge(handler.getThing().getUID()).withProperty(TeslaBindingConstants.VIN, vehicle.vin)
+                    .withBridge(thingHandler.getThing().getUID()).withProperty(TeslaBindingConstants.VIN, vehicle.vin)
                     .build();
             thingDiscovered(discoveryResult);
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,8 @@ import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.Type;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Implements a rollershutter value.
@@ -71,8 +73,16 @@ public class RollershutterValue extends Value {
         this.upCommandString = upCommandString;
         this.downCommandString = downCommandString;
         this.stopCommandString = stopCommandString;
-        this.upStateString = upStateString;
-        this.downStateString = downStateString;
+        if (upStateString == null) {
+            this.upStateString = upCommandString;
+        } else {
+            this.upStateString = upStateString;
+        }
+        if (downStateString == null) {
+            this.downStateString = downCommandString;
+        } else {
+            this.downStateString = downStateString;
+        }
         this.inverted = inverted;
         this.transformExtentsToString = transformExtentsToString;
     }
@@ -138,7 +148,10 @@ public class RollershutterValue extends Value {
     }
 
     @Override
-    public Command parseMessage(Command command) throws IllegalArgumentException {
+    public Type parseMessage(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType string && string.toString().isEmpty()) {
+            return UnDefType.NULL;
+        }
         command = parseType(command, upStateString, downStateString);
         if (inverted && command instanceof PercentType percentType) {
             return new PercentType(100 - percentType.intValue());

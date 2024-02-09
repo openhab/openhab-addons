@@ -20,7 +20,7 @@
     </bnd.importpackage>
     <okhttp3.version>3.14.9</okhttp3.version>
     <retrofit.version>2.7.2</retrofit.version>
-    <influx2.version>1.15.0</influx2.version>
+    <influx2.version>4.3.0</influx2.version>
     <influx1.version>2.21</influx1.version>
   </properties>
 
@@ -30,6 +30,16 @@
       <groupId>com.influxdb</groupId>
       <artifactId>influxdb-client-java</artifactId>
       <version>${influx2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.influxdb</groupId>
+      <artifactId>influxdb-client-utils</artifactId>
+      <version>${influx2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>adapter-rxjava2</artifactId>
+      <version>${retrofit.version}</version>
     </dependency>
     <dependency>
       <groupId>com.influxdb</groupId>

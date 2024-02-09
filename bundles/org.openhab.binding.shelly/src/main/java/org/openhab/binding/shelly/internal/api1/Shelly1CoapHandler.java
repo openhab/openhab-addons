@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -359,16 +359,12 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     valid &= addSensor(descr.sen.get(i));
                 }
             }
-            coiot.completeMissingSensorDefinition(sensorMap);
-
             if (!valid) {
-                logger.debug(
-                        "{}: Incompatible device description detected for CoIoT version {} (id length mismatch), discarding!",
-                        thingName, coiot.getVersion());
-
-                discover();
-                return;
+                logger.debug("{}: WARNING: Incompatible device description detected for CoIoT version {}!", thingName,
+                        coiot.getVersion());
             }
+
+            coiot.completeMissingSensorDefinition(sensorMap); // fix incomplete format
         } catch (JsonSyntaxException e) {
             logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload);
         } catch (NullPointerException | IllegalArgumentException e) {
@@ -448,7 +444,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         }
 
         List<CoIotSensor> sensorUpdates = list.generic;
-        Map<String, State> updates = new TreeMap<String, State>();
+        Map<String, State> updates = new TreeMap<>();
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
         ShellyColorUtils col = new ShellyColorUtils();

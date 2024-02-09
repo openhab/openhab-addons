@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="panasonicbdp"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Panasonic UHD Blu-ray Player Thing -->
+	<thing-type id="uhd-player">
+		<label>Panasonic UHD Blu-ray Player</label>
+		<description>
+			Panasonic UHD Blu-ray model DP-UB420/424, DP-UB820/824 or DP-UB9000/9004
+		</description>
+
+		<channels>
+			<channel id="power" typeId="system.power">
+				<label>Power</label>
+				<description>Turn the power for the player on or off</description>
+			</channel>
+			<channel id="button" typeId="uhd-button"/>
+			<channel id="control" typeId="control"/>
+			<channel id="player-status" typeId="player-status"/>
+			<channel id="time-elapsed" typeId="time-elapsed"/>
+		</channels>
+
+		<representation-property>uuid</representation-property>
+
+		<config-description>
+			<parameter name="hostName" type="text" required="true">
+				<context>network-address</context>
+				<label>Player Host Name/IP Address</label>
+				<description>Host Name or IP Address of the player</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="5" required="false" unit="s">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds</description>
+				<default>5</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+			<parameter name="playerKey" type="text" required="false">
+				<label>Player Key</label>
+				<description>To enable authentication of control commands, a key for the player must be specified</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="uhd-button">
+		<item-type>String</item-type>
+		<label>Remote Button</label>
+		<description>A remote button press to send to the player</description>
+		<state>
+			<options>
+				<option value="POWERON">Power On</option>
+				<option value="POWEROFF">Power Off</option>
+				<option value="POWER">Power Toggle</option>
+				<option value="PLAYBACK">Play</option>
+				<option value="PAUSE">Pause</option>
+				<option value="STOP">Stop</option>
+				<option value="CUE">Fast Forward</option>
+				<option value="REV">Reverse</option>
+				<option value="SKIPFWD">Skip Forward</option>
+				<option value="SKIPREV">Skip Back</option>
+				<option value="MNSKIP">Manual Skip +60s</option>
+				<option value="MNBACK">Manual Skip -10s</option>
+				<option value="OP_CL">Open/Close</option>
+				<option value="DSPSEL">Status</option>
+				<option value="TITLE">Top Menu</option>
+				<option value="PUPMENU">Pop-up Menu</option>
+				<option value="UP">Up</option>
+				<option value="DOWN">Down</option>
+				<option value="LEFT">Left</option>
+				<option value="RIGHT">Right</option>
+				<option value="SELECT">OK</option>
+				<option value="MENU">Submenu</option>
+				<option value="RETURN">Return</option>
+				<option value="D1">1</option>
+				<option value="D2">2</option>
+				<option value="D3">3</option>
+				<option value="D4">4</option>
+				<option value="D5">5</option>
+				<option value="D6">6</option>
+				<option value="D7">7</option>
+				<option value="D8">8</option>
+				<option value="D9">9</option>
+				<option value="D0">0</option>
+				<option value="D12">12</option>
+				<option value="CLEAR">Clear</option>
+				<option value="SHARP">#</option>
+				<option value="RED">Red</option>
+				<option value="GREEN">Green</option>
+				<option value="BLUE">Blue</option>
+				<option value="YELLOW">Yellow</option>
+				<option value="MLTNAVI">Home</option>
+				<option value="NETFLIX">Netflix</option>
+				<option value="V_CAST">Viera Cast</option>
+				<option value="NETWORK">Network</option>
+				<option value="SETUP">Setup</option>
+				<option value="EXIT">Exit</option>
+				<option value="AUDIOSEL">Audio</option>
+				<option value="TITLEONOFF">Subtitle</option>
+				<option value="CLOSED_CAPTION">Closed Caption</option>
+				<option value="PLAYBACKINFO">Playback Info</option>
+				<option value="HDR_PICTUREMODE">HDR Picture Mode</option>
+				<option value="MIRACAST">Mirroring</option>
+				<option value="PICTURESETTINGS">Picture Setting</option>
+				<option value="SOUNDEFFECT">Sound Effect</option>
+				<option value="HIGHCLARITY">High Clarity</option>
+				<option value="SKIP_THE_TRAILER">Skip The Trailer</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Transport Controls e.g. Play/Pause/Next/Previous/FForward/Rewind</description>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="player-status">
+		<item-type>String</item-type>
+		<label>Player Status</label>
+		<description>The current player status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="time-elapsed">
+		<item-type>Number:Time</item-type>
+		<label>Playback Time</label>
+		<description>The current playback time elapsed</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

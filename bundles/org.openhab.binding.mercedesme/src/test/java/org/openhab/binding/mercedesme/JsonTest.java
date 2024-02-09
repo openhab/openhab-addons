@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ class JsonTest {
 
     @Test
     void testOdoMapper() throws Exception {
-        List<String> expectedResults = new ArrayList<String>();
+        List<String> expectedResults = new ArrayList<>();
         expectedResults.add("range:mileage 4131 km");
         String content = Files.readString(Path.of("src/test/resources/odo.json"));
         JSONArray ja = new JSONArray(content);
@@ -65,7 +65,7 @@ class JsonTest {
 
     @Test
     void testEVMapper() throws IOException {
-        List<String> expectedResults = new ArrayList<String>();
+        List<String> expectedResults = new ArrayList<>();
         expectedResults.add("range:range-electric 325 km");
         expectedResults.add("range:soc 78 %");
         String content = Files.readString(Path.of("src/test/resources/evstatus.json"));
@@ -86,7 +86,7 @@ class JsonTest {
 
     @Test
     void testFuelMapper() throws IOException {
-        List<String> expectedResults = new ArrayList<String>();
+        List<String> expectedResults = new ArrayList<>();
         expectedResults.add("range:range-fuel 1292 km");
         expectedResults.add("range:fuel-level 90 %");
         String content = Files.readString(Path.of("src/test/resources/fuel.json"));
@@ -106,7 +106,7 @@ class JsonTest {
 
     @Test
     void testLockMapper() throws IOException {
-        List<String> expectedResults = new ArrayList<String>();
+        List<String> expectedResults = new ArrayList<>();
         expectedResults.add("lock:doors 0");
         expectedResults.add("lock:deck-lid ON");
         expectedResults.add("lock:flap ON");
@@ -128,7 +128,7 @@ class JsonTest {
 
     @Test
     void testStatusMapper() throws IOException {
-        List<String> expectedResults = new ArrayList<String>();
+        List<String> expectedResults = new ArrayList<>();
         expectedResults.add("doors:deck-lid CLOSED");
         expectedResults.add("doors:driver-front CLOSED");
         expectedResults.add("doors:passenger-front CLOSED");
@@ -165,7 +165,7 @@ class JsonTest {
     @Test
     void testEQALightsMapper() throws IOException {
         // real life example
-        List<String> expectedResults = new ArrayList<String>();
+        List<String> expectedResults = new ArrayList<>();
         expectedResults.add("doors:passenger-front OPEN");
         expectedResults.add("windows:driver-front 1");
         expectedResults.add("windows:driver-rear 1");
@@ -229,7 +229,7 @@ class JsonTest {
 
     @Test
     void testMissingTimestamp() throws IOException {
-        List<String> expectedResults = new ArrayList<String>();
+        List<String> expectedResults = new ArrayList<>();
         expectedResults.add("range:mileage 4131 km");
         String content = Files.readString(Path.of("src/test/resources/invalid-timestamp.json"));
         JSONArray ja = new JSONArray(content);
