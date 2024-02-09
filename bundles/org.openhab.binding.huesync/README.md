@@ -1,4 +1,4 @@
-# huesync Binding
+# HueSync Binding
 
 _Give some details about what this binding is meant for - a protocol, system, specific device._
 
@@ -22,6 +22,35 @@ _Describe the available auto-discovery features here._
 _Mention for what it works and what needs to be kept in mind when using it._
 
 ## Binding Configuration
+
+The beinding is using [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS) to discover HDMI Sync devies in the local network.
+The LED on the Sync Box must be white or red.
+This indicates that the device is connected to the Network.
+If the LED is blinking blue, you need to setup the device using the official [Hue Sync App](https://www.philips-hue.com/en-in/explore-hue/propositions/entertainment/hue-sync).
+
+If the device is not discovered you can check if it is properly configured and discoverable in the network:
+
+:::: tabs
+
+::: tab Linux
+
+```bash
+avahi-browse --resolve _huesync._tcp 
++ wlp0s20f3 IPv4 HueSyncBox-XXXXXXXXXXX                       _huesync._tcp        local
+= wlp0s20f3 IPv4 HueSyncBox-XXXXXXXXXXX                       _huesync._tcp        local
+   hostname = [XXXXXXXXXXX.local]
+   address = [192.168.0.12]
+   port = [443]
+   txt = ["name=Sync Box" "devicetype=HSB1" "uniqueid=XXXXXXXXXXX" "path=/api"]
+```
+
+:::
+
+::: tab Windows
+
+:::
+
+::::
 
 _If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
 _In this section, you should link to this file and provide some information about the options._

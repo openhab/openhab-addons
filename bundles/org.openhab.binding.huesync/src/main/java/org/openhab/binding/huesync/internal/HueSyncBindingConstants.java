@@ -25,10 +25,10 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class HueSyncBindingConstants {
 
-    private static final String BINDING_ID = "huesync";
+    public static final String BINDING_ID = "huesync";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID THING_TYPE_SYNCBOX = new ThingTypeUID(BINDING_ID, "box");
 
     // List of all Channel ids
     public static final String CHANNEL_1 = "channel1";

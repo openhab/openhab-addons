@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.huesync.internal;
 
-import static org.openhab.binding.huesync.internal.HueSyncBindingConstants.*;
+import static org.openhab.binding.huesync.internal.HueSyncBindingConstants.THING_TYPE_SYNCBOX;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,7 +37,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.huesync", service = ThingHandlerFactory.class)
 public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+    @SuppressWarnings("null")
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SYNCBOX);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,7 +49,7 @@ public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
+        if (THING_TYPE_SYNCBOX.equals(thingTypeUID)) {
             return new HueSyncHandler(thing);
         }
 
