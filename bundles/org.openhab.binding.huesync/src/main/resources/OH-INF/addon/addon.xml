@@ -5,6 +5,6 @@
 
 	<type>binding</type>
 	<name>Hue HDMI Sync Box Binding</name>
-	<description>This is the binding for the Hue HDMI Sync Box.</description>
+	<description>Binding for the Hue HDMI Sync Box.</description>
 
 </addon:addon>
