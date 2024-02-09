@@ -13,20 +13,23 @@
 package org.openhab.binding.huesync.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link huesyncConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link HueSyncBindingConstants} class defines common constants, which are
+ * used across the whole binding.
  *
  * @author Marco Kawon - Initial contribution
  * @author Patrik Gfeller - Integration into official repository, update to 4.x infrastructure
  */
 @NonNullByDefault
-public class huesyncConfiguration {
+public class HueSyncBindingConstants {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    private static final String BINDING_ID = "huesync";
+
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+
+    // List of all Channel ids
+    public static final String CHANNEL_1 = "channel1";
 }

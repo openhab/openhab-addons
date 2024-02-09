@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.huesync.internal;
 
-import static org.openhab.binding.huesync.internal.huesyncBindingConstants.*;
+import static org.openhab.binding.huesync.internal.HueSyncBindingConstants.*;
 
 import java.util.Set;
 
@@ -26,7 +26,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link huesyncHandlerFactory} is responsible for creating things and thing
+ * The {@link HueSyncHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Marco Kawon - Initial contribution
@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.huesync", service = ThingHandlerFactory.class)
-public class huesyncHandlerFactory extends BaseThingHandlerFactory {
+public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
 
@@ -48,7 +48,7 @@ public class huesyncHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new huesyncHandler(thing);
+            return new HueSyncHandler(thing);
         }
 
         return null;
