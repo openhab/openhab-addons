@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -672,7 +672,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         getThing().requestUpdates(1, true); // refresh config
                         break;
                     case SHELLY2_EVENT_SLEEP:
-                        logger.debug("{}: Device went to sleep mode", thingName);
+                        logger.debug("{}: Connection terminated, e.g. device in sleep mode", thingName);
                         break;
                     case SHELLY2_EVENT_WIFICONNFAILED:
                         logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName,
@@ -700,10 +700,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onClose(int statusCode, String reason) {
+    public void onClose(int statusCode, String description) {
         try {
-            logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, getString(reason));
-            if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) { // e.g. device rebooted
+            String reason = getString(description);
+            logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, reason);
+            if ("Bye".equalsIgnoreCase(reason)) {
+                logger.debug("{}: Device went to sleep mode", thingName);
+            } else if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) {
+                // e.g. device rebooted
                 thingOffline("WebSocket connection closed abnormal");
             }
         } catch (ShellyApiException e) {
@@ -714,7 +718,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onError(Throwable cause) {
-        logger.debug("{}: WebSocket error", thingName);
+        logger.debug("{}: WebSocket error: {}", thingName, cause.getMessage());
         if (thing != null && thing.getProfile().alwaysOn) {
             thingOffline("WebSocket error");
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.verisure")
 public class VerisureHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>();
     static {
         SUPPORTED_THING_TYPES.addAll(VerisureBridgeHandler.SUPPORTED_THING_TYPES);
         SUPPORTED_THING_TYPES.addAll(VerisureAlarmThingHandler.SUPPORTED_THING_TYPES);

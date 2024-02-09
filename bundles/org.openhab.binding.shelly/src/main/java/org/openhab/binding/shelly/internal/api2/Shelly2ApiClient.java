@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -238,9 +238,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (getDouble(rs.timerStartetAt) > 0) {
             int duration = (int) (now() - rs.timerStartetAt);
             sr.timerRemaining = duration;
-        }
-        if (status.tmp == null) {
-            status.tmp = new ShellySensorTmp();
         }
         if (rs.temperature != null) {
             if (status.tmp == null) {

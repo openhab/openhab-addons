@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,7 +75,7 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     private @Nullable ScheduledFuture<?> errorFuture;
     private @Nullable String armCode;
     private @Nullable String disarmCode;
-    private List<Zone> zones = Collections.synchronizedList(new LinkedList<Zone>());
+    private List<Zone> zones = Collections.synchronizedList(new LinkedList<>());
     private int partitionId;
 
     public QolsysIQPartitionHandler(Bridge bridge) {
@@ -278,7 +278,7 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     }
 
     private void setSecureArm(Boolean secure) {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("secureArm", String.valueOf(secure));
         getThing().setProperties(props);
     }

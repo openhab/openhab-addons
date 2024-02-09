@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,7 +88,7 @@ public class VehicleHandler extends BaseThingHandler {
     private static final String INITIALIZE_COMMAND = "Initialze";
 
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
-    private final Map<String, Long> timeHash = new HashMap<String, Long>();
+    private final Map<String, Long> timeHash = new HashMap<>();
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final TimeZoneProvider timeZoneProvider;
@@ -157,7 +157,7 @@ public class VehicleHandler extends BaseThingHandler {
                 }
             }
         } else if ("clear-cache".equals(channelUID.getIdWithoutGroup()) && command.equals(OnOffType.ON)) {
-            List<String> removals = new ArrayList<String>();
+            List<String> removals = new ArrayList<>();
             imageStorage.get().getKeys().forEach(entry -> {
                 if (entry.contains("_" + config.get().vin)) {
                     removals.add(entry);
@@ -309,7 +309,7 @@ public class VehicleHandler extends BaseThingHandler {
             return;
         }
         // add config parameters
-        MultiMap<String> parameterMap = new MultiMap<String>();
+        MultiMap<String> parameterMap = new MultiMap<>();
         parameterMap.add("background", Boolean.toString(config.get().background));
         parameterMap.add("night", Boolean.toString(config.get().night));
         parameterMap.add("cropped", Boolean.toString(config.get().cropped));
@@ -335,7 +335,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void setImageOtions() {
-        List<String> entries = new ArrayList<String>();
+        List<String> entries = new ArrayList<>();
         if (imageStorage.get().containsKey(EXT_IMG_RES + config.get().vin)) {
             String resources = imageStorage.get().get(EXT_IMG_RES + config.get().vin);
             JSONObject jo = new JSONObject(resources);
@@ -344,8 +344,8 @@ public class VehicleHandler extends BaseThingHandler {
             });
         }
         Collections.sort(entries);
-        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
-        List<StateOption> stateOptions = new ArrayList<StateOption>();
+        List<CommandOption> commandOptions = new ArrayList<>();
+        List<StateOption> stateOptions = new ArrayList<>();
         entries.forEach(entry -> {
             CommandOption co = new CommandOption(entry, null);
             commandOptions.add(co);

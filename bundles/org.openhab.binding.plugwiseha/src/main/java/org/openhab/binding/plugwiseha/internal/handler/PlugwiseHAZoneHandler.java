@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -218,7 +218,7 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                 if (entity.getSetpointTemperature().isPresent()) {
                     Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
                             .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
-                    state = new QuantityType<Temperature>(entity.getSetpointTemperature().get(), unit);
+                    state = new QuantityType<>(entity.getSetpointTemperature().get(), unit);
                 }
                 break;
             case ZONE_REGULATION_CHANNEL:
@@ -232,7 +232,7 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                     Unit<Temperature> unit = entity.getTemperatureUnit().orElse(UNIT_CELSIUS).equals(UNIT_CELSIUS)
                             ? SIUnits.CELSIUS
                             : ImperialUnits.FAHRENHEIT;
-                    state = new QuantityType<Temperature>(entity.getTemperature().get(), unit);
+                    state = new QuantityType<>(entity.getTemperature().get(), unit);
                 }
                 break;
             default:

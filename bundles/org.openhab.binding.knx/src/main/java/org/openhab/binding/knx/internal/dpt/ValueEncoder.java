@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,6 +47,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlator1BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator2ByteFloat;
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
+import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDate;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
 import tuwien.auto.calimero.dptxlator.DPTXlatorTime;
@@ -170,6 +171,10 @@ public class ValueEncoder {
                 PercentType[] rgbw = ColorUtil.hsbToRgbPercent(hsb);
                 return String.format("%,.1f %,.1f %,.1f - %%", rgbw[0].doubleValue(), rgbw[1].doubleValue(),
                         rgbw[2].doubleValue());
+            case "251.60600":
+                PercentType[] rgbw2 = ColorUtil.hsbToRgbwPercent(hsb);
+                return String.format("%,.1f %,.1f %,.1f %,.1f %%", rgbw2[0].doubleValue(), rgbw2[1].doubleValue(),
+                        rgbw2[2].doubleValue(), rgbw2[3].doubleValue());
             case "5.003":
                 return hsb.getHue().toString();
             default:
@@ -236,6 +241,11 @@ public class ValueEncoder {
             }
         }
         switch (mainNumber) {
+            case "1":
+                if (DPTXlatorBoolean.DPT_SCENE_AB.getID().equals(dptId)) {
+                    return (bigDecimal.intValue() == 0) ? dpt.getLowerValue() : dpt.getUpperValue();
+                }
+                return bigDecimal.stripTrailingZeros().toPlainString();
             case "2":
                 DPT valueDPT = ((DPTXlator1BitControlled.DPT1BitControlled) dpt).getValueDPT();
                 switch (bigDecimal.intValue()) {

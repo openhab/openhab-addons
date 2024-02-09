@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -188,8 +188,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     public SelectionDTO getSelection() {
         SelectionDTO mergedSelection = new SelectionDTO();
-        for (EcobeeThermostatBridgeHandler handler : new ArrayList<EcobeeThermostatBridgeHandler>(
-                thermostatHandlers.values())) {
+        for (EcobeeThermostatBridgeHandler handler : new ArrayList<>(thermostatHandlers.values())) {
             SelectionDTO selection = handler.getSelection();
             logger.trace("AccountBridge: Thermostat {} selection: {}", handler.getThing().getUID(), selection);
             mergedSelection.mergeSelection(selection);

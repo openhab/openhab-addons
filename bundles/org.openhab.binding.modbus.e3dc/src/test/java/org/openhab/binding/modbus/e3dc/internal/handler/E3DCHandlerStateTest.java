@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ public class E3DCHandlerStateTest {
         E3DCThingHandler handler = new E3DCThingHandler(bridge);
         handler.setCallback(callback);
 
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("refresh", 2000);
         Configuration config = new Configuration(map);
         when(bridge.getConfiguration()).thenReturn(config);
@@ -104,6 +104,6 @@ public class E3DCHandlerStateTest {
 
     private AsyncModbusFailure<ModbusReadRequestBlueprint> getFailResult() {
         ModbusReadRequestBlueprint readRequest = mock(ModbusReadRequestBlueprint.class);
-        return new AsyncModbusFailure<ModbusReadRequestBlueprint>(readRequest, new Exception("Something failed!"));
+        return new AsyncModbusFailure<>(readRequest, new Exception("Something failed!"));
     }
 }

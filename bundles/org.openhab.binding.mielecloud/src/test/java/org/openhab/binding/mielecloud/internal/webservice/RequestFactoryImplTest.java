@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,7 +75,7 @@ public class RequestFactoryImplTest {
         when(requestMock.param(anyString(), anyString())).thenReturn(requestMock);
         when(requestMock.content(any())).thenAnswer(i -> {
             StringContentProvider provider = i.getArgument(0);
-            List<Byte> rawData = new ArrayList<Byte>();
+            List<Byte> rawData = new ArrayList<>();
             provider.forEach(b -> {
                 b.rewind();
                 while (b.hasRemaining()) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,9 @@ public class PlexSession {
     private String sessionKey = "";
     private Integer userId;
     private String userTitle = "";
+    private String ratingKey;
+    private String parentRatingKey;
+    private String grandparentRatingKey;
 
     private final Logger logger = LoggerFactory.getLogger(PlexSession.class);
 
@@ -57,6 +60,18 @@ public class PlexSession {
         return title;
     }
 
+    public String getRatingKey() {
+        return ratingKey;
+    }
+
+    public String getParentRatingKey() {
+        return parentRatingKey;
+    }
+
+    public String getGrandparentRatingKey() {
+        return grandparentRatingKey;
+    }
+
     public Date getEndTime() {
         return endTime;
     }
@@ -67,6 +82,18 @@ public class PlexSession {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setRatingKey(String ratingKey) {
+        this.ratingKey = ratingKey;
+    }
+
+    public void setParentRatingKey(String ratingKey) {
+        this.parentRatingKey = ratingKey;
+    }
+
+    public void setGrandparentRatingKey(String ratingKey) {
+        this.grandparentRatingKey = ratingKey;
     }
 
     public String getThumb() {

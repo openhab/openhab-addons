@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -228,18 +228,18 @@ public enum BluetoothUnit {
     @Deprecated
     public static class BUnits {
         public static final Unit<ArealDensity> KILOGRAM_PER_SQUARE_METER = addUnit(
-                new ProductUnit<ArealDensity>(SIUnits.KILOGRAM.divide(SIUnits.SQUARE_METRE)));
+                new ProductUnit<>(SIUnits.KILOGRAM.divide(SIUnits.SQUARE_METRE)));
 
         public static final Unit<RadiationDoseAbsorptionRate> GRAY_PER_SECOND = addUnit(
-                new ProductUnit<RadiationDoseAbsorptionRate>(Units.GRAY.divide(Units.SECOND)));
+                new ProductUnit<>(Units.GRAY.divide(Units.SECOND)));
 
         public static final Unit<Mass> POUND = addUnit(
-                new TransformedUnit<Mass>(SIUnits.KILOGRAM, MultiplyConverter.of(0.45359237)));
+                new TransformedUnit<>(SIUnits.KILOGRAM, MultiplyConverter.of(0.45359237)));
 
-        public static final Unit<Angle> MINUTE_ANGLE = addUnit(new TransformedUnit<Angle>(Units.RADIAN,
+        public static final Unit<Angle> MINUTE_ANGLE = addUnit(new TransformedUnit<>(Units.RADIAN,
                 MultiplyConverter.ofPiExponent(1).concatenate(MultiplyConverter.ofRational(1, 180 * 60))));
 
-        public static final Unit<Angle> SECOND_ANGLE = addUnit(new TransformedUnit<Angle>(Units.RADIAN,
+        public static final Unit<Angle> SECOND_ANGLE = addUnit(new TransformedUnit<>(Units.RADIAN,
                 MultiplyConverter.ofPiExponent(1).concatenate(MultiplyConverter.ofRational(1, 180 * 60 * 60))));
 
         public static final Unit<Area> HECTARE = addUnit(SIUnits.SQUARE_METRE.multiply(10000.0));
@@ -248,54 +248,51 @@ public enum BluetoothUnit {
         public static final Unit<Length> NAUTICAL_MILE = addUnit(SIUnits.METRE.multiply(1852.0));
 
         public static final Unit<RadiantIntensity> WATT_PER_STERADIAN = addUnit(
-                new ProductUnit<RadiantIntensity>(Units.WATT.divide(Units.STERADIAN)));
+                new ProductUnit<>(Units.WATT.divide(Units.STERADIAN)));
 
         public static final Unit<Radiance> WATT_PER_STERADIAN_PER_SQUARE_METRE = addUnit(
-                new ProductUnit<Radiance>(WATT_PER_STERADIAN.divide(SIUnits.SQUARE_METRE)));
+                new ProductUnit<>(WATT_PER_STERADIAN.divide(SIUnits.SQUARE_METRE)));
 
-        public static final Unit<Frequency> CYCLES_PER_MINUTE = addUnit(new TransformedUnit<Frequency>(Units.HERTZ,
+        public static final Unit<Frequency> CYCLES_PER_MINUTE = addUnit(new TransformedUnit<>(Units.HERTZ,
                 MultiplyConverter.ofRational(BigInteger.valueOf(60), BigInteger.ONE)));
 
-        public static final Unit<Angle> REVOLUTION = addUnit(new TransformedUnit<Angle>(Units.RADIAN,
+        public static final Unit<Angle> REVOLUTION = addUnit(new TransformedUnit<>(Units.RADIAN,
                 MultiplyConverter.ofPiExponent(1).concatenate(MultiplyConverter.ofRational(2, 1))));
         public static final Unit<AngularVelocity> REVOLUTION_PER_MINUTE = addUnit(
-                new ProductUnit<AngularVelocity>(REVOLUTION.divide(Units.MINUTE)));
+                new ProductUnit<>(REVOLUTION.divide(Units.MINUTE)));
 
         public static final Unit<Dimensionless> STEPS = addUnit(Units.ONE.alternate("steps"));
         public static final Unit<Dimensionless> BEATS = addUnit(Units.ONE.alternate("beats"));
         public static final Unit<Dimensionless> STROKE = addUnit(Units.ONE.alternate("stroke"));
 
-        public static final Unit<Frequency> STEP_PER_MINUTE = addUnit(
-                new ProductUnit<Frequency>(STEPS.divide(Units.MINUTE)));
+        public static final Unit<Frequency> STEP_PER_MINUTE = addUnit(new ProductUnit<>(STEPS.divide(Units.MINUTE)));
 
-        public static final Unit<Frequency> BEATS_PER_MINUTE = addUnit(
-                new ProductUnit<Frequency>(BEATS.divide(Units.MINUTE)));
+        public static final Unit<Frequency> BEATS_PER_MINUTE = addUnit(new ProductUnit<>(BEATS.divide(Units.MINUTE)));
 
-        public static final Unit<Frequency> STROKE_PER_MINUTE = addUnit(
-                new ProductUnit<Frequency>(STROKE.divide(Units.MINUTE)));
+        public static final Unit<Frequency> STROKE_PER_MINUTE = addUnit(new ProductUnit<>(STROKE.divide(Units.MINUTE)));
 
         public static final Unit<MassFlowRate> GRAM_PER_SECOND = addUnit(
-                new ProductUnit<MassFlowRate>(SIUnits.GRAM.divide(Units.SECOND)));
+                new ProductUnit<>(SIUnits.GRAM.divide(Units.SECOND)));
 
         public static final Unit<LuminousEfficacy> LUMEN_PER_WATT = addUnit(
-                new ProductUnit<LuminousEfficacy>(Units.LUMEN.divide(Units.WATT)));
+                new ProductUnit<>(Units.LUMEN.divide(Units.WATT)));
 
         public static final Unit<LuminousEnergy> LUMEN_SECOND = addUnit(
-                new ProductUnit<LuminousEnergy>(Units.LUMEN.multiply(Units.SECOND)));
+                new ProductUnit<>(Units.LUMEN.multiply(Units.SECOND)));
 
         public static final Unit<LuminousEnergy> LUMEN_HOUR = addUnit(
-                new ProductUnit<LuminousEnergy>(Units.LUMEN.multiply(Units.HOUR)));
+                new ProductUnit<>(Units.LUMEN.multiply(Units.HOUR)));
 
         public static final Unit<ElectricCharge> AMPERE_HOUR = addUnit(
-                new ProductUnit<ElectricCharge>(Units.AMPERE.multiply(Units.HOUR)));
+                new ProductUnit<>(Units.AMPERE.multiply(Units.HOUR)));
 
         public static final Unit<LuminousExposure> LUX_HOUR = addUnit(
-                new ProductUnit<LuminousExposure>(Units.LUX.multiply(Units.HOUR)));
+                new ProductUnit<>(Units.LUX.multiply(Units.HOUR)));
 
         public static final Unit<Speed> KILOMETRE_PER_MINUTE = addUnit(SIUnits.KILOMETRE_PER_HOUR.multiply(60.0));
 
         public static final Unit<VolumetricFlowRate> LITRE_PER_SECOND = addUnit(
-                new ProductUnit<VolumetricFlowRate>(Units.LITRE.divide(Units.SECOND)));
+                new ProductUnit<>(Units.LITRE.divide(Units.SECOND)));
 
         static {
             SimpleUnitFormat.getInstance().label(GRAY_PER_SECOND, "Gy/s");
