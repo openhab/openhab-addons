@@ -200,7 +200,7 @@
 
 	<channel-type id="rain-today">
 		<item-type>Number:Length</item-type>
-		<label>Rainfall (today)</label>
+		<label>Rainfall Today</label>
 		<description>Total rainfall today</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f %unit%">
