@@ -42,5 +42,5 @@ public class DolbyCPBindingConstants {
     public static final String CHANNEL_MIC = "mic";
 
     // List of properties
-    public static final String PROPERTY_VERSION = "osversion";
+    public static final String PROPERTY_VERSION = "osVersion";
 }
