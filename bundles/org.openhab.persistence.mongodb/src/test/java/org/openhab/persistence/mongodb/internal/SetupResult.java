@@ -24,6 +24,7 @@ import com.mongodb.client.MongoDatabase;
  * 
  * @author René Ulbricht - Initial contribution
  */
+@NonNullByDefault
 public class SetupResult {
     public MongoDBPersistenceService service;
     public MongoDatabase database;

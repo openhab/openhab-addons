@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author René Ulbricht - Initial contribution
  */
+@NonNullByDefault
 public class MongoDBTypeConversions {
 
     private static final Logger logger = LoggerFactory.getLogger(MongoDBTypeConversions.class);
@@ -50,10 +51,11 @@ public class MongoDBTypeConversions {
      * A map of converters that convert openHAB states to MongoDB compatible types.
      * Each converter is a function that takes an openHAB state and returns an object that can be stored in MongoDB.
      */
-    private static final Map<Class<? extends State>, Function<State, Object>> STATE_CONVERTERS = Map.of(HSBType.class,
-            state -> state.toString(), QuantityType.class,
-            state -> ((QuantityType<?>) state).toBigDecimal().doubleValue(), PercentType.class,
-            state -> ((PercentType) state).intValue(), DateTimeType.class,
+    private static final Map<Class<? extends State>, Function<State, Object>> STATE_CONVERTERS = Map.of( //
+            HSBType.class, state -> state.toString(), //
+            QuantityType.class, state -> ((QuantityType<?>) state).toBigDecimal().doubleValue(), //
+            PercentType.class, state -> ((PercentType) state).intValue(), //
+            DateTimeType.class,
             state -> ((DateTimeType) state).getZonedDateTime().toString(), StringListType.class,
             state -> ((StringListType) state).toString(), DecimalType.class,
             state -> ((DecimalType) state).toBigDecimal().doubleValue(), RawType.class, state -> {
@@ -188,21 +190,14 @@ public class MongoDBTypeConversions {
      * @return The MongoDB query operator, or null if the operator is not supported.
      */
     public static @Nullable String convertOperator(Operator operator) {
-        switch (operator) {
-            case EQ:
-                return "$eq";
-            case GT:
-                return "$gt";
-            case GTE:
-                return "$gte";
-            case LT:
-                return "$lt";
-            case LTE:
-                return "$lte";
-            case NEQ:
-                return "$neq";
-            default:
-                return null;
-        }
+        return switch (operator) {
+            case EQ ->"$eq";
+            case GT -> "$gt";
+            case GTE -> "$gte";
+            case LT -> "$lt";
+            case LTE -> "$lte";
+            case NEQ -> "$neq";
+            default -> null;
+        };
     }
 }

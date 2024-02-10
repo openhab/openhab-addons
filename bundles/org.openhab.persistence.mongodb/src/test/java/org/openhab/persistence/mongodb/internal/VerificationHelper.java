@@ -40,6 +40,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
  *
  * @author René Ulbricht - Initial contribution
  */
+@NonNullByDefault
 public class VerificationHelper {
 
     /**

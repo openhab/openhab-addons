@@ -28,6 +28,7 @@ import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
  * 
  * @author René Ulbricht - Initial contribution
  */
+@NonNullByDefault
 public class DatabaseTestContainer {
     // A map to store MongoDBContainer instances for different MongoDB versions.
     private static final Map<String, MongoDBContainer> mongoDBContainers = new HashMap<>();
