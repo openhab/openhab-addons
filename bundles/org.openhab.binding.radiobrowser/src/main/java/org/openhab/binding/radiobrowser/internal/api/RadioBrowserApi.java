@@ -155,6 +155,7 @@ public class RadioBrowserApi {
                 }
             }
             countryOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
+            countryOptions.add(0, new StateOption("ALL", "Show All Countries"));
             return countryOptions;
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
@@ -261,11 +262,15 @@ public class RadioBrowserApi {
     }
 
     public void setCountry(String countryCode) throws ApiException {
-        this.countryCode = countryCode;
         this.state = "";
-        handler.setChannelState(CHANNEL_STATE, new StringType("Click to further narrow your search"));
-        handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATE),
-                getStates());
+        handler.setChannelState(CHANNEL_STATE, new StringType());
+        if ("ALL".equals(countryCode)) {
+            this.countryCode = "";
+        } else {
+            this.countryCode = countryCode;
+            handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATE),
+                    getStates());
+        }
         searchStations(updateFilter());
     }
 

@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RadioBrowserHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
     public final RadioBrowserStateDescriptionProvider stateDescriptionProvider;
     public RadioBrowserConfiguration config = new RadioBrowserConfiguration();
@@ -49,7 +48,6 @@ public class RadioBrowserHandler extends BaseThingHandler {
     public RadioBrowserHandler(Thing thing, HttpClient httpClient,
             RadioBrowserStateDescriptionProvider stateDescriptionProvider, LocaleProvider localeProvider) {
         super(thing);
-        this.httpClient = httpClient;
         this.localeProvider = localeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         radioBrowserApi = new RadioBrowserApi(this, httpClient);
@@ -64,29 +62,8 @@ public class RadioBrowserHandler extends BaseThingHandler {
         try {
             if (command instanceof RefreshType) {
                 switch (channelUID.getId()) {
-                    case CHANNEL_COUNTRY:
-
-                        return;
-                    case CHANNEL_LANGUAGE:
-
-                        return;
-                    case CHANNEL_STATE:
-
-                        return;
                     case CHANNEL_STATION:
                         radioBrowserApi.updateStations();
-                        return;
-                    case CHANNEL_STREAM:
-
-                        return;
-                    case CHANNEL_FAVORITES:
-
-                        return;
-                    case CHANNEL_ADD_FAVORITE:
-
-                        return;
-                    case CHANNEL_REMOVE_FAVORITE:
-
                         return;
                 }
             } else if (command instanceof StringType) {
@@ -106,12 +83,6 @@ public class RadioBrowserHandler extends BaseThingHandler {
                     case CHANNEL_STATION:
                         radioBrowserApi.selectStation(command.toString());
                         return;
-                    case CHANNEL_STREAM:
-
-                        return;
-                    case CHANNEL_FAVORITES:
-
-                        return;
                     case CHANNEL_ADD_FAVORITE:
 
                         return;
@@ -121,7 +92,7 @@ public class RadioBrowserHandler extends BaseThingHandler {
                 }
             }
         } catch (ApiException e) {
-            logger.info("Radio Browser Exception: {}", e.getMessage());
+            logger.warn("Radio Browser Exception: {}", e.getMessage());
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -137,12 +108,10 @@ public class RadioBrowserHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 updateState(CHANNEL_STATION, new StringType());
                 updateState(CHANNEL_STATE, new StringType());
+                updateState(CHANNEL_LANGUAGE, new StringType());
                 String countryCode = localeProvider.getLocale().getCountry();
                 updateState(CHANNEL_COUNTRY, new StringType(radioBrowserApi.countryMap.get(countryCode).name));
                 radioBrowserApi.setCountry(countryCode);
-                String language = localeProvider.getLocale().getLanguage();
-                updateState(CHANNEL_LANGUAGE, new StringType(language));
-                radioBrowserApi.setLanguage(language);
             } catch (ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
