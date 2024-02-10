@@ -61,6 +61,7 @@ import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
  * 
  * @author René Ulbricht - Initial contribution
  */
+@NonNullByDefault
 public class DataCreationHelper {
 
     protected static final UnitProvider UNIT_PROVIDER;
