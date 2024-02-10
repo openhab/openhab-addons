@@ -69,6 +69,9 @@ public class TestX1HybridG4Parser {
         assertEquals(487, data.getPV1Power()); // [8]
         assertEquals(65, data.getPV2Power()); // [9]
 
+        assertEquals(2, data.getInverterWorkModeCode()); // [10]
+        assertEquals("2", data.getInverterWorkMode()); // [10]
+
         assertEquals(121.8, data.getBatteryVoltage()); // [14]
         assertEquals(5, data.getBatteryCurrent()); // [15]
         assertEquals(605, data.getBatteryPower()); // [16]
