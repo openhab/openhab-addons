@@ -84,6 +84,11 @@ public class X1HybridG4InverterData extends CommonInverterData {
     }
 
     @Override
+    public short getInverterWorkModeCode() {
+        return getData(10);
+    }
+
+    @Override
     public double getBatteryVoltage() {
         return ((double) getData(14)) / 100;
     }
