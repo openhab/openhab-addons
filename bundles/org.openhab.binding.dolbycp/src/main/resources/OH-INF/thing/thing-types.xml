@@ -22,7 +22,7 @@
 		</channels>
 
 		<properties>
-			<property name="osversion"></property>
+			<property name="osVersion"></property>
 		</properties>
 
 		<config-description>
