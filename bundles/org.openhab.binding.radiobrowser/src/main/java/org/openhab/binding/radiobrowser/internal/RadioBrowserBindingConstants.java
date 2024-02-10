@@ -33,6 +33,7 @@ public class RadioBrowserBindingConstants {
     public static final String CHANNEL_COUNTRY = "country";
     public static final String CHANNEL_LANGUAGE = "language";
     public static final String CHANNEL_STATE = "state";
+    public static final String CHANNEL_GENRE = "genre";
     public static final String CHANNEL_STATION = "station";
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_ICON = "icon";

@@ -100,6 +100,9 @@ public class RadioBrowserHandler extends BaseThingHandler {
                     case CHANNEL_STATE:
                         radioBrowserApi.setState(command.toString());
                         return;
+                    case CHANNEL_GENRE:
+                        radioBrowserApi.setGenre(command.toString());
+                        return;
                     case CHANNEL_STATION:
                         radioBrowserApi.selectStation(command.toString());
                         return;
@@ -134,9 +137,6 @@ public class RadioBrowserHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 updateState(CHANNEL_STATION, new StringType());
                 updateState(CHANNEL_STATE, new StringType());
-                updateState(CHANNEL_STREAM, new StringType());
-                updateState(CHANNEL_ICON, new StringType());
-                updateState(CHANNEL_NAME, new StringType());
                 String countryCode = localeProvider.getLocale().getCountry();
                 updateState(CHANNEL_COUNTRY, new StringType(radioBrowserApi.countryMap.get(countryCode).name));
                 radioBrowserApi.setCountry(countryCode);

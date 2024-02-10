@@ -19,6 +19,7 @@ import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ public class RadioBrowserApi {
     private String language = "";
     private String countryCode = "";
     private String state = "";
+    private String genre = "";
     private Map<String, Station> stationMap = new HashMap<>();
     public Map<String, Country> countryMap = new HashMap<>();
 
@@ -126,9 +128,11 @@ public class RadioBrowserApi {
                 throw new ApiException("Could not get states");
             }
             List<StateOption> stateOptions = new ArrayList<>();
+            stateOptions.add(new StateOption("ALL", "Show All States"));
             for (State state : states) {
                 stateOptions.add(new StateOption(state.name, state.name));
             }
+            stateOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
             return stateOptions;
         } catch (JsonSyntaxException | UnsupportedEncodingException e) {
             throw new ApiException("Server did not reply with a valid json");
@@ -150,6 +154,7 @@ public class RadioBrowserApi {
                             new StateOption(country.countryCode, country.name + " (" + country.stationcount + ")"));
                 }
             }
+            countryOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
             return countryOptions;
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
@@ -171,6 +176,7 @@ public class RadioBrowserApi {
                             .add(new StateOption(language.name, language.name + " (" + language.stationcount + ")"));
                 }
             }
+            languageOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
             return languageOptions;
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
@@ -232,19 +238,20 @@ public class RadioBrowserApi {
         if (!countryCode.isEmpty()) {
             filter = filter + "&countrycode=" + countryCode;
         }
-        if (!state.isEmpty()) {
-            filter = filter + "&state=" + state;
+        if (!genre.isEmpty()) {
+            filter = filter + "&tag=" + genre;
         }
-        try {
-            filter = URLEncoder.encode(filter, "UTF-8").replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Filter contains bad characters?:{}", filter);
+        if (!state.isEmpty()) {
+            try {
+                filter = filter + "&state=" + URLEncoder.encode(state, "UTF-8").replace("+", "%20");
+            } catch (UnsupportedEncodingException e) {
+                logger.warn("State contains bad characters?:{}", state);
+            }
         }
         return filter;
     }
 
     public void setLanguage(String language) throws ApiException {
-        logger.debug("Changing to language:{}", language);
         if ("ALL".equals(language)) {
             this.language = "";
         } else {
@@ -254,16 +261,29 @@ public class RadioBrowserApi {
     }
 
     public void setCountry(String countryCode) throws ApiException {
-        logger.debug("Changing to countryCode:{}", countryCode);
         this.countryCode = countryCode;
+        this.state = "";
+        handler.setChannelState(CHANNEL_STATE, new StringType("Click to further narrow your search"));
         handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATE),
                 getStates());
         searchStations(updateFilter());
     }
 
     public void setState(String state) throws ApiException {
-        logger.debug("Changing to state:{}", state);
-        this.state = state;
+        if ("ALL".equals(state)) {
+            this.state = "";
+        } else {
+            this.state = state;
+        }
+        searchStations(updateFilter());
+    }
+
+    public void setGenre(String genre) throws ApiException {
+        if ("ALL".equals(genre)) {
+            this.genre = "";
+        } else {
+            this.genre = genre;
+        }
         searchStations(updateFilter());
     }
 

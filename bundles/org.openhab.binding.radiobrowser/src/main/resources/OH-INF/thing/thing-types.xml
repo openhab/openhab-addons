@@ -9,16 +9,14 @@
 		<description>RadioBrowser Cloud Connection</description>
 
 		<channels>
-			<channel id="language" typeId="language"/>
 			<channel id="country" typeId="country"/>
 			<channel id="state" typeId="state"/>
+			<channel id="language" typeId="language"/>
+			<channel id="genre" typeId="genre"/>
 			<channel id="station" typeId="station"/>
 			<channel id="stream" typeId="stream"/>
 			<channel id="name" typeId="name"/>
 			<channel id="icon" typeId="icon"/>
-			<channel id="favorites" typeId="favorites"/>
-			<channel id="addFavorite" typeId="addFavorite"/>
-			<channel id="removeFavorite" typeId="removeFavorite"/>
 		</channels>
 
 		<config-description>
@@ -26,6 +24,7 @@
 				<label>Filters</label>
 				<description>Enter your own custom filter starting with ?, to ensure a stream that works with your device</description>
 				<default>?hidebroken=true&amp;order=clickcount</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="clicks" type="boolean" required="true">
 				<label>Clicks</label>
@@ -36,7 +35,8 @@
 			</parameter>
 			<parameter name="languageCount" type="integer" min="1">
 				<label>Language Count</label>
-				<description>The minimum stations a language needs to have before the binding lists it as an option.</description>
+				<description>The minimum number of stations a language needs to have world wide before the binding lists it as an
+					option.</description>
 				<default>14</default>
 			</parameter>
 		</config-description>
@@ -64,6 +64,33 @@
 		<item-type>String</item-type>
 		<label>Station</label>
 		<description>A list of stations that you can select from to fetch the URI for</description>
+	</channel-type>
+
+	<channel-type id="genre">
+		<item-type>String</item-type>
+		<label>Genre</label>
+		<description>A list of genres or tags that you can select from</description>
+		<state readOnly="false">
+			<options>
+				<option value="ALL">Show All Genres</option>
+				<option value="christian">christian</option>
+				<option value="classical">classical</option>
+				<option value="country">country</option>
+				<option value="dance">dance</option>
+				<option value="disco">disco</option>
+				<option value="gospel">gospel</option>
+				<option value="hits">hits</option>
+				<option value="jazz">jazz</option>
+				<option value="music">music</option>
+				<option value="news">news</option>
+				<option value="oldies">oldies</option>
+				<option value="pop">pop</option>
+				<option value="rock">rock</option>
+				<option value="sports">sports</option>
+				<option value="talk">talk</option>
+				<option value="trance">trance</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="stream">
