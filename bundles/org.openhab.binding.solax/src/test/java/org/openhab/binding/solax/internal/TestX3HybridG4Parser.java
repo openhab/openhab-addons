@@ -89,6 +89,9 @@ public class TestX3HybridG4Parser {
         assertEquals(49.96, data.getFrequencyPhase2()); // [17]
         assertEquals(49.96, data.getFrequencyPhase3()); // [18]
 
+        assertEquals(2, data.getInverterWorkModeCode()); // [19]
+        assertEquals("2", data.getInverterWorkMode()); // [19]
+
         assertEquals(-41, data.getFeedInPower()); // [34] - [35]
 
         assertEquals(313.3, data.getBatteryVoltage()); // [39]
