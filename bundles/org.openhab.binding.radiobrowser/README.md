@@ -1,44 +1,21 @@
-# RadioBrowser Binding
+# Radio Browser Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+Radio Browser is a community driven database of internet radio and TV stations that has an open API that is free to use.
+With this binding you can use their API and database of stations to apply filters and find many internet radio streams.
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
+If you enjoy the binding, please consider sponsoring or a once off tip as a thank you via the links.
+This allows me to purchase software and hardware to contributing more bindings.
+Also some coffee to keep me coding faster never hurts :slight_smile:
 
-_Put each sentence in a separate line to improve readability of diffs._
+Sponsor @Skinah on GitHub
+<https://github.com/sponsors/Skinah/>
+
+Paypal can also be used via
+matt A-T pcmus D-O-T C-O-M
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
-
-## Discovery
-
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the RadioBrowser Binding
-#
-# Default secret key for the pairing of the RadioBrowser Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+- `radio`: Add one of these manually and it should come online after fetching language and country data.
 
 ## Thing Configuration
 
@@ -47,7 +24,7 @@ _This should be mainly about its mandatory and optional configuration parameters
 
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-### `sample` Thing Configuration
+### `radio` Thing Configuration
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
@@ -77,19 +54,14 @@ _*.sitemap examples are optional._
 Example thing configuration goes here.
 ```
 
-### Item Configuration
-
-```java
-Example item configuration goes here.
-```
-
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
-
 ## Any custom content here!
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+If you enjoy the binding, please consider sponsoring or a once off tip as a thank you via the links.
+This allows me to purchase software and hardware to contributing more bindings.
+Also some coffee to keep me coding faster never hurts :slight_smile:
+
+Sponsor @Skinah on GitHub
+<https://github.com/sponsors/Skinah/>
+
+Paypal can also be used via
+matt A-T pcmus D-O-T C-O-M
