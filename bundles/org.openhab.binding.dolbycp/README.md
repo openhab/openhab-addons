@@ -32,7 +32,7 @@ Normally, only the hostname or IP address must be configured.
 
 | Name              | Description                                              |
 |-------------------|----------------------------------------------------------|
-| osversion         | The operating system's version as returned by the device |
+| osVersion         | The operating system's version as returned by the device |
 
 ## Channels
 
