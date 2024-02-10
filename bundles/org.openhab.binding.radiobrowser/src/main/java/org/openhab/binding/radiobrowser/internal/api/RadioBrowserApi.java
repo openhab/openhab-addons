@@ -128,11 +128,11 @@ public class RadioBrowserApi {
                 throw new ApiException("Could not get states");
             }
             List<StateOption> stateOptions = new ArrayList<>();
-            stateOptions.add(new StateOption("ALL", "Show All States"));
             for (State state : states) {
                 stateOptions.add(new StateOption(state.name, state.name));
             }
             stateOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
+            stateOptions.add(0, new StateOption("ALL", "Show All States"));
             return stateOptions;
         } catch (JsonSyntaxException | UnsupportedEncodingException e) {
             throw new ApiException("Server did not reply with a valid json");
@@ -266,6 +266,8 @@ public class RadioBrowserApi {
         handler.setChannelState(CHANNEL_STATE, new StringType());
         if ("ALL".equals(countryCode)) {
             this.countryCode = "";
+            handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATE),
+                    new ArrayList<>());
         } else {
             this.countryCode = countryCode;
             handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATE),
