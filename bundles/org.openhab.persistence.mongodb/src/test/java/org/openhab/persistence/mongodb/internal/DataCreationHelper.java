@@ -13,7 +13,6 @@
 package org.openhab.persistence.mongodb.internal;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -30,6 +29,8 @@ import java.util.stream.Stream;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.Mockito;
 import org.openhab.core.i18n.UnitProvider;
@@ -37,9 +38,30 @@ import org.openhab.core.internal.i18n.I18nProviderImpl;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.library.items.*;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.items.CallItem;
+import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.items.ContactItem;
+import org.openhab.core.library.items.DateTimeItem;
+import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.ImageItem;
+import org.openhab.core.library.items.LocationItem;
+import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
+import org.openhab.core.library.items.RollershutterItem;
+import org.openhab.core.library.items.StringItem;
+import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringListType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.types.State;
@@ -264,14 +286,19 @@ public class DataCreationHelper {
      * @param endDate The end date of the FilterCriteria.
      * @return The created FilterCriteria.
      */
-    public static FilterCriteria createFilterCriteria(String itemName, ZonedDateTime beginDate, ZonedDateTime endDate) {
+    public static FilterCriteria createFilterCriteria(String itemName, @Nullable ZonedDateTime beginDate,
+            @Nullable ZonedDateTime endDate) {
         FilterCriteria filter = new FilterCriteria();
         filter.setItemName(itemName);
         filter.setPageSize(10);
         filter.setPageNumber(0);
         filter.setOrdering(FilterCriteria.Ordering.ASCENDING);
-        filter.setBeginDate(beginDate);
-        filter.setEndDate(endDate);
+        if (beginDate != null) {
+            filter.setBeginDate(beginDate);
+        }
+        if (endDate != null) {
+            filter.setEndDate(endDate);
+        }
         return filter;
     }
 
@@ -283,7 +310,7 @@ public class DataCreationHelper {
      * @return A SetupResult object containing the MongoDBPersistenceService, the database, the bundle context, the
      *         configuration map, the item registry, and the database name.
      */
-    public static SetupResult setupMongoDB(String collectionName, DatabaseTestContainer dbContainer) {
+    public static SetupResult setupMongoDB(@Nullable String collectionName, DatabaseTestContainer dbContainer) {
         // Start the database container
         dbContainer.start();
 

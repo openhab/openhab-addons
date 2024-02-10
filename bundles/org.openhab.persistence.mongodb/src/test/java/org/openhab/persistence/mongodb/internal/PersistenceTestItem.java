@@ -40,7 +40,7 @@ public class PersistenceTestItem {
     @Override
     public int hashCode() {
         return Objects.hash(itemName, date, value);
-    }    
+    }
 
     @Override
     public boolean equals(Object obj) {

@@ -15,7 +15,6 @@ package org.openhab.persistence.mongodb.internal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -38,6 +37,7 @@ import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
+import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -68,25 +68,40 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MongoDBTypeConversions {
 
-    private static final Logger logger = LoggerFactory.getLogger(MongoDBTypeConversions.class);
     /**
-     * A map of converters that convert openHAB states to MongoDB compatible types.
-     * Each converter is a function that takes an openHAB state and returns an object that can be stored in MongoDB.
+     * Converts a MongoDB document to an openHAB state.
+     *
+     * @param item The openHAB item that the state belongs to.
+     * @param doc The MongoDB document to convert.
+     * @return The openHAB state.
+     * @throws IllegalArgumentException If the item type is not supported.
      */
-    private static final Map<Class<? extends State>, Function<State, Object>> STATE_CONVERTERS = Map.of( //
-            HSBType.class, state -> state.toString(), //
-            QuantityType.class, state -> ((QuantityType<?>) state).toBigDecimal().doubleValue(), //
-            PercentType.class, state -> ((PercentType) state).intValue(), //
-            DateTimeType.class,
-            state -> ((DateTimeType) state).getZonedDateTime().toString(), StringListType.class,
-            state -> ((StringListType) state).toString(), DecimalType.class,
-            state -> ((DecimalType) state).toBigDecimal().doubleValue(), RawType.class, state -> {
-                RawType rawType = (RawType) state;
-                Document doc = new Document();
-                doc.put(MongoDBFields.FIELD_VALUE_TYPE, rawType.getMimeType());
-                doc.put(MongoDBFields.FIELD_VALUE_DATA, rawType.getBytes());
-                return doc;
-            });
+    public static State getStateFromDocument(Item item, Document doc) {
+        BiFunction<Item, Document, State> converter = ITEM_STATE_CONVERTERS.get(item.getClass());
+        if (converter != null) {
+            return converter.apply(item, doc);
+        } else {
+            throw new IllegalArgumentException("Unsupported item type: " + item.getClass().getName());
+        }
+    }
+
+    /**
+     * Converts an openHAB filter operator to a MongoDB query operator.
+     *
+     * @param operator The openHAB filter operator to convert.
+     * @return The MongoDB query operator, or null if the operator is not supported.
+     */
+    public static @Nullable String convertOperator(Operator operator) {
+        return switch (operator) {
+            case EQ -> "$eq";
+            case GT -> "$gt";
+            case GTE -> "$gte";
+            case LT -> "$lt";
+            case LTE -> "$lte";
+            case NEQ -> "$neq";
+            default -> null;
+        };
+    }
 
     /**
      * Converts an openHAB state to a MongoDB compatible type.
@@ -98,140 +113,143 @@ public class MongoDBTypeConversions {
         return STATE_CONVERTERS.getOrDefault(state.getClass(), State::toString).apply(state);
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(MongoDBTypeConversions.class);
+
+    /**
+     * A map of converters that convert openHAB states to MongoDB compatible types.
+     * Each converter is a function that takes an openHAB state and returns an object that can be stored in MongoDB.
+     */
+    private static final Map<Class<? extends State>, Function<State, Object>> STATE_CONVERTERS = Map.of( //
+            HSBType.class, State::toString, //
+            QuantityType.class, state -> ((QuantityType<?>) state).toBigDecimal().doubleValue(), //
+            PercentType.class, state -> ((PercentType) state).intValue(), //
+            DateTimeType.class, state -> ((DateTimeType) state).getZonedDateTime().toString(), //
+            StringListType.class, State::toString, //
+            DecimalType.class, state -> ((DecimalType) state).toBigDecimal().doubleValue(), //
+            RawType.class, MongoDBTypeConversions::handleRawType//
+    );
+
+    private static Object handleRawType(State state) {
+        RawType rawType = (RawType) state;
+        Document doc = new Document();
+        doc.put(MongoDBFields.FIELD_VALUE_TYPE, rawType.getMimeType());
+        doc.put(MongoDBFields.FIELD_VALUE_DATA, rawType.getBytes());
+        return doc;
+    }
+
     /**
      * A map of converters that convert MongoDB documents to openHAB states.
      * Each converter is a function that takes an openHAB item and a MongoDB document and returns an openHAB state.
      */
-    private static final Map<Class<? extends Item>, BiFunction<Item, Document, State>> ITEM_STATE_CONVERTERS;
 
-    static {
-        ITEM_STATE_CONVERTERS = new LinkedHashMap<>();
-        ITEM_STATE_CONVERTERS.put(NumberItem.class, (item, doc) -> {
-            NumberItem numberItem = (NumberItem) item;
-            Unit<?> unit = numberItem.getUnit();
-            Object value = doc.get(MongoDBFields.FIELD_VALUE);
-            if (value == null) {
-                return UnDefType.UNDEF;
-            }
-            // check whether doc contains MongoDBFields.FIELD_UNIT, if so use this unit, otherwise use the unit from the
-            // item
-            if (doc.containsKey(MongoDBFields.FIELD_UNIT)) {
-                String unitString = doc.getString(MongoDBFields.FIELD_UNIT);
-                Unit<?> docUnit = UnitUtils.parseUnit(unitString);
-                if (docUnit != null) {
-                    unit = docUnit;
-                }
-            }
+    private static final Map<Class<? extends Item>, BiFunction<Item, Document, State>> ITEM_STATE_CONVERTERS = //
+            Map.ofEntries( //
+                    Map.entry(NumberItem.class, MongoDBTypeConversions::handleNumberItem),
+                    Map.entry(ColorItem.class, MongoDBTypeConversions::handleColorItem),
+                    Map.entry(DimmerItem.class, MongoDBTypeConversions::handleDimmerItem),
+                    Map.entry(SwitchItem.class,
+                            (Item item, Document doc) -> OnOffType.valueOf(doc.getString(MongoDBFields.FIELD_VALUE))),
+                    Map.entry(ContactItem.class,
+                            (Item item, Document doc) -> OpenClosedType
+                                    .valueOf(doc.getString(MongoDBFields.FIELD_VALUE))),
+                    Map.entry(RollershutterItem.class, MongoDBTypeConversions::handleRollershutterItem),
+                    Map.entry(DateTimeItem.class, MongoDBTypeConversions::handleDateTimeItem),
+                    Map.entry(LocationItem.class,
+                            (Item item, Document doc) -> new PointType(doc.getString(MongoDBFields.FIELD_VALUE))),
+                    Map.entry(PlayerItem.class,
+                            (Item item, Document doc) -> PlayPauseType
+                                    .valueOf(doc.getString(MongoDBFields.FIELD_VALUE))),
+                    Map.entry(CallItem.class,
+                            (Item item, Document doc) -> new StringListType(doc.getString(MongoDBFields.FIELD_VALUE))),
+                    Map.entry(ImageItem.class, MongoDBTypeConversions::handleImageItem), //
+                    Map.entry(StringItem.class,
+                            (Item item, Document doc) -> new StringType(doc.getString(MongoDBFields.FIELD_VALUE))),
+                    Map.entry(GenericItem.class,
+                            (Item item, Document doc) -> new StringType(doc.getString(MongoDBFields.FIELD_VALUE)))//
+            );
 
-            if (value instanceof String) {
-                return new QuantityType<>(value.toString());
+    private static State handleNumberItem(Item item, Document doc) {
+        NumberItem numberItem = (NumberItem) item;
+        Unit<?> unit = numberItem.getUnit();
+        Object value = doc.get(MongoDBFields.FIELD_VALUE);
+        if (value == null) {
+            return UnDefType.UNDEF;
+        }
+        if (doc.containsKey(MongoDBFields.FIELD_UNIT)) {
+            String unitString = doc.getString(MongoDBFields.FIELD_UNIT);
+            Unit<?> docUnit = UnitUtils.parseUnit(unitString);
+            if (docUnit != null) {
+                unit = docUnit;
             }
-            if (unit != null) {
-                return new QuantityType<>(((Number) value).doubleValue(), unit);
-            } else {
-                return new DecimalType(((Number) value).doubleValue());
-            }
-        });
-        ITEM_STATE_CONVERTERS.put(ColorItem.class, (item, doc) -> {
-            Object value = doc.get(MongoDBFields.FIELD_VALUE);
-            if (value instanceof String) {
-                return new HSBType(value.toString());
-            } else {
-                logger.warn("HSBType ({}) value is not a valid string: {}", doc.getString(MongoDBFields.FIELD_REALNAME),
-                        value);
-                return new HSBType("0,0,0");
-            }
-        });
-        ITEM_STATE_CONVERTERS.put(DimmerItem.class, (item, doc) -> {
-            Object value = doc.get(MongoDBFields.FIELD_VALUE);
-            if (value == null) {
-                return UnDefType.UNDEF;
-            }
-            if (value instanceof Integer) {
-                return new PercentType((Integer) value);
-            } else {
-                return new PercentType(((Number) value).intValue());
-            }
-        });
-        ITEM_STATE_CONVERTERS.put(SwitchItem.class,
-                (item, doc) -> OnOffType.valueOf(doc.getString(MongoDBFields.FIELD_VALUE)));
-        ITEM_STATE_CONVERTERS.put(ContactItem.class,
-                (item, doc) -> OpenClosedType.valueOf(doc.getString(MongoDBFields.FIELD_VALUE)));
-        ITEM_STATE_CONVERTERS.put(RollershutterItem.class, (item, doc) -> {
-            Object value = doc.get(MongoDBFields.FIELD_VALUE);
-            if (value == null) {
-                return UnDefType.UNDEF;
-            }
-            if (value instanceof Integer) {
-                return new PercentType((Integer) value);
-            } else {
-                return new PercentType(((Number) value).intValue());
-            }
-        });
-        ITEM_STATE_CONVERTERS.put(DateTimeItem.class, (item, doc) -> {
-            Object value = doc.get(MongoDBFields.FIELD_VALUE);
-            if (value == null) {
-                return UnDefType.UNDEF;
-            }
-            if (value instanceof String) {
-                return new DateTimeType(ZonedDateTime.parse(doc.getString(MongoDBFields.FIELD_VALUE)));
-            } else {
-                return new DateTimeType(ZonedDateTime.ofInstant(((Date) value).toInstant(), ZoneId.systemDefault()));
-            }
-        });
-        ITEM_STATE_CONVERTERS.put(LocationItem.class,
-                (item, doc) -> new PointType(doc.getString(MongoDBFields.FIELD_VALUE)));
-        ITEM_STATE_CONVERTERS.put(PlayerItem.class,
-                (item, doc) -> PlayPauseType.valueOf(doc.getString(MongoDBFields.FIELD_VALUE)));
-        ITEM_STATE_CONVERTERS.put(CallItem.class,
-                (item, doc) -> new StringListType(doc.getString(MongoDBFields.FIELD_VALUE)));
-        ITEM_STATE_CONVERTERS.put(ImageItem.class, (item, doc) -> {
-            Object value = doc.get(MongoDBFields.FIELD_VALUE);
-            if (value instanceof Document) {
-                Document fieldValue = (Document) value;
-                String type = fieldValue.getString(MongoDBFields.FIELD_VALUE_TYPE);
-                Binary data = fieldValue.get(MongoDBFields.FIELD_VALUE_DATA, Binary.class);
-                return new RawType(data.getData(), type);
-            } else {
-                logger.warn("ImageItem ({}) value is not a Document: {}", doc.getString(MongoDBFields.FIELD_REALNAME),
-                        value);
-                return new RawType(new byte[0], "application/octet-stream");
-            }
-        });
-        ITEM_STATE_CONVERTERS.put(GenericItem.class,
-                (item, doc) -> new StringType(doc.getString(MongoDBFields.FIELD_VALUE)));
-
+        }
+        if (value instanceof String) {
+            return new QuantityType<>(value.toString());
+        }
+        if (unit != null) {
+            return new QuantityType<>(((Number) value).doubleValue(), unit);
+        } else {
+            return new DecimalType(((Number) value).doubleValue());
+        }
     }
 
-    /**
-     * Converts a MongoDB document to an openHAB state.
-     *
-     * @param item The openHAB item that the state belongs to.
-     * @param doc The MongoDB document to convert.
-     * @return The openHAB state.
-     * @throws IllegalArgumentException If the item type is not supported.
-     */
-    public static State getStateFromDocument(Item item, Document doc) {
-        return ITEM_STATE_CONVERTERS.entrySet().stream().filter(entry -> entry.getKey().isInstance(item)).findFirst()
-                .map(entry -> entry.getValue().apply(item, doc))
-                .orElseThrow(() -> new IllegalArgumentException("Unsupported item type: " + item.getClass().getName()));
+    private static State handleColorItem(Item item, Document doc) {
+        Object value = doc.get(MongoDBFields.FIELD_VALUE);
+        if (value instanceof String) {
+            return new HSBType(value.toString());
+        } else {
+            logger.warn("HSBType ({}) value is not a valid string: {}", doc.getString(MongoDBFields.FIELD_REALNAME),
+                    value);
+            return new HSBType("0,0,0");
+        }
     }
 
-    /**
-     * Converts an openHAB filter operator to a MongoDB query operator.
-     *
-     * @param operator The openHAB filter operator to convert.
-     * @return The MongoDB query operator, or null if the operator is not supported.
-     */
-    public static @Nullable String convertOperator(Operator operator) {
-        return switch (operator) {
-            case EQ ->"$eq";
-            case GT -> "$gt";
-            case GTE -> "$gte";
-            case LT -> "$lt";
-            case LTE -> "$lte";
-            case NEQ -> "$neq";
-            default -> null;
-        };
+    private static State handleDimmerItem(Item item, Document doc) {
+        Object value = doc.get(MongoDBFields.FIELD_VALUE);
+        if (value == null) {
+            return UnDefType.UNDEF;
+        }
+        if (value instanceof Integer) {
+            return new PercentType((Integer) value);
+        } else {
+            return new PercentType(((Number) value).intValue());
+        }
+    }
+
+    private static State handleRollershutterItem(Item item, Document doc) {
+        Object value = doc.get(MongoDBFields.FIELD_VALUE);
+        if (value == null) {
+            return UnDefType.UNDEF;
+        }
+        if (value instanceof Integer) {
+            return new PercentType((Integer) value);
+        } else {
+            return new PercentType(((Number) value).intValue());
+        }
+    }
+
+    private static State handleDateTimeItem(Item item, Document doc) {
+        Object value = doc.get(MongoDBFields.FIELD_VALUE);
+        if (value == null) {
+            return UnDefType.UNDEF;
+        }
+        if (value instanceof String) {
+            return new DateTimeType(ZonedDateTime.parse(doc.getString(MongoDBFields.FIELD_VALUE)));
+        } else {
+            return new DateTimeType(ZonedDateTime.ofInstant(((Date) value).toInstant(), ZoneId.systemDefault()));
+        }
+    }
+
+    private static State handleImageItem(Item item, Document doc) {
+        Object value = doc.get(MongoDBFields.FIELD_VALUE);
+        if (value instanceof Document) {
+            Document fieldValue = (Document) value;
+            String type = fieldValue.getString(MongoDBFields.FIELD_VALUE_TYPE);
+            Binary data = fieldValue.get(MongoDBFields.FIELD_VALUE_DATA, Binary.class);
+            return new RawType(data.getData(), type);
+        } else {
+            logger.warn("ImageItem ({}) value is not a Document: {}", doc.getString(MongoDBFields.FIELD_REALNAME),
+                    value);
+            return new RawType(new byte[0], "application/octet-stream");
+        }
     }
 }

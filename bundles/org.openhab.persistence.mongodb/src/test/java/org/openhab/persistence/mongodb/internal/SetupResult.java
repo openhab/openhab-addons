@@ -14,6 +14,7 @@ package org.openhab.persistence.mongodb.internal;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.items.ItemRegistry;
 import org.osgi.framework.BundleContext;
 

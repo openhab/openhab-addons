@@ -16,6 +16,8 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.testcontainers.containers.MongoDBContainer;
 
 import de.bwaldvogel.mongo.MongoServer;
@@ -34,13 +36,13 @@ public class DatabaseTestContainer {
     private static final Map<String, MongoDBContainer> mongoDBContainers = new HashMap<>();
 
     // The MongoDBContainer instance for this DatabaseTestContainer.
-    private MongoDBContainer mongoDBContainer;
+    private @Nullable MongoDBContainer mongoDBContainer;
 
     // The MongoServer instance for this DatabaseTestContainer.
-    private MongoServer server;
+    private @Nullable MongoServer server;
 
     // The InetSocketAddress instance for this DatabaseTestContainer.
-    private InetSocketAddress serverAddress;
+    private @Nullable InetSocketAddress serverAddress;
 
     /**
      * Creates a new DatabaseTestContainer for a given MongoDB version.
@@ -49,6 +51,8 @@ public class DatabaseTestContainer {
      * @param mongoDBVersion The version of MongoDB to use.
      */
     public DatabaseTestContainer(String mongoDBVersion) {
+        server = null;
+        serverAddress = null;
         mongoDBContainer = mongoDBContainers.computeIfAbsent(mongoDBVersion, MongoDBContainer::new);
     }
 
@@ -56,8 +60,11 @@ public class DatabaseTestContainer {
      * Creates a new DatabaseTestContainer for an in-memory MongoDB server.
      */
     public DatabaseTestContainer(MemoryBackend memoryBackend) {
+        mongoDBContainer = null;
         server = new MongoServer(memoryBackend);
-        serverAddress = server.bind();
+        if (server != null) {
+            serverAddress = server.bind();
+        }
     }
 
     /**
@@ -81,12 +88,18 @@ public class DatabaseTestContainer {
      * @return The connection string.
      */
     public String getConnectionString() {
-        if (mongoDBContainer != null) {
-            return mongoDBContainer.getConnectionString();
-        } else if (server != null) {
-            return String.format("mongodb://%s:%s", serverAddress.getHostName(), serverAddress.getPort());
+        @Nullable
+        MongoDBContainer lc_mongoDBContainer = this.mongoDBContainer;
+        @Nullable
+        InetSocketAddress lc_serverAddress = this.serverAddress;
+        @Nullable
+        MongoServer lc_server = this.server;
+        if (lc_mongoDBContainer != null) {
+            return lc_mongoDBContainer.getConnectionString();
+        } else if (lc_server != null && lc_serverAddress != null) {
+            return String.format("mongodb://%s:%s", lc_serverAddress.getHostName(), lc_serverAddress.getPort());
         } else {
-            return null;
+            return "";
         }
     }
 }

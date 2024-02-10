@@ -12,8 +12,8 @@
  */
 package org.openhab.persistence.mongodb.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.DateFormat;
 import java.time.LocalDate;
@@ -35,9 +35,16 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.ItemNotFoundException;
-import org.openhab.core.library.items.*;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.items.DateTimeItem;
+import org.openhab.core.library.items.ImageItem;
+import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.StringItem;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.osgi.framework.BundleContext;
