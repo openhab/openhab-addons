@@ -61,486 +61,473 @@ public class PidTranslationUtils {
         Map<String, PIdContainerClass> mapDescObj = new HashMap<String, PIdContainerClass>();
 
         mapDescObj.put("0x0001", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "0", "1",
-                "Switch On/Off", "Binary Switch value"));
+                "@text/fid-switch-on-off", "@text/fid-switch-on-off-text"));
         mapDescObj.put("0x0002", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Timed Start/Stop", "For staircase lighning or movement detection"));
+                "@text/fid-timed-start-stop", "@text/fid-timed-start-stop-text"));
         mapDescObj.put("0x0003", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Force-position", "Forces value dependent high priority on or off state"));
+                "@text/fid-force-position", "@text/fid-force-position-text"));
         mapDescObj.put("0x0004", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Scene Control", "Recall or learn the set value related to encoded scene number"));
+                "@text/fid-scene-control", "@text/fid-scene-control-text"));
         mapDescObj.put("0x0006",
                 createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_MOTION, "", "",
-                        "Movement under consideration of brightness",
-                        "Activation of an autonomous switch off function triggered by an movement detector"));
+                        "@text/fid-movement-under-consideration-of-brightness",
+                        "@text/fid-movement-under-consideration-of-brightness-text"));
         mapDescObj.put("0x0007", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_MOTION, "", "",
-                "Presence",
-                "Announces presence triggered by an movement detector to be used by e.g. RTCs. Is independent of brightness and can be used for alerts e.g."));
+                "@text/fid-presence", "@text/fid-presence-text"));
         mapDescObj.put("0x0010", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Relative Set Value", "Relative dimming value"));
+                "@text/fid-relative-set-value", "@text/fid-relative-set-value-text"));
         mapDescObj.put("0x0011", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Absolute Set Value", "Absolute control of the set value"));
+                "@text/fid-absolute-set-value", "@text/fid-absolute-set-value-text"));
         mapDescObj.put("0x0012", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Night", "Toggle between day and night (where day = 0 / night = 1)"));
+                "@text/fid-night", "@text/fid-night-text"));
         mapDescObj.put("0x0013", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "invalid string id", "Resets load failures / short circuits / etc"));
+                "@text/fid-invalid-string-id", "@text/fid-invalid-string-id-text"));
         mapDescObj.put("0x0015", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "RGB color", "RGB Color coded in three bytes"));
+                "@text/fid-rgb-color", "@text/fid-rgb-color-text"));
         mapDescObj.put("0x0016", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Color Temperature", "Color temperature"));
+                "@text/fid-color-temperature", "@text/fid-color-temperature-text"));
         mapDescObj.put("0x0017", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "HSV", "Hue (2 Byte) / Saturation (1 Byte) / Value (1 Byte / brightness)"));
+                "@text/fid-hsv", "@text/fid-hsv-text"));
         mapDescObj.put("0x0018", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "HUE", "Hue (2 Byte)"));
+                "@text/fid-hue", "@text/fid-hue-text"));
         mapDescObj.put("0x0019", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Saturation", "Saturation (1 Byte)"));
+                "@text/fid-saturation", "@text/fid-saturation-text"));
         mapDescObj.put("0x0020", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_SHUTTERMOVEMENT, CATEGORY_BLINDS,
-                "", "", "Move Up/Down", "Moves sunblind up (0) and down (1)"));
+                "", "", "@text/fid-move-up-down", "@text/fid-move-up-down-text"));
         mapDescObj.put("0x0021", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_SHUTTERMOVEMENT, CATEGORY_BLINDS,
-                "", "", "Adjust Up/Down", "Stops the sunblind and to step it up/down"));
+                "", "", "@text/fid-adjust-up-down", "@text/fid-adjust-up-down-text"));
         mapDescObj.put("0x0023", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_BLINDS, "0",
-                "100", "Set Absolute Position Blinds", "Moves the sunblinds into a specified position"));
+                "100", "@text/fid-set-absolute-position-blinds", "@text/fid-set-absolute-position-blinds-text"));
         mapDescObj.put("0x0024", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_BLINDS, "0",
-                "100", "Set Absolute Position Slats", "Moves the slats into a specified position"));
+                "100", "@text/fid-set-absolute-position-slats", "@text/fid-set-absolute-position-slats-text"));
         mapDescObj.put("0x0025", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_WIND, "", "",
-                "Wind Alarm",
-                "State of the wind sensor (sent cyclically and on COV) Moves the sunblind to a secure position and to block it for any further control"));
+                "@text/fid-wind-alarm", "@text/fid-wind-alarm-text"));
         mapDescObj.put("0x0026", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_TEMPERATURE, "",
-                "", "Frost Alarm",
-                "State of the frost sensor (sent cyclically and on COV) Moves the sunblind to a secure position and to block it for any further control"));
+                "", "@text/fid-frost-alarm", "@text/fid-frost-alarm-text"));
         mapDescObj.put("0x0027", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_RAIN, "", "",
-                "Rain Alarm", "State of the rain sensor (sent cyclically and on COV)"));
+                "@text/fid-rain-alarm", "@text/fid-rain-alarm-text"));
         mapDescObj.put("0x0028", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_UNDEFINED, "", "",
-                "Force-position blind", "Forces value dependent high priority up or down state"));
+                "@text/fid-force-position-blind", "@text/fid-force-position-blind-text"));
         mapDescObj.put("0x0029", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Window/Door position", "Delivers position for Window/Door (Open / Tilted / Closed)"));
+                "@text/fid-window-door-position", "@text/fid-window-door-position-text"));
         mapDescObj.put("0x0030", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Actuating Value Heating", "Determines the through flow volume of the control valve"));
+                "", "@text/fid-actuating-value-heating", "@text/fid-actuating-value-heating-text"));
         mapDescObj.put("0x0031", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Fan Level Heating", "Display value of the fan coil speed. (0=off / 1=lowest - 5=fastest)"));
+                "@text/fid-fan-level-heating", "@text/fid-fan-level-heating-text"));
         mapDescObj.put("0x0032", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Actuating Value Cooling", "Determines the through flow volume of the control valve"));
+                "", "@text/fid-actuating-value-cooling", "@text/fid-actuating-value-cooling-text"));
         mapDescObj.put("0x0033", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_TEMPERATURE, "7",
-                "30", "Set Value Temperature", "Defines the displayed set point temperature of the system"));
+                "30", "@text/fid-set-value-temperature", "@text/fid-set-value-temperature-text"));
         mapDescObj.put("0x0034", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_TEMPERATURE, "7",
-                "30", "Relative Set Point Temperature", "Defines the relative set point temperature of the system"));
+                "30", "@text/fid-relative-set-point-temperature", "@text/fid-relative-set-point-temperature-text"));
         mapDescObj.put("0x0035", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Window/Door", "Open = 1 / closed = 0"));
+                "@text/fid-window-door", "@text/fid-window-door-text"));
         mapDescObj.put("0x0036", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Status indication", "states: on/off heating/cooling; eco/comfort; frost/not frost"));
+                "", "@text/fid-status-indication", "@text/fid-status-indication-text"));
         mapDescObj.put("0x0037", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Fan Manual Heating On/Off", "Switches Fan in manual control mode (master to slave)"));
+                "@text/fid-fan-manual-heating-on-off", "@text/fid-fan-manual-heating-on-off-text"));
         mapDescObj.put("0x0038", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Controller On/Off", "Switches controller on or off. Off means protection mode"));
+                "@text/fid-controller-on-off", "@text/fid-controller-on-off-text"));
         mapDescObj.put("0x0039", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_TEMPERATURE, "7",
-                "30", "Relative Set Point Request", "Request for a new relative set point value"));
+                "30", "@text/fid-relative-set-point-request", "@text/fid-relative-set-point-request-text"));
         mapDescObj.put("0x003A", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Eco mode On/Off Request", "Switches eco mode on or off"));
+                "@text/fid-eco-mode-on-off-request", "@text/fid-eco-mode-on-off-request-text"));
         mapDescObj.put("0x003B", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_TEMPERATURE, "7",
-                "30", "Comfort Temperature", "Sends the current comfort temperature"));
+                "30", "@text/fid-comfort-temperature", "@text/fid-comfort-temperature-text"));
         mapDescObj.put("0x0040", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Fan Level Request", "Request for a new manual fan stage"));
+                "@text/fid-fan-level-request", "@text/fid-fan-level-request-text"));
         mapDescObj.put("0x0041", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Fan Manual On/Off Request", "WARNING: DO NOT USE!!!! Request for switching fan in manual/auto mode"));
+                "@text/fid-fan-manual-on-off-request", "@text/fid-fan-manual-on-off-request-text"));
         mapDescObj.put("0x0042", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Controller On/Off Request", "Request for switching controller on or off. Off means protection mode"));
+                "@text/fid-controller-on-off-request", "@text/fid-controller-on-off-request-text"));
         mapDescObj.put("0x0044", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Eco mode On/Off Request", "Indicates ECO mode"));
+                "@text/fid-eco-mode-on-off-request", "@text/fid-eco-mode-on-off-request-text"));
         mapDescObj.put("0x0100", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Info On/Off", "Reflects the binary state of the actuator"));
+                "@text/fid-info-on-off", "@text/fid-info-on-off-text"));
         mapDescObj.put("0x0101", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_UNDEFINED, "", "",
-                "Force-position info", "Indicates the cause of forced operation (0 = not forced)"));
+                "@text/fid-force-position-info", "@text/fid-force-position-info-text"));
         mapDescObj.put("0x0105", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_UNDEFINED, "", "",
-                "SysAP-InfoOnOff", "Reflects the binary state of the actuator group"));
+                "@text/fid-sysap-infoonoff", "@text/fid-sysap-infoonoff-text"));
         mapDescObj.put("0x0106", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "SysAP-InfoForce", "Indicates whether the actuator group is forced (1) or not forced (0)"));
+                "@text/fid-sysap-infoforce", "@text/fid-sysap-infoforce-text"));
         mapDescObj.put("0x0110", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Info Actual Dimming Value", "Reflects the actual value of the actuator"));
+                "@text/fid-info-actual-dimming-value", "@text/fid-info-actual-dimming-value-text"));
         mapDescObj.put("0x0111", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Info Error", "Indicates load failures / short circuits / etc"));
+                "@text/fid-info-error", "@text/fid-info-error-text"));
         mapDescObj.put("0x0115", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "SysAP-InfoCurrentDimmingValue", "Reflects the actual value of the actuator group"));
+                "@text/fid-sysap-infocurrentdimmingvalue", "@text/fid-sysap-infocurrentdimmingvalue-text"));
         mapDescObj.put("0x0116", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "SysAP-InfoError", "Indicates load failures / short circuits / etc"));
+                "@text/fid-sysap-infoerror", "@text/fid-sysap-infoerror-text"));
         mapDescObj.put("0x0118", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info Color Temperature", "Color temperature"));
+                "@text/fid-info-color-temperature", "@text/fid-info-color-temperature-text"));
         mapDescObj.put("0x011A", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "SysAP-Info Color Temperature", "Color temperature"));
+                "@text/fid-sysap-info-color-temperature", "@text/fid-sysap-info-color-temperature-text"));
         mapDescObj.put("0x011B", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info HSV", "Hue (2 Byte) Saturation (1 Byte); Value (1 Byte - brightness)"));
+                "@text/fid-info-hsv", "@text/fid-info-hsv-text"));
         mapDescObj.put("0x011C", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "SysAP Info HSV", "Hue (2 Byte) Saturation (1 Byte); Value (1 Byte - brightness)"));
+                "@text/fid-sysap-info-hsv", "@text/fid-sysap-info-hsv-text"));
         mapDescObj.put("0x011D", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info Color Mode", "hsv or ct"));
+                "@text/fid-info-color-mode", "@text/fid-info-color-mode-text"));
         mapDescObj.put("0x011E", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "SysAP Info Color Mode", "hsv or ct"));
+                "@text/fid-sysap-info-color-mode", "@text/fid-sysap-info-color-mode-text"));
         mapDescObj.put("0x0120", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_SHUTTERMOVEMENT, CATEGORY_BLINDS,
-                "", "", "Info Move Up/Down", "Indicates last moving direction and whether moving currently or not"));
+                "", "", "@text/fid-info-move-up-down", "@text/fid-info-move-up-down-text"));
         mapDescObj.put("0x0121",
                 createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_BLINDS, "", "",
-                        "Current Absolute Position Blinds Percentage",
-                        "Indicate the current position of the sunblinds in percentage"));
+                        "@text/fid-current-absolute-position-blinds-percentage",
+                        "@text/fid-current-absolute-position-blinds-percentage-text"));
         mapDescObj.put("0x0122",
                 createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                        "Current Absolute Position Slats Percentage",
-                        "Indicate the current position of the slats in percentage"));
-        mapDescObj.put("0x0125",
-                createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                        "SysAP-InfoMoveUpDown",
-                        "Indicates last moving direction and whether moving currently or not of the actuator group"));
+                        "@text/fid-current-absolute-position-slats-percentage",
+                        "@text/fid-current-absolute-position-slats-percentage-text"));
+        mapDescObj.put("0x0125", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+                "@text/fid-sysap-infomoveupdown", "@text/fid-sysap-infomoveupdown-text"));
         mapDescObj.put("0x0126",
                 createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                        "SysAP-InfoCurrentAbsoluteBlindsPercentage",
-                        "indicate the current position of the sunblinds in percentage of the actuator group"));
+                        "@text/fid-sysap-infocurrentabsoluteblindspercentage",
+                        "@text/fid-sysap-infocurrentabsoluteblindspercentage-text"));
         mapDescObj.put("0x0127",
                 createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                        "SysAP-InfoCurrentAbsoluteSlatsPercentage",
-                        "indicate the current position of the slats in percentage of the actuator group"));
+                        "@text/fid-sysap-infocurrentabsoluteslatspercentage",
+                        "@text/fid-sysap-infocurrentabsoluteslatspercentage-text"));
         mapDescObj.put("0x0130", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_TEMPERATURE, "7",
-                "30", "Measured Temperature", "Indicates the actual measured temperature"));
+                "30", "@text/fid-measured-temperature", "@text/fid-measured-temperature-text"));
         mapDescObj.put("0x0131", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info Value Heating", "States the current flow volume of the conrol valve"));
+                "@text/fid-info-value-heating", "@text/fid-info-value-heating-text"));
         mapDescObj.put("0x0132", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Info value cooling", "States the current flow volume of the conrol valve"));
+                "", "@text/fid-info-value-cooling", "@text/fid-info-value-cooling-text"));
         mapDescObj.put("0x0135", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Switchover heating/cooling", "switch between heating and cooling: heating = 0 / cooling = 1"));
+                "", "@text/fid-switchover-heating-cooling", "@text/fid-switchover-heating-cooling-text"));
         mapDescObj.put("0x0136", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Actuating Fan Stage Heating", "Requests a new manual fan stage from actuator in heating mode"));
+                "@text/fid-actuating-fan-stage-heating", "@text/fid-actuating-fan-stage-heating-text"));
         mapDescObj.put("0x0140", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_TEMPERATURE, "7",
-                "30", "Absolute setpoint temperature", "Absolute set point temperature input for timer"));
+                "30", "@text/fid-absolute-setpoint-temperature", "@text/fid-absolute-setpoint-temperature-text"));
         mapDescObj.put("0x0141", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Additional heating value info", "Feedback"));
+                "@text/fid-additional-heating-value-info", "@text/fid-additional-heating-value-info-text"));
         mapDescObj.put("0x0142", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Additional cooling value info", "Feedback"));
+                "", "@text/fid-additional-cooling-value-info", "@text/fid-additional-cooling-value-info-text"));
         mapDescObj.put("0x0143", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Control value additional heating", ""));
+                "@text/fid-control-value-additional-heating", "@text/fid-control-value-additional-heating-text"));
         mapDescObj.put("0x0144", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Control value additional cooling", ""));
+                "", "@text/fid-control-value-additional-cooling", "@text/fid-control-value-additional-cooling-text"));
         mapDescObj.put("0x0145", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info Actuating Fan Stage Heating", "Feedback from FCA"));
-        mapDescObj.put("0x0146", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info Actuating Fan Manual On/Off Heating", "Feedback from FCA"));
+                "@text/fid-info-actuating-fan-stage-heating", "@text/fid-info-actuating-fan-stage-heating-text"));
+        mapDescObj.put("0x0146",
+                createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+                        "@text/fid-info-actuating-fan-manual-on-off-heating",
+                        "@text/fid-info-actuating-fan-manual-on-off-heating-text"));
         mapDescObj.put("0x0147", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Actuating Fan Stage Cooling", "Requests a new manual fan stage from actuator in cooling mode"));
+                "", "@text/fid-actuating-fan-stage-cooling", "@text/fid-actuating-fan-stage-cooling-text"));
         mapDescObj.put("0x0149", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Info Fan Stage Cooling", "Feedback for current fan stage in cooling mode"));
+                "", "@text/fid-info-fan-stage-cooling", "@text/fid-info-fan-stage-cooling-text"));
         mapDescObj.put("0x014A", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_TEMPERATURE, "",
-                "", "Info Fan Manual On/Off Cooling", "Feedback for manual fan control cooling mode"));
+                "", "@text/fid-info-fan-manual-on-off-cooling", "@text/fid-info-fan-manual-on-off-cooling-text"));
         mapDescObj.put("0x014B", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Heating active", ""));
+                "", "@text/fid-heating-active", "@text/fid-heating-active-text"));
         mapDescObj.put("0x014C", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Cooling active", ""));
+                "", "@text/fid-cooling-active", "@text/fid-cooling-active-text"));
         mapDescObj.put("0x014D", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Heating demand", ""));
+                "", "@text/fid-heating-demand", "@text/fid-heating-demand-text"));
         mapDescObj.put("0x014E", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Cooling demand", ""));
+                "", "@text/fid-cooling-demand", "@text/fid-cooling-demand-text"));
         mapDescObj.put("0x014F", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Heating demand feedback signal", ""));
+                "", "@text/fid-heating-demand-feedback-signal", "@text/fid-heating-demand-feedback-signal-text"));
         mapDescObj.put("0x0150", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_TEMPERATURE, "",
-                "", "Cooling demand feedback signal", ""));
+                "", "@text/fid-cooling-demand-feedback-signal", "@text/fid-cooling-demand-feedback-signal-text"));
         mapDescObj.put("0x0151", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_HUMIDITY, "", "",
-                "Humidity", "Measured Humidity"));
+                "@text/fid-humidity", "@text/fid-humidity-text"));
         mapDescObj.put("0x0152", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Aux On/Off request", "Aux On/Off request"));
+                "@text/fid-aux-on-off-request", "@text/fid-aux-on-off-request-text"));
         mapDescObj.put("0x0153", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Aux On/Off response", "Aux On/Off response"));
+                "@text/fid-aux-on-off-response", "@text/fid-aux-on-off-response-text"));
         mapDescObj.put("0x0154", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Heating On/Off request", "Heating On/Off request"));
+                "@text/fid-heating-on-off-request", "@text/fid-heating-on-off-request-text"));
         mapDescObj.put("0x0155", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Cooling On/Off request", "Cooling On/Off request"));
+                "@text/fid-cooling-on-off-request", "@text/fid-cooling-on-off-request-text"));
         mapDescObj.put("0x0156", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Operation mode", ""));
+                "@text/fid-operation-mode", "@text/fid-operation-mode-text"));
         mapDescObj.put("0x0157", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Swing H/V", ""));
+                "@text/fid-swing-h-v", "@text/fid-swing-h-v-text"));
         mapDescObj.put("0x0158", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Supported features", ""));
+                "@text/fid-supported-features", "@text/fid-supported-features-text"));
         mapDescObj.put("0x0159", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Extended Status Indication", ""));
+                "@text/fid-extended-status-indication", "@text/fid-extended-status-indication-text"));
         mapDescObj.put("0x015A", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Extended Status Indication", ""));
+                "@text/fid-extended-status-indication", "@text/fid-extended-status-indication-text"));
         mapDescObj.put("0x015B", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Aux Heating On Off Request", ""));
+                "@text/fid-aux-heating-on-off-request", "@text/fid-aux-heating-on-off-request-text"));
         mapDescObj.put("0x015C", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Emergency Heating On Off Request", ""));
+                "@text/fid-emergency-heating-on-off-request", "@text/fid-emergency-heating-on-off-request-text"));
         mapDescObj.put("0x0160", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Relative fan speed control", "Relative control of the set value"));
+                "@text/fid-relative-fan-speed-control", "@text/fid-relative-fan-speed-control-text"));
         mapDescObj.put("0x0161", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Absolute fan speed control", "Absolute control of the set value"));
+                "@text/fid-absolute-fan-speed-control", "@text/fid-absolute-fan-speed-control-text"));
         mapDescObj.put("0x0162", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info absolute fan speed", "Reflects the actual value of the actuator"));
+                "@text/fid-info-absolute-fan-speed", "@text/fid-info-absolute-fan-speed-text"));
         mapDescObj.put("0x0163", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "SysAP-InfoActualFanSpeed", "Reflects the actual value of the actuator"));
+                "@text/fid-sysap-infoactualfanspeed", "@text/fid-sysap-infoactualfanspeed-text"));
         mapDescObj.put("0x01A0", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Notification flags", "Notifications of RF devices (e. g. Battery low)"));
+                "@text/fid-notification-flags", "@text/fid-notification-flags-text"));
         mapDescObj.put("0x0280", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Power RC", "Bool Value 1"));
+                "@text/fid-power-rc", "@text/fid-power-rc-text"));
         mapDescObj.put("0x0281", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Power RH", "Bool Value 2"));
+                "@text/fid-power-rh", "@text/fid-power-rh-text"));
         mapDescObj.put("0x0282", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Proximity status", "Bool Value 3"));
+                "@text/fid-proximity-status", "@text/fid-proximity-status-text"));
         mapDescObj.put("0x0290", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Brightness sensor", "Scaling Value 1"));
+                "@text/fid-brightness-sensor", "@text/fid-brightness-sensor-text"));
         mapDescObj.put("0x0291", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Last touch", "Scaling Value 2"));
+                "@text/fid-last-touch", "@text/fid-last-touch-text"));
         mapDescObj.put("0x0292", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "LED backlighting night mode", "Scaling Value 3"));
+                "@text/fid-led-backlighting-night-mode", "@text/fid-led-backlighting-night-mode-text"));
         mapDescObj.put("0x02C0", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Locator beep", "Locator Beep"));
+                "@text/fid-locator-beep", "@text/fid-locator-beep-text"));
         mapDescObj.put("0x02C1", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Switch test alarm", "Switch Test Alarm"));
+                "@text/fid-switch-test-alarm", "@text/fid-switch-test-alarm-text"));
         mapDescObj.put("0x02C3", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Fire alarm active", "Fire-Alarm Active"));
+                "@text/fid-fire-alarm-active", "@text/fid-fire-alarm-active-text"));
         mapDescObj.put("0x0400", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_TEMPERATURE, "",
-                "", "Outside temperature", "Outdoor Temperature"));
+                "", "@text/fid-outside-temperature", "@text/fid-outside-temperature-text"));
         mapDescObj.put("0x0401", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_WIND, "", "",
-                "Wind force", "Wind force"));
+                "@text/fid-wind-force", "@text/fid-wind-force-text"));
         mapDescObj.put("0x0402", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_UNDEFINED, "", "",
-                "Brightness alarm", "Brightness alarm"));
+                "@text/fid-brightness-alarm", "@text/fid-brightness-alarm-text"));
         mapDescObj.put("0x0403", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_UNDEFINED, "", "",
-                "Lux value", "Weatherstation brightness level"));
+                "@text/fid-lux-value", "@text/fid-lux-value-text"));
         mapDescObj.put("0x0404", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_WIND, "", "",
-                "Wind speed", "Wind speed"));
+                "@text/fid-wind-speed", "@text/fid-wind-speed-text"));
         mapDescObj.put("0x0405", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_RAIN, "", "",
-                "Rain detection", ""));
+                "@text/fid-rain-detection", "@text/fid-rain-detection-text"));
         mapDescObj.put("0x0406", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_RAIN, "", "",
-                "Rain sensor frequency", ""));
+                "@text/fid-rain-sensor-frequency", "@text/fid-rain-sensor-frequency-text"));
         mapDescObj.put("0x0440", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Play", "Start playing"));
+                "@text/fid-play", "@text/fid-play-text"));
         mapDescObj.put("0x0441", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Pause", "Pause/Stop playing"));
+                "@text/fid-pause", "@text/fid-pause-text"));
         mapDescObj.put("0x0442", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Next", "Play next title"));
+                "@text/fid-next", "@text/fid-next-text"));
         mapDescObj.put("0x0443", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Previous", "Play previous title"));
+                "@text/fid-previous", "@text/fid-previous-text"));
         mapDescObj.put("0x0444", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Play mode", "Play mode (shuffle / repeat)"));
+                "@text/fid-play-mode", "@text/fid-play-mode-text"));
         mapDescObj.put("0x0445", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Mute", "Mute (1) and unmute (0) a player"));
+                "@text/fid-mute", "@text/fid-mute-text"));
         mapDescObj.put("0x0446", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Relative volume control", "Relative volume control. See also relative dimming"));
+                "@text/fid-relative-volume-control", "@text/fid-relative-volume-control-text"));
         mapDescObj.put("0x0447", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Absolute volume control", "Set player volume"));
+                "@text/fid-absolute-volume-control", "@text/fid-absolute-volume-control-text"));
         mapDescObj.put("0x0448", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Group membership", ""));
+                "@text/fid-group-membership", "@text/fid-group-membership-text"));
         mapDescObj.put("0x0449", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Play favorite", ""));
+                "@text/fid-play-favorite", "@text/fid-play-favorite-text"));
         mapDescObj.put("0x044A", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Play next favorite", ""));
+                "@text/fid-play-next-favorite", "@text/fid-play-next-favorite-text"));
         mapDescObj.put("0x0460", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Playback status", ""));
+                "@text/fid-playback-status", "@text/fid-playback-status-text"));
         mapDescObj.put("0x0461", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Current item metadata info", ""));
+                "@text/fid-current-item-metadata-info", "@text/fid-current-item-metadata-info-text"));
         mapDescObj.put("0x0462", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info mute", ""));
+                "@text/fid-info-mute", "@text/fid-info-mute-text"));
         mapDescObj.put("0x0463", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info actual volume", ""));
+                "@text/fid-info-actual-volume", "@text/fid-info-actual-volume-text"));
         mapDescObj.put("0x0464", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Allowed playback actions", ""));
+                "@text/fid-allowed-playback-actions", "@text/fid-allowed-playback-actions-text"));
         mapDescObj.put("0x0465", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info group membership", ""));
+                "@text/fid-info-group-membership", "@text/fid-info-group-membership-text"));
         mapDescObj.put("0x0466", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info playing favorite", ""));
+                "@text/fid-info-playing-favorite", "@text/fid-info-playing-favorite-text"));
         mapDescObj.put("0x0467", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Absolute Group Volume Control", ""));
+                "@text/fid-absolute-group-volume-control", "@text/fid-absolute-group-volume-control-text"));
         mapDescObj.put("0x0468", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info Absolute Group Volume", ""));
+                "@text/fid-info-absolute-group-volume", "@text/fid-info-absolute-group-volume-text"));
         mapDescObj.put("0x0469", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Media source", ""));
+                "@text/fid-media-source", "@text/fid-media-source-text"));
         mapDescObj.put("0x04A0", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Solar power production", "Power from the sun"));
+                "@text/fid-solar-power-production", "@text/fid-solar-power-production-text"));
         mapDescObj.put("0x04A1", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Inverter output power", "Output power of inverter (pbatt+Psun)"));
+                "@text/fid-inverter-output-power", "@text/fid-inverter-output-power-text"));
         mapDescObj.put("0x04A2", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Solar energy (today)", "Produced Energy"));
+                "@text/fid-solar-energy-(today)", "@text/fid-solar-energy-(today)-text"));
         mapDescObj.put("0x04A3", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Injected energy (today)", "Energy into the grid"));
+                "@text/fid-injected-energy-(today)", "@text/fid-injected-energy-(today)-text"));
         mapDescObj.put("0x04A4", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Purchased energy (today)", "Energy from the grid"));
+                "@text/fid-purchased-energy-(today)", "@text/fid-purchased-energy-(today)-text"));
         mapDescObj.put("0x04A5", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Inverter alarm", "Inverter is working in stand alone mode"));
+                "@text/fid-inverter-alarm", "@text/fid-inverter-alarm-text"));
         mapDescObj.put("0x04A6", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Self-consumption", "production PV/ Total consumption"));
+                "@text/fid-self-consumption", "@text/fid-self-consumption-text"));
         mapDescObj.put("0x04A7", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Self-sufficiency", "Consumption from PV/ Total consumption"));
+                "@text/fid-self-sufficiency", "@text/fid-self-sufficiency-text"));
         mapDescObj.put("0x04A8", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Home power consumption", "Power in home (PV and grid)"));
+                "@text/fid-home-power-consumption", "@text/fid-home-power-consumption-text"));
         mapDescObj.put("0x04A9", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Power to grid", "Power from and to the grid: Purchased (less than 0), Injection (more than 0)"));
+                "@text/fid-power-to-grid", "@text/fid-power-to-grid-text"));
         mapDescObj.put("0x04AA", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Consumed energy (today)", "Energy bought from grid per day"));
+                "@text/fid-consumed-energy-(today)", "@text/fid-consumed-energy-(today)-text"));
         mapDescObj.put("0x04AB", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Meter alarm", "Meter communication loss"));
+                "@text/fid-meter-alarm", "@text/fid-meter-alarm-text"));
         mapDescObj.put("0x04AC", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Battery level", "Battery level"));
+                "@text/fid-battery-level", "@text/fid-battery-level-text"));
         mapDescObj.put("0x04AD", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Battery power", "Batter power: Discharge (less then 0), Charge (more then 0)"));
+                "@text/fid-battery-power", "@text/fid-battery-power-text"));
         mapDescObj.put("0x04B0", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Boost", "1: Boost enable request, 0: boost disable request"));
-        mapDescObj.put("0x04B1",
-                createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                        "Stop charging reuqest",
-                        "1: Stop charging session requested, 0: n/a so far, will be resetted when cable is unplugged"));
+                "@text/fid-boost", "@text/fid-boost-text"));
+        mapDescObj.put("0x04B1", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+                "@text/fid-stop-charging-reuqest", "@text/fid-stop-charging-reuqest-text"));
         mapDescObj.put("0x04B2", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Enable charging reuqest",
-                "1: Enable charging when cable is plugged in, 0: Disable next charging session but charge until cable is plugged"));
+                "@text/fid-enable-charging-reuqest", "@text/fid-enable-charging-reuqest-text"));
         mapDescObj.put("0x04B3", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info boost", "1: Boost enabled, 0: boost disabled"));
+                "@text/fid-info-boost", "@text/fid-info-boost-text"));
         mapDescObj.put("0x04B4", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info wallbox status",
-                "Wallbox status 00000001: car plugged in, 00000002: Authorization granted, 00000004: Not charging, battery fully loaded, 40000000: charging stopped due to blackout prevention, 80000000: Ground fault error"));
+                "@text/fid-info-wallbox-status", "@text/fid-info-wallbox-status-text"));
         mapDescObj.put("0x04B5", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info charging", "1: Charging, 0: Not charging"));
-        mapDescObj.put("0x04B6",
-                createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                        "Info charging enabled",
-                        "1: Charging enabled for next session, 0: Charging disabled for next session"));
+                "@text/fid-info-charging", "@text/fid-info-charging-text"));
+        mapDescObj.put("0x04B6", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+                "@text/fid-info-charging-enabled", "@text/fid-info-charging-enabled-text"));
         mapDescObj.put("0x04B7", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info installed power", "Installed power (e.g. 20 kW)"));
+                "@text/fid-info-installed-power", "@text/fid-info-installed-power-text"));
         mapDescObj.put("0x04B8", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info transmitted energy", "Energy transmitted so far per session (in Wh)"));
+                "@text/fid-info-transmitted-energy", "@text/fid-info-transmitted-energy-text"));
         mapDescObj.put("0x04B9", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info car range", "Car range in km per sessions"));
+                "@text/fid-info-car-range", "@text/fid-info-car-range-text"));
         mapDescObj.put("0x04BA", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info charging duration", "Start of charging session (in minutes in UTC)"));
+                "@text/fid-info-charging-duration", "@text/fid-info-charging-duration-text"));
         mapDescObj.put("0x04BB", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info current limit", "Limit for charger (in kW)"));
+                "@text/fid-info-current-limit", "@text/fid-info-current-limit-text"));
         mapDescObj.put("0x04BC", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info current limit for group", "Limit for group of charger (in kW)"));
+                "@text/fid-info-current-limit-for-group", "@text/fid-info-current-limit-for-group-text"));
         mapDescObj.put("0x04BD", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Album cover URL", "Album cover URL"));
+                "@text/fid-album-cover-url", "@text/fid-album-cover-url-text"));
         mapDescObj.put("0x0501", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "secure@home Central Unit", "Encrypted control datapoint for domus alarm center"));
+                "@text/fid-secure@home-central-unit", "@text/fid-secure@home-central-unit-text"));
         mapDescObj.put("0x0502", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "DomusDisarmCounter", "Info about the next counter to disarm the system"));
+                "@text/fid-domusdisarmcounter", "@text/fid-domusdisarmcounter-text"));
         mapDescObj.put("0x0504", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Intrusion Alarm", "Intrusion Alarm"));
+                "@text/fid-intrusion-alarm", "@text/fid-intrusion-alarm-text"));
         mapDescObj.put("0x0505", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Safety Alarm", "Safety Alarm"));
+                "@text/fid-safety-alarm", "@text/fid-safety-alarm-text"));
         mapDescObj.put("0x0507", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "InfoConfigurationStatus", "Domus alarm device negative feedback and configuration info."));
+                "@text/fid-infoconfigurationstatus", "@text/fid-infoconfigurationstatus-text"));
         mapDescObj.put("0x0508", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Enable configuration", "Encrypted control datapoint for entering configuration mode"));
+                "@text/fid-enable-configuration", "@text/fid-enable-configuration-text"));
         mapDescObj.put("0x0509", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Disarming LED", "Arm/Disarm a Zone"));
+                "@text/fid-disarming-led", "@text/fid-disarming-led-text"));
         mapDescObj.put("0x050A", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "AES Key", "Manufacturer ID + Serial + AES Key"));
+                "@text/fid-aes-key", "@text/fid-aes-key-text"));
         mapDescObj.put("0x050B", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Zone status", "Zone status"));
+                "@text/fid-zone-status", "@text/fid-zone-status-text"));
         mapDescObj.put("0x050E", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Time", "Absolute number of seconds when the zone will be armed"));
+                "@text/fid-time", "@text/fid-time-text"));
         mapDescObj.put("0x0600", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Start / Stop", "Starts / Stops operation"));
+                "@text/fid-start-stop", "@text/fid-start-stop-text"));
         mapDescObj.put("0x0601", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Pause / Resume", ""));
+                "@text/fid-pause-resume", "@text/fid-pause-resume-text"));
         mapDescObj.put("0x0602", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Select program", ""));
+                "@text/fid-select-program", "@text/fid-select-program-text"));
         mapDescObj.put("0x0603", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Delayed start time", ""));
+                "@text/fid-delayed-start-time", "@text/fid-delayed-start-time-text"));
         mapDescObj.put("0x0604", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info status", ""));
+                "@text/fid-info-status", "@text/fid-info-status-text"));
         mapDescObj.put("0x0605", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info remote start enabled", ""));
+                "@text/fid-info-remote-start-enabled", "@text/fid-info-remote-start-enabled-text"));
         mapDescObj.put("0x0606", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info program", ""));
+                "@text/fid-info-program", "@text/fid-info-program-text"));
         mapDescObj.put("0x0607", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info finish time", ""));
+                "@text/fid-info-finish-time", "@text/fid-info-finish-time-text"));
         mapDescObj.put("0x0608", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info delayed start", ""));
+                "@text/fid-info-delayed-start", "@text/fid-info-delayed-start-text"));
         mapDescObj.put("0x0609", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info door", ""));
+                "@text/fid-info-door", "@text/fid-info-door-text"));
         mapDescObj.put("0x060A", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info door alarm", ""));
+                "@text/fid-info-door-alarm", "@text/fid-info-door-alarm-text"));
         mapDescObj.put("0x060B", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Switch supercool", ""));
+                "@text/fid-switch-supercool", "@text/fid-switch-supercool-text"));
         mapDescObj.put("0x060C", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Switch superfreeze", ""));
+                "@text/fid-switch-superfreeze", "@text/fid-switch-superfreeze-text"));
         mapDescObj.put("0x060D", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info switch supercool", ""));
+                "@text/fid-info-switch-supercool", "@text/fid-info-switch-supercool-text"));
         mapDescObj.put("0x060E", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info switch superfreeze", ""));
+                "@text/fid-info-switch-superfreeze", "@text/fid-info-switch-superfreeze-text"));
         mapDescObj.put("0x060F", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Measured Temperature", ""));
+                "@text/fid-measured-temperature", "@text/fid-measured-temperature-text"));
         mapDescObj.put("0x0610", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Measured Temperature", ""));
+                "@text/fid-measured-temperature", "@text/fid-measured-temperature-text"));
         mapDescObj.put("0x0611", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Set Value Temperature", ""));
+                "@text/fid-set-value-temperature", "@text/fid-set-value-temperature-text"));
         mapDescObj.put("0x0612", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Set Value Temperature", ""));
+                "@text/fid-set-value-temperature", "@text/fid-set-value-temperature-text"));
         mapDescObj.put("0x0613", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Change operation", ""));
+                "@text/fid-change-operation", "@text/fid-change-operation-text"));
         mapDescObj.put("0x0614", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Detailed status info", ""));
+                "@text/fid-detailed-status-info", "@text/fid-detailed-status-info-text"));
         mapDescObj.put("0x0615", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info remaining time", "Remaining time till status change (start, finish, etc.)"));
-        mapDescObj.put("0x0616",
-                createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                        "Time of last status change (start, finish, etc.)",
-                        "Time of last status change (start, finish, etc.)"));
+                "@text/fid-info-remaining-time", "@text/fid-info-remaining-time-text"));
+        mapDescObj.put("0x0616", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
+                "@text/fid-time-of-last-status-change-(star", "@text/fid-time-of-last-status-change-(star-text"));
         mapDescObj.put("0x0618", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Lock/Unlock door command", "Lock/Unlock door command (1 Bit)"));
+                "@text/fid-lock-unlock-door-command", "@text/fid-lock-unlock-door-command-text"));
         mapDescObj.put("0x0619", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info Locked / Unlocked", "Info Lock/Unlock door(1 Bit)"));
+                "@text/fid-info-locked-unlocked", "@text/fid-info-locked-unlocked-text"));
         mapDescObj.put("0xF001", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Time", "Current local time"));
+                "@text/fid-time", "@text/fid-time-text"));
         mapDescObj.put("0xF002", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Date", "Curent local date"));
+                "@text/fid-date", "@text/fid-date-text"));
         mapDescObj.put("0xF003", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Notification", "Notification from message center"));
+                "@text/fid-notification", "@text/fid-notification-text"));
         mapDescObj.put("0xF101", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Switch entity On/Off", "Entity control e.g. activate an alert or timer program"));
+                "@text/fid-switch-entity-on-off", "@text/fid-switch-entity-on-off-text"));
         mapDescObj.put("0xF102", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "", "",
-                "Info switch entity On/Off", "Reflects the active state of an entity e.g. alert or timer program"));
+                "@text/fid-info-switch-entity-on-off", "@text/fid-info-switch-entity-on-off-text"));
         mapDescObj.put("0xF104", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Consistency Tag", "Notifications of RF devices (e. g. Battery low)"));
+                "@text/fid-consistency-tag", "@text/fid-consistency-tag-text"));
         mapDescObj.put("0xF105", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Battery Status", "Notifications of RF devices (e. g. Battery low)"));
+                "@text/fid-battery-status", "@text/fid-battery-status-text"));
         mapDescObj.put("0xF106", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Stay awake!", "Notifications of RF devices (e. g. Battery low)"));
+                "@text/fid-stay-awake", "@text/fid-stay-awake-text"));
         mapDescObj.put("0xF107", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Proxy switch", ""));
+                "@text/fid-proxy-switch", "@text/fid-proxy-switch-text"));
         mapDescObj.put("0xF108", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Proxy, 1 byte", ""));
+                "@text/fid-proxy1", "@text/fid-proxy1-text"));
         mapDescObj.put("0xF109", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Proxy, 2 byte", ""));
+                "@text/fid-proxy2", "@text/fid-proxy2-text"));
         mapDescObj.put("0xF10A", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Proxy, 4 byte", ""));
+                "@text/fid-proxy4", "@text/fid-proxy4-text"));
         mapDescObj.put("0xF10B", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Cyclic sleep time", "Time of sleep cycles"));
+                "@text/fid-cyclic-sleep-time", "@text/fid-cyclic-sleep-time-text"));
         mapDescObj.put("0xF10C", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Presence", "SysAP presence"));
+                "@text/fid-presence", "@text/fid-presence-text"));
         mapDescObj.put("0xF10D", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Measured temperature 1", "SysAP temperature"));
+                "@text/fid-measured-temperature-1", "@text/fid-measured-temperature-1-text"));
         mapDescObj.put("0xF10E", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Standby Statistics", "Statistics about standby usage for battery devices"));
+                "@text/fid-standby-statistics", "@text/fid-standby-statistics-text"));
         mapDescObj.put("0xF10F", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Heartbeat delay", "Time period between two heartbeats"));
+                "@text/fid-heartbeat-delay", "@text/fid-heartbeat-delay-text"));
         mapDescObj.put("0xF110", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Info heartbeat delay", "Time period between two heartbeats"));
+                "@text/fid-info-heartbeat-delay", "@text/fid-info-heartbeat-delay-text"));
         mapDescObj.put("0xFF01", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Measured temperature 1", "For debug purposes"));
+                "@text/fid-measured-temperature-1", "@text/fid-measured-temperature-1-text"));
         mapDescObj.put("0xFF02", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Measured temperature 2", "For debug purposes"));
+                "@text/fid-measured-temperature-2", "@text/fid-measured-temperature-2-text"));
         mapDescObj.put("0xFF03", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Measured temperature 3", "For debug purposes"));
+                "@text/fid-measured-temperature-3", "@text/fid-measured-temperature-3-text"));
         mapDescObj.put("0xFF04", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                "Measured temperature 4", "For debug purposes"));
-
-        // new values missing original documentation
+                "@text/fid-measured-temperature-4", "@text/fid-measured-temperature-4-text"));
         mapDescObj.put("0x061A", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_DECIMAL, CATEGORY_PRESSURE, "", "",
-                "Air Quality - Pressure value", "Air quality sensor value - Pressure value"));
+                "@text/fid-air-quality-pressure-value", "@text/fid-air-quality-pressure-value-text"));
         mapDescObj.put("0x061B", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Air Quality - CO2 value", "Air quality sensor value - CO2 value"));
+                "@text/fid-air-quality-co2-value", "@text/fid-air-quality-co2-value-text"));
         mapDescObj.put("0x061C", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Air Quality - CO value", "Air quality sensor value - CO value"));
+                "@text/fid-air-quality-co-value", "@text/fid-air-quality-co-value-text"));
         mapDescObj.put("0x061D", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Air Quality - NO2 value", "Air quality sensor value - NO2 value"));
+                "@text/fid-air-quality-no2-value", "@text/fid-air-quality-no2-value-text"));
         mapDescObj.put("0x061E", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Air Quality - O3 value", "Air quality sensor value - O3 value"));
+                "@text/fid-air-quality-o3-value", "@text/fid-air-quality-o3-value-text"));
         mapDescObj.put("0x061F", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Air Quality - PM10 value", "Air quality sensor value - PM10 value"));
+                "@text/fid-air-quality-pm10-value", "@text/fid-air-quality-pm10-value-text"));
         mapDescObj.put("0x0620", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Air Quality - PM25 value", "Air quality sensor value - PM25 value"));
+                "@text/fid-air-quality-pm25-value", "@text/fid-air-quality-pm25-value-text"));
         mapDescObj.put("0x0621", createFreeAtHomePairingIdTranslation(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
-                "Air Quality - VOC value", "Air quality sensor value - VOC value"));
+                "@text/fid-air-quality-voc-value", "@text/fid-air-quality-voc-value-text"));
 
         MAP_TRANSLATOR = Collections.unmodifiableMap(mapDescObj);
     }

@@ -17,8 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
 import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeBridgeHandler;
 import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeHttpCommunicationException;
@@ -39,6 +42,10 @@ import org.slf4j.LoggerFactory;
 public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscoveryService<FreeAtHomeBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeSystemDiscoveryService.class);
+    private @Nullable ScheduledFuture<?> backgroundDiscoveryJob = null;
+
+    private static final long BACKGROUND_DISCOVERY_DELAY = 1L;
+    private boolean isScanTerminated;
 
     Runnable runnable = new Runnable() {
         @Override
@@ -46,10 +53,11 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
             ThingUID bridgeUID = thingHandler.getThing().getUID();
 
             List<String> deviceList;
+
             try {
                 deviceList = thingHandler.getDeviceDeviceList();
 
-                for (int i = 0; i < deviceList.size(); i++) {
+                for (int i = 0; (i < deviceList.size()) && (isScanTerminated == false); i++) {
                     FreeAtHomeDeviceDescription device = thingHandler.getFreeatHomeDeviceDescription(deviceList.get(i));
 
                     ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.FREEATHOMEDEVICE_TYPE_UID, bridgeUID,
@@ -73,6 +81,8 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
             } catch (FreeAtHomeHttpCommunicationException e) {
                 logger.debug("Communication error in device discovery with the bridge: {}",
                         thingHandler.getThing().getLabel());
+            } catch (RuntimeException e) {
+                logger.debug("Scanning interrupted");
             }
         }
     };
@@ -93,14 +103,28 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
 
     @Override
     protected void startScan() {
-        this.removeOlderResults(Instant.now().toEpochMilli());
+        if (backgroundDiscoveryJob == null) {
+            this.removeOlderResults(Instant.now().toEpochMilli());
 
-        scheduler.execute(runnable);
+            isScanTerminated = false;
+            backgroundDiscoveryJob = scheduler.schedule(runnable, BACKGROUND_DISCOVERY_DELAY, TimeUnit.SECONDS);
+        }
     }
 
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
+
+        isScanTerminated = true;
+
+        ScheduledFuture<?> localDiscoveryJob = backgroundDiscoveryJob;
+
+        if (localDiscoveryJob != null) {
+            localDiscoveryJob.cancel(true);
+        }
+
+        backgroundDiscoveryJob = null;
+
         removeOlderResults(Instant.now().toEpochMilli());
     }
 

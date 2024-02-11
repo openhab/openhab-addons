@@ -691,6 +691,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         scheduler.execute(() -> {
             boolean thingReachable = true;
 
+            updateStatus(ThingStatus.UNKNOWN);
+
             httpConnectionOK.set(false);
 
             // load configuration
