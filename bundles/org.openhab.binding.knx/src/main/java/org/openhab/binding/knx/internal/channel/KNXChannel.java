@@ -131,7 +131,8 @@ public abstract class KNXChannel {
             } else {
                 for (Class<? extends Type> expectedTypeClass : expectedTypeClasses) {
                     if (command instanceof State state && State.class.isAssignableFrom(expectedTypeClass)) {
-                        if (state.as(expectedTypeClass.asSubclass(State.class)) != null) {
+                        var subClass = expectedTypeClass.asSubclass(State.class);
+                        if (state.as(subClass) != null) {
                             logger.trace(
                                     "getCommandSpec command class '{}' is a sub-class of the expectedTypeClass '{}' for key '{}'",
                                     command.getClass(), expectedTypeClass, entry.getKey());
