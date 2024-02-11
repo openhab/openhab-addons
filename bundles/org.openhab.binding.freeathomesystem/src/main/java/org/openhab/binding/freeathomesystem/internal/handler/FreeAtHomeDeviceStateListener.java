@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface FreeAtHomeDeviceStateListener {
-    public void onDeviceRemoved(String event);
+    void onDeviceRemoved(String event);
 
-    public void onDeviceStateChanged(String event, String valueString);
+    void onDeviceStateChanged(String event, String valueString);
 }

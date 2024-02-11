@@ -52,7 +52,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
             @Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
         super.activate(componentContext);
         this.channelTypeProvider = channelTypeProvider;
-        this.httpClient = httpClientFactory.createHttpClient("FreeAtHome");
+        httpClient = httpClientFactory.createHttpClient(FreeAtHomeSystemBindingConstants.BINDING_ID);
     }
 
     @Override
