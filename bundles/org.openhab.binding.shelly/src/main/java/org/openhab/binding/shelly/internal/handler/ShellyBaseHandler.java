@@ -150,7 +150,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         Map<String, String> properties = thing.getProperties();
         String gen = getString(properties.get(PROPERTY_DEV_GEN));
         String thingType = getThingType();
-        gen2 = "2".equals(gen) || ShellyDeviceProfile.isGeneration2(thingType);
+        gen2 = "2".equals(gen) || "3".equals(gen) || ShellyDeviceProfile.isGeneration2(thingType);
         blu = ShellyDeviceProfile.isBluSeries(thingType);
         this.api = !blu ? !gen2 ? new Shelly1HttpApi(thingName, this) : new Shelly2ApiRpc(thingName, thingTable, this)
                 : new ShellyBluApi(thingName, thingTable, this);
@@ -703,10 +703,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         return false;
     }
 
-    private boolean isWatchdogStarted() {
-        return watchdog > 0;
-    }
-
     @Override
     public void reinitializeThing() {
         logger.debug("{}: Re-Initialize Thing", thingName);
@@ -1008,6 +1004,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         config.serviceName = getString(properties.get(PROPERTY_SERVICE_NAME));
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
+        if (config.localIp.startsWith("169.254")) {
+            setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
+                    config.localIp);
+            return;
+        }
+
         if (!profile.isGen2 && config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
             // Gen2 has hard coded user "admin"
             config.userId = bindingConfig.defaultUserId;

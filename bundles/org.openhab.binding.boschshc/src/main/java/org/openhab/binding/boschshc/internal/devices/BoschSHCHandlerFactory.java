@@ -23,6 +23,7 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMART_BULB;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR_2;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_THERMOSTAT;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_TWINGUARD;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH;
@@ -47,6 +48,7 @@ import org.openhab.binding.boschshc.internal.devices.motiondetector.MotionDetect
 import org.openhab.binding.boschshc.internal.devices.plug.PlugHandler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControlHandler;
 import org.openhab.binding.boschshc.internal.devices.smartbulb.SmartBulbHandler;
+import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetector2Handler;
 import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.thermostat.ThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.twinguard.TwinguardHandler;
@@ -120,7 +122,8 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH,
                     thing -> new UniversalSwitchHandler(thing, timeZoneProvider)),
             new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH_2,
-                    thing -> new UniversalSwitch2Handler(thing, timeZoneProvider)));
+                    thing -> new UniversalSwitch2Handler(thing, timeZoneProvider)),
+            new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR_2, SmokeDetector2Handler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

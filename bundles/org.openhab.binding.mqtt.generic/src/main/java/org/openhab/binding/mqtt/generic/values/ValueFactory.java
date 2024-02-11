@@ -36,8 +36,10 @@ public class ValueFactory {
         Value value;
         switch (channelTypeID) {
             case MqttBindingConstants.STRING:
-                value = config.allowedStates.isBlank() ? new TextValue()
+                TextValue textValue = config.allowedStates.isBlank() ? new TextValue()
                         : new TextValue(config.allowedStates.split(","));
+                textValue.setNullValue(config.nullValue);
+                value = textValue;
                 break;
             case MqttBindingConstants.DATETIME:
                 value = new DateTimeValue();

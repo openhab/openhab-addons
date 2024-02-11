@@ -33,6 +33,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.DoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -443,6 +444,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         long end = filterEndDate == null ? System.currentTimeMillis() / 1000
                 : filterEndDate.toInstant().getEpochSecond();
 
+        DoubleFunction<State> toState = toStateMapper(item, unit);
+
         try {
             if (filterBeginDate == null) {
                 // as rrd goes back for years and gets more and more inaccurate, we only support descending order
@@ -455,8 +458,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
-                            HistoricItem rrd4jItem = new RRD4jItem(itemName, mapToState(lastValue, item, unit),
-                                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(db.getLastArchiveUpdateTime() * 1000),
+                            HistoricItem rrd4jItem = new RRD4jItem(itemName, toState.apply(lastValue),
+                                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(db.getLastArchiveUpdateTime()),
                                             ZoneId.systemDefault()));
                             return List.of(rrd4jItem);
                         } else {
@@ -486,13 +489,26 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
             List<HistoricItem> items = new ArrayList<>();
             long ts = result.getFirstTimestamp();
+            ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault());
             long step = result.getRowCount() > 1 ? result.getStep() : 0;
+
+            double prevValue = Double.NaN;
+            State prevState = null;
             for (double value : result.getValues(DATASOURCE_STATE)) {
                 if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
-                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, item, unit),
-                            ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault()));
+                    State state;
+
+                    if (prevValue == value) {
+                        state = prevState;
+                    } else {
+                        prevState = state = toState.apply(value);
+                        prevValue = value;
+                    }
+
+                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, state, zdt);
                     items.add(rrd4jItem);
                 }
+                zdt = zdt.plusSeconds(step);
                 ts += step;
             }
             return items;
@@ -603,25 +619,24 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private State mapToState(double value, @Nullable Item item, @Nullable Unit unit) {
+    private <Q extends Quantity<Q>> DoubleFunction<State> toStateMapper(@Nullable Item item, @Nullable Unit<Q> unit) {
         if (item instanceof GroupItem groupItem) {
             item = groupItem.getBaseItem();
         }
 
         if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
-            return OnOffType.from(value != 0.0d);
+            return (value) -> OnOffType.from(value != 0.0d);
         } else if (item instanceof ContactItem) {
-            return value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+            return (value) -> value == 0.0d ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem || item instanceof ColorItem) {
             // make sure Items that need PercentTypes instead of DecimalTypes do receive the right information
-            return new PercentType((int) Math.round(value * 100));
+            return (value) -> new PercentType((int) Math.round(value * 100));
         } else if (item instanceof NumberItem) {
             if (unit != null) {
-                return new QuantityType(value, unit);
+                return (value) -> new QuantityType<>(value, unit);
             }
         }
-        return new DecimalType(value);
+        return DecimalType::new;
     }
 
     private boolean isSupportedItemType(Item item) {

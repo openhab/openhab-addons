@@ -75,6 +75,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYPLUS2PM_ROLLER, //
             THING_TYPE_SHELLYPLUSI4, //
             THING_TYPE_SHELLYPLUSI4DC, //
+            THING_TYPE_SHELLYPLUSDIMMER10V, //
             THING_TYPE_SHELLYPLUSHT, //
             THING_TYPE_SHELLYPLUSSMOKE, //
             THING_TYPE_SHELLYPLUSPLUGS, //
@@ -104,6 +105,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYBLUBUTTON, //
             THING_TYPE_SHELLYBLUDW, //
             THING_TYPE_SHELLYBLUMOTION, //
+            THING_TYPE_SHELLYBLUGW, //
 
             THING_TYPE_SHELLYPROTECTED, //
             THING_TYPE_SHELLYUNKNOWN);

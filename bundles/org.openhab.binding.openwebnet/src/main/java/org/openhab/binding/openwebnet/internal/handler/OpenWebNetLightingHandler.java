@@ -385,8 +385,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      *
      * @param channelId the channelId string
      **/
-    @Nullable
-    private String toWhere(String channelId) {
+    private String toWhere(String channelId) throws OWNException {
         Where w = deviceWhere;
         if (w != null) {
             OpenWebNetBridgeHandler brH = bridgeHandler;
@@ -400,6 +399,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 }
             }
         }
-        return null;
+        throw new OWNException("Cannot select channel from WHERE " + w);
     }
 }

@@ -125,6 +125,11 @@ public class X3HybridG4InverterData extends CommonInverterData {
         return ((double) getData(18)) / 100;
     }
 
+    @Override
+    public short getInverterWorkModeCode() {
+        return getData(19);
+    }
+
     // Battery
 
     @Override
