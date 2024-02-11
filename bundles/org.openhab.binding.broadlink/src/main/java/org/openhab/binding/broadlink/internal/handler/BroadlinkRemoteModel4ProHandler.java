@@ -108,7 +108,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
 
         if (value == null || value.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No entries found for command" + command + " in RF map file, or the file is missing.");
+                    "No entries found for command " + command + " in RF map file, or the file is missing.");
             return null;
         }
 

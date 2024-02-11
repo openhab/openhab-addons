@@ -63,10 +63,11 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 
 ## Map File
 
-The Broadlink RM family of devices can transmit IR codes.
-The map file contains a list of IR command codes to send via the device.
+The Broadlink RM family of devices can transmit IR codes. The pro models add RF codes.
+The map file contains a list of IR/RF command codes to send via the device.
 The file uses the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and is stored in the `<OPENHAB_CONF>/transform` folder.
-By default, the file name is `broadlink.map` but can be changed using the `mapFile` setting.
+By default, the file name is `broadlink.map` for the IR codes, but can be changed using the `mapFile` setting. In similar fashion, the RM pro models
+store the codes in the `broadlinkrf.map` file. 
 
 Here is a map file example:
 
@@ -78,6 +79,7 @@ heatpump_off=2600760069380D0C0D0C0D290D0C0D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D2
 
 The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu heat pump.
 To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
+For RF, the `rfcommand` channel is used. 
 
 ## Learning new remote codes
 

@@ -136,12 +136,14 @@ public class BroadlinkMappingService {
                     List<WatchEvent<?>> events = key.pollEvents();
                     Stream<WatchEvent<?>> modificationEvents = events.stream()
                             .filter(e -> e.kind() == StandardWatchEventKinds.ENTRY_MODIFY);
+                    Stream<WatchEvent<?>> modificationEvents2 = events.stream()
+                            .filter(e -> e.kind() == StandardWatchEventKinds.ENTRY_MODIFY);
                     if (modificationEvents
                             .anyMatch(e -> ((WatchEvent<Path>) e).context().toString().equals(irMapFileName))) {
                         logger.debug("File {} has changed - reloading", irMapFileName);
                         reloadFromFile(irMapFileName, irProperties, irTargetChannelUID);
                     }
-                    if (modificationEvents
+                    if (modificationEvents2
                             .anyMatch(e -> ((WatchEvent<Path>) e).context().toString().equals(rfMapFileName))) {
                         logger.debug("File {} has changed - reloading", rfMapFileName);
                         reloadFromFile(rfMapFileName, rfProperties, rfTargetChannelUID);
