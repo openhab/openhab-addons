@@ -54,6 +54,27 @@ Genres are a good example for using the metadata, only show the styles of music 
 | name      | String | RW         | This is the name of the selected station.                                                                   |
 | icon      | String | RW         | This is the icon for the selected station if available in their database.                                   |
 
+## Station Searches
+
+Update the last search if the filters are not changed.
+
+```
+Radio_Station.sendCommand(REFRESH)
+```
+
+Search for all stations that contain `hit` in their name, and auto select the first result.
+All results are available to be selected, should the wrong one get sent to the top of the list based on clicks or vote counts.
+
+```
+Radio_Station.sendCommand("hit")
+```
+
+Search and auto select the station if you know the UUID from the website.
+
+```
+Radio_Station.sendCommand("962cc6df-0601-11e8-ae97-52543be04c81")
+```
+
 ## Show Your Thanks
 
 If you enjoy the binding, then please consider sponsoring or giving a once off tip as a thank you via the links.
