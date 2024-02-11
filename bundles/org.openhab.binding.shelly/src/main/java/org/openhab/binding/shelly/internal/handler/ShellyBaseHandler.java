@@ -415,7 +415,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
                 case CHANNEL_SENSOR_SLEEPTIME:
                     logger.debug("{}: Set sensor sleep time to {}", thingName, command);
-                    int value = (int) getNumber(command);
+                    int value = getNumber(command).intValue();
                     value = value > 0 ? Math.max(SHELLY_MOTION_SLEEPTIME_OFFSET, value - SHELLY_MOTION_SLEEPTIME_OFFSET)
                             : 0;
                     api.setSleepTime(value);
@@ -432,7 +432,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Select profile {}", thingName, command);
                     int id = -1;
                     if (command instanceof Number) {
-                        id = (int) getNumber(command);
+                        id = getNumber(command).intValue();
                     } else {
                         String cmd = command.toString();
                         if (isDigit(cmd.charAt(0))) {
@@ -458,7 +458,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_SETTEMP:
                     logger.debug("{}: Set temperature to {}", thingName, command);
-                    api.setValveTemperature(0, (int) getNumber(command));
+                    api.setValveTemperature(0, getNumber(command).intValue());
                     break;
                 case CHANNEL_CONTROL_POSITION:
                     logger.debug("{}: Set position to {}", thingName, command);
@@ -470,7 +470,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_BTIMER:
                     logger.debug("{}: Set boost timer to {}", thingName, command);
-                    api.setValveBoostTime(0, (int) getNumber(command));
+                    api.setValveBoostTime(0, getNumber(command).intValue());
                     break;
                 case CHANNEL_SENSOR_MUTE:
                     if (profile.isSmoke && ((OnOffType) command) == OnOffType.ON) {
@@ -512,19 +512,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         } catch (IllegalArgumentException e) {
             logger.debug("{}: {}", thingName, messages.get("command.failed", command, channelUID));
         }
-    }
-
-    private double getNumber(Command command) {
-        if (command instanceof QuantityType<?> quantityCommand) {
-            return quantityCommand.doubleValue();
-        }
-        if (command instanceof DecimalType decimalCommand) {
-            return decimalCommand.doubleValue();
-        }
-        if (command instanceof Number numberCommand) {
-            return numberCommand.doubleValue();
-        }
-        throw new IllegalArgumentException("Invalid Number type for conversion: " + command);
     }
 
     /**
