@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.radiobrowser.internal.json;
+package org.openhab.binding.radiobrowser.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.radiobrowser.internal.api.ApiException;
 import org.openhab.binding.radiobrowser.internal.api.RadioBrowserApi;
+import org.openhab.binding.radiobrowser.internal.api.RadioBrowserJson.Country;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -110,8 +111,14 @@ public class RadioBrowserHandler extends BaseThingHandler {
                 updateState(CHANNEL_STATE, new StringType());
                 updateState(CHANNEL_LANGUAGE, new StringType());
                 String countryCode = localeProvider.getLocale().getCountry();
-                updateState(CHANNEL_COUNTRY, new StringType(radioBrowserApi.countryMap.get(countryCode).name));
-                radioBrowserApi.setCountry(countryCode);
+                Country localCountry = radioBrowserApi.countryMap.get(countryCode);
+                if (localCountry != null) {
+                    updateState(CHANNEL_COUNTRY, new StringType(localCountry.name));
+                    radioBrowserApi.setCountry(countryCode);
+                } else {
+                    logger.info(
+                            "The binding could not auto discover your country, check openHAB has a country setup in the settings");
+                }
             } catch (ApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }

@@ -38,7 +38,6 @@ public class RadioBrowserBindingConstants {
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_ICON = "icon";
     public static final String CHANNEL_STREAM = "stream";
-    public static final String CHANNEL_FAVORITES = "favorites";
     public static final String CHANNEL_ADD_FAVORITE = "addFavorite";
     public static final String CHANNEL_REMOVE_FAVORITE = "removeFavorite";
 }

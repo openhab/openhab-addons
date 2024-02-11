@@ -34,10 +34,10 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.radiobrowser.internal.RadioBrowserHandler;
-import org.openhab.binding.radiobrowser.internal.json.RadioBrowserJson.Country;
-import org.openhab.binding.radiobrowser.internal.json.RadioBrowserJson.Language;
-import org.openhab.binding.radiobrowser.internal.json.RadioBrowserJson.State;
-import org.openhab.binding.radiobrowser.internal.json.RadioBrowserJson.Station;
+import org.openhab.binding.radiobrowser.internal.api.RadioBrowserJson.Country;
+import org.openhab.binding.radiobrowser.internal.api.RadioBrowserJson.Language;
+import org.openhab.binding.radiobrowser.internal.api.RadioBrowserJson.State;
+import org.openhab.binding.radiobrowser.internal.api.RadioBrowserJson.Station;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateOption;
@@ -120,9 +120,12 @@ public class RadioBrowserApi {
 
     private List<StateOption> getStates() throws ApiException {
         try {
-            String returnContent = sendGetRequest(
-                    "/json/states/" + URLEncoder.encode(countryMap.get(countryCode).name, "UTF-8").replace("+", "%20")
-                            + "/?hidebroken=true");
+            Country localCountry = countryMap.get(countryCode);
+            if (localCountry == null) {
+                return new ArrayList<>();
+            }
+            String returnContent = sendGetRequest("/json/states/"
+                    + URLEncoder.encode(localCountry.name, "UTF-8").replace("+", "%20") + "/?hidebroken=true");
             State[] states = gson.fromJson(returnContent, State[].class);
             if (states == null) {
                 throw new ApiException("Could not get states");
