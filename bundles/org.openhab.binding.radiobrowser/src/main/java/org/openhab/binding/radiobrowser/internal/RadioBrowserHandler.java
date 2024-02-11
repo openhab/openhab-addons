@@ -116,6 +116,7 @@ public class RadioBrowserHandler extends BaseThingHandler {
             updateState(CHANNEL_STATION, new StringType());
             updateState(CHANNEL_STATE, new StringType());
             updateState(CHANNEL_LANGUAGE, new StringType());
+            updateState(CHANNEL_GENRE, new StringType());
             String countryCode = localeProvider.getLocale().getCountry();
             Country localCountry = radioBrowserApi.countryMap.get(countryCode);
             if (localCountry != null) {

@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -76,7 +77,7 @@ public class RadioBrowserApi {
         String errorReason = "";
         request = httpClient.newRequest("http://" + server + url);
         request.header("Host", server);
-        request.header("User-Agent", "openHAB/RadioBrowserBinding");// api requirement
+        request.header("User-Agent", "openHAB4/RadioBrowserBinding");// api requirement
         request.header("Connection", "Keep-Alive");
         request.timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
@@ -105,7 +106,7 @@ public class RadioBrowserApi {
         List<String> listResult = new ArrayList<>();
         try {
             // add all round robin servers one by one
-            InetAddress[] list = InetAddress.getAllByName("all.api.radio-browser.info");
+            InetAddress[] list = InetAddress.getAllByName(ALL_SERVERS);
             for (InetAddress item : list) {
                 listResult.add(item.getCanonicalHostName());
             }
@@ -128,7 +129,7 @@ public class RadioBrowserApi {
                     + URLEncoder.encode(localCountry.name, "UTF-8").replace("+", "%20") + "/?hidebroken=true");
             State[] states = gson.fromJson(returnContent, State[].class);
             if (states == null) {
-                throw new ApiException("Could not get states");
+                throw new ApiException("Server replied with no states");
             }
             List<StateOption> stateOptions = new ArrayList<>();
             for (State state : states) {
@@ -147,7 +148,7 @@ public class RadioBrowserApi {
             String returnContent = sendGetRequest("/json/countries?hidebroken=true");
             Country[] countries = gson.fromJson(returnContent, Country[].class);
             if (countries == null) {
-                throw new ApiException("Could not get countries");
+                throw new ApiException("Server replied with no countries");
             }
             List<StateOption> countryOptions = new ArrayList<>();
             for (Country country : countries) {
@@ -170,7 +171,7 @@ public class RadioBrowserApi {
             String returnContent = sendGetRequest("/json/languages?hidebroken=true");
             Language[] languages = gson.fromJson(returnContent, Language[].class);
             if (languages == null) {
-                throw new ApiException("Could not get languages");
+                throw new ApiException("Server replied with no languages");
             }
             List<StateOption> languageOptions = new ArrayList<>();
             languageOptions.add(new StateOption("ALL", "Show All Languages"));
@@ -193,7 +194,7 @@ public class RadioBrowserApi {
             String returnContent = sendGetRequest("/json/stations/search" + arguments);
             Station[] stations = gson.fromJson(returnContent, Station[].class);
             if (stations == null) {
-                throw new ApiException("Could not get stations");
+                throw new ApiException("Server replied with json that did not contain stations");
             }
             List<StateOption> stationOptions = new ArrayList<>();
             for (Station station : stations) {
@@ -203,7 +204,7 @@ public class RadioBrowserApi {
             handler.stateDescriptionProvider
                     .setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATION), stationOptions);
             if (stationMap.isEmpty()) {
-                handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " matches found"));
+                handler.setChannelState(CHANNEL_STATION, new StringType("0 matches found"));
             } else {
                 handler.setChannelState(CHANNEL_STATION,
                         new StringType(stationMap.size() + " stations, click to select"));
@@ -220,12 +221,12 @@ public class RadioBrowserApi {
         searchStations(updateFilter());
     }
 
-    private Station searchStationUUID(String uuid) throws ApiException {
+    private @Nullable Station searchStationUUID(String uuid) throws ApiException {
         try {
-            String returnContent = sendGetRequest("/json/stations/" + uuid);
+            String returnContent = sendGetRequest("/json/stations/byuuid/" + uuid);
             Station[] stations = gson.fromJson(returnContent, Station[].class);
-            if (stations == null) {
-                throw new ApiException("Could not find requested station, missing from list and is not a valid UUID.");
+            if (stations == null || stations.length == 0) {
+                return null;
             }
             return stations[0];
         } catch (JsonSyntaxException e) {
@@ -233,23 +234,63 @@ public class RadioBrowserApi {
         }
     }
 
+    private @Nullable Station searchStationName(String name) throws ApiException {
+        try {
+            String returnContent = sendGetRequest("/json/stations/byname/" + name);
+            Station[] stations = gson.fromJson(returnContent, Station[].class);
+            if (stations == null || stations.length == 0) {
+                return null;
+            }
+            List<StateOption> stationOptions = new ArrayList<>();
+            stationMap.clear();
+            for (Station station : stations) {
+                stationMap.put(station.name, station);
+                stationOptions.add(new StateOption(station.name, station.name));
+            }
+            handler.stateDescriptionProvider
+                    .setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATION), stationOptions);
+            if (stationMap.isEmpty()) {
+                handler.setChannelState(CHANNEL_STATION, new StringType("0 matches found"));
+            } else {
+                handler.setChannelState(CHANNEL_STATION,
+                        new StringType(stationMap.size() + " stations, click to select"));
+            }
+            return stations[0]; // return first match
+        } catch (JsonSyntaxException e) {
+            throw new ApiException("Server did not reply with a valid json");
+        } catch (IllegalArgumentException e) {
+            // occurs when there are 0 matches
+            handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " matches found"));
+        }
+        return null;
+    }
+
     public void selectStation(String name) throws ApiException {
         Station station = stationMap.get(name);
         if (station == null) {
-            // missing from the MAP so its not from state options, try looking for UUID.
-            station = searchStationUUID(name);
+            // missing from the MAP so its not from state options, try searching.
+            if (name.contains("-") && name.length() == 36) {
+                logger.debug("Looking for station UUID:{}", name);
+                station = searchStationUUID(name);
+            } else {
+                logger.debug("Finding any stations that contain {} in the name.", name);
+                station = searchStationName(name);// first match gets selected but list contains all
+            }
+            if (station == null) {
+                return;
+            }
         }
-        handler.setChannelState(CHANNEL_NAME, new StringType(name));
+        handler.setChannelState(CHANNEL_NAME, new StringType(station.name));
         handler.setChannelState(CHANNEL_ICON, new StringType(station.favicon));
         handler.setChannelState(CHANNEL_STREAM, new StringType(station.url));
-        logger.debug("Selected stationUUID:{}", station.stationuuid);
+        logger.debug("Selected station UUID:{}", station.stationuuid);
         if (handler.config.clicks) {
             sendGetRequest("/json/url/" + station.stationuuid);
         }
     }
 
     private String updateFilter() {
-        String filter = "?" + handler.config.filters;
+        String filter = handler.config.filters;
         if (!language.isEmpty()) {
             filter = filter + "&language=" + language;
         }
