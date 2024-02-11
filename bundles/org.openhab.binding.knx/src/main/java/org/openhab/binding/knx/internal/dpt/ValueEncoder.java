@@ -263,7 +263,8 @@ public class ValueEncoder {
                 if (DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getID().equals(dptId)
                         || DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getID().equals(dptId)) {
                     return bigDecimal.divide(BigDecimal.valueOf(1000)).stripTrailingZeros().toPlainString().replace('.',
-                            ',');
+                            ((DecimalFormat) DecimalFormat.getInstance()).getDecimalFormatSymbols()
+                                    .getDecimalSeparator());
                 }
                 return bigDecimal.stripTrailingZeros().toPlainString();
             case "18":
