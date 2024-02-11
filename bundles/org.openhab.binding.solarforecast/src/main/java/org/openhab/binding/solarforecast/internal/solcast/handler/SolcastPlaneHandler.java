@@ -61,7 +61,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private final HttpClient httpClient;
     private Optional<SolcastPlaneConfiguration> configuration = Optional.empty();
     private Optional<SolcastBridgeHandler> bridgeHandler = Optional.empty();
-    private Optional<SolcastObject> forecast = Optional.empty();
+    protected Optional<SolcastObject> forecast = Optional.empty();
 
     public SolcastPlaneHandler(Thing thing, HttpClient hc) {
         super(thing);
@@ -141,7 +141,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         }
     }
 
-    protected SolcastObject fetchData() {
+    protected synchronized SolcastObject fetchData() {
         forecast.ifPresent(forecastObject -> {
             if (forecastObject.isExpired() || !forecastObject.isValid()) {
                 String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
@@ -191,7 +191,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         return forecast.get();
     }
 
-    private void updateChannels(SolcastObject f) {
+    protected void updateChannels(SolcastObject f) {
         ZonedDateTime now = ZonedDateTime.now(bridgeHandler.get().getTimeZone());
         double energyDay = f.getDayTotal(now.toLocalDate(), QueryMode.Estimation);
         double energyProduced = f.getActualEnergyValue(now, QueryMode.Estimation);

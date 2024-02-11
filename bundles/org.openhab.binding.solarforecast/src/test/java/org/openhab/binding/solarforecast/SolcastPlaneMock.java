@@ -14,12 +14,17 @@ package org.openhab.binding.solarforecast;
 
 import static org.mockito.Mockito.mock;
 
+import java.time.Instant;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneHandler;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.internal.BridgeImpl;
 import org.openhab.core.thing.internal.ThingImpl;
 
 /**
@@ -29,11 +34,32 @@ import org.openhab.core.thing.internal.ThingImpl;
  */
 @NonNullByDefault
 public class SolcastPlaneMock extends SolcastPlaneHandler {
+    Bridge bridge;
 
-    public SolcastPlaneMock(SolcastObject sco) {
+    public SolcastPlaneMock(BridgeImpl b) {
         super(new ThingImpl(SolarForecastBindingConstants.SOLCAST_PLANE, new ThingUID("test", "plane")),
                 mock(HttpClient.class));
         super.setCallback(new CallbackMock());
-        super.setForecast(sco);
+        bridge = b;
+    }
+
+    @Override
+    public @NonNull Bridge getBridge() {
+        return bridge;
+    }
+
+    @Override
+    protected SolcastObject fetchData() {
+        forecast.ifPresent(forecastObject -> {
+            if (forecastObject.isExpired() || !forecastObject.isValid()) {
+                String content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+                SolcastObject sco1 = new SolcastObject(content, Instant.now().plusSeconds(3600), new TimeZP());
+                super.setForecast(sco1);
+                // new forecast
+            } else {
+                super.updateChannels(forecastObject);
+            }
+        });
+        return forecast.get();
     }
 }

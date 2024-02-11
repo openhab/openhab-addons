@@ -150,9 +150,9 @@ public class SolcastObject implements SolarForecast {
 
     public boolean isExpired() {
         if (expirationDateTime.isAfter(Instant.now())) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     public double getActualEnergyValue(ZonedDateTime query, QueryMode mode) {

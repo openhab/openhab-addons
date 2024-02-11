@@ -112,7 +112,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     /**
      * Get data for all planes. Protect parts map from being modified during update
      */
-    private synchronized void getData() {
+    public synchronized void getData() {
         if (planes.isEmpty()) {
             logger.debug("No PV plane defined yet");
             return;

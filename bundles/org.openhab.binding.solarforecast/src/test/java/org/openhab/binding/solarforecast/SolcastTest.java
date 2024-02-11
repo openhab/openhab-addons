@@ -40,7 +40,9 @@ import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneHa
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.internal.BridgeImpl;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
@@ -290,12 +292,10 @@ class SolcastTest {
 
             // check if energy calculation fits to daily query
             assertEquals(qt.doubleValue(), eqt.doubleValue(), TOLERANCE, "Total " + i + " days forecast");
-            // System.out.println("Day: " + day + " ADay: " + qt.doubleValue() + " EDay: " + eqt.doubleValue());
             totalEnergy += qt.doubleValue();
 
             // check if sum is fitting to total energy query
             qt = scfo.getEnergy(start.toInstant(), start.plusDays(i + 1).toInstant());
-            // System.out.println("Total: " + qt.doubleValue());
             assertEquals(totalEnergy, qt.doubleValue(), TOLERANCE * 2, "Total " + i + " days forecast");
         }
     }
@@ -376,7 +376,6 @@ class SolcastTest {
         double startValue = sco.getActualPowerValue(now, QueryMode.Estimation);
         double endValue = sco.getActualPowerValue(now.plusMinutes(30), QueryMode.Estimation);
         for (int i = 0; i < 31; i++) {
-            // System.out.println(i + " : " + sco.getActualPowerValue(now.plusMinutes(i), QueryMode.Estimation));
             double interpolation = i / 30.0;
             double expected = ((1 - interpolation) * startValue) + (interpolation * endValue);
             assertEquals(expected, sco.getActualPowerValue(now.plusMinutes(i), QueryMode.Estimation), TOLERANCE,
@@ -396,15 +395,10 @@ class SolcastTest {
         double productionExpected = 0;
         for (int i = 0; i < 1000; i++) {
             double forecast = sco.getActualEnergyValue(now.plusMinutes(i), QueryMode.Estimation);
-            // int hour = now.plusMinutes(i).getHour();
-            // int minute = now.plusMinutes(i).getMinute();
             double addOnExpected = sco.getActualPowerValue(now.plusMinutes(i), QueryMode.Estimation) / 60.0;
             productionExpected += addOnExpected;
             double diff = forecast - productionExpected;
             maxDiff = Math.max(diff, maxDiff);
-            // System.out.println(hour + ":" + minute + " : Forecast " + Math.round(forecast * 1000) / 1000.0
-            // + " - Expected " + Math.round(productionExpected * 1000) / 1000.0 + " - Diff "
-            // + Math.round(diff * 1000) / 1000.0);
             assertEquals(productionExpected, sco.getActualEnergyValue(now.plusMinutes(i), QueryMode.Estimation),
                     100 * TOLERANCE, "Step " + i);
         }
@@ -432,7 +426,6 @@ class SolcastTest {
         JSONObject joined = new JSONObject(sco.getRaw());
         assertTrue(joined.has("forecasts"), "Forecasts available");
         assertTrue(joined.has("estimated_actuals"), "Actual data available");
-        // System.out.println(sco.getDay(LocalDate.now()));
     }
 
     @Test
@@ -547,22 +540,20 @@ class SolcastTest {
 
     @Test
     void testCombinedPowerTimeSeries() {
-        SolcastBridgeHandler scbh = new SolcastBridgeHandler(
-                new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITGE, "bridge"), new TimeZP());
+        BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITGE, "bridge");
+        SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
+        bi.setHandler(scbh);
         CallbackMock cm = new CallbackMock();
         scbh.setCallback(cm);
 
-        String content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
-        SolcastObject sco1 = new SolcastObject(content, Instant.now(), new TimeZP());
-        SolcastPlaneHandler scph1 = new SolcastPlaneMock(sco1);
-        scbh.addPlane(scph1);
-        scbh.forecastUpdate();
+        SolcastPlaneHandler scph1 = new SolcastPlaneMock(bi);
+        scph1.initialize();
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:power-estimate");
 
-        SolcastPlaneHandler scph2 = new SolcastPlaneMock(sco1);
-        scbh.addPlane(scph2);
-        scbh.forecastUpdate();
+        SolcastPlaneHandler scph2 = new SolcastPlaneMock(bi);
+        scph2.initialize();
         TimeSeries ts2 = cm.getTimeSeries("solarforecast:sc-site:bridge:power-estimate");
+
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
         while (iter1.hasNext()) {
@@ -577,22 +568,20 @@ class SolcastTest {
 
     @Test
     void testCombinedEnergyTimeSeries() {
-        SolcastBridgeHandler scbh = new SolcastBridgeHandler(
-                new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITGE, "bridge"), new TimeZP());
+        BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITGE, "bridge");
+        SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
+        bi.setHandler(scbh);
         CallbackMock cm = new CallbackMock();
         scbh.setCallback(cm);
 
-        String content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
-        SolcastObject sco1 = new SolcastObject(content, Instant.now(), new TimeZP());
-        SolcastPlaneHandler scph1 = new SolcastPlaneMock(sco1);
-        scbh.addPlane(scph1);
-        scbh.forecastUpdate();
+        SolcastPlaneHandler scph1 = new SolcastPlaneMock(bi);
+        scph1.initialize();
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:energy-estimate");
 
-        SolcastPlaneHandler scph2 = new SolcastPlaneMock(sco1);
-        scbh.addPlane(scph2);
-        scbh.forecastUpdate();
+        SolcastPlaneHandler scph2 = new SolcastPlaneMock(bi);
+        scph2.initialize();
         TimeSeries ts2 = cm.getTimeSeries("solarforecast:sc-site:bridge:energy-estimate");
+
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
         while (iter1.hasNext()) {
@@ -603,5 +592,32 @@ class SolcastTest {
             assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() / 2,
                     0.1, "Power Value");
         }
+    }
+
+    @Test
+    void testSingleEnergyTimeSeries() {
+        BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITGE, "bridge");
+        SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
+        bi.setHandler(scbh);
+        CallbackMock cm = new CallbackMock();
+        scbh.setCallback(cm);
+
+        SolcastPlaneHandler scph1 = new SolcastPlaneMock(bi);
+        scph1.initialize();
+
+        // simulate trigger of refresh job
+        scbh.getData();
+
+        TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:energy-estimate");
+        assertEquals(336, ts1.size(), "TimeSeries size");
+        Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
+        while (iter1.hasNext()) {
+            TimeSeries.Entry e1 = iter1.next();
+            assertEquals("kWh", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
+        }
+
+        // simulate item refresh
+        scbh.handleCommand(new ChannelUID("a:b:c:" + SolarForecastBindingConstants.CHANNEL_POWER_ACTUAL),
+                RefreshType.REFRESH);
     }
 }
