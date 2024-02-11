@@ -34,10 +34,12 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | port                | Integer | 80            | The network port for the device                                                   |
 | macAddress          | String  |               | The device's MAC Address                                                          |
 | pollingInterval     | Integer | 30            | The interval in seconds for polling the status of the device                      |
-| ignoreFailedUpdates | Boolean | false         | If enabled, failed status requests won't put the device `OFFLINE`                |
+| nameOfCommandToLearn| String  | DEVICE_ON     | The name of the IR or RF command to learn when using the learn command channel    |
 | mapFilename         | String  | broadlink.map | The map file that contains remote codes to send via IR                            |
+| rfmapFilename       | String  | broadlinkrf.map | The map file that contains remote codes to send via RF                          |
+| ignoreFailedUpdates | Boolean | false         | If enabled, failed status requests won't put the device `OFFLINE`                |
 
-> The `mapFilename` setting is applicable to the RM series of devices only.
+> The `mapFilename` setting is applicable to the RM series of devices only. The 'rfmapFilename' is only available for RM Pro series of devices.
 
 ## Channels
 

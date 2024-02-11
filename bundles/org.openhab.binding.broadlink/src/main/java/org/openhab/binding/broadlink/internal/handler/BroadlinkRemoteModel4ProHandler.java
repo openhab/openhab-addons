@@ -28,6 +28,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -56,6 +57,10 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
         if (!Utils.isOnline(getThing())) {
             logger.debug("Can't handle command {} because handler for thing {} is not ONLINE", command,
                     getThing().getLabel());
+            return;
+        }
+        if (command instanceof RefreshType) {
+            updateItemStatus();
             return;
         }
 

@@ -173,7 +173,9 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 handleLearningCommand(command.toString());
                 break;
             default:
-                logger.debug("Thing {} has unknown channel type '{}'", getThing().getLabel(), channelTypeUID.getId());
+                // logger.debug("Thing {} has unknown channel type '{}'", getThing().getLabel(),
+                // channelTypeUID.getId());
+                break;
         }
     }
 
