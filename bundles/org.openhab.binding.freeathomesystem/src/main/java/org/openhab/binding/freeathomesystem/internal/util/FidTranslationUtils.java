@@ -194,7 +194,8 @@ public class FidTranslationUtils {
     public static final int FID_MOVEMENT_DETECTOR_FLEX = 0x1090;
     public static final int FID_DIMMING_ACTUATOR_FLEX = 0x1810;
 
-    private static final Map<String, String> mapFunctionId = Map.ofEntries(Map.entry("0x0000", "@text/fid-control-element"), // FID_SWITCH_SENSOR
+    private static final Map<String, String> mapFunctionId = Map.ofEntries(
+            Map.entry("0x0000", "@text/fid-control-element"), // FID_SWITCH_SENSOR
             Map.entry("0x0001", "@text/fid-dimming-sensor"), // FID_DIMMING_SENSOR
             Map.entry("0x0003", "@text/fid-blind-sensor"), // FID_BLIND_SENSOR
             Map.entry("0x0004", "@text/fid-stairwell-light-sensor"), // FID_STAIRCASE_LIGHT_SENSOR
