@@ -35,6 +35,7 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
     private static final String TEST_MAP_FILE = "broadlink.map";
     private static final String TEST_MAP_FILE_RF = "broadlinkrf.map";
     private static final ChannelUID TEST_CHANNEL_UID = new ChannelUID("bsm:test:channel:uid");
+    private static final ChannelUID TEST_CHANNEL_UID2 = new ChannelUID("bsm:test:channel:uid2");
 
     private BroadlinkRemoteDynamicCommandDescriptionProvider mockProvider = Mockito
             .mock(BroadlinkRemoteDynamicCommandDescriptionProvider.class);
@@ -42,7 +43,7 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
     @Test
     public void canReadFromAMapFile() {
         BroadlinkMappingService bms = new BroadlinkMappingService(TEST_MAP_FILE, TEST_MAP_FILE_RF, mockProvider,
-                TEST_CHANNEL_UID);
+                TEST_CHANNEL_UID, TEST_CHANNEL_UID2);
 
         assertEquals("00112233", bms.lookupIR("TEST_COMMAND_ON"));
         assertEquals("33221100", bms.lookupIR("TEST_COMMAND_OFF"));
@@ -50,7 +51,7 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
 
     @Test
     public void notifiesTheFrameworkOfTheAvailableCommands() {
-        new BroadlinkMappingService(TEST_MAP_FILE, TEST_MAP_FILE_RF, mockProvider, TEST_CHANNEL_UID);
+        new BroadlinkMappingService(TEST_MAP_FILE, TEST_MAP_FILE_RF, mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2);
 
         List<CommandOption> expected = new ArrayList<>();
         expected.add(new CommandOption("TEST_COMMAND_ON", null));

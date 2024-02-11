@@ -74,6 +74,8 @@ public class BroadlinkBindingConstants {
 
     public static final String COMMAND_CHANNEL = "command";
     public static final String LEARNING_CONTROL_CHANNEL = "learningControl";
+    public static final String RF_COMMAND_CHANNEL = "rfcommand";
+    public static final String RF_LEARNING_CONTROL_CHANNEL = "learningRFControl";
     public static final String LEARNING_CONTROL_COMMAND_LEARN = "LEARN";
     public static final String LEARNING_CONTROL_COMMAND_CHECK = "CHECK";
     public static final String CHANNEL_TEMPERATURE = "temperature";

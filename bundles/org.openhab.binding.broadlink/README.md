@@ -32,9 +32,9 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | ipAddress           | String  |               | Sets the IP address of the Broadlink device                                       |
 | staticIp            | Boolean | true          | Enabled if your broadlink device has a Static IP set                              |
 | port                | Integer | 80            | The network port for the device                                                   |
-| macAddress          | String  |               | The device's MAC Address                                                           |
+| macAddress          | String  |               | The device's MAC Address                                                          |
 | pollingInterval     | Integer | 30            | The interval in seconds for polling the status of the device                      |
-| ignoreFailedUpdates | Boolean | false         | If enabled, failed status requests won't put the device `OFFLINE`                       |
+| ignoreFailedUpdates | Boolean | false         | If enabled, failed status requests won't put the device `OFFLINE`                |
 | mapFilename         | String  | broadlink.map | The map file that contains remote codes to send via IR                            |
 
 > The `mapFilename` setting is applicable to the RM series of devices only.

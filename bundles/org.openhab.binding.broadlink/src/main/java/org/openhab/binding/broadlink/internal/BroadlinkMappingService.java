@@ -52,7 +52,8 @@ public class BroadlinkMappingService {
     private final String irMapFileName;
     private final String rfMapFileName;
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
-    private final ChannelUID targetChannelUID;
+    private final ChannelUID irTargetChannelUID;
+    private final ChannelUID rfTargetChannelUID;
 
     private @Nullable WatchService watchService = null;
     private @Nullable WatchKey transformDirWatchKey = null;
@@ -61,14 +62,18 @@ public class BroadlinkMappingService {
     private Properties rfProperties = new Properties();
 
     public BroadlinkMappingService(String irMapFileName, String rfMapFileName,
-            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider, ChannelUID targetChannelUID) {
+            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider, ChannelUID irTargetChannelUID,
+            ChannelUID rfTargetChannelUID) {
         this.irMapFileName = irMapFileName;
         this.rfMapFileName = rfMapFileName;
         this.commandDescriptionProvider = commandDescriptionProvider;
-        this.targetChannelUID = targetChannelUID;
-        reloadFromFile();
+        this.irTargetChannelUID = irTargetChannelUID;
+        this.rfTargetChannelUID = rfTargetChannelUID;
+        reloadFromFile(irMapFileName, irProperties, irTargetChannelUID);
+        reloadFromFile(rfMapFileName, rfProperties, rfTargetChannelUID);
         startWatching();
-        logger.debug("BroadlinkMappingService constructed on behalf of {}", this.targetChannelUID);
+        logger.debug("BroadlinkMappingService constructed on behalf of {} and {}", this.irTargetChannelUID,
+                this.rfTargetChannelUID);
     }
 
     @SuppressWarnings("null")
@@ -134,7 +139,12 @@ public class BroadlinkMappingService {
                     if (modificationEvents
                             .anyMatch(e -> ((WatchEvent<Path>) e).context().toString().equals(irMapFileName))) {
                         logger.debug("File {} has changed - reloading", irMapFileName);
-                        reloadFromFile();
+                        reloadFromFile(irMapFileName, irProperties, irTargetChannelUID);
+                    }
+                    if (modificationEvents
+                            .anyMatch(e -> ((WatchEvent<Path>) e).context().toString().equals(rfMapFileName))) {
+                        logger.debug("File {} has changed - reloading", rfMapFileName);
+                        reloadFromFile(rfMapFileName, rfProperties, rfTargetChannelUID);
                     }
                     key.reset();
                 } catch (InterruptedException x) {
@@ -159,21 +169,21 @@ public class BroadlinkMappingService {
     }
 
     @SuppressWarnings("unchecked")
-    private void reloadFromFile() {
-        Path mapFilePath = Paths.get(TRANSFORM_DIR + irMapFileName);
+    private void reloadFromFile(String fileName, Properties prop, ChannelUID targetChannel) {
+        Path mapFilePath = Paths.get(TRANSFORM_DIR + fileName);
         try (FileReader reader = new FileReader(mapFilePath.toFile())) {
-            irProperties.load(reader);
-            logger.debug("Read {} commands from {}", irProperties.size(), mapFilePath);
-            notifyAvailableCommands((Set<String>) (Set<?>) irProperties.keySet());
+            prop.load(reader);
+            logger.debug("Read {} commands from {}", prop.size(), mapFilePath);
+            notifyAvailableCommands((Set<String>) (Set<?>) prop.keySet(), fileName, targetChannel);
         } catch (IOException e) {
             logger.warn("Couldn't read {}: {}", mapFilePath, e.getMessage());
         }
     }
 
-    private void notifyAvailableCommands(Set<String> commandNames) {
+    private void notifyAvailableCommands(Set<String> commandNames, String fileName, ChannelUID targetChannelUID) {
         List<CommandOption> commandOptions = new ArrayList<>();
         commandNames.forEach((c) -> commandOptions.add(new CommandOption(c, null)));
-        logger.debug("notifying framework about {} commands from {}", commandOptions.size(), irMapFileName);
+        logger.debug("notifying framework about {} commands from {}", commandOptions.size(), fileName);
         this.commandDescriptionProvider.setCommandOptions(targetChannelUID, commandOptions);
     }
 }

@@ -45,7 +45,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     public static final byte COMMAND_BYTE_CHECK_LEARNT_DATA = 0x04;
 
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
-    private @Nullable BroadlinkMappingService mappingService;
+    protected @Nullable BroadlinkMappingService mappingService;
 
     public BroadlinkRemoteHandler(Thing thing,
             BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
@@ -56,8 +56,10 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
+        // TODO: check if this also works for a Mini without RF
         this.mappingService = new BroadlinkMappingService(thingConfig.getMapFilename(), thingConfig.getRfmapFilename(),
-                commandDescriptionProvider, new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL));
+                commandDescriptionProvider, new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL),
+                new ChannelUID(thing.getUID(), BroadlinkBindingConstants.RF_COMMAND_CHANNEL));
     }
 
     @Override
@@ -152,16 +154,11 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             return;
         }
 
-        Channel channel = thing.getChannel(channelUID.getId());
-        if (channel == null) {
-            logger.warn("Unexpected null channel while handling command {}", command.toFullString());
-            return;
-        }
-        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        ChannelTypeUID channelTypeUID = extractChannelType(channelUID, command);
         if (channelTypeUID == null) {
-            logger.warn("Unexpected null channelTypeUID while handling command {}", command.toFullString());
             return;
         }
+
         switch (channelTypeUID.getId()) {
             case BroadlinkBindingConstants.COMMAND_CHANNEL: {
                 logger.debug("Handling ir command '{}' on channel {} of thing {}", command, channelUID.getId(),
@@ -178,6 +175,20 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             default:
                 logger.debug("Thing {} has unknown channel type '{}'", getThing().getLabel(), channelTypeUID.getId());
         }
+    }
+
+    protected @Nullable ChannelTypeUID extractChannelType(ChannelUID channelUID, Command command) {
+        Channel channel = thing.getChannel(channelUID.getId());
+        if (channel == null) {
+            logger.warn("Unexpected null channel while handling command {}", command.toFullString());
+            return null;
+        }
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        if (channelTypeUID == null) {
+            logger.warn("Unexpected null channelTypeUID while handling command {}", command.toFullString());
+            return null;
+        }
+        return channelTypeUID;
     }
 
     @SuppressWarnings("null")

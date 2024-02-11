@@ -98,6 +98,11 @@ public class BroadlinkRemoteModel4MiniHandler extends BroadlinkRemoteHandler {
         int lsb = decryptedResponse[0] & 0xFF;
         int msb = decryptedResponse[1] & 0xFF;
         int payloadLength = (msb << 8) + lsb;
+        if ((payloadLength + 2) > decryptedResponse.length) {
+            logger.warn("Received incomplete message, expected length: {}, received: {}", payloadLength + 2,
+                    decryptedResponse.length);
+            payloadLength = decryptedResponse.length - 2;
+        }
         return Utils.slice(decryptedResponse, 6, payloadLength + 2);
     }
 }
