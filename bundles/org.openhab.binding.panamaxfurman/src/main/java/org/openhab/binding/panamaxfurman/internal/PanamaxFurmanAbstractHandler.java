@@ -197,7 +197,7 @@ public abstract class PanamaxFurmanAbstractHandler extends BaseThingHandler
 
     @Override
     public void dispose() {
-        ScheduledFuture backgroundJob = this.backgroundJob;
+        ScheduledFuture<?> backgroundJob = this.backgroundJob;
         if (backgroundJob != null) {
             backgroundJob.cancel(false);
             this.backgroundJob = null;
