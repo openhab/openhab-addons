@@ -220,10 +220,24 @@ public class RadioBrowserApi {
         searchStations(updateFilter());
     }
 
+    private Station searchStationUUID(String uuid) throws ApiException {
+        try {
+            String returnContent = sendGetRequest("/json/stations/" + uuid);
+            Station[] stations = gson.fromJson(returnContent, Station[].class);
+            if (stations == null) {
+                throw new ApiException("Could not find requested station, missing from list and is not a valid UUID.");
+            }
+            return stations[0];
+        } catch (JsonSyntaxException e) {
+            throw new ApiException("Server did not reply with a valid json");
+        }
+    }
+
     public void selectStation(String name) throws ApiException {
         Station station = stationMap.get(name);
         if (station == null) {
-            return;
+            // missing from the MAP so its not from state options, try looking for UUID.
+            station = searchStationUUID(name);
         }
         handler.setChannelState(CHANNEL_NAME, new StringType(name));
         handler.setChannelState(CHANNEL_ICON, new StringType(station.favicon));

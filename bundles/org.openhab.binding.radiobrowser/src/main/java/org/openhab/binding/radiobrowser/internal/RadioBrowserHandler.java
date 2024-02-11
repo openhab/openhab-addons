@@ -14,7 +14,12 @@ package org.openhab.binding.radiobrowser.internal;
 
 import static org.openhab.binding.radiobrowser.internal.RadioBrowserBindingConstants.*;
 
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.radiobrowser.internal.api.ApiException;
 import org.openhab.binding.radiobrowser.internal.api.RadioBrowserApi;
@@ -45,6 +50,7 @@ public class RadioBrowserHandler extends BaseThingHandler {
     public final RadioBrowserStateDescriptionProvider stateDescriptionProvider;
     public RadioBrowserConfiguration config = new RadioBrowserConfiguration();
     private RadioBrowserApi radioBrowserApi;
+    private @Nullable ScheduledFuture<?> reconnectFuture = null;
 
     public RadioBrowserHandler(Thing thing, HttpClient httpClient,
             RadioBrowserStateDescriptionProvider stateDescriptionProvider, LocaleProvider localeProvider) {
@@ -93,8 +99,40 @@ public class RadioBrowserHandler extends BaseThingHandler {
                 }
             }
         } catch (ApiException e) {
-            logger.warn("Radio Browser Exception: {}", e.getMessage());
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            Future<?> future = reconnectFuture;
+            if (future == null) {
+                // reconnect every 3 mins, but try in 30 seconds time in case its only 1 of 5 servers down.
+                reconnectFuture = scheduler.scheduleWithFixedDelay(this::reconnect, 30, 180, TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    private void reconnect() {
+        try {
+            // Will look up and randomly connect to one of the servers
+            radioBrowserApi.initialize();
+            updateStatus(ThingStatus.ONLINE);
+            updateState(CHANNEL_STATION, new StringType());
+            updateState(CHANNEL_STATE, new StringType());
+            updateState(CHANNEL_LANGUAGE, new StringType());
+            String countryCode = localeProvider.getLocale().getCountry();
+            Country localCountry = radioBrowserApi.countryMap.get(countryCode);
+            if (localCountry != null) {
+                updateState(CHANNEL_COUNTRY, new StringType(localCountry.name));
+                radioBrowserApi.setCountry(countryCode);
+            } else {
+                logger.debug(
+                        "The binding could not auto discover your country, check openHAB has a country setup in the settings");
+            }
+
+            Future<?> future = reconnectFuture;
+            if (future != null) {
+                future.cancel(false);// don't interrupt as we are running it right now
+                reconnectFuture = null;
+            }
+        } catch (ApiException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -102,30 +140,16 @@ public class RadioBrowserHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(RadioBrowserConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
-
-        scheduler.execute(() -> {
-            try {
-                radioBrowserApi.initialize();
-                updateStatus(ThingStatus.ONLINE);
-                updateState(CHANNEL_STATION, new StringType());
-                updateState(CHANNEL_STATE, new StringType());
-                updateState(CHANNEL_LANGUAGE, new StringType());
-                String countryCode = localeProvider.getLocale().getCountry();
-                Country localCountry = radioBrowserApi.countryMap.get(countryCode);
-                if (localCountry != null) {
-                    updateState(CHANNEL_COUNTRY, new StringType(localCountry.name));
-                    radioBrowserApi.setCountry(countryCode);
-                } else {
-                    logger.info(
-                            "The binding could not auto discover your country, check openHAB has a country setup in the settings");
-                }
-            } catch (ApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        });
+        // First time connecting, try again in 60 seconds to try another random server out of 5? possible ones
+        reconnectFuture = scheduler.scheduleWithFixedDelay(this::reconnect, 0, 60, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
+        Future<?> future = reconnectFuture;
+        if (future != null) {
+            future.cancel(true);
+            reconnectFuture = null;
+        }
     }
 }

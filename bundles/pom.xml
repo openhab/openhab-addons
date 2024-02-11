@@ -946,7 +946,10 @@
             
     
     <module>org.openhab.binding.qolsysiq</module>
-            
+
+
+    <module>org.openhab.binding.radiobrowser</module>           
+
     
     <module>org.openhab.binding.radiothermostat</module>
             
