@@ -1,8 +1,8 @@
 # Jellyfin Binding
 
 This is the binding for [Jellyfin](https://jellyfin.org), the volunteer built media solution that puts you in control of your media.
-This binding allows connect to Jellyfin clients that supports remote control, it's built on top of the official Jellyfin kotlin sdk.
-Compatible with Jellyfin servers from version `10.8.1`, recommended is `10.8.13`.
+This binding allows you to connect to Jellyfin clients that supports remote control, it's built on top of the official Jellyfin Kotlin SDK.
+It is compatible with Jellyfin servers from version `10.8.1`, recommended is `10.8.13`.
 
 ## Discovery
 
@@ -47,7 +47,7 @@ In order to assist you with this process the binding expose a simple login form 
 | playing-item-season-name   | String | Name of the item's season currently playing, only have value when item is an episode (readonly)                 |
 | playing-item-season        | Number | Number of the item's season currently playing, only have value when item is an episode (readonly)               |
 | playing-item-episode       | Number | Number of the episode item currently playing, only have value when item is an episode (readonly)                |
-| playing-item-genders       | String | Comma separate list genders of the item currently playing (readonly)                                            |
+| playing-item-genders       | String | Comma-separated list genders of the item currently playing (readonly)                                           |
 | playing-item-type          | String | Type of the item currently playing (readonly)                                                                   |
 | playing-item-percentage    | Dimmer | Played percentage for the item currently playing, allow seek                                                    |
 | playing-item-second        | Number | Current second for the item currently playing, allow seek                                                       |
@@ -65,8 +65,8 @@ In order to assist you with this process the binding expose a simple login form 
 
 The terms search has a default behavior that can be modified by sending some predefined prefixes.
 
-The default behavior is to search for movies, series or episodes whose name starts with the given text, if it finds results the bind will proceed as said before.
-If the result is a series, the binding will try to resume some episode, if not it will look for the next episode to watch and finally will fall back to the first episode.
+The default behavior is to search for movies, series or episodes whose name starts with the given text. If it finds results the bind will proceed as said before.
+If the result is a series, the binding will try to resume some episode. If not it will look for the next episode to watch and finally will fall back to the first episode.
 
 You can prefix your search with `<type:movie>`, `<type:episode>`, `<type:series>` to limit your search to a specific type.
 
@@ -104,7 +104,8 @@ Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Web client"
 Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Android client" (jellyfin:server:exampleServerId)
 ```
 
-It is recommended to create the clients using the discovery. To get the device ids manually, it is possible to use the Jellyfin web interface with the web inspector and look for the request that is launched when you click the cast button (`<jellyfin url>/Sessions?ControllableByUserId=XXXXXXXXXXXX`).
+It is recommended to create the clients using the discovery.
+To get the device ids manually, it is possible to use the Jellyfin web interface with the web inspector and look for the request that is launched when you click the cast button (`<jellyfin url>/Sessions?ControllableByUserId=XXXXXXXXXXXX`).
 
 ### Example Items - jellyfin.items
 
