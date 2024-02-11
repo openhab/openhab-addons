@@ -55,6 +55,7 @@ import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.datapoint.CommandDP;
 import tuwien.auto.calimero.datapoint.Datapoint;
+import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.TranslatorTypes;
 import tuwien.auto.calimero.process.ProcessCommunicator;
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
@@ -352,9 +353,45 @@ public class Back2BackTest {
 
     @Test
     void testDpt7() {
-        // TODO add tests for more subtypes
         helper("7.001", new byte[] { 0, 42 }, new DecimalType(42));
         helper("7.001", new byte[] { (byte) 0xff, (byte) 0xff }, new DecimalType(65535));
+        // workaround in place, as Calimero uses "s" instead of "ms"
+        // refs: ValueEncoder::handleNumericTypes() (case 7) and DptUnits (static initialization)
+        assertTrue("s".equals(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getUnit()));
+        helper("7.002", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 ms"));
+        helper("7.002", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("7.002", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 ms"));
+        assertTrue("s".equals(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getUnit()));
+        helper("7.003", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("7.003", new byte[] { (byte) 0x00, (byte) 0x64 }, new QuantityType<>("1000 ms"));
+        helper("7.003", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("2550 ms"));
+        helper("7.003", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("655350 ms"));
+        helper("7.004", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("7.004", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("25500 ms"));
+        helper("7.004", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("6553500 ms"));
+        helper("7.005", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 s"));
+        helper("7.005", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 s"));
+        helper("7.005", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 s"));
+        helper("7.006", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 min"));
+        helper("7.006", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 min"));
+        helper("7.006", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 min"));
+        helper("7.006", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("3932100 s"));
+        helper("7.007", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 h"));
+        helper("7.007", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 h"));
+        helper("7.007", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("918000 s"));
+        helper("7.007", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 h"));
+
+        helper("7.010", new byte[] { 0, 42 }, new DecimalType(42));
+        helper("7.010", new byte[] { (byte) 0xff, (byte) 0xff }, new DecimalType(65535));
+        helper("7.011", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 mm"));
+        helper("7.011", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 mm"));
+        helper("7.011", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 mm"));
+        helper("7.012", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 mA"));
+        helper("7.012", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 mA"));
+        helper("7.012", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 mA"));
+        helper("7.013", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 lx"));
+        helper("7.013", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 lx"));
+        helper("7.013", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 lx"));
     }
 
     @Test
