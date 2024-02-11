@@ -144,6 +144,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     protected synchronized SolcastObject fetchData() {
         forecast.ifPresent(forecastObject -> {
             if (forecastObject.isExpired() || !forecastObject.isValid()) {
+                logger.info("Get new forecast " + forecastObject.toString());
                 String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
                 String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);
                 try {
@@ -202,13 +203,14 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     }
 
     protected synchronized void setForecast(SolcastObject f) {
+        logger.info("New forecast " + f.toString());
         forecast = Optional.of(f);
         sendTimeSeries(CHANNEL_POWER_ESTIMATE, f.getPowerTimeSeries(QueryMode.Estimation));
-        sendTimeSeries(CHANNEL_POWER_ESTIMATE10, f.getPowerTimeSeries(QueryMode.Optimistic));
-        sendTimeSeries(CHANNEL_POWER_ESTIMATE90, f.getPowerTimeSeries(QueryMode.Pessimistic));
+        sendTimeSeries(CHANNEL_POWER_ESTIMATE10, f.getPowerTimeSeries(QueryMode.Pessimistic));
+        sendTimeSeries(CHANNEL_POWER_ESTIMATE90, f.getPowerTimeSeries(QueryMode.Optimistic));
         sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, f.getEnergyTimeSeries(QueryMode.Estimation));
-        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE10, f.getEnergyTimeSeries(QueryMode.Optimistic));
-        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE90, f.getEnergyTimeSeries(QueryMode.Pessimistic));
+        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE10, f.getEnergyTimeSeries(QueryMode.Pessimistic));
+        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE90, f.getEnergyTimeSeries(QueryMode.Optimistic));
         bridgeHandler.ifPresent(h -> {
             h.forecastUpdate();
         });

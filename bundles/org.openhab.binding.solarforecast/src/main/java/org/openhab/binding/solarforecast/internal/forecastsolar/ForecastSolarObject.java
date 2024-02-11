@@ -91,11 +91,6 @@ public class ForecastSolarObject implements SolarForecast {
         }
     }
 
-    /**
-     * Check if ForecastObject has some valid forecast data for the future
-     *
-     * @return true: valid forecast data available till the end of the day
-     */
     public boolean isValid() {
         if (wattHourMap.isEmpty() || wattMap.isEmpty()) {
             return false;
@@ -103,16 +98,11 @@ public class ForecastSolarObject implements SolarForecast {
         return true;
     }
 
-    /**
-     * Check if refresh of forecast data shall happen
-     *
-     * @return true: refresh
-     */
     public boolean isExpired() {
         if (expirationDateTime.isAfter(Instant.now())) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     public double getActualEnergyValue(ZonedDateTime queryDateTime) {
