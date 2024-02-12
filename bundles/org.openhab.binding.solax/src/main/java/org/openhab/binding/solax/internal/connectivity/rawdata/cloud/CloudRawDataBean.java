@@ -160,7 +160,7 @@ public class CloudRawDataBean implements CloudInverterData {
 
     @Override
     public InverterType getInverterType() {
-        return result != null ? InverterType.fromIndex(result.getInverterType()) : InverterType.UNKNOWN;
+        return InverterType.fromIndex(result.getInverterType());
     }
 
     @Override
@@ -205,7 +205,7 @@ public class CloudRawDataBean implements CloudInverterData {
 
     @Override
     public int getBatteryStatus() {
-        return result != null ? result.getBatStatus() : Integer.MIN_VALUE;
+        return result.getBatStatus();
     }
 
     @Override
