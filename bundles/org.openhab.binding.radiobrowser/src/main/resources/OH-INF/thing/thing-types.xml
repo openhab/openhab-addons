@@ -23,7 +23,7 @@
 			<parameter name="filters" type="text" required="true">
 				<label>Filters</label>
 				<description>Enter your own custom filter starting with ?, to ensure a stream that works with your device</description>
-				<default>?hidebroken=true&amp;limit=1700&amp;order=clickcount</default>
+				<default>?hidebroken=true&amp;limit=1700&amp;reverse=true&amp;order=votes</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="clicks" type="boolean" required="true">
