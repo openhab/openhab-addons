@@ -253,91 +253,61 @@ Exchange the configuration data in [thing file](#thing-file) and you're ready to
 
 ```java
 Bridge solarforecast:fs-site:homeSite   "ForecastSolar Home" [ location="54.321,8.976"] {
-         Thing fs-plane homeSouthWest   "ForecastSolar Home South-West" [ refreshInterval=30, azimuth=45, declination=35, kwp=5.5]
-         Thing fs-plane homeNorthEast   "ForecastSolar Home North-East" [ refreshInterval=30, azimuth=-145, declination=35, kwp=4.425]
+         Thing fs-plane homeSouthWest   "ForecastSolar Home South-West" [ refreshInterval=15, azimuth=45, declination=35, kwp=5.5]
+         Thing fs-plane homeNorthEast   "ForecastSolar Home North-East" [ refreshInterval=15, azimuth=-145, declination=35, kwp=4.425]
 }
 ```
 
 ### Items file
 
 ```java
-Number:Power            ForecastSolarHome_Actual_Power      "Power prediction for this moment"              {channel="solarforecast:fs-site:homeSite:power-actual" }                                                                           
-Number:Energy           ForecastSolarHome_Actual            "Today's forecast till now"                     {channel="solarforecast:fs-site:homeSite:energy-actual" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining         "Today's remaining forecast till sunset"        {channel="solarforecast:fs-site:homeSite:energy-remain" }                                                                           
-Number:Energy           ForecastSolarHome_Today             "Today's total energy forecast"                 {channel="solarforecast:fs-site:homeSite:energy-today" }                                                                           
+// channel items
+Number:Power            ForecastSolarHome_Actual_Power      "Power prediction for this moment"              { channel="solarforecast:fs-site:homeSite:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }                                                                           
+Number:Energy           ForecastSolarHome_Actual            "Today's forecast till now"                     { channel="solarforecast:fs-site:homeSite:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining         "Today's remaining forecast till sunset"        { channel="solarforecast:fs-site:homeSite:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
+Number:Energy           ForecastSolarHome_Today             "Today's total energy forecast"                 { channel="solarforecast:fs-site:homeSite:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }   
+// calculated by rule                                                                        
+Number:Energy           ForecastSolarHome_Tomorrow          "Tomorrow's total energy forecast"              { stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }                                                                           
 
-Number:Power            ForecastSolarHome_Actual_Power_NE   "NE Power prediction for this moment"           {channel="solarforecast:fs-site:homeSite:homeNorthEast:power-actual" }                                                                           
-Number:Energy           ForecastSolarHome_Actual_NE         "NE Today's forecast till now"                  {channel="solarforecast:fs-site:homeSite:homeNorthEast:energy-actual" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining_NE      "NE Today's remaining forecast till sunset"     {channel="solarforecast:fs-site:homeSite:homeNorthEast:energy-remain" }                                                                           
-Number:Energy           ForecastSolarHome_Today_NE          "NE Today's total energy forecast"              {channel="solarforecast:fs-site:homeSite:homeNorthEast:energy-today" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power_NE   "NE Power prediction for this moment"           { channel="solarforecast:fs-plane:homeSite:homeNorthEast:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }   
+Number:Energy           ForecastSolarHome_Actual_NE         "NE Today's forecast till now"                  { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining_NE      "NE Today's remaining forecast till sunset"     { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
+Number:Energy           ForecastSolarHome_Today_NE          "NE Today's total energy forecast"              { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }                                                                           
 
-Number:Power            ForecastSolarHome_Actual_Power_SW   "SW Power prediction for this moment"           {channel="solarforecast:fs-site:homeSite:homeSouthWest:power-actual" }                                                                           
-Number:Energy           ForecastSolarHome_Actual_SW         "SW Today's forecast till now"                  {channel="solarforecast:fs-site:homeSite:homeSouthWest:energy-actual" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining_SW      "SW Today's remaining forecast till sunset"     {channel="solarforecast:fs-site:homeSite:homeSouthWest:energy-remain" }                                                                           
-Number:Energy           ForecastSolarHome_Today_SW          "SW Today's total energy forecast"              {channel="solarforecast:fs-site:homeSite:homeSouthWest:energy-today" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power_SW   "SW Power prediction for this moment"           { channel="solarforecast:fs-plane:homeSite:homeSouthWest:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }                                                                           
+Number:Energy           ForecastSolarHome_Actual_SW         "SW Today's forecast till now"                  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
+Number:Energy           ForecastSolarHome_Remaining_SW      "SW Today's remaining forecast till sunset"     { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
+Number:Energy           ForecastSolarHome_Today_SW          "SW Today's total energy forecast"              { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }                                                                           
+
+// estimaion items
+Group influxdb
+Number:Power            ForecastSolarHome_Power_Estimate        "Power estimations"                         (influxdb)  { channel="solarforecast:fs-site:homeSite:power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }                                                                           
+Number:Energy           ForecastSolarHome_Energy_Estimate       "Energy estimations"                        (influxdb)  { channel="solarforecast:fs-site:homeSite:energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
+Number:Power            ForecastSolarHome_Power_Estimate_SW     "SW Power estimations"                      (influxdb)  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }                                                                           
+Number:Energy           ForecastSolarHome_Energy_Estimate_SW    "SW Energy estimations"                     (influxdb)  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
 ```
 
 ### Actions rule
 
 ```java
-import java.time.temporal.ChronoUnit
-
-rule "Forecast Solar Actions"
+rule "Tomorrow Forecast Calculation"
     when
-        Time cron "0 0 23 * * ?" // trigger whatever you like
+        Item ForecastSolarHome_Today received update
     then 
-        // get Actions for specific fs-site
         val solarforecastActions = getActions("solarforecast","solarforecast:fs-site:homeSite")
-        val timeZone = "Europe/Berlin"
-
-        // get earliest and latest forecast dates
-        val beginDT = solarforecastActions.getForecastBegin
-        val endDT = solarforecastActions.getForecastEnd
-        logInfo("SF Tests","Begin: "+ beginDT.atZone(ZoneId.of(timeZone))+" End: "+endDT.atZone(ZoneId.of(timeZone)))
- 
-        // get forecast for tomorrow    
-        val fcTomorrowState = solarforecastActions.getDay(LocalDate.now.plusDays(1))
-        logInfo("SF Tests","Forecast tomorrow state: "+ fcTomorrowState.toString)
-        val fcToTomorrowDouble = (fcTomorrowState as Number).doubleValue
-        logInfo("SF Tests","Forecast tomorrow value: "+ fcToTomorrowDouble)
-        
-        // get power forecast in one hour
-        val hourPlusOnePowerState = solarforecastActions.getPower(Instant.now.plus(1,ChronoUnit.HOURS))
-        logInfo("SF Tests","Hour+1 power state: "+ hourPlusOnePowerState.toString)
-        val hourPlusOnePowerValue = (hourPlusOnePowerState as Number).doubleValue
-        logInfo("SF Tests","Hour+1 power value: "+ hourPlusOnePowerValue)
-        
-        // get energy forecast at specific time: Nov 18th 2023, 16:00 
-        val startDT = LocalDateTime.of(2023,11,18,16,00).atZone(ZoneId.of(timeZone))
-        val stopDT = startDT.plusDays(2)
-        val twoDaysForecastFromNowState = solarforecastActions.getEnergy(startDT.toInstant, stopDT.toInstant)
-        logInfo("SF Tests","Forecast 2 days state: "+ twoDaysForecastFromNowState.toString)
-        val twoDaysForecastFromNowValue = (twoDaysForecastFromNowState as Number).doubleValue
-        logInfo("SF Tests","Forecast 2 days value: "+ twoDaysForecastFromNowValue)
+        val energyState = solarforecastActions.getDay(LocalDate.now.plusDays(1))
+        logInfo("SF Tests","{}",energyState)
+        ForecastSolarHome_Tomorrow.postUpdate(energyState) 
+        //val energy = (ForecastSolar_PV_Plane_Power_Forecast.historicState(now.plusDays(1)).state as Number)
 end
-```
-
-shall produce following output
-
-```
-2023-11-18 22:00:59.250 [INFO ] [g.openhab.core.model.script.SF Tests] - Begin: 2023-11-18T07:34:23+01:00[Europe/Berlin] End: 2023-11-19T16:26:50+01:00[Europe/Berlin]
-2023-11-18 22:00:59.262 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast tomorrow state: 3.861 kWh
-2023-11-18 22:00:59.267 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast tomorrow value: 3.861
-2023-11-18 22:00:59.275 [INFO ] [g.openhab.core.model.script.SF Tests] - Hour+1 power state: 0 kW
-2023-11-18 22:00:59.280 [INFO ] [g.openhab.core.model.script.SF Tests] - Hour+1 power value: 0.0
-2023-11-18 22:00:59.296 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast 2 days state: 3.865 kWh
-2023-11-18 22:00:59.300 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast 2 days value: 3.865
 ```
 
 ### Actions rule with Arguments
 
-Only Solcast is delivering `optimistic` and `pessimistic` scenario data.
-If arguments are used on ForecastSolar `UNDEF` state is returned
-
 ```java
 import java.time.temporal.ChronoUnit
 
-rrule "Solcast Actions"
+rule "Solcast Actions"
     when
         Time cron "0 0 23 * * ?" // trigger whatever you like
     then 
@@ -351,12 +321,4 @@ rrule "Solcast Actions"
         val sixDayPessimistic = solarforecastActions.getEnergy(startTimestamp,endTimestamp, "pessimistic")
         logInfo("SF Tests","Forecast Pessimist 6 days "+ sixDayPessimistic)
 end
-```
-
-shall produce following output
-
-```
-2022-08-10 00:02:16.569 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast Estimate  6 days 309.424 kWh
-2022-08-10 00:02:16.574 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast Optimist  6 days 319.827 kWh
-2022-08-10 00:02:16.578 [INFO ] [g.openhab.core.model.script.SF Tests] - Forecast Pessimist 6 days 208.235 kWh
 ```

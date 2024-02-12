@@ -100,7 +100,23 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            getData();
+            String channel = channelUID.getIdWithoutGroup();
+            switch (channel) {
+                case CHANNEL_ENERGY_ACTUAL:
+                case CHANNEL_ENERGY_REMAIN:
+                case CHANNEL_ENERGY_TODAY:
+                case CHANNEL_POWER_ACTUAL:
+                    getData();
+                    break;
+                case CHANNEL_POWER_ESTIMATE:
+                case CHANNEL_POWER_ESTIMATE10:
+                case CHANNEL_POWER_ESTIMATE90:
+                case CHANNEL_ENERGY_ESTIMATE:
+                case CHANNEL_ENERGY_ESTIMATE10:
+                case CHANNEL_ENERGY_ESTIMATE90:
+                    forecastUpdate();
+                    break;
+            }
         }
     }
 
@@ -138,12 +154,14 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         if (planes.isEmpty()) {
             return;
         }
+        // get all available forecasts
         List<SolarForecast> forecastObjects = new ArrayList<SolarForecast>();
         for (Iterator<SolcastPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
             SolcastPlaneHandler sfph = iterator.next();
             forecastObjects.addAll(sfph.getSolarForecasts());
         }
-        List<QueryMode> modes = List.of(QueryMode.Estimation, QueryMode.Optimistic, QueryMode.Optimistic);
+        // sort in Tree according to times for each scenario
+        List<QueryMode> modes = List.of(QueryMode.Estimation, QueryMode.Pessimistic, QueryMode.Optimistic);
         modes.forEach(mode -> {
             TreeMap<Instant, QuantityType<?>> combinedPowerForecast = new TreeMap<Instant, QuantityType<?>>();
             TreeMap<Instant, QuantityType<?>> combinedEnergyForecast = new TreeMap<Instant, QuantityType<?>>();
@@ -157,7 +175,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                     Utils.addState(combinedEnergyForecast, entry);
                 });
             });
-
+            // create TimeSeries and distribute
             TimeSeries powerSeries = new TimeSeries(Policy.REPLACE);
             combinedPowerForecast.forEach((timestamp, state) -> {
                 powerSeries.add(timestamp, state);

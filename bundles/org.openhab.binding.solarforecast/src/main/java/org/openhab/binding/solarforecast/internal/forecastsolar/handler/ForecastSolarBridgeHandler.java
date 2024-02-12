@@ -42,6 +42,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
 
@@ -85,6 +86,21 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            String channel = channelUID.getIdWithoutGroup();
+            switch (channel) {
+                case CHANNEL_ENERGY_ACTUAL:
+                case CHANNEL_ENERGY_REMAIN:
+                case CHANNEL_ENERGY_TODAY:
+                case CHANNEL_POWER_ACTUAL:
+                    getData();
+                    break;
+                case CHANNEL_POWER_ESTIMATE:
+                case CHANNEL_ENERGY_ESTIMATE:
+                    forecastUpdate();
+                    break;
+            }
+        }
     }
 
     /**
