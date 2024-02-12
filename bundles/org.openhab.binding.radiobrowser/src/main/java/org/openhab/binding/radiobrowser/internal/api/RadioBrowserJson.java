@@ -32,8 +32,6 @@ public class RadioBrowserJson {
 
     public class Language {
         public String name = "";
-        // @SerializedName(value = "languageCode", alternate = { "iso_639" }) // iso_3166_1 is used in json
-        // public String languageCode = "";
         public int stationcount;
     }
 

@@ -211,8 +211,7 @@ public class RadioBrowserApi {
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
         } catch (IllegalArgumentException e) {
-            // occurs when there are 0 matches
-            // handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " matches found"));
+            logger.warn("IllegalArgumentException:{}", e.getMessage());
         }
     }
 
@@ -257,8 +256,7 @@ public class RadioBrowserApi {
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
         } catch (IllegalArgumentException e) {
-            // occurs when there are 0 matches
-            // handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " matches found"));
+            logger.warn("IllegalArgumentException:{}", e.getMessage());
         }
         return null;
     }
