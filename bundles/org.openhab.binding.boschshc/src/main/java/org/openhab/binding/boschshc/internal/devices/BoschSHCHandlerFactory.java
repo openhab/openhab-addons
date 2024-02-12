@@ -17,6 +17,8 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_CLIMATE_CONTROL;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_INTRUSION_DETECTION_SYSTEM;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_LIGHT_SWITCH;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHC;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL;
@@ -44,7 +46,9 @@ import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.devices.camera.CameraHandler;
 import org.openhab.binding.boschshc.internal.devices.climatecontrol.ClimateControlHandler;
 import org.openhab.binding.boschshc.internal.devices.intrusion.IntrusionDetectionHandler;
+import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControl2Handler;
 import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControlHandler;
+import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightSwitchHandler;
 import org.openhab.binding.boschshc.internal.devices.motiondetector.MotionDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.plug.PlugHandler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControl2Handler;
@@ -126,7 +130,9 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
                     thing -> new UniversalSwitchHandler(thing, timeZoneProvider)),
             new ThingTypeHandlerMapping(THING_TYPE_UNIVERSAL_SWITCH_2,
                     thing -> new UniversalSwitch2Handler(thing, timeZoneProvider)),
-            new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR_2, SmokeDetector2Handler::new));
+            new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR_2, SmokeDetector2Handler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_LIGHT_CONTROL_2, LightControl2Handler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_LIGHT_SWITCH, LightSwitchHandler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -41,7 +41,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
 
 /**
- * ThingDiscoveryService Tester.
+ * Unit tests for {@link ThingDiscoveryService}.
  *
  * @author Gerd Zanker - Initial contribution
  */
@@ -160,6 +160,28 @@ class ThingDiscoveryServiceTest {
         assertThat(result.getBindingId(), is(BoschSHCBindingConstants.BINDING_ID));
         assertThat(result.getThingTypeUID(), is(BoschSHCBindingConstants.THING_TYPE_TWINGUARD));
         assertThat(result.getThingUID().getId(), is("testDevice_ID"));
+        assertThat(result.getBridgeUID().getId(), is("testSHC"));
+        assertThat(result.getLabel(), is("Test Name"));
+        assertThat(String.valueOf(result.getProperties().get("Location")), is("TestRoom"));
+    }
+
+    @Test
+    void testAddDeviceWithChildDeviceID() {
+        mockBridgeCalls();
+
+        Device device = new Device();
+        device.deviceModel = "MICROMODULE_LIGHT_ATTACHED";
+        device.id = "hdm:ZigBee:70ac08fffe5294ea#3";
+        device.name = "Test Name";
+        fixture.addDevice(device, "TestRoom");
+
+        verify(discoveryListener).thingDiscovered(discoveryServiceCaptor.capture(), discoveryResultCaptor.capture());
+
+        assertThat(discoveryServiceCaptor.getValue().getClass(), is(ThingDiscoveryService.class));
+        DiscoveryResult result = discoveryResultCaptor.getValue();
+        assertThat(result.getBindingId(), is(BoschSHCBindingConstants.BINDING_ID));
+        assertThat(result.getThingTypeUID(), is(BoschSHCBindingConstants.THING_TYPE_LIGHT_SWITCH));
+        assertThat(result.getThingUID().getId(), is("hdm_ZigBee_70ac08fffe5294ea_3"));
         assertThat(result.getBridgeUID().getId(), is("testSHC"));
         assertThat(result.getLabel(), is("Test Name"));
         assertThat(String.valueOf(result.getProperties().get("Location")), is("TestRoom"));

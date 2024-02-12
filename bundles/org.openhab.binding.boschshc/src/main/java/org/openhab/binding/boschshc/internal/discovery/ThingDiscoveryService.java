@@ -91,7 +91,9 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             new AbstractMap.SimpleEntry<>("SWITCH2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2),
             new AbstractMap.SimpleEntry<>("SMOKE_DETECTOR2", BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR_2),
             new AbstractMap.SimpleEntry<>("MICROMODULE_SHUTTER", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2),
-            new AbstractMap.SimpleEntry<>("MICROMODULE_AWNING", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2)
+            new AbstractMap.SimpleEntry<>("MICROMODULE_AWNING", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2),
+            new AbstractMap.SimpleEntry<>("MICROMODULE_LIGHT_CONTROL", BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2),
+            new AbstractMap.SimpleEntry<>("MICROMODULE_LIGHT_ATTACHED", BoschSHCBindingConstants.THING_TYPE_LIGHT_SWITCH)
 // Future Extension: map deviceModel names to BoschSHC Thing Types when they are supported
 //            new AbstractMap.SimpleEntry<>("SMOKE_DETECTION_SYSTEM", BoschSHCBindingConstants.),
 //            new AbstractMap.SimpleEntry<>("PRESENCE_SIMULATION_SERVICE", BoschSHCBindingConstants.),
@@ -221,7 +223,8 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
         logger.trace("- got thingTypeID '{}' for deviceModel '{}'", thingTypeUID.getId(), device.deviceModel);
 
-        ThingUID thingUID = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(), device.id.replace(':', '_'));
+        ThingUID thingUID = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(),
+                buildCompliantThingID(device.id));
 
         logger.trace("- got thingUID '{}' for device: '{}'", thingUID, device);
 
@@ -235,6 +238,18 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
         logger.debug("Discovered device '{}' with thingTypeUID={}, thingUID={}, id={}, deviceModel={}", device.name,
                 thingUID, thingTypeUID, device.id, device.deviceModel);
+    }
+
+    /**
+     * Translates a Bosch device ID to an openHAB-compliant thing ID.
+     * <p>
+     * Characters that are not allowed in thing IDs are replaced by underscores.
+     * 
+     * @param deviceId the Bosch device ID
+     * @return the translated openHAB-compliant thing ID
+     */
+    private String buildCompliantThingID(String deviceId) {
+        return deviceId.replace(':', '_').replace('#', '_');
     }
 
     private String getNiceName(String name, String roomName) {

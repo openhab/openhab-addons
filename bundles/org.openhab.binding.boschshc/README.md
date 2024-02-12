@@ -1,6 +1,6 @@
 # Bosch Smart Home Binding
 
-Binding for the Bosch Smart Home.
+Binding for Bosch Smart Home devices.
 
 - [Bosch Smart Home Binding](#bosch-smart-home-binding)
   - [Supported Things](#supported-things)
@@ -10,6 +10,8 @@ Binding for the Bosch Smart Home.
     - [Twinguard Smoke Detector](#twinguard-smoke-detector)
     - [Door/Window Contact](#door-window-contact)
     - [Door/Window Contact II](#door-window-contact-ii)
+    - [Light Control II](#light-control-ii)
+    - [Light Switch](#light-switch)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
     - [Shutter Control II](#shutter-control-ii)
@@ -115,6 +117,29 @@ Detects open windows and doors and features an additional button.
 | bypass          | Switch    | &#9744;  | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined. |
 | signal-strength | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
 
+### Light Control II
+
+This thing type is used if Light/Shutter Control II devices are configured as light controls. This thing type represents the base (parent) device and provides communication quality and power metering services. The two light switch circuits are modeled as two independent child devices with thing type `light-switch`, which is documented in a [separate section](#light-switch).
+
+**Thing Type ID**: `light-control-2`
+
+| Channel Type ID    | Item Type     | Writable | Description                  |
+| ------------------ | ------------- | :------: | ---------------------------------------- |
+| signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.      |
+| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device.  |
+
+### Light Switch
+
+This thing type represents light switch circuits of a modular parent device. For example, if a Light/Shutter Control II is configured as light control, the two light switch circuits are represented as two logical child devices with the thing type `light-switch`.
+
+**Thing Type ID**: `light-switch`
+
+| Channel Type ID  | Item Type | Writable | Description                                       |
+| ---------------- | --------- | :------: | ------------------------------------------------- |
+| power-switch     | Switch    | &#9745;  | Switches the light on or off.                     |
+| child-protection | Switch    | &#9745;  | Indicates whether the child protection is active. |
+
 ### Motion Detector
 
 Detects every movement through an intelligent combination of passive infra-red technology and an additional temperature sensor.
@@ -140,7 +165,7 @@ Control of your shutter to take any position you desire.
 
 ### Shutter Control II
 
-Second generation shutter control.
+This thing type is used if Light/Shutter Control II devices are configured as shutter controls.
 
 **Thing Type ID**: `shutter-control-2`
 
