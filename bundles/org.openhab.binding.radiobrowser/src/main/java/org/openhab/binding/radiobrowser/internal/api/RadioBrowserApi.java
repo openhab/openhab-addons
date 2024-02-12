@@ -81,7 +81,7 @@ public class RadioBrowserApi {
         request.header("Connection", "Keep-Alive");
         request.timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
-        logger.debug("Sending GET:{}", url);
+        logger.trace("Sending GET:{}", url);
 
         try {
             ContentResponse contentResponse = request.send();
@@ -136,7 +136,7 @@ public class RadioBrowserApi {
                 stateOptions.add(new StateOption(state.name, state.name));
             }
             stateOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
-            stateOptions.add(0, new StateOption("ALL", "Show All States"));
+            stateOptions.add(0, new StateOption("ALL", "All States"));
             return stateOptions;
         } catch (JsonSyntaxException | UnsupportedEncodingException e) {
             throw new ApiException("Server did not reply with a valid json");
@@ -159,7 +159,7 @@ public class RadioBrowserApi {
                 }
             }
             countryOptions.sort(Comparator.comparing(o -> "0".equals(o.getValue()) ? "" : o.getLabel()));
-            countryOptions.add(0, new StateOption("ALL", "Show All Countries"));
+            countryOptions.add(0, new StateOption("ALL", "All Countries"));
             return countryOptions;
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
@@ -174,7 +174,7 @@ public class RadioBrowserApi {
                 throw new ApiException("Server replied with no languages");
             }
             List<StateOption> languageOptions = new ArrayList<>();
-            languageOptions.add(new StateOption("ALL", "Show All Languages"));
+            languageOptions.add(new StateOption("ALL", "All Languages"));
             for (Language language : languages) {
                 if (language.stationcount >= handler.config.languageCount) {
                     languageOptions
@@ -204,16 +204,15 @@ public class RadioBrowserApi {
             handler.stateDescriptionProvider
                     .setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATION), stationOptions);
             if (stationMap.isEmpty()) {
-                handler.setChannelState(CHANNEL_STATION, new StringType("0 matches found"));
+                handler.setChannelState(CHANNEL_STATION, new StringType("0 stations"));
             } else {
-                handler.setChannelState(CHANNEL_STATION,
-                        new StringType(stationMap.size() + " stations, click to select"));
+                handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " stations"));
             }
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
         } catch (IllegalArgumentException e) {
             // occurs when there are 0 matches
-            handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " matches found"));
+            // handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " matches found"));
         }
     }
 
@@ -250,17 +249,16 @@ public class RadioBrowserApi {
             handler.stateDescriptionProvider
                     .setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATION), stationOptions);
             if (stationMap.isEmpty()) {
-                handler.setChannelState(CHANNEL_STATION, new StringType("0 matches found"));
+                handler.setChannelState(CHANNEL_STATION, new StringType("0 stations"));
             } else {
-                handler.setChannelState(CHANNEL_STATION,
-                        new StringType(stationMap.size() + " stations, click to select"));
+                handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " stations"));
             }
             return stations[0]; // return first match
         } catch (JsonSyntaxException e) {
             throw new ApiException("Server did not reply with a valid json");
         } catch (IllegalArgumentException e) {
             // occurs when there are 0 matches
-            handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " matches found"));
+            // handler.setChannelState(CHANNEL_STATION, new StringType(stationMap.size() + " matches found"));
         }
         return null;
     }

@@ -1,6 +1,6 @@
 # Radio Browser Binding
 
-Radio Browser is a community driven database of internet radio and TV stations, that has an open API that is `free for ALL` to use and has multiple servers to ensure up time is high.
+Radio Browser is a community driven database of internet radio and TV stations, that has an open API that is free for all to use and has multiple servers to ensure up time is high.
 With this binding you can use their database of more than 45,000 stations to apply filters and quickly find internet radio streams that interest you.
 
 ## Supported Things
@@ -56,14 +56,12 @@ Genres are a good example for using the metadata, only show the styles of music 
 
 ## Station Searches
 
-Update the last search if the filters are not changed.
+Searches can be done in a few different ways and since the binding will auto select the first result, you can change what is sent to the top of the list by changing the filters config from including `order=clickcount` (default) to `votes`, `clicktrend` or even `random`.
 
-```
-Radio_Station.sendCommand(REFRESH)
-```
+Examples on how to do searches from rules, or you can also change an item to take input by using `oh-input-item` using metadata called `Default list item widget`.
+
 
 Search for all stations that contain `hit` in their name, and auto select the first result.
-All results are available to be selected, should the wrong one get sent to the top of the list based on clicks or vote counts.
 
 ```
 Radio_Station.sendCommand("hit")
@@ -72,7 +70,13 @@ Radio_Station.sendCommand("hit")
 Search and auto select the station if you know the UUID from the website.
 
 ```
-Radio_Station.sendCommand("962cc6df-0601-11e8-ae97-52543be04c81")
+Radio_Station.sendCommand("b6a490e8-f498-4a7c-b024-607b3d997614")
+```
+
+Clear any manual search results using the above two methods, and `REFRESH` back to using the normal filter channels.
+
+```
+Radio_Station.sendCommand(REFRESH)
 ```
 
 ## Show Your Thanks
