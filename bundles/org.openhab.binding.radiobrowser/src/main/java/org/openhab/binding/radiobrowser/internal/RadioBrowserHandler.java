@@ -136,7 +136,7 @@ public class RadioBrowserHandler extends BaseThingHandler {
     private boolean buildFilters() {
         if (!config.filters.contains("=") || config.filters.startsWith("?") || config.filters.contains(" ")
                 || config.filters.startsWith(" ")) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Please update your filters config to the correct key=value,key2=value2 format");
             return false;
         }
