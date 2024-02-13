@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class RadioBrowserBindingConstants {
     private static final String BINDING_ID = "radiobrowser";
-    public static final int HTTP_TIMEOUT_SECONDS = 50;
+    public static final int HTTP_TIMEOUT_SECONDS = 10;
     public static final String ALL_SERVERS = "all.api.radio-browser.info";
 
     // List of all Thing Type UIDs
