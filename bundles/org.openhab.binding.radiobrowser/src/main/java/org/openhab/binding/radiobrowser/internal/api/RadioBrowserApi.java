@@ -75,7 +75,7 @@ public class RadioBrowserApi {
     private String sendGetRequest(String url) throws ApiException {
         Request request;
         String errorReason = "";
-        request = httpClient.newRequest("http://" + server + url);
+        request = httpClient.newRequest("https://" + server + url);
         request.header("Host", server);
         request.header("User-Agent", "openHAB4/RadioBrowserBinding");// api requirement
         request.header("Connection", "Keep-Alive");

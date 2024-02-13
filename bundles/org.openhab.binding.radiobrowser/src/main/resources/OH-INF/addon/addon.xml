@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Radio Browser Binding</name>
 	<description>This binding makes it easy to find a working radio stream using the open API called RadioBrowser.</description>
-
+    <connection>cloud</connection>
+    
 </addon:addon>
