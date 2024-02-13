@@ -146,7 +146,7 @@ public class RadioBrowserHandler extends BaseThingHandler {
             if (builtFilters.isEmpty()) {
                 builtFilters = "?" + filter;
             } else {
-                builtFilters = "&" + filter;
+                builtFilters = builtFilters + "&" + filter;
             }
         }
         // over write the config with fixed copy, existing code keep working
