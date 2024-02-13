@@ -95,7 +95,6 @@ public class RadioBrowserHandler extends BaseThingHandler {
                     case CHANNEL_ADD_FAVORITE:
                         return;
                     case CHANNEL_REMOVE_FAVORITE:
-
                         return;
                 }
             }
