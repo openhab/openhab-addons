@@ -9,11 +9,11 @@ With this binding you can use their database of more than 45,000 stations to app
 
 ### `radio` Thing Configuration
 
-| Name          | Type    | Description                                                                                 | Default | Required | Advanced |
-|---------------|---------|---------------------------------------------------------------------------------------------|---------|----------|----------|
-| filters       | text    | Allows you to specify your own filters from the `advanced search` of the API.           | `?hidebroken=true&limit=1700&order=clickcount`                                                                          | yes      | no      |
-| clicks        | boolean | Helps to support the server recommend good results.                                         | true    | yes      | yes      |
-| languageCount | integer | If you want less languages to be shown as a filter, you can raise this or create your own.  | 14      | yes      | yes      |
+| Name          | Type    | Description                                                                                | Default  | Required | Advanced |
+|---------------|---------|--------------------------------------------------------------------------------------------|----------|----------|----------|
+| filters       | text    | Allows you to specify your own filters from the `advanced search` of the API.          | See below | yes     | no       |
+| clicks        | boolean | Helps to support the server recommend good results.                                        | true     | yes      | yes      |
+| languageCount | integer | If you want less languages to be shown as a filter, you can raise this or create your own. | 14       | yes      | yes      |
 
 ## Filters Configuration
 
@@ -21,17 +21,12 @@ Found by ticking the `show advanced` box, this configuration called `filters` ca
 The default filter is this and can be change to create better results for your needs.
 
 ```
-?hidebroken=true&limit=1700&order=clickcount
-```
-
-To give an example on how to show less stations by removing any low quality streams below 128kbps (FM radio quality), this could be added.
-You may not want to do this if you're interested in chat and sports channels.
-
-```
-?hidebroken=true&limit=1700&order=clickcount&bitrateMin=128
+hidebroken=true,limit=1700,reverse=true,order=votes
 ```
 
 If you want to create your own custom filter, the options are listed here <https://de1.api.radio-browser.info/#Advanced_station_search>
+You can also try out the various search features on their main website, and then copy what is added to the address bar of your web browser.
+<https://www.radio-browser.info/>
 
 ## State Option Metadata
 

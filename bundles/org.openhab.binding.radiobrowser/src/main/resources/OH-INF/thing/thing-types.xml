@@ -23,7 +23,7 @@
 			<parameter name="filters" type="text" required="true">
 				<label>Filters</label>
 				<description>Enter your own custom filter starting with ?, to ensure a stream that works with your device</description>
-				<default>?hidebroken=true&amp;limit=1700&amp;reverse=true&amp;order=votes</default>
+				<default>hidebroken=true,limit=1700,reverse=true,order=votes</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="clicks" type="boolean" required="true">
@@ -79,6 +79,8 @@
 				<option value="country">country</option>
 				<option value="dance">dance</option>
 				<option value="disco">disco</option>
+				<option value="drum">drum</option>
+				<option value="dubstep">dubstep</option>
 				<option value="edm">edm</option>
 				<option value="electronic">electronic</option>
 				<option value="folk">folk</option>
@@ -87,18 +89,22 @@
 				<option value="house">house</option>
 				<option value="indie">indie</option>
 				<option value="jazz">jazz</option>
+				<option value="latin">latin</option>
 				<option value="lounge">lounge</option>
 				<option value="metal">metal</option>
 				<option value="music">music</option>
 				<option value="news">news</option>
 				<option value="oldies">oldies</option>
 				<option value="pop">pop</option>
+				<option value="punk">punk</option>
+				<option value="reggae ">reggae</option>
 				<option value="rock">rock</option>
 				<option value="soul">soul</option>
 				<option value="sports">sports</option>
 				<option value="talk">talk</option>
 				<option value="techno">techno</option>
 				<option value="trance">trance</option>
+				<option value="world">world</option>
 			</options>
 		</state>
 	</channel-type>

@@ -14,6 +14,8 @@ package org.openhab.binding.radiobrowser.internal;
 
 import static org.openhab.binding.radiobrowser.internal.RadioBrowserBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -137,12 +139,35 @@ public class RadioBrowserHandler extends BaseThingHandler {
         }
     }
 
+    private boolean buildFilters() {
+        if (!config.filters.contains("=") || config.filters.startsWith("?") || config.filters.contains(" ")
+                || config.filters.startsWith(" ")) {
+            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Please update your filters config to the correct key=value,key2=value2 format");
+            return false;
+        }
+        String builtFilters = "";
+        List<String> filterList = Arrays.asList(config.filters.split(","));
+        for (String filter : filterList) {
+            if (builtFilters.isEmpty()) {
+                builtFilters = "?" + filter;
+            } else {
+                builtFilters = "&" + filter;
+            }
+        }
+        // over write the config with fixed copy, existing code keep working
+        config.filters = builtFilters;
+        return true;
+    }
+
     @Override
     public void initialize() {
         config = getConfigAs(RadioBrowserConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
-        // First time connecting, try again in 60 seconds to try another random server out of 5? possible ones
-        reconnectFuture = scheduler.scheduleWithFixedDelay(this::reconnect, 0, 60, TimeUnit.SECONDS);
+        if (buildFilters()) {
+            // First time connecting, try again in 60 seconds to try another random server out of 5? possible ones
+            reconnectFuture = scheduler.scheduleWithFixedDelay(this::reconnect, 0, 60, TimeUnit.SECONDS);
+        }
     }
 
     @Override
