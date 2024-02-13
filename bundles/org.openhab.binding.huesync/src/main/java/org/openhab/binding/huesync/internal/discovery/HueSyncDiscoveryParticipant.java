@@ -15,6 +15,7 @@ package org.openhab.binding.huesync.internal.discovery;
 
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -28,12 +29,14 @@ import org.openhab.binding.huesync.internal.HueSyncBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,13 +69,20 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     // TODO: Implement SSL certificate validation
     private static final HttpClient httpClient = new HttpClient(new SslContextFactory.Client(true));
-
+    // TODO: Get from configuration
     private boolean autoDiscoveryEnabled = true;
+
+    protected final ThingRegistry thingRegistry;
+
+    @Activate
+    public HueSyncDiscoveryParticipant(final @Reference ThingRegistry thingRegistry) {
+        this.thingRegistry = thingRegistry;
+    }
 
     @SuppressWarnings("null")
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(HueSyncBindingConstants.THING_TYPE_SYNCBOX);
+        return Collections.singleton(HueSyncBindingConstants.THING_TYPE);
     }
 
     @Override
@@ -81,25 +91,23 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    public @Nullable DiscoveryResult createResult(ServiceInfo serviceInfo) {
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         if (this.autoDiscoveryEnabled) {
-            String qualifiedName = serviceInfo.getQualifiedName();
+            ThingUID uid = getThingUID(service);
+            if (Objects.nonNull(uid)) {
+                try {
+                    String qualifiedName = service.getQualifiedName();
 
-            logger.debug("HueSync Device found: {}", qualifiedName);
+                    logger.debug("HueSync Device found: {}", qualifiedName);
 
-            try {
-                String[] addressses = serviceInfo.getHostAddresses();
-                if (addressses.length == 0) {
-                    logger.warn("Incomplete mDNS device discovery information - {} ignored.", qualifiedName);
-                    return null;
+                    String request = String.format("https://%s:%s/%s", service.getHostAddresses()[0], service.getPort(),
+                            DEVICE_INFO_ENDPOINT);
+                    ContentResponse response = HueSyncDiscoveryParticipant.httpClient.GET(request);
+
+                    logger.debug("Device information for {}: {}", qualifiedName, response);
+                } catch (Exception e) {
+                    logger.error("Unable to query device information for {}: {}", service.getQualifiedName(), e);
                 }
-                String request = String.format("https://%s:%s/%s", serviceInfo.getHostAddresses()[0],
-                        serviceInfo.getPort(), DEVICE_INFO_ENDPOINT);
-                ContentResponse response = HueSyncDiscoveryParticipant.httpClient.GET(request);
-
-                logger.debug("Device information for {}: {}", qualifiedName, response);
-            } catch (Exception e) {
-                logger.error("Unable to query device information for {}: {}", qualifiedName, e);
             }
         }
         return null;
@@ -107,7 +115,14 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        return null;
+        String id = service.getName();
+        String[] addressses = service.getHostAddresses();
+
+        if (addressses.length == 0 || id == null || id.isBlank()) {
+            logger.warn("Incomplete mDNS device discovery information - {} ignored.", id == null ? "[name: null]" : id);
+            return null;
+        }
+        return new ThingUID(HueSyncBindingConstants.THING_TYPE, id);
     }
 
     @Activate
