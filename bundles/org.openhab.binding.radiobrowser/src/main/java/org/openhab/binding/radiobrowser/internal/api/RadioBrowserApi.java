@@ -81,7 +81,7 @@ public class RadioBrowserApi {
         request.header("Connection", "Keep-Alive");
         request.timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.method(HttpMethod.GET);
-        logger.trace("Sending GET:{}", url);
+        logger.debug("Sending GET:{}", url);
 
         try {
             ContentResponse contentResponse = request.send();
