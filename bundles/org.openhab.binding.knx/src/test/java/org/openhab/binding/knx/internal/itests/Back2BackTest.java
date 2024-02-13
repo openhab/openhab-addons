@@ -332,10 +332,24 @@ public class Back2BackTest {
 
     @Test
     void testDpt5() {
-        // TODO add tests for more subtypes
+        helper("5.001", new byte[] { 0 }, new QuantityType<>("0 %"));
+        helper("5.001", new byte[] { (byte) 0xff }, new QuantityType<>("100 %"));
+        // fallback: PercentType
         helper("5.001", new byte[] { 0 }, new PercentType(0));
         helper("5.001", new byte[] { (byte) 0x80 }, new PercentType(50));
         helper("5.001", new byte[] { (byte) 0xff }, new PercentType(100));
+
+        helper("5.003", new byte[] { 0 }, new QuantityType<>("0 °"));
+        helper("5.003", new byte[] { (byte) 0xff }, new QuantityType<>("360 °"));
+        helper("5.004", new byte[] { 0 }, new QuantityType<>("0 %"));
+        helper("5.004", new byte[] { (byte) 0x64 }, new QuantityType<>("100 %"));
+        helper("5.004", new byte[] { (byte) 0xff }, new QuantityType<>("255 %"));
+        // PercentType cannot encode values >100%, not supported for 5.004
+        helper("5.005", new byte[] { 42 }, new DecimalType(42));
+        helper("5.005", new byte[] { (byte) 0xff }, new DecimalType(255));
+        helper("5.006", new byte[] { 0 }, new DecimalType(0));
+        helper("5.006", new byte[] { 42 }, new DecimalType(42));
+        helper("5.006", new byte[] { (byte) 0xfe }, new DecimalType(254));
 
         helper("5.010", new byte[] { 42 }, new DecimalType(42));
         helper("5.010", new byte[] { (byte) 0xff }, new DecimalType(255));
@@ -343,11 +357,14 @@ public class Back2BackTest {
 
     @Test
     void testDpt6() {
+        helper("6.001", new byte[] { 0 }, new QuantityType<>("0 %"));
+        helper("6.001", new byte[] { (byte) 0x7f }, new QuantityType<>("127 %"));
+        helper("6.001", new byte[] { (byte) 0xff }, new QuantityType<>("-1 %"));
+        // PercentType cannot encode values >100% or <0%, not supported for 6.001
+
         helper("6.010", new byte[] { 0 }, new DecimalType(0));
         helper("6.010", new byte[] { (byte) 0x7f }, new DecimalType(127));
         helper("6.010", new byte[] { (byte) 0xff }, new DecimalType(-1));
-        // TODO 6.001 is mapped to PercentType, which can only cover 0-100%, not -128..127%
-        // helper("6.001", new byte[] { 0 }, new DecimalType(0));
     }
 
     @Test
@@ -359,9 +376,33 @@ public class Back2BackTest {
 
     @Test
     void testDpt8() {
-        // TODO add tests for more subtypes
         helper("8.001", new byte[] { (byte) 0x7f, (byte) 0xff }, new DecimalType(32767));
         helper("8.001", new byte[] { (byte) 0x80, (byte) 0x00 }, new DecimalType(-32768));
+        helper("8.002", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 ms"));
+        helper("8.002", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 ms"));
+        helper("8.002", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("8.003", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-327680 ms"));
+        helper("8.003", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("327670 ms"));
+        helper("8.003", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("8.004", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-3276800 ms"));
+        helper("8.004", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("3276700 ms"));
+        helper("8.004", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
+        helper("8.005", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 s"));
+        helper("8.005", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 s"));
+        helper("8.005", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 s"));
+        helper("8.006", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 min"));
+        helper("8.006", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 min"));
+        helper("8.006", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 min"));
+        helper("8.007", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 h"));
+        helper("8.007", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 h"));
+        helper("8.007", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 h"));
+
+        helper("8.011", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 °"));
+        helper("8.011", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 °"));
+        helper("8.011", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 °"));
+        helper("8.012", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 m"));
+        helper("8.012", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 m"));
+        helper("8.012", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 m"));
     }
 
     @Test
@@ -423,7 +464,6 @@ public class Back2BackTest {
 
     @Test
     void testDpt13() {
-        // TODO add tests for more subtypes
         helper("13.001", new byte[] { 0, 0, 0, 0 }, new DecimalType(0));
         helper("13.001", new byte[] { 0, 0, 0, 42 }, new DecimalType(42));
         helper("13.001", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
@@ -431,6 +471,64 @@ public class Back2BackTest {
         // KNX representation typically uses two's complement
         helper("13.001", new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff }, new DecimalType(-1));
         helper("13.001", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 }, new DecimalType(-2147483648));
+        helper("13.002", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 m³/h"));
+        helper("13.002", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 m³/h"));
+        helper("13.002", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 m³/h"));
+
+        helper("13.010", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 Wh"));
+        helper("13.010", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 Wh"));
+        helper("13.010", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 Wh"));
+        helper("13.011", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 VAh"));
+        helper("13.011", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 VAh"));
+        helper("13.011", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 VAh"));
+        helper("13.012", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 varh"));
+        helper("13.012", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 varh"));
+        helper("13.012", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 varh"));
+        helper("13.013", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 kWh"));
+        helper("13.013", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 kWh"));
+        helper("13.013", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 kWh"));
+        helper("13.014", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 VAh"));
+        helper("13.014", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648000 VAh"));
+        helper("13.014", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647000 VAh"));
+        helper("13.015", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 kvarh"));
+        helper("13.015", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 kvarh"));
+        helper("13.015", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 kvarh"));
+        helper("13.016", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 MWh"));
+        helper("13.016", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 MWh"));
+        helper("13.016", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 MWh"));
+
+        helper("13.100", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 s"));
+        helper("13.100", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 s"));
+        helper("13.100", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 s"));
+
+        helper("13.1200", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 l"));
+        helper("13.1200", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 l"));
+        helper("13.1200", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 l"));
+        helper("13.1201", new byte[] { 0, 0, 0, 0 }, new QuantityType<>("0 m³"));
+        helper("13.1201", new byte[] { (byte) 0x80, (byte) 0x0, (byte) 0x0, (byte) 0x0 },
+                new QuantityType<>("-2147483648 m³"));
+        helper("13.1201", new byte[] { (byte) 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                new QuantityType<>("2147483647 m³"));
     }
 
     @Test

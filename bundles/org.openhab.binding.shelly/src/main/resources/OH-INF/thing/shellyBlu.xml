@@ -45,4 +45,16 @@
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:blubattery"/>
 	</thing-type>
+
+	<thing-type id="shellyblugw">
+		<label>Shelly BLU Gateway</label>
+		<description>@text/thing-type.shelly.shellyblugw.description</description>
+		<channel-groups>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:blugw"/>
+	</thing-type>
+
 </thing:thing-descriptions>

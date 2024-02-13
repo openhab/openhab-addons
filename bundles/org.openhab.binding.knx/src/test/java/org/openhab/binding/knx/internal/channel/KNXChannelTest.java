@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,9 +25,16 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.knx.internal.KNXBindingConstants;
+import org.openhab.binding.knx.internal.client.OutboundSpec;
+import org.openhab.binding.knx.internal.dpt.ValueEncoder;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 
 import tuwien.auto.calimero.GroupAddress;
@@ -156,6 +165,38 @@ class KNXChannelTest {
         assertEquals(2, writeAddresses.size());
         assertTrue(writeAddresses.contains(new GroupAddress("1/2/3")));
         assertTrue(writeAddresses.contains(new GroupAddress("7/1/9")));
+    }
+
+    @Test
+    void testSubTypeMapping() throws KNXFormatException {
+        Channel channel = Objects.requireNonNull(mock(Channel.class));
+        Configuration configuration = new Configuration(Map.of("key1", "1.001:1/2/3"));
+        when(channel.getChannelTypeUID()).thenReturn(new ChannelTypeUID("a:b:c"));
+        when(channel.getConfiguration()).thenReturn(configuration);
+        when(channel.getAcceptedItemType()).thenReturn(ColorItem.class.getName());
+        MyKNXChannel knxChannel = new MyKNXChannel(channel);
+        assertNotNull(knxChannel.getCommandSpec(new HSBType("0,100,100")));
+        assertEquals(knxChannel.getCommandSpec(new HSBType("0,100,100")).getDPT(), "1.001");
+    }
+
+    @Test
+    void test5001PercentType() throws KNXFormatException {
+        Configuration configuration = new Configuration(Map.of("switch", "1.001:1/2/1", "position", "5.001:1/2/2"));
+        Channel channel = Objects.requireNonNull(mock(Channel.class));
+        when(channel.getChannelTypeUID())
+                .thenReturn(new ChannelTypeUID(KNXBindingConstants.BINDING_ID, KNXBindingConstants.CHANNEL_DIMMER));
+        when(channel.getConfiguration()).thenReturn(configuration);
+
+        KNXChannel knxChannel = KNXChannelFactory.createKnxChannel(channel);
+        assertThat(knxChannel, instanceOf(TypeDimmer.class));
+
+        Command command = new PercentType("100");
+        OutboundSpec outboundSpec = knxChannel.getCommandSpec(command);
+        assertThat(outboundSpec, is(notNullValue()));
+
+        String mappedValue = ValueEncoder.encode(outboundSpec.getValue(), outboundSpec.getDPT());
+        assertThat(mappedValue, is("100"));
+        assertThat(outboundSpec.getValue(), is(instanceOf(PercentType.class)));
     }
 
     private static class MyKNXChannel extends KNXChannel {

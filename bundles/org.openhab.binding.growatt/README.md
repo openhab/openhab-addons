@@ -164,11 +164,11 @@ The meaning of the method parameters is as follows:
 
 Notes:
 
--1) ***WARNING*** inverters have different program `time segment`'s for each `programMode`.
+-<sup>1)</sup> ***WARNING*** inverters have different program `time segment`'s for each `programMode`.
 To prevent unexpected results do not overlap the `time segment`'s.
 
--2) Depending on inverter type and `programMode` certain parameters may accept 'null' values.
-The 'mix', 'sph' and 'spa' types set the battery program in a single command, so all parameters - except `enableAcCharging` - <u>**must**</u> be ***non-***'null'.
+-<sup>2)</sup> Depending on inverter type and `programMode` certain parameters may accept 'null' values.
+The 'mix', 'sph' and 'spa' types set the battery program in a single command, so all parameters - except `enableAcCharging` - <u>**must**</u> be ***non-*** 'null'.
 By contrast 'tlx' types set the battery program in up to four partial commands, and you may pass 'null' parameters in order to omit a partial command.
 The permission for passing 'null' parameters, and the effect of such 'null' parameters, is shown in detail in the table below:
 

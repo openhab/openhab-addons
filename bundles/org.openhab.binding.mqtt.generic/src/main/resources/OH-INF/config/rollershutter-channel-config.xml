@@ -94,7 +94,6 @@
 		<parameter name="stop" type="text">
 			<label>Stop Command</label>
 			<description>A string (like "STOP") that is sent when commanding the rollershutter to stop.</description>
-			<default>STOP</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="onState" type="text">

@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import static java.util.stream.Collectors.*;
-import static org.openhab.binding.knx.internal.KNXBindingConstants.CONTROL_CHANNEL_TYPES;
-import static org.openhab.binding.knx.internal.KNXBindingConstants.GA;
+import static java.util.stream.Collectors.toList;
+import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +30,7 @@ import org.openhab.binding.knx.internal.dpt.DPTUtil;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,14 +121,33 @@ public abstract class KNXChannel {
         logger.trace("getCommandSpec checking keys '{}' for command '{}' ({})", gaKeys, command, command.getClass());
         for (Map.Entry<String, GroupAddressConfiguration> entry : groupAddressConfigurations.entrySet()) {
             String dpt = Objects.requireNonNullElse(entry.getValue().getDPT(), getDefaultDPT(entry.getKey()));
-            Set<Class<? extends Type>> expectedTypeClass = DPTUtil.getAllowedTypes(dpt);
-            if (expectedTypeClass.contains(command.getClass())) {
-                logger.trace("getCommandSpec key '{}' has expectedTypeClass '{}', matching command '{}' and dpt '{}'",
-                        entry.getKey(), expectedTypeClass, command, dpt);
+            Set<Class<? extends Type>> expectedTypeClasses = DPTUtil.getAllowedTypes(dpt);
+            // find the first matching type that is assignable from the command
+            if (expectedTypeClasses.contains(command.getClass())) {
+                logger.trace(
+                        "getCommandSpec key '{}' has one of the expectedTypeClasses '{}', matching command '{}' and dpt '{}'",
+                        entry.getKey(), expectedTypeClasses, command, dpt);
                 return new WriteSpecImpl(entry.getValue(), dpt, command);
+            } else {
+                for (Class<? extends Type> expectedTypeClass : expectedTypeClasses) {
+                    if (command instanceof State state && State.class.isAssignableFrom(expectedTypeClass)) {
+                        if (state.as(expectedTypeClass.asSubclass(State.class)) != null) {
+                            logger.trace(
+                                    "getCommandSpec command class '{}' is a sub-class of the expectedTypeClass '{}' for key '{}'",
+                                    command.getClass(), expectedTypeClass, entry.getKey());
+                            Class<? extends State> expectedTypeAsStateClass = expectedTypeClass.asSubclass(State.class);
+                            State convertedState = state.as(expectedTypeAsStateClass);
+                            if (convertedState != null) {
+                                return new WriteSpecImpl(entry.getValue(), dpt, convertedState);
+                            }
+                        }
+                    }
+                }
             }
         }
-        logger.trace("getCommandSpec no Spec found!");
+        logger.trace(
+                "getCommandSpec could not match command class '{}' with expectedTypeClasses for any of the checked keys '{}', discarding command",
+                command.getClass(), gaKeys);
         return null;
     }
 
