@@ -21,6 +21,8 @@ import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeBridgeHan
 import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeDeviceHandler;
 import org.openhab.binding.freeathomesystem.internal.type.FreeAtHomeChannelTypeProvider;
 import org.openhab.binding.freeathomesystem.internal.type.FreeAtHomeThingTypeProvider;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -45,14 +47,19 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
     private final FreeAtHomeChannelTypeProvider channelTypeProvider;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
 
     @Activate
     public FreeAtHomeSystemHandlerFactory(@Reference FreeAtHomeThingTypeProvider thingTypeProvider,
-            @Reference FreeAtHomeChannelTypeProvider channelTypeProvider,
-            @Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
+            @Reference FreeAtHomeChannelTypeProvider channelTypeProvider, @Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider, @Reference HttpClientFactory httpClientFactory,
+            ComponentContext componentContext) {
         super.activate(componentContext);
         this.channelTypeProvider = channelTypeProvider;
-        httpClient = httpClientFactory.createHttpClient(FreeAtHomeSystemBindingConstants.BINDING_ID);
+        this.httpClient = httpClientFactory.createHttpClient(FreeAtHomeSystemBindingConstants.BINDING_ID);
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -67,7 +74,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
         if (BRIDGE_TYPE_UID.equals(thingTypeUID)) {
             return new FreeAtHomeBridgeHandler((Bridge) thing, httpClient);
         } else if (FREEATHOMEDEVICE_TYPE_UID.equals(thingTypeUID)) {
-            return new FreeAtHomeDeviceHandler(thing, channelTypeProvider);
+            return new FreeAtHomeDeviceHandler(thing, channelTypeProvider, i18nProvider, localeProvider);
         }
 
         return null;

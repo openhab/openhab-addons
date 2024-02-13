@@ -15,9 +15,7 @@ package org.openhab.binding.freeathomesystem.internal.util;
 import static org.openhab.binding.freeathomesystem.internal.FreeAtHomeSystemBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
@@ -40,13 +38,6 @@ public class UidUtils {
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelNameString);
 
         return channelTypeUID;
-    }
-
-    public static ChannelUID generateChannelUID(ThingUID thingUID, String deviceId, String channelID, String label) {
-        String localLabel = label.replaceAll("[^a-zA-Z\\d\\s:]", "-").replace(" ", "-").toLowerCase();
-
-        ChannelUID channelUID = new ChannelUID(thingUID, String.format("%s-%s", channelID, localLabel));
-        return channelUID;
     }
 
     public static ThingTypeUID generateThingUID() {

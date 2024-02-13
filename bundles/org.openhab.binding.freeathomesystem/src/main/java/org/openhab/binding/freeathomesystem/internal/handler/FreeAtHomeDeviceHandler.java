@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,6 +30,8 @@ import org.openhab.binding.freeathomesystem.internal.type.FreeAtHomeChannelTypeP
 import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeHttpCommunicationException;
 import org.openhab.binding.freeathomesystem.internal.util.UidUtils;
 import org.openhab.binding.freeathomesystem.internal.valuestateconverter.ValueStateConverter;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
@@ -51,6 +54,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,14 +74,23 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDeviceHandler.class);
     private FreeAtHomeDeviceDescription device = new FreeAtHomeDeviceDescription();
     private FreeAtHomeChannelTypeProvider channelTypeProvider;
+    private TranslationProvider i18nProvider;
+    private LocaleProvider localeProvider;
+    private Locale locale;
+    private Bundle bundle;
 
     private Map<ChannelUID, FreeAtHomeDatapointGroup> mapChannelUID = new HashMap<ChannelUID, FreeAtHomeDatapointGroup>();
     private Map<String, ChannelUID> mapEventToChannelUID = new HashMap<String, ChannelUID>();
 
-    public FreeAtHomeDeviceHandler(Thing thing, FreeAtHomeChannelTypeProvider channelTypeProvider) {
+    public FreeAtHomeDeviceHandler(Thing thing, FreeAtHomeChannelTypeProvider channelTypeProvider,
+            TranslationProvider i18nProvider, LocaleProvider localeProvider) {
         super(thing);
 
         this.channelTypeProvider = channelTypeProvider;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
+        this.locale = localeProvider.getLocale();
     }
 
     @Override
@@ -454,22 +468,23 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                         channelTypeUID = createChannelTypeForDatapointgroup(dpg, channelTypeUID);
                     }
 
-                    ChannelUID channelUID = UidUtils.generateChannelUID(thingUID, device.getDeviceId(),
-                            channel.getChannelId(), dpg.getLabel());
+                    ChannelUID channelUID = new ChannelUID(thingUID, channel.getChannelId(), dpg.getLabel());
 
                     String channelLabel = String.format("%s - %s - %s", channel.getChannelLabel(),
-                            channel.getFunctionIdText(), dpg.getLabel());
+                            i18nProvider.getText(bundle, channel.getFunctionIdText(), "-", locale),
+                            i18nProvider.getText(bundle, dpg.getLabel(), "-", locale));
+
+                    String channelDescription = String.format("%s",
+                            i18nProvider.getText(bundle, dpg.getDescription(), "-", locale));
 
                     Channel thingChannel = ChannelBuilder.create(channelUID)
                             .withAcceptedItemType(dpg.getOpenHabItemType()).withKind(ChannelKind.STATE)
-                            .withProperties(channelProps).withLabel(channelLabel).withDescription(dpg.getDescription())
+                            .withProperties(channelProps).withLabel(channelLabel).withDescription(channelDescription)
                             .withType(channelTypeUID).build();
                     thingChannels.add(thingChannel);
 
-                    logger.debug(
-                            "Thing channel created - device: {} - channelUID: {} - channel label: {} - category: {}",
-                            device.getDeviceId() + device.getDeviceLabel(), channelUID.getAsString(), dpg.getLabel(),
-                            dpg.getOpenHabCategory());
+                    logger.debug("Thing channel created - device: {} - channelUID: {} - channel label: {}",
+                            device.getDeviceId() + device.getDeviceLabel(), channelUID.getAsString(), channelLabel);
 
                     // in case of output channel, register it for updates
                     if (outputDatapoint != null) {
@@ -544,8 +559,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                     channelTypeUID = createChannelTypeForDatapointgroup(dpg, channelTypeUID);
                 }
 
-                ChannelUID channelUID = UidUtils.generateChannelUID(thingUID, device.getDeviceId(),
-                        channel.getChannelId(), dpg.getLabel());
+                ChannelUID channelUID = new ChannelUID(thingUID, channel.getChannelId());
 
                 FreeAtHomeDatapoint outputDatapoint = dpg.getOutputDatapoint();
 
