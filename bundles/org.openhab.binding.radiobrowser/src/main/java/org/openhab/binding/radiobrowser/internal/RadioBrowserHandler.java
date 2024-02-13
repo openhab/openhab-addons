@@ -92,11 +92,6 @@ public class RadioBrowserHandler extends BaseThingHandler {
                     case CHANNEL_STATION:
                         radioBrowserApi.selectStation(command.toString());
                         return;
-                    case CHANNEL_ADD_FAVORITE:
-                        return;
-                    case CHANNEL_REMOVE_FAVORITE:
-
-                        return;
                 }
             }
         } catch (ApiException e) {
