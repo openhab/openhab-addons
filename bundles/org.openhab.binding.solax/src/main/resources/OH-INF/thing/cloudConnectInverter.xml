@@ -82,7 +82,7 @@
 
 			<channel id="last-update-time" typeId="last-retrieve-time-stamp"/>
 
-			<channel id="inverter-workmode" typeId="inverter-workmode">
+			<channel id="inverter-workmode" typeId="inverter-workmode-cloud">
 				<label>Inverter Workmode</label>
 				<description>Inverter Workmode</description>
 			</channel>
@@ -90,12 +90,8 @@
 			<channel id="raw-data" typeId="raw-data-type"/>
 		</channels>
 
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
-
 		<config-description>
-			<parameter name="refreshInterval" type="integer" min="15" max="600">
+			<parameter name="refreshInterval" type="integer" min="10" max="600">
 				<label>Refresh Interval</label>
 				<description>Refresh interval in seconds. (Cloud API is limited to max 10 calls per minute and 10000 times per day)</description>
 				<default>30</default>
@@ -108,7 +104,7 @@
 			<parameter name="token" type="text" required="true">
 				<label>Token</label>
 				<description>Token to access the Solax cloud API</description>
-				<context>network-address</context>
+				<context>password</context>
 			</parameter>
 		</config-description>
 	</thing-type>

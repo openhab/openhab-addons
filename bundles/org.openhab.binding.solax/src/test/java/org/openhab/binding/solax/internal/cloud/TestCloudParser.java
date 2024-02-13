@@ -15,6 +15,9 @@ package org.openhab.binding.solax.internal.cloud;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -28,7 +31,7 @@ import org.openhab.binding.solax.internal.model.InverterType;
  */
 @NonNullByDefault
 public class TestCloudParser {
-    private String CLOUD_RESPONSE = """
+    private static final String CLOUD_RESPONSE_SUCCESS = """
             {
                 "success": true,
                 "exception": "Query success!",
@@ -60,11 +63,15 @@ public class TestCloudParser {
             }
                                     """;
 
+    private static final String CLOUD_RESPONSE_ERROR = """
+            {"success":false,"exception":"error","result":null,"code":2001}
+            """;
+
     @Test
-    public void testWithRealData() throws IOException {
-        CloudRawDataBean bean = CloudRawDataBean.fromJson(CLOUD_RESPONSE);
+    public void testPositiveScenario() throws IOException {
+        CloudRawDataBean bean = CloudRawDataBean.fromJson(CLOUD_RESPONSE_SUCCESS);
         assertTrue(bean.isSuccess(), "Overall response success");
-        assertEquals(bean.getOverallResult(), "Query success!", "Query success string response");
+        assertEquals(bean.getOverallResult(), CloudRawDataBean.QUERY_SUCCESS, "Query success string response");
 
         InverterType type = bean.getInverterType();
         assertEquals(InverterType.X1_HYBRID_G4, type, "Inverter type not recognized properly");
@@ -83,12 +90,29 @@ public class TestCloudParser {
         assertEquals(2536.4, bean.getConsumeEnergy(), "Consume energy");
         assertEquals(0, bean.getFeedInPowerM2(), "Feed in power M2");
         assertEquals(56.3, bean.getEPSPowerR(), "EPS power R");
-        // assertEquals(ZonedDateTime.of(LocalDateTime.of(2023, 11, 28, 18, 34, 17), ZoneId.of("CET")),
-        // bean.getUploadTime(), "Upload time");
+
         assertEquals(1245, bean.getBatteryPower(), "Battery power");
         assertEquals(55, bean.getPowerPv1(), "PV1");
         assertEquals(670, bean.getPowerPv2(), "PV2");
         assertEquals(0, bean.getBatteryStatus(), "Battery status");
         assertEquals(0, bean.getCode(), "Return code");
+
+        ZoneId zoneId = ZoneId.of("CET");
+        assertEquals(ZonedDateTime.of(LocalDateTime.of(2023, 11, 28, 18, 34, 17), zoneId), bean.getUploadTime(zoneId),
+                "Upload time");
+    }
+
+    @Test
+    public void testNegativeScenario() throws IOException {
+        CloudRawDataBean bean = CloudRawDataBean.fromJson(CLOUD_RESPONSE_ERROR);
+        assertFalse(bean.isSuccess(), "Overall response success");
+        assertEquals(bean.getOverallResult(), CloudRawDataBean.ERROR, "Expected error as a response");
+    }
+
+    @Test
+    public void testEmptyResponse() throws IOException {
+        CloudRawDataBean bean = CloudRawDataBean.fromJson("");
+        assertFalse(bean.isSuccess(), "Overall response success");
+        assertEquals(bean.getOverallResult(), CloudRawDataBean.ERROR, "Expected error as a response");
     }
 }

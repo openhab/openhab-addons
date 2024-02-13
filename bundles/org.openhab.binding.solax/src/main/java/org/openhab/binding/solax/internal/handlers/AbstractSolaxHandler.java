@@ -47,7 +47,7 @@ public abstract class AbstractSolaxHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractSolaxHandler.class);
 
-    private static final int INITIAL_SCHEDULE_DELAY_SECONDS = 5;
+    private static final int INITIAL_SCHEDULE_DELAY_SECONDS = 0;
 
     private @NonNullByDefault({}) SolaxConnector connector;
 
@@ -98,7 +98,7 @@ public abstract class AbstractSolaxHandler extends BaseThingHandler {
                 logger.debug("Exception received while attempting to retrieve data via HTTP", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (SolaxUpdateException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } finally {
                 retrieveDataCallLock.unlock();
             }

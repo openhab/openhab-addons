@@ -54,6 +54,15 @@
 				<option value="11">PV Wake-up Battery</option>
 				<option value="12">GEN Check</option>
 				<option value="13">GEN Run</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="inverter-workmode-cloud">
+		<item-type>String</item-type>
+		<label>Inverter Workmode</label>
+		<description>Inverter Workmode</description>
+		<state pattern="%s" readOnly="true">
+			<options>
 				<option value="100">Waiting</option>
 				<option value="101">Checking</option>
 				<option value="102">Normal</option>

@@ -31,14 +31,10 @@ public class CloudHttpConnector implements SolaxConnector {
 
     private static final int HTTP_REQUEST_TIME_OUT = 5000;
 
-    // private static final String CONTENT_TYPE = "text/html; charset=utf-8";
     private static final String CONTENT_TYPE = "application/json; charset=utf-8";
 
     private final Logger logger = LoggerFactory.getLogger(CloudHttpConnector.class);
 
-    private static final String TOKEN_ID_REPLACEMENT_PATTERN = "{tokenId}";
-    // The serial number of the Wifi dongle is the password for the connection (default)
-    private static final String SERIAL_NUMBER_REPLACEMENT_PATTERN = "{serialNumber}";
     private static final String URI = """
             https://www.solaxcloud.com/proxyApp/proxy/api/getRealtimeInfo.do?tokenId={tokenId}&sn={serialNumber}
             """;
@@ -50,13 +46,12 @@ public class CloudHttpConnector implements SolaxConnector {
     }
 
     public CloudHttpConnector(String uri, String tokenId, String serialNumber) {
-        this.uri = uri.replace(TOKEN_ID_REPLACEMENT_PATTERN, tokenId)
-                .replace(SERIAL_NUMBER_REPLACEMENT_PATTERN, serialNumber).trim();
+        this.uri = uri.replace("{tokenId}", tokenId).replace("{serialNumber}", serialNumber).trim();
     }
 
     @Override
     public @Nullable String retrieveData() throws IOException {
-        logger.trace("Uri: {}", uri);
+        logger.debug("About to retrieve data from Uri: {}", uri);
         String result = HttpUtil.executeUrl(HttpMethod.GET.name(), uri, null, CONTENT_TYPE, HTTP_REQUEST_TIME_OUT);
         logger.trace("Retrieved content = {}", result);
         return result;

@@ -14,7 +14,8 @@ In case the parsed information that comes with the binding out of the box differ
 
 | Thing                  | Thing Type | Description                                                                         |
 |------------------------|------------|-------------------------------------------------------------------------------------|
-| local-connect-inverter | Thing      | This is model representation of inverter with all the data available as a channels  |
+| local-connect-inverter | Thing      | An inverter representation with all the data available as a channels (directly retrieved from the wi-fi module  |
+| cloud-connect-inverter | Thing      | An inverter representation with all the data available as a channels (retrieved from the Solax cloud API)  |
 
 Note: Channels may vary depending on the inverter type and the availability of information for parsing the raw data. 
 If you're missing a channel this means that it's not supported for your inverter type.
@@ -199,27 +200,27 @@ String solaxInverterStatus "Inverter Status [%s]" <energy> (gsolax_inverter,Ever
 
 ### Sitemap Configuration
 
-```java
+```perl
 Frame label="Solar power strings" {
     Text item=solaxPowerEast valuecolor=[<=30="gray",<=300="red", <1500="orange", >=1500="green"] {
         Text item=solaxPowerEast icon="energy" valuecolor=[<=30="gray",<=300="red", <1500="orange", >=1500="green"]
         Text item=solaxPowerWest icon="energy" valuecolor=[<=30="gray",<=300="red", <1500="orange", >=1500="green"]
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
-        Chart item=solarPanels period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solarPanels period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solarPanels period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solarPanels period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solarPanels period=Y refresh=3600 visibility=[Chart_Period==4] 		
+        Chart item=solarPanels period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solarPanels period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solarPanels period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solarPanels period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solarPanels period=Y refresh=3600 visibility=[Chart_Period==4]
     }
     Text item=solaxPowerWest valuecolor=[<=30="gray",<=300="red", <1500="orange", >=1500="green"] {
         Text item=solaxPowerEast icon="energy" valuecolor=[<=30="gray",<=300="red", <1500="orange", >=1500="green"]
         Text item=solaxPowerWest icon="energy" valuecolor=[<=30="gray",<=300="red", <1500="orange", >=1500="green"]
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
-        Chart item=solarPanels period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solarPanels period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solarPanels period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solarPanels period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solarPanels period=Y refresh=3600 visibility=[Chart_Period==4] 	
+        Chart item=solarPanels period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solarPanels period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solarPanels period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solarPanels period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solarPanels period=Y refresh=3600 visibility=[Chart_Period==4]
     }
     Text item=solaxVoltageEast valuecolor=[==0="gray",>0="green", >480="orange", >=500="red"]
     Text item=solaxVoltageWest valuecolor=[==0="gray",>0="green", >480="orange", >=500="red"]
@@ -230,96 +231,96 @@ Frame label="Solar power strings" {
         Text item=solaxPowerWest icon="energy" valuecolor=[<=30="gray",<=300="red", <1500="orange", >=1500="green"]
         Text item=solaxGenerationTotal icon="energy" valuecolor=[<=30="gray",<=300="red", <1500="orange", >=1500="green"]
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
-        Chart item=solarPanels period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solarPanels period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solarPanels period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solarPanels period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solarPanels period=Y refresh=3600 visibility=[Chart_Period==4] 	
+        Chart item=solarPanels period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solarPanels period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solarPanels period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solarPanels period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solarPanels period=Y refresh=3600 visibility=[Chart_Period==4]
     }
 }
 Frame label="Consumption" {
     Text item=solaxAcPower valuecolor=[<=30="gray", <800="green", <1500="orange", >=1500="red"] {
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
         Text item=solaxAcPower icon="energy" valuecolor=[<=30="gray", <800="green", <1500="orange", >=1500="red"]
-        Chart item=solaxAcPower period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solaxAcPower period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solaxAcPower period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solaxAcPower period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solaxAcPower period=Y refresh=3600 visibility=[Chart_Period==4] 
+        Chart item=solaxAcPower period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solaxAcPower period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solaxAcPower period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solaxAcPower period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solaxAcPower period=Y refresh=3600 visibility=[Chart_Period==4]
     }
     Text item=solaxFeedInPower valuecolor=[<=30="gray", <800="green", <1500="orange", >=1500="red"] {
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
         Text item=solaxFeedInPower icon="energy" valuecolor=[<=30="gray", <800="green", <1500="orange", >=1500="red"]
-        Chart item=solaxFeedInPower period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solaxFeedInPower period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solaxFeedInPower period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solaxFeedInPower period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solaxFeedInPower period=Y refresh=3600 visibility=[Chart_Period==4] 
+        Chart item=solaxFeedInPower period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solaxFeedInPower period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solaxFeedInPower period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solaxFeedInPower period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solaxFeedInPower period=Y refresh=3600 visibility=[Chart_Period==4]
     }
     Text item=solaxFrequency valuecolor=[<=30="gray", <800="green", <1500="orange", >=1500="red"] {
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
         Text item=solaxFrequency icon="energy" valuecolor=[<=30="gray", <800="green", <1500="orange", >=1500="red"]
-        Chart item=solaxFrequency period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solaxFrequency period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solaxFrequency period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solaxFrequency period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solaxFrequency period=Y refresh=3600 visibility=[Chart_Period==4] 
+        Chart item=solaxFrequency period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solaxFrequency period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solaxFrequency period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solaxFrequency period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solaxFrequency period=Y refresh=3600 visibility=[Chart_Period==4]
     }
     Text item=solaxVoltage valuecolor=[<=30="gray", <800="green", <1500="orange", >=1500="red"] {
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
         Text item=solaxVoltage icon="energy" valuecolor=[<=30="gray", <800="green", <1500="orange", >=1500="red"]
-        Chart item=solaxVoltage period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solaxVoltage period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solaxVoltage period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solaxVoltage period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solaxVoltage period=Y refresh=3600 visibility=[Chart_Period==4] 
+        Chart item=solaxVoltage period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solaxVoltage period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solaxVoltage period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solaxVoltage period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solaxVoltage period=Y refresh=3600 visibility=[Chart_Period==4]
     }
 }
 Frame label="Battery" {
     Text item=solaxBatteryPower valuecolor=[<=-500="red", <0="orange", ==0="gray", >0="green"] {
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
         Text item=solaxBatteryPower icon="energy" valuecolor=[<-800="red", <0="orange", ==0="gray", >=0="green"]
-        Chart item=solaxBatteryPower period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solaxBatteryPower period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solaxBatteryPower period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solaxBatteryPower period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solaxBatteryPower period=Y refresh=3600 visibility=[Chart_Period==4] 		
+        Chart item=solaxBatteryPower period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solaxBatteryPower period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solaxBatteryPower period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solaxBatteryPower period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solaxBatteryPower period=Y refresh=3600 visibility=[Chart_Period==4]
     }
     Text item=solaxBatteryCurrent valuecolor=[<=-5="red", <0="orange", ==0="gray", >0="green"] {
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
         Text item=solaxBatteryCurrent icon="energy" valuecolor=[<-800="red", <0="orange", ==0="gray", >=0="green"]
-        Chart item=solaxBatteryCurrent period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solaxBatteryCurrent period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solaxBatteryCurrent period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solaxBatteryCurrent period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solaxBatteryCurrent period=Y refresh=3600 visibility=[Chart_Period==4] 		
+        Chart item=solaxBatteryCurrent period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solaxBatteryCurrent period=D refresh=3600 visibility=[Chart_Period==1]			
+        Chart item=solaxBatteryCurrent period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solaxBatteryCurrent period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solaxBatteryCurrent period=Y refresh=3600 visibility=[Chart_Period==4]
     }
     Text item=solaxBatteryVoltage valuecolor=[<=-500="red", <0="orange", ==0="gray", >0="green"] {
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
         Text item=solaxBatteryVoltage icon="energy" valuecolor=[<-800="red", <0="orange", ==0="gray", >=0="green"]
-        Chart item=solaxBatteryVoltage period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solaxBatteryVoltage period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solaxBatteryVoltage period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solaxBatteryVoltage period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solaxBatteryVoltage period=Y refresh=3600 visibility=[Chart_Period==4] 		
+        Chart item=solaxBatteryVoltage period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solaxBatteryVoltage period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solaxBatteryVoltage period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solaxBatteryVoltage period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solaxBatteryVoltage period=Y refresh=3600 visibility=[Chart_Period==4]
     }
     Text item=solaxBatterySoc valuecolor=[<=30="red", <50="orange", >=50="green"] {
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
         Text item=solaxBatterySoc valuecolor=[<=30="red", <50="orange", >=50="green"]
-        Chart item=solaxBatterySoc period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solaxBatterySoc period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solaxBatterySoc period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solaxBatterySoc period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solaxBatterySoc period=Y refresh=3600 visibility=[Chart_Period==4] 		
+        Chart item=solaxBatterySoc period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solaxBatterySoc period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solaxBatterySoc period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solaxBatterySoc period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solaxBatterySoc period=Y refresh=3600 visibility=[Chart_Period==4]
     }
     Text item=solaxBatteryTemperature valuecolor=[<=35="green", <45="orange", >=45="red"] {
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
         Text item=solaxBatteryTemperature valuecolor=[<=25="green", <40="orange", >=40="red"]
-        Chart item=solaxBatteryTemperature period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solaxBatteryTemperature period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solaxBatteryTemperature period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solaxBatteryTemperature period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solaxBatteryTemperature period=Y refresh=3600 visibility=[Chart_Period==4] 		
+        Chart item=solaxBatteryTemperature period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solaxBatteryTemperature period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solaxBatteryTemperature period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solaxBatteryTemperature period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solaxBatteryTemperature period=Y refresh=3600 visibility=[Chart_Period==4]
     }
 }
 Frame label="Statistics" {
@@ -331,11 +332,11 @@ Frame label="Statistics" {
     Text item=solaxCalculatedTotalFeedInPowerThisMonth valuecolor=[<200="green", >=200="orange", >=300="red"] {
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
         Text item=solaxCalculatedTotalFeedInPowerThisMonth valuecolor=[<=30="red", <50="orange", >=50="green"]
-        Chart item=solaxCalculatedTotalFeedInPowerThisMonth period=h refresh=600 visibility=[Chart_Period==0] 					
-        Chart item=solaxCalculatedTotalFeedInPowerThisMonth period=D refresh=3600 visibility=[Chart_Period==1] 					
-        Chart item=solaxCalculatedTotalFeedInPowerThisMonth period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized] 					
-        Chart item=solaxCalculatedTotalFeedInPowerThisMonth period=M refresh=3600 visibility=[Chart_Period==3]					
-        Chart item=solaxCalculatedTotalFeedInPowerThisMonth period=Y refresh=3600 visibility=[Chart_Period==4] 		
+        Chart item=solaxCalculatedTotalFeedInPowerThisMonth period=h refresh=600 visibility=[Chart_Period==0]
+        Chart item=solaxCalculatedTotalFeedInPowerThisMonth period=D refresh=3600 visibility=[Chart_Period==1]
+        Chart item=solaxCalculatedTotalFeedInPowerThisMonth period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
+        Chart item=solaxCalculatedTotalFeedInPowerThisMonth period=M refresh=3600 visibility=[Chart_Period==3]
+        Chart item=solaxCalculatedTotalFeedInPowerThisMonth period=Y refresh=3600 visibility=[Chart_Period==4]
     }
 }
 Frame label="General" {
@@ -348,5 +349,3 @@ Frame label="Raw data" {
     Text item=solaxCloudRawData
 }
 ```
-
-

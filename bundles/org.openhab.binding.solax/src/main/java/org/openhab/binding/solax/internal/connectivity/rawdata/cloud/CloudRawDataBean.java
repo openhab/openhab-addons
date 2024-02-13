@@ -35,7 +35,8 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class CloudRawDataBean implements CloudInverterData {
 
-    private static final String ERROR = "error";
+    public static final String QUERY_SUCCESS = "Query success!";
+    public static final String ERROR = "error";
 
     private static final DateTimeFormatter CUSTOM_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -44,6 +45,15 @@ public class CloudRawDataBean implements CloudInverterData {
     private @NonNullByDefault({}) Result result;
     private int code;
     private @NonNullByDefault({}) String rawData;
+
+    // For JSON serialization / deserialization purposes
+    public CloudRawDataBean() {
+    }
+
+    public CloudRawDataBean(boolean isSuccess) {
+        this.success = isSuccess;
+        this.exception = isSuccess ? QUERY_SUCCESS : ERROR;
+    }
 
     @Override
     public boolean isSuccess() {
@@ -215,13 +225,13 @@ public class CloudRawDataBean implements CloudInverterData {
 
     public static CloudRawDataBean fromJson(String json) {
         if (json.isEmpty()) {
-            throw new IllegalArgumentException("JSON payload should not be empty");
+            return new CloudRawDataBean(false);
         }
 
         Gson gson = GsonSupplier.getInstance();
         CloudRawDataBean deserializedObject = gson.fromJson(json, CloudRawDataBean.class);
         if (deserializedObject == null) {
-            throw new IllegalStateException("Unexpected null result when deserializing JSON");
+            return new CloudRawDataBean(false);
         }
         deserializedObject.setRawData(json);
         return deserializedObject;
@@ -238,7 +248,7 @@ public class CloudRawDataBean implements CloudInverterData {
 
     public boolean isError() {
         String exception = getException();
-        return exception == null || exception.equals(ERROR);
+        return ERROR.equals(exception);
     }
 
     private double notNullResult(Supplier<@Nullable Double> supplier) {
