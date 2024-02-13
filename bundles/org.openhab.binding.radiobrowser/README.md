@@ -17,7 +17,8 @@ With this binding you can use their database of more than 45,000 stations to app
 
 ## Filters Configuration
 
-Found by ticking the `show advanced` box, this configuration called `filters` can be used to limit the stations based on codecs, minimum quality, ordering and more.
+The `advanced` configuration parameter `filters` can be used to limit the stations based on different fields like codecs, minimum quality, ordering and more.
+All possible filter options are listed here <https://de1.api.radio-browser.info/#Advanced_station_search>
 The default filter is this and can be change to create better results for your needs.
 
 ```
