@@ -611,7 +611,7 @@
 	</channel-type>
 
 	<channel-type id="ncurrent">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>@text/channel-type.shelly.ncurrent.label</label>
 		<description>@text/channel-type.shelly.ncurrent.description</description>
 		<category>Energy</category>
@@ -619,10 +619,12 @@
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
 	</channel-type>
 
 	<channel-type id="ixsum">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>@text/channel-type.shelly.ixsum.label</label>
 		<description>@text/channel-type.shelly.ixsum.description</description>
 		<category>Energy</category>
@@ -630,10 +632,12 @@
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
 	</channel-type>
 
 	<channel-type id="nmTreshhold">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:ElectricCurrent</item-type>
 		<label>@text/channel-type.shelly.nmTreshhold.label</label>
 		<description>@text/channel-type.shelly.nmTreshhold.description</description>
 		<category>Energy</category>
@@ -641,6 +645,8 @@
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
 	</channel-type>
 
 	<channel-type id="nmismatch">
