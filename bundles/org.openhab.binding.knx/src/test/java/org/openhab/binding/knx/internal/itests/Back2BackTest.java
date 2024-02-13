@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.knx.internal.client.DummyClient;
 import org.openhab.binding.knx.internal.client.DummyKNXNetworkLink;
 import org.openhab.binding.knx.internal.client.DummyProcessListener;
 import org.openhab.binding.knx.internal.dpt.DPTUtil;
