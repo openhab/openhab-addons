@@ -127,22 +127,4 @@
 		<description>The currently selected stations icon</description>
 	</channel-type>
 
-	<channel-type id="favorites">
-		<item-type>String</item-type>
-		<label>Favorites</label>
-		<description>The stations you have liked and added to this list</description>
-	</channel-type>
-
-	<channel-type id="addFavorite">
-		<item-type>Switch</item-type>
-		<label>Add Favorite</label>
-		<description>Add the currently selected station to the favorite list</description>
-	</channel-type>
-
-	<channel-type id="removeFavorite">
-		<item-type>Switch</item-type>
-		<label>Remove Favorite</label>
-		<description>Add the currently selected station to the favorite list</description>
-	</channel-type>
-
 </thing:thing-descriptions>
