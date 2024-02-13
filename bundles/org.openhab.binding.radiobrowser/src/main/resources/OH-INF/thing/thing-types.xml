@@ -63,7 +63,7 @@
 	<channel-type id="station">
 		<item-type>String</item-type>
 		<label>Station</label>
-		<description>A list of stations that you can select from to fetch the URI for</description>
+		<description>A list of stations that you can select from</description>
 	</channel-type>
 
 	<channel-type id="genre">
