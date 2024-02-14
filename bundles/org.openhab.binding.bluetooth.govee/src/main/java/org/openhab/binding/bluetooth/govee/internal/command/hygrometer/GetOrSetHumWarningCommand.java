@@ -86,12 +86,12 @@ public class GetOrSetHumWarningCommand extends GoveeCommand {
             resultHandler.completeExceptionally(th);
         }
         if (data != null) {
-            WarningSettingsDTO<Dimensionless> result = new WarningSettingsDTO<Dimensionless>();
+            WarningSettingsDTO<Dimensionless> result = new WarningSettingsDTO<>();
 
             ByteBuffer buffer = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
             result.enableAlarm = OnOffType.from(buffer.get() == 1);
-            result.min = new QuantityType<Dimensionless>(buffer.getShort() / 100.0, Units.PERCENT);
-            result.max = new QuantityType<Dimensionless>(buffer.getShort() / 100.0, Units.PERCENT);
+            result.min = new QuantityType<>(buffer.getShort() / 100.0, Units.PERCENT);
+            result.max = new QuantityType<>(buffer.getShort() / 100.0, Units.PERCENT);
 
             resultHandler.complete(result);
         } else {

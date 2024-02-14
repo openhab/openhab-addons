@@ -69,7 +69,7 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
 
     private boolean alreadyRemovedUnsupportedChannels;
 
-    private final Set<String> unsupportedExistingChannels = new HashSet<String>();
+    private final Set<String> unsupportedExistingChannels = new HashSet<>();
 
     private final ReentrantLock retrieveDataCallLock = new ReentrantLock();
 
@@ -190,12 +190,18 @@ public class SolaxLocalAccessHandler extends BaseThingHandler {
                 supportedChannels);
         updateChannel(SolaxBindingConstants.CHANNEL_BATTERY_TEMPERATURE, inverterData.getBatteryTemperature(),
                 SIUnits.CELSIUS, supportedChannels);
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_TEMPERATURE1, inverterData.getInverterTemperature1(),
+                SIUnits.CELSIUS, supportedChannels);
+        updateChannel(SolaxBindingConstants.CHANNEL_INVERTER_TEMPERATURE2, inverterData.getInverterTemperature2(),
+                SIUnits.CELSIUS, supportedChannels);
         updateChannel(SolaxBindingConstants.CHANNEL_BATTERY_STATE_OF_CHARGE, inverterData.getBatteryLevel(),
                 Units.PERCENT, supportedChannels);
         updateChannel(SolaxBindingConstants.CHANNEL_FEED_IN_POWER, inverterData.getFeedInPower(), Units.WATT,
                 supportedChannels);
         updateChannel(SolaxBindingConstants.CHANNEL_POWER_USAGE, inverterData.getPowerUsage(), Units.WATT,
                 supportedChannels);
+        updateState(SolaxBindingConstants.CHANNEL_INVERTER_WORKMODE,
+                new StringType(inverterData.getInverterWorkMode()));
 
         // Totals
         updateChannel(SolaxBindingConstants.CHANNEL_TOTAL_ENERGY, inverterData.getTotalEnergy(), Units.KILOWATT_HOUR,

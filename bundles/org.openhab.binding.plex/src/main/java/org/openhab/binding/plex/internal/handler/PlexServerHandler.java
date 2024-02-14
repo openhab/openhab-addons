@@ -169,7 +169,7 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
      * @return
      */
     public List<String> getAvailablePlayers() {
-        List<String> availablePlayers = new ArrayList<String>();
+        List<String> availablePlayers = new ArrayList<>();
         MediaContainer sessionData = plexAPIConnector.getSessionData();
 
         if (sessionData != null && sessionData.getSize() > 0) {

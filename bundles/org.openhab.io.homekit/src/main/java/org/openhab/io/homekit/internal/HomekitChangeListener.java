@@ -99,7 +99,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         this.instance = instance;
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices-" + instance, scheduler,
                 Duration.ofMillis(1000), Clock.systemUTC(), this::applyUpdates);
-        metadataChangeListener = new RegistryChangeListener<Metadata>() {
+        metadataChangeListener = new RegistryChangeListener<>() {
             @Override
             public void added(final Metadata metadata) {
                 final MetadataKey uid = metadata.getUID();

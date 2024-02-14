@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NumberValue extends Value {
     private static final String NAN = "NaN";
+    private static final String NEGATIVE_NAN = "-NaN";
 
     private final Logger logger = LoggerFactory.getLogger(NumberValue.class);
     private final @Nullable BigDecimal min;
@@ -120,8 +121,12 @@ public class NumberValue extends Value {
 
     @Override
     public Type parseMessage(Command command) throws IllegalArgumentException {
-        if (command instanceof StringType && command.toString().equalsIgnoreCase(NAN)) {
-            return UnDefType.UNDEF;
+        if (command instanceof StringType) {
+            if (command.toString().equalsIgnoreCase(NAN) || command.toString().equalsIgnoreCase(NEGATIVE_NAN)) {
+                return UnDefType.UNDEF;
+            } else if (command.toString().isEmpty()) {
+                return UnDefType.NULL;
+            }
         }
         return parseCommand(command);
     }

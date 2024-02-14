@@ -342,7 +342,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     }
 
     private static Set<Integer> csvStringToSetInt(String s) {
-        TreeSet<Integer> intSet = new TreeSet<Integer>();
+        TreeSet<Integer> intSet = new TreeSet<>();
         String sNorm = s.replaceAll("\\s", "");
         Scanner sc = new Scanner(sNorm);
         sc.useDelimiter(",");
@@ -380,7 +380,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     @Override
     protected long getRefreshAllLastTS() {
         return lastAllDevicesRefreshTS;
-    };
+    }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {

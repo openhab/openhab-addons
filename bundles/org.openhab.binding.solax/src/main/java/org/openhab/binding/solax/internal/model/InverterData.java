@@ -68,11 +68,11 @@ public interface InverterData {
 
     default double getBatteryVoltage() {
         return Short.MIN_VALUE;
-    };
+    }
 
     default double getBatteryCurrent() {
         return Short.MIN_VALUE;
-    };
+    }
 
     default short getBatteryPower() {
         return Short.MIN_VALUE;
@@ -80,6 +80,22 @@ public interface InverterData {
 
     default short getBatteryTemperature() {
         return Short.MIN_VALUE;
+    }
+
+    default short getInverterTemperature1() {
+        return Short.MIN_VALUE;
+    }
+
+    default short getInverterTemperature2() {
+        return Short.MIN_VALUE;
+    }
+
+    default short getInverterWorkModeCode() {
+        return Short.MIN_VALUE;
+    }
+
+    default String getInverterWorkMode() {
+        return String.valueOf(getInverterWorkModeCode());
     }
 
     default short getBatteryLevel() {

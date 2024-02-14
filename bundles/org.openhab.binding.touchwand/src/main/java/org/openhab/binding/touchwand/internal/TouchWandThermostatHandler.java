@@ -96,13 +96,13 @@ public class TouchWandThermostatHandler extends TouchWandBaseUnitHandler {
 
     void updateTargetTemperature(TouchWandThermostatUnitData unitData) {
         int targetTemperature = unitData.getCurrStatus().getTargetTemperature();
-        QuantityType<Temperature> temperatureValue = new QuantityType<Temperature>(targetTemperature, SIUnits.CELSIUS);
+        QuantityType<Temperature> temperatureValue = new QuantityType<>(targetTemperature, SIUnits.CELSIUS);
         updateState(CHANNEL_THERMOSTAT_TARGET_TEMPERATURE, temperatureValue);
     }
 
     void updateRoomTemperature(TouchWandThermostatUnitData unitData) {
         int roomTemperature = unitData.getCurrStatus().getRoomTemperature();
-        QuantityType<Temperature> temperatureValue = new QuantityType<Temperature>(roomTemperature, SIUnits.CELSIUS);
+        QuantityType<Temperature> temperatureValue = new QuantityType<>(roomTemperature, SIUnits.CELSIUS);
         updateState(CHANNEL_THERMOSTAT_ROOM_TEMPERATURE, temperatureValue);
     }
 

@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-    private static final List<Integer> PORTS = new ArrayList<Integer>();
+    private static final List<Integer> PORTS = new ArrayList<>();
     private static int port = 8090;
 
     /**

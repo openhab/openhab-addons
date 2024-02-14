@@ -63,6 +63,7 @@
 				<option value="TrueHD51">Dolby TrueHD 5.1</option>
 				<option value="PCM51">Dolby Multichannel PCM 5.1</option>
 				<option value="DTS51">DTS Surround 5.1</option>
+				<option value="TrueHD71">Dolby TrueHD 7.1</option>
 			</options>
 		</state>
 	</channel-type>

@@ -46,7 +46,7 @@ abstract class UniFiCache<T extends @Nullable HasId> {
         ID,
         IP,
         MAC,
-        NAME;
+        NAME
     }
 
     private static final String SEPARATOR = ":";

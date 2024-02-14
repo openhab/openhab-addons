@@ -76,7 +76,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
      * @throws ValidationException
      */
     protected String getJsonContent() throws ValidationException {
-        Map<String, String> content = new HashMap<String, String>(1);
+        Map<String, String> content = new HashMap<>(1);
         content.put(channel.getUID().getIdWithoutGroup(), getCommandValue());
 
         return gson.toJson(content);

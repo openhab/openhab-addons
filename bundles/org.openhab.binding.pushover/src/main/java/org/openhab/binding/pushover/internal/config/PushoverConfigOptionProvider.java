@@ -30,6 +30,7 @@ import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link PushoverConfigOptionProvider} class contains fields mapping thing configuration parameters.
@@ -37,7 +38,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ConfigOptionProvider.class)
+@Component(scope = ServiceScope.PROTOTYPE, service = { PushoverConfigOptionProvider.class, ConfigOptionProvider.class })
 public class PushoverConfigOptionProvider implements ConfigOptionProvider, ThingHandlerService {
 
     private @Nullable PushoverAccountHandler accountHandler;

@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +39,7 @@ class BoschSHCHandlerFactoryTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        fixture = new BoschSHCHandlerFactory();
+        fixture = new BoschSHCHandlerFactory(() -> ZoneId.systemDefault());
     }
 
     @Test

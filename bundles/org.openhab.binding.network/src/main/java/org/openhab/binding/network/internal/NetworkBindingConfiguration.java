@@ -47,7 +47,7 @@ public class NetworkBindingConfiguration {
         this.preferResponseTimeAsLatency = newConfiguration.preferResponseTimeAsLatency;
 
         NetworkUtils networkUtils = new NetworkUtils();
-        this.arpPingUtilMethod = networkUtils.determineNativeARPpingMethod(arpPingToolPath);
+        this.arpPingUtilMethod = networkUtils.determineNativeArpPingMethod(arpPingToolPath);
 
         notifyListeners();
     }

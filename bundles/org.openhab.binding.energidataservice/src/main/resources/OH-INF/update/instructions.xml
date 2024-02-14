@@ -61,6 +61,10 @@
 			</update-channel>
 		</instruction-set>
 
+		<instruction-set targetVersion="4">
+			<remove-channel id="hourly-prices" groupIds="electricity"/>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>

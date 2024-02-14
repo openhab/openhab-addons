@@ -16,9 +16,6 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 
 import java.util.List;
 
-import javax.measure.quantity.Energy;
-import javax.measure.quantity.Power;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.powermeter.PowerMeterService;
@@ -87,9 +84,8 @@ public abstract class AbstractPowerSwitchHandler extends BoschSHCDeviceHandler {
      * @param state Current state of {@link PowerMeterService}.
      */
     private void updateChannels(PowerMeterServiceState state) {
-        super.updateState(CHANNEL_POWER_CONSUMPTION, new QuantityType<Power>(state.powerConsumption, Units.WATT));
-        super.updateState(CHANNEL_ENERGY_CONSUMPTION,
-                new QuantityType<Energy>(state.energyConsumption, Units.WATT_HOUR));
+        super.updateState(CHANNEL_POWER_CONSUMPTION, new QuantityType<>(state.powerConsumption, Units.WATT));
+        super.updateState(CHANNEL_ENERGY_CONSUMPTION, new QuantityType<>(state.energyConsumption, Units.WATT_HOUR));
     }
 
     /**

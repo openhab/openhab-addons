@@ -29,7 +29,7 @@ public class F750 {
 
     @SuppressWarnings("serial")
     private static final Map<Integer, VariableInformation> VARIABLE_INFO_F750 = Collections
-            .unmodifiableMap(new HashMap<Integer, VariableInformation>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
             // @formatter:off
                     put(32260, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "NIBE Inverter 216-state"));

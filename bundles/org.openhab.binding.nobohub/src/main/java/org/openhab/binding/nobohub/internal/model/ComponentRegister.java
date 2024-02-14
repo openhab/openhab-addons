@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public final class ComponentRegister {
 
-    private final @NotNull Map<SerialNumber, Component> register = new HashMap<SerialNumber, Component>();
+    private final @NotNull Map<SerialNumber, Component> register = new HashMap<>();
 
     /**
      * Stores a new Component in the register. If a component exists with the same id, that value is overwritten.

@@ -24,7 +24,7 @@ public class MowerData {
     private Calendar calendar;
     private Planner planner;
     private Metadata metadata;
-    private ArrayList<Position> positions = new ArrayList<Position>();
+    private ArrayList<Position> positions = new ArrayList<>();
 
     public System getSystem() {
         return system;

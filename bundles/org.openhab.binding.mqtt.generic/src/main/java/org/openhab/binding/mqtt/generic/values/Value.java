@@ -23,6 +23,7 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandDescriptionBuilder;
 import org.openhab.core.types.State;
@@ -147,6 +148,9 @@ public abstract class Value {
      * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
      */
     public Type parseMessage(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType string && string.toString().isEmpty()) {
+            return UnDefType.NULL;
+        }
         return parseCommand(command);
     }
 

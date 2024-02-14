@@ -38,6 +38,7 @@
 		<category>Sensor</category>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 

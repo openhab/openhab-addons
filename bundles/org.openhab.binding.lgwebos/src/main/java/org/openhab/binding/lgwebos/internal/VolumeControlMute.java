@@ -54,7 +54,7 @@ public class VolumeControlMute extends BaseChannelHandler<Boolean> {
     }
 
     private ResponseListener<Boolean> createResponseListener(String channelId, LGWebOSHandler handler) {
-        return new ResponseListener<Boolean>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(@Nullable String error) {

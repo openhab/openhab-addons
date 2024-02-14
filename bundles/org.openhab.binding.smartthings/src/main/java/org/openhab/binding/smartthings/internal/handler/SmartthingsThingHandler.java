@@ -54,7 +54,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
     private String smartthingsName;
     private int timeout;
     private SmartthingsHandlerFactory smartthingsHandlerFactory;
-    private Map<ChannelUID, SmartthingsConverter> converters = new HashMap<ChannelUID, SmartthingsConverter>();
+    private Map<ChannelUID, SmartthingsConverter> converters = new HashMap<>();
 
     private final String smartthingsConverterName = "smartthings-converter";
 
@@ -243,7 +243,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
 
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
-        Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<ConfigStatusMessage>();
+        Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<>();
 
         // The name must be provided
         String stName = config.smartthingsName;

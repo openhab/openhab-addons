@@ -24,8 +24,11 @@ import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * This class provides the list of valid inputs for the input channel of a source.
@@ -33,6 +36,8 @@ import org.openhab.core.types.StateOption;
  * @author Kai Kreuzer - Initial contribution
  *
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { DynamicStateDescriptionProvider.class,
+        InputStateOptionProvider.class })
 @NonNullByDefault
 public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvider implements ThingHandlerService {
 

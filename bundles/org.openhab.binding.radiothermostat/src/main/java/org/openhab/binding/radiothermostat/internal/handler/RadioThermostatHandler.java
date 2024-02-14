@@ -516,8 +516,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         switch (channelId) {
             case TEMPERATURE:
                 if (data.getThermostatData().getTemperature() != null) {
-                    return new QuantityType<Temperature>(data.getThermostatData().getTemperature(),
-                            API_TEMPERATURE_UNIT);
+                    return new QuantityType<>(data.getThermostatData().getTemperature(), API_TEMPERATURE_UNIT);
                 } else {
                     return null;
                 }
@@ -535,7 +534,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 return data.getThermostatData().getProgramMode();
             case SET_POINT:
                 if (data.getThermostatData().getSetpoint() != 0) {
-                    return new QuantityType<Temperature>(data.getThermostatData().getSetpoint(), API_TEMPERATURE_UNIT);
+                    return new QuantityType<>(data.getThermostatData().getSetpoint(), API_TEMPERATURE_UNIT);
                 } else {
                     return null;
                 }

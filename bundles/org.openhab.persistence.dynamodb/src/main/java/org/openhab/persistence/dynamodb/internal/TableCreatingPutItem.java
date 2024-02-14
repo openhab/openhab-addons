@@ -80,7 +80,7 @@ public class TableCreatingPutItem<T extends DynamoDBItem<?>> {
     private final DynamoDBPersistenceService service;
     private T dto;
     private DynamoDbAsyncTable<T> table;
-    private CompletableFuture<Void> aggregateFuture = new CompletableFuture<Void>();
+    private CompletableFuture<Void> aggregateFuture = new CompletableFuture<>();
     private Instant start = Instant.now();
     private ExecutorService executor;
     private DynamoDbAsyncClient lowLevelClient;

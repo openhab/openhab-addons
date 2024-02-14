@@ -46,7 +46,7 @@ public class GetBatteryCommand extends GetCommand {
         }
         if (data != null) {
             int value = data[0] & 0xFF;
-            resultHandler.complete(new QuantityType<Dimensionless>(value, Units.PERCENT));
+            resultHandler.complete(new QuantityType<>(value, Units.PERCENT));
         } else {
             resultHandler.complete(null);
         }

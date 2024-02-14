@@ -29,7 +29,7 @@ public class PowerMode {
     @SerializedName("STATUS")
     private Status status;
     @SerializedName("ITEMS")
-    private List<ItemPower> items = new ArrayList<ItemPower>();
+    private List<ItemPower> items = new ArrayList<>();
     @SerializedName("URI")
     private String uri;
 

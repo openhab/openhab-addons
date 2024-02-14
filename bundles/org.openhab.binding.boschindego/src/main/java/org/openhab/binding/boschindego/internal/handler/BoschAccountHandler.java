@@ -174,7 +174,7 @@ public class BoschAccountHandler extends BaseBridgeHandler implements Authorizat
 
     public Collection<DevicePropertiesResponse> getDevices() throws IndegoException {
         Collection<String> serialNumbers = controller.getSerialNumbers();
-        List<DevicePropertiesResponse> devices = new ArrayList<DevicePropertiesResponse>(serialNumbers.size());
+        List<DevicePropertiesResponse> devices = new ArrayList<>(serialNumbers.size());
 
         for (String serialNumber : serialNumbers) {
             DevicePropertiesResponse properties = controller.getDeviceProperties(serialNumber);

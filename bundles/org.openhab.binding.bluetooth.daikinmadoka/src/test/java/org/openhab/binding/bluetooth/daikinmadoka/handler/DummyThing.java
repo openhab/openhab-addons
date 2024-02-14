@@ -50,12 +50,12 @@ public class DummyThing implements Thing {
 
     @Override
     public List<@NonNull Channel> getChannels() {
-        return new ArrayList<Channel>();
+        return new ArrayList<>();
     }
 
     @Override
     public List<@NonNull Channel> getChannelsOfGroup(String channelGroupId) {
-        return new ArrayList<Channel>();
+        return new ArrayList<>();
     }
 
     @Override
@@ -117,7 +117,7 @@ public class DummyThing implements Thing {
 
     @Override
     public Map<@NonNull String, @NonNull String> getProperties() {
-        return new HashMap<String, String>();
+        return new HashMap<>();
     }
 
     @Override

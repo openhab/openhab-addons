@@ -30,9 +30,9 @@ public class CurrentInput {
     @SerializedName("STATUS")
     private Status status;
     @SerializedName("ITEMS")
-    private List<ItemInput> items = new ArrayList<ItemInput>();
+    private List<ItemInput> items = new ArrayList<>();
     @SerializedName("HASHLIST")
-    private List<Long> hashlist = new ArrayList<Long>();
+    private List<Long> hashlist = new ArrayList<>();
     @SerializedName("URI")
     private String uri;
     @SerializedName("PARAMETERS")

@@ -90,7 +90,7 @@ public class AbstractFMIResponseParsingTest {
     }
 
     protected static Matcher<Data> deeplyEqualTo(long start, int intervalMinutes, String... values) {
-        return new TypeSafeMatcher<Data>() {
+        return new TypeSafeMatcher<>() {
 
             private TimestampMatcher timestampMatcher = new TimestampMatcher(start, intervalMinutes, values.length);
             private ValuesMatcher valuesMatcher = new ValuesMatcher(values);

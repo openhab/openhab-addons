@@ -57,8 +57,8 @@ public class TimetableStubHttpCallable implements HttpCallable {
     public TimetableStubHttpCallable(File testdataDir) {
         this.testdataDir = testdataDir;
         this.requestedPlanUrls = new ArrayList<>();
-        this.requestedFullChangesUrls = new ArrayList<String>();
-        this.requestedRecentChangesUrls = new ArrayList<String>();
+        this.requestedFullChangesUrls = new ArrayList<>();
+        this.requestedRecentChangesUrls = new ArrayList<>();
     }
 
     public void addAvailableUrl(String url) {

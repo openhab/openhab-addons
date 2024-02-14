@@ -80,7 +80,7 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             .create();
     private HttpClient httpClient;
     private GeneracMobileLinkDiscoveryService discoveryService;
-    private Map<String, Apparatus> apparatusesCache = new HashMap<String, Apparatus>();
+    private Map<String, Apparatus> apparatusesCache = new HashMap<>();
     private int refreshIntervalSeconds = 60;
     private boolean loggedIn;
 

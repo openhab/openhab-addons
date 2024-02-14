@@ -119,7 +119,7 @@ public class StatusWrapper {
     private boolean hasFuel;
     private boolean isHybrid;
 
-    private Map<String, State> specialHandlingMap = new HashMap<String, State>();
+    private Map<String, State> specialHandlingMap = new HashMap<>();
 
     public StatusWrapper(String type, String statusJson) {
         hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())

@@ -1155,7 +1155,7 @@ public enum EcoTouchTags {
         Bitfield,
         Float,
         Enum
-    };
+    }
 
     /**
      * The format of the response of the heat pump
@@ -1287,7 +1287,7 @@ public enum EcoTouchTags {
      * @return first matching EcoTouchTags instance, if available
      */
     public static List<EcoTouchTags> fromTag(String tag) {
-        List<EcoTouchTags> result = new LinkedList<EcoTouchTags>();
+        List<EcoTouchTags> result = new LinkedList<>();
         for (EcoTouchTags c : EcoTouchTags.values()) {
             if (c.getTagName().equals(tag)) {
                 result.add(c);

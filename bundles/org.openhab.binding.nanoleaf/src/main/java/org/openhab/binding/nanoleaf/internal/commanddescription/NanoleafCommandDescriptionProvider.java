@@ -29,6 +29,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.DynamicCommandDescriptionProvider;
 import org.openhab.core.types.CommandOption;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * This class provides the available effects as dynamic options as they are read from the Nanoleaf controller.
@@ -37,7 +38,8 @@ import org.osgi.service.component.annotations.Component;
  *
  */
 @NonNullByDefault
-@Component(service = { DynamicCommandDescriptionProvider.class })
+@Component(scope = ServiceScope.PROTOTYPE, service = { NanoleafCommandDescriptionProvider.class,
+        DynamicCommandDescriptionProvider.class })
 public class NanoleafCommandDescriptionProvider extends BaseDynamicCommandDescriptionProvider
         implements NanoleafControllerListener, ThingHandlerService {
 
@@ -62,12 +64,11 @@ public class NanoleafCommandDescriptionProvider extends BaseDynamicCommandDescri
     }
 
     @Override
-    public void deactivate() {
+    public void dispose() {
         NanoleafControllerHandler localHandler = this.bridgeHandler;
         if (localHandler != null) {
             localHandler.unregisterControllerListener(this);
         }
-        super.deactivate();
     }
 
     @Override

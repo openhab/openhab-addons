@@ -109,6 +109,7 @@
     <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
+    <module>org.openhab.binding.dolbycp</module>
     <module>org.openhab.binding.dominoswiss</module>
     <module>org.openhab.binding.doorbird</module>
     <module>org.openhab.binding.draytonwiser</module>
@@ -147,6 +148,7 @@
     <module>org.openhab.binding.foobot</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.freeboxos</module>
+    <module>org.openhab.binding.freecurrency</module>
     <module>org.openhab.binding.fronius</module>
     <module>org.openhab.binding.fsinternetradio</module>
     <module>org.openhab.binding.ftpupload</module>
@@ -159,8 +161,9 @@
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
-    <module>org.openhab.binding.groupepsa</module>
     <module>org.openhab.binding.groheondus</module>
+    <module>org.openhab.binding.groupepsa</module>
+    <module>org.openhab.binding.growatt</module>
     <module>org.openhab.binding.guntamatic</module>
     <module>org.openhab.binding.haassohnpelletstove</module>
     <module>org.openhab.binding.harmonyhub</module>

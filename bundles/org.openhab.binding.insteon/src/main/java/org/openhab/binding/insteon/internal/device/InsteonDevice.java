@@ -73,7 +73,7 @@ public class InsteonDevice {
     private boolean hasModemDBEntry = false;
     private DeviceStatus status = DeviceStatus.INITIALIZED;
     private Map<Integer, GroupMessageStateMachine> groupState = new HashMap<>();
-    private Map<String, Object> deviceConfigMap = new HashMap<String, Object>();
+    private Map<String, Object> deviceConfigMap = new HashMap<>();
 
     /**
      * Constructor
