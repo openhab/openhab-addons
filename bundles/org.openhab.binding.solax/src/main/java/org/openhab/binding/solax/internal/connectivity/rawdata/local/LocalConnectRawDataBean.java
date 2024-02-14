@@ -10,12 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal.connectivity.rawdata;
+package org.openhab.binding.solax.internal.connectivity.rawdata.local;
 
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.solax.internal.connectivity.rawdata.RawDataBean;
 import org.openhab.binding.solax.internal.util.GsonSupplier;
 
 import com.google.gson.Gson;
@@ -23,7 +24,6 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link LocalConnectRawDataBean} collects the raw data and the specific implementation to return the parsed data.
- * If there are differences between the inverters probably would be wise to split the parsing in seprate class(es)
  *
  * @author Konstantin Polihronov - Initial contribution
  */
@@ -90,6 +90,7 @@ public class LocalConnectRawDataBean implements RawDataBean {
         return rawData;
     }
 
+    @Override
     public void setRawData(String rawData) {
         this.rawData = rawData;
     }

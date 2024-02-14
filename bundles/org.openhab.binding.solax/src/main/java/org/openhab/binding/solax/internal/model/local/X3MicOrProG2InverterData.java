@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal.model.impl;
+package org.openhab.binding.solax.internal.model.local;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
+import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 
 /**
  * The {@link X3HybridG4InverterData} is responsible for handling commands, which are
@@ -23,7 +23,7 @@ import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDa
  *         (based on X1/X3 G4 parser from Konstantin Polihronov)
  */
 @NonNullByDefault
-public class X3MicOrProG2InverterData extends CommonInverterData {
+public class X3MicOrProG2InverterData extends CommonLocalInverterData {
 
     public X3MicOrProG2InverterData(LocalConnectRawDataBean data) {
         super(data);

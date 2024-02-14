@@ -10,18 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal.model;
+package org.openhab.binding.solax.internal.model.local;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.solax.internal.model.InverterType;
 
 /**
- * The {@link InverterData} Interface for the parsed inverter data in meaningful format
+ * The {@link LocalInverterData} Interface for the parsed inverter data in meaningful format
  *
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public interface InverterData {
+public interface LocalInverterData {
 
     @Nullable
     String getWifiSerial();
@@ -88,14 +89,6 @@ public interface InverterData {
 
     default short getInverterTemperature2() {
         return Short.MIN_VALUE;
-    }
-
-    default short getInverterWorkModeCode() {
-        return Short.MIN_VALUE;
-    }
-
-    default String getInverterWorkMode() {
-        return String.valueOf(getInverterWorkModeCode());
     }
 
     default short getBatteryLevel() {
@@ -220,6 +213,14 @@ public interface InverterData {
 
     default double getFrequencyPhase3() {
         return Short.MIN_VALUE;
+    }
+
+    default short getInverterWorkModeCode() {
+        return Short.MIN_VALUE;
+    }
+
+    default String getInverterWorkMode() {
+        return String.valueOf(getInverterWorkModeCode());
     }
 
     default String toStringDetailed() {
