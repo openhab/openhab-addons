@@ -66,6 +66,7 @@ public class RadioBrowserApi {
     private String genre = "";
     private Map<String, Station> stationMap = new HashMap<>();
     public Map<String, Country> countryMap = new HashMap<>();
+    private List<StateOption> recentOptions = new ArrayList<>();
 
     public RadioBrowserApi(RadioBrowserHandler handler, HttpClient httpClient) {
         this.handler = handler;
@@ -75,7 +76,7 @@ public class RadioBrowserApi {
     private String sendGetRequest(String url) throws ApiException {
         Request request;
         String errorReason = "";
-        request = httpClient.newRequest("http://" + server + url);
+        request = httpClient.newRequest("https://" + server + url).scheme("https");
         request.header("Host", server);
         request.header("User-Agent", "openHAB4/RadioBrowserBinding");// api requirement
         request.header("Connection", "Keep-Alive");
@@ -261,6 +262,15 @@ public class RadioBrowserApi {
         return null;
     }
 
+    private void addRecent(String uuid, String name) {
+        recentOptions.add(0, new StateOption(uuid, name));
+        if (recentOptions.size() > handler.config.recentLimit) {
+            recentOptions.remove(recentOptions.size() - 1);
+        }
+        handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_RECENT),
+                recentOptions);
+    }
+
     public void selectStation(String name) throws ApiException {
         Station station = stationMap.get(name);
         if (station == null) {
@@ -280,6 +290,9 @@ public class RadioBrowserApi {
         handler.setChannelState(CHANNEL_ICON, new StringType(station.favicon));
         handler.setChannelState(CHANNEL_STREAM, new StringType(station.url));
         logger.debug("Selected station UUID:{}", station.stationuuid);
+        if (handler.config.recentLimit > 0) {
+            addRecent(station.stationuuid, station.name);
+        }
         if (handler.config.clicks) {
             sendGetRequest("/json/url/" + station.stationuuid);
         }

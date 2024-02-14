@@ -39,4 +39,5 @@ public class RadioBrowserBindingConstants {
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_ICON = "icon";
     public static final String CHANNEL_STREAM = "stream";
+    public static final String CHANNEL_RECENT = "recent";
 }

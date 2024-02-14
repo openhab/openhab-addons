@@ -24,4 +24,5 @@ public class RadioBrowserConfiguration {
     public boolean clicks = true;
     public int languageCount;
     public String filters = "";
+    public int recentLimit;
 }

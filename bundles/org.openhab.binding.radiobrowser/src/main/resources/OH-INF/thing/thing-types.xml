@@ -17,6 +17,7 @@
 			<channel id="stream" typeId="stream"/>
 			<channel id="name" typeId="name"/>
 			<channel id="icon" typeId="icon"/>
+			<channel id="recent" typeId="recent"/>
 		</channels>
 
 		<config-description>
@@ -38,6 +39,11 @@
 				<description>The minimum number of stations a language needs to have world wide before the binding lists it as an
 					option.</description>
 				<default>14</default>
+			</parameter>
+			<parameter name="recentLimit" type="integer" min="0" required="true">
+				<label>Recent Limit</label>
+				<description>Limit the number of stations in the recent channel list to this amount. `0` Disables the feature.</description>
+				<default>5</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -125,6 +131,12 @@
 		<item-type>String</item-type>
 		<label>Icon</label>
 		<description>The currently selected stations icon</description>
+	</channel-type>
+
+	<channel-type id="recent">
+		<item-type>String</item-type>
+		<label>Recent</label>
+		<description>A list of recently played stations</description>
 	</channel-type>
 
 </thing:thing-descriptions>

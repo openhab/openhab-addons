@@ -89,6 +89,7 @@ public class RadioBrowserHandler extends BaseThingHandler {
                     case CHANNEL_GENRE:
                         radioBrowserApi.setGenre(command.toString());
                         return;
+                    case CHANNEL_RECENT:
                     case CHANNEL_STATION:
                         radioBrowserApi.selectStation(command.toString());
                         return;
