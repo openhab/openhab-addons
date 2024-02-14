@@ -45,4 +45,5 @@ public class ShellyThingConfiguration {
     public String serviceName = "";
 
     public Boolean enableBluGateway = false;
+    public Boolean enableRangeExtender = true;
 }
