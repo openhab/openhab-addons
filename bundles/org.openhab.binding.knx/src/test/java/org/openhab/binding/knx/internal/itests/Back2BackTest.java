@@ -22,8 +22,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -81,6 +79,7 @@ import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
 public class Back2BackTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(Back2BackTest.class);
     static Set<Integer> dptTested = new HashSet<>();
+    static final byte[] F32_MINUS_ONE = new byte[] { (byte) 0xbf, (byte) 0x80, 0, 0 };
     boolean testsMissing = false;
 
     /**
@@ -407,8 +406,112 @@ public class Back2BackTest {
 
     @Test
     void testDpt9() {
-        // TODO add tests for more subtypes
-        helper("9.001", new byte[] { (byte) 0x00, (byte) 0x64 }, new QuantityType<Temperature>("1 °C"));
+        // special float with sign, 4-bit exponent, and mantissa in two's complement notation
+        // ref: KNX spec, 03_07_02-Datapoint-Types
+        // FIXME according to spec, value 0x7fff shall be regarded as "invalid data"
+        // FIXME lower boundary not fully covered by Calimero library
+        // TODO add tests for clipping at lower boundary (e.g. absolute zero)
+        helper("9.001", new byte[] { (byte) 0x00, (byte) 0x64 }, new QuantityType<>("1 °C"));
+        helper("9.001", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 °C"));
+        helper("9.001", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 °C"));
+        helper("9.001", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 °C"));
+        // lower values than absolute zero will be set to abs. zero (-273 °C)
+        // helper("9.001", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-273 °C"));
+        helper("9.002", new byte[] { (byte) 0x00, (byte) 0x64 }, new QuantityType<>("1 K"));
+        helper("9.002", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 K"));
+        helper("9.002", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 K"));
+        helper("9.002", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 K"));
+        // broken, Calimero does not allow full range
+        // helper("9.002", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K"));
+        helper("9.003", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 K/h"));
+        helper("9.003", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 K/h"));
+        helper("9.003", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 K/h"));
+        // broken, Calimero does not allow full range
+        // helper("9.003", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K/h"));
+        helper("9.004", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 lx"));
+        helper("9.004", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 lx"));
+        helper("9.004", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 lx"));
+        helper("9.005", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 m/s"));
+        helper("9.005", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 m/s"));
+        helper("9.005", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 m/s"));
+        // no negative values allowed for DPTs 9.005-9.008
+        helper("9.005", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 m/s"));
+        helper("9.005", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 m/s"));
+        helper("9.005", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 m/s"));
+        helper("9.006", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 Pa"));
+        helper("9.006", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 Pa"));
+        helper("9.006", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 Pa"));
+        helper("9.007", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 %"));
+        helper("9.007", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 %"));
+        helper("9.007", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 %"));
+        helper("9.008", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 ppm"));
+        helper("9.008", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 ppm"));
+        helper("9.008", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ppm"));
+        helper("9.009", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 m³/h"));
+        helper("9.009", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 m³/h"));
+        helper("9.009", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 m³/h"));
+        // broken, Calimero does not allow full range
+        // helper("9.009", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 m³/h"));
+        helper("9.010", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 s"));
+        helper("9.010", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 s"));
+        helper("9.010", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 s"));
+        // broken, Calimero does not allow full range
+        // helper("9.010", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 s"));
+        helper("9.011", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 ms"));
+        helper("9.011", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 ms"));
+        helper("9.011", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 ms"));
+        // broken, Calimero does not allow full range
+        // helper("9.011", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K/h"));
+
+        helper("9.020", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 mV"));
+        helper("9.020", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 mV"));
+        helper("9.020", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 mV"));
+        // broken, Calimero does not allow full range
+        // helper("9.020", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 mV"));
+        helper("9.021", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 mA"));
+        helper("9.021", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 mA"));
+        helper("9.021", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 mA"));
+        // broken, Calimero does not allow full range
+        // helper("9.021", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 mA"));
+        helper("9.022", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 W/m²"));
+        helper("9.022", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 W/m²"));
+        helper("9.022", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 W/m²"));
+        // broken, Calimero does not allow full range
+        // helper("9.022", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 W/m²"));
+        helper("9.023", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 K/%"));
+        helper("9.023", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 K/%"));
+        helper("9.023", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 K/%"));
+        // broken, Calimero does not allow full range
+        // helper("9.023", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K/%"));
+        helper("9.024", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 kW"));
+        helper("9.024", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 kW"));
+        helper("9.024", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 kW"));
+        // broken, Calimero does not allow full range
+        // helper("9.024", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 kW"));
+        helper("9.025", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 l/h"));
+        helper("9.025", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 l/h"));
+        helper("9.025", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 l/h"));
+        // broken, Calimero does not allow full range
+        // helper("9.025", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 l/h"));
+        helper("9.026", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 l/m²"));
+        helper("9.026", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 l/m²"));
+        helper("9.026", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 l/m²"));
+        // broken, Calimero does not allow full range
+        // helper("9.026", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 l/m²"));
+        helper("9.027", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 °F"));
+        helper("9.027", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 °F"));
+        helper("9.027", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 °F"));
+        // lower values than absolute zero will be set to abs. zero (-459.6 °F)
+        helper("9.028", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 km/h"));
+        helper("9.028", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 km/h"));
+        helper("9.028", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 km/h"));
+        // no negative values allowed for DPTs 9.028-9.030
+        helper("9.029", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 g/m³"));
+        helper("9.029", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 g/m³"));
+        helper("9.029", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 g/m³"));
+        helper("9.030", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 µg/m³"));
+        helper("9.030", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 µg/m³"));
+        helper("9.030", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 µg/m³"));
     }
 
     @Test
@@ -533,8 +636,92 @@ public class Back2BackTest {
 
     @Test
     void testDpt14() {
-        // TODO add tests for more subtypes
-        helper("14.068", new byte[] { (byte) 0x3f, (byte) 0x80, 0, 0 }, new QuantityType<Temperature>("1 °C"));
+        helper("14.000", new byte[] { (byte) 0x3f, (byte) 0x80, 0, 0 }, new QuantityType<>("1 m/s²"));
+        helper("14.000", F32_MINUS_ONE, new QuantityType<>("-1 m/s²"));
+        helper("14.001", F32_MINUS_ONE, new QuantityType<>("-1 rad/s²"));
+        helper("14.002", F32_MINUS_ONE, new QuantityType<>("-1 J/mol"));
+        helper("14.003", F32_MINUS_ONE, new QuantityType<>("-1 /s"));
+        helper("14.004", F32_MINUS_ONE, new QuantityType<>("-1 mol"));
+        helper("14.005", F32_MINUS_ONE, new DecimalType("-1"));
+        helper("14.006", F32_MINUS_ONE, new QuantityType<>("-1 rad"));
+        helper("14.007", F32_MINUS_ONE, new QuantityType<>("-1 °"));
+        helper("14.008", F32_MINUS_ONE, new QuantityType<>("-1 J*s"));
+        helper("14.009", F32_MINUS_ONE, new QuantityType<>("-1 rad/s"));
+        helper("14.010", F32_MINUS_ONE, new QuantityType<>("-1 m²"));
+        helper("14.011", F32_MINUS_ONE, new QuantityType<>("-1 F"));
+        helper("14.012", F32_MINUS_ONE, new QuantityType<>("-1 C/m²"));
+        helper("14.013", F32_MINUS_ONE, new QuantityType<>("-1 C/m³"));
+        helper("14.014", F32_MINUS_ONE, new QuantityType<>("-1 m²/N"));
+        helper("14.015", F32_MINUS_ONE, new QuantityType<>("-1 S"));
+        helper("14.016", F32_MINUS_ONE, new QuantityType<>("-1 S/m"));
+        helper("14.017", F32_MINUS_ONE, new QuantityType<>("-1 kg/m³"));
+        helper("14.018", F32_MINUS_ONE, new QuantityType<>("-1 C"));
+        helper("14.019", F32_MINUS_ONE, new QuantityType<>("-1 A"));
+        helper("14.020", F32_MINUS_ONE, new QuantityType<>("-1 A/m²"));
+        helper("14.021", F32_MINUS_ONE, new QuantityType<>("-1 C*m"));
+        helper("14.022", F32_MINUS_ONE, new QuantityType<>("-1 C/m²"));
+        helper("14.023", F32_MINUS_ONE, new QuantityType<>("-1 V/m"));
+        helper("14.024", F32_MINUS_ONE, new QuantityType<>("-1 V*m")); // SI unit is Vm
+        helper("14.025", F32_MINUS_ONE, new QuantityType<>("-1 C/m²"));
+        helper("14.026", F32_MINUS_ONE, new QuantityType<>("-1 C/m²"));
+        helper("14.027", F32_MINUS_ONE, new QuantityType<>("-1 V"));
+        helper("14.028", F32_MINUS_ONE, new QuantityType<>("-1 V"));
+        helper("14.029", F32_MINUS_ONE, new QuantityType<>("-1 A*m²"));
+        helper("14.030", F32_MINUS_ONE, new QuantityType<>("-1 V"));
+        helper("14.031", F32_MINUS_ONE, new QuantityType<>("-1 J"));
+        helper("14.032", F32_MINUS_ONE, new QuantityType<>("-1 N"));
+        helper("14.033", F32_MINUS_ONE, new QuantityType<>("-1 /s"));
+        helper("14.034", F32_MINUS_ONE, new QuantityType<>("-1 rad/s"));
+        helper("14.035", F32_MINUS_ONE, new QuantityType<>("-1 J/K"));
+        helper("14.036", F32_MINUS_ONE, new QuantityType<>("-1 W"));
+        helper("14.037", F32_MINUS_ONE, new QuantityType<>("-1 J"));
+        helper("14.038", F32_MINUS_ONE, new QuantityType<>("-1 Ohm"));
+        helper("14.039", F32_MINUS_ONE, new QuantityType<>("-1 m"));
+        helper("14.040", F32_MINUS_ONE, new QuantityType<>("-1 J"));
+        helper("14.041", F32_MINUS_ONE, new QuantityType<>("-1 cd/m²"));
+        helper("14.042", F32_MINUS_ONE, new QuantityType<>("-1 lm"));
+        helper("14.043", F32_MINUS_ONE, new QuantityType<>("-1 cd"));
+        helper("14.044", F32_MINUS_ONE, new QuantityType<>("-1 A/m"));
+        helper("14.045", F32_MINUS_ONE, new QuantityType<>("-1 Wb"));
+        helper("14.046", F32_MINUS_ONE, new QuantityType<>("-1 T"));
+        helper("14.047", F32_MINUS_ONE, new QuantityType<>("-1 A*m²"));
+        helper("14.048", F32_MINUS_ONE, new QuantityType<>("-1 T"));
+        helper("14.049", F32_MINUS_ONE, new QuantityType<>("-1 A/m"));
+        helper("14.050", F32_MINUS_ONE, new QuantityType<>("-1 A"));
+        helper("14.051", F32_MINUS_ONE, new QuantityType<>("-1 kg"));
+        helper("14.052", F32_MINUS_ONE, new QuantityType<>("-1 kg/s"));
+        helper("14.053", F32_MINUS_ONE, new QuantityType<>("-1 N/s"));
+        helper("14.054", F32_MINUS_ONE, new QuantityType<>("-1 rad"));
+        helper("14.055", F32_MINUS_ONE, new QuantityType<>("-1 °"));
+        helper("14.056", F32_MINUS_ONE, new QuantityType<>("-1 W"));
+        helper("14.057", F32_MINUS_ONE, new DecimalType("-1"));
+        helper("14.058", F32_MINUS_ONE, new QuantityType<>("-1 Pa"));
+        helper("14.059", F32_MINUS_ONE, new QuantityType<>("-1 Ohm"));
+        helper("14.060", F32_MINUS_ONE, new QuantityType<>("-1 Ohm"));
+        helper("14.061", F32_MINUS_ONE, new QuantityType<>("-1 Ohm*m"));
+        helper("14.062", F32_MINUS_ONE, new QuantityType<>("-1 H"));
+        helper("14.063", F32_MINUS_ONE, new QuantityType<>("-1 sr"));
+        helper("14.064", F32_MINUS_ONE, new QuantityType<>("-1 W/m²"));
+        helper("14.065", F32_MINUS_ONE, new QuantityType<>("-1 m/s"));
+        helper("14.066", F32_MINUS_ONE, new QuantityType<>("-1 Pa"));
+        helper("14.067", F32_MINUS_ONE, new QuantityType<>("-1 N/m"));
+        helper("14.068", new byte[] { (byte) 0x3f, (byte) 0x80, 0, 0 }, new QuantityType<>("1 °C"));
+        helper("14.068", F32_MINUS_ONE, new QuantityType<>("-1 °C"));
+        helper("14.069", F32_MINUS_ONE, new QuantityType<>("-1 K"));
+        helper("14.070", F32_MINUS_ONE, new QuantityType<>("-1 K"));
+        helper("14.071", F32_MINUS_ONE, new QuantityType<>("-1 J/K"));
+        helper("14.072", F32_MINUS_ONE, new QuantityType<>("-1 W/m/K"));
+        helper("14.073", F32_MINUS_ONE, new QuantityType<>("-1 V/K"));
+        helper("14.074", F32_MINUS_ONE, new QuantityType<>("-1 s"));
+        helper("14.075", F32_MINUS_ONE, new QuantityType<>("-1 N*m"));
+        helper("14.076", F32_MINUS_ONE, new QuantityType<>("-1 m³"));
+        helper("14.077", F32_MINUS_ONE, new QuantityType<>("-1 m³/s"));
+        helper("14.078", F32_MINUS_ONE, new QuantityType<>("-1 N"));
+        helper("14.079", F32_MINUS_ONE, new QuantityType<>("-1 J"));
+        helper("14.080", F32_MINUS_ONE, new QuantityType<>("-1 VA"));
+
+        helper("14.1200", F32_MINUS_ONE, new QuantityType<>("-1 m³/h"));
+        helper("14.1201", F32_MINUS_ONE, new QuantityType<>("-1 l/s"));
     }
 
     @Test
