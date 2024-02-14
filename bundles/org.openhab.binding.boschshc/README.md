@@ -119,7 +119,9 @@ Detects open windows and doors and features an additional button.
 
 ### Light Control II
 
-This thing type is used if Light/Shutter Control II devices are configured as light controls. This thing type represents the base (parent) device and provides communication quality and power metering services. The two light switch circuits are modeled as two independent child devices with thing type `light-switch`, which is documented in a [separate section](#light-switch).
+This thing type is used if Light/Shutter Control II devices are configured as light controls. 
+This thing type represents the base (parent) device and provides communication quality and power metering services. 
+The two light switch circuits are modeled as two independent child devices with thing type `light-switch`, which is documented in a [separate section](#light-switch).
 
 **Thing Type ID**: `light-control-2`
 
