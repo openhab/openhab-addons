@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal.model.impl;
+package org.openhab.binding.solax.internal.model.local;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
+import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 
 /**
  * The {@link X1HybridG4InverterData} is an implementation of the single phased inverter data interface for X1 Hybrid G4
@@ -22,7 +22,7 @@ import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDa
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public class X1HybridG4InverterData extends CommonInverterData {
+public class X1HybridG4InverterData extends CommonLocalInverterData {
 
     public X1HybridG4InverterData(LocalConnectRawDataBean data) {
         super(data);
@@ -84,11 +84,6 @@ public class X1HybridG4InverterData extends CommonInverterData {
     }
 
     @Override
-    public short getInverterWorkModeCode() {
-        return getData(10);
-    }
-
-    @Override
     public double getBatteryVoltage() {
         return ((double) getData(14)) / 100;
     }
@@ -111,5 +106,10 @@ public class X1HybridG4InverterData extends CommonInverterData {
     @Override
     public short getBatteryLevel() {
         return getData(18);
+    }
+
+    @Override
+    public short getInverterWorkModeCode() {
+        return getData(10);
     }
 }

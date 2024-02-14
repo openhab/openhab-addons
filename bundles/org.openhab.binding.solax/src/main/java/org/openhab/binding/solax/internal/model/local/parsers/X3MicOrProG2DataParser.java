@@ -10,16 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal.model.parsers;
+package org.openhab.binding.solax.internal.model.local.parsers;
 
 import static org.openhab.binding.solax.internal.SolaxBindingConstants.*;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
-import org.openhab.binding.solax.internal.model.InverterData;
-import org.openhab.binding.solax.internal.model.impl.X3MicOrProG2InverterData;
+import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
+import org.openhab.binding.solax.internal.model.local.LocalInverterData;
+import org.openhab.binding.solax.internal.model.local.X3MicOrProG2InverterData;
 
 /**
  * The {@link X3MicOrProG2DataParser} is the implementation that parses raw data into a SinglePhaseInverterData for the
@@ -44,7 +44,7 @@ public class X3MicOrProG2DataParser implements RawDataParser {
             CHANNEL_INVERTER_TEMPERATURE2, CHANNEL_INVERTER_WORKMODE, CHANNEL_RAW_DATA);
 
     @Override
-    public InverterData getData(LocalConnectRawDataBean rawData) {
+    public LocalInverterData getData(LocalConnectRawDataBean rawData) {
         return new X3MicOrProG2InverterData(rawData);
     }
 
