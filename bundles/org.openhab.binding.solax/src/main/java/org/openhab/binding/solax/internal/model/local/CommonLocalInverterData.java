@@ -10,30 +10,29 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal.model.impl;
+package org.openhab.binding.solax.internal.model.local;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.solax.internal.connectivity.rawdata.LocalConnectRawDataBean;
-import org.openhab.binding.solax.internal.model.InverterData;
+import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link CommonInverterData} is an abstract class that contains the common information, applicable for all
+ * The {@link CommonLocalInverterData} is an abstract class that contains the common information, applicable for all
  * inverters.
  *
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public abstract class CommonInverterData implements InverterData {
+public abstract class CommonLocalInverterData implements LocalInverterData {
 
-    private final Logger logger = LoggerFactory.getLogger(CommonInverterData.class);
+    private final Logger logger = LoggerFactory.getLogger(CommonLocalInverterData.class);
 
     private LocalConnectRawDataBean data;
 
-    public CommonInverterData(LocalConnectRawDataBean data) {
+    public CommonLocalInverterData(LocalConnectRawDataBean data) {
         this.data = data;
     }
 
