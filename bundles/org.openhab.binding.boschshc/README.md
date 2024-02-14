@@ -125,8 +125,8 @@ The two light switch circuits are modeled as two independent child devices with 
 
 **Thing Type ID**: `light-control-2`
 
-| Channel Type ID    | Item Type     | Writable | Description                  |
-| ------------------ | ------------- | :------: | ---------------------------------------- |
+| Channel Type ID    | Item Type     | Writable | Description                                       |
+| ------------------ | ------------- | :------: | ------------------------------------------------- |
 | signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
 | power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.      |
 | energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device.  |
