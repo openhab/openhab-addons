@@ -21,7 +21,7 @@ The `advanced` configuration parameter `filters` can be used to limit the statio
 All possible filter options are listed here <https://de1.api.radio-browser.info/#Advanced_station_search>
 The default filter (below) can be changed to suit your needs.
 
-```
+```text
 hidebroken=true,limit=1700,reverse=true,order=votes
 ```
 
