@@ -12,34 +12,44 @@
  */
 package org.openhab.binding.huesync.internal.factory;
 
-import static org.openhab.binding.huesync.internal.HueSyncBindingConstants.THING_TYPE_SYNCBOX;
-
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.huesync.internal.HueSyncBindingConstants;
 import org.openhab.binding.huesync.internal.HueSyncHandler;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link HueSyncHandlerFactory} is responsible for creating things and thing
+ * The {@link HueSyncHandlerFactory} is responsible for creating things and
+ * thing
  * handlers.
  *
  * @author Marco Kawon - Initial contribution
- * @author Patrik Gfeller - Integration into official repository, update to 4.x infrastructure
+ * @author Patrik Gfeller - Integration into official repository, update to 4.x
+ *         infrastructure
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.huesync", service = ThingHandlerFactory.class)
 public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
 
+    @Activate
+    public HueSyncHandlerFactory() {
+    }
+
     @SuppressWarnings("null")
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_SYNCBOX);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .singleton(HueSyncBindingConstants.THING_TYPE_UID);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,10 +57,17 @@ public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
+
+        return Objects.nonNull(thingUID) ? super.createThing(thingTypeUID, configuration, thingUID) : null;
+    }
+
+    @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SYNCBOX.equals(thingTypeUID)) {
+        if (HueSyncBindingConstants.THING_TYPE_UID.equals(thingTypeUID)) {
             return new HueSyncHandler(thing);
         }
 

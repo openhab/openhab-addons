@@ -1,5 +1,3 @@
-package org.openhab.binding.huesync.internal.discovery;
-
 /**
  * Copyright (c) 2024-2024 Contributors to the openHAB project
  *
@@ -12,6 +10,7 @@ package org.openhab.binding.huesync.internal.discovery;
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+package org.openhab.binding.huesync.internal.discovery;
 
 import java.util.Collections;
 import java.util.Dictionary;
@@ -23,10 +22,11 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.huesync.internal.HueSyncBindingConstants;
+import org.openhab.binding.huesync.internal.factory.HueSyncHandlerFactory;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.thing.ThingRegistry;
@@ -67,6 +67,8 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private static final String SERVICE_TYPE = "_huesync._tcp.local.";
     private static final String DEVICE_INFO_ENDPOINT = "api/v1/device";
 
+    private final HueSyncHandlerFactory factory = new HueSyncHandlerFactory();
+
     // TODO: Implement SSL certificate validation
     private static final HttpClient httpClient = new HttpClient(new SslContextFactory.Client(true));
     // TODO: Get from configuration
@@ -82,7 +84,7 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @SuppressWarnings("null")
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(HueSyncBindingConstants.THING_TYPE);
+        return Collections.singleton(HueSyncBindingConstants.THING_TYPE_UID);
     }
 
     @Override
@@ -96,15 +98,25 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
             ThingUID uid = getThingUID(service);
             if (Objects.nonNull(uid)) {
                 try {
-                    String qualifiedName = service.getQualifiedName();
+                    /*
+                     * String qualifiedName = service.getQualifiedName();
+                     * 
+                     * logger.debug("HueSync Device found: {}", qualifiedName);
+                     * 
+                     * String request = String.format("https://%s:%s/%s",
+                     * service.getHostAddresses()[0], service.getPort(),
+                     * DEVICE_INFO_ENDPOINT);
+                     * ContentResponse response =
+                     * HueSyncDiscoveryParticipant.httpClient.GET(request);
+                     * 
+                     * logger.debug("Device information for {}: {}", qualifiedName, response);
+                     */
 
-                    logger.debug("HueSync Device found: {}", qualifiedName);
+                    // return new HueSyncDiscoveryResult(uid, Map.of());
 
-                    String request = String.format("https://%s:%s/%s", service.getHostAddresses()[0], service.getPort(),
-                            DEVICE_INFO_ENDPOINT);
-                    ContentResponse response = HueSyncDiscoveryParticipant.httpClient.GET(request);
+                    DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid).withLabel(service.getName());
 
-                    logger.debug("Device information for {}: {}", qualifiedName, response);
+                    return builder.build();
                 } catch (Exception e) {
                     logger.error("Unable to query device information for {}: {}", service.getQualifiedName(), e);
                 }
@@ -122,7 +134,7 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
             logger.warn("Incomplete mDNS device discovery information - {} ignored.", id == null ? "[name: null]" : id);
             return null;
         }
-        return new ThingUID(HueSyncBindingConstants.THING_TYPE, id);
+        return new ThingUID(HueSyncBindingConstants.THING_TYPE_UID, id);
     }
 
     @Activate
@@ -143,7 +155,8 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @SuppressWarnings("null")
     private void updateService(ComponentContext componentContext) {
-        Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
+        Dictionary<String, Object> properties = componentContext.getProperties();
+
         String autoDiscoveryPropertyValue = (String) properties
                 .get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY);
 
