@@ -91,7 +91,7 @@
 		</channels>
 
 		<config-description>
-			<parameter name="refreshInterval" type="integer" min="10" max="600">
+			<parameter name="refreshInterval" type="integer" min="9" max="600">
 				<label>Refresh Interval</label>
 				<description>Refresh interval in seconds. (Cloud API is limited to max 10 calls per minute and 10000 times per day)</description>
 				<default>30</default>
