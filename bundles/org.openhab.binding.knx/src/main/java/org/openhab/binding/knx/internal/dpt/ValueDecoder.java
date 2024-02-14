@@ -211,7 +211,6 @@ public class ValueDecoder {
                     return handleDpt251(value, subType, preferredType);
                 default:
                     return handleNumericDpt(id, translator, preferredType);
-                // TODO 6.001 is mapped to PercentType, which can only cover 0-100%, not -128..127%
             }
         } catch (NumberFormatException | KNXFormatException | KNXIllegalArgumentException | ParseException e) {
             LOGGER.info("Translator couldn't parse data '{}' for datapoint type '{}' ({}).", data, dptId, e.getClass());
@@ -271,9 +270,6 @@ public class ValueDecoder {
     }
 
     private static Type handleDpt10(String value) throws ParseException {
-        // TODO check handling of DPT10: date is not set to current date, but 1970-01-01 + offset if day is given
-        // maybe we should change the semantics and use current date + offset if day is given
-
         // Calimero will provide either TIME_DAY_FORMAT or TIME_FORMAT, no-day is not printed
         Date date = null;
         try {
