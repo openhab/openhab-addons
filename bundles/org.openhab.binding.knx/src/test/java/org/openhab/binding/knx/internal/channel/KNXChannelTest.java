@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.knx.internal.KNXBindingConstants;
 import org.openhab.binding.knx.internal.client.OutboundSpec;
@@ -176,7 +177,10 @@ class KNXChannelTest {
         when(channel.getAcceptedItemType()).thenReturn(ColorItem.class.getName());
         MyKNXChannel knxChannel = new MyKNXChannel(channel);
         assertNotNull(knxChannel.getCommandSpec(new HSBType("0,100,100")));
-        assertEquals(knxChannel.getCommandSpec(new HSBType("0,100,100")).getDPT(), "1.001");
+        @Nullable
+        OutboundSpec outboundSpec = knxChannel.getCommandSpec(new HSBType("0,100,100"));
+        assertNotNull(outboundSpec);
+        assertEquals(outboundSpec.getDPT(), "1.001");
     }
 
     @Test
@@ -191,8 +195,9 @@ class KNXChannelTest {
         assertThat(knxChannel, instanceOf(TypeDimmer.class));
 
         Command command = new PercentType("100");
+        @Nullable
         OutboundSpec outboundSpec = knxChannel.getCommandSpec(command);
-        assertThat(outboundSpec, is(notNullValue()));
+        assertNotNull(outboundSpec);
 
         String mappedValue = ValueEncoder.encode(outboundSpec.getValue(), outboundSpec.getDPT());
         assertThat(mappedValue, is("100"));
