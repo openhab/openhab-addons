@@ -133,7 +133,8 @@ The two light switch circuits are modeled as two independent child devices with 
 
 ### Light Switch
 
-This thing type represents light switch circuits of a modular parent device. For example, if a Light/Shutter Control II is configured as light control, the two light switch circuits are represented as two logical child devices with the thing type `light-switch`.
+This thing type represents light switch circuits of a modular parent device. 
+For example, if a Light/Shutter Control II is configured as light control, the two light switch circuits are represented as two logical child devices with the thing type `light-switch`.
 
 **Thing Type ID**: `light-switch`
 
