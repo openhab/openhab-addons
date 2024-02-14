@@ -578,6 +578,11 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
 |        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
 
+_Note:
+You should calibrate the device if you want to use "neutral current" measurements.
+Check the Shelly documentation for details._
+
+
 ### Shelly 2 - relay mode (thing-type: shelly2-relay)
 
 | Group  | Channel      | Type     | read-only | Description                                                                       |
