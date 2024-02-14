@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: KNX Binding</name>
 
   <properties>
-    <bnd.importpackage>javax.microedition.io.*;resolution:="optional",javax.usb.*;resolution:="optional",org.usb4java.*;resolution:="optional"</bnd.importpackage>
+    <bnd.importpackage>javax.microedition.io.*;resolution:="optional",javax.usb.*;resolution:="optional",org.usb4java.*;resolution:="optional",org.bouncycastle.*;resolution:="optional"</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -61,12 +61,6 @@
       <artifactId>TSS.Java</artifactId>
       <version>1.0.0</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <!-- last version of 1.5 branch is bcprov-jdk15on 1.70 -->
-      <artifactId>bcprov-jdk18on</artifactId>
-      <version>1.77</version>
     </dependency>
   </dependencies>
 
@@ -121,15 +115,13 @@
               </goals>
               <configuration>
                 <target>
-                  <echo file="${project.build.outputDirectory}/deps.txt"
-                    message="compile classpath: ${compile_classpath}"/>
                   <echo>"Fixing TSS.Java for OSGI"</echo>
                   <delete>
-                    <fileset dir="${project.build.directory}/classes" includes="TSSMain.class"/>
+                    <fileset dir="${project.build.directory}/classes" includes="*"/>
                   </delete>
-                  <jar destfile="${project.build.directory}/TSS.Java-fixed-1.0.0.jar">
-                    <fileset dir="${project.build.directory}/classes/tss"/>
-                  </jar>
+                  <delete includeemptydirs="true" failonerror="false">
+                    <fileset dir="${project.build.directory}/classes/samples"/>
+                  </delete>
                 </target>
               </configuration>
             </execution>
@@ -150,7 +142,6 @@ Require-Capability:
       cardinality:=multiple
 SPI-Provider: tuwien.auto.calimero.serial.spi.SerialCom
 SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[tuwien.auto.calimero.serial.spi.SerialCom])
--includeresource: "target/TSS.Java-fixed-1.0.0.jar";lib:=true
             ]]>
             </bnd>
           </configuration>
