@@ -14,6 +14,7 @@ With this binding you can use their database of more than 45,000 stations to app
 | filters       | text    | Allows you to specify your own filters from the `advanced search` of the API.          | See below | yes     | no       |
 | clicks        | boolean | Helps to support the server recommend good results.                                        | true     | yes      | yes      |
 | languageCount | integer | If you want less languages to be shown as a filter, you can raise this or create your own. | 14       | yes      | yes      |
+| recentLimit   | integer | Limit the number of stations in the recent channel list. `0` Disables the feature.        | 5        | yes      | no       |
 
 ## Filters Configuration
 
@@ -48,6 +49,7 @@ Genres are a good example for using the metadata, only show the styles of music 
 | stream    | String | RW         | This is the URL for the selected station.                                                                   |
 | name      | String | RW         | This is the name of the selected station.                                                                   |
 | icon      | String | RW         | This is the icon for the selected station if available in their database.                                   |
+| recent    | String | RW         | Records the last stations you selected to make them easier to find. A config allows this list to be longer. |
 
 ## Station Searches
 
