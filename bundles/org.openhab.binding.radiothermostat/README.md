@@ -47,14 +47,16 @@ If one or more time or setpoint fields are left blank in a given schedule and th
 A heating or cooling schedule with all fields left blank will be ignored by the binding.
 In that case, the existing schedule on the thermostat will remain untouched.
 
+### Cloud Service Discontinued
+
 The MyRadioThermostat/EnergyHub cloud service that previously enabled remote control and scheduling of the thermostat is now defunct.
 As such, disabling cloud connectivity on a thermostat that was previously connected to the cloud service may slightly improve the speed and reliability of accessing the local API.
 
 The thermostat can de-provisioned from the cloud by issuing the following `curl` commands:
 
 ```shell
-curl http://$THERMOSTAT_IP/cloud -d '{"enabled":0}' -X POST
-curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}' -X POST
+curl http://$THERMOSTAT_IP/cloud -d '{"enabled":0}'
+curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}'
 ```
 
 ### Some notes
@@ -62,7 +64,7 @@ curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}' -X POST
 - The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow. Do not over load it with excessive amounts of simultaneous commands.
 - When changing the thermostat mode, the current temperature set point is cleared and a refresh of the thermostat data is done to get the new mode's set point.
 - Since retrieving the thermostat's data is the slowest operation, it will take several seconds after changing the mode before the new set point is displayed.
-- Clock sync will not occur if `override` flag is on (i.e. the program setpoint has been manually overridden) because syncing time will reset the temperature back to the program setpoint.
+- Clock sync will not occur while the `override` flag is on (i.e. the program setpoint has been manually overridden) because syncing time will reset the temperature back to the program setpoint.
 - The `override` flag is not reported correctly on older thermostat versions (i.e. /tstat/model reports v1.09)
 - The 'Program Mode' command is untested and according to the published API is only available on a CT80 Rev B.
 - Humidity information is available only when using a CT80 thermostat.
@@ -169,10 +171,10 @@ Number Therm_Hour      "Thermostat Hour [%d]"                                { c
 Number Therm_Minute    "Thermostat Minute [%d]"                              { channel="radiothermostat:rtherm:mytherm1:minute" }
 String Therm_Dstmp     "Thermostat DateStamp [%s]" <time>                    { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
 
-Number:Time Therm_todayheat "Today's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime" }
-Number:Time Therm_todaycool "Today's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime" }
-Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime" }
-Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime" }
+Number:Time Therm_todayheat "Today's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime", unit="min" }
+Number:Time Therm_todaycool "Today's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime", unit="min" }
+Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime", unit="min" }
+Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime", unit="min" }
 String Therm_Message   "Message: [%s]"                                      { channel="radiothermostat:rtherm:mytherm1:message" }
 
 // Override the thermostat's temperature reading with a value from an external sensor, set to -1 to revert to internal temperature mode
