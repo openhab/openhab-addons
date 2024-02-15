@@ -36,7 +36,7 @@
 			</parameter>
 			<parameter name="languageCount" type="integer" min="1" required="true">
 				<label>Language Count</label>
-				<description>The minimum number of stations a language needs to have world wide before the binding lists it as an
+				<description>The minimum number of stations a language needs to have, before the binding lists it as an
 					option.</description>
 				<default>14</default>
 			</parameter>
