@@ -299,7 +299,7 @@
 			<channel id="icon-id" typeId="condition-icon-id"/>
 			<channel id="temperature" typeId="system.outdoor-temperature"/>
 			<channel id="apparent-temperature" typeId="apparent-temperature"/>
-			<channel id="pressure" typeId="systembarometric-pressure"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
 			<channel id="dew-point" typeId="dew-point"/>
 			<channel id="uvindex" typeId="uvindex"/>
