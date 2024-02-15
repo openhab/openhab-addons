@@ -21,17 +21,6 @@ You can add as many `weather-and-forecast` things for different locations to you
 The binding tries to request daily forecast data from the OpenWeatherMap API.
 If the request fails, all daily forecast channel groups will be removed from the thing and further request will be omitted.
 
-### Current UV Index And Forecast
-
-::: tip Note
-The product will retire on 1st April 2021, please find UV data in the One Call API.
-One Call API includes current, hourly forecast for 7 days and 5 days historical UV data.
-:::
-
-The third thing `uvindex` supports the [current UV Index](https://openweathermap.org/api/uvi#current) and [forecasted UV Index](https://openweathermap.org/api/uvi#forecast) for a specific location.
-It requires coordinates of the location of your interest.
-You can add as much `uvindex` things for different locations to your setup as you like to observe.
-
 ### Current And Forecasted Air Pollution
 
 Another thing is the `air-pollution` which provides the [current air pollution](https://openweathermap.org/api/air-pollution) and [forecasted air pollution](https://openweathermap.org/api/air-pollution#forecast) for a specific location.
@@ -83,15 +72,6 @@ Once the system location will be changed, the background discovery updates the c
 | forecastDays   | Number of days for daily forecast (including todays forecast). Optional, the default value is 6 (min="0", max="16", step="1"). |
 
 Once the parameters `forecastHours` or `forecastDays` will be changed, the available channel groups on the thing will be created or removed accordingly.
-
-### Current UV Index And Forecast
-
-| Parameter      | Description                                                                                                                      |
-|----------------|----------------------------------------------------------------------------------------------------------------------------------|
-| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                     |
-| forecastDays   | Number of days for UV Index forecast (including todays forecast). Optional, the default value is 6 (min="1", max="8", step="1"). |
-
-Once the parameter `forecastDays` will be changed, the available channel groups on the thing will be created or removed accordingly.
 
 ### Current Air Pollution And Forecast
 
@@ -256,15 +236,6 @@ In a future release, the `forecastToday` to `forecastDay7` channel groups won't 
 | alerts1, alerts2, ... | onset       | DateTime  | Start Date and Time for which the warning is valid. |
 | alerts1, alerts2, ... | expires     | DateTime  | End Date and Time for which the warning is valid.   |
 | alerts1, alerts2, ... | source      | String    | The source of the alert. **Advanced**               |
-
-### UV Index
-
-| Channel Group ID                                          | Channel ID | Item Type | Description                          |
-|-----------------------------------------------------------|------------|-----------|--------------------------------------|
-| current, forecastTomorrow, forecastDay2, ... forecastDay7 | time-stamp | DateTime  | Date of data observation / forecast. |
-| current, forecastTomorrow, forecastDay2, ... forecastDay7 | uvindex    | Number    | Current or forecasted UV Index.      |
-
-The `uvindex` channel is also available in the current data and the daily forecast of the One Call API.
 
 ### Air Pollution
 
