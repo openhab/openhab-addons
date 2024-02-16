@@ -14,6 +14,8 @@ package org.openhab.binding.huesync.internal.discovery;
 
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -21,10 +23,7 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.huesync.internal.HueSyncBindingConstants;
-import org.openhab.binding.huesync.internal.factory.HueSyncHandlerFactory;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -65,12 +64,12 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
      * Service·Name·and·Transport·Protocol·Port·Number·Registry</a>
      */
     private static final String SERVICE_TYPE = "_huesync._tcp.local.";
-    private static final String DEVICE_INFO_ENDPOINT = "api/v1/device";
 
-    private final HueSyncHandlerFactory factory = new HueSyncHandlerFactory();
-
+    // TODO: move to API
+    // private static final String DEVICE_INFO_ENDPOINT = "api/v1/device";
     // TODO: Implement SSL certificate validation
-    private static final HttpClient httpClient = new HttpClient(new SslContextFactory.Client(true));
+    // private static final HttpClient httpClient = new HttpClient(new
+    // SslContextFactory.Client(true));
     // TODO: Get from configuration
     private boolean autoDiscoveryEnabled = true;
 
@@ -93,6 +92,7 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
+    @SuppressWarnings("null")
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         if (this.autoDiscoveryEnabled) {
             ThingUID uid = getThingUID(service);
@@ -113,10 +113,14 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
                      */
 
                     // return new HueSyncDiscoveryResult(uid, Map.of());
+                    Map<String, Object> properties = new HashMap<>(2);
 
-                    DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid).withLabel(service.getName());
+                    properties.put(HueSyncBindingConstants.PARAMETER_HOST, service.getHostAddresses()[0]);
+                    properties.put(HueSyncBindingConstants.PARAMETER_PORT, service.getPort());
 
-                    return builder.build();
+                    DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(service.getName())
+                            .withProperties(properties).build();
+                    return result;
                 } catch (Exception e) {
                     logger.error("Unable to query device information for {}: {}", service.getQualifiedName(), e);
                 }
@@ -134,18 +138,33 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
             logger.warn("Incomplete mDNS device discovery information - {} ignored.", id == null ? "[name: null]" : id);
             return null;
         }
+
+        // Matcher matcher = PHILIPS_SYNCBOX_PATTERN.matcher(qualifiedName);
+        // matcher.matches(); // we already know it matches, it was matched in
+        // getThingUID
+
+        // String vendor = "Philips";
+        // String model = "Hue Play HDMI Sync Box";
+        // String friendlyName = "Philips Hue HDMI Sync Box";
+        // String hostname = (matcher.group(1) + "-" + matcher.group(2)).toLowerCase();
+        // String serial = matcher.group(2);
+
+        // Map<String, Object> properties = new HashMap<>(2);
+        // properties.put(PARAMETER_HOST, hostname);
+        // properties.put(Thing.PROPERTY_SERIAL_NUMBER, serial);
+        // properties.put(Thing.PROPERTY_VENDOR, vendor);
+        // properties.put(Thing.PROPERTY_MODEL_ID, model);
+
+        // logger.debug("thing properties: {}", properties);
+
+        // return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+        // .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(friendlyName).build();
         return new ThingUID(HueSyncBindingConstants.THING_TYPE_UID, id);
     }
 
     @Activate
     protected void activate(ComponentContext componentContext) {
-        try {
-            httpClient.start();
-
-            updateService(componentContext);
-        } catch (Exception e) {
-            logger.error("Unable to activate mDNS discovery participant: {}, Exception: {}", SERVICE_TYPE, e);
-        }
+        updateService(componentContext);
     }
 
     @Modified

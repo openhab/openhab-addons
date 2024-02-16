@@ -4,45 +4,37 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="huesyncBridge" />
-			</supported-bridge-type-refs>
-		-->
+	<thing-type id="box">
 
-		<label>huesync Binding Thing</label>
-		<description>Sample thing for huesync Binding</description>
-
-		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
-		</channels>
+		<label>Hue HDMI Sync Box</label>
+		<description>Sync your smart lights to your on-screen TV content with the Philips Hue Play HDMI Sync Box. Four HDMI
+			inputs allow you to connect your media devices to your Hue setup, resulting in a fast, seamless display of colorful
+			smart light that responds to and reflects the content you watch or listen to.</description>
+		<properties>
+			<property name="vendor">Philips</property>
+		</properties>
 
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
+			<parameter-group name="connection">
+				<label>Connection Settings</label>
+			</parameter-group>
+
+			<parameter name="host" type="text" groupName="connection">
 				<context>network-address</context>
-				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<label>Network Address</label>
+				<description>Network address of the HDMI Sync Box.</description>
+				<required>true</required>
 			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the device</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
+			<parameter name="port" type="integer" min="1" max="65535" groupName="connection">
+				<context></context>
+				<label>Port</label>
+				<description>Port of the HDMI Sync Box.</description>
 				<advanced>true</advanced>
+				<default>443</default>
+				<required>true</required>
 			</parameter>
 		</config-description>
+
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for huesync Binding</description>
-	</channel-type>
 </thing:thing-descriptions>

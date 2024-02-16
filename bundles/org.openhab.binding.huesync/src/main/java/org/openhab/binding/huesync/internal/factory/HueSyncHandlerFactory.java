@@ -13,22 +13,23 @@
 package org.openhab.binding.huesync.internal.factory;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.huesync.internal.HueSyncBindingConstants;
 import org.openhab.binding.huesync.internal.HueSyncHandler;
-import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HueSyncHandlerFactory} is responsible for creating things and
@@ -43,8 +44,12 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.huesync", service = ThingHandlerFactory.class)
 public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
 
+    private final HttpClient httpClient;
+
     @Activate
-    public HueSyncHandlerFactory() {
+    public HueSyncHandlerFactory(@Reference final HttpClientFactory httpClientFactory) throws Exception {
+        httpClient = new HttpClient(new SslContextFactory.Client(true));
+        httpClient.start();
     }
 
     @SuppressWarnings("null")
@@ -56,12 +61,14 @@ public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    @Override
-    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
-            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
+    // @Override
+    // public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration
+    // configuration,
+    // @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
 
-        return Objects.nonNull(thingUID) ? super.createThing(thingTypeUID, configuration, thingUID) : null;
-    }
+    // return Objects.nonNull(thingUID) ? super.createThing(thingTypeUID,
+    // configuration, thingUID) : null;
+    // }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
