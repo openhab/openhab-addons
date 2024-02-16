@@ -126,7 +126,7 @@ public class ShellyChannelDefinitions {
                 // Device
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_NAME, "deviceName", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_GATEWAY, "gatewayDevice", ITEMT_STRING))
-                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ITEMP, "deviceTemp", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ITEMP, "system:indoor-temperature", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts", ITEMT_POWER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal", ITEMT_ENERGY))
@@ -236,11 +236,11 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_LAST_UPDATE, "lastUpdate", ITEMT_DATETIME))
 
                 // Addon with external sensors
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP1, "sensorExtTemp", ITEMT_TEMP))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP2, "sensorExtTemp", ITEMT_TEMP))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP3, "sensorExtTemp", ITEMT_TEMP))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP4, "sensorExtTemp", ITEMT_TEMP))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP5, "sensorExtTemp", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP1, "system:outdoor-temperature", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP2, "system:outdoor-temperature", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP3, "system:outdoor-temperature", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP4, "system:outdoor-temperature", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_TEMP5, "system:outdoor-temperature", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_HUMIDITY, "system:atmospheric-humidity",
                         ITEMT_PERCENT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENSOR_VOLTAGE, "sensorExtVolt", ITEMT_VOLT))

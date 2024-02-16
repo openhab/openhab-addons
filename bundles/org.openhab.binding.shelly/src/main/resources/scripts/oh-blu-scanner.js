@@ -78,6 +78,14 @@ let BTHomeDecoder = {
   getInt24LE: function (buffer) {
     return this.utoi(this.getUInt24LE(buffer), 24);
   },
+  getUInt32LE: function (buffer) {
+    return (
+      (buffer.at(2) << 24) | (buffer.at(2) << 16) | (buffer.at(1) << 8) | buffer.at(0)
+    );
+  },
+  getInt32LE: function (buffer) {
+    return this.utoi(this.getUInt32LE(buffer), 32);
+  },
   getBufValue: function (type, buffer) {
     if (buffer.length < getByteSize(type)) return null;
     let res = null;
@@ -87,6 +95,8 @@ let BTHomeDecoder = {
     if (type === int16) res = this.getInt16LE(buffer);
     if (type === uint24) res = this.getUInt24LE(buffer);
     if (type === int24) res = this.getInt24LE(buffer);
+    if (type === uint32) res = this.getUInt24LE(buffer);
+    if (type === int32) res = this.getInt24LE(buffer);
     return res;
   },
   unpack: function (buffer) {
@@ -106,8 +116,7 @@ let BTHomeDecoder = {
       _bth = BTH[buffer.at(0)];
       if (typeof _bth === "undefined") {
         console.log("BTH: unknown type");
-        //break;
-        continue;
+        break;
       }
       buffer = buffer.slice(1);
       _value = this.getBufValue(_bth.t, buffer);
