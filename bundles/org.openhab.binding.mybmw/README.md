@@ -108,7 +108,7 @@ Same configuration is needed for all things
 | Parameter       | Type    | Description                           |
 |-----------------|---------|---------------------------------------|
 | vin             | text    | Vehicle Identification Number (VIN)   |
-| refreshInterval | integer | Refresh Interval in Minutes           |
+| refreshInterval | integer | Refresh Interval in Minutes (set to 0 if no automated refresh should be triggered)          |
 
 #### Advanced Configuration
 
@@ -132,9 +132,10 @@ They differ for each vehicle type, build-in sensors and activated services.
 
 | Channel Group ID                 | Description                                       | conv | phev | bev_rex | bev |
 |----------------------------------|---------------------------------------------------|------|------|---------|-----|
+| [update](#vehicle-update)        | Overall vehicle status                            |  X   |  X   |    X    |  X  |
 | [status](#vehicle-status)        | Overall vehicle status                            |  X   |  X   |    X    |  X  |
-| [range](#range-data)             | Provides mileage, range and charge / fuel levels  |  X   |  X   |    X    |  X  |
 | [doors](#doors-details)          | Detials of all doors and windows                  |  X   |  X   |    X    |  X  |
+| [range](#range-data)             | Provides mileage, range and charge / fuel levels  |  X   |  X   |    X    |  X  |
 | [check](#check-control)          | Shows current active CheckControl messages        |  X   |  X   |    X    |  X  |
 | [service](#services)             | Future vehicle service schedules                  |  X   |  X   |    X    |  X  |
 | [location](#location)            | Coordinates and heading of the vehicle            |  X   |  X   |    X    |  X  |
@@ -144,6 +145,21 @@ They differ for each vehicle type, build-in sensors and activated services.
 | [session](#charge-sessions)      | Past charging sessions                            |      |  X   |    X    |  X  |
 | [tires](#tire-pressure)          | Current and wanted pressure for all tires         |  X   |  X   |    X    |  X  |
 | [image](#image)                  | Provides an image of your vehicle                 |  X   |  X   |    X    |  X  |
+
+#### Vehicle Update
+
+Provides switches to force partly updates of the BMW API functionality
+
+- Channel Group ID is status
+- Available for all vehicles
+- switches which can be triggered by a command
+- if the switches are set to ON, then immediately they will be set to OFF again for being able to trigger the next update
+
+| Channel Label                                  | Channel ID      | Type   | Description                                                               | conv | phev | bev_rex | bev |
+|------------------------------------------------|-----------------|--------|---------------------------------------------------------------------------|------|------|---------|-----|
+| trigger the update of the state                | state-update    | Switch | When set to ON, the state of the vehicle will be updated                  |  X   |  X   |    X    |  X  |
+| trigger the update of the charging information | charging-update | Switch | When set to ON, the charging statistics of the vehicle will be updated    |      |  X   |    X    |  X  |
+| trigger the update of the image                | image-update    | Switch | When set to ON, the image of the vehicle will be updated                  |  X   |  X   |    X    |  X  |
 
 #### Vehicle Status
 
