@@ -16,8 +16,8 @@
 		<description>Instructs the Broadlink device to perform tasks related to IR code learning</description>
 		<state readOnly="false">
 			<options>
-				<option value="LEARN">Enter infrared learn mode</option>
-				<option value="CHECK">Save last captured IR code</option>
+				<option value="LEARN">Learn IR command</option>
+				<option value="CHECK">IR command saved</option>
 			</options>
 		</state>
 	</channel-type>
@@ -33,8 +33,8 @@
 		<description>Instructs the Broadlink device to perform tasks related to RF code learning</description>
 		<state readOnly="false">
 			<options>
-				<option value="LEARN">Enter RF learn mode (find frequencies)</option>
-				<option value="CHECK">Save last captured RF code</option>
+				<option value="LEARN">Learn RF command</option>
+				<option value="CHECK">RF command saved</option>
 			</options>
 		</state>
 	</channel-type>

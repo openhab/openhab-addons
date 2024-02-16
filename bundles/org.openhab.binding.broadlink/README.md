@@ -86,33 +86,17 @@ For RF, the `rfcommand` channel is used.
 To obtain the command codes, you can get this binding to put your Broadlink RMx device into 
 "learn mode" and then ask it for the code it learnt. Here are the steps:
 
-1. In the openHAB web UI, navigate to your RMx Thing, and click on its *Channels* tab
-2. Find the *Remote Learning Control* channel and create an Item for it
-3. Click the item, and click the rectangular area that is marked NULL
-4. In the pop-up menu that appears, select "Enter infrared learn mode"
-5. *The LED on your RM device will illuminate solidly*
-6. Point your IR remote control at your RM device and press the button you'd like to learn
-7. *The LED on your RM device will extinguish once it has learnt the command*
-8. Now click the rectangular area again (which will now show "Enter infrared learn mode")
-9. Select the "Check last captured IR code" menu option in the pop-up menu
-10. Inspect the `openhab.log` file on your openHAB server - you should see the following:
-
-```
-[BroadlinkRemoteHandler] - BEGIN LAST LEARNT CODE (976 bytes)
-[BroadlinkRemoteHandler] - 2600bc017239100d0e2b0e0f100c107f55747be51a3e1d4ff4......f5be8b3d4ff4b
-4d77c44d105fa530546becaa2bcfbd348b30145447f55747be51a3747be51a3e1d4ff4b3f4f4f......a3e1d4ff4b348
-0145447f55747be51a3e1d4ff4b
-[BroadlinkRemoteHandler] - END LAST LEARNT CODE (1944 characters)
-```
-
-11. If you carefully copy the log line between the `BEGIN` and `END` messages, 
-    it should have exactly the number of characters as advised in the `END` message.
-    
-12. You can now paste a new entry into your `map` file, with the name of your choice; for example:
-
-```
-BLURAY_ON=2600bc017239100d0e2b0e0f100c107f55747be51a3e1d4ff4...0145447f55747be51a3e1d4ff4b
-```
+0. In the openHAB web UI, navigate to your RMx Thing
+1. Set the *Name of IR/RF command to learn* property to the name of the command you want the device to learn
+2. Click on its *Channels* tab
+3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead.
+4. Click the item, and click the rectangular area that is marked NULL
+5. In the pop-up menu that appears, select "Learn IR command" for IR or "Learn RF command" for RF
+6. *The LED on your RM device will illuminate solidly*
+7. Point your IR/RF remote control at your RM device and keep pressing the button you'd like to learn
+8. *The LED on your RM device will extinguish once it has learnt the command*
+9. If the command has been learned succesfully, the channel will have changed it name to "IR command saved" or "RF command saved".
+10. If no succes, the channel will be named "NULL". Inspect the `openhab.log` file on your openHAB server for any issues
 
 
 ## Full Example
