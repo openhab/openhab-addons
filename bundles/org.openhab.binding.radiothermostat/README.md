@@ -160,25 +160,25 @@ Number Therm_Mode               "Thermostat Mode [MAP(radiotherm.map):%s_mode]" 
 Number Therm_Fmode              "Fan Mode [MAP(radiotherm.map):%s_fan]"         { channel="radiothermostat:rtherm:mytherm1:fan_mode" }
 // Program Mode only supported on CT80 Rev B
 Number Therm_Pmode              "Program Mode [MAP(radiotherm.map):%s_pgm]"     { channel="radiothermostat:rtherm:mytherm1:program_mode" }
-Number:Temperature  Therm_Setpt "Set Point [%d]" <temperature>                  { channel="radiothermostat:rtherm:mytherm1:set_point" }
+Number:Temperature Therm_Setpt  "Set Point [%d]" <temperature>                  { channel="radiothermostat:rtherm:mytherm1:set_point" }
 Number Therm_Status             "Status [MAP(radiotherm.map):%s_stus]"          { channel="radiothermostat:rtherm:mytherm1:status" }
 Number Therm_FanStatus          "Fan Status [MAP(radiotherm.map):%s_fstus]"     { channel="radiothermostat:rtherm:mytherm1:fan_status" }
 Number Therm_Override           "Override [MAP(radiotherm.map):%s_over]"        { channel="radiothermostat:rtherm:mytherm1:override" }
 Switch Therm_Hold               "Hold"                                          { channel="radiothermostat:rtherm:mytherm1:hold" }
 
-Number Therm_Day       "Thermostat Day [%d]"                                 { channel="radiothermostat:rtherm:mytherm1:day" }
-Number Therm_Hour      "Thermostat Hour [%d]"                                { channel="radiothermostat:rtherm:mytherm1:hour" }
-Number Therm_Minute    "Thermostat Minute [%d]"                              { channel="radiothermostat:rtherm:mytherm1:minute" }
-String Therm_Dstmp     "Thermostat DateStamp [%s]" <time>                    { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
+Number Therm_Day                "Thermostat Day [%d]"                           { channel="radiothermostat:rtherm:mytherm1:day" }
+Number Therm_Hour               "Thermostat Hour [%d]"                          { channel="radiothermostat:rtherm:mytherm1:hour" }
+Number Therm_Minute             "Thermostat Minute [%d]"                        { channel="radiothermostat:rtherm:mytherm1:minute" }
+String Therm_Dstmp              "Thermostat DateStamp [%s]" <time>              { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
 
-Number:Time Therm_todayheat "Today's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime", unit="min" }
-Number:Time Therm_todaycool "Today's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime", unit="min" }
-Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime", unit="min" }
-Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime", unit="min" }
-String Therm_Message   "Message: [%s]"                                      { channel="radiothermostat:rtherm:mytherm1:message" }
+Number:Time Therm_todayheat     "Today's Heating Runtime [%d %unit%]"           { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime", unit="min" }
+Number:Time Therm_todaycool     "Today's Cooling Runtime [%d %unit%]"           { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime", unit="min" }
+Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime", unit="min" }
+Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime", unit="min" }
+String Therm_Message            "Message: [%s]"                                 { channel="radiothermostat:rtherm:mytherm1:message" }
 
 // Override the thermostat's temperature reading with a value from an external sensor, set to -1 to revert to internal temperature mode
-Number:Temperature Therm_Rtemp  "Remote Temperature [%d]" <temperature>     { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
+Number:Temperature Therm_Rtemp  "Remote Temperature [%d]" <temperature>         { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
 
 // A virtual switch used to trigger a rule to send a json command to the thermostat
 Switch Therm_mysetting   "Send my preferred setting"
