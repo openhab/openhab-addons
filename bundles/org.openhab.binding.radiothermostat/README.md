@@ -74,28 +74,28 @@ curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}'
 
 The thermostat information that is retrieved is available as these channels:
 
-| Channel ID             | Item Type            | Description                                                                                                                        |
-|------------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| temperature            | Number:Temperature   | The current temperature reading of the thermostat                                                                                  |
-| humidity               | Number:Dimensionless | The current humidity reading of the thermostat (CT80 only)                                                                         |
-| mode                   | Number               | The current operating mode of the HVAC system                                                                                      |
-| fan_mode               | Number               | The current operating mode of the fan                                                                                              |
-| program_mode           | Number               | The program schedule that the thermostat is running (CT80 Rev B only)                                                              |
-| set_point              | Number:Temperature   | The current temperature set point of the thermostat                                                                                |
-| status                 | Number               | Indicates the current running status of the HVAC system                                                                            |
-| fan_status             | Number               | Indicates the current fan status of the HVAC system                                                                                |
-| override               | Number               | Indicates if the normal program set-point has been manually overridden                                                             |
-| hold                   | Switch               | Indicates if the current set point temperature is to be held indefinitely                                                          |
-| remote_temp            | Number:Temperature   | Override the internal temperature as read by the thermostat's temperature sensor; Set to -1 to return to internal temperature mode |
-| day                    | Number               | The current day of the week reported by the thermostat (0 = Monday)                                                                |
-| hour                   | Number               | The current hour of the day reported by the thermostat (24 hr)                                                                     |
-| minute                 | Number               | The current minute past the hour reported by the thermostat                                                                        |
-| dt_stamp               | String               | The current day of the week and time reported by the thermostat (E HH:mm)                                                          |
-| today_heat_runtime     | Number:Time          | The total number of minutes of heating run-time today                                                                              |
-| today_cool_runtime     | Number:Time          | The total number of minutes of cooling run-time today                                                                              |
-| yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                                                                          |
-| yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                                                                          |
-| message                | String (Write Only)  | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed    |
+| Channel ID             | Item Type            | Description                                                                                                                             |
+|------------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| temperature            | Number:Temperature   | The current temperature reading (°F) of the thermostat                                                                                  |
+| humidity               | Number:Dimensionless | The current humidity reading of the thermostat (CT80 only)                                                                              |
+| mode                   | Number               | The current operating mode of the HVAC system                                                                                           |
+| fan_mode               | Number               | The current operating mode of the fan                                                                                                   |
+| program_mode           | Number               | The program schedule that the thermostat is running (CT80 Rev B only)                                                                   |
+| set_point              | Number:Temperature   | The current temperature set point (°F) of the thermostat                                                                                |
+| status                 | Number               | Indicates the current running status of the HVAC system                                                                                 |
+| fan_status             | Number               | Indicates the current fan status of the HVAC system                                                                                     |
+| override               | Number               | Indicates if the normal program set-point has been manually overridden                                                                  |
+| hold                   | Switch               | Indicates if the current set point temperature is to be held indefinitely                                                               |
+| remote_temp            | Number:Temperature   | Override the internal temperature (°F) as read by the thermostat's temperature sensor; Set to -1 to return to internal temperature mode |
+| day                    | Number               | The current day of the week reported by the thermostat (0 = Monday)                                                                     |
+| hour                   | Number               | The current hour of the day reported by the thermostat (24 hr)                                                                          |
+| minute                 | Number               | The current minute past the hour reported by the thermostat                                                                             |
+| dt_stamp               | String               | The current day of the week and time reported by the thermostat (E HH:mm)                                                               |
+| today_heat_runtime     | Number:Time          | The total number of minutes of heating run-time today                                                                                   |
+| today_cool_runtime     | Number:Time          | The total number of minutes of cooling run-time today                                                                                   |
+| yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                                                                               |
+| yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                                                                               |
+| message                | String (Write Only)  | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed         |
 
 ## Full Example
 
