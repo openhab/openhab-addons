@@ -149,7 +149,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void startScan() {
         try {
-            installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway);
+            if (getProfile().isBlu) {
+                installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway);
+            }
         } catch (ShellyApiException e) {
         }
     }

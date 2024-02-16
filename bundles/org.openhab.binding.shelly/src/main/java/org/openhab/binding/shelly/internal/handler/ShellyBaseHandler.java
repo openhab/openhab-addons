@@ -259,6 +259,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (api.isInitialized()) {
             api.startScan();
         }
+
+        checkRangeExtender(profile);
     }
 
     /**
@@ -361,18 +363,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // update thing properties
         updateProperties(tmpPrf, tmpPrf.status);
         checkVersion(tmpPrf, tmpPrf.status);
+
         // Check for Range Extender mode, add secondary device to Inbox
-        if (getBool(tmpPrf.settings.rangeExtender) && config.enableRangeExtender && tmpPrf.status.rangeExtender != null
-                && tmpPrf.status.rangeExtender.apClients != null) {
-            for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
-                String secondaryIp = config.deviceIp + ":" + client.mport.toString();
-                DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, "", secondaryIp, bindingConfig,
-                        httpClient, messages);
-                if (result != null) {
-                    thingTable.discoveredResult(result);
-                }
-            }
-        }
+        checkRangeExtender(tmpPrf);
 
         startCoap(config, tmpPrf);
         if (!gen2 && !blu) {
@@ -596,6 +589,20 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 logger.debug("{}: Enabling channel cache ({} updates / {}s)", thingName, skipUpdate,
                         cacheCount * UPDATE_STATUS_INTERVAL_SECONDS);
                 cache.enable();
+            }
+        }
+    }
+
+    private void checkRangeExtender(ShellyDeviceProfile prf) {
+        if (getBool(prf.settings.rangeExtender) && config.enableRangeExtender && prf.status.rangeExtender != null
+                && prf.status.rangeExtender.apClients != null) {
+            for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
+                String secondaryIp = config.deviceIp + ":" + client.mport.toString();
+                DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, "", secondaryIp, bindingConfig,
+                        httpClient, messages);
+                if (result != null) {
+                    thingTable.discoveredResult(result);
+                }
             }
         }
     }
