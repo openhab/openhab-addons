@@ -148,8 +148,11 @@ They differ for each vehicle type, build-in sensors and activated services.
 
 #### Vehicle Update
 
-The BMW API has limits in the requests per time period. This leads to unexpected errors stating that some quota is reached and the next successful request can be triggered in X minutes. In this case the bridge as well as the vehicle things can be set to offline and nothing can be done with them anymore until the next successful refresh. To reduce the probability of the error, the default automated API update has been set to 60 Minutes, but this is often not sufficient to retrieve continuous range or charging updates.
-These channels can be used to control the update behavior from Openhab, e.g. via rules. They provide switches to separately trigger the update of the vehicle state (state-update), the image (image-update) or for xEVs the charging statistics (charging-update).
+The BMW API has limits in the requests per time period.
+This leads to unexpected errors stating that some quota is reached and the next successful request can be triggered in X minutes.
+In this case the bridge as well as the vehicle things can be set to offline and nothing can be done with them anymore until the next successful refresh.
+To reduce the probability of the error, the default automated API update has been set to 60 Minutes, but this is often not sufficient to retrieve continuous range or charging updates.
+These channels can be used to control the update behavior from openHAB, e.g. via rules.
 
 - Channel Group ID is status
 - Available for all vehicles (charging channel only for xEV)
