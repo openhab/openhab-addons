@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,6 @@
 package org.openhab.binding.paradoxalarm.internal.handlers;
 
 import static org.openhab.binding.paradoxalarm.internal.handlers.ParadoxAlarmBindingConstants.*;
-
-import javax.measure.quantity.ElectricPotential;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.paradoxalarm.internal.model.ParadoxInformation;
@@ -59,10 +57,9 @@ public class ParadoxPanelHandler extends EntityBaseHandler {
             updateProperty(PANEL_BOOTLOADER_VERSION_PROPERTY_NAME, panelInformation.getBootLoaderVersion().toString());
 
             updateState(PANEL_TIME, new DateTimeType(panel.getPanelTime()));
-            updateState(PANEL_INPUT_VOLTAGE, new QuantityType<ElectricPotential>(panel.getVdcLevel(), Units.VOLT));
-            updateState(PANEL_BOARD_VOLTAGE, new QuantityType<ElectricPotential>(panel.getDcLevel(), Units.VOLT));
-            updateState(PANEL_BATTERY_VOLTAGE,
-                    new QuantityType<ElectricPotential>(panel.getBatteryLevel(), Units.VOLT));
+            updateState(PANEL_INPUT_VOLTAGE, new QuantityType<>(panel.getVdcLevel(), Units.VOLT));
+            updateState(PANEL_BOARD_VOLTAGE, new QuantityType<>(panel.getDcLevel(), Units.VOLT));
+            updateState(PANEL_BATTERY_VOLTAGE, new QuantityType<>(panel.getBatteryLevel(), Units.VOLT));
         }
     }
 }

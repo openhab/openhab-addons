@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ public class PcapNetworkInterfaceWrapper {
     /**
      * Use this Guava function in order to create a {@link PcapNetworkInterfaceWrapper} instance.
      */
-    public static final Function<PcapNetworkInterface, PcapNetworkInterfaceWrapper> TRANSFORMER = new Function<PcapNetworkInterface, PcapNetworkInterfaceWrapper>() {
+    public static final Function<PcapNetworkInterface, PcapNetworkInterfaceWrapper> TRANSFORMER = new Function<>() {
 
         @Override
         public PcapNetworkInterfaceWrapper apply(PcapNetworkInterface pcapNetworkInterface) {

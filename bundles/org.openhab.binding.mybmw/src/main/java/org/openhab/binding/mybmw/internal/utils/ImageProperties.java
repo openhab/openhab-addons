@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,12 +18,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link ImageProperties} Properties of current Vehicle Image
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Martin Grassl - fix default viewport as "default" is not available anymore
  */
 @NonNullByDefault
 public class ImageProperties {
     public static final int RETRY_COUNTER = 5;
     public int failCounter = 0;
-    public String viewport = "Default";
+    public String viewport = "VehicleStatus";
 
     public ImageProperties(String viewport) {
         this.viewport = viewport;

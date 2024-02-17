@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,6 @@
 package org.openhab.binding.bticinosmarther.internal.api.dto;
 
 import java.util.Optional;
-
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Temperature;
 
 import org.openhab.binding.bticinosmarther.internal.api.dto.Enums.MeasureUnit;
 import org.openhab.binding.bticinosmarther.internal.api.exception.SmartherIllegalPropertyValueException;
@@ -91,16 +88,15 @@ public class Measure {
 
         switch (MeasureUnit.fromValue(unit)) {
             case CELSIUS:
-                state = optValue.<State> map(t -> new QuantityType<Temperature>(new DecimalType(t), SIUnits.CELSIUS))
+                state = optValue.<State> map(t -> new QuantityType<>(new DecimalType(t), SIUnits.CELSIUS))
                         .orElse(UnDefType.UNDEF);
                 break;
             case FAHRENHEIT:
-                state = optValue
-                        .<State> map(t -> new QuantityType<Temperature>(new DecimalType(t), ImperialUnits.FAHRENHEIT))
+                state = optValue.<State> map(t -> new QuantityType<>(new DecimalType(t), ImperialUnits.FAHRENHEIT))
                         .orElse(UnDefType.UNDEF);
                 break;
             case PERCENTAGE:
-                state = optValue.<State> map(t -> new QuantityType<Dimensionless>(new DecimalType(t), Units.PERCENT))
+                state = optValue.<State> map(t -> new QuantityType<>(new DecimalType(t), Units.PERCENT))
                         .orElse(UnDefType.UNDEF);
                 break;
             case DIMENSIONLESS:

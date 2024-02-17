@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -305,11 +305,11 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                             updateState(CHANNEL_WATER_LEVEL_REACHED, newAttributeValue);
                             break;
                         case "CleanAdvise":
-                            newAttributeValue = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                            newAttributeValue = OnOffType.from(!"0".equals(attributeValue));
                             updateState(CHANNEL_CLEAN_ADVISE, newAttributeValue);
                             break;
                         case "FilterAdvise":
-                            newAttributeValue = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                            newAttributeValue = OnOffType.from(!"0".equals(attributeValue));
                             updateState(CHANNEL_FILTER_ADVISE, newAttributeValue);
                             break;
                         case "Brewed":

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -297,7 +297,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
      * @param response
      */
     private void managePowerStateUpdate(AvrResponse response) {
-        OnOffType state = PowerStateValues.ON_VALUE.equals(response.getParameterValue()) ? OnOffType.ON : OnOffType.OFF;
+        OnOffType state = OnOffType.from(PowerStateValues.ON_VALUE.equals(response.getParameterValue()));
 
         // When a Power ON state update is received, call the onPowerOn method.
         if (OnOffType.ON == state) {
@@ -329,7 +329,7 @@ public abstract class AbstractAvrHandler extends BaseThingHandler
      */
     private void manageMuteStateUpdate(AvrResponse response) {
         updateState(getChannelUID(PioneerAvrBindingConstants.MUTE_CHANNEL, response.getZone()),
-                response.getParameterValue().equals(MuteStateValues.OFF_VALUE) ? OnOffType.OFF : OnOffType.ON);
+                OnOffType.from(!response.getParameterValue().equals(MuteStateValues.OFF_VALUE)));
     }
 
     /**

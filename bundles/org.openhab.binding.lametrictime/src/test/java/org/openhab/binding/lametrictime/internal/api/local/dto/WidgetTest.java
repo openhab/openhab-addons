@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public class WidgetTest extends AbstractTest {
     @SuppressWarnings("serial")
     public void testSerialize() throws Exception {
         Widget widget = new Widget().withPackageName("com.lametric.radio").withIndex(Integer.valueOf(-1))
-                .withSettings(new HashMap<String, JsonPrimitive>() {
+                .withSettings(new HashMap<>() {
                     {
                         put("_title", new JsonPrimitive("Radio"));
                     }

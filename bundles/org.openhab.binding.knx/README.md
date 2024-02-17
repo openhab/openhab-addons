@@ -6,7 +6,7 @@ Switching lights on and off, activating your roller shutters, or changing room t
 To access your KNX bus, you either need a gateway device which is connected to the KNX bus and allows computers to access the bus communication.
 This can be either an Ethernet (as a Router or a Tunnel type) or a serial gateway.
 The KNX binding then can communicate directly with this gateway.
-Alternatively, a PC running [KNXD](https://github.com/knxd/knxd) (free open source component software) can be put in between which then acts as a broker allowing multiple client to connect to the same gateway.
+Alternatively, a PC running [KNXD](https://github.com/knxd/knxd) (free open source component software) can be put in between which then acts as a broker allowing multiple clients to connect to the same gateway.
 Since the protocol is identical, the KNX binding can also communicate with it transparently.
 
 ***Attention:*** With the introduction of Unit of Measurement (UoM) support, some data types have changed (see `number` channel below):
@@ -30,6 +30,20 @@ There is an _ip_ bridge to connect to KNX IP Gateways, and a _serial_ bridge for
 
 The following two bridge types are supported.
 Bridges don't have channels on their own.
+
+### Discovery
+
+KNX IP bridges, i.e. IP interfaces, routers, and knxd instances, are discovered through mulitcast communication in the local network.
+As a KNX setup is typically static, this in only done during startup of the binding.
+Corresponding bridges are added to the inbox.
+Additional configuration might be necessary after adding a bridge.
+
+Note that several items per device might be created, as routers typically support routing and tunneling.
+Make sure you import only one item per device.
+
+Discovery is not available for serial bridges and device Things described below.
+Discovery of IP bridges will not work without further measures if openHAB and the interface run on different network segments,
+as multicast traffic is typically not forwarded.
 
 ### IP Gateway
 
@@ -107,10 +121,16 @@ When a `GroupValueRead` telegram is sent from the KNX bus to a *-control Channel
 | position         | Group address brightness               | 5.001       |
 | increaseDecrease | Group address for relative brightness  | 3.007       |
 
-The `hsb` address supports DPT 242.600 and 251.600.
+The `hsb` address supports DPT 232.600 (RGB), 242.600 (xyY), and 251.600 (RGBW).
 
-Some RGB/RGBW products (e.g. MDT) support HSB values for DPT 232.600 instead of RGB.
+Some RGB/RGBW products (e.g. MDT) use HSB values for DPT 232.600 instead of RGB.
 This is supported as "vendor-specific DPT" with a value of 232.60000.
+
+RGBW (DPT 251.600) can either be converted to HSBType, or be represented two items: a HSBType for RGB and an additional PercentType for W channel.
+Default handling for RGBW is to use separate items.
+Note that this also requires two frames being sent out separately when these elements are sent to the bus, as the binary representation uses a partially populated KNX frame.  
+Alternatively, a single HSB item can be used. Conversion to a single HSBType will loose the exact setting for W, and will reconstruct it when a conversion to RGBW is required.
+This option can be selected using the special DPT 251.60600.
 
 ##### Channel Type `contact`, `contact-control`
 
@@ -235,18 +255,35 @@ For UoM support see the explanations of the `number` channel.
 #### Group Address Notation
 
 ```text
-<config>="[<dpt>:][<]<mainGA>[[+[<]<listeningGA>][+[<]<listeningGA>..]]"
+<config>="[<dpt>:][<|>]<mainGA>[[+[<]<listeningGA>][+[<]<listeningGA>..]]"
 ```
 
 where parts in brackets `[]` denote optional information.
 
+**Each configuration parameter has a `mainGA` where commands are written to and optionally several `listeningGA`s.**
+
+`mainGA` also listens to incoming packets, unless prefixed with a `>` character.
+This is recommended if you have a dedicated status group address which is added as `listeningGA`.
+
 The optional `<` sign tells whether the group address of the datapoint accepts read requests on the KNX bus (it does, if the sign is there).
-All group addresses marked with `<` are read by openHAB during startup.
+The group addresses marked with `<` are read by openHAB during startup. 
+Future versions might support reading from one GA only.
 With `*-control` channels, the state is not owned by any device on the KNX bus, therefore no read requests will be sent by the binding, i.e. `<` signs will be ignored for them.
 
-Each configuration parameter has a `mainGA` where commands are written to and optionally several `listeningGA`s.
+The element `dpt` is  highly recommended and may change to a mandatory element in future versions.
+If omitted, the corresponding default value will be used (see the channel descriptions above).
 
-The `dpt` element is optional. If omitted, the corresponding default value will be used (see the channel descriptions above).
+## Special DPTs
+
+OpenHAB supports all DPTs supported by the corresponding release of Calimero library.
+
+Additional DPTs have been introduced to add functionality:
+
+| DPT           | Description                                                 | Remark     |
+|---------------|-------------------------------------------------------------|------------|
+| DPT 232.60000 | DPT 232.600 with HSB instead of RGB data (see below)        | read/write |
+| DPT 235.001   | Composed DPT 235.001, first element ActiveEnergy (Wh)       | read only  |
+| DPT 235.61001 | Composed DPT 235.001, second element Tariff (plain number)  | read only  |
 
 ## KNX Secure
 

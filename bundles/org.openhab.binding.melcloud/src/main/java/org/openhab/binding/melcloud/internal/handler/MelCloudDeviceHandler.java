@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -264,7 +264,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
     private void updateChannels(String channelId, DeviceStatus deviceStatus) {
         switch (channelId) {
             case CHANNEL_POWER:
-                updateState(CHANNEL_POWER, deviceStatus.getPower() ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_POWER, OnOffType.from(deviceStatus.getPower()));
                 break;
             case CHANNEL_OPERATION_MODE:
                 updateState(CHANNEL_OPERATION_MODE, new StringType(deviceStatus.getOperationMode().toString()));
@@ -283,11 +283,10 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
                 updateState(CHANNEL_VANE_VERTICAL, new StringType(deviceStatus.getVaneVertical().toString()));
                 break;
             case CHANNEL_OFFLINE:
-                updateState(CHANNEL_OFFLINE, deviceStatus.getOffline() ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_OFFLINE, OnOffType.from(deviceStatus.getOffline()));
                 break;
             case CHANNEL_HAS_PENDING_COMMAND:
-                updateState(CHANNEL_HAS_PENDING_COMMAND,
-                        deviceStatus.getHasPendingCommand() ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_HAS_PENDING_COMMAND, OnOffType.from(deviceStatus.getHasPendingCommand()));
                 break;
             case CHANNEL_ROOM_TEMPERATURE:
                 updateState(CHANNEL_ROOM_TEMPERATURE, new DecimalType(deviceStatus.getRoomTemperature()));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -188,10 +188,10 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
         // Might be extended in the future, therefore a switch statement
         switch (channelUID.getId()) {
             case CHANNEL_POWER:
-                updateState(channelUID, systemControlState.power ? OnOffType.ON : OnOffType.OFF);
+                updateState(channelUID, OnOffType.from(systemControlState.power));
                 break;
             case CHANNEL_PARTY_MODE:
-                updateState(channelUID, systemControlState.partyMode ? OnOffType.ON : OnOffType.OFF);
+                updateState(channelUID, OnOffType.from(systemControlState.partyMode));
                 break;
             case CHANNEL_PARTY_MODE_MUTE:
             case CHANNEL_PARTY_MODE_VOLUME:
@@ -412,7 +412,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
         boolean needsCompleteRefresh = msg.power && !systemControlState.power;
         systemControlState = msg;
 
-        updateState(CHANNEL_POWER, systemControlState.power ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_POWER, OnOffType.from(systemControlState.power));
         if (needsCompleteRefresh) {
             updateAllZoneInformation();
         }

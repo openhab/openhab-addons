@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.knx.internal.dpt.DPTUtil.NORMALIZED_DPT;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.regex.Matcher;
 
@@ -44,8 +45,10 @@ import tuwien.auto.calimero.dptxlator.DPT;
 import tuwien.auto.calimero.dptxlator.DPTXlator;
 import tuwien.auto.calimero.dptxlator.DPTXlator1BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator2ByteFloat;
+import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
+import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDate;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
 import tuwien.auto.calimero.dptxlator.DPTXlatorTime;
@@ -108,6 +111,10 @@ public class ValueEncoder {
             } else if (value instanceof DecimalType || value instanceof QuantityType<?>) {
                 return handleNumericTypes(dptId, mainNumber, dpt, value);
             } else if (value instanceof StringType) {
+                if ("243.600".equals(dptId) || "249.600".equals(dptId)) {
+                    return value.toString().replace('.', ((DecimalFormat) DecimalFormat.getInstance())
+                            .getDecimalFormatSymbols().getDecimalSeparator());
+                }
                 return value.toString();
             } else if (value instanceof DateTimeType type) {
                 return handleDateTimeType(dptId, type);
@@ -165,6 +172,10 @@ public class ValueEncoder {
                 PercentType[] rgbw = ColorUtil.hsbToRgbPercent(hsb);
                 return String.format("%,.1f %,.1f %,.1f - %%", rgbw[0].doubleValue(), rgbw[1].doubleValue(),
                         rgbw[2].doubleValue());
+            case "251.60600":
+                PercentType[] rgbw2 = ColorUtil.hsbToRgbwPercent(hsb);
+                return String.format("%,.1f %,.1f %,.1f %,.1f %%", rgbw2[0].doubleValue(), rgbw2[1].doubleValue(),
+                        rgbw2[2].doubleValue(), rgbw2[3].doubleValue());
             case "5.003":
                 return hsb.getHue().toString();
             default:
@@ -231,6 +242,11 @@ public class ValueEncoder {
             }
         }
         switch (mainNumber) {
+            case "1":
+                if (DPTXlatorBoolean.DPT_SCENE_AB.getID().equals(dptId)) {
+                    return (bigDecimal.intValue() == 0) ? dpt.getLowerValue() : dpt.getUpperValue();
+                }
+                return bigDecimal.stripTrailingZeros().toPlainString();
             case "2":
                 DPT valueDPT = ((DPTXlator1BitControlled.DPT1BitControlled) dpt).getValueDPT();
                 switch (bigDecimal.intValue()) {
@@ -243,6 +259,14 @@ public class ValueEncoder {
                     default:
                         return "1 " + valueDPT.getUpperValue();
                 }
+            case "7":
+                if (DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getID().equals(dptId)
+                        || DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getID().equals(dptId)) {
+                    return bigDecimal.divide(BigDecimal.valueOf(1000)).stripTrailingZeros().toPlainString().replace('.',
+                            ((DecimalFormat) DecimalFormat.getInstance()).getDecimalFormatSymbols()
+                                    .getDecimalSeparator());
+                }
+                return bigDecimal.stripTrailingZeros().toPlainString();
             case "18":
                 int intVal = bigDecimal.intValue();
                 if (intVal > 63) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -146,8 +146,8 @@ public class FoldingClientHandler extends BaseBridgeHandler {
                 FoldingDiscoveryProxy.getInstance().newSlot(getThing().getUID(), host, si.id, si.description);
             }
         }
-        updateState(getThing().getChannel("run").getUID(), running ? OnOffType.ON : OnOffType.OFF);
-        updateState(getThing().getChannel("finish").getUID(), finishing ? OnOffType.ON : OnOffType.OFF);
+        updateState(getThing().getChannel("run").getUID(), OnOffType.from(running));
+        updateState(getThing().getChannel("finish").getUID(), OnOffType.from(finishing));
     }
 
     public void delayedRefresh() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -290,7 +290,7 @@ public class DmxChannel extends BaseDmxChannel {
 
             // notify on/off listeners if on/off state changed
             if ((lastStateValue == 0) || (value == 0)) {
-                OnOffType state = (value == 0) ? OnOffType.OFF : OnOffType.ON;
+                OnOffType state = OnOffType.from(value != 0);
                 for (Entry<ChannelUID, DmxThingHandler> listener : onOffListeners.entrySet()) {
                     (listener.getValue()).updateSwitchState(listener.getKey(), state);
                     logger.trace("sending ONOFF={} (raw={}), status update to listener {}", state, value,

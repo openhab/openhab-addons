@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,7 +97,7 @@ public enum MeasureType {
     CO2(PARTS_PER_MILLION, 2, CHANNEL_TYPE_CO2, Utils::toUInt16),
 
     WATER_LEAK_DETECTION(1, CHANNEL_TYPE_WATER_LEAK_DETECTION,
-            (data, offset, context) -> toUInt8(data[offset]) != 0 ? OnOffType.ON : OnOffType.OFF),
+            (data, offset, context) -> OnOffType.from(toUInt8(data[offset]) != 0)),
 
     LIGHTNING_DISTANCE(KILO(METRE), 1, CHANNEL_TYPE_LIGHTNING_DISTANCE, (data, offset) -> {
         int distance = toUInt8(data[offset]);

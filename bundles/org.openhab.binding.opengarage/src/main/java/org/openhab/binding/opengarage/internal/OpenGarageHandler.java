@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,12 +13,14 @@
 package org.openhab.binding.opengarage.internal;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.opengarage.internal.api.ControllerVariables;
 import org.openhab.binding.opengarage.internal.api.Enums.OpenGarageCommand;
 import org.openhab.core.library.types.DecimalType;
@@ -52,34 +54,47 @@ public class OpenGarageHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenGarageHandler.class);
 
-    private long refreshInterval;
-
     private @NonNullByDefault({}) OpenGarageWebTargets webTargets;
-    private @Nullable ScheduledFuture<?> pollFuture;
+
+    // reference to periodically scheduled poll task
+    private Future<?> pollScheduledFuture = CompletableFuture.completedFuture(null);
+
+    // reference to one-shot poll task which gets scheduled after a garage state change command
+    private Future<?> pollScheduledFutureTransition = CompletableFuture.completedFuture(null);
+    private Instant lastTransition;
+    private String lastTransitionText;
+
+    private OpenGarageConfiguration config = new OpenGarageConfiguration();
 
     public OpenGarageHandler(Thing thing) {
         super(thing);
+        this.lastTransition = Instant.MIN;
+        this.lastTransitionText = "";
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         try {
             logger.debug("Received command {} for thing '{}' on channel {}", command, thing.getUID().getAsString(),
                     channelUID.getId());
-            boolean invert = isChannelInverted(channelUID.getId());
+            Function<Boolean, Boolean> maybeInvert = getInverter(channelUID.getId());
             switch (channelUID.getId()) {
                 case OpenGarageBindingConstants.CHANNEL_OG_STATUS:
                 case OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH:
                 case OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER:
-                    if (command.equals(OnOffType.ON) || command.equals(UpDownType.UP)) {
-                        changeStatus(invert ? OpenGarageCommand.CLOSE : OpenGarageCommand.OPEN);
-                        return;
-                    } else if (command.equals(OnOffType.OFF) || command.equals(UpDownType.DOWN)) {
-                        changeStatus(invert ? OpenGarageCommand.OPEN : OpenGarageCommand.CLOSE);
-                        return;
-                    } else if (command.equals(StopMoveType.STOP) || command.equals(StopMoveType.MOVE)) {
+                    if (command.equals(StopMoveType.STOP) || command.equals(StopMoveType.MOVE)) {
                         changeStatus(OpenGarageCommand.CLICK);
-                        return;
+                    } else {
+                        boolean doorOpen = command.equals(OnOffType.ON) || command.equals(UpDownType.UP);
+                        changeStatus(maybeInvert.apply(doorOpen) ? OpenGarageCommand.OPEN : OpenGarageCommand.CLOSE);
+                        this.lastTransition = Instant.now();
+                        this.lastTransitionText = doorOpen ? this.config.doorOpeningState
+                                : this.config.doorClosingState;
+
+                        this.poll(); // invoke poll directly to communicate the door transition state
+                        this.pollScheduledFutureTransition.cancel(false);
+                        this.pollScheduledFutureTransition = this.scheduler.schedule(this::poll,
+                                this.config.doorTransitionTimeSeconds, TimeUnit.SECONDS);
                     }
                     break;
                 default:
@@ -91,98 +106,97 @@ public class OpenGarageHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        OpenGarageConfiguration config = getConfigAs(OpenGarageConfiguration.class);
+        this.config = getConfigAs(OpenGarageConfiguration.class);
         logger.debug("config.hostname = {}, refresh = {}, port = {}", config.hostname, config.refresh, config.port);
-        if (config.hostname == null) {
+        if (config.hostname.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
         } else {
-            webTargets = new OpenGarageWebTargets(config.hostname, config.port, config.password);
-            refreshInterval = config.refresh;
-
-            schedulePoll();
+            updateStatus(ThingStatus.UNKNOWN);
+            int requestTimeout = Math.max(OpenGarageWebTargets.DEFAULT_TIMEOUT_MS, config.refresh * 1000);
+            webTargets = new OpenGarageWebTargets(config.hostname, config.port, config.password, requestTimeout);
+            this.pollScheduledFuture = this.scheduler.scheduleWithFixedDelay(this::poll, 1, config.refresh,
+                    TimeUnit.SECONDS);
         }
     }
 
     @Override
     public void dispose() {
+        this.pollScheduledFuture.cancel(true);
+        this.pollScheduledFutureTransition.cancel(true);
         super.dispose();
-        stopPoll();
     }
 
-    private void schedulePoll() {
-        if (pollFuture != null) {
-            pollFuture.cancel(false);
-        }
-        logger.debug("Scheduling poll for 1 second out, then every {} s", refreshInterval);
-        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 1, refreshInterval, TimeUnit.SECONDS);
-    }
-
-    private void poll() {
+    /**
+     * Update the state of the controller.
+     *
+     *
+     */
+    private synchronized void poll() {
         try {
             logger.debug("Polling for state");
-            pollStatus();
+            ControllerVariables controllerVariables = webTargets.getControllerVariables();
+            long lastTransitionAgoSecs = Duration.between(lastTransition, Instant.now()).getSeconds();
+            boolean inTransition = lastTransitionAgoSecs < this.config.doorTransitionTimeSeconds;
+            if (controllerVariables != null) {
+                updateStatus(ThingStatus.ONLINE);
+                updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE,
+                        new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
+                Function<Boolean, Boolean> maybeInvert = getInverter(
+                        OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH);
+
+                if ((controllerVariables.door != 0) && (controllerVariables.door != 1)) {
+                    logger.debug("Received unknown door value: {}", controllerVariables.door);
+                } else {
+                    boolean doorOpen = controllerVariables.door == 1;
+                    OnOffType onOff = OnOffType.from(maybeInvert.apply(doorOpen));
+                    UpDownType upDown = doorOpen ? UpDownType.UP : UpDownType.DOWN;
+                    OpenClosedType contact = doorOpen ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+
+                    String transitionText;
+                    if (inTransition) {
+                        transitionText = this.lastTransitionText;
+                    } else {
+                        transitionText = doorOpen ? this.config.doorOpenState : this.config.doorClosedState;
+                    }
+                    if (!inTransition) {
+                        updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, onOff); // deprecated channel
+                        updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH, onOff);
+                    }
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, upDown);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, contact);
+                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_TEXT, new StringType(transitionText));
+                }
+
+                switch (controllerVariables.vehicle) {
+                    case 0:
+                        updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
+                                new StringType("No vehicle detected"));
+                        break;
+                    case 1:
+                        updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle detected"));
+                        break;
+                    case 2:
+                        updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
+                                new StringType("Vehicle status unknown"));
+                        break;
+                    case 3:
+                        updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
+                                new StringType("Vehicle status not available"));
+                        break;
+
+                    default:
+                        logger.debug("Received unknown vehicle value: {}", controllerVariables.vehicle);
+                }
+                updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE_STATUS,
+                        new DecimalType(controllerVariables.vehicle));
+            }
         } catch (IOException e) {
             logger.debug("Could not connect to OpenGarage controller", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not connect to OpenGarage controller");
         } catch (RuntimeException e) {
-            logger.warn("Unexpected error connecting to OpenGarage controller", e);
+            logger.debug("Unexpected error connecting to OpenGarage controller", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    private void stopPoll() {
-        final Future<?> future = pollFuture;
-        if (future != null && !future.isCancelled()) {
-            future.cancel(true);
-            pollFuture = null;
-        }
-    }
-
-    private void pollStatus() throws IOException {
-        ControllerVariables controllerVariables = webTargets.getControllerVariables();
-        updateStatus(ThingStatus.ONLINE);
-        if (controllerVariables != null) {
-            updateState(OpenGarageBindingConstants.CHANNEL_OG_DISTANCE,
-                    new QuantityType<>(controllerVariables.dist, MetricPrefix.CENTI(SIUnits.METRE)));
-            boolean invert = isChannelInverted(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH);
-            switch (controllerVariables.door) {
-                case 0:
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, invert ? OnOffType.ON : OnOffType.OFF);
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH,
-                            invert ? OnOffType.ON : OnOffType.OFF);
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.DOWN);
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.CLOSED);
-                    break;
-                case 1:
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS, invert ? OnOffType.OFF : OnOffType.ON);
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_SWITCH,
-                            invert ? OnOffType.OFF : OnOffType.ON);
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_ROLLERSHUTTER, UpDownType.UP);
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_STATUS_CONTACT, OpenClosedType.OPEN);
-                    break;
-                default:
-                    logger.warn("Received unknown door value: {}", controllerVariables.door);
-            }
-            switch (controllerVariables.vehicle) {
-                case 0:
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("No vehicle detected"));
-                    break;
-                case 1:
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE, new StringType("Vehicle detected"));
-                    break;
-                case 2:
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
-                            new StringType("Vehicle status unknown"));
-                    break;
-                case 3:
-                    updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE,
-                            new StringType("Vehicle status not available"));
-                    break;
-                default:
-                    logger.warn("Received unknown vehicle value: {}", controllerVariables.vehicle);
-            }
-            updateState(OpenGarageBindingConstants.CHANNEL_OG_VEHICLE_STATUS,
-                    new DecimalType(controllerVariables.vehicle));
         }
     }
 
@@ -190,8 +204,13 @@ public class OpenGarageHandler extends BaseThingHandler {
         webTargets.setControllerVariables(status);
     }
 
-    private boolean isChannelInverted(String channelUID) {
+    private Function<Boolean, Boolean> getInverter(String channelUID) {
         Channel channel = getThing().getChannel(channelUID);
-        return channel != null && channel.getConfiguration().as(OpenGarageChannelConfiguration.class).invert;
+        boolean invert = channel != null && channel.getConfiguration().as(OpenGarageChannelConfiguration.class).invert;
+        if (invert) {
+            return onOff -> !onOff;
+        } else {
+            return Function.identity();
+        }
     }
 }

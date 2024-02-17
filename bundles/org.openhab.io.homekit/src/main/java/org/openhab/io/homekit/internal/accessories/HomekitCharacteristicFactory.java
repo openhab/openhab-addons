@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -162,7 +162,7 @@ public class HomekitCharacteristicFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(HomekitCharacteristicFactory.class);
 
     // List of optional characteristics and corresponding method to create them.
-    private static final Map<HomekitCharacteristicType, BiFunction<HomekitTaggedItem, HomekitAccessoryUpdater, Characteristic>> OPTIONAL = new HashMap<HomekitCharacteristicType, BiFunction<HomekitTaggedItem, HomekitAccessoryUpdater, Characteristic>>() {
+    private static final Map<HomekitCharacteristicType, BiFunction<HomekitTaggedItem, HomekitAccessoryUpdater, Characteristic>> OPTIONAL = new HashMap<>() {
         {
             put(NAME, HomekitCharacteristicFactory::createNameCharacteristic);
             put(BATTERY_LOW_STATUS, HomekitCharacteristicFactory::createStatusLowBatteryCharacteristic);
@@ -583,7 +583,7 @@ public class HomekitCharacteristicFactory {
         BigDecimal lowThreshold = taggedItem.getConfiguration(HomekitTaggedItem.BATTERY_LOW_THRESHOLD,
                 BigDecimal.valueOf(20));
         BooleanItemReader lowBatteryReader = new BooleanItemReader(taggedItem.getItem(),
-                taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
+                OnOffType.from(!taggedItem.isInverted()),
                 taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN, lowThreshold, true);
         return new StatusLowBatteryCharacteristic(
                 () -> CompletableFuture.completedFuture(
@@ -1210,10 +1210,10 @@ public class HomekitCharacteristicFactory {
     private static MuteCharacteristic createMuteCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         BooleanItemReader muteReader = new BooleanItemReader(taggedItem.getItem(),
-                taggedItem.isInverted() ? OnOffType.OFF : OnOffType.ON,
+                OnOffType.from(!taggedItem.isInverted()),
                 taggedItem.isInverted() ? OpenClosedType.CLOSED : OpenClosedType.OPEN);
         return new MuteCharacteristic(() -> CompletableFuture.completedFuture(muteReader.getValue()),
-                (value) -> taggedItem.send(value ? OnOffType.ON : OnOffType.OFF),
-                getSubscriber(taggedItem, MUTE, updater), getUnsubscriber(taggedItem, MUTE, updater));
+                (value) -> taggedItem.send(OnOffType.from(value)), getSubscriber(taggedItem, MUTE, updater),
+                getUnsubscriber(taggedItem, MUTE, updater));
     }
 }

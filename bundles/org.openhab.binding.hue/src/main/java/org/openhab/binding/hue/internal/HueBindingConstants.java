@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,6 +87,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_STATUS = "status";
     public static final String CHANNEL_FLAG = "flag";
     public static final String CHANNEL_SCENE = "scene";
+    public static final String CHANNEL_TYPE_2_SCENE = "scene-v2";
 
     // List all triggers
     public static final String EVENT_DIMMER_SWITCH = "dimmer_switch_event";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -108,7 +108,7 @@ public abstract class SatelThingHandler extends BaseThingHandler implements Sate
      * @param switchOn if <code>true</code> the channel is updated with ON state, with OFF state otherwise
      */
     protected void updateSwitch(ChannelUID channelUID, boolean switchOn) {
-        State state = switchOn ? OnOffType.ON : OnOffType.OFF;
+        State state = OnOffType.from(switchOn);
         updateState(channelUID, state);
     }
 

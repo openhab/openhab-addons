@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class PTM200Message extends _RPSMessage {
             Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
         switch (channelId) {
             case CHANNEL_GENERAL_SWITCHING:
-                return bytes[0] == SWITCH_ON ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(bytes[0] == SWITCH_ON);
             case CHANNEL_ROLLERSHUTTER:
                 return bytes[0] == UP ? PercentType.ZERO : (bytes[0] == DOWN ? PercentType.HUNDRED : UnDefType.UNDEF);
             case CHANNEL_CONTACT:

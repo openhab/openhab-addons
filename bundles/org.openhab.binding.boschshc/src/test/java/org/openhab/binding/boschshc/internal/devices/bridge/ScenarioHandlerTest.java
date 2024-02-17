@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,7 @@ class ScenarioHandlerTest {
     }
 
     @Test
-    void triggerScenario_ShouldSendPOST_ToBoschAPI() throws Exception {
+    void triggerScenarioShouldSendPOSTToBoschAPI() throws Exception {
         // GIVEN
         final var httpClient = mock(BoschHttpClient.class);
         final var request = mock(Request.class);
@@ -85,7 +85,7 @@ class ScenarioHandlerTest {
     }
 
     @Test
-    void triggerScenario_ShouldNoSendPOST_ToScenarioNameDoesNotExist() throws Exception {
+    void triggerScenarioShouldNoSendPOSTToScenarioNameDoesNotExist() throws Exception {
         // GIVEN
         final var httpClient = mock(BoschHttpClient.class);
         final var request = mock(Request.class);
@@ -106,7 +106,7 @@ class ScenarioHandlerTest {
 
     @ParameterizedTest
     @MethodSource("exceptionData")
-    void triggerScenario_ShouldNotPanic_IfBoschAPIThrowsException(final Exception exception) throws Exception {
+    void triggerScenarioShouldNotPanicIfBoschAPIThrowsException(final Exception exception) throws Exception {
         // GIVEN
         final var httpClient = mock(BoschHttpClient.class);
         final var request = mock(Request.class);
@@ -126,7 +126,7 @@ class ScenarioHandlerTest {
     }
 
     @Test
-    void triggerScenario_ShouldNotPanic_IfPOSTIsNotSuccessful() throws Exception {
+    void triggerScenarioShouldNotPanicIfPOSTIsNotSuccessful() throws Exception {
         // GIVEN
         final var httpClient = mock(BoschHttpClient.class);
         final var request = mock(Request.class);
@@ -150,7 +150,7 @@ class ScenarioHandlerTest {
 
     @ParameterizedTest
     @MethodSource("httpExceptionData")
-    void triggerScenario_ShouldNotPanic_IfPOSTThrowsException(final Exception exception) throws Exception {
+    void triggerScenarioShouldNotPanicIfPOSTThrowsException(final Exception exception) throws Exception {
         // GIVEN
         final var httpClient = mock(BoschHttpClient.class);
         final var request = mock(Request.class);

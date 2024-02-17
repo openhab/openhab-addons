@@ -13,10 +13,18 @@
 		<description>A Hue API v2 device with channels depending on its actual capabilities.</description>
 
 		<channels>
-			<channel id="color" typeId="system.color"/>
-			<channel id="color-temperature" typeId="system.color-temperature"/>
-			<channel id="brightness" typeId="system.brightness"/>
-			<channel id="switch" typeId="system.power"/>
+			<channel id="color" typeId="system.color">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="color-temperature" typeId="system.color-temperature">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="brightness" typeId="system.brightness">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 			<channel id="alert" typeId="alert-v2">
 				<description>Activate the alert for the light.</description>
 			</channel>
@@ -85,16 +93,12 @@
 			<channel id="battery-low" typeId="system.low-battery"/>
 			<channel id="last-updated" typeId="last-updated-v2"/>
 			<channel id="dynamics" typeId="dynamics"/>
-			<channel id="color-temperature-abs" typeId="system.color-temperature-abs"/>
-			<channel id="color-xy-only" typeId="advanced-color">
-				<description>Set the color xy parameter of the light without changing other state parameters.</description>
+			<channel id="color-temperature-abs" typeId="system.color-temperature-abs">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
-			<channel id="dimming-only" typeId="advanced-brightness">
-				<description>Set the dimming parameter of the light without changing other state parameters.</description>
-			</channel>
-			<channel id="on-off-only" typeId="advanced-power">
-				<description>Set the on/off parameter of the light without changing other state parameters.</description>
-			</channel>
+			<channel id="color-xy-only" typeId="advanced-color"/>
+			<channel id="dimming-only" typeId="advanced-brightness"/>
+			<channel id="on-off-only" typeId="advanced-power"/>
 		</channels>
 
 		<properties>

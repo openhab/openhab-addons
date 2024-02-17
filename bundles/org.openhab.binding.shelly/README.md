@@ -28,8 +28,8 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 The binding supports both hardware generations
 
 - Generation 1: The original Shelly devices like the Shelly 1, Shelly 2.5, Shelly Flood etc.
-- Generation 2: The new Plus / Pro series of devices
-- Shelly Plus Mini: Shelly Plus devices in compact format
+- Generation 2: Plus / Pro series of devices
+- Shelly Plus Mini: Shelly Plus devices in compact format (Gen 2+3)
 - Shelly BLU: Bluetooth based series of devices
 
 The binding provides the same feature set across all devices as good as possible and depending on device specific features.
@@ -95,13 +95,13 @@ The binding provides the same feature set across all devices as good as possible
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
 
-### Generation 2 Plus Mini series
-| thing-type           | Model                                                    | Vendor ID                    |
-| -------------------- | -------------------------------------------------------- | ---------------------------- |
-| shellymini1          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X16EU                |
-| shellymini1pm        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNPM-001PCEU16               |
-| shellyminipm         | Shelly Plus PM Mini with 1x power meter                  | SNSW-001P8EU                 |
+### Generation 2 Plus Mini series (incl. Gen 3)
 
+ | thing-type           | Model                                                    | Vendor ID                      |
+ | -------------------- | -------------------------------------------------------- | ------------------------------ |
+ | shellymini1          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
+ | shellymini1pm        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
+ | shellyminipm         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
 
 ### Generation 2 Pro series
 
@@ -402,14 +402,18 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 
 ### Non-battery powered devices
 
-| Event Type  | Description                                                                       |
-| ----------- | --------------------------------------------------------------------------------- |
-| RESTARTED   | The device has been restarted. This could be an indicator for a firmware problem. |
-| WEAK_SIGNAL | An alarm is triggered when RSSI is < -80, which indicates an unstable connection. |
-| OVER_TEMP   | The device is overheating, check installation and housing.                        |
-| OVER_LOAD   | An over load condition has been detected, e.g. from the roller motor.             |
-| OVER_POWER  | Maximum allowed power was exceeded. The relay was turned off.                     |
-| LOAD_ERROR  | Device reported a load problem, so far Dimmer only.                               |
+| Event Type   | Description                                                                       |
+| ------------ | --------------------------------------------------------------------------------- |
+| RESTARTED    | The device has been restarted. This could be an indicator for a firmware problem. |
+| WEAK_SIGNAL  | An alarm is triggered when RSSI is < -80, which indicates an unstable connection. |
+| OVERTEMP     | The device is overheating, check installation and housing.                        |
+| OVERLOAD     | An over load condition has been detected, e.g. from the roller motor.             |
+| OVERPOWER    | Maximum allowed power was exceeded. The relay was turned off.                     |
+| LOAD_ERROR   | Device reported a load problem.                                                   |
+| SENSOR_ERROR | Device reported a sensor problem.                                                 |
+| VALVE_ERROR  | Device reported a problem with the valve.                                         |
+| VIBRATION    | Device reported vibration.                                                        |
+| LOW_BATTERY  | Device reported low battery.                                                      |
 
 ### Sensors
 

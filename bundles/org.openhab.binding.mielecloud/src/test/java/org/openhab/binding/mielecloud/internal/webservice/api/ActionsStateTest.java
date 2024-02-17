@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -277,7 +277,7 @@ public class ActionsStateTest {
     public void testCanControlLightReturnsFalseWhenNoLightOptionIsAvailable() {
         // given:
         Actions actions = mock(Actions.class);
-        when(actions.getLight()).thenReturn(new LinkedList<Light>());
+        when(actions.getLight()).thenReturn(new LinkedList<>());
 
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
 

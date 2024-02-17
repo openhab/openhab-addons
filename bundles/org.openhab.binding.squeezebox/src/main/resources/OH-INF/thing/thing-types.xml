@@ -98,6 +98,7 @@
 			<property name="name"></property>
 			<property name="uid"></property>
 			<property name="ip"></property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>mac</representation-property>
@@ -216,14 +217,18 @@
 		<description>Playlist index</description>
 	</channel-type>
 	<channel-type id="currentPlayingTime">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Current Playing Time</label>
 		<description>Current Playing Time</description>
+		<category>Time</category>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="duration">
-		<item-type>Number</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Track Duration</label>
 		<description>Duration of Current Track (in seconds)</description>
+		<category>Time</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentPlaylistShuffle">
 		<item-type>Number</item-type>

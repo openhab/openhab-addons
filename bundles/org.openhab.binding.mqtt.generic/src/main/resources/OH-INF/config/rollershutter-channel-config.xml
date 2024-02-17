@@ -19,7 +19,8 @@
 		</parameter>
 		<parameter name="commandTopic" type="text">
 			<label>MQTT Command Topic</label>
-			<description>An MQTT topic that this thing will send a command to. If not set, this will be a read-only switch.</description>
+			<description>An MQTT topic that this thing will send a command to. If not set, this will be a read-only
+				rollershutter.</description>
 		</parameter>
 		<parameter name="transformationPattern" type="text" groupName="transformations">
 			<label>Incoming Value Transformations</label>
@@ -79,22 +80,48 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="on" type="text">
-			<label>Up Value</label>
-			<description>A string (like "OPEN") that is recognised as UP state. You can use this parameter for a second keyword,
-				next to UP.</description>
+			<label>Up Command Value</label>
+			<description>A string (like "OPEN") that is sent when commanding the rollershutter to open. If not provided, 0 (or
+				100, if inverted) will be sent instead.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="off" type="text">
-			<label>Down Value</label>
-			<description>A string (like "CLOSE") that is recognised as DOWN state. You can use this parameter for a second
-				keyword, next to DOWN.</description>
+			<label>Down Command Value</label>
+			<description>A string (like "CLOSE") that is sent when commanding the rollershutter to close. If not provided, 100
+				(or 0, if inverted) will be sent instead.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="stop" type="text">
-			<label>Stop Value</label>
-			<description>A string (like "STOP") that is recognised as stop state. Will set the rollershutter state to undefined,
-				because the current position is unknown at that point.</description>
-			<default>STOP</default>
+			<label>Stop Command</label>
+			<description>A string (like "STOP") that is sent when commanding the rollershutter to stop.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="onState" type="text">
+			<label>Up State Value</label>
+			<description>A string (like "OPENED") that is recognised as UP state. You can use this parameter for a second
+				keyword, next to UP. Defaults to the Up Command Value.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="offState" type="text">
+			<label>Down State Value</label>
+			<description>A string (like "CLOSED") that is recognised as DOWN state. You can use this parameter for a second
+				keyword, next to DOWN. Defaults to the Down Command Value.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="invert" type="boolean">
+			<label>Invert</label>
+			<description>Enable if your device uses 100 as UP and 0 as DOWN, instead of the normal openHAB convention of 0 as UP
+				and 100 as DOWN.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="transformExtentsToString" type="boolean">
+			<label>Transform Commands at Extents to String</label>
+			<description>If a command is 0 or 100, send that as UP or DOWN commands instead. Useful if your device doesn't
+				support going to a specific position - only opening or closing, but you have front ends (say HomeKit) or rules that
+				will only send percentage commands instead of UP/DOWN.
+			</description>
+			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

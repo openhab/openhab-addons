@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
 
@@ -162,11 +163,11 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
     }
 
     @Override
-    protected byte[] buildMessage(SonyProjectorItem item, boolean getCommand, byte[] data) {
+    protected byte[] buildMessage(byte[] itemCode, boolean getCommand, byte[] data) {
         byte[] message = new byte[8];
         message[0] = START_CODE;
-        message[1] = item.getCode()[0];
-        message[2] = item.getCode()[1];
+        message[1] = itemCode[0];
+        message[2] = itemCode[1];
         message[3] = getCommand ? GET : SET;
         message[4] = data[0];
         message[5] = data[1];
@@ -246,9 +247,10 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
         if (responseMessage[3] == TYPE_ITEM) {
             // Item number should be the same as used for sending
             byte[] itemResponseMsg = Arrays.copyOfRange(responseMessage, 1, 3);
-            if (!Arrays.equals(itemResponseMsg, item.getCode())) {
+            byte[] itemSentMsg = Objects.requireNonNull(item.getCode());
+            if (!Arrays.equals(itemResponseMsg, itemSentMsg)) {
                 logger.debug("Unexpected item number in response: {} rather than {}",
-                        HexUtils.bytesToHex(itemResponseMsg), HexUtils.bytesToHex(item.getCode()));
+                        HexUtils.bytesToHex(itemResponseMsg), HexUtils.bytesToHex(itemSentMsg));
                 throw new CommunicationException("Unexpected item number in response");
             }
         } else if (responseMessage[3] == TYPE_ACK) {

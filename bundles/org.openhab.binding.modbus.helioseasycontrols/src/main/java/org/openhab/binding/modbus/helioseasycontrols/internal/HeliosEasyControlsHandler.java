@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -642,7 +642,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     }
 
     private List<String> getMessages(long bitMask, int bits, String prefix) {
-        ArrayList<String> msg = new ArrayList<String>();
+        ArrayList<String> msg = new ArrayList<>();
         long mask = 1;
         for (int i = 0; i < bits; i++) {
             if ((bitMask & mask) != 0) {
@@ -693,7 +693,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @return an <code>List</code> of messages indicated by the status flags sent by the device
      */
     protected List<String> getStatusMessages() {
-        ArrayList<String> msg = new ArrayList<String>();
+        ArrayList<String> msg = new ArrayList<>();
         if (this.statusFlags.length() == HeliosEasyControlsBindingConstants.BITS_STATUS_MSG) {
             for (int i = 0; i < HeliosEasyControlsBindingConstants.BITS_STATUS_MSG; i++) {
                 String key = HeliosEasyControlsBindingConstants.PREFIX_STATUS_MSG + i + "."
@@ -877,7 +877,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                             break;
                         case "Switch":
                             if (variableType.equals(HeliosVariable.TYPE_INTEGER)) {
-                                updateState(v.getGroupAndName(), "1".equals(value) ? OnOffType.ON : OnOffType.OFF);
+                                updateState(v.getGroupAndName(), OnOffType.from("1".equals(value)));
                             }
                             break;
                         case "String":

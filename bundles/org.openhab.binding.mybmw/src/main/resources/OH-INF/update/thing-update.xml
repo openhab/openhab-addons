@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="mybmw:bev_rex">
+		<instruction-set targetVersion="1">
+			<!-- channels to be removed -->
+			<remove-channel id="charge-info" groupIds="status"/>
+			<remove-channel id="motion" groupIds="status"/>
+			<!-- channels to be added -->
+			<add-channel id="charge-remaining" groupIds="status">
+				<type>mybmw:charging-remaining-channel</type>
+				<label>Remaining Charging Time</label>
+			</add-channel>
+			<add-channel id="last-fetched" groupIds="status">
+				<type>mybmw:last-fetched-channel</type>
+				<label>Last Openhab Update Timestamp</label>
+			</add-channel>
+			<add-channel id="estimated-fuel-l-100km" groupIds="range">
+				<type>mybmw:estimated-fuel-l-100km-channel</type>
+				<label>Estimated Fuel Consumption l/100km</label>
+			</add-channel>
+			<add-channel id="estimated-fuel-mpg" groupIds="range">
+				<type>mybmw:estimated-fuel-mpg-channel</type>
+				<label>Estimated Fuel Consumption mpg</label>
+			</add-channel>
+			<!-- channels to be updated -->
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="mybmw:bev">
+		<instruction-set targetVersion="1">
+			<!-- channels to be removed -->
+			<remove-channel id="charge-info" groupIds="status"/>
+			<remove-channel id="motion" groupIds="status"/>
+			<!-- channels to be added -->
+			<add-channel id="charge-remaining" groupIds="status">
+				<type>mybmw:charging-remaining-channel</type>
+				<label>Remaining Charging Time</label>
+			</add-channel>
+			<add-channel id="last-fetched" groupIds="status">
+				<type>mybmw:last-fetched-channel</type>
+				<label>Last Openhab Update Timestamp</label>
+			</add-channel>
+			<!-- channels to be updated -->
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="mybmw:conv">
+		<instruction-set targetVersion="1">
+			<!-- channels to be removed -->
+			<!-- channels to be added -->
+			<add-channel id="last-fetched" groupIds="status">
+				<type>mybmw:last-fetched-channel</type>
+				<label>Last Openhab Update Timestamp</label>
+			</add-channel>
+			<add-channel id="estimated-fuel-l-100km" groupIds="range">
+				<type>mybmw:estimated-fuel-l-100km-channel</type>
+				<label>Estimated Fuel Consumption l/100km</label>
+			</add-channel>
+			<add-channel id="estimated-fuel-mpg" groupIds="range">
+				<type>mybmw:estimated-fuel-mpg-channel</type>
+				<label>Estimated Fuel Consumption mpg</label>
+			</add-channel>
+			<!-- channels to be updated -->
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="mybmw:phev">
+		<instruction-set targetVersion="1">
+			<!-- channels to be removed -->
+			<remove-channel id="charge-info" groupIds="status"/>
+			<remove-channel id="motion" groupIds="status"/>
+			<!-- channels to be added -->
+			<add-channel id="charge-remaining" groupIds="status">
+				<type>mybmw:charging-remaining-channel</type>
+				<label>Remaining Charging Time</label>
+			</add-channel>
+			<add-channel id="last-fetched" groupIds="status">
+				<type>mybmw:last-fetched-channel</type>
+				<label>Last Openhab Update Timestamp</label>
+			</add-channel>
+			<add-channel id="estimated-fuel-l-100km" groupIds="range">
+				<type>mybmw:estimated-fuel-l-100km-channel</type>
+				<label>Estimated Fuel Consumption l/100km</label>
+			</add-channel>
+			<add-channel id="estimated-fuel-mpg" groupIds="range">
+				<type>mybmw:estimated-fuel-mpg-channel</type>
+				<label>Estimated Fuel Consumption mpg</label>
+			</add-channel>
+			<!-- channels to be updated -->
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

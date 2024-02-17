@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,23 @@
  */
 package org.openhab.binding.opengarage.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The OpenGarageConfiguration class contains fields mapping thing configuration parameters.
  *
  * @author Paul Smedley - Initial contribution
  */
+@NonNullByDefault
 public class OpenGarageConfiguration {
-    public String hostname;
-    public long port = 80;
+    public String hostname = "";
+    public int port = 80;
     public String password = "opendoor";
-    public long refresh = 10;
+    public int refresh = 10;
+
+    public String doorOpeningState = "OPENING";
+    public String doorOpenState = "OPEN";
+    public String doorClosedState = "CLOSED";
+    public String doorClosingState = "CLOSING";
+    public int doorTransitionTimeSeconds = 17;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -708,7 +708,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
             updateChannelState(CHANNEL_MEASURES_TEMPERATURE, localChrono.getThermometer().toState());
             updateChannelState(CHANNEL_MEASURES_HUMIDITY, localChrono.getHygrometer().toState());
             // Update the Status channels
-            updateChannelState(CHANNEL_STATUS_STATE, (localChrono.isActive() ? OnOffType.ON : OnOffType.OFF));
+            updateChannelState(CHANNEL_STATUS_STATE, OnOffType.from((localChrono.isActive())));
             updateChannelState(CHANNEL_STATUS_FUNCTION,
                     new StringType(StringUtils.capitalize(localChrono.getFunction().toLowerCase())));
             updateChannelState(CHANNEL_STATUS_MODE,

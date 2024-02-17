@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public abstract class AWS4SignerBase {
     }
 
     protected static String getCanonicalizeHeaderNames(Map<String, String> headers) {
-        List<String> sortedHeaders = new ArrayList<String>();
+        List<String> sortedHeaders = new ArrayList<>();
         sortedHeaders.addAll(headers.keySet());
         Collections.sort(sortedHeaders, String.CASE_INSENSITIVE_ORDER);
 
@@ -89,7 +89,7 @@ public abstract class AWS4SignerBase {
             return "";
         }
 
-        List<String> sortedHeaders = new ArrayList<String>();
+        List<String> sortedHeaders = new ArrayList<>();
         sortedHeaders.addAll(headers.keySet());
         Collections.sort(sortedHeaders, String.CASE_INSENSITIVE_ORDER);
 
@@ -129,7 +129,7 @@ public abstract class AWS4SignerBase {
             return "";
         }
 
-        SortedMap<String, String> sorted = new TreeMap<String, String>();
+        SortedMap<String, String> sorted = new TreeMap<>();
         Iterator<Map.Entry<String, String>> pairs = parameters.entrySet().iterator();
 
         while (pairs.hasNext()) {

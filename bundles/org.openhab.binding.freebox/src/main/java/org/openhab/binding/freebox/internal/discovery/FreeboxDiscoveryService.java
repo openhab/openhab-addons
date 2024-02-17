@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,14 +30,14 @@ import org.openhab.binding.freebox.internal.config.FreeboxNetInterfaceConfigurat
 import org.openhab.binding.freebox.internal.config.FreeboxServerConfiguration;
 import org.openhab.binding.freebox.internal.handler.FreeboxHandler;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,17 +50,16 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Garnier - use new internal API manager
  * @author Laurent Garnier - use ThingHandlerService
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = FreeboxDiscoveryService.class)
 @NonNullByDefault
-public class FreeboxDiscoveryService extends AbstractDiscoveryService
-        implements FreeboxDataListener, ThingHandlerService {
+public class FreeboxDiscoveryService extends AbstractThingHandlerDiscoveryService<FreeboxHandler>
+        implements FreeboxDataListener {
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxDiscoveryService.class);
 
     private static final int SEARCH_TIME = 10;
 
     private static final String PHONE_ID = "wired";
-
-    private @Nullable FreeboxHandler bridgeHandler;
     private boolean discoverPhone;
     private boolean discoverNetDevice;
     private boolean discoverNetInterface;
@@ -70,7 +69,7 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService
      * Creates a FreeboxDiscoveryService with background discovery disabled.
      */
     public FreeboxDiscoveryService() {
-        super(FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME, false);
+        super(FreeboxHandler.class, FreeboxBindingConstants.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME, false);
         this.discoverPhone = true;
         this.discoverNetDevice = true;
         this.discoverNetInterface = true;
@@ -78,58 +77,39 @@ public class FreeboxDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof FreeboxHandler freeboxHandler) {
-            bridgeHandler = freeboxHandler;
-        }
+    public void initialize() {
+        Configuration config = thingHandler.getThing().getConfiguration();
+        Object property = config.get(FreeboxServerConfiguration.DISCOVER_PHONE);
+        discoverPhone = property != null ? ((Boolean) property).booleanValue() : true;
+        property = config.get(FreeboxServerConfiguration.DISCOVER_NET_DEVICE);
+        discoverNetDevice = property != null ? ((Boolean) property).booleanValue() : true;
+        property = config.get(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE);
+        discoverNetInterface = property != null ? ((Boolean) property).booleanValue() : true;
+        property = config.get(FreeboxServerConfiguration.DISCOVER_AIRPLAY_RECEIVER);
+        discoverAirPlayReceiver = property != null ? ((Boolean) property).booleanValue() : true;
+        logger.debug("Freebox discovery - discoverPhone : {}", discoverPhone);
+        logger.debug("Freebox discovery - discoverNetDevice : {}", discoverNetDevice);
+        logger.debug("Freebox discovery - discoverNetInterface : {}", discoverNetInterface);
+        logger.debug("Freebox discovery - discoverAirPlayReceiver : {}", discoverAirPlayReceiver);
+
+        thingHandler.registerDataListener(this);
+        super.initialize();
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-        FreeboxHandler handler = bridgeHandler;
-        if (handler != null) {
-            Configuration config = handler.getThing().getConfiguration();
-            Object property = config.get(FreeboxServerConfiguration.DISCOVER_PHONE);
-            discoverPhone = property != null ? ((Boolean) property).booleanValue() : true;
-            property = config.get(FreeboxServerConfiguration.DISCOVER_NET_DEVICE);
-            discoverNetDevice = property != null ? ((Boolean) property).booleanValue() : true;
-            property = config.get(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE);
-            discoverNetInterface = property != null ? ((Boolean) property).booleanValue() : true;
-            property = config.get(FreeboxServerConfiguration.DISCOVER_AIRPLAY_RECEIVER);
-            discoverAirPlayReceiver = property != null ? ((Boolean) property).booleanValue() : true;
-            logger.debug("Freebox discovery - discoverPhone : {}", discoverPhone);
-            logger.debug("Freebox discovery - discoverNetDevice : {}", discoverNetDevice);
-            logger.debug("Freebox discovery - discoverNetInterface : {}", discoverNetInterface);
-            logger.debug("Freebox discovery - discoverAirPlayReceiver : {}", discoverAirPlayReceiver);
-
-            handler.registerDataListener(this);
-        }
-    }
-
-    @Override
-    public void deactivate() {
-        FreeboxHandler handler = bridgeHandler;
-        if (handler != null) {
-            handler.unregisterDataListener(this);
-        }
-        super.deactivate();
+    public void dispose() {
+        super.dispose();
+        thingHandler.unregisterDataListener(this);
     }
 
     @Override
     protected void startScan() {
         logger.debug("Starting Freebox discovery scan");
-        FreeboxHandler handler = bridgeHandler;
-        if (handler != null && handler.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
-                List<FreeboxLanHost> lanHosts = handler.getApiManager().getLanHosts();
-                List<FreeboxAirMediaReceiver> airPlayDevices = handler.getApiManager().getAirMediaReceivers();
-                onDataFetched(handler.getThing().getUID(), lanHosts, airPlayDevices);
+                List<FreeboxLanHost> lanHosts = thingHandler.getApiManager().getLanHosts();
+                List<FreeboxAirMediaReceiver> airPlayDevices = thingHandler.getApiManager().getAirMediaReceivers();
+                onDataFetched(thingHandler.getThing().getUID(), lanHosts, airPlayDevices);
             } catch (FreeboxException e) {
                 logger.warn("Error while requesting data for things discovery", e);
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices.motiondetector;
 
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_ILLUMINANCE;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_LATEST_MOTION;
 
 import java.util.List;
@@ -19,9 +20,12 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.illuminance.IlluminanceService;
+import org.openhab.binding.boschshc.internal.services.illuminance.dto.IlluminanceServiceState;
 import org.openhab.binding.boschshc.internal.services.latestmotion.LatestMotionService;
 import org.openhab.binding.boschshc.internal.services.latestmotion.dto.LatestMotionServiceState;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -30,6 +34,7 @@ import org.openhab.core.thing.Thing;
  *
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - Use service instead of custom logic
+ * @author David Pace - Added illuminance channel
  */
 @NonNullByDefault
 public class MotionDetectorHandler extends AbstractBatteryPoweredDeviceHandler {
@@ -43,10 +48,16 @@ public class MotionDetectorHandler extends AbstractBatteryPoweredDeviceHandler {
         super.initializeServices();
 
         this.createService(LatestMotionService::new, this::updateChannels, List.of(CHANNEL_LATEST_MOTION));
+        this.createService(IlluminanceService::new, this::updateChannels, List.of(CHANNEL_ILLUMINANCE), true);
     }
 
     private void updateChannels(LatestMotionServiceState state) {
         DateTimeType date = new DateTimeType(state.latestMotionDetected);
         updateState(CHANNEL_LATEST_MOTION, date);
+    }
+
+    private void updateChannels(IlluminanceServiceState state) {
+        DecimalType illuminance = new DecimalType(state.illuminance);
+        updateState(CHANNEL_ILLUMINANCE, illuminance);
     }
 }
