@@ -105,10 +105,10 @@ So if want your UI in english language place _en_ as desired language.
 
 Same configuration is needed for all things
 
-| Parameter       | Type    | Description                           |
-|-----------------|---------|---------------------------------------|
-| vin             | text    | Vehicle Identification Number (VIN)   |
-| refreshInterval | integer | Refresh Interval in Minutes (set to 0 if no automated refresh should be triggered)          |
+| Parameter       | Type    | Description                                                                                                             |
+|-----------------|---------|-------------------------------------------------------------------------------------------------------------------------|
+| vin             | text    | Vehicle Identification Number (VIN)                                                                                     |
+| refreshInterval | integer | Refresh Interval in Minutes (by default set to 60; to be set to 0 if no automated refresh should be triggered)          |
 
 #### Advanced Configuration
 
