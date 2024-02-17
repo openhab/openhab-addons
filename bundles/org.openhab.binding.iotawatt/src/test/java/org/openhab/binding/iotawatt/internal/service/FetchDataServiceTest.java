@@ -1,0 +1,201 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.iotawatt.internal.service;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.openhab.binding.iotawatt.internal.service.FetchDataService.INPUT_CHANNEL_ID_PREFIX;
+
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
+
+import javax.measure.Unit;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.iotawatt.internal.IoTaWattBindingConstants;
+import org.openhab.binding.iotawatt.internal.client.IoTaWattClient;
+import org.openhab.binding.iotawatt.internal.model.StatusResponse;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.types.State;
+
+/**
+ * @author Peter Rosenberg - Initial contribution
+ */
+@ExtendWith(MockitoExtension.class)
+@NonNullByDefault
+class FetchDataServiceTest {
+    @Mock
+    @NonNullByDefault({})
+    private DeviceHandlerCallback deviceHandlerCallback;
+    @Mock
+    @NonNullByDefault({})
+    private IoTaWattClient ioTaWattClient;
+    @InjectMocks
+    @NonNullByDefault({})
+    private FetchDataService service;
+
+    private final ThingUID thingUID = new ThingUID(IoTaWattBindingConstants.BINDING_ID, "d231dea2e4");
+
+    @Test
+    void pollDevice_whenAllSupportedTypes_updateAllChannels()
+            throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
+        // given
+        service.setIoTaWattClient(ioTaWattClient);
+        final Float voltageRms = 259.1f;
+        final Float hertz = 50.1f;
+        final Float phase0 = 0.1f;
+        final Float wattsValue = 1.1f;
+        final float phase1 = 0.2f;
+        when(deviceHandlerCallback.getThingUID()).thenReturn(thingUID);
+        final List<StatusResponse.Input> inputs = List.of(new StatusResponse.Input(0, voltageRms, hertz, phase0, null),
+                new StatusResponse.Input(1, null, null, phase1, wattsValue));
+        final StatusResponse statusResponse = new StatusResponse(inputs);
+        when(ioTaWattClient.fetchStatus()).thenReturn(Optional.of(statusResponse));
+
+        // when
+        service.pollDevice();
+
+        // then
+        verify(deviceHandlerCallback).updateStatus(ThingStatus.ONLINE);
+        verify(deviceHandlerCallback).updateState(createChannelUID("00", "voltage"),
+                createState(voltageRms, Units.VOLT));
+        verify(deviceHandlerCallback).updateState(createChannelUID("00", "frequency"), createState(hertz, Units.HERTZ));
+        verify(deviceHandlerCallback).updateState(createChannelUID("01", "watts"), createState(wattsValue, Units.WATT));
+    }
+
+    @Test
+    void pollDevice_whenResponseWithNoChannels_updateStatusToOnlineAndDoNotUpdateChannels()
+            throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        // given
+        service.setIoTaWattClient(ioTaWattClient);
+        when(ioTaWattClient.fetchStatus()).thenReturn(Optional.empty());
+
+        // when
+        service.pollDevice();
+
+        // then
+        verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        verify(deviceHandlerCallback, never()).updateState(any(), any());
+    }
+
+    @Test
+    void pollDevice_whenExceptionWithCase_useCauseMessage()
+            throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+        // given
+        final String exceptionMessage = "test message";
+        service.setIoTaWattClient(ioTaWattClient);
+        final Throwable exception = mock(URISyntaxException.class);
+        final Throwable cause = mock(Exception.class);
+        when(cause.getMessage()).thenReturn(exceptionMessage);
+        when(exception.getCause()).thenReturn(cause);
+        when(ioTaWattClient.fetchStatus()).thenThrow(exception);
+
+        // when
+        service.pollDevice();
+
+        // then
+        verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                exceptionMessage);
+        verify(deviceHandlerCallback, never()).updateState(any(), any());
+    }
+
+    @Test
+    void pollDevice_whenEmptyResponse_updateStatusToOffline() {
+        // given
+        // do not set service.setIoTaWattClient(ioTaWattClient);
+
+        // when
+        service.pollDevice();
+
+        // then
+        verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+        verify(deviceHandlerCallback, never()).updateState(any(), any());
+    }
+
+    @Test
+    void pollDevice_whenNotInitialised_fail()
+            throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
+        // given
+        service.setIoTaWattClient(ioTaWattClient);
+        final StatusResponse statusResponse = new StatusResponse(List.of());
+        when(ioTaWattClient.fetchStatus()).thenReturn(Optional.of(statusResponse));
+
+        // when
+        service.pollDevice();
+
+        // then
+        verify(deviceHandlerCallback).updateStatus(ThingStatus.ONLINE);
+        verify(deviceHandlerCallback, never()).updateState(any(), any());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideParamsForThrowCases")
+    void pollDevice_whenApiRequestThrowsInterruptedException_updateStatusAccordingly(Class<Throwable> throwableClass,
+            ThingStatusDetail thingStatusDetail, boolean withErrorMessage)
+            throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
+        // given
+        final String errorMessage = "Error message";
+        service.setIoTaWattClient(ioTaWattClient);
+        final Throwable thrownThrowable = mock(throwableClass);
+        if (withErrorMessage) {
+            when(thrownThrowable.getMessage()).thenReturn(errorMessage);
+        }
+        when(ioTaWattClient.fetchStatus()).thenThrow(thrownThrowable);
+
+        // when
+        service.pollDevice();
+
+        // then
+        if (withErrorMessage) {
+            verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, thingStatusDetail, errorMessage);
+        } else {
+            verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, thingStatusDetail);
+        }
+        verify(deviceHandlerCallback, never()).updateState(any(), any());
+    }
+
+    private static Stream<Arguments> provideParamsForThrowCases() {
+        return Stream.of(Arguments.of(InterruptedException.class, ThingStatusDetail.NOT_YET_READY, false),
+                Arguments.of(TimeoutException.class, ThingStatusDetail.COMMUNICATION_ERROR, false),
+                Arguments.of(URISyntaxException.class, ThingStatusDetail.CONFIGURATION_ERROR, true),
+                Arguments.of(ExecutionException.class, ThingStatusDetail.NONE, true));
+    }
+
+    private ChannelUID createChannelUID(String channelNumberStr, String channelName) {
+        return new ChannelUID(thingUID, INPUT_CHANNEL_ID_PREFIX + channelNumberStr + "#" + channelName);
+    }
+
+    private State createState(Float value, Unit<?> unit) {
+        return new QuantityType<>(value, unit);
+    }
+}

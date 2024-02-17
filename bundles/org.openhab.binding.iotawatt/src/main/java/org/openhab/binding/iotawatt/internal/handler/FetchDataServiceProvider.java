@@ -10,22 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.iotawatt.internal;
+package org.openhab.binding.iotawatt.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.iotawatt.internal.service.DeviceHandlerCallback;
+import org.openhab.binding.iotawatt.internal.service.FetchDataService;
 
 /**
- * The {@link IoTaWattConfiguration} class contains fields mapping thing configuration parameters.
+ * Provides a FetchDataService.
  *
  * @author Peter Rosenberg - Initial contribution
  */
 @NonNullByDefault
-public class IoTaWattConfiguration {
-    public static final int REFRESH_INTERVAL_DEFAULT = 10;
-
+public interface FetchDataServiceProvider {
     /**
-     * Configuration parameters
+     * get the service to handle data fetching.
      */
-    public String hostname = "";
-    public int refreshIntervalInSeconds = REFRESH_INTERVAL_DEFAULT;
+    FetchDataService getFetchDataService(DeviceHandlerCallback deviceHandlerCallback);
 }

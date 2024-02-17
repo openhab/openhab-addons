@@ -10,22 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.iotawatt.internal;
+package org.openhab.binding.iotawatt.internal.model;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link IoTaWattConfiguration} class contains fields mapping thing configuration parameters.
+ * Status response of IoTaWatt.
  *
  * @author Peter Rosenberg - Initial contribution
  */
 @NonNullByDefault
-public class IoTaWattConfiguration {
-    public static final int REFRESH_INTERVAL_DEFAULT = 10;
-
-    /**
-     * Configuration parameters
-     */
-    public String hostname = "";
-    public int refreshIntervalInSeconds = REFRESH_INTERVAL_DEFAULT;
+public record StatusResponse(List<Input> inputs) {
+    public record Input(int channel, @Nullable @SerializedName("Vrms") Float vrms,
+            @Nullable @SerializedName("Hz") Float hz, @Nullable Float phase,
+            @Nullable @SerializedName("Watts") Float watts) {
+    }
 }

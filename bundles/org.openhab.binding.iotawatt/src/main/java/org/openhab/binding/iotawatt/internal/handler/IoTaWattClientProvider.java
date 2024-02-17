@@ -10,22 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.iotawatt.internal;
+package org.openhab.binding.iotawatt.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.iotawatt.internal.client.IoTaWattClient;
 
 /**
- * The {@link IoTaWattConfiguration} class contains fields mapping thing configuration parameters.
+ * Provides an IoTaWattClient.
  *
  * @author Peter Rosenberg - Initial contribution
  */
 @NonNullByDefault
-public class IoTaWattConfiguration {
-    public static final int REFRESH_INTERVAL_DEFAULT = 10;
-
+public interface IoTaWattClientProvider {
     /**
-     * Configuration parameters
+     * get the client to talk to IoTaWatt
      */
-    public String hostname = "";
-    public int refreshIntervalInSeconds = REFRESH_INTERVAL_DEFAULT;
+    IoTaWattClient getIoTaWattClient(String hostname);
 }
