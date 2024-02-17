@@ -31,11 +31,12 @@ You can also try out the various search features on their main website, and then
 
 ## State Option Metadata
 
-If you wish to display only a couple of languages or choice to any of the filters, you can create your own using metadata>state options.
-The countries need to be the country code not the full name, for example US and not `The United States of America`.
-The binding will auto select your country based on openHAB's settings you should have already made when setting up openHAB.
+If you wish to display only a couple of languages or custom choices to any of the filters, you can create your own using metadata>state options.
+The countries need to be the country code not the full name, for example `US` and not `The United States of America`.
+The binding will auto select your country based on openHAB's settings that you made when setting up openHAB.
 It makes sense to do this for languages if the built in way of `languageCount` does not work for your use case.
 Genres are a good example for using the metadata, only show the styles of music and other tags that you like.
+If in doubt you can use the [Event Monitor in the Developer Sidebar](https://www.openhab.org/docs/tutorial/tips-and-tricks.html#event-monitor) to watch what commands are sent to the bindings channels. 
 
 ## Channels
 
@@ -50,6 +51,12 @@ Genres are a good example for using the metadata, only show the styles of music 
 | name      | String | RW         | This is the name of the selected station.                                                                   |
 | icon      | String | RW         | This is the icon for the selected station if available in their database.                                   |
 | recent    | String | RW         | Records the last stations you selected to make them easier to find. A config allows this list to be longer. |
+
+## Using the Stream URL
+
+You can send the `stream` channel that holds a URL for a stream to the `playuri` channel of the [Chromecast Binding](https://www.openhab.org/addons/bindings/chromecast/#channels) or the `stream` channel of the [Squeezebox Binding](https://www.openhab.org/addons/bindings/squeezebox/#player-channels).
+To make this easier without needing to setup a rule to forward the stream, you can use this [widget found in the marketplace](https://community.openhab.org/t/radio-browser-basic-widget-for-finding-internet-radio-streams-with-the-ui/153783) without needing to create any rules.
+The widget is probably the easiest way to get started and have a play with what is possible.
 
 ## Station Searches
 
@@ -75,15 +82,3 @@ Clear any manual search results using the above two methods, and `REFRESH` back 
 ```
 Radio_Station.sendCommand(REFRESH)
 ```
-
-## Show Your Thanks
-
-If you enjoy the binding, then please consider sponsoring or giving a once off tip as a thank you via the links.
-This allows me to purchase software and hardware to contribute more bindings, and also shows this binding should gain more feature like favourites.
-Some coffee to keep me coding faster never hurts :slight_smile:
-
-Sponsor @Skinah on GitHub
-<https://github.com/sponsors/Skinah/>
-
-Paypal can also be used via
-matt A-T pcmus D-O-T C-O-M
