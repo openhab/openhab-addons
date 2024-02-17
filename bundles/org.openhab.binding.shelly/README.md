@@ -1512,8 +1512,8 @@ See notes on discovery of Shelly BLU devices above.
 
 See notes on discovery of Shelly BLU devices above.
 
-| Group   | Channel       | Type     | read-only | Description                                                                         |
-| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| Group   | Channel       | Type     | read-only | Description                                             |
+| ------- | ------------- | -------- | --------- | ------------------------------------------------------- |
 | sensors | temperature   | Number   | yes       | Temperature, unit is reported by tempUnit               |
 |         | humidity      | Number   | yes       | Relative humidity in %                                  |
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
