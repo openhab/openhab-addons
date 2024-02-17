@@ -97,19 +97,6 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:openweathermap:uvindex">
-		<parameter name="location" type="text" required="true">
-			<context>location</context>
-			<label>Location of Weather</label>
-			<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
-		</parameter>
-		<parameter name="forecastDays" type="integer" min="1" max="8" step="1">
-			<label>Number of Days</label>
-			<description>Number of days for UV Index forecast.</description>
-			<default>6</default>
-		</parameter>
-	</config-description>
-
 	<config-description uri="thing-type:openweathermap:air-pollution">
 		<parameter name="location" type="text" required="true">
 			<context>location</context>
