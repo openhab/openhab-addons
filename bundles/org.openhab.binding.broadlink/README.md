@@ -91,12 +91,16 @@ To obtain the command codes, you can get this binding to put your Broadlink RMx 
 2. Click on its *Channels* tab
 3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead.
 4. Click the item, and click the rectangular area that is marked NULL
-5. In the pop-up menu that appears, select "Learn IR command" for IR or "Learn RF command" for RF
+5. In the pop-up menu that appears, select *Learn IR command* for IR or *Learn RF command* for RF
 6. *The LED on your RM device will illuminate solidly*
-7. Point your IR/RF remote control at your RM device and keep pressing the button you'd like to learn
-8. *The LED on your RM device will extinguish once it has learnt the command*
-9. If the command has been learned succesfully, the channel will have changed it name to "IR command saved" or "RF command saved".
+7. Point your IR/RF remote control at your RM device and keep pressing the button you'd like to learn. For RF, this can take 10-30 seconds
+8. *The LED on your RM device will extinguish once it has identified the command*
+9. If the command has been identified succesfully, the channel will have changed it name to "Learn command" or *RF command learnt*
 10. If no succes, the channel will be named "NULL". Inspect the `openhab.log` file on your openHAB server for any issues
+11. Check and save the IR/RF command by clicking the item once more and select "Check and save command". 
+12. Keep pressing the remote control with the command to check and save
+12. If succesfull, the channel will change name to the command saved
+13. If no succes, the channel be named "NULL", restart from step 3.
 
 
 ## Full Example

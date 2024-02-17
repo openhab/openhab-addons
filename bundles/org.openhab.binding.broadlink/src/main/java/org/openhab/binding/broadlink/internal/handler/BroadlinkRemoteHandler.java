@@ -21,6 +21,7 @@ import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkMappingService;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.Utils;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -112,18 +113,24 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
     private void sendCheckDataCommandAndLog(String irCommand) {
         try {
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK));
             byte[] response = sendCommand(COMMAND_BYTE_CHECK_LEARNT_DATA, "send learnt code check command");
             if (response == null) {
                 logger.warn("Got nothing back while getting learnt code");
+                updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
             } else {
                 String hexString = Utils.toHexString(extractResponsePayload(response));
                 mappingService.storeIR(irCommand, hexString);
                 logger.info("BEGIN LAST LEARNT CODE");
                 logger.info("{}", hexString);
                 logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+                updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                        new StringType("IR command " + irCommand + " saved"));
             }
         } catch (IOException e) {
             logger.warn("Exception while attempting to check learnt code: {}", e.getMessage());
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
         }
     }
 
@@ -131,10 +138,12 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         logger.trace("Sending learning-channel command {}", learningCommand);
         switch (learningCommand) {
             case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN:
+                logger.trace("Learning IR command {}", thingConfig.getNameOfCommandToLearn());
+                updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                        new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN));
                 sendCommand(COMMAND_BYTE_ENTER_LEARNING, "enter remote code learning mode");
                 break;
             case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK:
-                logger.trace("Learning IR command {}", thingConfig.getNameOfCommandToLearn());
                 sendCheckDataCommandAndLog(thingConfig.getNameOfCommandToLearn());
                 break;
             default:

@@ -88,7 +88,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
                     }
                     case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK: {
                         logger.debug("RF check command received");
-                        handleLearnIRCommand();
+                        checkAndSaveRFCommand();
                         break;
                     }
                     default: {
@@ -117,10 +117,6 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
 
         logger.debug("Transformed command '{}' for thing {}", command, getThing().getLabel());
         return code;
-    }
-
-    private void handleLearnIRCommand() {
-        // TODO Auto-generated method stub
     }
 
     private void handleFindRFFrequencies() {
@@ -163,11 +159,17 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
             return;
         }
 
+        updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("RF command learnt"));
+    }
+
+    private void checkAndSaveRFCommand() {
         logger.trace("find RF packet data ...");
+        updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL,
+                new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK));
         sendCommand(COMMAND_BYTE_FIND_RF_PACKET, "find the rf packet data");
 
-        start = System.currentTimeMillis();
-        timeout = start + 30 * 1000;
+        long start = System.currentTimeMillis();
+        long timeout = start + 30 * 1000;
 
         boolean dataFound = false;
 
@@ -185,6 +187,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
                         logger.info("BEGIN LAST LEARNT CODE");
                         logger.info("{}", hexString);
                         logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+
                         dataFound = true;
                     } catch (ProtocolException ex) {
                         logger.trace(".");
@@ -193,19 +196,14 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
             }
         } catch (IOException | InterruptedException e) {
             logger.warn("Unexpected exception while checking RF packet data: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unexpected error while checking RF packet data.");
+            updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
         }
 
         if (dataFound) {
             updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL,
-                    new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK));
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "RF command " + thingConfig.getNameOfCommandToLearn() + " learned.");
+                    new StringType("RF command " + thingConfig.getNameOfCommandToLearn() + " saved"));
         } else {
             updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unexpected error while checking RF packet data.");
         }
     }
 }

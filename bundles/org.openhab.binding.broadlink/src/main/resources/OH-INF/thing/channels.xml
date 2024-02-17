@@ -17,7 +17,7 @@
 		<state readOnly="false">
 			<options>
 				<option value="LEARN">Learn IR command</option>
-				<option value="CHECK">IR command saved</option>
+				<option value="CHECK">Check and save IR command</option>
 			</options>
 		</state>
 	</channel-type>
@@ -34,7 +34,7 @@
 		<state readOnly="false">
 			<options>
 				<option value="LEARN">Learn RF command</option>
-				<option value="CHECK">RF command saved</option>
+				<option value="CHECK">Check and save RF command</option>
 			</options>
 		</state>
 	</channel-type>
