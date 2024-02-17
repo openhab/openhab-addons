@@ -15,8 +15,8 @@ package org.openhab.binding.knx.internal.channel;
 import static java.util.stream.Collectors.toList;
 import static org.openhab.binding.knx.internal.KNXBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,21 +47,21 @@ import tuwien.auto.calimero.GroupAddress;
 @NonNullByDefault
 public abstract class KNXChannel {
     private final Logger logger = LoggerFactory.getLogger(KNXChannel.class);
-    private final Set<String> gaKeys;
+    private final List<String> gaKeys;
 
-    private final Map<String, GroupAddressConfiguration> groupAddressConfigurations = new HashMap<>();
-    private final Set<GroupAddress> listenAddresses = new HashSet<>();
-    private final Set<GroupAddress> writeAddresses = new HashSet<>();
+    private final Map<String, GroupAddressConfiguration> groupAddressConfigurations = new LinkedHashMap<>();
+    private final List<GroupAddress> listenAddresses = new ArrayList<>();
+    private final List<GroupAddress> writeAddresses = new ArrayList<>();
     private final String channelType;
     private final ChannelUID channelUID;
     private final boolean isControl;
     private final Class<? extends Type> preferredType;
 
     KNXChannel(List<Class<? extends Type>> acceptedTypes, Channel channel) {
-        this(Set.of(GA), acceptedTypes, channel);
+        this(List.of(GA), acceptedTypes, channel);
     }
 
-    KNXChannel(Set<String> gaKeys, List<Class<? extends Type>> acceptedTypes, Channel channel) {
+    KNXChannel(List<String> gaKeys, List<Class<? extends Type>> acceptedTypes, Channel channel) {
         this.gaKeys = gaKeys;
         this.preferredType = acceptedTypes.get(0);
 
@@ -109,16 +109,17 @@ public abstract class KNXChannel {
         return preferredType;
     }
 
-    public final Set<GroupAddress> getAllGroupAddresses() {
+    public final List<GroupAddress> getAllGroupAddresses() {
         return listenAddresses;
     }
 
-    public final Set<GroupAddress> getWriteAddresses() {
+    public final List<GroupAddress> getWriteAddresses() {
         return writeAddresses;
     }
 
     public final @Nullable OutboundSpec getCommandSpec(Type command) {
         logger.trace("getCommandSpec checking keys '{}' for command '{}' ({})", gaKeys, command, command.getClass());
+        // first check if there is a direct match for the provided command for all GAs
         for (Map.Entry<String, GroupAddressConfiguration> entry : groupAddressConfigurations.entrySet()) {
             String dpt = Objects.requireNonNullElse(entry.getValue().getDPT(), getDefaultDPT(entry.getKey()));
             Set<Class<? extends Type>> expectedTypeClasses = DPTUtil.getAllowedTypes(dpt);
@@ -128,19 +129,23 @@ public abstract class KNXChannel {
                         "getCommandSpec key '{}' has one of the expectedTypeClasses '{}', matching command '{}' and dpt '{}'",
                         entry.getKey(), expectedTypeClasses, command, dpt);
                 return new WriteSpecImpl(entry.getValue(), dpt, command);
-            } else {
-                for (Class<? extends Type> expectedTypeClass : expectedTypeClasses) {
-                    if (command instanceof State state && State.class.isAssignableFrom(expectedTypeClass)) {
-                        var subClass = expectedTypeClass.asSubclass(State.class);
-                        if (state.as(subClass) != null) {
-                            logger.trace(
-                                    "getCommandSpec command class '{}' is a sub-class of the expectedTypeClass '{}' for key '{}'",
-                                    command.getClass(), expectedTypeClass, entry.getKey());
-                            Class<? extends State> expectedTypeAsStateClass = expectedTypeClass.asSubclass(State.class);
-                            State convertedState = state.as(expectedTypeAsStateClass);
-                            if (convertedState != null) {
-                                return new WriteSpecImpl(entry.getValue(), dpt, convertedState);
-                            }
+            }
+        }
+        // if we didn't find a match, check if we find a sub-type match
+        for (Map.Entry<String, GroupAddressConfiguration> entry : groupAddressConfigurations.entrySet()) {
+            String dpt = Objects.requireNonNullElse(entry.getValue().getDPT(), getDefaultDPT(entry.getKey()));
+            Set<Class<? extends Type>> expectedTypeClasses = DPTUtil.getAllowedTypes(dpt);
+            for (Class<? extends Type> expectedTypeClass : expectedTypeClasses) {
+                if (command instanceof State state && State.class.isAssignableFrom(expectedTypeClass)) {
+                    var subClass = expectedTypeClass.asSubclass(State.class);
+                    if (state.as(subClass) != null) {
+                        logger.trace(
+                                "getCommandSpec command class '{}' is a sub-class of the expectedTypeClass '{}' for key '{}'",
+                                command.getClass(), expectedTypeClass, entry.getKey());
+                        Class<? extends State> expectedTypeAsStateClass = expectedTypeClass.asSubclass(State.class);
+                        State convertedState = state.as(expectedTypeAsStateClass);
+                        if (convertedState != null) {
+                            return new WriteSpecImpl(entry.getValue(), dpt, convertedState);
                         }
                     }
                 }
