@@ -151,15 +151,11 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         } catch (ShellyApiException e) {
             ShellyApiResult result = e.getApiResult();
             if (result.isHttpAccessUnauthorized()) {
-                // logger.info("{}: {}", name, messages.get("discovery.protected", ipAddress));
-
                 // create shellyunknown thing - will be changed during thing initialization with valid credentials
                 thingUID = ShellyThingCreator.getThingUID(name, model, mode, true);
-            } else {
-                // logger.debug("{}: {}", name, messages.get("discovery.failed", ipAddress, e.toString()));
             }
         } catch (IllegalArgumentException | IOException e) { // maybe some format description was buggy
-            // logger.debug("{}: Discovery failed!", name, e);
+
         } finally {
             if (api != null) {
                 api.close();
@@ -177,7 +173,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             addProperty(properties, PROPERTY_DEV_MODE, mode);
             addProperty(properties, PROPERTY_DEV_AUTH, auth ? "yes" : "no");
 
-            // logger.debug("{}: Adding Shelly {}, UID={}", name, deviceName, thingUID.getAsString());
             String thingLabel = deviceName.isEmpty() ? name + " - " + ipAddress
                     : deviceName + " (" + name + "@" + ipAddress + ")";
             return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(thingLabel)
