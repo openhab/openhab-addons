@@ -67,7 +67,7 @@ The Broadlink RM family of devices can transmit IR codes. The pro models add RF 
 The map file contains a list of IR/RF command codes to send via the device.
 The file uses the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and is stored in the `<OPENHAB_CONF>/transform` folder.
 By default, the file name is `broadlink.map` for the IR codes, but can be changed using the `mapFile` setting. In similar fashion, the RM pro models
-store the codes in the `broadlinkrf.map` file. 
+store the RF codes in the `broadlinkrf.map` file. 
 
 Here is a map file example:
 
