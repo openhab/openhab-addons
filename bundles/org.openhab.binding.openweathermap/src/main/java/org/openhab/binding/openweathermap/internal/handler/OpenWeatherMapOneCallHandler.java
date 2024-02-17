@@ -85,9 +85,9 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
     private @Nullable OpenWeatherMapOneCallAPIData weatherData;
 
     // forecastMinutes, -Hours and -Days determine the number of channel groups to create for each type
-    private int forecastMinutes = 0;
-    private int forecastHours = 12;
-    private int forecastDays = 6;
+    private int forecastMinutes = 60;
+    private int forecastHours = 48;
+    private int forecastDays = 8;
     private int numberOfAlerts = 0;
 
     public OpenWeatherMapOneCallHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
