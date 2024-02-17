@@ -235,7 +235,8 @@ public class RadioBrowserApi {
 
     private @Nullable Station searchStationName(String name) throws ApiException {
         try {
-            String returnContent = sendGetRequest("/json/stations/byname/" + name);
+            String returnContent = sendGetRequest(
+                    "/json/stations/byname/" + URLEncoder.encode(name, "UTF-8").replace("+", "%20"));
             Station[] stations = gson.fromJson(returnContent, Station[].class);
             if (stations == null || stations.length == 0) {
                 return null;
@@ -258,6 +259,8 @@ public class RadioBrowserApi {
             throw new ApiException("Server did not reply with a valid json");
         } catch (IllegalArgumentException e) {
             logger.warn("IllegalArgumentException:{}", e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("UnsupportedEncodingException:{}", e.getMessage());
         }
         return null;
     }
