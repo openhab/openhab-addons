@@ -199,8 +199,9 @@ public class RadioBrowserApi {
             }
             List<StateOption> stationOptions = new ArrayList<>();
             for (Station station : stations) {
-                stationMap.put(station.name, station);
-                stationOptions.add(new StateOption(station.name, station.name));
+                if (stationMap.putIfAbsent(station.name, station) == null) {// Remove multiples with the exact same name
+                    stationOptions.add(new StateOption(station.name, station.name));
+                }
             }
             handler.stateDescriptionProvider
                     .setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATION), stationOptions);
@@ -244,8 +245,9 @@ public class RadioBrowserApi {
             List<StateOption> stationOptions = new ArrayList<>();
             stationMap.clear();
             for (Station station : stations) {
-                stationMap.put(station.name, station);
-                stationOptions.add(new StateOption(station.name, station.name));
+                if (stationMap.putIfAbsent(station.name, station) == null) {// Remove multiples with the exact same name
+                    stationOptions.add(new StateOption(station.name, station.name));
+                }
             }
             handler.stateDescriptionProvider
                     .setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_STATION), stationOptions);
