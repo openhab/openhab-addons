@@ -1,8 +1,7 @@
 # Modbus Sungrow Binding
 
 This binding integrates the sungrow inverters into openHAB.
-It is based on the Sungrow specification "Communication Protocol of Residential Hybrid Inverter V1.0.23",
-which can be found here: https://github.com/bohdan-s/SunGather/issues/36.
+It is based on the Sungrow specification "Communication Protocol of Residential Hybrid Inverter V1.0.23", which can be found here: https://github.com/bohdan-s/SunGather/issues/36.
 
 ## Supported inverters
 
@@ -29,7 +28,7 @@ As defined within the spec mentioned above the following inverters are supported
 
 The binding supports only one thing:
 
-- `sungrowInverter`: The sungrow inverter
+- `sungrow-inverter`: The sungrow inverter
 
 ## Preparation
 
@@ -49,7 +48,7 @@ Enabling modbus and whitelist setting can be done in WiNet-S Web-UI as shown bel
 Once you've configured the Modbus TCP Slave or Modbus Serial Slave as Bridge you can configure the Sungrow inverter thing.
 You just have to select the configured bridge and optional configure the polling interval. 
 
-### `sungrowInverter` Thing Configuration
+### `sungrow-inverter` Thing Configuration
 
 | Name         | Type    | Description                          | Default | Required | Advanced |
 |--------------|---------|--------------------------------------|---------|----------|----------|
@@ -57,8 +56,7 @@ You just have to select the configured bridge and optional configure the polling
 
 ## Channels
 
-The `sungrowInverter` thing has channels that serve the current state of the sungrow inverter,
-as you are used to from the iSolareCloud Website and App.
+The `sungrow-inverter` thing has channels that serve the current state of the sungrow inverter, as you are used to from the iSolareCloud Website and App.
 
 | Channel Type ID                    | Item Type                | Description                           | Advanced  | Channel Group       |
 |------------------------------------|--------------------------|---------------------------------------|-----------|---------------------|
@@ -109,7 +107,7 @@ as you are used to from the iSolareCloud Website and App.
 
 This example shows how to configure a sungrow inverter connected via modbus and uses the most common channels.
 
-sungrow.things
+_sungrow.things_
 
 ```java
 Bridge modbus:tcp:sungrowBridge [ host="10.0.0.2", port=502, id=1, enableDiscovery=false ] {
@@ -117,7 +115,7 @@ Bridge modbus:tcp:sungrowBridge [ host="10.0.0.2", port=502, id=1, enableDiscove
 }
 ```
 
-sungrow.items
+_sungrow.items_
 
 ```java
 // Groups
