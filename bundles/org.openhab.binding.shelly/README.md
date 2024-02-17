@@ -492,7 +492,7 @@ In this case the is no real measurement based on power consumption, but the Shel
 |         | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                      |
 |         | button       | Trigger  | yes       | Event trigger, see section Button Events                                        |
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                            |
+|         | lastPower1   | Number   | yes       | The average power for the previous minute                                       |
 |         | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart) |
 |         |              |          |           |                                                                                 |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
@@ -573,6 +573,15 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| nmeter | ncurrent      | Number   | yes       | Current current based on N clamp (requires calibration)                           |
+|        | ixsum         | Number   | yes       | Measured current over all phases                                                  |
+|        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
+|        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
+
+_Note:
+You should calibrate the device if you want to use "neutral current" measurements.
+Check the Shelly documentation for details._
+
 
 ### Shelly 2 - relay mode (thing-type: shelly2-relay)
 

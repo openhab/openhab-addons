@@ -31,6 +31,8 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentSettings;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
@@ -94,6 +96,7 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_LIGHTCH = CHANNEL_GROUP_LIGHT_CHANNEL;
     private static final String CHGR_STATUS = CHANNEL_GROUP_STATUS;
     private static final String CHGR_METER = CHANNEL_GROUP_METER;
+    private static final String CHGR_EMN = CHANNEL_GROUP_NMETER;
     private static final String CHGR_SENSOR = CHANNEL_GROUP_SENSOR;
     private static final String CHGR_CONTROL = CHANNEL_GROUP_CONTROL;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
@@ -203,6 +206,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_PFACTOR, "meterPowerFactor", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_EMETER_RESETTOTAL, "meterResetTotals", ITEMT_SWITCH))
 
+                // 3EM: neutral current (emeter_n)
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_CURRENT, "ncurrent", ITEMT_AMP))
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_IXSUM, "ixsum", ITEMT_AMP))
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_MTRESHHOLD, "nmTreshhold", ITEMT_AMP))
+                .add(new ShellyChannel(m, CHGR_EMN, CHANNEL_NMETER_MISMATCH, "nmismatch", ITEMT_SWITCH))
+
                 // Sensors
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TEMP, "sensorTemp", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_HUM, "sensorHumidity", ITEMT_PERCENT))
@@ -264,13 +273,13 @@ public class ShellyChannelDefinitions {
         String group = substringBefore(channelName, "#");
         String channel = substringAfter(channelName, "#");
 
-        if (group.contains(CHANNEL_GROUP_METER)) {
+        if (group.startsWith(CHANNEL_GROUP_METER)) {
             group = CHANNEL_GROUP_METER; // map meter1..n to meter
-        } else if (group.contains(CHANNEL_GROUP_RELAY_CONTROL)) {
+        } else if (group.startsWith(CHANNEL_GROUP_RELAY_CONTROL)) {
             group = CHANNEL_GROUP_RELAY_CONTROL; // map meter1..n to meter
-        } else if (group.contains(CHANNEL_GROUP_LIGHT_CHANNEL)) {
+        } else if (group.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
             group = CHANNEL_GROUP_LIGHT_CHANNEL;
-        } else if (group.contains(CHANNEL_GROUP_STATUS)) {
+        } else if (group.startsWith(CHANNEL_GROUP_STATUS)) {
             group = CHANNEL_GROUP_STATUS; // map status1..n to meter
         }
 
@@ -488,6 +497,17 @@ public class ShellyChannelDefinitions {
         if (handler != null) {
             addChannel(thing, newChannels, handler.getProfile().isEM50, group, CHANNEL_DEVST_RESETTOTAL); // 3EM
         }
+        return newChannels;
+    }
+
+    public static Map<String, Channel> createEMNCurrentChannels(final Thing thing, ShellyEMNCurrentSettings settings,
+            ShellyEMNCurrentStatus status) {
+        String group = CHANNEL_GROUP_NMETER;
+        Map<String, Channel> newChannels = new LinkedHashMap<>();
+        addChannel(thing, newChannels, status.current != null, group, CHANNEL_NMETER_CURRENT);
+        addChannel(thing, newChannels, status.ixsum != null, group, CHANNEL_NMETER_IXSUM);
+        addChannel(thing, newChannels, status.mismatch != null, group, CHANNEL_NMETER_MISMATCH);
+        addChannel(thing, newChannels, settings.mismatchThreshold != null, group, CHANNEL_NMETER_MTRESHHOLD);
         return newChannels;
     }
 
