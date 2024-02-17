@@ -10,22 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.iotawatt.internal;
+package org.openhab.binding.iotawatt.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 
 /**
- * The {@link IoTaWattConfiguration} class contains fields mapping thing configuration parameters.
+ * Provides a HttpClient.
  *
  * @author Peter Rosenberg - Initial contribution
  */
 @NonNullByDefault
-public class IoTaWattConfiguration {
-    public static final int REFRESH_INTERVAL_DEFAULT = 10;
-
+public interface HttpClientProvider {
     /**
-     * Configuration parameters
+     * get the insecure http client (ignores SSL errors)
      */
-    public String hostname = "";
-    public int refreshIntervalInSeconds = REFRESH_INTERVAL_DEFAULT;
+    HttpClient getInsecureClient();
 }
