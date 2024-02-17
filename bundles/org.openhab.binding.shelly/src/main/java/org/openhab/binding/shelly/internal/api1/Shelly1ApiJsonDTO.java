@@ -553,6 +553,23 @@ public class Shelly1ApiJsonDTO {
         public Double current; // 3EM
     }
 
+    public static class ShellyEMNCurrentSettings {
+        // "emeter_n":{ "range_extender":1, "mismatch_threshold":0.00}
+        @SerializedName("range_extender")
+        public Integer rangeExtender;
+        @SerializedName("mismatch_threshold")
+        public Double mismatchThreshold;
+    }
+
+    public static class ShellyEMNCurrentStatus {
+        // "emeter_n":{"current":2.28,"ixsum":2.29,"mismatch":false,"is_valid":true}
+        public Double current;
+        public Double ixsum;
+        public Boolean mismatch;
+        @SerializedName("is_valid")
+        public Boolean isValid;
+    }
+
     public static class ShellySettingsUpdate {
         public String status;
         @SerializedName("has_update")
@@ -621,6 +638,8 @@ public class Shelly1ApiJsonDTO {
         public @Nullable ArrayList<ShellySettingsRoller> rollers;
         public @Nullable ArrayList<ShellySettingsRgbwLight> lights;
         public @Nullable ArrayList<ShellySettingsEMeter> emeters;
+        @SerializedName("emeter_n")
+        public ShellyEMNCurrentSettings neutralCurrent;
         public @Nullable ArrayList<ShellyThermnostat> thermostats; // TRV
 
         @SerializedName("ext_switch_enable")
@@ -745,6 +764,9 @@ public class Shelly1ApiJsonDTO {
         public ArrayList<ShellySettingsMeter> meters;
 
         public ArrayList<ShellySettingsEMeter> emeters;
+        @SerializedName("emeter_n")
+        public ShellyEMNCurrentStatus neutralCurrent;
+
         public Double totalCurrent;
         public Double totalPower;
         public Double totalReturned;
