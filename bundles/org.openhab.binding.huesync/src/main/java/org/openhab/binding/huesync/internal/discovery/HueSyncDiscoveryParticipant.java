@@ -65,12 +65,9 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
      */
     private static final String SERVICE_TYPE = "_huesync._tcp.local.";
 
-    // TODO: move to API
-    // private static final String DEVICE_INFO_ENDPOINT = "api/v1/device";
     // TODO: Implement SSL certificate validation
     // private static final HttpClient httpClient = new HttpClient(new
     // SslContextFactory.Client(true));
-    // TODO: Get from configuration
     private boolean autoDiscoveryEnabled = true;
 
     protected final ThingRegistry thingRegistry;
@@ -98,21 +95,9 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
             ThingUID uid = getThingUID(service);
             if (Objects.nonNull(uid)) {
                 try {
-                    /*
-                     * String qualifiedName = service.getQualifiedName();
-                     * 
-                     * logger.debug("HueSync Device found: {}", qualifiedName);
-                     * 
-                     * String request = String.format("https://%s:%s/%s",
-                     * service.getHostAddresses()[0], service.getPort(),
-                     * DEVICE_INFO_ENDPOINT);
-                     * ContentResponse response =
-                     * HueSyncDiscoveryParticipant.httpClient.GET(request);
-                     * 
-                     * logger.debug("Device information for {}: {}", qualifiedName, response);
-                     */
+                    logger.debug("HDMI Sync Box {} discovered at {}:{}", service.getName(),
+                            service.getHostAddresses()[0], service.getPort());
 
-                    // return new HueSyncDiscoveryResult(uid, Map.of());
                     Map<String, Object> properties = new HashMap<>(2);
 
                     properties.put(HueSyncBindingConstants.PARAMETER_HOST, service.getHostAddresses()[0]);
@@ -139,26 +124,6 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
             return null;
         }
 
-        // Matcher matcher = PHILIPS_SYNCBOX_PATTERN.matcher(qualifiedName);
-        // matcher.matches(); // we already know it matches, it was matched in
-        // getThingUID
-
-        // String vendor = "Philips";
-        // String model = "Hue Play HDMI Sync Box";
-        // String friendlyName = "Philips Hue HDMI Sync Box";
-        // String hostname = (matcher.group(1) + "-" + matcher.group(2)).toLowerCase();
-        // String serial = matcher.group(2);
-
-        // Map<String, Object> properties = new HashMap<>(2);
-        // properties.put(PARAMETER_HOST, hostname);
-        // properties.put(Thing.PROPERTY_SERIAL_NUMBER, serial);
-        // properties.put(Thing.PROPERTY_VENDOR, vendor);
-        // properties.put(Thing.PROPERTY_MODEL_ID, model);
-
-        // logger.debug("thing properties: {}", properties);
-
-        // return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-        // .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(friendlyName).build();
         return new ThingUID(HueSyncBindingConstants.THING_TYPE_UID, id);
     }
 

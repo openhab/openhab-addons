@@ -12,21 +12,12 @@
  */
 package org.openhab.binding.huesync.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
- * The {@link HueSyncConfiguration} class contains fields mapping thing configuration parameters.
- *
- * @author Marco Kawon - Initial contribution
- * @author Patrik Gfeller - Integration into official repository, update to 4.x infrastructure
+ * TODO: Description ...
+ * 
+ * @author Patrik Gfeller - Initial contribution
  */
-@NonNullByDefault
 public class HueSyncConfiguration {
-
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    public String host;
+    public Integer port;
 }

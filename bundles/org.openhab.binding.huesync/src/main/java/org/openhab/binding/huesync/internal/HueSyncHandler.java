@@ -12,8 +12,15 @@
  */
 package org.openhab.binding.huesync.internal;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfo;
+import org.openhab.binding.huesync.internal.connection.HueSyncConnection;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -37,8 +44,16 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private @Nullable HueSyncConfiguration config;
 
-    public HueSyncHandler(Thing thing) {
+    private HttpClient httpClient;
+
+    private HueSyncConnection connection;
+
+    private HueSyncDeviceInfo deviceInfo;
+
+    @SuppressWarnings("null")
+    public HueSyncHandler(Thing thing, HttpClientFactory httpClientFactory) {
         super(thing);
+        this.httpClient = new HttpClient(new SslContextFactory.Client(true));
     }
 
     @Override
@@ -57,9 +72,11 @@ public class HueSyncHandler extends BaseThingHandler {
         // }
     }
 
+    // TODO: Check if we can go without the "null" warning ...
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
-        config = getConfigAs(HueSyncConfiguration.class);
+        this.config = getConfigAs(HueSyncConfiguration.class);
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly, i.e. any
@@ -83,11 +100,24 @@ public class HueSyncHandler extends BaseThingHandler {
 
         // Example for background initialization:
         scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
+            try {
+                this.connection = new HueSyncConnection(this.httpClient, this.config);
+                this.connection.start();
+
+                this.deviceInfo = this.connection.getDeviceInfo();
+
+                Map<String, String> properties = editProperties();
+
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, this.deviceInfo.uniqueId);
+                properties.put(Thing.PROPERTY_MODEL_ID, this.deviceInfo.deviceType);
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, deviceInfo.firmwareVersion);
+
+                updateProperties(properties);
+
                 updateStatus(ThingStatus.ONLINE);
-            } else {
+            } catch (Exception e) {
+                // TODO: Log message ...
+                // TODO: thing status details ...
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
@@ -107,5 +137,17 @@ public class HueSyncHandler extends BaseThingHandler {
         // work as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        try {
+            // TODO: Check if we have to unregister openHAB form the Hue HDMI Sync Box
+            this.httpClient.stop();
+        } catch (Exception e) {
+            // TODO: Handle ...
+        }
     }
 }
