@@ -300,7 +300,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         if (knxChannel == null) {
             return;
         }
-        Set<GroupAddress> rsa = knxChannel.getWriteAddresses();
+        List<GroupAddress> rsa = knxChannel.getWriteAddresses();
         if (!rsa.isEmpty()) {
             logger.trace("onGroupRead size '{}'", rsa.size());
             OutboundSpec os = groupAddressesRespondingSpec.get(destination);

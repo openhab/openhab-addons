@@ -39,7 +39,7 @@ class TypeRollershutter extends KNXChannel {
             CHANNEL_ROLLERSHUTTER_CONTROL);
 
     TypeRollershutter(Channel channel) {
-        super(Set.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA),
+        super(List.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA),
                 List.of(PercentType.class, UpDownType.class, StopMoveType.class), channel);
     }
 

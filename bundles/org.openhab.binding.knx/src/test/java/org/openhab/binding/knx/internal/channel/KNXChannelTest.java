@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +31,7 @@ import org.openhab.binding.knx.internal.dpt.ValueEncoder;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -159,10 +159,10 @@ class KNXChannelTest {
 
         MyKNXChannel knxChannel = new MyKNXChannel(channel);
 
-        Set<GroupAddress> listenAddresses = knxChannel.getAllGroupAddresses();
+        List<GroupAddress> listenAddresses = knxChannel.getAllGroupAddresses();
         assertEquals(5, listenAddresses.size());
         // we don't check the content since parsing has been checked before and the quantity is correct
-        Set<GroupAddress> writeAddresses = knxChannel.getWriteAddresses();
+        List<GroupAddress> writeAddresses = knxChannel.getWriteAddresses();
         assertEquals(2, writeAddresses.size());
         assertTrue(writeAddresses.contains(new GroupAddress("1/2/3")));
         assertTrue(writeAddresses.contains(new GroupAddress("7/1/9")));
@@ -194,19 +194,41 @@ class KNXChannelTest {
         KNXChannel knxChannel = KNXChannelFactory.createKnxChannel(channel);
         assertThat(knxChannel, instanceOf(TypeDimmer.class));
 
-        Command command = new PercentType("100");
+        Command command = new PercentType("90");
         @Nullable
         OutboundSpec outboundSpec = knxChannel.getCommandSpec(command);
-        assertNotNull(outboundSpec);
+        assertThat(outboundSpec, is(notNullValue()));
+        assertThat(outboundSpec.getGroupAddress(), is(new GroupAddress("1/2/2")));
 
         String mappedValue = ValueEncoder.encode(outboundSpec.getValue(), outboundSpec.getDPT());
-        assertThat(mappedValue, is("100"));
+        assertThat(mappedValue, is("90"));
         assertThat(outboundSpec.getValue(), is(instanceOf(PercentType.class)));
+    }
+
+    @Test
+    void test1001ToDimmerChannel() throws KNXFormatException {
+        Configuration configuration = new Configuration(Map.of("switch", "1.001:1/2/1", "position", "5.001:1/2/2"));
+        Channel channel = Objects.requireNonNull(mock(Channel.class));
+        when(channel.getChannelTypeUID())
+                .thenReturn(new ChannelTypeUID(KNXBindingConstants.BINDING_ID, KNXBindingConstants.CHANNEL_DIMMER));
+        when(channel.getConfiguration()).thenReturn(configuration);
+
+        KNXChannel knxChannel = KNXChannelFactory.createKnxChannel(channel);
+        assertThat(knxChannel, instanceOf(TypeDimmer.class));
+
+        Command command = OnOffType.ON;
+        OutboundSpec outboundSpec = knxChannel.getCommandSpec(command);
+        assertThat(outboundSpec, is(notNullValue()));
+        assertThat(outboundSpec.getGroupAddress(), is(new GroupAddress("1/2/1")));
+
+        String mappedValue = ValueEncoder.encode(outboundSpec.getValue(), outboundSpec.getDPT());
+        assertThat(mappedValue, is("on"));
+        assertThat(outboundSpec.getValue(), is(instanceOf(OnOffType.class)));
     }
 
     private static class MyKNXChannel extends KNXChannel {
         public MyKNXChannel(Channel channel) {
-            super(Set.of("key1", "key2"), List.of(UnDefType.class), channel);
+            super(List.of("key1", "key2"), List.of(UnDefType.class), channel);
         }
 
         @Override
