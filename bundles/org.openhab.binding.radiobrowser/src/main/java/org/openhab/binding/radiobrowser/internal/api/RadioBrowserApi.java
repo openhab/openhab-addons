@@ -291,6 +291,7 @@ public class RadioBrowserApi {
                 return;
             }
         }
+        handler.setChannelState(CHANNEL_STATION, new StringType(station.name));
         handler.setChannelState(CHANNEL_NAME, new StringType(station.name));
         handler.setChannelState(CHANNEL_ICON, new StringType(station.favicon));
         handler.setChannelState(CHANNEL_STREAM, new StringType(station.url));
