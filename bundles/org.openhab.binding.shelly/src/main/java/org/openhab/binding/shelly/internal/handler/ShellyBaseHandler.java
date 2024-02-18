@@ -183,13 +183,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             boolean start = true;
             try {
                 if (initializeThingConfig()) {
-                    logger.debug("{}: Device config: Device address={}, HTTP user/password={}/{}, update interval={}",
-                            thingName, config.deviceAddress, config.userId.isEmpty() ? "<non>" : config.userId,
-                            config.password.isEmpty() ? "<none>" : "***", config.updateInterval);
-                    logger.debug(
-                            "{}: Configured Events: Button: {}, Switch (on/off): {}, Push: {}, Roller: {}, Sensor: {}, CoIoT: {}, Enable AutoCoIoT: {}",
-                            thingName, config.eventsButton, config.eventsSwitch, config.eventsPush, config.eventsRoller,
-                            config.eventsSensorReport, config.eventsCoIoT, bindingConfig.autoCoIoT);
+                    logger.debug("{}: Config: {}", thingName, config);
                     start = initializeThing();
                 }
             } catch (ShellyApiException e) {
