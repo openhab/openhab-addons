@@ -23,14 +23,17 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.SalusBindingConstants;
+import org.openhab.binding.salus.internal.rest.ApiResponse;
 import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
 import org.openhab.binding.salus.internal.rest.Error;
@@ -40,8 +43,11 @@ import org.openhab.binding.salus.internal.rest.SalusApi;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,18 +76,19 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Override
     public void initialize() {
-        var config = this.getConfigAs(CloudBridgeConfig.class);
+        CloudBridgeConfig config = this.getConfigAs(CloudBridgeConfig.class);
         if (!config.isValid()) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "Username or password is not valid");
             return;
         }
-        var httpClient = new JettyHttpClient(httpClientFactory.getCommonHttpClient());
-        var localSalusApi = salusApi = new SalusApi(config.getUsername(), config.getPassword().toCharArray(),
+        JettyHttpClient httpClient = new JettyHttpClient(httpClientFactory.getCommonHttpClient());
+        @Nullable
+        SalusApi localSalusApi = salusApi = new SalusApi(config.getUsername(), config.getPassword().toCharArray(),
                 config.getUrl(), httpClient, GsonMapper.INSTANCE);
         logger = LoggerFactory
                 .getLogger(CloudBridgeHandler.class.getName() + "[" + config.getUsername().replace(".", "_") + "]");
 
-        var scheduledPool = ThreadPoolManager.getScheduledPool(SalusBindingConstants.BINDING_ID);
+        ScheduledExecutorService scheduledPool = ThreadPoolManager.getScheduledPool(SalusBindingConstants.BINDING_ID);
         scheduledPool.schedule(() -> tryConnectToCloud(localSalusApi), 1, MICROSECONDS);
 
         this.devicePropertiesCache = Caffeine.newBuilder().maximumSize(10_000)
@@ -97,9 +104,10 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     private void tryConnectToCloud(SalusApi localSalusApi) {
         try {
-            var response = localSalusApi.findDevices();
+            ApiResponse<SortedSet<Device>> response = localSalusApi.findDevices();
             if (response.failed()) {
-                var error = response.error();
+                @Nullable
+                Error error = response.error();
                 if (error == null) {
                     error = new Error(500, "Unknown error");
                 }
@@ -119,21 +127,22 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                 logger.debug("No bridge, refresh cancelled");
                 return;
             }
-            var things = bridge.getThings();
-            for (var thing : things) {
+            List<Thing> things = bridge.getThings();
+            for (Thing thing : things) {
                 try {
                     if (!thing.isEnabled()) {
                         logger.debug("Thing {} is disabled, refresh cancelled", thing.getUID());
                         continue;
                     }
 
-                    var handler = thing.getHandler();
+                    @Nullable
+                    ThingHandler handler = thing.getHandler();
                     if (handler == null) {
                         logger.debug("No handler for thing {} refresh cancelled", thing.getUID());
                         continue;
                     }
-                    var channels = thing.getChannels();
-                    for (var channel : channels) {
+                    List<Channel> channels = thing.getChannels();
+                    for (Channel channel : channels) {
                         handler.handleCommand(channel.getUID(), REFRESH);
                     }
                 } catch (Exception ex) {
@@ -154,7 +163,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Override
     public void dispose() {
-        var localScheduledFuture = scheduledFuture;
+        ScheduledFuture<?> localScheduledFuture = scheduledFuture;
         if (localScheduledFuture != null) {
             localScheduledFuture.cancel(true);
             scheduledFuture = null;
@@ -169,13 +178,14 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Nullable
     private SortedSet<DeviceProperty<?>> loadPropertiesForDevice(String dsn) {
-        var api = salusApi;
+        @Nullable
+        SalusApi api = salusApi;
         if (api == null) {
             logger.debug("Cannot find properties for device {} because salusClient is null", dsn);
             return null;
         }
         logger.debug("Finding properties for device {} using salusClient", dsn);
-        var response = api.findDeviceProperties(dsn);
+        ApiResponse<SortedSet<DeviceProperty<?>>> response = api.findDeviceProperties(dsn);
         if (response.failed()) {
             logger.warn("Cannot find properties for device {} using salusClient\n{}", dsn, response.error());
             return null;
@@ -185,20 +195,22 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Override
     public boolean setValueForProperty(String dsn, String propertyName, Object value) {
-        var api = salusApi;
+        @Nullable
+        SalusApi api = salusApi;
         if (api == null) {
             logger.warn("Cannot set value for property {} on device {} because salusClient is null", propertyName, dsn);
             return false;
         }
         logger.debug("Setting property {} on device {} to value {} using salusClient", propertyName, dsn, value);
-        var response = api.setValueForProperty(dsn, propertyName, value);
+        ApiResponse<Object> response = api.setValueForProperty(dsn, propertyName, value);
         if (response.failed()) {
             logger.debug("Cannot set property {} on device {} to value {} using salusClient\n{}", propertyName, dsn,
                     value, response.error());
             devicePropertiesCache.invalidate(dsn);
             return false;
         }
-        var setValue = response.body();
+        @Nullable
+        Object setValue = response.body();
         if (setValue != null
                 && (!(setValue instanceof Boolean) && !(setValue instanceof String) && !(setValue instanceof Number))) {
             logger.warn(
@@ -206,17 +218,17 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                     setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
             return false;
         }
-        var property = devicePropertiesCache.get(dsn).stream().filter(prop -> prop.getName().equals(propertyName))
-                .findFirst();
+        Optional<DeviceProperty<?>> property = devicePropertiesCache.get(dsn).stream()
+                .filter(prop -> prop.getName().equals(propertyName)).findFirst();
         if (property.isEmpty()) {
-            var simpleName = setValue != null ? setValue.getClass().getSimpleName() : "<null>";
+            String simpleName = setValue != null ? setValue.getClass().getSimpleName() : "<null>";
             logger.warn(
                     "Cannot set value {} ({}) for property {} on device {} because it is not found in the cache. Invalidating cache",
                     setValue, simpleName, propertyName, dsn);
             devicePropertiesCache.invalidate(dsn);
             return false;
         }
-        var prop = property.get();
+        DeviceProperty<?> prop = property.get();
         if (setValue == null) {
             prop.setValue(null);
             return true;
@@ -242,19 +254,21 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Override
     public SortedSet<Device> findDevices() {
-        var api = this.salusApi;
+        @Nullable
+        SalusApi api = this.salusApi;
         if (api == null) {
             logger.debug("Cannot find devices because salusClient is null");
             return emptySortedSet();
         }
         logger.debug("Finding devices using salusClient");
-        var response = api.findDevices();
+        ApiResponse<SortedSet<Device>> response = api.findDevices();
         if (response.failed()) {
             logger.warn("Cannot find devices using salusClient\n{}", response.error());
             return emptySortedSet();
         }
 
-        var body = response.body();
+        @Nullable
+        SortedSet<Device> body = response.body();
         if (body == null) {
             return emptySortedSet();
         }
