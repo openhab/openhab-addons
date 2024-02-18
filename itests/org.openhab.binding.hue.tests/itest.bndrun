@@ -27,7 +27,6 @@ Fragment-Host: org.openhab.binding.hue
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	org.eclipse.jdt.annotation;version='[2.2.100,2.2.101)',\
 	javax.jmdns;version='[3.5.9,3.5.10)',\
-	org.jupnp;version='[2.7.1,2.7.2)',\
 	org.apache.felix.configadmin;version='[1.9.26,1.9.27)',\
 	org.apache.felix.http.servlet-api;version='[1.2.0,1.2.1)',\
 	org.osgi.service.component;version='[1.5.0,1.5.1)',\
@@ -94,4 +93,12 @@ Fragment-Host: org.openhab.binding.hue
 	org.openhab.core.test;version='[4.2.0,4.2.1)',\
 	org.openhab.core.thing;version='[4.2.0,4.2.1)',\
 	org.openhab.core.transform;version='[4.2.0,4.2.1)',\
-	org.osgi.service.component.annotations;version='[1.5.0,1.5.1)'
+	org.osgi.service.component.annotations;version='[1.5.0,1.5.1)',\
+	org.eclipse.jetty.jaas;version='[9.4.52,9.4.53)',\
+	org.eclipse.jetty.xml;version='[9.4.52,9.4.53)',\
+	org.jupnp;version='[3.0.0,3.0.1)',\
+	org.openhab.core.addon;version='[4.2.0,4.2.1)',\
+	org.ops4j.pax.web.pax-web-jetty;version='[8.0.22,8.0.23)',\
+	org.ops4j.pax.web.pax-web-runtime;version='[8.0.22,8.0.23)',\
+	org.ops4j.pax.web.pax-web-spi;version='[8.0.22,8.0.23)',\
+	org.ops4j.pax.web.pax-web-tomcat-common;version='[8.0.22,8.0.23)'

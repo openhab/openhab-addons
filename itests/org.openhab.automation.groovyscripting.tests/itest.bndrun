@@ -88,4 +88,5 @@ Fragment-Host: org.openhab.automation.groovyscripting
 	org.threeten.extra;version='[1.7.2,1.7.3)',\
 	stax2-api;version='[4.2.1,4.2.2)',\
 	de.focus_shift.jollyday-core;version='[0.23.2,0.23.3)',\
-	de.focus_shift.jollyday-jackson;version='[0.23.2,0.23.3)'
+	de.focus_shift.jollyday-jackson;version='[0.23.2,0.23.3)',\
+	org.openhab.core.addon;version='[4.2.0,4.2.1)'

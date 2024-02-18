@@ -94,4 +94,5 @@ Fragment-Host: org.openhab.binding.mielecloud
 	org.openhab.core.test;version='[4.2.0,4.2.1)',\
 	org.openhab.core.thing;version='[4.2.0,4.2.1)',\
 	org.openhab.core.transform;version='[4.2.0,4.2.1)',\
-	org.osgi.service.component.annotations;version='[1.5.0,1.5.1)'
+	org.osgi.service.component.annotations;version='[1.5.0,1.5.1)',\
+	org.openhab.core.addon;version='[4.2.0,4.2.1)'
