@@ -1,6 +1,7 @@
 # Piper Text-to-Speech
 
-Piper STT integrates [Piper](https://github.com/rhasspy/piper) the fast, local neural text to speech system that sounds great and is optimized for the Raspberry Pi 4 into openHAB using a JNI interface.
+This voice service allows you to use the open source library [Piper](https://github.com/rhasspy/piper) as your TTS service in openHAB.
+[Piper](https://github.com/rhasspy/piper) is a fast, local neural text to speech system that sounds great and is optimized for the Raspberry Pi 4.
 
 ## Supported platforms
 

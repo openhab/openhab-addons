@@ -96,8 +96,8 @@ public class PiperTTSService extends AbstractCachedTTSService {
             this.piper = new PiperJNI();
             this.piper.initialize(true, false);
             logger.debug("Using Piper version {}", this.piper.getPiperVersion());
-        } catch (Exception e) {
-            logger.warn("Library registration failed, the add-on will not work");
+        } catch (IOException e) {
+            logger.warn("Piper registration failed, the add-on will not work: {}", e.getMessage());
         }
         tryCreatePiperDirectory();
         configChange(config);
