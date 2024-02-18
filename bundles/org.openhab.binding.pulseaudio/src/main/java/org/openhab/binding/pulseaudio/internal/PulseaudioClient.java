@@ -13,11 +13,11 @@
 package org.openhab.binding.pulseaudio.internal;
 
 import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants.*;
+import static org.openhab.binding.pulseaudio.internal.cli.Parser.extractArgumentFromLine;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.math.BigDecimal;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -25,6 +25,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -36,10 +37,12 @@ import org.openhab.binding.pulseaudio.internal.handler.DeviceIdentifier;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State;
 import org.openhab.binding.pulseaudio.internal.items.Module;
+import org.openhab.binding.pulseaudio.internal.items.SimpleProtocolTCPModule;
 import org.openhab.binding.pulseaudio.internal.items.Sink;
 import org.openhab.binding.pulseaudio.internal.items.SinkInput;
 import org.openhab.binding.pulseaudio.internal.items.Source;
 import org.openhab.binding.pulseaudio.internal.items.SourceOutput;
+import org.openhab.core.audio.AudioFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +92,6 @@ public class PulseaudioClient {
      * corresponding name to execute actions on source-output items
      */
     private static final String ITEM_SOURCE_OUTPUT = "source-output";
-
     /**
      * command to list the loaded modules
      */
@@ -198,7 +200,7 @@ public class PulseaudioClient {
      * @param id
      * @return the corresponding {@link Module} to the given <code>id</code>
      */
-    public @Nullable Module getModule(int id) {
+    public synchronized @Nullable Module getModule(int id) {
         for (Module module : modules) {
             if (module.getId() == id) {
                 return module;
@@ -328,37 +330,53 @@ public class PulseaudioClient {
     }
 
     /**
-     * Locate or load (if needed) the simple protocol tcp module for the given sink
-     * and returns the port.
+     * Creates a new Simple Protocol TCP module instance on the server or reuse an idle one if still available.
      * The module loading (if needed) will be tried several times, on a new random port each time.
      *
      * @param item the sink we are searching for
-     * @param simpleTcpPortPref the port to use if we have to load the module
-     * @return the port on which the module is listening
+     * @return the module representation
      * @throws InterruptedException
      */
-    public Optional<Integer> loadModuleSimpleProtocolTcpIfNeeded(AbstractAudioDeviceConfig item,
-            Integer simpleTcpPortPref, @Nullable String format, @Nullable BigDecimal rate,
-            @Nullable BigDecimal channels) throws InterruptedException {
+    public Optional<SimpleProtocolTCPModule> loadModuleSimpleProtocolTcpIfNeeded(AbstractAudioDeviceConfig item,
+            AudioFormat format, @Nullable SimpleProtocolTCPModule spModule) throws InterruptedException {
         int currentTry = 0;
-        int simpleTcpPortToTry = simpleTcpPortPref;
+        String paFormat = getPAFormatString(format);
+        long rate = Objects.requireNonNull(format.getFrequency());
+        int channels = Objects.requireNonNull(format.getChannels());
+        if (spModule != null) {
+            // check if cached module is still available, it should be
+            var module = findSimpleProtocolTcpModule(item, spModule.getId(), spModule.getPort(), paFormat, rate,
+                    channels);
+            if (module.isPresent()) {
+                logger.debug("reusing simple protocol tcp module {}", module.get().getId());
+                return module;
+            }
+            logger.warn("previous module instance not found or incompatible, creating a new one");
+        }
         String itemType = getItemCommandName(item);
         do {
-            Optional<Integer> simplePort = findSimpleProtocolTcpModule(item, format, rate, channels);
-
-            if (simplePort.isPresent()) {
-                return simplePort;
-            } else {
-                String moduleOptions = itemType + "=" + item.getPaName() + " port=" + simpleTcpPortToTry;
-                if (item instanceof Source && format != null && rate != null && channels != null) {
-                    moduleOptions = moduleOptions + String.format(" record=true format=%s rate=%d channels=%d", format,
-                            rate.longValue(), channels.intValue());
-                }
-                sendRawCommand("load-module module-simple-protocol-tcp " + moduleOptions);
-                simpleTcpPortToTry = new Random().nextInt(64512) + 1024; // a random port above 1024
+            int simpleTcpPortToTry = new Random().nextInt(64512) + 1024; // a random port above 1024
+            logger.debug("trying to load simple protocol tcp module at port {}", simpleTcpPortToTry);
+            String moduleOptions = String.format(" %s=%s port=%d format=%s rate=%d channels=%d", itemType,
+                    item.getPaName(), simpleTcpPortToTry, paFormat, rate, channels);
+            if (item instanceof Source) {
+                moduleOptions = moduleOptions + " record=true";
             }
-            Thread.sleep(100);
-            update();
+            sendRawCommand("load-module " + MODULE_SIMPLE_PROTOCOL_TCP_NAME + moduleOptions);
+            try {
+                do {
+                    Thread.sleep(100);
+                    update();
+                    Optional<SimpleProtocolTCPModule> simpleProtocolModule = findSimpleProtocolTcpModule(item, null,
+                            simpleTcpPortToTry, paFormat, rate, channels);
+                    if (simpleProtocolModule.isPresent()) {
+                        return simpleProtocolModule;
+                    }
+                    currentTry++;
+                } while (currentTry < 3);
+            } catch (NumberFormatException e) {
+                logger.warn("simple protocol module load failed");
+            }
             currentTry++;
         } while (currentTry < 3);
 
@@ -369,6 +387,20 @@ public class PulseaudioClient {
         return Optional.empty();
     }
 
+    public String getPAFormatString(AudioFormat format) {
+        assert AudioFormat.CODEC_PCM_SIGNED.equals(format.getCodec());
+        switch (Objects.requireNonNull(format.getBitDepth())) {
+            case 16:
+                return "s16" + (Objects.requireNonNull(format.isBigEndian()) ? "be" : "le");
+            case 24:
+                return "s24" + (Objects.requireNonNull(format.isBigEndian()) ? "be" : "le");
+            case 32:
+                return "s32" + (Objects.requireNonNull(format.isBigEndian()) ? "be" : "le");
+            default:
+                throw new IllegalArgumentException("Unsupported format");
+        }
+    }
+
     /**
      * Find a simple protocol module corresponding to the given sink in argument
      * and returns the port it listens to
@@ -376,8 +408,9 @@ public class PulseaudioClient {
      * @param item
      * @return
      */
-    private Optional<Integer> findSimpleProtocolTcpModule(AbstractAudioDeviceConfig item, @Nullable String format,
-            @Nullable BigDecimal rate, @Nullable BigDecimal channels) {
+    private Optional<SimpleProtocolTCPModule> findSimpleProtocolTcpModule(AbstractAudioDeviceConfig item,
+            @Nullable Integer id, @Nullable Integer port, @Nullable String format, @Nullable Long rate,
+            @Nullable Integer channels) {
         String itemType = getItemCommandName(item);
         if (itemType == null) {
             return Optional.empty();
@@ -387,13 +420,24 @@ public class PulseaudioClient {
         return modulesCopy.stream() // iteration on modules
                 .filter(module -> MODULE_SIMPLE_PROTOCOL_TCP_NAME.equals(module.getPaName())) // filter on module name
                 .filter(module -> {
+                    if (!(module instanceof SimpleProtocolTCPModule simpleProtocolTCPModule)) {
+                        return false;
+                    }
+                    if (id != null && simpleProtocolTCPModule.getId() != id) {
+                        return false;
+                    }
+                    if (port != null && simpleProtocolTCPModule.getPort() != port) {
+                        return false;
+                    }
                     boolean nameMatch = extractArgumentFromLine(itemType, module.getArgument()) // extract sick|source
                             .map(name -> name.equals(item.getPaName())).orElse(false);
-                    if (isSource && nameMatch) {
-                        boolean recordStream = extractArgumentFromLine("record", module.getArgument())
-                                .map("true"::equals).orElse(false);
-                        if (!recordStream) {
-                            return false;
+                    if (nameMatch) {
+                        if (isSource) {
+                            boolean recordStream = extractArgumentFromLine("record", module.getArgument())
+                                    .map("true"::equals).orElse(false);
+                            if (!recordStream) {
+                                return false;
+                            }
                         }
                         if (format != null) {
                             boolean rateMatch = extractArgumentFromLine("format", module.getArgument())
@@ -404,7 +448,7 @@ public class PulseaudioClient {
                         }
                         if (rate != null) {
                             boolean rateMatch = extractArgumentFromLine("rate", module.getArgument())
-                                    .map(value -> Long.parseLong(value) == rate.longValue()).orElse(false);
+                                    .map(value -> Long.parseLong(value) == rate).orElse(false);
                             if (!rateMatch) {
                                 return false;
                             }
@@ -420,25 +464,11 @@ public class PulseaudioClient {
                     return nameMatch;
                 }) // filter on sink name
                 .findAny() // get a corresponding module
-                .map(module -> extractArgumentFromLine("port", module.getArgument())
-                        .orElse(Integer.toString(MODULE_SIMPLE_PROTOCOL_TCP_DEFAULT_PORT))) // get port
-                .map(portS -> Integer.parseInt(portS));
+                .map(module -> (SimpleProtocolTCPModule) module);
     }
 
-    private Optional<String> extractArgumentFromLine(String argumentWanted, @Nullable String argumentLine) {
-        String argument = null;
-        if (argumentLine != null) {
-            int startPortIndex = argumentLine.indexOf(argumentWanted + "=");
-            if (startPortIndex != -1) {
-                startPortIndex = startPortIndex + argumentWanted.length() + 1;
-                int endPortIndex = argumentLine.indexOf(" ", startPortIndex);
-                if (endPortIndex == -1) {
-                    endPortIndex = argumentLine.length();
-                }
-                argument = argumentLine.substring(startPortIndex, endPortIndex);
-            }
-        }
-        return Optional.ofNullable(argument);
+    public void unloadModule(Module module) {
+        sendCommand("unload-module " + module.getId());
     }
 
     /**

@@ -34,6 +34,7 @@ import org.openhab.binding.pulseaudio.internal.PulseAudioAudioSink;
 import org.openhab.binding.pulseaudio.internal.PulseAudioAudioSource;
 import org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
+import org.openhab.binding.pulseaudio.internal.items.SimpleProtocolTCPModule;
 import org.openhab.binding.pulseaudio.internal.items.Sink;
 import org.openhab.binding.pulseaudio.internal.items.SinkInput;
 import org.openhab.binding.pulseaudio.internal.items.Source;
@@ -117,7 +118,11 @@ public class PulseaudioHandler extends BaseThingHandler {
         return deviceIdentifier;
     }
 
-    private void audioSinkSetup() {
+    public int getMaxIdleModules() {
+        return ((BigDecimal) thing.getConfiguration().get(DEVICE_PARAMETER_IDLE_MODULES)).intValue();
+    }
+
+    private synchronized void audioSinkSetup() {
         if (audioSink != null) {
             // Audio sink is already setup
             return;
@@ -130,23 +135,7 @@ public class PulseaudioHandler extends BaseThingHandler {
         if (sinkActivated == null || !sinkActivated.booleanValue()) {
             return;
         }
-        final PulseaudioHandler thisHandler = this;
-        PulseAudioAudioSink audioSink = new PulseAudioAudioSink(thisHandler, scheduler, audioSinkUtils);
-        scheduler.submit(new Runnable() {
-            @Override
-            public void run() {
-                PulseaudioHandler.this.audioSink = audioSink;
-                try {
-                    audioSink.connectIfNeeded();
-                } catch (IOException e) {
-                    logger.warn("pulseaudio binding cannot connect to the module-simple-protocol-tcp on {} ({})",
-                            getHost(), e.getMessage());
-                } catch (InterruptedException i) {
-                    logger.info("Interrupted during sink audio connection: {}", i.getMessage());
-                    return;
-                }
-            }
-        });
+        this.audioSink = new PulseAudioAudioSink(this, scheduler, audioSinkUtils);
         // Register the sink as an audio sink in openhab
         logger.trace("Registering an audio sink for pulse audio sink thing {}", thing.getUID());
         @SuppressWarnings("unchecked")
@@ -155,10 +144,10 @@ public class PulseaudioHandler extends BaseThingHandler {
         audioSinkRegistrations.put(thing.getUID().toString(), reg);
     }
 
-    private void audioSinkUnsetup() {
+    private synchronized void audioSinkUnsetup() {
         PulseAudioAudioSink sink = audioSink;
         if (sink != null) {
-            sink.disconnect();
+            sink.close();
             audioSink = null;
         }
         // Unregister the potential pulse audio sink's audio sink
@@ -169,7 +158,7 @@ public class PulseaudioHandler extends BaseThingHandler {
         }
     }
 
-    private void audioSourceSetup() {
+    private synchronized void audioSourceSetup() {
         if (audioSource != null) {
             // Audio source is already setup
             return;
@@ -182,23 +171,7 @@ public class PulseaudioHandler extends BaseThingHandler {
         if (sourceActivated == null || !sourceActivated.booleanValue()) {
             return;
         }
-        final PulseaudioHandler thisHandler = this;
-        PulseAudioAudioSource audioSource = new PulseAudioAudioSource(thisHandler, scheduler);
-        scheduler.submit(new Runnable() {
-            @Override
-            public void run() {
-                PulseaudioHandler.this.audioSource = audioSource;
-                try {
-                    audioSource.connectIfNeeded();
-                } catch (IOException e) {
-                    logger.warn("pulseaudio binding cannot connect to the module-simple-protocol-tcp on {} ({})",
-                            getHost(), e.getMessage());
-                } catch (InterruptedException i) {
-                    logger.info("Interrupted during source audio connection: {}", i.getMessage());
-                    return;
-                }
-            }
-        });
+        audioSource = new PulseAudioAudioSource(this, scheduler);
         // Register the source as an audio source in openhab
         logger.trace("Registering an audio source for pulse audio source thing {}", thing.getUID());
         @SuppressWarnings("unchecked")
@@ -207,10 +180,10 @@ public class PulseaudioHandler extends BaseThingHandler {
         audioSourceRegistrations.put(thing.getUID().toString(), reg);
     }
 
-    private void audioSourceUnsetup() {
+    public synchronized void audioSourceUnsetup() {
         PulseAudioAudioSource source = audioSource;
         if (source != null) {
-            source.disconnect();
+            source.close();
             audioSource = null;
         }
         // Unregister the potential pulse audio source's audio sources
@@ -438,14 +411,14 @@ public class PulseaudioHandler extends BaseThingHandler {
     }
 
     /**
-     * This method will scan the pulseaudio server to find the port on which the module/sink/source is listening
-     * If no module is listening, then it will command the module to load on the pulse audio server,
+     * Creates a new Simple Protocol TCP module instance on the server or reuse an idle one if still available.
      *
-     * @return the port on which the pulseaudio server is listening for this sink/source
+     * @return the Simple Protocol module instance
      * @throws IOException when device info is not available
      * @throws InterruptedException when interrupted during the loading module wait
      */
-    public int getSimpleTcpPortAndLoadModuleIfNecessary() throws IOException, InterruptedException {
+    public Optional<SimpleProtocolTCPModule> loadSimpleProtocolModule(AudioFormat audioFormat,
+            @Nullable SimpleProtocolTCPModule module) throws IOException, InterruptedException {
         var briHandler = getPulseaudioBridgeHandler();
         if (briHandler == null) {
             throw new IOException("bridge is not ready");
@@ -455,18 +428,7 @@ public class PulseaudioHandler extends BaseThingHandler {
             throw new IOException(
                     "missing device info, device " + safeGetDeviceNameOrDescription() + " appears to be offline");
         }
-        String simpleTcpPortPrefName = (device instanceof Source) ? DEVICE_PARAMETER_AUDIO_SOURCE_PORT
-                : DEVICE_PARAMETER_AUDIO_SINK_PORT;
-        BigDecimal simpleTcpPortPref = ((BigDecimal) getThing().getConfiguration().get(simpleTcpPortPrefName));
-        int simpleTcpPort = simpleTcpPortPref != null ? simpleTcpPortPref.intValue()
-                : MODULE_SIMPLE_PROTOCOL_TCP_DEFAULT_PORT;
-        String simpleFormat = ((String) getThing().getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOURCE_FORMAT));
-        BigDecimal simpleRate = (BigDecimal) getThing().getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOURCE_RATE);
-        BigDecimal simpleChannels = (BigDecimal) getThing().getConfiguration()
-                .get(DEVICE_PARAMETER_AUDIO_SOURCE_CHANNELS);
-        return briHandler.getClient()
-                .loadModuleSimpleProtocolTcpIfNeeded(device, simpleTcpPort, simpleFormat, simpleRate, simpleChannels)
-                .orElse(simpleTcpPort);
+        return briHandler.getClient().loadModuleSimpleProtocolTcpIfNeeded(device, audioFormat, module);
     }
 
     public AudioFormat getSourceAudioFormat() {
@@ -516,8 +478,16 @@ public class PulseaudioHandler extends BaseThingHandler {
         }
     }
 
+    public void unloadModule(SimpleProtocolTCPModule module) throws IOException {
+        var briHandler = getPulseaudioBridgeHandler();
+        if (briHandler == null) {
+            throw new IOException("bridge is not ready");
+        }
+        briHandler.getClient().unloadModule(module);
+    }
+
     public int getIdleTimeout() {
-        var idleTimeout = 3000;
+        var idleTimeout = 0;
         var handler = getPulseaudioBridgeHandler();
         if (handler != null) {
             AbstractAudioDeviceConfig device = handler.getDevice(deviceIdentifier);

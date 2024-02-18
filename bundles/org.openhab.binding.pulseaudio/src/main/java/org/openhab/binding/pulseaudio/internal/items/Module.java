@@ -21,22 +21,20 @@ import org.eclipse.jdt.annotation.Nullable;
  * be able to remove sinks from the pulseaudio server.
  *
  * @author Tobias Bräutigam - Initial contribution
+ * @author Miguel Álvarez Díez - Make arguments final
  */
 @NonNullByDefault
 public class Module extends AbstractDeviceConfig {
 
-    private @Nullable String argument;
+    private final @Nullable String argument;
 
-    public Module(int id, String name) {
+    public Module(int id, String name, @Nullable String argument) {
         super(id, name);
+        this.argument = argument;
     }
 
     public @Nullable String getArgument() {
         return argument;
-    }
-
-    public void setArgument(String argument) {
-        this.argument = argument;
     }
 
     @Override

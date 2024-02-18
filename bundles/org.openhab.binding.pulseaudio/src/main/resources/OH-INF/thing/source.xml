@@ -36,11 +36,6 @@
 					pulseaudio server)</description>
 				<default>false</default>
 			</parameter>
-			<parameter name="simpleProtocolSourcePort" type="integer" required="false">
-				<label>Simple Protocol Port</label>
-				<description>Default Port to allocate to be used by module-simple-protocol-tcp on the pulseaudio server</description>
-				<default>4710</default>
-			</parameter>
 			<parameter name="simpleProtocolSourceIdleTimeout" type="integer" required="false">
 				<advanced>true</advanced>
 				<label>Idle Timeout</label>
@@ -64,6 +59,12 @@
 					<option value="s32le">PCM signed 32-bit little-endian</option>
 					<option value="s32be">PCM signed 32-bit big-endian</option>
 				</options>
+			</parameter>
+			<parameter name="simpleProtocolIdleModules" type="integer" required="false">
+				<label>Simple Protocol Idle Modules</label>
+				<description>Number of Simple Protocol TCP Socket modules to keep loaded in the server to reuse</description>
+				<default>1</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="simpleProtocolSourceRate" type="integer" min="0">
 				<label>Simple Protocol Rate</label>

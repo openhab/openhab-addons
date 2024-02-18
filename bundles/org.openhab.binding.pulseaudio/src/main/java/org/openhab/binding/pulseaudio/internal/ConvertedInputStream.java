@@ -35,21 +35,25 @@ import org.slf4j.LoggerFactory;
 import org.tritonus.share.sampled.file.TAudioFileFormat;
 
 /**
- * This class convert a stream to the normalized pcm
- * format wanted by the pulseaudio sink
+ * This class convert a stream to the normalized pcm signed
+ * format supported by the pulseaudio sink
  *
  * @author Gwendal Roulleau - Initial contribution
+ * @author Miguel Álvarez Díez - Extend from AudioStream
  */
 @NonNullByDefault
-public class ConvertedInputStream extends InputStream {
+public class ConvertedInputStream extends AudioStream {
 
     private final Logger logger = LoggerFactory.getLogger(ConvertedInputStream.class);
 
-    private static final javax.sound.sampled.AudioFormat TARGET_FORMAT = new javax.sound.sampled.AudioFormat(
-            javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED, 44100, 16, 2, 4, 44100, false);
+    private static final AudioFormat TARGET_FORMAT = new AudioFormat(AudioFormat.CONTAINER_WAVE,
+            AudioFormat.CODEC_PCM_SIGNED, false, 16, 44100 * 16 * 2, 44100L, 2);
+
+    private static final javax.sound.sampled.AudioFormat J_TARGET_FORMAT = new javax.sound.sampled.AudioFormat(44100,
+            16, 2, true, false);
 
     private final AudioFormat audioFormat;
-    private AudioInputStream pcmNormalizedInputStream;
+    private final AudioInputStream pcmNormalizedInputStream;
 
     private long duration = -1;
     private long length = -1;
@@ -103,7 +107,7 @@ public class ConvertedInputStream extends InputStream {
     /**
      * Ensure right PCM format by converting if needed (sample rate, channel)
      *
-     * @param pcmInputStream
+     * @param pcmInputStream A pcm signed input stream
      *
      * @return A PCM normalized stream (2 channel, 44100hz, 16 bit signed)
      */
@@ -113,7 +117,7 @@ public class ConvertedInputStream extends InputStream {
                 || !format.getEncoding().equals(javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED)
                 || Math.abs(format.getFrameRate() - 44100) > 1000) {
             logger.debug("Sound is not in the target format. Trying to reencode it");
-            return AudioSystem.getAudioInputStream(TARGET_FORMAT, pcmInputStream);
+            return AudioSystem.getAudioInputStream(J_TARGET_FORMAT, pcmInputStream);
         } else {
             return pcmInputStream;
         }
@@ -183,5 +187,10 @@ public class ConvertedInputStream extends InputStream {
             throw new UnsupportedAudioFormatException("Pulseaudio audio sink can only play pcm or mp3 stream",
                     audioFormat);
         }
+    }
+
+    @Override
+    public AudioFormat getFormat() {
+        return TARGET_FORMAT;
     }
 }
