@@ -1104,6 +1104,8 @@ public class Shelly2ApiJsonDTO {
         public Integer motionState;
         @SerializedName("Temperature")
         public Double temperature;
+        @SerializedName("Humidity")
+        public Double humidity;
 
         public Integer rssi;
         public Integer tx_power;

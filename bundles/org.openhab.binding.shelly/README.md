@@ -123,6 +123,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellyblubutton   | Shelly BLU Button 1                                    | SBBT      |
 | shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
 | shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
+| shellybluht       | Shelly BLU H&T                                         | SBMO      |
 
 ## Binding Configuration
 
@@ -1515,6 +1516,18 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Shelly BLU H&T(thing-type: shellybluht)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                             |
+| ------- | ------------- | -------- | --------- | ------------------------------------------------------- |
+| sensors | temperature   | Number   | yes       | Temperature, unit is reported by tempUnit               |
+|         | humidity      | Number   | yes       | Relative humidity in %                                  |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
 
 ## Shelly Wall Displays
 
