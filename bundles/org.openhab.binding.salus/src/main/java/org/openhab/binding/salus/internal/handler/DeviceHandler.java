@@ -205,28 +205,23 @@ public class DeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        try {
-            if (command instanceof RefreshType) {
-                handleRefreshCommand(channelUID);
-            } else if (command instanceof OnOffType typedCommand) {
-                handleBoolCommand(channelUID, typedCommand == OnOffType.ON);
-            } else if (command instanceof UpDownType typedCommand) {
-                handleBoolCommand(channelUID, typedCommand == UpDownType.UP);
-            } else if (command instanceof OpenClosedType typedCommand) {
-                handleBoolCommand(channelUID, typedCommand == OpenClosedType.OPEN);
-            } else if (command instanceof PercentType typedCommand) {
-                handleDecimalCommand(channelUID, typedCommand.as(DecimalType.class));
-            } else if (command instanceof DecimalType typedCommand) {
-                handleDecimalCommand(channelUID, typedCommand);
-            } else if (command instanceof StringType typedCommand) {
-                handleStringCommand(channelUID, typedCommand);
-            } else {
-                logger.warn("Does not know how to handle command `{}` ({}) on channel `{}`!", command,
-                        command.getClass().getSimpleName(), channelUID);
-            }
-        } catch (Exception ex) {
-            logger.error("Error occurred while handling command `{}` ({}) on channel `{}`!", command,
-                    command.getClass().getSimpleName(), channelUID.getId(), ex);
+        if (command instanceof RefreshType) {
+            handleRefreshCommand(channelUID);
+        } else if (command instanceof OnOffType typedCommand) {
+            handleBoolCommand(channelUID, typedCommand == OnOffType.ON);
+        } else if (command instanceof UpDownType typedCommand) {
+            handleBoolCommand(channelUID, typedCommand == UpDownType.UP);
+        } else if (command instanceof OpenClosedType typedCommand) {
+            handleBoolCommand(channelUID, typedCommand == OpenClosedType.OPEN);
+        } else if (command instanceof PercentType typedCommand) {
+            handleDecimalCommand(channelUID, typedCommand.as(DecimalType.class));
+        } else if (command instanceof DecimalType typedCommand) {
+            handleDecimalCommand(channelUID, typedCommand);
+        } else if (command instanceof StringType typedCommand) {
+            handleStringCommand(channelUID, typedCommand);
+        } else {
+            logger.warn("Does not know how to handle command `{}` ({}) on channel `{}`!", command,
+                    command.getClass().getSimpleName(), channelUID);
         }
     }
 
