@@ -1,12 +1,10 @@
 # Piper Text-to-Speech
 
-Piper STT integrates [Piper](https://github.com/rhasspy/piper) the fast, local neural text to speech system that sounds great and is optimized for the Raspberry Pi 4 into OpenHAB using a JNI interface.
+Piper STT integrates [Piper](https://github.com/rhasspy/piper) the fast, local neural text to speech system that sounds great and is optimized for the Raspberry Pi 4 into openHAB using a JNI interface.
 
 ## Supported platforms
 
-The service relies on native dependencies which are distributed with-in the add-on: piper-jni, piper, piper-phonemize, espeak-ng, an the onnxruntime.
-
-It includes compatibility for the following platforms:
+The add-on is compatible with the following platforms:
 
 * linux (armv7l, aarch64, x86_64, min GLIBC version 2.31)
 * macOS (x86_64 min version 11.0, aarch64 min version 13.0)
@@ -26,7 +24,7 @@ After that the UI should display your available voices at 'Settings / System Set
 
 ### Multi Speaker Voices
 
-Models that support multiples speakers are shown as multiple voices in OpenHAB.
+Models that support multiples speakers are shown as multiple voices in openHAB.
 
 ### Text to Speech Configuration
 
@@ -40,7 +38,7 @@ In case you would like to setup the service via a text file, create a new file i
 
 Its contents should look similar to:
 
-```
+```text
 org.openhab.voice.pipertts:preloadModel=true
 ```
 
@@ -55,6 +53,6 @@ You can setup your preferred default Speech-to-Text in the UI:
 
 In case you would like to set up these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
-```
+```text
 org.openhab.voice:defaultTTS=pipertts
 ```

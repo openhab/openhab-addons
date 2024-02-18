@@ -64,7 +64,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.givimad.piperjni.PiperConfig;
 import io.github.givimad.piperjni.PiperJNI;
 import io.github.givimad.piperjni.PiperVoice;
 
@@ -84,7 +83,6 @@ public class PiperTTSService extends AbstractCachedTTSService {
     private PiperTTSConfiguration config = new PiperTTSConfiguration();
     private @Nullable VoiceModel preloadedModel;
     private @Nullable PiperJNI piper;
-    private @Nullable PiperConfig piperConfig;
     private HashMap<String, List<Voice>> cachedVoicesByModel = new HashMap<>();
 
     @Activate
@@ -96,10 +94,8 @@ public class PiperTTSService extends AbstractCachedTTSService {
     protected void activate(Map<String, Object> config) {
         try {
             this.piper = new PiperJNI();
-            this.piperConfig = this.piper.createConfig();
-            this.piper.initialize(this.piperConfig, true, false);
-            logger.debug("Piper library loaded");
-            logger.info("Using piper version: {}", this.piper.getPiperVersion());
+            this.piper.initialize(true, false);
+            logger.debug("Using Piper version {}", this.piper.getPiperVersion());
         } catch (Exception e) {
             logger.warn("Library registration failed, the add-on will not work");
         }
@@ -116,13 +112,11 @@ public class PiperTTSService extends AbstractCachedTTSService {
     protected void deactivate(Map<String, Object> config) {
         try {
             unloadModel();
-            PiperConfig piperConfig = getPiperConfig();
-            this.piperConfig = null;
-            getPiper().terminate(piperConfig);
-            piperConfig.close();
+            getPiper().close();
             piper = null;
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Exception unloading model: {}", e.getMessage());
+        } catch (LibraryNotLoaded ignored) {
         }
     }
 
@@ -135,20 +129,12 @@ public class PiperTTSService extends AbstractCachedTTSService {
         }
     }
 
-    private PiperJNI getPiper() throws IOException {
+    private PiperJNI getPiper() throws LibraryNotLoaded {
         PiperJNI piper = this.piper;
         if (piper == null) {
-            throw new IOException("Library not loaded");
+            throw new LibraryNotLoaded();
         }
         return piper;
-    }
-
-    private PiperConfig getPiperConfig() throws IOException {
-        PiperConfig piperConfig = this.piperConfig;
-        if (piperConfig == null) {
-            throw new IOException("Piper config not available");
-        }
-        return piperConfig;
     }
 
     private void tryCreatePiperDirectory() {
@@ -281,11 +267,16 @@ public class PiperTTSService extends AbstractCachedTTSService {
             }
             try {
                 logger.debug("Generating audio for: '{}'", text);
-                buffer = getPiper().textToAudio(getPiperConfig(), voiceModel.piperVoice, text);
+                buffer = getPiper().textToAudio(voiceModel.piperVoice, text);
                 logger.debug("Generated {} samples of audio", buffer.length);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw new TTSException("Voice generation failed: " + e.getMessage());
             }
+        } catch (PiperJNI.NotInitialized | LibraryNotLoaded e) {
+            throw new TTSException("Piper not initialized, try restarting the add-on.");
+        } catch (RuntimeException e) {
+            logger.warn("RuntimeException running text to audio: {}", e.getMessage());
+            throw new TTSException("There was an error running Piper");
         } finally {
             if (voiceModel != null) {
                 if (!usingPreloadedModel
@@ -305,27 +296,15 @@ public class PiperTTSService extends AbstractCachedTTSService {
         }
     }
 
-    private VoiceModel loadModel(PiperTTSVoice voice) throws IOException, UnsatisfiedLinkError {
+    private VoiceModel loadModel(PiperTTSVoice voice) throws IOException, PiperJNI.NotInitialized, LibraryNotLoaded {
         if (!Files.exists(voice.voiceModelPath()) || !Files.exists(voice.voiceModelConfigPath())) {
             throw new IOException("Missing voice files");
         }
         PiperJNI piper = getPiper();
-        PiperVoice piperVoice = null;
+        PiperVoice piperVoice;
         VoiceModel voiceModel;
-        try {
-            piperVoice = piper.loadVoice(getPiperConfig(), voice.voiceModelPath(), voice.voiceModelConfigPath(),
-                    voice.speakerId.orElse(-1L));
-            voiceModel = new VoiceModel(voice, piperVoice, piperVoice.getSampleRate(), new AtomicInteger(1), logger);
-        } catch (Exception e) {
-            if (piperVoice != null) {
-                try {
-                    piperVoice.close();
-                } catch (Exception ignored) {
-                }
-            }
-            throw new IOException("Voice load failed");
-        }
-
+        piperVoice = piper.loadVoice(voice.voiceModelPath(), voice.voiceModelConfigPath(), voice.speakerId.orElse(-1L));
+        voiceModel = new VoiceModel(voice, piperVoice, piperVoice.getSampleRate(), new AtomicInteger(1), logger);
         if (config.preloadModel) {
             synchronized (this) {
                 if (this.preloadedModel == null) {
@@ -365,13 +344,13 @@ public class PiperTTSService extends AbstractCachedTTSService {
         for (var sample : samples) {
             byteBuffer.putShort(sample);
         }
-        // Initialize a Java audio stream on the piper output format with the byte buffer created.
+        // Initialize a Java audio stream using the Piper output format with the byte buffer created.
         byte[] bytes = byteBuffer.array();
         javax.sound.sampled.AudioFormat jAudioFormat = new javax.sound.sampled.AudioFormat(sampleRate, 16, 1, true,
                 false);
-        long audioDuration = (long) Math.ceil(((double) bytes.length) / jAudioFormat.getFrameSize());
+        long audioLength = (long) Math.ceil(((double) bytes.length) / jAudioFormat.getFrameSize());
         AudioInputStream audioInputStreamTemp = new AudioInputStream(new ByteArrayInputStream(bytes), jAudioFormat,
-                audioDuration);
+                audioLength);
         // Move the audio data to another Java audio stream in the target format so the Java AudioSystem encoded it as
         // needed.
         javax.sound.sampled.AudioFormat jTargetFormat = new javax.sound.sampled.AudioFormat(
@@ -382,7 +361,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
         // implementations.
         // It can not be done with the AudioInputStream returned by AudioSystem::getAudioInputStream because it missed
         // the length property.
-        // Therefore the following method creates another AudioInputStream instance and uses the Java AudioSystem to
+        // Therefore, the following method creates another AudioInputStream instance and uses the Java AudioSystem to
         // prepend
         // the wav header bytes,
         // and finally initializes an OpenHAB audio stream.
@@ -421,16 +400,18 @@ public class PiperTTSService extends AbstractCachedTTSService {
         }
     }
 
+    private static class LibraryNotLoaded extends Exception {
+        private LibraryNotLoaded() {
+            super("Library not loaded");
+        }
+    }
+
     private record VoiceModel(PiperTTSVoice ttsVoice, PiperVoice piperVoice, int sampleRate, AtomicInteger consumers,
             Logger logger) implements AutoCloseable {
 
         @Override
         public void close() {
-            try {
-                this.piperVoice.close();
-            } catch (Exception e) {
-                logger.warn("Error releasing voice native memory", e);
-            }
+            this.piperVoice.close();
         }
     }
 }

@@ -18,7 +18,7 @@
     <dependency>
       <groupId>io.github.givimad</groupId>
       <artifactId>piper-jni</artifactId>
-      <version>1.2.0-0bb4cb9</version>
+      <version>1.2.0-e5cb84c</version>
     </dependency>
   </dependencies>
 </project>
