@@ -87,10 +87,7 @@ public class It600Handler extends BaseThingHandler {
                         "There is no bridge for this thing. Remove it and add it again.");
                 return;
             }
-            var bridgeHandler = bridge.getHandler();
-            if (!(bridgeHandler instanceof CloudBridgeHandler cloudHandler)) {
-                var bridgeHandlerClassName = Optional.ofNullable(bridgeHandler).map(BridgeHandler::getClass)
-                        .map(Class::getSimpleName).orElse("null");
+            if (!(bridge.getHandler() instanceof CloudBridgeHandler cloudHandler)) {
                 updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "There is wrong type of bridge for cloud device!");
                 return;
             }
