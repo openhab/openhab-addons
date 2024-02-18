@@ -70,16 +70,6 @@ public class It600Handler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        try {
-            logger.debug("Initializing thing...");
-            internalInitialize();
-        } catch (Exception e) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "Error occurred while initializing Salus device! " + e.getLocalizedMessage());
-        }
-    }
-
-    private void internalInitialize() {
         {
             var bridge = getBridge();
             if (bridge == null) {

@@ -69,14 +69,6 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Override
     public void initialize() {
-        try {
-            internalInitialize();
-        } catch (Exception ex) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "Cannot start server! " + ex.getMessage());
-        }
-    }
-
-    private void internalInitialize() {
         var config = this.getConfigAs(CloudBridgeConfig.class);
         if (!config.isValid()) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "Username or password is not valid");
