@@ -73,6 +73,10 @@ public class ShellyBluSensorHandler extends ShellyBaseHandler {
                 ttype = THING_TYPE_SHELLYBLUMOTION_STR;
                 tuid = THING_TYPE_SHELLYBLUMOTION;
                 break;
+            case SHELLYDT_BLUHT:
+                ttype = THING_TYPE_SHELLYBLUHT_STR;
+                tuid = THING_TYPE_SHELLYBLUHT;
+                break;
             default:
                 logger.debug("{}: Unsupported BLU device model {}, MAC={}", gateway, model, mac);
                 return;
