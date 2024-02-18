@@ -174,14 +174,14 @@ public class It600Handler extends BaseThingHandler {
             return;
         }
 
-        if (command instanceof DecimalType || command instanceof QuantityType) {
-            BigDecimal rawValue;
-            if (command instanceof DecimalType typedCommand) {
-                rawValue = typedCommand.toBigDecimal();
-            } else {
-                var typedCommand = (QuantityType<?>) command;
-                rawValue = typedCommand.toBigDecimal();
-            }
+        BigDecimal rawValue = null;
+        if (command instanceof QuantityType commandAsQuantityType) {
+            rawValue = commandAsQuantityType.toBigDecimal();
+        } else if (command instanceof DecimalType commandAsDecimalType) {
+            rawValue = commandAsDecimalType.toBigDecimal();
+        }
+        
+        if (rawValue != null) {
 
             var value = rawValue.multiply(ONE_HUNDRED).longValue();
             var property = findLongProperty("ep_9:sIT600TH:SetHeatingSetpoint_x100", "SetHeatingSetpoint_x100");
