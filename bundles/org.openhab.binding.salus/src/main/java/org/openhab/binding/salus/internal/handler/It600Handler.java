@@ -254,7 +254,7 @@ public class It600Handler extends BaseThingHandler {
                     .map(DeviceProperty.LongDeviceProperty.class::cast).findAny();
         }
         if (property.isEmpty()) {
-            logger.warn("{}/{} property not found!", name, shortName);
+            logger.debug("{}/{} property not found!", name, shortName);
         }
         return property;
     }

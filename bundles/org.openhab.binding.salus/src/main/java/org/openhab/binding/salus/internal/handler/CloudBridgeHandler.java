@@ -136,11 +136,11 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                         handler.handleCommand(channel.getUID(), REFRESH);
                     }
                 } catch (Exception ex) {
-                    logger.error("Cannot refresh thing {} from CloudBridgeHandler", thing.getUID(), ex);
+                    logger.warn("Cannot refresh thing {} from CloudBridgeHandler", thing.getUID(), ex);
                 }
             }
         } catch (Exception ex) {
-            logger.error("Cannot refresh devices from CloudBridgeHandler", ex);
+            logger.warn("Cannot refresh devices from CloudBridgeHandler", ex);
         }
     }
 
@@ -170,7 +170,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     private SortedSet<DeviceProperty<?>> loadPropertiesForDevice(String dsn) {
         var api = salusApi;
         if (api == null) {
-            logger.error("Cannot find properties for device {} because salusClient is null", dsn);
+            logger.debug("Cannot find properties for device {} because salusClient is null", dsn);
             return null;
         }
         logger.debug("Finding properties for device {} using salusClient", dsn);
@@ -186,7 +186,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     public boolean setValueForProperty(String dsn, String propertyName, Object value) {
         var api = salusApi;
         if (api == null) {
-            logger.error("Cannot set value for property {} on device {} because salusClient is null", propertyName,
+            logger.warn("Cannot set value for property {} on device {} because salusClient is null", propertyName,
                     dsn);
             return false;
         }
