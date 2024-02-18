@@ -73,7 +73,7 @@ public class GsonMapper {
 
     private Optional<Device> parseDevice(Object obj) {
         if (!(obj instanceof Map<?, ?> firstLevelMap)) {
-            logger.warn("Cannot parse device, because object is not type of map!\n{}", obj);
+            logger.debug("Cannot parse device, because object is not type of map!\n{}", obj);
             return empty();
         }
 
@@ -82,14 +82,14 @@ public class GsonMapper {
                 var str = firstLevelMap.entrySet().stream()
                         .map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
                         .collect(Collectors.joining("\n"));
-                logger.warn("Cannot parse device, because firstLevelMap does not have [device] key!\n{}", str);
+                logger.debug("Cannot parse device, because firstLevelMap does not have [device] key!\n{}", str);
             }
             return empty();
         }
         var objLevel2 = firstLevelMap.get("device");
 
         if (!(objLevel2 instanceof Map<?, ?> map)) {
-            logger.warn("Cannot parse device, because object is not type of map!\n{}", obj);
+            logger.debug("Cannot parse device, because object is not type of map!\n{}", obj);
             return empty();
         }
 
@@ -98,7 +98,7 @@ public class GsonMapper {
             if (logger.isWarnEnabled()) {
                 var str = map.entrySet().stream().map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
                         .collect(Collectors.joining("\n"));
-                logger.warn("Cannot parse device, because map does not have [dsn] key!\n{}", str);
+                logger.debug("Cannot parse device, because map does not have [dsn] key!\n{}", str);
             }
             return empty();
         }
@@ -109,7 +109,7 @@ public class GsonMapper {
             if (logger.isWarnEnabled()) {
                 var str = map.entrySet().stream().map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
                         .collect(Collectors.joining("\n"));
-                logger.warn("Cannot parse device, because map does not have [product_name] key!\n{}", str);
+                logger.debug("Cannot parse device, because map does not have [product_name] key!\n{}", str);
             }
             return empty();
         }
@@ -143,7 +143,11 @@ public class GsonMapper {
         try {
             return gson.fromJson(body, typeToken);
         } catch (JsonSyntaxException e) {
-            logger.warn("Error when parsing body!\n{}", body, e);
+            if(logger.isTraceEnabled()) {
+                logger.trace("Error when parsing body!\n{}", body, e);
+            } else {
+                logger.debug("Error when parsing body! Turn on TRACE for more details", e);
+            }
             return defaultValue;
         }
     }
@@ -157,7 +161,7 @@ public class GsonMapper {
         try {
             return requireNonNull(gson.fromJson(errorValue, Error.class));
         } catch (JsonSyntaxException e) {
-            logger.warn("Cannot parse Error from string:\n{}", errorValue);
+            logger.debug("Cannot parse Error from string:\n{}", errorValue);
             return new Error(response.statusCode(), "<ERROR>");
         }
     }
@@ -173,7 +177,7 @@ public class GsonMapper {
 
     private Optional<DeviceProperty<?>> parseDeviceProperty(@Nullable Object obj) {
         if (!(obj instanceof Map<?, ?> firstLevelMap)) {
-            logger.warn("Cannot parse device property, because object is not type of map!\n{}", obj);
+            logger.debug("Cannot parse device property, because object is not type of map!\n{}", obj);
             return empty();
         }
 
@@ -182,7 +186,7 @@ public class GsonMapper {
                 var str = firstLevelMap.entrySet().stream()
                         .map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
                         .collect(Collectors.joining("\n"));
-                logger.warn("Cannot parse device property, because firstLevelMap does not have [property] key!\n{}",
+                logger.debug("Cannot parse device property, because firstLevelMap does not have [property] key!\n{}",
                         str);
             }
             return empty();
@@ -190,7 +194,7 @@ public class GsonMapper {
 
         var objLevel2 = firstLevelMap.get("property");
         if (!(objLevel2 instanceof Map<?, ?> map)) {
-            logger.warn("Cannot parse device property, because object is not type of map!\n{}", obj);
+            logger.debug("Cannot parse device property, because object is not type of map!\n{}", obj);
             return empty();
         }
 
@@ -199,7 +203,7 @@ public class GsonMapper {
             if (logger.isWarnEnabled()) {
                 var str = map.entrySet().stream().map(entry -> format("%s=%s", entry.getKey(), entry.getValue()))
                         .collect(Collectors.joining("\n"));
-                logger.warn("Cannot parse device property, because map does not have [name] key!\n{}", str);
+                logger.debug("Cannot parse device property, because map does not have [name] key!\n{}", str);
             }
             return empty();
         }
@@ -253,7 +257,7 @@ public class GsonMapper {
             } else if (value instanceof String typedValue) {
                 bool = parseBoolean(typedValue);
             } else {
-                logger.warn("Cannot parse boolean from [{}]", value);
+                logger.debug("Cannot parse boolean from [{}]", value);
                 bool = null;
             }
             return new DeviceProperty.BooleanDeviceProperty(name, readOnly, direction, dataUpdatedAt, productName,
@@ -269,11 +273,11 @@ public class GsonMapper {
                 try {
                     longValue = parseLong(string);
                 } catch (NumberFormatException ex) {
-                    logger.warn("Cannot parse long from [{}]", value, ex);
+                    logger.debug("Cannot parse long from [{}]", value, ex);
                     longValue = null;
                 }
             } else {
-                logger.warn("Cannot parse long from [{}]", value);
+                logger.debug("Cannot parse long from [{}]", value);
                 longValue = null;
             }
             return new DeviceProperty.LongDeviceProperty(name, readOnly, direction, dataUpdatedAt, productName,
