@@ -453,7 +453,7 @@
 	</channel-type>
 	<channel-type id="heatingLimitTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Heating Charging Limit Temperature</label>
+		<label>Charging Temperature Limit</label>
 		<description>Until which Temperature should the specific heating device be charged</description>
 		<category>Temperature</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>

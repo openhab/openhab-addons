@@ -33,7 +33,7 @@ Default value for _refreshInterval_ is 60 seconds.
 
 ## Channels
 
-### General channels
+### General Channels
 
 Those channels exist only once.
 Please note that some of them are only available when evcc is properly configured.
@@ -55,7 +55,7 @@ Please note that some of them are only available when evcc is properly configure
 | general#version                 | String               | R          | Current evcc version                                                                                                                                               |
 | general#availableVersion        | String               | R          | Available evcc update version                                                                                                                                      |
 
-### Loadpoint channels
+### Loadpoint Channels
 
 Those channels exist per configured loadpoint.
 Please note that you have to replace _\<N\>_ with your loadpoint id/number.
@@ -87,7 +87,7 @@ Please note that you have to replace _\<N\>_ with your loadpoint id/number.
 | loadpoint\<N\>#chargerFeatureHeating          | Switch                 | R          | 'True' for heating device: State of Charge in Degree instead of Percent                                           |
 | loadpoint\<N\>#chargerFeatureIntegratedDevice | Switch                 | R          | 'True' for integrated device: Operate without a "vehicle" (e.g. heat pump, eBike)                                 |
 
-#### Loadpoint channels specific for vehicles
+#### Loadpoint Channels Specific for Vehicles
 
 | Channel                          | Type                 | Read/Write | Description                                                             |
 |----------------------------------|----------------------|------------|-------------------------------------------------------------------------|
@@ -95,7 +95,7 @@ Please note that you have to replace _\<N\>_ with your loadpoint id/number.
 | loadpoint\<N\>#effectiveLimitSoC | Number:Dimensionless | R          | Effective state of charge (SoC) until which the vehicle will be charged |
 | loadpoint\<N\>#vehicleSoC        | Number:Dimensionless | R          | Current State of Charge of EV                                           |
 
-#### Loadpoint channels specific for heating devices
+#### Loadpoint Channels Specific for Heating Devices
 
 | Channel                                  | Type               | Read/Write | Description                                                          |
 |------------------------------------------|--------------------|------------|----------------------------------------------------------------------|
@@ -103,7 +103,7 @@ Please note that you have to replace _\<N\>_ with your loadpoint id/number.
 | loadpoint\<N\>#effectiveLimitTemperature | Number:Temperature | R          | Effective Temperature until which the heating device will be charged |
 | loadpoint\<N\>#vehicleTemperature        | Number:Temperature | R          | Current Temperature of the heating device                            |
 
-### Vehicle channels
+### Vehicle Channels
 
 Those channels exist per configured vehicle.
 Please note that you have to replace _\<ID\>_ with your vehicle id/name.
@@ -117,7 +117,7 @@ Please note that you have to replace _\<ID\>_ with your vehicle id/name.
 | vehicle\<ID\>#vehiclePlanSoC     | Number:Dimensionless | RW         | Until which state of charge (SoC) should vehicle be charged in plan      |
 | vehicle\<ID\>#vehiclePlanTime    | DateTime             | RW         | When the plan SoC should be reached                                      |
 
-### Heating channels
+### Heating Channels
 
 Those channels exist per configured heating device.
 Please note that you have to replace _\<ID\>_ with your heating device id/name.
