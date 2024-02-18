@@ -92,5 +92,4 @@ public class CloudBridgeConfig {
                 + ", refreshInterval=" + refreshInterval + ", propertiesRefreshInterval=" + propertiesRefreshInterval
                 + '}';
     }
-
 }
