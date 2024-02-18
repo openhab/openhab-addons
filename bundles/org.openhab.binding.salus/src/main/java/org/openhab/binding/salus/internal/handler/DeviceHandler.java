@@ -106,13 +106,11 @@ public class DeviceHandler extends BaseThingHandler {
         try {
             var device = this.cloudApi.findDevice(dsn);
             if (device.isEmpty()) {
-                var msg = "Device with DSN " + dsn + " not found!";
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, "Device with DSN " + dsn + " not found!");
                 return;
             }
             if (!device.get().isConnected()) {
-                var msg = "Device with DSN " + dsn + " is not connected!";
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, "Device with DSN " + dsn + " is not connected!");
                 return;
             }
             var channels = findDeviceProperties().stream().map(this::buildChannel).toList();
@@ -122,8 +120,7 @@ public class DeviceHandler extends BaseThingHandler {
             }
             updateChannels(channels);
         } catch (Exception e) {
-            var msg = "Error when connecting to Salus Cloud!";
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, msg);
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, "Error when connecting to Salus Cloud!");
             return;
         }
 
@@ -134,7 +131,7 @@ public class DeviceHandler extends BaseThingHandler {
     private Channel buildChannel(DeviceProperty<?> property) {
         String channelId;
         String acceptedItemType;
-        if (property instanceof DeviceProperty.BooleanDeviceProperty booleanProperty) {
+        if (property instanceof DeviceProperty.BooleanDeviceProperty) {
             channelId = inOrOut(property.getDirection(), SalusBindingConstants.Channels.GENERIC_INPUT_BOOL_CHANNEL,
                     SalusBindingConstants.Channels.GENERIC_OUTPUT_BOOL_CHANNEL);
             acceptedItemType = "Switch";
@@ -150,7 +147,7 @@ public class DeviceHandler extends BaseThingHandler {
                         SalusBindingConstants.Channels.GENERIC_OUTPUT_NUMBER_CHANNEL);
             }
             acceptedItemType = "Number";
-        } else if (property instanceof DeviceProperty.StringDeviceProperty stringDeviceProperty) {
+        } else if (property instanceof DeviceProperty.StringDeviceProperty) {
             channelId = inOrOut(property.getDirection(), SalusBindingConstants.Channels.GENERIC_INPUT_CHANNEL,
                     SalusBindingConstants.Channels.GENERIC_OUTPUT_CHANNEL);
             acceptedItemType = "String";

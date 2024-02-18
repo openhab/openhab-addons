@@ -30,6 +30,7 @@ import java.util.concurrent.ScheduledFuture;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.salus.internal.SalusBindingConstants;
 import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
 import org.openhab.binding.salus.internal.rest.GsonMapper;
@@ -87,7 +88,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         logger = LoggerFactory
                 .getLogger(CloudBridgeHandler.class.getName() + "[" + config.getUsername().replace(".", "_") + "]");
 
-        var scheduledPool = ThreadPoolManager.getScheduledPool("Salus");
+        var scheduledPool = ThreadPoolManager.getScheduledPool(SalusBindingConstants.BINDING_ID);
         scheduledPool.schedule(() -> tryConnectToCloud(localSalusApi), 1, MICROSECONDS);
 
         this.devicePropertiesCache = Caffeine.newBuilder().maximumSize(10_000)
