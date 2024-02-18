@@ -143,7 +143,7 @@ public class GsonMapper {
         try {
             return gson.fromJson(body, typeToken);
         } catch (JsonSyntaxException e) {
-            if(logger.isTraceEnabled()) {
+            if (logger.isTraceEnabled()) {
                 logger.trace("Error when parsing body!\n{}", body, e);
             } else {
                 logger.debug("Error when parsing body! Turn on TRACE for more details", e);

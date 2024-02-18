@@ -42,7 +42,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -167,7 +166,7 @@ public class It600Handler extends BaseThingHandler {
         } else if (command instanceof DecimalType commandAsDecimalType) {
             rawValue = commandAsDecimalType.toBigDecimal();
         }
-        
+
         if (rawValue != null) {
 
             var value = rawValue.multiply(ONE_HUNDRED).longValue();
