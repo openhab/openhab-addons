@@ -73,15 +73,6 @@ public class DeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        try {
-            internalInitialize();
-        } catch (Exception e) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "Error occurred while initializing Salus device! " + e.getLocalizedMessage());
-        }
-    }
-
-    private void internalInitialize() {
         var bridge = getBridge();
         if (bridge == null) {
             updateStatus(OFFLINE, BRIDGE_UNINITIALIZED,
