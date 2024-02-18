@@ -36,18 +36,20 @@ public class SolarForecastBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(FORECAST_SOLAR_SITE, FORECAST_SOLAR_PLANE,
             SOLCAST_SITGE, SOLCAST_PLANE);
 
+    // Channel groups
+    public static final String GROUP_AVERAGE = "average";
+    public static final String GROUP_OPTIMISTIC = "optimistic";
+    public static final String GROUP_PESSIMISTIC = "pessimistic";
+    public static final String GROUP_RAW = "raw";
+
     // Channels
-    public static final String CHANNEL_POWER_ACTUAL = "power-actual";
     public static final String CHANNEL_POWER_ESTIMATE = "power-estimate";
-    public static final String CHANNEL_POWER_ESTIMATE10 = "power-estimate10";
-    public static final String CHANNEL_POWER_ESTIMATE90 = "power-estimate90";
+    public static final String CHANNEL_ENERGY_ESTIMATE = "energy-estimate";
+    public static final String CHANNEL_POWER_ACTUAL = "power-actual";
     public static final String CHANNEL_ENERGY_ACTUAL = "energy-actual";
     public static final String CHANNEL_ENERGY_REMAIN = "energy-remain";
     public static final String CHANNEL_ENERGY_TODAY = "energy-today";
-    public static final String CHANNEL_ENERGY_ESTIMATE = "energy-estimate";
-    public static final String CHANNEL_ENERGY_ESTIMATE10 = "energy-estimate10";
-    public static final String CHANNEL_ENERGY_ESTIMATE90 = "energy-estimate90";
-    public static final String CHANNEL_RAW = "raw";
+    public static final String CHANNEL_JSON = "json";
 
     // Other
     public static final int REFRESH_ACTUAL_INTERVAL = 1;

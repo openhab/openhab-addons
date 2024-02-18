@@ -114,27 +114,33 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         if (command instanceof RefreshType) {
             forecast.ifPresent(forecastObject -> {
                 if (forecastObject.isValid()) {
-                    if (CHANNEL_POWER_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                        sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecastObject.getPowerTimeSeries(QueryMode.Estimation));
-                    } else if (CHANNEL_POWER_ESTIMATE10.equals(channelUID.getIdWithoutGroup())) {
-                        sendTimeSeries(CHANNEL_POWER_ESTIMATE10,
-                                forecastObject.getPowerTimeSeries(QueryMode.Pessimistic));
-                    } else if (CHANNEL_POWER_ESTIMATE90.equals(channelUID.getIdWithoutGroup())) {
-                        sendTimeSeries(CHANNEL_POWER_ESTIMATE90,
-                                forecastObject.getPowerTimeSeries(QueryMode.Optimistic));
-                    } else if (CHANNEL_ENERGY_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE,
-                                forecastObject.getEnergyTimeSeries(QueryMode.Estimation));
-                    } else if (CHANNEL_ENERGY_ESTIMATE10.equals(channelUID.getIdWithoutGroup())) {
-                        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE10,
-                                forecastObject.getEnergyTimeSeries(QueryMode.Pessimistic));
-                    } else if (CHANNEL_ENERGY_ESTIMATE90.equals(channelUID.getIdWithoutGroup())) {
-                        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE90,
-                                forecastObject.getEnergyTimeSeries(QueryMode.Optimistic));
-                    } else if (CHANNEL_RAW.equals(channelUID.getIdWithoutGroup())) {
-                        updateState(CHANNEL_RAW, StringType.valueOf(forecastObject.getRaw()));
-                    } else {
-                        fetchData();
+                    String group = channelUID.getGroupId();
+                    String channel = channelUID.getIdWithoutGroup();
+                    QueryMode mode = QueryMode.Average;
+                    switch (group) {
+                        case GROUP_AVERAGE:
+                            mode = QueryMode.Average;
+                            break;
+                        case GROUP_OPTIMISTIC:
+                            mode = QueryMode.Optimistic;
+                            break;
+                        case GROUP_PESSIMISTIC:
+                            mode = QueryMode.Pessimistic;
+                            break;
+                        case GROUP_RAW:
+                            forecast.ifPresent(f -> {
+                                updateState(GROUP_RAW + "#" + CHANNEL_JSON, StringType.valueOf(f.getRaw()));
+                            });
+                    }
+                    switch (channel) {
+                        case CHANNEL_ENERGY_ESTIMATE:
+                            sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecastObject.getEnergyTimeSeries(mode));
+                            break;
+                        case CHANNEL_POWER_ESTIMATE:
+                            sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecastObject.getPowerTimeSeries(mode));
+                            break;
+                        default:
+                            updateChannels(forecastObject);
                     }
                 }
             });
@@ -165,7 +171,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         if (crForecast.getStatus() == 200) {
                             localForecast.join(crForecast.getContentAsString());
                             setForecast(localForecast);
-                            updateState(CHANNEL_RAW, StringType.valueOf(forecast.get().getRaw()));
+                            updateState(GROUP_RAW + "#" + CHANNEL_JSON, StringType.valueOf(forecast.get().getRaw()));
                             updateStatus(ThingStatus.ONLINE);
                         } else {
                             logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl, crForecast.getStatus());
@@ -194,23 +200,50 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
 
     protected void updateChannels(SolcastObject f) {
         ZonedDateTime now = ZonedDateTime.now(bridgeHandler.get().getTimeZone());
-        double energyDay = f.getDayTotal(now.toLocalDate(), QueryMode.Estimation);
-        double energyProduced = f.getActualEnergyValue(now, QueryMode.Estimation);
-        updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energyProduced));
-        updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(energyDay - energyProduced));
-        updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(energyDay));
-        updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Estimation)));
+        List<QueryMode> modes = List.of(QueryMode.Average, QueryMode.Pessimistic, QueryMode.Optimistic);
+        modes.forEach(mode -> {
+            double energyDay = f.getDayTotal(now.toLocalDate(), mode);
+            double energyProduced = f.getActualEnergyValue(now, mode);
+            switch (mode) {
+                case Average:
+                    updateState(GROUP_AVERAGE + "#" + CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energyProduced));
+                    updateState(GROUP_AVERAGE + "#" + CHANNEL_ENERGY_REMAIN,
+                            Utils.getEnergyState(energyDay - energyProduced));
+                    updateState(GROUP_AVERAGE + "#" + CHANNEL_ENERGY_TODAY, Utils.getEnergyState(energyDay));
+                    updateState(GROUP_AVERAGE + "#" + CHANNEL_POWER_ACTUAL,
+                            Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Average)));
+                    break;
+                case Optimistic:
+                    updateState(GROUP_OPTIMISTIC + "#" + CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energyProduced));
+                    updateState(GROUP_OPTIMISTIC + "#" + CHANNEL_ENERGY_REMAIN,
+                            Utils.getEnergyState(energyDay - energyProduced));
+                    updateState(GROUP_OPTIMISTIC + "#" + CHANNEL_ENERGY_TODAY, Utils.getEnergyState(energyDay));
+                    updateState(GROUP_OPTIMISTIC + "#" + CHANNEL_POWER_ACTUAL,
+                            Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Average)));
+                    break;
+                case Pessimistic:
+                    updateState(GROUP_PESSIMISTIC + "#" + CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energyProduced));
+                    updateState(GROUP_PESSIMISTIC + "#" + CHANNEL_ENERGY_REMAIN,
+                            Utils.getEnergyState(energyDay - energyProduced));
+                    updateState(GROUP_PESSIMISTIC + "#" + CHANNEL_ENERGY_TODAY, Utils.getEnergyState(energyDay));
+                    updateState(GROUP_PESSIMISTIC + "#" + CHANNEL_POWER_ACTUAL,
+                            Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Average)));
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 
     protected synchronized void setForecast(SolcastObject f) {
         logger.info("New forecast {}", f.toString());
         forecast = Optional.of(f);
-        sendTimeSeries(CHANNEL_POWER_ESTIMATE, f.getPowerTimeSeries(QueryMode.Estimation));
-        sendTimeSeries(CHANNEL_POWER_ESTIMATE10, f.getPowerTimeSeries(QueryMode.Pessimistic));
-        sendTimeSeries(CHANNEL_POWER_ESTIMATE90, f.getPowerTimeSeries(QueryMode.Optimistic));
-        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, f.getEnergyTimeSeries(QueryMode.Estimation));
-        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE10, f.getEnergyTimeSeries(QueryMode.Pessimistic));
-        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE90, f.getEnergyTimeSeries(QueryMode.Optimistic));
+        sendTimeSeries(GROUP_AVERAGE + "#" + CHANNEL_POWER_ESTIMATE, f.getPowerTimeSeries(QueryMode.Average));
+        sendTimeSeries(GROUP_AVERAGE + "#" + CHANNEL_ENERGY_ESTIMATE, f.getEnergyTimeSeries(QueryMode.Average));
+        sendTimeSeries(GROUP_OPTIMISTIC + "#" + CHANNEL_POWER_ESTIMATE, f.getPowerTimeSeries(QueryMode.Optimistic));
+        sendTimeSeries(GROUP_OPTIMISTIC + "#" + CHANNEL_ENERGY_ESTIMATE, f.getEnergyTimeSeries(QueryMode.Optimistic));
+        sendTimeSeries(GROUP_PESSIMISTIC + "#" + CHANNEL_POWER_ESTIMATE, f.getPowerTimeSeries(QueryMode.Pessimistic));
+        sendTimeSeries(GROUP_PESSIMISTIC + "#" + CHANNEL_ENERGY_ESTIMATE, f.getEnergyTimeSeries(QueryMode.Pessimistic));
         bridgeHandler.ifPresent(h -> {
             h.forecastUpdate();
         });

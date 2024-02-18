@@ -57,8 +57,8 @@ class SolcastTest {
     private static final TimeZP TIMEZONEPROVIDER = new TimeZP();
     // double comparison tolerance = 1 Watt
     private static final double TOLERANCE = 0.001;
-    public static final QuantityType<Power> POWER_UNDEF = Utils.getPowerState(-1);;
-    public static final QuantityType<Energy> ENERGY_UNDEF = Utils.getEnergyState(-1);;
+    public static final QuantityType<Power> POWER_UNDEF = Utils.getPowerState(-1);
+    public static final QuantityType<Energy> ENERGY_UNDEF = Utils.getEnergyState(-1);
 
     /**
      * "2022-07-18T00:00+02:00[Europe/Berlin]": 0,
@@ -118,22 +118,22 @@ class SolcastTest {
         content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         scfo.join(content);
         // test one day, step ahead in time and cross check channel values
-        double dayTotal = scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation);
-        double actual = scfo.getActualEnergyValue(now, QueryMode.Estimation);
-        double remain = scfo.getRemainingProduction(now, QueryMode.Estimation);
+        double dayTotal = scfo.getDayTotal(now.toLocalDate(), QueryMode.Average);
+        double actual = scfo.getActualEnergyValue(now, QueryMode.Average);
+        double remain = scfo.getRemainingProduction(now, QueryMode.Average);
         assertEquals(0.0, actual, TOLERANCE, "Begin of day actual");
         assertEquals(23.107, remain, TOLERANCE, "Begin of day remaining");
         assertEquals(23.107, dayTotal, TOLERANCE, "Day total");
-        assertEquals(0.0, scfo.getActualPowerValue(now, QueryMode.Estimation), TOLERANCE, "Begin of day power");
+        assertEquals(0.0, scfo.getActualPowerValue(now, QueryMode.Average), TOLERANCE, "Begin of day power");
         double previousPower = 0;
         for (int i = 0; i < 47; i++) {
             now = now.plusMinutes(30);
-            double power = scfo.getActualPowerValue(now, QueryMode.Estimation) / 2.0;
+            double power = scfo.getActualPowerValue(now, QueryMode.Average) / 2.0;
             double powerAddOn = ((power + previousPower) / 2.0);
             actual += powerAddOn;
-            assertEquals(actual, scfo.getActualEnergyValue(now, QueryMode.Estimation), TOLERANCE, "Actual at " + now);
+            assertEquals(actual, scfo.getActualEnergyValue(now, QueryMode.Average), TOLERANCE, "Actual at " + now);
             remain -= powerAddOn;
-            assertEquals(remain, scfo.getRemainingProduction(now, QueryMode.Estimation), TOLERANCE, "Remain at " + now);
+            assertEquals(remain, scfo.getRemainingProduction(now, QueryMode.Average), TOLERANCE, "Remain at " + now);
             assertEquals(dayTotal, actual + remain, TOLERANCE, "Total sum at " + now);
             previousPower = power;
         }
@@ -162,8 +162,8 @@ class SolcastTest {
          * "period_end": "2022-07-23T14:30:00.0000000Z",
          * "period": "PT30M"
          */
-        assertEquals(1.9176, scfo.getActualPowerValue(now, QueryMode.Estimation), TOLERANCE, "Estimate power " + now);
-        assertEquals(1.754, scfo.getActualPowerValue(now.plusMinutes(30), QueryMode.Estimation), TOLERANCE,
+        assertEquals(1.9176, scfo.getActualPowerValue(now, QueryMode.Average), TOLERANCE, "Estimate power " + now);
+        assertEquals(1.754, scfo.getActualPowerValue(now.plusMinutes(30), QueryMode.Average), TOLERANCE,
                 "Estimate power " + now.plusMinutes(30));
 
         assertEquals(2.046, scfo.getActualPowerValue(now, QueryMode.Optimistic), TOLERANCE, "Optimistic power " + now);
@@ -189,8 +189,8 @@ class SolcastTest {
          **/
         // get same values for optimistic / pessimistic and estimate in the past
         ZonedDateTime past = LocalDateTime.of(2022, 7, 17, 16, 30).atZone(TEST_ZONE);
-        assertEquals(1.932, scfo.getActualPowerValue(past, QueryMode.Estimation), TOLERANCE, "Estimate power " + past);
-        assertEquals(1.724, scfo.getActualPowerValue(past.plusMinutes(30), QueryMode.Estimation), TOLERANCE,
+        assertEquals(1.932, scfo.getActualPowerValue(past, QueryMode.Average), TOLERANCE, "Estimate power " + past);
+        assertEquals(1.724, scfo.getActualPowerValue(past.plusMinutes(30), QueryMode.Average), TOLERANCE,
                 "Estimate power " + now.plusMinutes(30));
 
         assertEquals(1.932, scfo.getActualPowerValue(past, QueryMode.Optimistic), TOLERANCE,
@@ -251,8 +251,8 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = LocalDateTime.of(2022, 7, 17, 7, 0).atZone(TEST_ZONE);
         SolcastObject scfo = new SolcastObject(content, now.toInstant(), TIMEZONEPROVIDER);
-        assertEquals(0.42, scfo.getActualEnergyValue(now, QueryMode.Estimation), TOLERANCE, "Actual estimation");
-        assertEquals(25.413, scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation), TOLERANCE, "Day total");
+        assertEquals(0.42, scfo.getActualEnergyValue(now, QueryMode.Average), TOLERANCE, "Actual estimation");
+        assertEquals(25.413, scfo.getDayTotal(now.toLocalDate(), QueryMode.Average), TOLERANCE, "Day total");
     }
 
     @Test
@@ -260,11 +260,11 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(TEST_ZONE);
         SolcastObject scfo = new SolcastObject(content, now.toInstant(), TIMEZONEPROVIDER);
-        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Estimation), 0.01, "Invalid");
+        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Average), 0.01, "Invalid");
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
-        assertEquals(18.946, scfo.getActualEnergyValue(now, QueryMode.Estimation), 0.01, "Actual data");
-        assertEquals(23.107, scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation), 0.01, "Today data");
+        assertEquals(18.946, scfo.getActualEnergyValue(now, QueryMode.Average), 0.01, "Actual data");
+        assertEquals(23.107, scfo.getDayTotal(now.toLocalDate(), QueryMode.Average), 0.01, "Today data");
         JSONObject rawJson = new JSONObject(scfo.getRaw());
         assertTrue(rawJson.has("forecasts"));
         assertTrue(rawJson.has("estimated_actuals"));
@@ -275,7 +275,7 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(TEST_ZONE);
         SolcastObject scfo = new SolcastObject(content, now.toInstant(), TIMEZONEPROVIDER);
-        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Estimation), 0.01, "Invalid");
+        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Average), 0.01, "Invalid");
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
 
@@ -307,13 +307,13 @@ class SolcastTest {
         SolcastObject scfo = new SolcastObject(content, now.toInstant(), TIMEZONEPROVIDER);
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
-        assertEquals(19.389, scfo.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.Estimation), TOLERANCE,
+        assertEquals(19.389, scfo.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.Average), TOLERANCE,
                 "Estimation");
         assertEquals(7.358, scfo.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.Pessimistic), TOLERANCE,
                 "Estimation");
         assertEquals(22.283, scfo.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.Optimistic), TOLERANCE,
                 "Estimation");
-        assertEquals(23.316, scfo.getDayTotal(now.toLocalDate().plusDays(6), QueryMode.Estimation), TOLERANCE,
+        assertEquals(23.316, scfo.getDayTotal(now.toLocalDate().plusDays(6), QueryMode.Average), TOLERANCE,
                 "Estimation");
         assertEquals(9.8, scfo.getDayTotal(now.toLocalDate().plusDays(6), QueryMode.Pessimistic), TOLERANCE,
                 "Estimation");
@@ -356,12 +356,12 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = ZonedDateTime.now(TEST_ZONE);
         SolcastObject scfo = new SolcastObject(content, now.toInstant(), TIMEZONEPROVIDER);
-        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Estimation), 0.01, "Data available - day not in");
+        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Average), 0.01, "Data available - day not in");
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
-        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Estimation), 0.01,
+        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Average), 0.01,
                 "Data available after merge - day not in");
-        assertEquals(-1.0, scfo.getDayTotal(now.toLocalDate(), QueryMode.Estimation), 0.01,
+        assertEquals(-1.0, scfo.getDayTotal(now.toLocalDate(), QueryMode.Average), 0.01,
                 "Data available after merge - day not in");
     }
 
@@ -373,12 +373,12 @@ class SolcastTest {
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         sco.join(content);
 
-        double startValue = sco.getActualPowerValue(now, QueryMode.Estimation);
-        double endValue = sco.getActualPowerValue(now.plusMinutes(30), QueryMode.Estimation);
+        double startValue = sco.getActualPowerValue(now, QueryMode.Average);
+        double endValue = sco.getActualPowerValue(now.plusMinutes(30), QueryMode.Average);
         for (int i = 0; i < 31; i++) {
             double interpolation = i / 30.0;
             double expected = ((1 - interpolation) * startValue) + (interpolation * endValue);
-            assertEquals(expected, sco.getActualPowerValue(now.plusMinutes(i), QueryMode.Estimation), TOLERANCE,
+            assertEquals(expected, sco.getActualPowerValue(now.plusMinutes(i), QueryMode.Average), TOLERANCE,
                     "Step " + i);
         }
     }
@@ -394,12 +394,12 @@ class SolcastTest {
         double maxDiff = 0;
         double productionExpected = 0;
         for (int i = 0; i < 1000; i++) {
-            double forecast = sco.getActualEnergyValue(now.plusMinutes(i), QueryMode.Estimation);
-            double addOnExpected = sco.getActualPowerValue(now.plusMinutes(i), QueryMode.Estimation) / 60.0;
+            double forecast = sco.getActualEnergyValue(now.plusMinutes(i), QueryMode.Average);
+            double addOnExpected = sco.getActualPowerValue(now.plusMinutes(i), QueryMode.Average) / 60.0;
             productionExpected += addOnExpected;
             double diff = forecast - productionExpected;
             maxDiff = Math.max(diff, maxDiff);
-            assertEquals(productionExpected, sco.getActualEnergyValue(now.plusMinutes(i), QueryMode.Estimation),
+            assertEquals(productionExpected, sco.getActualEnergyValue(now.plusMinutes(i), QueryMode.Average),
                     100 * TOLERANCE, "Step " + i);
         }
     }
@@ -454,7 +454,7 @@ class SolcastTest {
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         sco.join(content);
 
-        TimeSeries powerSeries = sco.getPowerTimeSeries(QueryMode.Estimation);
+        TimeSeries powerSeries = sco.getPowerTimeSeries(QueryMode.Average);
         List<QuantityType<Power>> estimateL = new ArrayList<QuantityType<Power>>();
         assertEquals(672, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
@@ -500,7 +500,7 @@ class SolcastTest {
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         sco.join(content);
 
-        TimeSeries energySeries = sco.getEnergyTimeSeries(QueryMode.Estimation);
+        TimeSeries energySeries = sco.getEnergyTimeSeries(QueryMode.Average);
         List<QuantityType<Power>> estimateL = new ArrayList<QuantityType<Power>>();
         assertEquals(672, energySeries.size()); // 18 values each day for 2 days
         energySeries.getStates().forEachOrdered(entry -> {
@@ -547,12 +547,21 @@ class SolcastTest {
         scbh.setCallback(cm);
 
         SolcastPlaneHandler scph1 = new SolcastPlaneMock(bi);
+        CallbackMock cm1 = new CallbackMock();
         scph1.initialize();
-        TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:power-estimate");
+        scph1.setCallback(cm1);
 
         SolcastPlaneHandler scph2 = new SolcastPlaneMock(bi);
+        CallbackMock cm2 = new CallbackMock();
         scph2.initialize();
-        TimeSeries ts2 = cm.getTimeSeries("solarforecast:sc-site:bridge:power-estimate");
+        scph2.setCallback(cm2);
+
+        // simulate trigger of refresh job
+        scbh.getData();
+
+        TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#power-estimate");
+        TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:thing:average#power-estimate");
+        assertEquals(336, ts1.size(), "TimeSeries size");
 
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
@@ -561,7 +570,7 @@ class SolcastTest {
             TimeSeries.Entry e2 = iter2.next();
             assertEquals("kW", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
             assertEquals("kW", ((QuantityType<?>) e2.state()).getUnit().toString(), "Power Unit");
-            assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() / 2,
+            assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() * 2,
                     0.1, "Power Value");
         }
     }
@@ -575,12 +584,21 @@ class SolcastTest {
         scbh.setCallback(cm);
 
         SolcastPlaneHandler scph1 = new SolcastPlaneMock(bi);
+        CallbackMock cm1 = new CallbackMock();
         scph1.initialize();
-        TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:energy-estimate");
+        scph1.setCallback(cm1);
 
         SolcastPlaneHandler scph2 = new SolcastPlaneMock(bi);
+        CallbackMock cm2 = new CallbackMock();
         scph2.initialize();
-        TimeSeries ts2 = cm.getTimeSeries("solarforecast:sc-site:bridge:energy-estimate");
+        scph2.setCallback(cm2);
+
+        // simulate trigger of refresh job
+        scbh.getData();
+
+        TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#energy-estimate");
+        TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:thing:average#energy-estimate");
+        assertEquals(336, ts1.size(), "TimeSeries size");
 
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
@@ -589,7 +607,7 @@ class SolcastTest {
             TimeSeries.Entry e2 = iter2.next();
             assertEquals("kWh", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
             assertEquals("kWh", ((QuantityType<?>) e2.state()).getUnit().toString(), "Power Unit");
-            assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() / 2,
+            assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() * 2,
                     0.1, "Power Value");
         }
     }
@@ -608,7 +626,7 @@ class SolcastTest {
         // simulate trigger of refresh job
         scbh.getData();
 
-        TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:energy-estimate");
+        TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#energy-estimate");
         assertEquals(336, ts1.size(), "TimeSeries size");
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         while (iter1.hasNext()) {

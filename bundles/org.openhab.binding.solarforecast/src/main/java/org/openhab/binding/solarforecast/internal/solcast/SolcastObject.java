@@ -59,7 +59,7 @@ public class SolcastObject implements SolarForecast {
     private long period = 30;
 
     public enum QueryMode {
-        Estimation("Estimation"),
+        Average(SolarForecast.AVERAGE),
         Optimistic(SolarForecast.OPTIMISTIC),
         Pessimistic(SolarForecast.PESSIMISTIC),
         Error("Error");
@@ -142,17 +142,11 @@ public class SolcastObject implements SolarForecast {
     }
 
     public boolean isValid() {
-        if (estimationDataMap.isEmpty()) {
-            return false;
-        }
-        return true;
+        return !estimationDataMap.isEmpty();
     }
 
     public boolean isExpired() {
-        if (expirationDateTime.isAfter(Instant.now())) {
-            return false;
-        }
-        return true;
+        return (expirationDateTime.isBefore(Instant.now()));
     }
 
     public double getActualEnergyValue(ZonedDateTime query, QueryMode mode) {
@@ -317,7 +311,7 @@ public class SolcastObject implements SolarForecast {
     private TreeMap<ZonedDateTime, Double> getDataMap(QueryMode mode) {
         TreeMap<ZonedDateTime, Double> returnMap = EMPTY_MAP;
         switch (mode) {
-            case Estimation:
+            case Average:
                 returnMap = estimationDataMap;
                 break;
             case Optimistic:
@@ -463,7 +457,7 @@ public class SolcastObject implements SolarForecast {
                 return QueryMode.Error;
             }
         } else {
-            return QueryMode.Estimation;
+            return QueryMode.Average;
         }
     }
 }

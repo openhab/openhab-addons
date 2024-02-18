@@ -31,6 +31,10 @@ import org.openhab.core.types.TimeSeries;
 @NonNullByDefault
 public interface SolarForecast {
     /**
+     * Argument can be used to query an average forecast scenario
+     */
+    public static final String AVERAGE = "average";
+    /**
      * Argument can be used to query an optimistic forecast scenario
      */
     public static final String OPTIMISTIC = "optimistic";

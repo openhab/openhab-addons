@@ -139,11 +139,11 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
             forecastObjects.addAll(sfph.getSolarForecasts());
         }
         forecastObjects.forEach(fc -> {
-            TimeSeries powerTS = fc.getPowerTimeSeries(QueryMode.Estimation);
+            TimeSeries powerTS = fc.getPowerTimeSeries(QueryMode.Average);
             powerTS.getStates().forEach(entry -> {
                 Utils.addState(combinedPowerForecast, entry);
             });
-            TimeSeries energyTS = fc.getEnergyTimeSeries(QueryMode.Estimation);
+            TimeSeries energyTS = fc.getEnergyTimeSeries(QueryMode.Average);
             energyTS.getStates().forEach(entry -> {
                 Utils.addState(combinedEnergyForecast, entry);
             });

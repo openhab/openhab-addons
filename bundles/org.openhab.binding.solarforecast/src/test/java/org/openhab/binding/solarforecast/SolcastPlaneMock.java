@@ -16,8 +16,8 @@ import static org.mockito.Mockito.mock;
 
 import java.time.Instant;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
@@ -36,15 +36,16 @@ import org.openhab.core.thing.internal.ThingImpl;
 public class SolcastPlaneMock extends SolcastPlaneHandler {
     Bridge bridge;
 
+    // solarforecast:sc-site:bridge
     public SolcastPlaneMock(BridgeImpl b) {
-        super(new ThingImpl(SolarForecastBindingConstants.SOLCAST_PLANE, new ThingUID("test", "plane")),
-                mock(HttpClient.class));
+        super(new ThingImpl(SolarForecastBindingConstants.SOLCAST_PLANE,
+                new ThingUID("solarforecast", "sc-plane", "thing")), mock(HttpClient.class));
         super.setCallback(new CallbackMock());
         bridge = b;
     }
 
     @Override
-    public @NonNull Bridge getBridge() {
+    public @Nullable Bridge getBridge() {
         return bridge;
     }
 

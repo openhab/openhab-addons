@@ -287,6 +287,26 @@ Number:Power            ForecastSolarHome_Power_Estimate_SW     "SW Power estima
 Number:Energy           ForecastSolarHome_Energy_Estimate_SW    "SW Energy estimations"                     (influxdb)  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
 ```
 
+### Persistence file
+
+```java
+// persistence strategies have a name and definition and are referred to in the "Items" section
+Strategies {
+        everyHour : "0 0 * * * ?"
+        everyDay  : "0 0 0 * * ?"
+}
+
+/*
+ * Each line in this section defines for which Item(s) which strategy(ies) should be applied.
+ * You can list single items, use "*" for all items or "groupitem*" for all members of a group
+ * Item (excl. the group Item itself).
+ */
+Items {
+
+        influxdb* : strategy = restoreOnStartup, forecast
+}
+```
+
 ### Actions rule
 
 ```java
@@ -311,14 +331,22 @@ rule "Solcast Actions"
     when
         Time cron "0 0 23 * * ?" // trigger whatever you like
     then 
+        // Query forecast via Actions
         val solarforecastActions = getActions("solarforecast","solarforecast:sc-site:homeSite")
         val startTimestamp = Instant.now
         val endTimestamp = Instant.now.plus(6, ChronoUnit.DAYS)
         val sixDayForecast = solarforecastActions.getEnergy(startTimestamp,endTimestamp)
-        logInfo("SF Tests","Forecast Estimate  6 days "+ sixDayForecast)
+        logInfo("SF Tests","Forecast Average 6 days "+ sixDayForecast)
         val sixDayOptimistic = solarforecastActions.getEnergy(startTimestamp,endTimestamp, "optimistic")
-        logInfo("SF Tests","Forecast Optimist  6 days "+ sixDayOptimistic)
+        logInfo("SF Tests","Forecast Optimist 6 days "+ sixDayOptimistic)
         val sixDayPessimistic = solarforecastActions.getEnergy(startTimestamp,endTimestamp, "pessimistic")
         logInfo("SF Tests","Forecast Pessimist 6 days "+ sixDayPessimistic)
+
+        // Query forecast TimesSeries Items via historicStata
+        val energyAverage =  (Solcast_Site_Average_Energyestimate.historicState(now.plusDays(1)).state as Number)
+        logInfo("SF Tests","Average energy {}",energyAverage)
+        val energyOptimistic =  (Solcast_Site_Optimistic_Energyestimate.historicState(now.plusDays(1)).state as Number)
+        logInfo("SF Tests","Optimist energy {}",energyOptimistic)
+
 end
 ```

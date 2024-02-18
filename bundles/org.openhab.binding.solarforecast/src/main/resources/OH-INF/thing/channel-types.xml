@@ -16,18 +16,6 @@
 		<description>Power forecast for next hours/days</description>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="power-estimate10-channel">
-		<item-type>Number:Power</item-type>
-		<label>Pessimistic Power Forecast</label>
-		<description>Pessimistic power forecast for next hours/days</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="power-estimate90-channel">
-		<item-type>Number:Power</item-type>
-		<label>Optimistic Power Forecast</label>
-		<description>Optimistic power forecast for next hours/days</description>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
 	<channel-type id="energy-actual-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Actual Energy Forecast</label>
@@ -52,19 +40,7 @@
 		<description>Energy forecast for next hours/days</description>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="energy-estimate10-channel">
-		<item-type>Number:Energy</item-type>
-		<label>Pessimistic Energy Forecast</label>
-		<description>Pessimistic energy forecast for next hours/days</description>
-		<state pattern="%.3f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="energy-estimate90-channel">
-		<item-type>Number:Energy</item-type>
-		<label>Optimistic Energy Forecast</label>
-		<description>Optimistic energy forecast for next hours/days</description>
-		<state pattern="%.3f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="raw-channel" advanced="true">
+	<channel-type id="json-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Raw JSON Response</label>
 		<description>Plain JSON response without conversions</description>

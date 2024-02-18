@@ -92,17 +92,11 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     public boolean isValid() {
-        if (wattHourMap.isEmpty() || wattMap.isEmpty()) {
-            return false;
-        }
-        return true;
+        return !(wattHourMap.isEmpty() || wattMap.isEmpty());
     }
 
     public boolean isExpired() {
-        if (expirationDateTime.isAfter(Instant.now())) {
-            return false;
-        }
-        return true;
+        return expirationDateTime.isBefore(Instant.now());
     }
 
     public double getActualEnergyValue(ZonedDateTime queryDateTime) {

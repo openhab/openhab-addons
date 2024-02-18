@@ -48,8 +48,8 @@ import org.openhab.core.types.TimeSeries;
 class ForecastSolarTest {
     private static final double TOLERANCE = 0.001;
     public static final ZoneId TEST_ZONE = ZoneId.of("Europe/Berlin");
-    public static final QuantityType<Power> POWER_UNDEF = Utils.getPowerState(-1);;
-    public static final QuantityType<Energy> ENERGY_UNDEF = Utils.getEnergyState(-1);;
+    public static final QuantityType<Power> POWER_UNDEF = Utils.getPowerState(-1);
+    public static final QuantityType<Energy> ENERGY_UNDEF = Utils.getEnergyState(-1);
 
     @Test
     void testForecastObject() {
@@ -223,7 +223,7 @@ class ForecastSolarTest {
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
         ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
 
-        TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.Estimation);
+        TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.Average);
         assertEquals(36, powerSeries.size()); // 18 values each day for 2 days
         powerSeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
@@ -231,7 +231,7 @@ class ForecastSolarTest {
             assertEquals("kW", ((QuantityType<Power>) s).getUnit().toString());
         });
 
-        TimeSeries energySeries = fo.getEnergyTimeSeries(QueryMode.Estimation);
+        TimeSeries energySeries = fo.getEnergyTimeSeries(QueryMode.Average);
         assertEquals(36, energySeries.size());
         energySeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
