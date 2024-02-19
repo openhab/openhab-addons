@@ -11,7 +11,6 @@ Binding for Bosch Smart Home devices.
     - [Door/Window Contact](#door-window-contact)
     - [Door/Window Contact II](#door-window-contact-ii)
     - [Light Control II](#light-control-ii)
-    - [Light Switch](#light-switch)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
     - [Shutter Control II](#shutter-control-ii)
@@ -119,29 +118,19 @@ Detects open windows and doors and features an additional button.
 
 ### Light Control II
 
-This thing type is used if Light/Shutter Control II devices are configured as light controls. 
-This thing type represents the base (parent) device and provides communication quality and power metering services. 
-The two light switch circuits are modeled as two independent child devices with thing type `light-switch`, which is documented in a [separate section](#light-switch).
+This thing type is used if Light/Shutter Control II devices are configured as light controls.
 
 **Thing Type ID**: `light-control-2`
 
-| Channel Type ID    | Item Type     | Writable | Description                                       |
-| ------------------ | ------------- | :------: | ------------------------------------------------- |
+| Channel Type ID    | Item Type     | Writable | Description                                                   |
+| ------------------ | ------------- | :------: | ------------------------------------------------------------- |
 | signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
-| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.      |
-| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device.  |
-
-### Light Switch
-
-This thing type represents light switch circuits of a modular parent device. 
-For example, if a Light/Shutter Control II is configured as light control, the two light switch circuits are represented as two logical child devices with the thing type `light-switch`.
-
-**Thing Type ID**: `light-switch`
-
-| Channel Type ID  | Item Type | Writable | Description                                       |
-| ---------------- | --------- | :------: | ------------------------------------------------- |
-| power-switch     | Switch    | &#9745;  | Switches the light on or off.                     |
-| child-protection | Switch    | &#9745;  | Indicates whether the child protection is active. |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.                  |
+| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device.              |
+| power-switch-1     | Switch        | &#9745;  | Switches the light on or off (circuit 1).                     |
+| child-protection-1 | Switch        | &#9745;  | Indicates whether the child protection is active (circuit 1). |
+| power-switch-2     | Switch        | &#9745;  | Switches the light on or off (circuit 2).                     |
+| child-protection-2 | Switch        | &#9745;  | Indicates whether the child protection is active (circuit 2). |
 
 ### Motion Detector
 
