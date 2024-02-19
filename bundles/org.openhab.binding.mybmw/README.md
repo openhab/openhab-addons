@@ -134,7 +134,7 @@ They differ for each vehicle type, build-in sensors and activated services.
 |----------------------------------|---------------------------------------------------|------|------|---------|-----|
 | [update](#vehicle-update)        | Overall vehicle status                            |  X   |  X   |    X    |  X  |
 | [status](#vehicle-status)        | Overall vehicle status                            |  X   |  X   |    X    |  X  |
-| [doors](#doors-details)          | Detials of all doors and windows                  |  X   |  X   |    X    |  X  |
+| [doors](#doors-details)          | Details of all doors and windows                  |  X   |  X   |    X    |  X  |
 | [range](#range-data)             | Provides mileage, range and charge / fuel levels  |  X   |  X   |    X    |  X  |
 | [check](#check-control)          | Shows current active CheckControl messages        |  X   |  X   |    X    |  X  |
 | [service](#services)             | Future vehicle service schedules                  |  X   |  X   |    X    |  X  |
