@@ -294,7 +294,7 @@
 	</channel-type>
 	<channel-type id="effectiveLimitSoC">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Effective Charging Limit SoC</label>
+		<label>Effective Charging Limit</label>
 		<description>Effective state of charge (SoC) until which the vehicle will be charged</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
