@@ -161,9 +161,9 @@ This thing type is used if Light/Shutter Control II devices are configured as sh
 
 **Thing Type ID**: `shutter-control-2`
 
-| Channel Type ID    | Item Type     | Writable | Description                              |
-| ------------------ | ------------- | :------: | ---------------------------------------- |
-| level              | Rollershutter | &#9745;  | Current open ratio (0 to 100, Step 0.5). |
+| Channel Type ID    | Item Type     | Writable | Description                                       |
+| ------------------ | ------------- | :------: | ------------------------------------------------- |
+| level              | Rollershutter | &#9745;  | Current open ratio (0 to 100, Step 0.5).          |
 | signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
 | child-protection   | Switch        | &#9745;  | Indicates whether the child protection is active. |
 | power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.      |
