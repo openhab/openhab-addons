@@ -85,7 +85,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
     private PiperTTSConfiguration config = new PiperTTSConfiguration();
     private @Nullable VoiceModel preloadedModel;
     private @Nullable PiperJNI piper;
-    private HashMap<String, List<Voice>> cachedVoicesByModel = new HashMap<>();
+    private Map<String, List<Voice>> cachedVoicesByModel = new HashMap<>();
     private Lock modelLock = new ReentrantLock();
 
     @Activate
