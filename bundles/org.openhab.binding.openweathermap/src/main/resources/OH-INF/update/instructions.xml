@@ -143,6 +143,17 @@
 				<type>openweathermap:snow</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="moonrise" groupIds="forecastDaily">
+				<type>openweathermap:moonrise</type>
+			</add-channel>
+			<add-channel id="moonset" groupIds="forecastDaily">
+				<type>openweathermap:moonset</type>
+			</add-channel>
+			<add-channel id="moon-phase" groupIds="forecastDaily">
+				<type>openweathermap:moon-phase</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
