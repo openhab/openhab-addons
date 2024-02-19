@@ -389,8 +389,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/comm-error.error-in-sysap-com");
 
-            restartHttpConnection();
-
             throw new FreeAtHomeHttpCommunicationException(0,
                     "Http communication interrupted [ " + e.getMessage() + " ]");
         }
@@ -452,24 +450,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     public boolean openHttpConnection() {
         boolean ret = false;
 
-        // Configure client
-        httpClient.setFollowRedirects(false);
-        httpClient.setMaxConnectionsPerDestination(1);
-        httpClient.setMaxRequestsQueuedPerDestination(50);
-
-        // Set timeouts
-        httpClient.setIdleTimeout(-1);
-        httpClient.setConnectTimeout(5000);
-
-        try {
-            // Start HttpClient.
-            httpClient.start();
-        } catch (Exception ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error.not-able-start-httpclient");
-            return false;
-        }
-
         try {
             // Add authentication credentials.
             AuthenticationStore auth = httpClient.getAuthenticationStore();
@@ -505,46 +485,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
             ret = false;
         }
-
-        return ret;
-    }
-
-    /**
-     * Method to close Http connection
-     */
-    public boolean closeHttpConnection() {
-        boolean ret = false;
-
-        try {
-            // Stop HttpClient.
-            httpClient.stop();
-
-            logger.debug("Stop http client");
-
-            ret = true;
-        } catch (Exception ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error.not-able-stop-httpclient");
-
-            ret = false;
-        }
-
-        return ret;
-    }
-
-    /**
-     * Method to restart Http connection
-     */
-    public boolean restartHttpConnection() {
-        boolean ret = false;
-
-        ret = closeHttpConnection();
-
-        if (ret) {
-            ret = openHttpConnection();
-        }
-
-        logger.debug("Restart HTTP connection!");
 
         return ret;
     }
@@ -748,8 +688,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         socketMonitor.interrupt();
 
         closeWebSocketConnection();
-
-        closeHttpConnection();
     }
 
     /**

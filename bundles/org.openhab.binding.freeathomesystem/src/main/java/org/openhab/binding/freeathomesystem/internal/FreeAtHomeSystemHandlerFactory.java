@@ -33,7 +33,10 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link FreeAtHomeSystemHandlerFactory} is responsible for creating things and thing
@@ -44,6 +47,8 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.freeathomesystem", service = ThingHandlerFactory.class)
 public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
+
+    private final Logger logger = LoggerFactory.getLogger(FreeAtHomeSystemHandlerFactory.class);
 
     private final HttpClient httpClient;
     private final FreeAtHomeChannelTypeProvider channelTypeProvider;
@@ -57,9 +62,38 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
             ComponentContext componentContext) {
         super.activate(componentContext);
         this.channelTypeProvider = channelTypeProvider;
-        this.httpClient = httpClientFactory.createHttpClient(FreeAtHomeSystemBindingConstants.BINDING_ID);
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
+
+        // create httpClient
+        this.httpClient = httpClientFactory.createHttpClient(FreeAtHomeSystemBindingConstants.BINDING_ID);
+
+        // Configure client
+        this.httpClient.setFollowRedirects(false);
+        this.httpClient.setMaxConnectionsPerDestination(1);
+        this.httpClient.setMaxRequestsQueuedPerDestination(50);
+
+        // Set timeouts
+        this.httpClient.setIdleTimeout(-1);
+        this.httpClient.setConnectTimeout(5000);
+
+        try {
+            // Start HttpClient.
+            this.httpClient.start();
+        } catch (Exception ex) {
+            logger.error("ould not create HttpClient: {}", ex.getMessage());
+
+            throw new IllegalStateException("Could not create HttpClient", ex);
+        }
+    }
+
+    @Deactivate
+    public void deactivate() {
+        try {
+            httpClient.stop();
+        } catch (Exception ex) {
+            logger.warn("Failed to stop HttpClient: {}", ex.getMessage());
+        }
     }
 
     @Override
