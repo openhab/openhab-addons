@@ -19,6 +19,9 @@
 			<channel id="bulbMode" typeId="bulbMode"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:rgbandcct"/>
 	</thing-type>
 
@@ -37,6 +40,9 @@
 			<channel id="bulbMode" typeId="bulbMode"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:rgbandcct"/>
 	</thing-type>
 
@@ -53,6 +59,9 @@
 			<channel id="colourTemperatureAbs" typeId="system.color-temperature-abs"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:cct"/>
 	</thing-type>
 
@@ -69,6 +78,9 @@
 			<channel id="colourTemperatureAbs" typeId="system.color-temperature-abs"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:cct"/>
 	</thing-type>
 
@@ -85,6 +97,9 @@
 			<channel id="bulbMode" typeId="bulbMode"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:rgbw"/>
 	</thing-type>
 
@@ -101,6 +116,9 @@
 			<channel id="bulbMode" typeId="bulbMode"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:mqtt:rgb"/>
 	</thing-type>
 

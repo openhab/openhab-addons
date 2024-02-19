@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,12 +75,13 @@ public class ShellyEventServlet extends WebSocketServlet {
      * Servlet handler. Shelly1: http request, Shelly2: WebSocket call
      */
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse resp)
+    protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse resp)
             throws ServletException, IOException, IllegalArgumentException {
         String path = getString(request.getRequestURI()).toLowerCase();
-
         if (path.equals(SHELLY2_CALLBACK_URI)) { // Shelly2 WebSocket
-            super.service(request, resp);
+            if (request != null && resp != null) {
+                super.service(request, resp);
+            }
             return;
         }
 

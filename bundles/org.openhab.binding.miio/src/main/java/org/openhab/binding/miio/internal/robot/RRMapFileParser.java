@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -158,8 +158,8 @@ public class RRMapFileParser {
                 case PATH:
                 case GOTO_PATH:
                 case GOTO_PREDICTED_PATH:
-                    ArrayList<float[]> path = new ArrayList<float[]>();
-                    Map<String, Integer> detail = new HashMap<String, Integer>();
+                    ArrayList<float[]> path = new ArrayList<>();
+                    Map<String, Integer> detail = new HashMap<>();
                     int pairs = getUInt32LE(header, 0x04) / 4;
                     detail.put(PATH_POINT_LENGTH, getUInt32LE(header, 0x08));
                     detail.put(PATH_POINT_SIZE, getUInt32LE(header, 0x0C));
@@ -203,7 +203,7 @@ public class RRMapFileParser {
                 case MOB_FORBIDDEN_AREA:
                 case CARPET_FORBIDDEN_AREA:
                     int areaPairs = getUInt16(header, 0x08);
-                    ArrayList<float[]> area = new ArrayList<float[]>();
+                    ArrayList<float[]> area = new ArrayList<>();
                     for (int areaPair = 0; areaPair < areaPairs; areaPair++) {
                         float x0 = (getUInt16(raw, blockDataStart + areaPair * 16));
                         float y0 = getUInt16(raw, blockDataStart + areaPair * 16 + 2);

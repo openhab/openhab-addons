@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -173,9 +173,14 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
 
         Lock lock = persistItem.lock();
         lock.lock();
+
+        Comparator<PersistEntry> comparator = filter.getOrdering() == FilterCriteria.Ordering.ASCENDING
+                ? Comparator.comparing(PersistEntry::timestamp)
+                : Comparator.comparing(PersistEntry::timestamp).reversed();
+
         try {
-            return persistItem.database().stream().filter(e -> applies(e, filter)).map(e -> toHistoricItem(itemName, e))
-                    .toList();
+            return persistItem.database().stream().filter(e -> applies(e, filter)).sorted(comparator)
+                    .map(e -> toHistoricItem(itemName, e)).toList();
         } finally {
             lock.unlock();
         }
@@ -309,8 +314,8 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
     }
 
     private record PersistEntry(ZonedDateTime timestamp, State state) {
-    };
+    }
 
     private record PersistItem(TreeSet<PersistEntry> database, Lock lock) {
-    };
+    }
 }

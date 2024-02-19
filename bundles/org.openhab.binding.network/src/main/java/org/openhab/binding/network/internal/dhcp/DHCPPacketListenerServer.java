@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,7 +63,7 @@ public class DHCPPacketListenerServer extends Thread {
     }
 
     protected void receivePacket(DHCPPacket request, @Nullable InetAddress udpRemote)
-            throws BadPacketException, UnknownHostException, IOException {
+            throws BadPacketException, IOException {
         if (request.getOp() != DHCPPacket.BOOTREQUEST) {
             return; // skipping non BOOTREQUEST message types
         }

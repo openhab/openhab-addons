@@ -378,6 +378,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.dolbycp</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.dominoswiss</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -568,6 +573,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.freecurrency</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.fronius</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -634,6 +644,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.groupepsa</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.growatt</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -1304,6 +1319,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.orvibo</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.panasonicbdp</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

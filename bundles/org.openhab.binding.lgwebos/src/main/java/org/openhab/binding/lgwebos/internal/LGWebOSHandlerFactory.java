@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,8 +79,8 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
         // reduce timeout from default 15sec
         this.webSocketClient.setConnectTimeout(1000);
 
-        // channel and app listing are json docs up to 4MB
-        this.webSocketClient.getPolicy().setMaxTextMessageSize(4 * 1024 * 1024);
+        // channel and app listing are json docs up to 5MB
+        this.webSocketClient.getPolicy().setMaxTextMessageSize(5 * 1024 * 1024);
 
         // since this is not using openHAB's shared web socket client we need to start and stop
         try {

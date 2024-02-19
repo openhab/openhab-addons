@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ public class SurePetcareBaseObject {
     public ZonedDateTime updatedAt = ZonedDateTime.now();
 
     public Map<String, String> getThingProperties() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put("id", id.toString());
         properties.put("version", version);
         properties.put("createdAt", createdAt.toString());

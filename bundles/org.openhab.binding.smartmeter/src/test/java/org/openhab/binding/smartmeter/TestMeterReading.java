@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -136,8 +136,7 @@ public class TestMeterReading {
     }
 
     MeterDevice<Object> getMeterDevice(ConnectorBase<Object> connector) {
-        return new MeterDevice<Object>(() -> mock(SerialPortManager.class), "id", "port", null, 9600, 0,
-                ProtocolMode.SML) {
+        return new MeterDevice<>(() -> mock(SerialPortManager.class), "id", "port", null, 9600, 0, ProtocolMode.SML) {
 
             @Override
             protected @NonNull IMeterReaderConnector<Object> createConnector(

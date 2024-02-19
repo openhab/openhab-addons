@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public class DatahubTariffFilterFactory {
     private static final String GLN_FLOW_ELNET = "5790000392551";
     private static final String GLN_HAMMEL_ELFORSYNING_NET = "5790001090166";
     private static final String GLN_HURUP_ELVAERK_NET = "5790000610839";
-    private static final String GLN_IKAST_E1_NET = "5790000682102";
+    private static final String GLN_IKAST_EL_NET = "5790000682102";
     private static final String GLN_KONSTANT = "5790000704842";
     private static final String GLN_L_NET = "5790001090111";
     private static final String GLN_MIDTFYNS_ELFORSYNING = "5790001089023";
@@ -67,9 +67,10 @@ public class DatahubTariffFilterFactory {
     private static final String NOTE_REDUCED_ELECTRICITY_TAX = "Reduceret elafgift";
     private static final String NOTE_TRANSMISSION_NET_TARIFF = "Transmissions nettarif";
 
+    public static final LocalDate IKAST_EL_NET_CUTOFF_DATE = LocalDate.of(2022, 10, 1);
+    public static final LocalDate KONSTANT_CUTOFF_DATE = LocalDate.of(2023, 2, 1);
     public static final LocalDate N1_CUTOFF_DATE = LocalDate.of(2023, 1, 1);
     public static final LocalDate RADIUS_CUTOFF_DATE = LocalDate.of(2023, 1, 1);
-    public static final LocalDate KONSTANT_CUTOFF_DATE = LocalDate.of(2023, 2, 1);
 
     public static DatahubTariffFilter getGridTariffByGLN(String globalLocationNumber) {
         switch (globalLocationNumber) {
@@ -100,9 +101,9 @@ public class DatahubTariffFilterFactory {
                         DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_HURUP_ELVAERK_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("HEV-NT-01")), Set.of(NOTE_NET_TARIFF));
-            case GLN_IKAST_E1_NET:
-                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("IEV-NT-11")),
-                        Set.of(NOTE_NET_TARIFF_C_HOUR, "Transport - Overordnet net"));
+            case GLN_IKAST_EL_NET:
+                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("IEV-NT-01")), Set.of(NOTE_NET_TARIFF_C_HOUR),
+                        DateQueryParameter.of(IKAST_EL_NET_CUTOFF_DATE));
             case GLN_KONSTANT:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("151-NT01T"), ChargeTypeCode.of("151-NRA04T")),
                         Set.of(), DateQueryParameter.of(KONSTANT_CUTOFF_DATE));
@@ -124,7 +125,8 @@ public class DatahubTariffFilterFactory {
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("TAC")), Set.of(NOTE_NET_TARIFF_C),
                         DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_NORDVESTJYSK_ELFORSYNING_NOE_NET:
-                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("Net C")), Set.of(NOTE_NET_TARIFF_C));
+                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("30030")), Set.of(NOTE_NET_TARIFF_C),
+                        DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_RADIUS:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("DT_C_01")), Set.of(NOTE_NET_TARIFF_C_HOUR),
                         DateQueryParameter.of(RADIUS_CUTOFF_DATE));

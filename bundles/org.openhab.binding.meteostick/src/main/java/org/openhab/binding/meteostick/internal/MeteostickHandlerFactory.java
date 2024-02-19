@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteostick.internal.handler.MeteostickBridgeHandler;
 import org.openhab.binding.meteostick.internal.handler.MeteostickSensorHandler;
 import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -41,10 +42,13 @@ public class MeteostickHandlerFactory extends BaseThingHandlerFactory {
     private Logger logger = LoggerFactory.getLogger(MeteostickHandlerFactory.class);
 
     private final SerialPortManager serialPortManager;
+    private final CronScheduler scheduler;
 
     @Activate
-    public MeteostickHandlerFactory(final @Reference SerialPortManager serialPortManager) {
+    public MeteostickHandlerFactory(final @Reference SerialPortManager serialPortManager,
+            final @Reference CronScheduler scheduler) {
         this.serialPortManager = serialPortManager;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -64,7 +68,7 @@ public class MeteostickHandlerFactory extends BaseThingHandlerFactory {
         }
 
         if (MeteostickSensorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new MeteostickSensorHandler(thing);
+            return new MeteostickSensorHandler(thing, scheduler);
         }
 
         return null;

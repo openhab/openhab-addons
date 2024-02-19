@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -159,6 +159,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
                 break;
             case CHANNEL_EINST_WK_AKT:
             case CHANNEL_EINST_BWS_AKT:
+            case CHANNEL_EINST_HZFTRL_AKT:
             case CHANNEL_EINST_KUCFTL_AKT:
             case CHANNEL_SOLLWERT_KUCFTL_AKT:
             case CHANNEL_SOLL_BWS_AKT:

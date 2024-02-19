@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public class MQTTProtocol {
             pmapId = mapId;
             this.userPmapvId = userPmapvId;
 
-            regions = new ArrayList<Region>();
+            regions = new ArrayList<>();
             for (int i = 0; (i < pregions.length) && (i < types.length); i++) {
                 regions.add(new Region(pregions[i], types[i]));
             }
@@ -336,4 +336,4 @@ public class MQTTProtocol {
         public String robotid;
         public String hostname;
     }
-};
+}
