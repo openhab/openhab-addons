@@ -110,6 +110,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
 
     public static @Nullable DiscoveryResult createResult(boolean gen2, String hostname, String ipAddress,
             ShellyBindingConfiguration bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages) {
+        Logger logger = LoggerFactory.getLogger(ShellyBasicDiscoveryService.class);
         ThingUID thingUID = null;
         ShellyDeviceProfile profile;
         ShellySettingsDevice devInfo;
@@ -124,7 +125,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new TreeMap<>();
 
         try {
-
             ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress);
             api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
             api.initialize();
@@ -132,7 +132,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             mac = getString(devInfo.mac);
             model = devInfo.type;
             auth = getBool(devInfo.auth);
-            if (name.isEmpty()) {
+            if (name.isEmpty() || name.startsWith("shellyplusrange")) {
                 name = devInfo.hostname;
             }
             if (devInfo.name != null) {
@@ -155,7 +155,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
                 thingUID = ShellyThingCreator.getThingUID(name, model, mode, true);
             }
         } catch (IllegalArgumentException | IOException e) { // maybe some format description was buggy
-
+            logger.debug("Discovery: Unable to discover thing", e);
         } finally {
             if (api != null) {
                 api.close();
