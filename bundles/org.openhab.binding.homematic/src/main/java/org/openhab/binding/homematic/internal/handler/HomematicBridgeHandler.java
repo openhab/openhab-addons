@@ -36,6 +36,7 @@ import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.type.HomematicTypeGenerator;
 import org.openhab.binding.homematic.internal.type.UidUtils;
+import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -132,6 +133,9 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                         ex.getMessage(), ex);
                 disposeInternal();
                 scheduleReinitialize();
+            } catch (ConfigurationException ex) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+                disposeInternal();
             }
         }
     }
