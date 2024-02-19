@@ -3,7 +3,7 @@
 This binding integrates the sungrow inverters into openHAB.
 It is based on the Sungrow specification "Communication Protocol of Residential Hybrid Inverter V1.0.23", which can be found here: https://github.com/bohdan-s/SunGather/issues/36.
 
-## Supported inverters
+## Supported Inverters
 
 As defined within the spec mentioned above the following inverters are supported, but not all are tested yet:
 
@@ -46,9 +46,9 @@ Enabling modbus and whitelist setting can be done in WiNet-S Web-UI as shown bel
 ## Thing Configuration
 
 Once you've configured the Modbus TCP Slave or Modbus Serial Slave as Bridge you can configure the Sungrow inverter thing.
-You just have to select the configured bridge and optional configure the polling interval. 
+You just have to select the configured bridge and optional configure the polling interval.
 
-### `sungrow-inverter` Thing Configuration
+### Sungrow Inverter (`sungrow-inverter`)
 
 | Name         | Type    | Description                          | Default | Required | Advanced |
 |--------------|---------|--------------------------------------|---------|----------|----------|
@@ -103,7 +103,7 @@ The `sungrow-inverter` thing has channels that serve the current state of the su
 | sg-total-direct-energy-consumption | Number:Energy            | Total Direct Energy Consumption       | no        | Load Information    |
 | sg-self-consumption-today          | Number:Dimensionless     | Self Consumption Today                | no        | Load Information    |
 
-## Configuration Example
+## Full Example
 
 This example shows how to configure a sungrow inverter connected via modbus and uses the most common channels.
 
@@ -144,4 +144,31 @@ Number:Energy daily_import_energy "Daily Import Energy" (gridInformation) ["Meas
 
 // Load information
 Number:Power load_power "Load Power" (loadInformation) ["Measurement", "Power"] {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-load-information#sg-load-power"}
-Number:Energy daily_direct_energy_consumption "Daily Direct Energy Consumption" (loadInformation) ["Measurement", "Energy"] {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-load-information#sg-daily-direct-energy-consumption"}```
+Number:Energy daily_direct_energy_consumption "Daily Direct Energy Consumption" (loadInformation) ["Measurement", "Energy"] {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-load-information#sg-daily-direct-energy-consumption"}
+```
+
+_sungrow.sitemap_
+
+```perl
+sitemap sungrow label="Sungrow Binding"
+{
+    Frame {
+        Text item=total_active_power
+        Text item=total_dc_power
+        Text item=daily_pv_generation
+        Text item=total_pv_generation
+
+        Text item=battery_power
+        Text item=battery_level
+        Text item=daily_charge_energy
+        Text item=daily_discharge_energy
+
+        Text item=export_power
+        Text item=daily_export_energy
+        Text item=daily_import_energy
+
+        Text item=load_power
+        Text item=daily_direct_energy_consumption
+    }
+}
+```
