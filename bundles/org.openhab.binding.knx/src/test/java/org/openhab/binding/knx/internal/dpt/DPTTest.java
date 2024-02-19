@@ -73,8 +73,9 @@ class DPTTest {
     @Test
     void testToDPT7ValueFromQuantityType() {
         assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.002"));
-        assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.003"));
-        assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.004"));
+        // according to spec this should be 1000 for 7.003 and 7.004 - 1 is a workaround for Calimero 2.5.1
+        assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.003"));
+        assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.004"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.005"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 s"), "7.006"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 min"), "7.007"));

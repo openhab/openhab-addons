@@ -90,24 +90,6 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="uvindex">
-		<label>Current UV Index</label>
-		<description>This is the current UV Index.</description>
-		<channels>
-			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
-			<channel id="uvindex" typeId="uvindex"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="uvindexForecast">
-		<label>Forecasted UV Index</label>
-		<description>This is the forecasted UV Index.</description>
-		<channels>
-			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
-			<channel id="uvindex" typeId="forecasted-uvindex"/>
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="airPollution">
 		<label>Current Air Pollution</label>
 		<description>This is the current air pollution.</description>
