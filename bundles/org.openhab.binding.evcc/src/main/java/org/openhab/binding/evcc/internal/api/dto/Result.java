@@ -83,6 +83,12 @@ public class Result {
     @SerializedName("vehicles")
     private Map<String, Vehicle> vehicles;
 
+    @SerializedName("version")
+    private String version;
+
+    @SerializedName("availableVersion")
+    private String availableVersion;
+
     /**
      * @return battery's capacity
      */
@@ -204,5 +210,19 @@ public class Result {
 
     public Map<String, Vehicle> getVehicles() {
         return vehicles;
+    }
+
+    /**
+     * @return evcc version
+     */
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * @return evcc available version
+     */
+    public String getAvailableVersion() {
+        return availableVersion;
     }
 }

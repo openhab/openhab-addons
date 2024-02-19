@@ -17,7 +17,9 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -69,6 +71,7 @@ public class EvccHandler extends BaseThingHandler {
     private boolean batteryConfigured = false;
     private boolean gridConfigured = false;
     private boolean pvConfigured = false;
+    private Set<String> vehicleFeatureHeating = new HashSet<String>();
     Map<String, Triple<Boolean, Float, ZonedDateTime>> vehiclePlans = new HashMap<>();
 
     public EvccHandler(Thing thing) {
@@ -143,7 +146,7 @@ public class EvccHandler extends BaseThingHandler {
                         }
                     }
                 } else if (groupId.startsWith(CHANNEL_GROUP_ID_LOADPOINT)) {
-                    int loadpoint = Integer.parseInt(groupId.substring(9)) + 1;
+                    int loadpoint = Integer.parseInt(groupId.substring(CHANNEL_GROUP_ID_LOADPOINT.length())) + 1;
                     switch (channelIdWithoutGroup) {
                         case CHANNEL_LOADPOINT_MODE -> {
                             if (command instanceof StringType) {
@@ -165,6 +168,15 @@ public class EvccHandler extends BaseThingHandler {
                         case CHANNEL_LOADPOINT_LIMIT_SOC -> {
                             if (command instanceof QuantityType<?> qt) {
                                 evccAPI.setLimitSoC(loadpoint, qt.toUnit(Units.PERCENT).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setLimitSoC(loadpoint, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
+                        }
+                        case CHANNEL_LOADPOINT_LIMIT_TEMPERATURE -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setLimitSoC(loadpoint, qt.toUnit(SIUnits.CELSIUS).intValue());
                             } else if (command instanceof DecimalType dt) {
                                 evccAPI.setLimitSoC(loadpoint, dt.intValue());
                             } else {
@@ -200,12 +212,27 @@ public class EvccHandler extends BaseThingHandler {
                             return;
                         }
                     }
-                } else if (groupId.startsWith(CHANNEL_GROUP_ID_VEHICLE)) {
-                    String vehicleName = groupId.substring(7);
+                } else if (groupId.startsWith(CHANNEL_GROUP_ID_VEHICLE)
+                        || groupId.startsWith(CHANNEL_GROUP_ID_HEATING)) {
+                    String vehicleName;
+                    if (groupId.startsWith(CHANNEL_GROUP_ID_VEHICLE)) {
+                        vehicleName = groupId.substring(CHANNEL_GROUP_ID_VEHICLE.length());
+                    } else {
+                        vehicleName = groupId.substring(CHANNEL_GROUP_ID_HEATING.length());
+                    }
                     switch (channelIdWithoutGroup) {
                         case CHANNEL_VEHICLE_MIN_SOC -> {
                             if (command instanceof QuantityType<?> qt) {
                                 evccAPI.setVehicleMinSoC(vehicleName, qt.toUnit(Units.PERCENT).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setVehicleMinSoC(vehicleName, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
+                        }
+                        case CHANNEL_HEATING_MIN_TEMPERATURE -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setVehicleMinSoC(vehicleName, qt.toUnit(SIUnits.CELSIUS).intValue());
                             } else if (command instanceof DecimalType dt) {
                                 evccAPI.setVehicleMinSoC(vehicleName, dt.intValue());
                             } else {
@@ -221,7 +248,16 @@ public class EvccHandler extends BaseThingHandler {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
                         }
-                        case CHANNEL_VEHICLE_PLAN_ENABLED -> {
+                        case CHANNEL_HEATING_LIMIT_TEMPERATURE -> {
+                            if (command instanceof QuantityType<?> qt) {
+                                evccAPI.setVehicleLimitSoC(vehicleName, qt.toUnit(SIUnits.CELSIUS).intValue());
+                            } else if (command instanceof DecimalType dt) {
+                                evccAPI.setVehicleLimitSoC(vehicleName, dt.intValue());
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
+                        }
+                        case CHANNEL_VEHICLE_PLAN_ENABLED, CHANNEL_HEATING_PLAN_ENABLED -> {
                             Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
                             if (command == OnOffType.ON) {
                                 evccAPI.setVehiclePlan(vehicleName, planValues.getMiddle().intValue(),
@@ -255,7 +291,26 @@ public class EvccHandler extends BaseThingHandler {
                                 logger.debug("Command has wrong type, QuantityType or DecimalType required!");
                             }
                         }
-                        case CHANNEL_VEHICLE_PLAN_TIME -> {
+                        case CHANNEL_HEATING_PLAN_TEMPERATURE -> {
+                            Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
+                            if (command instanceof QuantityType<?> qt) {
+                                vehiclePlans.put(vehicleName, new Triple<>(planValues.getLeft(),
+                                        qt.toUnit(SIUnits.CELSIUS).floatValue(), planValues.getRight()));
+                                if (planValues.getLeft()) {
+                                    evccAPI.setVehiclePlan(vehicleName, qt.toUnit(SIUnits.CELSIUS).intValue(),
+                                            planValues.getRight());
+                                }
+                            } else if (command instanceof DecimalType dt) {
+                                vehiclePlans.put(vehicleName,
+                                        new Triple<>(planValues.getLeft(), dt.floatValue(), planValues.getRight()));
+                                if (planValues.getLeft()) {
+                                    evccAPI.setVehiclePlan(vehicleName, dt.intValue(), planValues.getRight());
+                                }
+                            } else {
+                                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                            }
+                        }
+                        case CHANNEL_VEHICLE_PLAN_TIME, CHANNEL_HEATING_PLAN_TIME -> {
                             Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
                             if (command instanceof DateTimeType dtt) {
                                 vehiclePlans.put(vehicleName, new Triple<>(planValues.getLeft(), planValues.getMiddle(),
@@ -381,6 +436,7 @@ public class EvccHandler extends BaseThingHandler {
             createChannel(CHANNEL_RESIDUAL_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_RESIDUAL_POWER,
                     "Number:Power");
         }
+
         if (gridConfigured) {
             createChannel(CHANNEL_GRID_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_GRID_POWER, "Number:Power");
         }
@@ -388,11 +444,24 @@ public class EvccHandler extends BaseThingHandler {
         if (pvConfigured) {
             createChannel(CHANNEL_PV_POWER, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_PV_POWER, "Number:Power");
         }
+
+        createChannel(CHANNEL_VERSION, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_VERSION, CoreItemFactory.STRING);
+        createChannel(CHANNEL_AVAILABLE_VERSION, CHANNEL_GROUP_ID_GENERAL, CHANNEL_TYPE_UID_AVAILABLE_VERSION,
+                CoreItemFactory.STRING);
+
         removeChannel("batteryPrioritySoC", CHANNEL_GROUP_ID_GENERAL);
     }
 
     private void createChannelsLoadpoint(int loadpointId) {
+        final Result result = this.result;
+        if (result == null) {
+            return;
+        }
         final String channelGroup = CHANNEL_GROUP_ID_LOADPOINT + loadpointId;
+
+        Loadpoint loadpoint = result.getLoadpoints()[loadpointId];
+        boolean chargerFeatureHeating = loadpoint.getChargerFeatureHeating();
+
         createChannel(CHANNEL_LOADPOINT_ACTIVE_PHASES, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_ACTIVE_PHASES,
                 CoreItemFactory.NUMBER);
         createChannel(CHANNEL_LOADPOINT_CHARGE_CURRENT, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_CHARGE_CURRENT,
@@ -424,8 +493,30 @@ public class EvccHandler extends BaseThingHandler {
                 CoreItemFactory.NUMBER);
         createChannel(CHANNEL_LOADPOINT_LIMIT_ENERGY, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_LIMIT_ENERGY,
                 "Number:Energy");
-        createChannel(CHANNEL_LOADPOINT_LIMIT_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_LIMIT_SOC,
-                "Number:Dimensionless");
+        if (chargerFeatureHeating) {
+            createChannel(CHANNEL_LOADPOINT_LIMIT_TEMPERATURE, channelGroup,
+                    CHANNEL_TYPE_UID_LOADPOINT_LIMIT_TEMPERATURE, "Number:Temperature");
+            createChannel(CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE, channelGroup,
+                    CHANNEL_TYPE_UID_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE, "Number:Temperature");
+            createChannel(CHANNEL_LOADPOINT_VEHICLE_TEMPERATURE, channelGroup,
+                    CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_TEMPERATURE, "Number:Temperature");
+
+            removeChannel(CHANNEL_LOADPOINT_LIMIT_SOC, channelGroup);
+            removeChannel(CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_SOC, channelGroup);
+            removeChannel(CHANNEL_LOADPOINT_VEHICLE_SOC, channelGroup);
+        } else {
+            createChannel(CHANNEL_LOADPOINT_LIMIT_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_LIMIT_SOC,
+                    "Number:Dimensionless");
+            createChannel(CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_SOC, channelGroup,
+                    CHANNEL_TYPE_UID_LOADPOINT_EFFECTIVE_LIMIT_SOC, "Number:Dimensionless");
+            createChannel(CHANNEL_LOADPOINT_VEHICLE_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_SOC,
+                    "Number:Dimensionless");
+
+            removeChannel(CHANNEL_LOADPOINT_LIMIT_TEMPERATURE, channelGroup);
+            removeChannel(CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE, channelGroup);
+            removeChannel(CHANNEL_LOADPOINT_VEHICLE_TEMPERATURE, channelGroup);
+        }
+
         createChannel(CHANNEL_LOADPOINT_TITLE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_TITLE, CoreItemFactory.STRING);
         createChannel(CHANNEL_LOADPOINT_VEHICLE_CAPACITY, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_CAPACITY,
                 "Number:Energy");
@@ -435,10 +526,12 @@ public class EvccHandler extends BaseThingHandler {
                 CoreItemFactory.SWITCH);
         createChannel(CHANNEL_LOADPOINT_VEHICLE_RANGE, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_RANGE,
                 "Number:Length");
-        createChannel(CHANNEL_LOADPOINT_VEHICLE_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_SOC,
-                "Number:Dimensionless");
         createChannel(CHANNEL_LOADPOINT_VEHICLE_NAME, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_NAME,
                 CoreItemFactory.STRING);
+        createChannel(CHANNEL_LOADPOINT_CHARGER_FEATURE_HEATING, channelGroup,
+                CHANNEL_TYPE_UID_LOADPOINT_CHARGER_FEATURE_HEATING, CoreItemFactory.SWITCH);
+        createChannel(CHANNEL_LOADPOINT_CHARGER_FEATURE_INTEGRATED_DEVICE, channelGroup,
+                CHANNEL_TYPE_UID_LOADPOINT_CHARGER_FEATURE_INTEGRATED_DEVICE, CoreItemFactory.SWITCH);
 
         removeChannel("hasVehicle", channelGroup);
         removeChannel("minSoC", channelGroup);
@@ -449,21 +542,56 @@ public class EvccHandler extends BaseThingHandler {
     }
 
     private void createChannelsVehicle(String vehicleName) {
-        final String channelGroup = CHANNEL_GROUP_ID_VEHICLE + vehicleName;
-        createChannel(CHANNEL_VEHICLE_TITLE, channelGroup, CHANNEL_TYPE_UID_VEHICLE_TITLE, CoreItemFactory.STRING);
-        createChannel(CHANNEL_VEHICLE_MIN_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_MIN_SOC, "Number:Dimensionless");
-        createChannel(CHANNEL_VEHICLE_LIMIT_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_LIMIT_SOC,
-                "Number:Dimensionless");
-        createChannel(CHANNEL_VEHICLE_PLAN_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_PLAN_SOC,
-                "Number:Dimensionless");
-        createChannel(CHANNEL_VEHICLE_PLAN_TIME, channelGroup, CHANNEL_TYPE_UID_VEHICLE_PLAN_TIME,
-                CoreItemFactory.DATETIME);
-        createChannel(CHANNEL_VEHICLE_PLAN_ENABLED, channelGroup, CHANNEL_TYPE_UID_VEHICLE_PLAN_ENABLED,
-                CoreItemFactory.SWITCH);
-        createChannel(CHANNEL_VEHICLE_PLAN_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_PLAN_SOC,
-                "Number:Dimensionless");
-        createChannel(CHANNEL_VEHICLE_PLAN_TIME, channelGroup, CHANNEL_TYPE_UID_VEHICLE_PLAN_TIME,
-                CoreItemFactory.DATETIME);
+        String channelGroup;
+        if (vehicleFeatureHeating.contains(vehicleName)) {
+            channelGroup = CHANNEL_GROUP_ID_HEATING + vehicleName;
+            createChannel(CHANNEL_HEATING_MIN_TEMPERATURE, channelGroup, CHANNEL_TYPE_UID_HEATING_MIN_TEMPERATURE,
+                    "Number:Temperature");
+            createChannel(CHANNEL_HEATING_LIMIT_TEMPERATURE, channelGroup, CHANNEL_TYPE_UID_HEATING_LIMIT_TEMPERATURE,
+                    "Number:Temperature");
+            createChannel(CHANNEL_HEATING_PLAN_TEMPERATURE, channelGroup, CHANNEL_TYPE_UID_HEATING_PLAN_TEMPERATURE,
+                    "Number:Temperature");
+            createChannel(CHANNEL_HEATING_TITLE, channelGroup, CHANNEL_TYPE_UID_HEATING_TITLE, CoreItemFactory.STRING);
+            createChannel(CHANNEL_HEATING_PLAN_TIME, channelGroup, CHANNEL_TYPE_UID_HEATING_PLAN_TIME,
+                    CoreItemFactory.DATETIME);
+            createChannel(CHANNEL_HEATING_PLAN_ENABLED, channelGroup, CHANNEL_TYPE_UID_HEATING_PLAN_ENABLED,
+                    CoreItemFactory.SWITCH);
+            createChannel(CHANNEL_HEATING_PLAN_TIME, channelGroup, CHANNEL_TYPE_UID_HEATING_PLAN_TIME,
+                    CoreItemFactory.DATETIME);
+
+            channelGroup = CHANNEL_GROUP_ID_VEHICLE + vehicleName;
+            removeChannel(CHANNEL_VEHICLE_MIN_SOC, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_LIMIT_SOC, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_PLAN_SOC, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_TITLE, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_PLAN_TIME, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_PLAN_ENABLED, channelGroup);
+            removeChannel(CHANNEL_VEHICLE_PLAN_TIME, channelGroup);
+        } else {
+            channelGroup = CHANNEL_GROUP_ID_VEHICLE + vehicleName;
+            createChannel(CHANNEL_VEHICLE_MIN_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_MIN_SOC,
+                    "Number:Dimensionless");
+            createChannel(CHANNEL_VEHICLE_LIMIT_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_LIMIT_SOC,
+                    "Number:Dimensionless");
+            createChannel(CHANNEL_VEHICLE_PLAN_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_PLAN_SOC,
+                    "Number:Dimensionless");
+            createChannel(CHANNEL_VEHICLE_TITLE, channelGroup, CHANNEL_TYPE_UID_VEHICLE_TITLE, CoreItemFactory.STRING);
+            createChannel(CHANNEL_VEHICLE_PLAN_TIME, channelGroup, CHANNEL_TYPE_UID_VEHICLE_PLAN_TIME,
+                    CoreItemFactory.DATETIME);
+            createChannel(CHANNEL_VEHICLE_PLAN_ENABLED, channelGroup, CHANNEL_TYPE_UID_VEHICLE_PLAN_ENABLED,
+                    CoreItemFactory.SWITCH);
+            createChannel(CHANNEL_VEHICLE_PLAN_TIME, channelGroup, CHANNEL_TYPE_UID_VEHICLE_PLAN_TIME,
+                    CoreItemFactory.DATETIME);
+
+            channelGroup = CHANNEL_GROUP_ID_HEATING + vehicleName;
+            removeChannel(CHANNEL_HEATING_MIN_TEMPERATURE, channelGroup);
+            removeChannel(CHANNEL_HEATING_LIMIT_TEMPERATURE, channelGroup);
+            removeChannel(CHANNEL_HEATING_PLAN_TEMPERATURE, channelGroup);
+            removeChannel(CHANNEL_HEATING_TITLE, channelGroup);
+            removeChannel(CHANNEL_HEATING_PLAN_TIME, channelGroup);
+            removeChannel(CHANNEL_HEATING_PLAN_ENABLED, channelGroup);
+            removeChannel(CHANNEL_HEATING_PLAN_TIME, channelGroup);
+        }
     }
 
     // Units and description for vars: https://docs.evcc.io/docs/reference/configuration/messaging/#msg
@@ -527,6 +655,14 @@ public class EvccHandler extends BaseThingHandler {
             channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_PV_POWER);
             updateState(channel, new QuantityType<>(pvPower, Units.WATT));
         }
+
+        String version = result.getVersion();
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_VERSION);
+        updateState(channel, new StringType(version));
+
+        String availableVersion = result.getAvailableVersion();
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_AVAILABLE_VERSION);
+        updateState(channel, new StringType(availableVersion));
     }
 
     private void updateChannelsLoadpoint(int loadpointId) {
@@ -538,6 +674,14 @@ public class EvccHandler extends BaseThingHandler {
         final String channelGroup = CHANNEL_GROUP_ID_LOADPOINT + loadpointId;
         ChannelUID channel;
         Loadpoint loadpoint = result.getLoadpoints()[loadpointId];
+
+        boolean chargerFeatureHeating = loadpoint.getChargerFeatureHeating();
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGER_FEATURE_HEATING);
+        updateState(channel, OnOffType.from(chargerFeatureHeating));
+
+        boolean chargerFeatureIntegratedDevice = loadpoint.getChargerFeatureIntegratedDevice();
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGER_FEATURE_INTEGRATED_DEVICE);
+        updateState(channel, OnOffType.from(chargerFeatureIntegratedDevice));
 
         int activePhases = loadpoint.getActivePhases();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_ACTIVE_PHASES);
@@ -603,9 +747,39 @@ public class EvccHandler extends BaseThingHandler {
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_LIMIT_ENERGY);
         updateState(channel, new QuantityType<>(limitEnergy, Units.WATT_HOUR));
 
-        float limitSoC = loadpoint.getLimitSoC();
-        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_LIMIT_SOC);
-        updateState(channel, new QuantityType<>(limitSoC, Units.PERCENT));
+        String vehicleName = loadpoint.getVehicleName();
+        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_NAME);
+        updateState(channel, new StringType(vehicleName));
+
+        if (chargerFeatureHeating) {
+            vehicleFeatureHeating.add(vehicleName);
+
+            float limitSoC = loadpoint.getLimitSoC();
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_LIMIT_TEMPERATURE);
+            updateState(channel, new QuantityType<>(limitSoC, SIUnits.CELSIUS));
+
+            float effectiveLimitSoC = loadpoint.getEffectiveLimitSoC();
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE);
+            updateState(channel, new QuantityType<>(effectiveLimitSoC, SIUnits.CELSIUS));
+
+            float vehicleSoC = loadpoint.getVehicleSoC();
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_TEMPERATURE);
+            updateState(channel, new QuantityType<>(vehicleSoC, SIUnits.CELSIUS));
+        } else {
+            vehicleFeatureHeating.remove(vehicleName);
+
+            float limitSoC = loadpoint.getLimitSoC();
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_LIMIT_SOC);
+            updateState(channel, new QuantityType<>(limitSoC, Units.PERCENT));
+
+            float effectiveLimitSoC = loadpoint.getEffectiveLimitSoC();
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_SOC);
+            updateState(channel, new QuantityType<>(effectiveLimitSoC, Units.PERCENT));
+
+            float vehicleSoC = loadpoint.getVehicleSoC();
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_SOC);
+            updateState(channel, new QuantityType<>(vehicleSoC, Units.PERCENT));
+        }
 
         String title = loadpoint.getTitle();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_TITLE);
@@ -626,14 +800,6 @@ public class EvccHandler extends BaseThingHandler {
         float vehicleRange = loadpoint.getVehicleRange();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_RANGE);
         updateState(channel, new QuantityType<>(vehicleRange, MetricPrefix.KILO(SIUnits.METRE)));
-
-        float vehicleSoC = loadpoint.getVehicleSoC();
-        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_SOC);
-        updateState(channel, new QuantityType<>(vehicleSoC, Units.PERCENT));
-
-        String vehicleName = loadpoint.getVehicleName();
-        channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_VEHICLE_NAME);
-        updateState(channel, new StringType(vehicleName));
     }
 
     private void updateChannelsVehicle(String vehicleName) {
@@ -642,21 +808,39 @@ public class EvccHandler extends BaseThingHandler {
             return;
         }
         final ThingUID uid = getThing().getUID();
-        final String channelGroup = CHANNEL_GROUP_ID_VEHICLE + vehicleName;
-        ChannelUID channel;
         Vehicle vehicle = result.getVehicles().get(vehicleName);
 
-        String title = vehicle.getTitle();
-        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_TITLE);
-        updateState(channel, new StringType(title));
+        final String channelGroup;
+        boolean vehicleFeatureHeating = this.vehicleFeatureHeating.contains(vehicleName);
+        if (vehicleFeatureHeating) {
+            channelGroup = CHANNEL_GROUP_ID_HEATING + vehicleName;
 
-        float minSoC = vehicle.getMinSoC();
-        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_MIN_SOC);
-        updateState(channel, new QuantityType<>(minSoC, Units.PERCENT));
+            float minSoC = vehicle.getMinSoC();
+            ChannelUID channel = new ChannelUID(uid, channelGroup, CHANNEL_HEATING_MIN_TEMPERATURE);
+            updateState(channel, new QuantityType<>(minSoC, SIUnits.CELSIUS));
 
-        float limitSoC = vehicle.getLimitSoC();
-        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_LIMIT_SOC);
-        updateState(channel, new QuantityType<>(limitSoC, Units.PERCENT));
+            float limitSoC = vehicle.getLimitSoC();
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_HEATING_LIMIT_TEMPERATURE);
+            updateState(channel, new QuantityType<>(limitSoC, SIUnits.CELSIUS));
+
+            String title = vehicle.getTitle();
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_HEATING_TITLE);
+            updateState(channel, new StringType(title));
+        } else {
+            channelGroup = CHANNEL_GROUP_ID_VEHICLE + vehicleName;
+
+            float minSoC = vehicle.getMinSoC();
+            ChannelUID channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_MIN_SOC);
+            updateState(channel, new QuantityType<>(minSoC, Units.PERCENT));
+
+            float limitSoC = vehicle.getLimitSoC();
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_LIMIT_SOC);
+            updateState(channel, new QuantityType<>(limitSoC, Units.PERCENT));
+
+            String title = vehicle.getTitle();
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_HEATING_TITLE);
+            updateState(channel, new StringType(title));
+        }
 
         Plan plan = vehicle.getPlan();
         if (plan == null && vehiclePlans.get(vehicleName) == null) {
@@ -664,18 +848,28 @@ public class EvccHandler extends BaseThingHandler {
         } else if (plan != null) {
             vehiclePlans.put(vehicleName, new Triple<>(true, plan.getSoC(), ZonedDateTime.parse(plan.getTime())));
         }
-        updateVehiclePlanChannel(vehicleName, uid, channelGroup);
+        updateVehiclePlanChannel(vehicleName, uid, channelGroup, vehicleFeatureHeating);
     }
 
-    private void updateVehiclePlanChannel(String vehicleName, ThingUID uid, String channelGroup) {
+    private void updateVehiclePlanChannel(String vehicleName, ThingUID uid, String channelGroup,
+            boolean vehicleFeatureHeating) {
         Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
 
-        ChannelUID channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_ENABLED);
-        updateState(channel, planValues.getLeft() ? OnOffType.ON : OnOffType.OFF);
-        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_SOC);
-        updateState(channel, new QuantityType<>(planValues.getMiddle(), Units.PERCENT));
-        channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_TIME);
-        updateState(channel, new DateTimeType(planValues.getRight()));
+        if (vehicleFeatureHeating) {
+            ChannelUID channel = new ChannelUID(uid, channelGroup, CHANNEL_HEATING_PLAN_ENABLED);
+            updateState(channel, planValues.getLeft() ? OnOffType.ON : OnOffType.OFF);
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_HEATING_PLAN_TEMPERATURE);
+            updateState(channel, new QuantityType<>(planValues.getMiddle(), SIUnits.CELSIUS));
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_HEATING_PLAN_TIME);
+            updateState(channel, new DateTimeType(planValues.getRight()));
+        } else {
+            ChannelUID channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_ENABLED);
+            updateState(channel, planValues.getLeft() ? OnOffType.ON : OnOffType.OFF);
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_SOC);
+            updateState(channel, new QuantityType<>(planValues.getMiddle(), Units.PERCENT));
+            channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_TIME);
+            updateState(channel, new DateTimeType(planValues.getRight()));
+        }
     }
 
     private void createChannel(String channel, String channelGroupId, ChannelTypeUID channelTypeUID, String itemType) {

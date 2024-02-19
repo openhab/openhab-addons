@@ -31,6 +31,7 @@ public class EvccBindingConstants {
     public static final String CHANNEL_GROUP_ID_GENERAL = "general";
     public static final String CHANNEL_GROUP_ID_LOADPOINT = "loadpoint";
     public static final String CHANNEL_GROUP_ID_VEHICLE = "vehicle";
+    public static final String CHANNEL_GROUP_ID_HEATING = "heating";
 
     // List of all Channel ids
     public static final String CHANNEL_BATTERY_CAPACITY = "batteryCapacity";
@@ -45,6 +46,9 @@ public class EvccBindingConstants {
     public static final String CHANNEL_GRID_POWER = "gridPower";
     public static final String CHANNEL_HOME_POWER = "homePower";
     public static final String CHANNEL_PV_POWER = "pvPower";
+    public static final String CHANNEL_VERSION = "version";
+    public static final String CHANNEL_AVAILABLE_VERSION = "availableVersion";
+
     public static final String CHANNEL_LOADPOINT_ACTIVE_PHASES = "activePhases";
     public static final String CHANNEL_LOADPOINT_CHARGE_CURRENT = "chargeCurrent";
     public static final String CHANNEL_LOADPOINT_CHARGE_DURATION = "chargeDuration";
@@ -62,19 +66,32 @@ public class EvccBindingConstants {
     public static final String CHANNEL_LOADPOINT_PHASES = "phases";
     public static final String CHANNEL_LOADPOINT_LIMIT_ENERGY = "limitEnergy";
     public static final String CHANNEL_LOADPOINT_LIMIT_SOC = "limitSoC";
+    public static final String CHANNEL_LOADPOINT_LIMIT_TEMPERATURE = "limitTemperature";
+    public static final String CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_SOC = "effectiveLimitSoC";
+    public static final String CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE = "effectiveLimitTemperature";
     public static final String CHANNEL_LOADPOINT_TITLE = "title";
     public static final String CHANNEL_LOADPOINT_VEHICLE_CAPACITY = "vehicleCapacity";
     public static final String CHANNEL_LOADPOINT_VEHICLE_ODOMETER = "vehicleOdometer";
     public static final String CHANNEL_LOADPOINT_VEHICLE_PRESENT = "vehiclePresent";
     public static final String CHANNEL_LOADPOINT_VEHICLE_RANGE = "vehicleRange";
     public static final String CHANNEL_LOADPOINT_VEHICLE_SOC = "vehicleSoC";
+    public static final String CHANNEL_LOADPOINT_VEHICLE_TEMPERATURE = "vehicleTemperature";
     public static final String CHANNEL_LOADPOINT_VEHICLE_NAME = "vehicleName";
+    public static final String CHANNEL_LOADPOINT_CHARGER_FEATURE_HEATING = "chargerFeatureHeating";
+    public static final String CHANNEL_LOADPOINT_CHARGER_FEATURE_INTEGRATED_DEVICE = "chargerFeatureIntegratedDevice";
+
     public static final String CHANNEL_VEHICLE_TITLE = "vehicleTitle";
+    public static final String CHANNEL_HEATING_TITLE = "heatingTitle";
     public static final String CHANNEL_VEHICLE_MIN_SOC = "vehicleMinSoC";
+    public static final String CHANNEL_HEATING_MIN_TEMPERATURE = "heatingMinTemperature";
     public static final String CHANNEL_VEHICLE_LIMIT_SOC = "vehicleLimitSoC";
+    public static final String CHANNEL_HEATING_LIMIT_TEMPERATURE = "heatingLimitTemperature";
     public static final String CHANNEL_VEHICLE_PLAN_ENABLED = "vehiclePlanEnabled";
+    public static final String CHANNEL_HEATING_PLAN_ENABLED = "heatingPlanEnabled";
     public static final String CHANNEL_VEHICLE_PLAN_SOC = "vehiclePlanSoC";
+    public static final String CHANNEL_HEATING_PLAN_TEMPERATURE = "heatingPlanTemperature";
     public static final String CHANNEL_VEHICLE_PLAN_TIME = "vehiclePlanTime";
+    public static final String CHANNEL_HEATING_PLAN_TIME = "heatingPlanTime";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
@@ -100,6 +117,10 @@ public class EvccBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_UID_GRID_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_GRID_POWER);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_HOME_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_HOME_POWER);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_PV_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_PV_POWER);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_VERSION = new ChannelTypeUID(BINDING_ID, CHANNEL_VERSION);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_AVAILABLE_VERSION = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_AVAILABLE_VERSION);
+
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_ACTIVE_PHASES = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_ACTIVE_PHASES);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_CURRENT = new ChannelTypeUID(BINDING_ID,
@@ -134,6 +155,12 @@ public class EvccBindingConstants {
             CHANNEL_LOADPOINT_LIMIT_ENERGY);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_LIMIT_SOC = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_LIMIT_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_LIMIT_TEMPERATURE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_LIMIT_TEMPERATURE);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_EFFECTIVE_LIMIT_SOC = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TITLE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_TITLE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_CAPACITY = new ChannelTypeUID(BINDING_ID,
@@ -146,20 +173,39 @@ public class EvccBindingConstants {
             CHANNEL_LOADPOINT_VEHICLE_RANGE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_SOC = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_VEHICLE_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_TEMPERATURE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_LOADPOINT_VEHICLE_TEMPERATURE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_NAME = new ChannelTypeUID(BINDING_ID,
             CHANNEL_LOADPOINT_VEHICLE_NAME);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGER_FEATURE_HEATING = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_LOADPOINT_CHARGER_FEATURE_HEATING);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGER_FEATURE_INTEGRATED_DEVICE = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_LOADPOINT_CHARGER_FEATURE_INTEGRATED_DEVICE);
+
     public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_TITLE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_VEHICLE_TITLE);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_TITLE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_HEATING_TITLE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_MIN_SOC = new ChannelTypeUID(BINDING_ID,
             CHANNEL_VEHICLE_MIN_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_MIN_TEMPERATURE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_HEATING_MIN_TEMPERATURE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_LIMIT_SOC = new ChannelTypeUID(BINDING_ID,
             CHANNEL_VEHICLE_LIMIT_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_LIMIT_TEMPERATURE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_HEATING_LIMIT_TEMPERATURE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_PLAN_ENABLED = new ChannelTypeUID(BINDING_ID,
             CHANNEL_VEHICLE_PLAN_ENABLED);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_PLAN_ENABLED = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_HEATING_PLAN_ENABLED);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_PLAN_SOC = new ChannelTypeUID(BINDING_ID,
             CHANNEL_VEHICLE_PLAN_SOC);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_PLAN_TEMPERATURE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_HEATING_PLAN_TEMPERATURE);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_PLAN_TIME = new ChannelTypeUID(BINDING_ID,
             CHANNEL_VEHICLE_PLAN_TIME);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_PLAN_TIME = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_HEATING_PLAN_TIME);
 
     public static final int CONNECTION_TIMEOUT_MILLISEC = 5000;
     public static final int LONG_CONNECTION_TIMEOUT_MILLISEC = 60000;

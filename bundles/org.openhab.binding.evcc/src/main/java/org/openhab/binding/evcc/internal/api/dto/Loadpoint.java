@@ -100,6 +100,15 @@ public class Loadpoint {
     @SerializedName("vehicleName")
     private String vehicleName;
 
+    @SerializedName("effectiveLimitSoc")
+    private float effectiveLimitSoC;
+
+    @SerializedName("chargerFeatureHeating")
+    private boolean chargerFeatureHeating;
+
+    @SerializedName("chargerFeatureIntegratedDevice")
+    private boolean chargerFeatureIntegratedDevice;
+
     /**
      * @return number of active phases
      */
@@ -273,5 +282,26 @@ public class Loadpoint {
      */
     public String getVehicleName() {
         return vehicleName;
+    }
+
+    /**
+     * @return effective limit state of charge
+     */
+    public float getEffectiveLimitSoC() {
+        return effectiveLimitSoC;
+    }
+
+    /**
+     * @return Charger Feature: Heating
+     */
+    public boolean getChargerFeatureHeating() {
+        return chargerFeatureHeating;
+    }
+
+    /**
+     * @return Charger Feature: Integrated Device
+     */
+    public boolean getChargerFeatureIntegratedDevice() {
+        return chargerFeatureIntegratedDevice;
     }
 }
