@@ -57,30 +57,48 @@ public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
 
     @Override
     public void initialize() {
-        var config = this.config = getConfigAs(BoschSHCConfiguration.class);
+        this.config = getConfigAs(BoschSHCConfiguration.class);
 
         String deviceId = config.id;
+        boolean isValid = validateDeviceId(deviceId);
+        if (!isValid) {
+            return;
+        }
+
+        super.initialize();
+    }
+
+    /**
+     * Attempts to obtain information about the device with the specified ID via a REST call.
+     * <p>
+     * If the REST call is successful, the device ID is considered to be valid.
+     * <p>
+     * If the device ID is not configured/empty or the REST call is not successful, the device ID is considered invalid.
+     * 
+     * @param deviceId the device ID to check
+     * @return <code>true</code> if the device ID is valid, <code>false</code> otherwise
+     */
+    protected boolean validateDeviceId(@Nullable String deviceId) {
         if (deviceId == null || deviceId.isBlank()) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.empty-device-id");
-            return;
+            return false;
         }
 
         // Try to get device info to make sure the device exists
         try {
             var bridgeHandler = this.getBridgeHandler();
             var info = bridgeHandler.getDeviceInfo(deviceId);
-            logger.trace("Device initialized:\n{}", info);
+            logger.trace("Device validated and initialized:\n{}", info);
+            return true;
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
+            return false;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
+            return false;
         }
-
-        super.initialize();
     }
 
     /**

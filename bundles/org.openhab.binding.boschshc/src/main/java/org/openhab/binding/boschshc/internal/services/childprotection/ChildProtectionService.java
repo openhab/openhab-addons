@@ -25,7 +25,9 @@ import org.openhab.binding.boschshc.internal.services.childprotection.dto.ChildP
 @NonNullByDefault
 public class ChildProtectionService extends BoschSHCService<ChildProtectionServiceState> {
 
+    public static final String CHILD_PROTECTION_SERVICE_NAME = "ChildProtection";
+
     public ChildProtectionService() {
-        super("ChildProtection", ChildProtectionServiceState.class);
+        super(CHILD_PROTECTION_SERVICE_NAME, ChildProtectionServiceState.class);
     }
 }

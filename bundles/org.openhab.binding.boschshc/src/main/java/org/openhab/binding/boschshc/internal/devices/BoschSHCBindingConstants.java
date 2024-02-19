@@ -54,7 +54,6 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_UNIVERSAL_SWITCH_2 = new ThingTypeUID(BINDING_ID, "universal-switch-2");
     public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR_2 = new ThingTypeUID(BINDING_ID, "smoke-detector-2");
     public static final ThingTypeUID THING_TYPE_LIGHT_CONTROL_2 = new ThingTypeUID(BINDING_ID, "light-control-2");
-    public static final ThingTypeUID THING_TYPE_LIGHT_SWITCH = new ThingTypeUID(BINDING_ID, "light-switch");
 
     public static final ThingTypeUID THING_TYPE_USER_DEFINED_STATE = new ThingTypeUID(BINDING_ID, "user-defined-state");
 
@@ -102,6 +101,14 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_KEY_NAME = "key-name";
     public static final String CHANNEL_KEY_EVENT_TYPE = "key-event-type";
     public static final String CHANNEL_KEY_EVENT_TIMESTAMP = "key-event-timestamp";
+
+    // numbered channels
+    // the rationale for introducing numbered channels was discussed in
+    // https://github.com/openhab/openhab-addons/pull/16400
+    public static final String CHANNEL_POWER_SWITCH_1 = "power-switch-1";
+    public static final String CHANNEL_POWER_SWITCH_2 = "power-switch-2";
+    public static final String CHANNEL_CHILD_PROTECTION_1 = "child-protection-1";
+    public static final String CHANNEL_CHILD_PROTECTION_2 = "child-protection-2";
 
     public static final String CHANNEL_USER_DEFINED_STATE = "user-state";
 

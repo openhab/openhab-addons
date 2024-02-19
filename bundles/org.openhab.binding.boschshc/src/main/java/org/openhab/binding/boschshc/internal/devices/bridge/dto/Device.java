@@ -18,23 +18,25 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents a single devices connected to the Bosch Smart Home Controller.
- *
- * Example from Json:
- *
+ * <p>
+ * Example JSON:
+ * 
+ * <pre>
  * {
- * "@type":"device",
- * "rootDeviceId":"64-da-a0-02-14-9b",
- * "id":"hdm:HomeMaticIP:3014F711A00004953859F31B",
- * "deviceServiceIds":["PowerMeter","PowerSwitch","PowerSwitchProgram","Routing"],
- * "manufacturer":"BOSCH",
- * "roomId":"hz_3",
- * "deviceModel":"PSM",
- * "serial":"3014F711A00004953859F31B",
- * "profile":"GENERIC",
- * "name":"Coffee Machine",
- * "status":"AVAILABLE",
- * "childDeviceIds":[]
+ *   "@type": "device",
+ *   "rootDeviceId": "64-da-a0-02-14-9b",
+ *   "id": "hdm:HomeMaticIP:3014F711A00004953859F31B",
+ *   "deviceServiceIds": ["PowerMeter","PowerSwitch","PowerSwitchProgram","Routing"],
+ *   "manufacturer": "BOSCH",
+ *   "roomId": "hz_3",
+ *   "deviceModel": "PSM",
+ *   "serial": "3014F711A00004953859F31B",
+ *   "profile": "GENERIC",
+ *   "name": "Coffee Machine",
+ *   "status": "AVAILABLE",
+ *   "childDeviceIds": []
  * }
+ * </pre>
  *
  * @author Stefan Kästle - Initial contribution
  */

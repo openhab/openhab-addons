@@ -92,8 +92,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             new AbstractMap.SimpleEntry<>("SMOKE_DETECTOR2", BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR_2),
             new AbstractMap.SimpleEntry<>("MICROMODULE_SHUTTER", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2),
             new AbstractMap.SimpleEntry<>("MICROMODULE_AWNING", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2),
-            new AbstractMap.SimpleEntry<>("MICROMODULE_LIGHT_CONTROL", BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2),
-            new AbstractMap.SimpleEntry<>("MICROMODULE_LIGHT_ATTACHED", BoschSHCBindingConstants.THING_TYPE_LIGHT_SWITCH)
+            new AbstractMap.SimpleEntry<>("MICROMODULE_LIGHT_CONTROL", BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2)
 // Future Extension: map deviceModel names to BoschSHC Thing Types when they are supported
 //            new AbstractMap.SimpleEntry<>("SMOKE_DETECTION_SYSTEM", BoschSHCBindingConstants.),
 //            new AbstractMap.SimpleEntry<>("PRESENCE_SIMULATION_SERVICE", BoschSHCBindingConstants.),
@@ -231,6 +230,9 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
         DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withProperty("id", device.id).withLabel(getNiceName(device.name, roomName));
         discoveryResult.withBridge(thingHandler.getThing().getUID());
+
+        collectChildDeviceIDs(device, thingTypeUID, discoveryResult);
+
         if (!roomName.isEmpty()) {
             discoveryResult.withProperty("Location", roomName);
         }
@@ -238,6 +240,25 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
         logger.debug("Discovered device '{}' with thingTypeUID={}, thingUID={}, id={}, deviceModel={}", device.name,
                 thingUID, thingTypeUID, device.id, device.deviceModel);
+    }
+
+    private void collectChildDeviceIDs(Device device, ThingTypeUID thingTypeUID,
+            DiscoveryResultBuilder discoveryResultBuilder) {
+        // so far the only device that supports child devices is the Light Control II
+        if (!BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2.equals(thingTypeUID)) {
+            return;
+        }
+
+        List<String> childDeviceIds = device.childDeviceIds;
+        if (childDeviceIds == null || childDeviceIds.isEmpty()) {
+            return;
+        }
+
+        int childDeviceIdIndex = 1;
+        for (String childDeviceId : childDeviceIds) {
+            discoveryResultBuilder.withProperty("childId" + childDeviceIdIndex, childDeviceId);
+            childDeviceIdIndex++;
+        }
     }
 
     /**

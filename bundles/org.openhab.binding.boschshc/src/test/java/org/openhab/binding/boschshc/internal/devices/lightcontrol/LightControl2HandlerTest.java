@@ -13,8 +13,14 @@
 package org.openhab.binding.boschshc.internal.devices.lightcontrol;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
@@ -25,7 +31,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.openhab.binding.boschshc.internal.devices.AbstractBoschSHCDeviceHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.childprotection.dto.ChildProtectionServiceState;
+import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchService;
+import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchState;
+import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitchServiceState;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
@@ -42,9 +55,16 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 class LightControl2HandlerTest extends AbstractBoschSHCDeviceHandlerTest<LightControl2Handler> {
 
+    private static final String CHILD_DEVICE_ID_1 = "hdm:ZigBee:70ac08fffefead2d#3";
+    private static final String CHILD_DEVICE_ID_2 = "hdm:ZigBee:70ac08fffefead2d#2";
+
     private @Captor @NonNullByDefault({}) ArgumentCaptor<QuantityType<Power>> powerCaptor;
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<QuantityType<Energy>> energyCaptor;
+
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<ChildProtectionServiceState> childProtectionServiceStateCaptor;
+
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<PowerSwitchServiceState> powerSwitchStateCaptor;
 
     @Override
     protected LightControl2Handler createFixture() {
@@ -61,8 +81,16 @@ class LightControl2HandlerTest extends AbstractBoschSHCDeviceHandlerTest<LightCo
         return "hdm:ZigBee:70ac08fcfefa5197";
     }
 
+    @Override
+    protected Configuration getConfiguration() {
+        Configuration configuration = super.getConfiguration();
+        configuration.put("childId1", CHILD_DEVICE_ID_1);
+        configuration.put("childId2", CHILD_DEVICE_ID_2);
+        return configuration;
+    }
+
     @Test
-    void testUpdateChannelsCommunicationQualityService() {
+    void testUpdateChannelCommunicationQualityService() {
         String json = """
                 {
                     "@type": "communicationQualityState",
@@ -110,5 +138,117 @@ class LightControl2HandlerTest extends AbstractBoschSHCDeviceHandlerTest<LightCo
                 energyCaptor.capture());
         QuantityType<Energy> energyValue = energyCaptor.getValue();
         assertEquals(42, energyValue.intValue());
+    }
+
+    @Test
+    void testHandleCommandPowerSwitchChannelChildDevice1()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH_1), OnOffType.ON);
+        verify(getBridgeHandler()).putState(eq(CHILD_DEVICE_ID_1), eq("PowerSwitch"), powerSwitchStateCaptor.capture());
+        PowerSwitchServiceState state = powerSwitchStateCaptor.getValue();
+        assertSame(PowerSwitchState.ON, state.switchState);
+
+        getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH_1), OnOffType.OFF);
+        verify(getBridgeHandler(), times(2)).putState(eq(CHILD_DEVICE_ID_1), eq("PowerSwitch"),
+                powerSwitchStateCaptor.capture());
+        state = powerSwitchStateCaptor.getValue();
+        assertSame(PowerSwitchState.OFF, state.switchState);
+    }
+
+    @Test
+    void testHandleCommandPowerSwitchChannelChildDevice2()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH_2), OnOffType.ON);
+        verify(getBridgeHandler()).putState(eq(CHILD_DEVICE_ID_2), eq("PowerSwitch"), powerSwitchStateCaptor.capture());
+        PowerSwitchServiceState state = powerSwitchStateCaptor.getValue();
+        assertSame(PowerSwitchState.ON, state.switchState);
+
+        getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH_2), OnOffType.OFF);
+        verify(getBridgeHandler(), times(2)).putState(eq(CHILD_DEVICE_ID_2), eq("PowerSwitch"),
+                powerSwitchStateCaptor.capture());
+        state = powerSwitchStateCaptor.getValue();
+        assertSame(PowerSwitchState.OFF, state.switchState);
+    }
+
+    @Test
+    void testUpdateChannelPowerSwitchStateChildDevice1() {
+        JsonElement jsonObject = JsonParser
+                .parseString("{\n" + "  \"@type\": \"powerSwitchState\",\n" + "  \"switchState\": \"ON\"\n" + "}");
+        getFixture().processChildUpdate(CHILD_DEVICE_ID_1, PowerSwitchService.POWER_SWITCH_SERVICE_NAME, jsonObject);
+        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH_1),
+                OnOffType.ON);
+
+        jsonObject = JsonParser
+                .parseString("{\n" + "  \"@type\": \"powerSwitchState\",\n" + "  \"switchState\": \"OFF\"\n" + "}");
+        getFixture().processChildUpdate(CHILD_DEVICE_ID_1, PowerSwitchService.POWER_SWITCH_SERVICE_NAME, jsonObject);
+        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH_1),
+                OnOffType.OFF);
+    }
+
+    @Test
+    void testUpdateChannelPowerSwitchStateChildDevice2() {
+        JsonElement jsonObject = JsonParser
+                .parseString("{\n" + "  \"@type\": \"powerSwitchState\",\n" + "  \"switchState\": \"ON\"\n" + "}");
+        getFixture().processChildUpdate(CHILD_DEVICE_ID_2, PowerSwitchService.POWER_SWITCH_SERVICE_NAME, jsonObject);
+        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH_2),
+                OnOffType.ON);
+
+        jsonObject = JsonParser
+                .parseString("{\n" + "  \"@type\": \"powerSwitchState\",\n" + "  \"switchState\": \"OFF\"\n" + "}");
+        getFixture().processChildUpdate(CHILD_DEVICE_ID_2, PowerSwitchService.POWER_SWITCH_SERVICE_NAME, jsonObject);
+        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH_2),
+                OnOffType.OFF);
+    }
+
+    @Test
+    void testUpdateChannelsChildProtectionServiceChildDevice1() {
+        String json = """
+                {
+                    "@type": "ChildProtectionState",
+                    "childLockActive": true
+                }
+                """;
+        JsonElement jsonObject = JsonParser.parseString(json);
+
+        getFixture().processChildUpdate(CHILD_DEVICE_ID_1, "ChildProtection", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_PROTECTION_1), OnOffType.ON);
+    }
+
+    @Test
+    void testUpdateChannelsChildProtectionServiceChildDevice2() {
+        String json = """
+                {
+                    "@type": "ChildProtectionState",
+                    "childLockActive": true
+                }
+                """;
+        JsonElement jsonObject = JsonParser.parseString(json);
+
+        getFixture().processChildUpdate(CHILD_DEVICE_ID_2, "ChildProtection", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_PROTECTION_2), OnOffType.ON);
+    }
+
+    @Test
+    void testHandleCommandChildProtectionServiceChildDevice1()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        getFixture().handleCommand(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_PROTECTION_1), OnOffType.ON);
+        verify(getBridgeHandler()).putState(eq(CHILD_DEVICE_ID_1), eq("ChildProtection"),
+                childProtectionServiceStateCaptor.capture());
+        ChildProtectionServiceState state = childProtectionServiceStateCaptor.getValue();
+        assertTrue(state.childLockActive);
+    }
+
+    @Test
+    void testHandleCommandChildProtectionServiceChildDevice2()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        getFixture().handleCommand(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_PROTECTION_2), OnOffType.ON);
+        verify(getBridgeHandler()).putState(eq(CHILD_DEVICE_ID_2), eq("ChildProtection"),
+                childProtectionServiceStateCaptor.capture());
+        ChildProtectionServiceState state = childProtectionServiceStateCaptor.getValue();
+        assertTrue(state.childLockActive);
     }
 }
