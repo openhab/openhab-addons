@@ -33,6 +33,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import javax.sound.sampled.AudioFileFormat;
@@ -84,6 +86,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
     private @Nullable VoiceModel preloadedModel;
     private @Nullable PiperJNI piper;
     private HashMap<String, List<Voice>> cachedVoicesByModel = new HashMap<>();
+    private Lock modelLock = new ReentrantLock();
 
     @Activate
     public PiperTTSService(final @Reference TTSCache ttsCache) {
@@ -93,9 +96,9 @@ public class PiperTTSService extends AbstractCachedTTSService {
     @Activate
     protected void activate(Map<String, Object> config) {
         try {
-            this.piper = new PiperJNI();
-            this.piper.initialize(true, false);
-            logger.debug("Using Piper version {}", this.piper.getPiperVersion());
+            piper = new PiperJNI();
+            piper.initialize(true, false);
+            logger.debug("Using Piper version {}", piper.getPiperVersion());
         } catch (IOException e) {
             logger.warn("Piper registration failed, the add-on will not work: {}", e.getMessage());
         }
@@ -165,7 +168,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
             Set<Voice> voices = filesStream //
                     .filter(filePath -> filePath.getFileName().toString().endsWith(".onnx")) //
                     .map(filePath -> {
-                        List<Voice> modelVoices = this.getVoice(filePath);
+                        List<Voice> modelVoices = getVoice(filePath);
                         newCachedVoices.put(filePath.toString(), modelVoices);
                         return modelVoices;
                     }) //
@@ -186,7 +189,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
             if (!Files.exists(configFile) || Files.isDirectory(configFile)) {
                 throw new IOException("Missed config file: " + configFile.toAbsolutePath());
             }
-            List<Voice> cachedVoices = this.cachedVoicesByModel.get(modelPath.toString());
+            List<Voice> cachedVoices = cachedVoicesByModel.get(modelPath.toString());
             if (cachedVoices != null) {
                 return cachedVoices;
             }
@@ -210,7 +213,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
             int numSpeakers = numSpeakersJsonNode != null ? numSpeakersJsonNode.intValue() : 1;
             JsonNode speakersIdsJsonNode = voiceJsonRoot.get("speaker_id_map");
             if (numSpeakers != 1 && speakersIdsJsonNode != null) {
-                ArrayList<Voice> voices = new ArrayList<>();
+                List<Voice> voices = new ArrayList<>();
                 speakersIdsJsonNode.fieldNames().forEachRemaining(field -> {
                     JsonNode fieldNode = speakersIdsJsonNode.get(field);
                     voices.add(new PiperTTSVoice( //
@@ -241,7 +244,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
     @Override
     public AudioStream synthesizeForCache(String text, Voice voice, AudioFormat audioFormat) throws TTSException {
         if (!(voice instanceof PiperTTSVoice ttsVoice)) {
-            throw new TTSException("Not piper voice provided");
+            throw new TTSException("No piper voice provided");
         }
         VoiceModel voiceModel = null;
         boolean usingPreloadedModel = false;
@@ -258,9 +261,9 @@ public class PiperTTSService extends AbstractCachedTTSService {
                     unloadModel();
                     logger.debug("Loading voice model...");
                     voiceModel = loadModel(ttsVoice);
-                    synchronized (this) {
-                        usingPreloadedModel = voiceModel.equals(this.preloadedModel);
-                    }
+                    modelLock.lock();
+                    usingPreloadedModel = voiceModel.equals(this.preloadedModel);
+                    modelLock.unlock();
                 }
             } catch (IOException e) {
                 throw new TTSException("Unable to load voice model: " + e.getMessage());
@@ -306,23 +309,24 @@ public class PiperTTSService extends AbstractCachedTTSService {
         piperVoice = piper.loadVoice(voice.voiceModelPath(), voice.voiceModelConfigPath(), voice.speakerId.orElse(-1L));
         voiceModel = new VoiceModel(voice, piperVoice, piperVoice.getSampleRate(), new AtomicInteger(1), logger);
         if (config.preloadModel) {
-            synchronized (this) {
-                if (this.preloadedModel == null) {
-                    logger.debug("Voice model will be kept preloaded");
-                    this.preloadedModel = voiceModel;
-                } else {
-                    logger.debug("Another voice model already preloaded");
-                }
+            modelLock.lock();
+            if (preloadedModel == null) {
+                logger.debug("Voice model will be kept preloaded");
+                preloadedModel = voiceModel;
+            } else {
+                logger.debug("Another voice model already preloaded");
             }
+            modelLock.unlock();
         }
         return voiceModel;
     }
 
     private void unloadModel() throws IOException {
-        var model = this.preloadedModel;
+        var model = preloadedModel;
         if (model != null) {
-            synchronized (this) {
-                this.preloadedModel = null;
+            modelLock.lock();
+            try {
+                preloadedModel = null;
                 if (model.consumers.get() == 0) {
                     // Do not release the model memory if it's been used, it should be released by the consumer
                     // when there is no other consumers and is not a ref of the preloaded model object.
@@ -331,6 +335,8 @@ public class PiperTTSService extends AbstractCachedTTSService {
                 } else {
                     logger.debug("Preloaded model in use, skip memory release");
                 }
+            } finally {
+                modelLock.unlock();
             }
         }
     }
@@ -411,7 +417,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
         @Override
         public void close() {
-            this.piperVoice.close();
+            piperVoice.close();
         }
     }
 }

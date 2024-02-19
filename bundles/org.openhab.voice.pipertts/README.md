@@ -17,7 +17,7 @@ The add-on is compatible with the following platforms:
 
 You can find the link to the available voices at the [Piper README](https://github.com/rhasspy/piper).
 
-Each voice model is composed of two files a onnx runtime model file with extension '.onnx' and a model config file with extension '.onnx.json'.
+Each voice model is composed of two files an onnx runtime model file with extension '.onnx' and a model config file with extension '.onnx.json'.
 For the add-on to load your voices you need both to be named equal (obviously excluding their extensions).
 
 You should place both voice files at '<OPENHAB_USERDATA>/piper/'.
