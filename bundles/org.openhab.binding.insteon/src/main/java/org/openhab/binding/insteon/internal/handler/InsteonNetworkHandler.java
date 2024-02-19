@@ -25,6 +25,7 @@ import org.openhab.binding.insteon.internal.InsteonBinding;
 import org.openhab.binding.insteon.internal.config.InsteonNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.discovery.InsteonDeviceDiscoveryService;
+import org.openhab.binding.insteon.internal.utils.Utils;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
@@ -125,7 +126,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
                     }, 0, DRIVER_INITIALIZED_TIME_IN_SECONDS, TimeUnit.SECONDS);
                 } else {
                     String msg = "Initialization failed, unable to start the Insteon bridge with the port '"
-                            + config.getPort() + "'.";
+                            + Utils.redactPassword(config.getPort()) + "'.";
                     logger.warn(msg);
 
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
