@@ -580,6 +580,9 @@ public class BridgeHandler extends BaseBridgeHandler {
 
                 logger.trace("Checking device {}, looking for {}", deviceId, updateDeviceId);
 
+                // handled is a boolean latch that stays true once it becomes true
+                // note that no short-circuiting operators are used, meaning that the method
+                // calls will always be evaluated, even if the latch is already true
                 handled |= notifyHandler(handler, deviceId, updateDeviceId, serviceId, state);
                 handled |= notifyParentHandler(handler, deviceId, updateDeviceId, serviceId, state);
             } else {
