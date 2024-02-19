@@ -83,7 +83,6 @@ public class ShutterControl2Handler extends ShutterControlHandler {
         if (BoschSHCBindingConstants.CHANNEL_CHILD_PROTECTION.equals(channelUID.getId())
                 && (command instanceof OnOffType onOffCommand)) {
             updateChildProtectionState(onOffCommand);
-
         }
     }
 
