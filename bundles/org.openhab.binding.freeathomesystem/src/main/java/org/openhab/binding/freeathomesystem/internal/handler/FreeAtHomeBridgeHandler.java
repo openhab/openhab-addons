@@ -624,8 +624,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
      */
     @Override
     public void initialize() {
-        boolean thingReachable = true;
-
         updateStatus(ThingStatus.UNKNOWN);
 
         httpConnectionOK.set(false);
@@ -648,6 +646,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         baseUrl = "http://" + ipAddress + "/fhapi/v1/api";
 
         scheduler.execute(() -> {
+            boolean thingReachable = true;
+
             // Open Http connection
             if (!openHttpConnection()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
