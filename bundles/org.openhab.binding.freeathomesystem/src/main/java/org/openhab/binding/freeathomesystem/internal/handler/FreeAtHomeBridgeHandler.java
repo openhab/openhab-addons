@@ -475,13 +475,9 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                 httpConnectionOK.set(false);
 
                 ret = false;
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error.wrong-credentials");
             }
         } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error.not-able-open-httpconnection");
+            logger.debug("Initial HTTP connection to SysAP is not successful");
 
             ret = false;
         }
@@ -628,30 +624,30 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
      */
     @Override
     public void initialize() {
+        boolean thingReachable = true;
+
+        updateStatus(ThingStatus.UNKNOWN);
+
+        httpConnectionOK.set(false);
+
+        // load configuration
+        FreeAtHomeBridgeHandlerConfiguration locConfig = getConfigAs(FreeAtHomeBridgeHandlerConfiguration.class);
+
+        ipAddress = locConfig.ipAddress;
+        if (ipAddress.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error.ip-address-missing");
+            return;
+        }
+        password = locConfig.password;
+        // See above
+        username = locConfig.username;
+        // See above
+
+        // build base URL
+        baseUrl = "http://" + ipAddress + "/fhapi/v1/api";
+
         scheduler.execute(() -> {
-            boolean thingReachable = true;
-
-            updateStatus(ThingStatus.UNKNOWN);
-
-            httpConnectionOK.set(false);
-
-            // load configuration
-            FreeAtHomeBridgeHandlerConfiguration locConfig = getConfigAs(FreeAtHomeBridgeHandlerConfiguration.class);
-
-            ipAddress = locConfig.ipAddress;
-            if (ipAddress.isBlank()) {
-               updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/conf-error.ip-address-missing");
-                return;
-            }
-            password = locConfig.password;
-            // See above
-            username = locConfig.username;
-            // See above
-
-            // build base URL
-            baseUrl = "http://" + ipAddress + "/fhapi/v1/api";
-
             // Open Http connection
             if (!openHttpConnection()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
