@@ -31,7 +31,7 @@ public class PidTranslationUtils {
     public static final String PID_VALUETYPE_UNKNOWN = "PID_VALUETYPE_UNKNOWN";
     public static final String PID_VALUETYPE_BOOLEAN = "PID_VALUETYPE_BOOLEAN";
     public static final String PID_VALUETYPE_DECIMAL = "PID_VALUETYPE_DECIMAL";
-    public static final String PID_VALUETYPE_INTEGER = "PID_VALUETYPE_INTIGER";
+    public static final String PID_VALUETYPE_INTEGER = "PID_VALUETYPE_INTEGER";
     public static final String PID_VALUETYPE_STRING = "PID_VALUETYPE_STRING";
     public static final String PID_VALUETYPE_SHUTTERMOVEMENT = "PID_VALUETYPE_SHUTTERMOVEMENT";
     public static final String PID_VALUETYPE_ENUM = "PID_VALUETYPE_ENUM";

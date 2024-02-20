@@ -639,8 +639,15 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             FreeAtHomeBridgeHandlerConfiguration locConfig = getConfigAs(FreeAtHomeBridgeHandlerConfiguration.class);
 
             ipAddress = locConfig.ipAddress;
+            if (ipAddress.isBlank()) {
+               updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/conf-error.ip-address-missing");
+                return;
+            }
             password = locConfig.password;
+            // See above
             username = locConfig.username;
+            // See above
 
             // build base URL
             baseUrl = "http://" + ipAddress + "/fhapi/v1/api";

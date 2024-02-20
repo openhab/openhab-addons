@@ -35,9 +35,7 @@ public class UidUtils {
             channelNameString = valueType + "-channeltype";
         }
 
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelNameString);
-
-        return channelTypeUID;
+        return new ChannelTypeUID(BINDING_ID, channelNameString);
     }
 
     public static ThingTypeUID generateThingUID() {
