@@ -7,7 +7,8 @@ The main purpose is to check if there are waiting print jobs on a printer, which
 
 The binding has been tested against a CUPS Server (which implements the Internet Printing Protocol).
 So all printers in a CUPS envorinment should work fine. Many network printers also use IPP,
-but there are many differences on which parts of IPP are supported. It is not guaranteed that every printer will work.
+but there are many differences on which parts of IPP are supported.
+It is not guaranteed that every printer will work.
 
 ## Discovery
 
