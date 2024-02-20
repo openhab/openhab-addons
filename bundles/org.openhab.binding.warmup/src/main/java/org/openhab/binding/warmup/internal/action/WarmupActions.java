@@ -66,8 +66,8 @@ public class WarmupActions implements ThingActions {
 
     public static void setOverride(@Nullable ThingActions actions, @Nullable QuantityType<?> temperature,
             @Nullable QuantityType<?> duration) {
-        if (actions instanceof WarmupActions) {
-            ((WarmupActions) actions).setOverride(temperature, duration);
+        if (actions instanceof WarmupActions warmupActions) {
+            warmupActions.setOverride(temperature, duration);
         } else {
             throw new IllegalArgumentException("Instance is not an WarmupActions class.");
         }

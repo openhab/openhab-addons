@@ -15,11 +15,13 @@ package org.openhab.binding.warmup.internal.handler;
 import static org.openhab.binding.warmup.internal.WarmupBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.warmup.internal.action.WarmupActions;
+import org.openhab.binding.warmup.internal.api.MyWarmupApi;
 import org.openhab.binding.warmup.internal.api.MyWarmupApiException;
 import org.openhab.binding.warmup.internal.model.query.LocationDTO;
 import org.openhab.binding.warmup.internal.model.query.QueryResponseDTO;
@@ -133,7 +135,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(WarmupActions.class);
+        return Set.of(WarmupActions.class);
     }
 
     private void setOverride(final QuantityType<?> command) {
@@ -145,9 +147,6 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
     }
 
     private void setOverride(final int temperature, final int duration) {
-        String roomId = getThing().getProperties().get(PROPERTY_ROOM_ID);
-        String locationId = getThing().getProperties().get(PROPERTY_LOCATION_ID);
-
         if (duration > 1440 || duration <= 0) {
             logger.info("Set Override failed: duration must be between 0 and 1440 minutes");
         }
@@ -155,11 +154,9 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
             logger.info("Set Override failed: temperature must be between 0.5 and 60 degrees C");
         } else {
             try {
-                final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
-                if (bridgeHandler != null && locationId != null && roomId != null) {
-                    bridgeHandler.getApi().setOverride(locationId, roomId, temperature, duration);
-                    refreshFromServer();
-                }
+                RoomCallout rc = getCallout();
+                rc.api.setOverride(rc.locationId, rc.roomId, temperature, duration);
+                refreshFromServer();
             } catch (MyWarmupApiException e) {
                 logger.info("Set Override failed: {}", e.getMessage());
             }
@@ -167,52 +164,51 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
     }
 
     private void setFixed(final QuantityType<?> command) {
-        String roomId = getThing().getProperties().get(PROPERTY_ROOM_ID);
-        String locationId = getThing().getProperties().get(PROPERTY_LOCATION_ID);
-
-        final int value = formatTemperature(command);
-
         try {
-            final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
-            if (bridgeHandler != null && locationId != null && roomId != null) {
-                bridgeHandler.getApi().setFixed(locationId, roomId, value);
-                refreshFromServer();
-            }
+            RoomCallout rc = getCallout();
+            rc.api.setFixed(rc.locationId, rc.roomId, formatTemperature(command));
+            refreshFromServer();
         } catch (MyWarmupApiException e) {
             logger.debug("Set Fixed failed: {}", e.getMessage());
         }
     }
 
     private void toggleFrostProtectionMode(OnOffType command) {
-        String roomId = getThing().getProperties().get(PROPERTY_ROOM_ID);
-        String locationId = getThing().getProperties().get(PROPERTY_LOCATION_ID);
         try {
-            final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
-            if (bridgeHandler != null && locationId != null && roomId != null) {
-                bridgeHandler.getApi().toggleFrostProtectionMode(locationId, roomId, command);
-                refreshFromServer();
-            }
+            RoomCallout rc = getCallout();
+            rc.api.toggleFrostProtectionMode(rc.locationId, rc.roomId, command);
+            refreshFromServer();
         } catch (MyWarmupApiException e) {
             logger.debug("Toggle Frost Protection failed: {}", e.getMessage());
         }
     }
 
     private void setRoomMode(StringType command) {
-        String roomId = getThing().getProperties().get(PROPERTY_ROOM_ID);
-        String locationId = getThing().getProperties().get(PROPERTY_LOCATION_ID);
         try {
-            final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
-            if (bridgeHandler != null && locationId != null && roomId != null) {
-                try {
-                    RoomMode mode = RoomMode.valueOf(command.toString().trim().toUpperCase());
-                    bridgeHandler.getApi().setRoomMode(locationId, roomId, mode);
-                    refreshFromServer();
-                } catch (IllegalArgumentException ex) {
-                    logger.error("Unable to set room mode: {}", command.toString());
-                }
-            }
+            RoomCallout rc = getCallout();
+            RoomMode mode = RoomMode.valueOf(command.toString().trim().toUpperCase());
+            rc.api.setRoomMode(rc.locationId, rc.roomId, mode);
+            refreshFromServer();
         } catch (MyWarmupApiException e) {
             logger.debug("Set Room Mode failed: {}", e.getMessage());
+        } catch (IllegalArgumentException ex) {
+            logger.error("Unable to set room mode: {}", command.toString());
         }
+    }
+
+    private RoomCallout getCallout() throws MyWarmupApiException {
+        Map<String, String> props = getThing().getProperties();
+        String locationId = props.get(PROPERTY_LOCATION_ID);
+        String roomId = props.get(PROPERTY_ROOM_ID);
+        final MyWarmupAccountHandler bridgeHandler = getBridgeHandler();
+
+        if (bridgeHandler != null && locationId != null && roomId != null) {
+            return new RoomCallout(roomId, locationId, bridgeHandler.getApi());
+        } else {
+            throw new MyWarmupApiException("Misconfigured thing.");
+        }
+    }
+
+    record RoomCallout(String roomId, String locationId, MyWarmupApi api) {
     }
 }

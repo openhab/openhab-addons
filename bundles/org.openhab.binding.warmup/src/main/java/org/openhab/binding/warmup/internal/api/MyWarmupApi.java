@@ -118,8 +118,8 @@ public class MyWarmupApi {
      */
     public void setRoomMode(String locationId, String roomId, WarmupBindingConstants.RoomMode mode)
             throws MyWarmupApiException {
-        if (mode == WarmupBindingConstants.RoomMode.SCHEDULE) {
-            callWarmupGraphQL(String.format("mutation{deviceProgram(lid:%s,rid:%s)}", locationId, roomId));
+        if (WarmupBindingConstants.RoomMode.SCHEDULE.equals(mode)) {
+            callWarmupGraphQL("mutation{deviceProgram(lid:%s,rid:%s)}".formatted(locationId, roomId));
         }
     }
 
@@ -133,7 +133,7 @@ public class MyWarmupApi {
      */
     public void setFixed(String locationId, String roomId, int temperature) throws MyWarmupApiException {
         callWarmupGraphQL(
-                String.format("mutation{deviceFixed(lid:%s,rid:%s,temperature:%d)}", locationId, roomId, temperature));
+                "mutation{deviceFixed(lid:%s,rid:%s,temperature:%d)}".formatted(locationId, roomId, temperature));
     }
 
     /**
@@ -147,7 +147,7 @@ public class MyWarmupApi {
      */
     public void setOverride(String locationId, String roomId, int temperature, Integer duration)
             throws MyWarmupApiException {
-        callWarmupGraphQL(String.format("mutation{deviceOverride(lid:%s,rid:%s,temperature:%d,minutes:%d)}", locationId,
+        callWarmupGraphQL("mutation{deviceOverride(lid:%s,rid:%s,temperature:%d,minutes:%d)}".formatted(locationId,
                 roomId, temperature, duration));
     }
 
@@ -161,7 +161,7 @@ public class MyWarmupApi {
      */
     public void toggleFrostProtectionMode(String locationId, String roomId, OnOffType command)
             throws MyWarmupApiException {
-        callWarmupGraphQL(String.format("mutation{turn%s(lid:%s,rid:%s){id}}", command == OnOffType.ON ? "Off" : "On",
+        callWarmupGraphQL("mutation{turn%s(lid:%s,rid:%s){id}}".formatted(command == OnOffType.ON ? "Off" : "On",
                 locationId, roomId));
     }
 
