@@ -15,15 +15,5 @@ package org.openhab.binding.warmup.internal.model.auth;
 /**
  * @author James Melville - Initial contribution
  */
-public class AuthResponseDataDTO {
-    private String method;
-    private String token;
-
-    public String getToken() {
-        return token;
-    }
-
-    public String getMethod() {
-        return method;
-    }
+public record AuthResponseDataDTO(String method, String token) {
 }

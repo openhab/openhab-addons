@@ -87,8 +87,8 @@ public class MyWarmupApi {
 
         AuthResponseDTO ar = GSON.fromJson(response.getContentAsString(), AuthResponseDTO.class);
 
-        if (ar != null && ar.getStatus() != null && "success".equals(ar.getStatus().getResult())) {
-            authToken = ar.getResponse().getToken();
+        if (ar != null && ar.status() != null && "success".equals(ar.status().result())) {
+            authToken = ar.response().token();
         } else {
             throw new MyWarmupApiException("Authentication Failed");
         }
@@ -172,7 +172,7 @@ public class MyWarmupApi {
 
         QueryResponseDTO qr = GSON.fromJson(response.getContentAsString(), QueryResponseDTO.class);
 
-        if (qr != null && "success".equals(qr.getStatus())) {
+        if (qr != null && "success".equals(qr.status())) {
             return qr;
         } else {
             throw new MyWarmupApiException("Unexpected reponse from API");

@@ -93,35 +93,35 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No data from bridge");
         } else if (config != null) {
             final String serialNumber = config.getSerialNumber();
-            for (LocationDTO location : domain.getData().getUser().getLocations()) {
-                for (RoomDTO room : location.getRooms()) {
-                    if (room.getThermostat4ies() != null && !room.getThermostat4ies().isEmpty()
-                            && room.getThermostat4ies().get(0).getDeviceSN().equals(serialNumber)) {
-                        if (room.getThermostat4ies().get(0).getLastPoll() > 10) {
+            for (LocationDTO location : domain.data().user().locations()) {
+                for (RoomDTO room : location.rooms()) {
+                    if (room.thermostat4ies() != null && !room.thermostat4ies().isEmpty()
+                            && room.thermostat4ies().get(0).deviceSN().equals(serialNumber)) {
+                        if (room.thermostat4ies().get(0).lastPoll() > 10) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                     "Thermostat has not polled for 10 minutes");
                         } else {
                             updateStatus(ThingStatus.ONLINE);
 
                             updateProperty(PROPERTY_ROOM_ID, room.getId());
-                            updateProperty(PROPERTY_ROOM_NAME, room.getName());
+                            updateProperty(PROPERTY_ROOM_NAME, room.roomName());
                             updateProperty(PROPERTY_LOCATION_ID, location.getId());
-                            updateProperty(PROPERTY_LOCATION_NAME, location.getName());
+                            updateProperty(PROPERTY_LOCATION_NAME, location.name());
 
-                            updateState(CHANNEL_CURRENT_TEMPERATURE, parseTemperature(room.getCurrentTemperature()));
-                            updateState(CHANNEL_TARGET_TEMPERATURE, parseTemperature(room.getTargetTemperature()));
-                            updateState(CHANNEL_FIXED_TEMPERATURE, parseTemperature(room.getFixedTemperature()));
-                            updateState(CHANNEL_ENERGY, parseEnergy(room.getEnergy()));
+                            updateState(CHANNEL_CURRENT_TEMPERATURE, parseTemperature(room.currentTemp()));
+                            updateState(CHANNEL_TARGET_TEMPERATURE, parseTemperature(room.targetTemp()));
+                            updateState(CHANNEL_FIXED_TEMPERATURE, parseTemperature(room.fixedTemp()));
+                            updateState(CHANNEL_ENERGY, parseEnergy(room.energy()));
                             updateState(CHANNEL_AIR_TEMPERATURE,
-                                    parseTemperature(room.getThermostat4ies().get(0).getAirTemp()));
+                                    parseTemperature(room.thermostat4ies().get(0).airTemp()));
                             updateState(CHANNEL_FLOOR1_TEMPERATURE,
-                                    parseTemperature(room.getThermostat4ies().get(0).getFloor1Temp()));
+                                    parseTemperature(room.thermostat4ies().get(0).floor1Temp()));
                             updateState(CHANNEL_FLOOR2_TEMPERATURE,
-                                    parseTemperature(room.getThermostat4ies().get(0).getFloor2Temp()));
-                            updateState(CHANNEL_OVERRIDE_DURATION, parseDuration(room.getOverrideDuration()));
-                            updateState(CHANNEL_RUN_MODE, parseString(room.getRunMode()));
+                                    parseTemperature(room.thermostat4ies().get(0).floor2Temp()));
+                            updateState(CHANNEL_OVERRIDE_DURATION, parseDuration(room.overrideDur()));
+                            updateState(CHANNEL_RUN_MODE, parseString(room.runMode()));
                             updateState(CHANNEL_FROST_PROTECTION_MODE,
-                                    OnOffType.from(room.getRunMode().equals(FROST_PROTECTION_MODE)));
+                                    OnOffType.from(room.runMode().equals(FROST_PROTECTION_MODE)));
                         }
                         return;
                     }
