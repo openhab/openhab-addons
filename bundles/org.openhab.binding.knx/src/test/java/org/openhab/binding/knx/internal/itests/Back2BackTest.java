@@ -408,6 +408,10 @@ public class Back2BackTest {
         helper("7.013", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 lx"));
         helper("7.013", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 lx"));
         helper("7.013", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 lx"));
+
+        helper("7.600", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 K"));
+        helper("7.600", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 K"));
+        helper("7.600", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 K"));
     }
 
     @Test
