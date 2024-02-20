@@ -527,7 +527,7 @@ class BridgeHandlerTest {
     }
 
     @Test
-    void testHandleLongPollResultNoDeviceId() {
+    void handleLongPollResultNoDeviceId() {
         List<Thing> things = new ArrayList<Thing>();
         when(thing.getThings()).thenReturn(things);
 
@@ -562,7 +562,7 @@ class BridgeHandlerTest {
     }
 
     @Test
-    void testHandleLongPollResult() {
+    void handleLongPollResult() {
         List<Thing> things = new ArrayList<Thing>();
         when(thing.getThings()).thenReturn(things);
 
@@ -607,7 +607,7 @@ class BridgeHandlerTest {
     }
 
     @Test
-    void testHandleLongPollResultHandleChildUpdate() {
+    void handleLongPollResultHandleChildUpdate() {
         List<Thing> things = new ArrayList<Thing>();
         when(thing.getThings()).thenReturn(things);
 
