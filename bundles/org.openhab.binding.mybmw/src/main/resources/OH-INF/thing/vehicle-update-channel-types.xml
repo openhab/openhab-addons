@@ -6,16 +6,16 @@
 	<channel-type id="state-update-channel">
 		<item-type>Switch</item-type>
 		<label>trigger the update of the state</label>
-		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="charging-update-channel">
 		<item-type>Switch</item-type>
 		<label>trigger the update of the charging information</label>
-		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="image-update-channel">
 		<item-type>Switch</item-type>
 		<label>trigger the update of the image</label>
-		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

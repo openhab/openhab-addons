@@ -1009,8 +1009,6 @@ public class VehicleHandler extends BaseThingHandler {
                     default:
                         break;
                 }
-                // immediately set the switch back to off
-                updateChannel(group, channelUID.getIdWithoutGroup(), OnOffType.OFF, null);
             }
         }
     }
