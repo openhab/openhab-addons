@@ -159,11 +159,11 @@ These channels can be used to control the update behavior from openHAB, e.g. via
 - switches which can be triggered by a command
 - if the switches are set to ON, then immediately they will be set to OFF again for being able to trigger the next update
 
-| Channel ID      | Type   | Description                                                               | conv | phev | bev_rex | bev |
-|-----------------|--------|---------------------------------------------------------------------------|------|------|---------|-----|
-| state-update    | Switch | When set to ON, the state of the vehicle will be updated                  |  X   |  X   |    X    |  X  |
-| charging-update | Switch | When set to ON, the charging statistics of the vehicle will be updated    |      |  X   |    X    |  X  |
-| image-update    | Switch | When set to ON, the image of the vehicle will be updated                  |  X   |  X   |    X    |  X  |
+| Channel ID      | Type   | Description                                                                                              | conv | phev | bev_rex | bev |
+|-----------------|--------|----------------------------------------------------------------------------------------------------------|------|------|---------|-----|
+| state-update    | Switch | When set to ON, the state channels of the vehicle will be updated                                        |  X   |  X   |    X    |  X  |
+| charging-update | Switch | When set to ON, the charging statistics and charging sessions channels of the vehicle will be updated    |      |  X   |    X    |  X  |
+| image-update    | Switch | When set to ON, the image of the vehicle will be updated                                                 |  X   |  X   |    X    |  X  |
 
 #### Vehicle Status
 
@@ -259,19 +259,19 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 - Availability according to table
 - Read-only values
 
-| Channel ID                 | Type                 | conv | phev | bev_rex | bev |
-|----------------------------|----------------------|------|------|---------|-----|
-| mileage                    | Number:Length        |  X   |  X   |    X    |  X  |
-| range-fuel                 | Number:Length        |  X   |  X   |    X    |     |
-| range-electric             | Number:Length        |      |  X   |    X    |  X  |
-| range-hybrid               | Number:Length        |      |  X   |    X    |     |
-| soc                        | Number:Dimensionless |      |  X   |    X    |  X  |
-| remaining-fuel             | Number:Volume        |  X   |  X   |    X    |     |
-| estimated-fuel-l-100km     | Number               |  X   |  X   |    X    |     |
-| estimated-fuel-mpg         | Number               |  X   |  X   |    X    |     |
-| range-radius-fuel          | Number:Length        |  X   |  X   |    X    |     |
-| range-radius-electric      | Number:Length        |      |  X   |    X    |  X  |
-| range-radius-hybrid        | Number:Length        |      |  X   |    X    |     |
+| Channel ID                 | Type                 | Description                                   | conv | phev | bev_rex | bev |
+|----------------------------|----------------------|-----------------------------------------------|------|------|---------|-----|
+| mileage                    | Number:Length        | current mileage of the vehicle                |  X   |  X   |    X    |  X  |
+| range-fuel                 | Number:Length        | fuel range                                    |  X   |  X   |    X    |     |
+| range-electric             | Number:Length        | electric range                                |      |  X   |    X    |  X  |
+| range-hybrid               | Number:Length        | combined hybrid range                         |      |  X   |    X    |     |
+| soc                        | Number:Dimensionless | state of charge                               |      |  X   |    X    |  X  |
+| remaining-fuel             | Number:Volume        | remaining fuel in l                           |  X   |  X   |    X    |     |
+| estimated-fuel-l-100km     | Number               | estimated fuel consumption in l               |  X   |  X   |    X    |     |
+| estimated-fuel-mpg         | Number               | estimated fuel consumption in mpg             |  X   |  X   |    X    |     |
+| range-radius-fuel          | Number:Length        | the calculated range radius combustion        |  X   |  X   |    X    |     |
+| range-radius-electric      | Number:Length        | the calculated range radius electric          |      |  X   |    X    |  X  |
+| range-radius-hybrid        | Number:Length        | the calculated range radius hybrid combined   |      |  X   |    X    |     |
 
 #### Doors Details
 
@@ -281,20 +281,20 @@ Detailed status of all doors and windows.
 - Available for all vehicles if corresponding sensors are built-in
 - Read-only values
 
-| Channel ID              | Type          |
-|-------------------------|---------------|
-| driver-front            | String        |
-| driver-rear             | String        |
-| passenger-front         | String        |
-| passenger-rear          | String        |
-| trunk                   | String        |
-| hood                    | String        |
-| win-driver-front        | String        |
-| win-driver-rear         | String        |
-| win-passenger-front     | String        |
-| win-passenger-rear      | String        |
-| win-rear                | String        |
-| sunroof                 | String        |
+| Channel ID              | Type          | Description                             |
+|-------------------------|---------------|-----------------------------------------|
+| driver-front            | String        | status of front door driver's side      |
+| driver-rear             | String        | status of rear door driver's side       |
+| passenger-front         | String        | status of front door passenger's side   |
+| passenger-rear          | String        | status of rear door passenger's side    |
+| trunk                   | String        | status of trunk                         |
+| hood                    | String        | status of hood                          |
+| win-driver-front        | String        | status of front window driver's side    |
+| win-driver-rear         | String        | status of rear window driver's side     |
+| win-passenger-front     | String        | status of front window passenger's side |
+| win-passenger-rear      | String        | status of rear window passenger's side  |
+| win-rear                | String        | status of rear window                   |
+| sunroof                 | String        | status of sunroof                       |
 
 Possible states
 
@@ -349,12 +349,12 @@ GPS location and heading of the vehicle.
 - Available for all vehicles with built-in GPS sensor. Function can be enabled/disabled in the head unit
 - Read-only values
 
-| Channel ID          | Type          |
-|---------------------|---------------|
-| gps                 | Location      |
-| heading             | Number:Angle  |
-| address             | String        |
-| home-distance       | Number:Length |
+| Channel ID          | Type          | Description                                                  |
+|---------------------|---------------|--------------------------------------------------------------|
+| gps                 | Location      | current GPS coordinates of the vehicle                       |
+| heading             | Number:Angle  | current direction of the vehicle                             |
+| address             | String        | current address                                              |
+| home-distance       | Number:Length | calculated distance from configured home position of Openhab |
 
 #### Remote Services
 
@@ -437,11 +437,11 @@ Shows charge statistics of the current month
 - Available for electric and hybrid vehicles
 - Read-only values
 
-| Channel ID              | Type           |
-|-------------------------|----------------|
-| title                   | String         |
-| energy                  | Number:Energy  |
-| sessions                | Number         |
+| Channel ID              | Type           | Description             |
+|-------------------------|----------------|-------------------------|
+| title                   | String         | Title of the statistics |
+| energy                  | Number:Energy  | consumed energy         |
+| sessions                | Number         | number of sessions      |
 
 #### Charge Sessions
 
@@ -452,13 +452,13 @@ If more than one message is active the channel _name_ contains all active messag
 - Available for electric and hybrid vehicles
 - Read-only values
 
-| Channel ID   | Type     |
-|--------------|----------|
-| title        | String   |
-| subtitle     | String   |
-| energy       | String   |
-| issue        | String   |
-| status       | String   |
+| Channel ID   | Type     | Description             |
+|--------------|----------|-------------------------|
+| title        | String   | Title of the session    |
+| subtitle     | String   | Subtitle of the session |
+| energy       | String   | consumed energy         |
+| issue        | String   | if an issue occurred    |
+| status       | String   | status of the session   |
 
 #### Tire Pressure
 
@@ -468,16 +468,16 @@ Current and target tire pressure values
 - Available for all vehicles if corresponding sensors are built-in
 - Read-only values
 
-| Channel ID              | Type             |
-|-------------------------|------------------|
-| fl-current              | Number:Pressure  |
-| fl-target               | Number:Pressure  |
-| fr-current              | Number:Pressure  |
-| fr-target               | Number:Pressure  |
-| rl-current              | Number:Pressure  |
-| rl-target               | Number:Pressure  |
-| rr-current              | Number:Pressure  |
-| rr-target               | Number:Pressure  |
+| Channel ID              | Type             | Description                  |
+|-------------------------|------------------|------------------------------|
+| fl-current              | Number:Pressure  | Current pressure front left  |
+| fl-target               | Number:Pressure  | Target pressure front left   |
+| fr-current              | Number:Pressure  | Current pressure front right |
+| fr-target               | Number:Pressure  | Target pressure front right  |
+| rl-current              | Number:Pressure  | Current pressure rear left   |
+| rl-target               | Number:Pressure  | Target pressure rear left    |
+| rr-current              | Number:Pressure  | Current pressure rear right  |
+| rr-target               | Number:Pressure  | Target pressure rear right   |
 
 #### Image
 
@@ -487,10 +487,10 @@ Image representation of the vehicle.
 - Available for all vehicles
 - Read/Write access
 
-| Channel ID          | Type   |  Access  |
-|---------------------|--------|----------|
-| png                 | Image  | Read     |
-| view                | String | Write    |
+| Channel ID          | Type   |  Access  | Description               |
+|---------------------|--------|----------|---------------------------|
+| png                 | Image  | Read     | the image as png          |
+| view                | String | Write    | the view port of the car  |
 
 Possible view ports:
 
