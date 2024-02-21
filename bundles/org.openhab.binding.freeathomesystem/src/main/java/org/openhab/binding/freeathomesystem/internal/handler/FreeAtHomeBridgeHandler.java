@@ -635,10 +635,20 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                     "@text/conf-error.ip-address-missing");
             return;
         }
+
         password = locConfig.password;
-        // See above
+        if (password.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error.password-missing");
+            return;
+        }
+
         username = locConfig.username;
-        // See above
+        if (username.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error.username-missing");
+            return;
+        }
 
         // build base URL
         baseUrl = "http://" + ipAddress + "/fhapi/v1/api";
