@@ -197,7 +197,7 @@ class KNXChannelTest {
         Command command = new PercentType("90");
         @Nullable
         OutboundSpec outboundSpec = knxChannel.getCommandSpec(command);
-        assertThat(outboundSpec, is(notNullValue()));
+        assertNotNull(outboundSpec);
         assertThat(outboundSpec.getGroupAddress(), is(new GroupAddress("1/2/2")));
 
         String mappedValue = ValueEncoder.encode(outboundSpec.getValue(), outboundSpec.getDPT());
@@ -217,8 +217,9 @@ class KNXChannelTest {
         assertThat(knxChannel, instanceOf(TypeDimmer.class));
 
         Command command = OnOffType.ON;
+        @Nullable
         OutboundSpec outboundSpec = knxChannel.getCommandSpec(command);
-        assertThat(outboundSpec, is(notNullValue()));
+        assertNotNull(outboundSpec);
         assertThat(outboundSpec.getGroupAddress(), is(new GroupAddress("1/2/1")));
 
         String mappedValue = ValueEncoder.encode(outboundSpec.getValue(), outboundSpec.getDPT());
