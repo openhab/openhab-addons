@@ -619,8 +619,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
     /**
      * Method to initialize the bridge
-     *
-     *
      */
     @Override
     public void initialize() {
