@@ -57,7 +57,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
             try {
                 deviceList = thingHandler.getDeviceDeviceList();
 
-                for (int i = 0; (i < deviceList.size()) && (isScanTerminated == false); i++) {
+                for (int i = 0; (i < deviceList.size()) && !isScanTerminated; i++) {
                     FreeAtHomeDeviceDescription device = thingHandler.getFreeatHomeDeviceDescription(deviceList.get(i));
 
                     ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.FREEATHOMEDEVICE_TYPE_UID, bridgeUID,

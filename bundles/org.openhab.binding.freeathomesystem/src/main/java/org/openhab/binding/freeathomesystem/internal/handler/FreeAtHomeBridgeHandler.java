@@ -199,7 +199,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         }
 
         // Scan finished but error. clear the list
-        if (ret == false) {
+        if (!ret) {
             listOfComponentId.clear();
         }
 
@@ -548,7 +548,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
      * Method to close the websocket connection
      */
     public void closeWebSocketConnection() {
-
         socketMonitor.interrupt();
 
         QueuedThreadPool localThreadPool = jettyThreadPool;
@@ -861,7 +860,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
      */
     @Override
     public void onWebSocketText(@Nullable String message) {
-
         if (message != null) {
             if (message.toLowerCase(Locale.US).contains("bye")) {
                 Session localSession = websocketSession;
