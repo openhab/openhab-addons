@@ -114,7 +114,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                         String locDeviceId = properties.get("deviceId");
 
                         if (locDeviceId != null) {
-
                             try {
                                 device = freeAtHomeBridge.getFreeatHomeDeviceDescription(locDeviceId);
                             } catch (FreeAtHomeHttpCommunicationException e) {
@@ -135,7 +134,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                             logger.debug("Device cannot be created: device ID is null");
                         }
                     }
-
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -426,7 +424,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
             logger.debug("Channel type created {} - label: {} - caegory: {}", channelTypeUID.getAsString(),
                     dpg.getLabel(), dpg.getOpenHabCategory());
-
         } catch (URISyntaxException e) {
             logger.debug("Channel config URI cannot created for datapoint - datapoint group: {}", dpg.getLabel());
         }

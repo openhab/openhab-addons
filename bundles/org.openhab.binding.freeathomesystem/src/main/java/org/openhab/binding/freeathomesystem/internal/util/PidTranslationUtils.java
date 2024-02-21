@@ -48,7 +48,7 @@ public class PidTranslationUtils {
     public static final String CATEGORY_CONTACT = "Contact";
     public static final String CATEGORY_SWITCH = "Switch";
 
-    private static final Map<String, PIdContainerClass> mapPairingId = Map.ofEntries(
+    private static final Map<String, PIdContainerClass> MAP_PAIRING_ID = Map.ofEntries(
             Map.entry("0x0001",
                     new PIdContainerClass(PID_VALUETYPE_BOOLEAN, CATEGORY_SWITCH, "0", "1", "pid-switch-on-off",
                             "pid-switch-on-off-text")),
@@ -740,49 +740,49 @@ public class PidTranslationUtils {
                     "pid-air-quality-voc-value", "pid-air-quality-voc-value-text")));
 
     public static String getShortTextForPairingId(String Key) {
-        PIdContainerClass desc = mapPairingId.get(Key);
+        PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
         return (desc != null) ? desc.label : "Unknown label";
     }
 
     public static String getDescriptionTextForPairingId(String Key) {
-        PIdContainerClass desc = mapPairingId.get(Key);
+        PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
         return (desc != null) ? desc.description : "Unknown description";
     }
 
     public static String getValueTypeForPairingId(String Key) {
-        PIdContainerClass desc = mapPairingId.get(Key);
+        PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
         return (desc != null) ? desc.valueType : PID_VALUETYPE_DECIMAL;
     }
 
     public static String getItemTypeForPairingId(String Key) {
-        PIdContainerClass desc = mapPairingId.get(Key);
+        PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
         return (desc != null) ? desc.category : CATEGORY_UNDEFINED;
     }
 
     public static String getCategoryForPairingId(String Key) {
-        PIdContainerClass desc = mapPairingId.get(Key);
+        PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
         return (desc != null) ? desc.category : CATEGORY_UNDEFINED;
     }
 
     public static String getPatternForPairingId(String Key) {
-        PIdContainerClass desc = mapPairingId.get(Key);
+        PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
         return (desc != null) ? desc.category : CATEGORY_UNDEFINED;
     }
 
     public static int getMax(String Key) {
-        PIdContainerClass desc = mapPairingId.get(Key);
+        PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
         return (desc != null) ? desc.max : 1;
     }
 
     public static int getMin(String Key) {
-        PIdContainerClass desc = mapPairingId.get(Key);
+        PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
         return (desc != null) ? desc.min : 0;
     }
