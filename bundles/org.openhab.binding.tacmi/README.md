@@ -8,8 +8,8 @@ These modes are:
 
 Via a "Schema API Page"
 
-- Read values from output nodes
-- Change values for controllable nodes
+  * Read values from output nodes
+  * Change values for controllable nodes
 
 CoE (CAN over Ethernet) Connection
 
@@ -22,9 +22,13 @@ Depending on what you want to achieve, either the "Schema API Page" or the CoE w
 As rough guidance: Anything you want to provide to the TA equipment it has to work / operate with the CoE might be better.
 If you plan things mainly for user interaction the "Schema API Page" might be better.
 
-## Prerequisites
+## Discovery
 
-### Setting up the "Schema API Page"
+Autodiscovering is not supported. You have to define the things manually.
+
+## Schema API
+
+### Prerequisites
 
 The "Schema API page" is a special schema page created via TA's _TA-Designer_ application available as download on their web site.
 This page just needs to exist and be deployed on the C.M.I. but it dosn't need to be linked by the other schema pages you are using to control your TA installation.
@@ -53,22 +57,8 @@ The first sample is a sensor reading, but also the 'operation mode' of a heating
 
 In this screenshot you also see the schema page id - the parenthesized number on the bottom page overview, in this sample 4.
 
-### CoE Configuration
 
-#### Configure CAN outputs in TAPPS2
-
-You need to configure CAN outputs in your Functional data on the UVR16x2.
-This can be done by using the TAPPS2 application from TA. Follow the user guide on how to do this.
-
-#### Configure your CMI for CoE
-
-Now follow the User Guide of the CMI on how to setup CAN over Ethernet (COE).
-Here you will map your outputs that you configured in the previous step.
-This can be accomplished via the GUI on the CMI or via the coe.csv file.
-As the target device you need to put the IP of your openHAB server.
-Don’t forget to reboot the CMI after you uploaded the coe.csv file.
-
-## Supported Bridge and Things
+### Supported Bridge and Things
 
 - TA C.M.I. schema API connection - Thing
 
@@ -76,24 +66,8 @@ This thing reflecting one of our 'schema API page' as defined in the prerequisit
 This thing doesn't need the bridge.
 Multiple of these pages on different C.M.I.'s could be defined within an openHAB instance.
 
-- TA C.M.I. CoE Bridge
 
-In order to get the CAN over Ethernet (COE) envionment working a `coe-bridge` has to be created.
-The bridge itself opens the UDP port 5441 for communication with the C.M.I. devices.
-The bridge could be used for multiple C.M.I. devices.
-
-- TA C.M.I. CoE Connection - Thing
-
-This thing reflects a connection to a node behind a specific C.M.I..
-This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
-
-## Discovery
-
-Autodiscovering is not supported. We have to define the things manually.
-
-## Thing Configuration
-
-### TA C.M.I. schema API connection
+### Configuration
 
 The _TA C.M.I. Schema API Connection_ has to be manually configured.
 
@@ -109,22 +83,7 @@ The thing has the following configuration parameters:
 
 This thing doesn't need a bridge. Multiple of these things for different C.M.I.'s could be defined within an openHAB instance.
 
-### TA C.M.I. CoE Connection
-
-The _TA C.M.I. CoE Connection_ has to be manually configured.
-
-This thing reflects a connection to a node behind a specific C.M.I.. This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
-
-| Parameter Label         | Parameter ID    | Description                                                                                                   | Accepted values        |
-|-------------------------|-----------------|---------------------------------------------------------------------------------------------------------------|------------------------|
-| C.M.I. IP Address       | host            | Host name or IP address of the C.M.I                                                                          | host name or ip        |
-| Node                    | node            | The CoE / CAN Node number openHAB should represent                                                            | 1-64                   |
-
-The thing has no channels by default - they have to be added manually matching the configured inputs / outputs for the related CAN Node. Digital and Analog channels are supported. Please read TA's documentation related to the CAN-protocol - multiple analog (4) and digital (16) channels are combined so please be aware of this design limitation.
-
-## Channels
-
-### TA C.M.I. schema API connection
+### Channels
 
 The channels provided by this thing depend on the configuration of the "schema API page".
 All the channels are dynamically created to match it.
@@ -142,7 +101,52 @@ The behavior in detail:
 - `On-Fetch` (`1`): This is the default for read-only values. This means the channel is updated every time the schema page is polled. Ideally for values you want to monitor and log into charts.
 - `On-Change` (`2`): When channel values can be changed via OH it is better to only update the channel when the value changes. The binding will cache the previous value and only send an update when it changes to the previous known value. This is especially useful if you intend to link other things (like i.e. Zigbee or Shelly switches) to the TA via OH that can be controlled by different sources. This prevents unintended toggles or even toggle-loops.
 
-### TA C.M.I. CoE Connection
+## CoE
+
+### Configuration
+
+
+#### Configure CAN outputs in TAPPS2
+
+You need to configure CAN outputs in your Functional data on the UVR16x2.
+This can be done by using the TAPPS2 application from TA. Follow the user guide on how to do this.
+
+##### Configure your CMI for CoE
+
+Now follow the User Guide of the CMI on how to setup CAN over Ethernet (COE).
+Here you will map your outputs that you configured in the previous step.
+This can be accomplished via the GUI on the CMI or via the coe.csv file.
+As the target device you need to put the IP of your openHAB server.
+Don’t forget to reboot the CMI after you uploaded the coe.csv file.
+
+### Supported Bridge and Things
+
+- TA C.M.I. CoE Bridge
+
+In order to get the CAN over Ethernet (COE) envionment working a `coe-bridge` has to be created.
+The bridge itself opens the UDP port 5441 for communication with the C.M.I. devices.
+The bridge could be used for multiple C.M.I. devices.
+
+- TA C.M.I. CoE Connection - Thing
+
+This thing reflects a connection to a node behind a specific C.M.I..
+This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
+
+
+### Thing Configuration
+
+The _TA C.M.I. CoE Connection_ has to be manually configured.
+
+This thing reflects a connection to a node behind a specific C.M.I.. This node could be every CAN-Capable device from TA which allows to define a CAN-Input.
+
+| Parameter Label         | Parameter ID    | Description                                                                                                   | Accepted values        |
+|-------------------------|-----------------|---------------------------------------------------------------------------------------------------------------|------------------------|
+| C.M.I. IP Address       | host            | Host name or IP address of the C.M.I                                                                          | host name or ip        |
+| Node                    | node            | The CoE / CAN Node number openHAB should represent                                                            | 1-64                   |
+
+The thing has no channels by default - they have to be added manually matching the configured inputs / outputs for the related CAN Node. Digital and Analog channels are supported. Please read TA's documentation related to the CAN-protocol - multiple analog (4) and digital (16) channels are combined so please be aware of this design limitation.
+
+### Channels
 
 Some comments on the CoE Connection and channel configuration:
 As you might already have taken notice when studying the TA's manual, there are always a multiple CoE-values updated within a single CoE-message.
@@ -213,7 +217,7 @@ The known measure types are:
 | 17..   | repeating again from 1, e.g 17==1, 18==2, ...                          |
 
 
-## Full Example
+### Full Example
 
 As there is no common configuration as everything depends on the configuration of the TA devices.
 So we just can provide some samples providing the basics so you can build the configuration matching your system.
