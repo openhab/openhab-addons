@@ -1,0 +1,75 @@
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>
+				%d{HH:mm:ss.SSS} [%-5.5p] [%-36.36c] - %m%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<root level="ERROR">
+		<appender-ref ref="STDOUT"/>
+	</root>
+
+	<!-- openHAB specific logger configuration -->
+
+	<Logger level="${env:logger.openhab.level:-INFO}" name="org.openhab"/>
+
+	<!-- Uncomment this logger and update the name to enable debug logging for a binding -->
+	<!-- <Logger level="DEBUG" name="org.openhab.binding.YOURBINDINGNAME"/> -->
+
+	<Logger level="DEBUG" name="org.openhab.binding.miio"/>
+
+	<!-- You can also override the variables of the loggers below to enable logging without -->
+	<!-- modifying this file. E.g. set 'logger.misc1.name' to 'org.openhab.binding.YOURBINDINGNAME' -->
+	<!-- in the launch configuration of app.bndrun . Similarly you can also override the -->
+	<!--'logger.misc1.level' this way or change the log level of the root and openhab loggers above. -->
+	<Logger level="${env:logger.misc1.level:-DEBUG}" name="${env:logger.misc1.name:-override.me}"/>
+	<Logger level="${env:logger.misc2.level:-DEBUG}" name="${env:logger.misc2.name:-override.me}"/>
+	<Logger level="${env:logger.misc3.level:-DEBUG}" name="${env:logger.misc3.name:-override.me}"/>
+
+	<Logger level="ERROR" name="openhab.event.ItemStateEvent"/>
+	<Logger level="ERROR" name="openhab.event.ItemAddedEvent"/>
+	<Logger level="ERROR" name="openhab.event.ItemRemovedEvent"/>
+	<Logger level="ERROR" name="openhab.event.ItemChannelLinkAddedEvent"/>
+	<Logger level="ERROR" name="openhab.event.ItemChannelLinkRemovedEvent"/>
+	<Logger level="ERROR" name="openhab.event.ChannelDescriptionChangedEvent"/>
+	<Logger level="ERROR" name="openhab.event.ThingStatusInfoEvent"/>
+	<Logger level="ERROR" name="openhab.event.ThingAddedEvent"/>
+	<Logger level="ERROR" name="openhab.event.ThingUpdatedEvent"/>
+	<Logger level="ERROR" name="openhab.event.ThingRemovedEvent"/>
+	<Logger level="ERROR" name="openhab.event.InboxUpdatedEvent"/>
+	<Logger level="ERROR" name="openhab.event.RuleStatusInfoEvent"/>
+	<Logger level="ERROR" name="openhab.event.RuleAddedEvent"/>
+	<Logger level="ERROR" name="openhab.event.RuleRemovedEvent"/>
+	<Logger level="ERROR" name="openhab.event.StartlevelEvent"/>
+	<Logger level="ERROR" name="openhab.event.AddonEvent"/>
+
+
+	<Logger level="ERROR" name="javax.jmdns"/>
+	<Logger level="ERROR" name="org.jupnp"/>
+
+	<!-- Filters known issues of pax-web (issue link to be added here). -->
+	<!-- Can be removed once the issues are resolved in an upcoming version. -->
+	<Logger level="OFF" name="org.ops4j.pax.web.pax-web-runtime"/>
+
+	<!-- Filters known issues of lsp4j, see -->
+	<!-- https://github.com/eclipse/smarthome/issues/4639 -->
+	<!-- https://github.com/eclipse/smarthome/issues/4629 -->
+	<!-- https://github.com/eclipse/smarthome/issues/4643 -->
+	<!-- Can be removed once the issues are resolved in an upcoming version. -->
+	<Logger level="OFF" name="org.eclipse.lsp4j"/>
+
+	<!-- Filters warnings for events that could not be delivered to a disconnected client. -->
+	<Logger level="ERROR" name="org.apache.cxf.jaxrs.sse.SseEventSinkImpl"/>
+
+	<!-- Filters known issues of javax.mail, see -->
+	<!-- https://github.com/openhab/openhab-addons/issues/5530 -->
+	<Logger level="ERROR" name="javax.mail"/>
+
+	<!-- Filters disconnection warnings of the ChromeCast Java API, see -->
+	<!-- https://github.com/openhab/openhab-addons/issues/3770 -->
+	<Logger level="ERROR" name="su.litvak.chromecast.api.v2.Channel"/>
+
+</configuration>
