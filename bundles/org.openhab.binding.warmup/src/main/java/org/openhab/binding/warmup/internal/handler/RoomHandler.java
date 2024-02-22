@@ -158,7 +158,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
                 rc.api.setOverride(rc.locationId, rc.roomId, temperature, duration);
                 refreshFromServer();
             } catch (MyWarmupApiException e) {
-                logger.info("Set Override failed: {}", e.getMessage());
+                logger.warn("Set Override failed: {}", e.getMessage());
             }
         }
     }
@@ -169,7 +169,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
             rc.api.setFixed(rc.locationId, rc.roomId, formatTemperature(command));
             refreshFromServer();
         } catch (MyWarmupApiException e) {
-            logger.debug("Set Fixed failed: {}", e.getMessage());
+            logger.warn("Set Fixed failed: {}", e.getMessage());
         }
     }
 
@@ -179,7 +179,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
             rc.api.toggleFrostProtectionMode(rc.locationId, rc.roomId, command);
             refreshFromServer();
         } catch (MyWarmupApiException e) {
-            logger.debug("Toggle Frost Protection failed: {}", e.getMessage());
+            logger.warn("Toggle Frost Protection failed: {}", e.getMessage());
         }
     }
 
@@ -190,9 +190,9 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
             rc.api.setRoomMode(rc.locationId, rc.roomId, mode);
             refreshFromServer();
         } catch (MyWarmupApiException e) {
-            logger.debug("Set Room Mode failed: {}", e.getMessage());
+            logger.warn("Set Room Mode failed: {}", e.getMessage());
         } catch (IllegalArgumentException ex) {
-            logger.error("Unable to set room mode: {}", command.toString());
+            logger.warn("Unable to set room mode: {}", command.toString());
         }
     }
 
