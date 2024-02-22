@@ -1124,10 +1124,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                         List<StateOption> sourceMenuStateOptions = new ArrayList<>();
                         topMenuItems.forEach(topItem -> {
                             sourceMenuStateOptions.add(new StateOption(topItem.getText(), topItem.getText()));
-                            topItem.getItems().forEach(subItem -> {
-                                sourceMenuStateOptions
-                                        .add(new StateOption(topItem.getText() + "|" + subItem, "-> " + subItem));
-                            });
+                            topItem.getItems().forEach(subItem -> sourceMenuStateOptions
+                                    .add(new StateOption(topItem.getText() + "|" + subItem, "-> " + subItem)));
                         });
                         stateDescriptionProvider.setStateOptions(
                                 new ChannelUID(getThing().getUID(),
