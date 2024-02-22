@@ -55,8 +55,8 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
 
     /**
      * Initializes the logger.
-     * This cannot be done upon class construction because at that moment, the context is not setup.
-     * Instead, this has to be done before the first usage of the logger.
+     * This cannot be done on script engine creation because the context variables are not yet initialized.
+     * Therefore, the logger needs to be initialized on the first use after script engine creation.
      */
     private void initializeLogger() {
         Object fileName = delegate.getContext().getAttribute("javax.script.filename");
