@@ -72,7 +72,7 @@ public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
-    private static Source GLOBAL_SOURCE;
+    private static final Source GLOBAL_SOURCE;
     static {
         try {
             GLOBAL_SOURCE = Source.newBuilder("js", getFileAsReader("node_modules/@jsscripting-globals.js"),
@@ -82,7 +82,7 @@ public class OpenhabGraalJSScriptEngine
         }
     }
 
-    private static Source OPENHAB_JS_SOURCE;
+    private static final Source OPENHAB_JS_SOURCE;
     static {
         try {
             OPENHAB_JS_SOURCE = Source
