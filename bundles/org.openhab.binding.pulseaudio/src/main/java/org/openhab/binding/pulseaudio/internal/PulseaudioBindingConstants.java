@@ -59,6 +59,8 @@ public class PulseaudioBindingConstants {
     public static final String DEVICE_PARAMETER_AUDIO_SOURCE_CHANNELS = "simpleProtocolSourceChannels";
     public static final String DEVICE_PARAMETER_AUDIO_SOCKET_SO_TIMEOUT = "simpleProtocolSOTimeout";
     public static final String DEVICE_PARAMETER_IDLE_MODULES = "simpleProtocolIdleModules";
+    public static final String DEVICE_PARAMETER_MIN_PORT = "simpleProtocolModuleMinPort";
+    public static final String DEVICE_PARAMETER_MAX_PORT = "simpleProtocolModuleMaxPort";
 
     public static final String MODULE_SIMPLE_PROTOCOL_TCP_NAME = "module-simple-protocol-tcp";
 }

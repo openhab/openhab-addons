@@ -84,6 +84,8 @@ public class PulseaudioHandler extends BaseThingHandler {
     private @Nullable DeviceIdentifier deviceIdentifier;
     private @Nullable PulseAudioAudioSink audioSink;
     private @Nullable PulseAudioAudioSource audioSource;
+    private int simpleProtocolMinPort;
+    private int simpleProtocolMaxPort;
     private @Nullable Integer savedVolume;
 
     private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
@@ -105,6 +107,12 @@ public class PulseaudioHandler extends BaseThingHandler {
         try {
             deviceIdentifier = new DeviceIdentifier((String) config.get(DEVICE_PARAMETER_NAME_OR_DESCRIPTION),
                     (String) config.get(DEVICE_PARAMETER_ADDITIONAL_FILTERS));
+            simpleProtocolMinPort = (int) (config.containsKey(DEVICE_PARAMETER_MIN_PORT)
+                    ? config.get(DEVICE_PARAMETER_MIN_PORT)
+                    : 1024);
+            simpleProtocolMaxPort = (int) (config.containsKey(DEVICE_PARAMETER_MAX_PORT)
+                    ? config.get(DEVICE_PARAMETER_MAX_PORT)
+                    : 64512);
         } catch (PatternSyntaxException p) {
             deviceIdentifier = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -428,7 +436,8 @@ public class PulseaudioHandler extends BaseThingHandler {
             throw new IOException(
                     "missing device info, device " + safeGetDeviceNameOrDescription() + " appears to be offline");
         }
-        return briHandler.getClient().loadModuleSimpleProtocolTcpIfNeeded(device, audioFormat, module);
+        return briHandler.getClient().loadModuleSimpleProtocolTcpIfNeeded(device, audioFormat, simpleProtocolMinPort,
+                simpleProtocolMaxPort, module);
     }
 
     public AudioFormat getSourceAudioFormat() {

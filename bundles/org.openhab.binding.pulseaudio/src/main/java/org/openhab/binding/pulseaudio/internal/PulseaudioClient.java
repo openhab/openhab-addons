@@ -338,7 +338,8 @@ public class PulseaudioClient {
      * @throws InterruptedException
      */
     public Optional<SimpleProtocolTCPModule> loadModuleSimpleProtocolTcpIfNeeded(AbstractAudioDeviceConfig item,
-            AudioFormat format, @Nullable SimpleProtocolTCPModule spModule) throws InterruptedException {
+            AudioFormat format, int minPort, int maxPort, @Nullable SimpleProtocolTCPModule spModule)
+            throws InterruptedException {
         int currentTry = 0;
         String paFormat = getPAFormatString(format);
         long rate = Objects.requireNonNull(format.getFrequency());
@@ -355,7 +356,7 @@ public class PulseaudioClient {
         }
         String itemType = getItemCommandName(item);
         do {
-            int simpleTcpPortToTry = new Random().nextInt(64512) + 1024; // a random port above 1024
+            int simpleTcpPortToTry = new Random().nextInt(minPort) + maxPort; // a random port above 1024
             logger.debug("trying to load simple protocol tcp module at port {}", simpleTcpPortToTry);
             String moduleOptions = String.format(" %s=%s port=%d format=%s rate=%d channels=%d", itemType,
                     item.getPaName(), simpleTcpPortToTry, paFormat, rate, channels);

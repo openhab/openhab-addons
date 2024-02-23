@@ -85,6 +85,18 @@
 				<default>500</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="simpleProtocolMinPort" type="integer" min="1024" max="64512">
+				<label>Simple Protocol Min Port</label>
+				<description>Min port used by simple protocol module instances created by the binding on the pulseaudio host .</description>
+				<default>1024</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="simpleProtocolMaxPort" type="integer" min="1024" max="64512">
+				<label>Simple Protocol Max Port</label>
+				<description>Max port used by simple protocol module instances created by the binding on the pulseaudio host .</description>
+				<default>64512</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
