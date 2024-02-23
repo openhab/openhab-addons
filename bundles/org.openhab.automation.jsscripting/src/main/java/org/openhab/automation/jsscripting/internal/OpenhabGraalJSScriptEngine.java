@@ -134,7 +134,7 @@ public class OpenhabGraalJSScriptEngine
     private final JSRuntimeFeatures jsRuntimeFeatures;
 
     // these fields start as null because they are populated on first use
-    private String engineIdentifier;
+    private @Nullable String engineIdentifier;
     private @Nullable Consumer<String> scriptDependencyListener;
 
     private boolean initialized = false;
@@ -239,10 +239,11 @@ public class OpenhabGraalJSScriptEngine
         }
 
         // these are added post-construction, so we need to fetch them late
-        this.engineIdentifier = (String) ctx.getAttribute(CONTEXT_KEY_ENGINE_IDENTIFIER);
-        if (this.engineIdentifier == null) {
+        String localEngineIdentifier = (String) ctx.getAttribute(CONTEXT_KEY_ENGINE_IDENTIFIER);
+        if (localEngineIdentifier == null) {
             throw new IllegalStateException("Failed to retrieve engine identifier from engine bindings");
         }
+        engineIdentifier = localEngineIdentifier;
 
         ScriptExtensionAccessor scriptExtensionAccessor = (ScriptExtensionAccessor) ctx
                 .getAttribute(CONTEXT_KEY_EXTENSION_ACCESSOR);
@@ -262,7 +263,7 @@ public class OpenhabGraalJSScriptEngine
 
         // Wrap the "require" function to also allow loading modules from the ScriptExtensionModuleProvider
         Function<Function<Object[], Object>, Function<String, Object>> wrapRequireFn = originalRequireFn -> moduleName -> scriptExtensionModuleProvider
-                .locatorFor(delegate.getPolyglotContext(), engineIdentifier).locateModule(moduleName)
+                .locatorFor(delegate.getPolyglotContext(), localEngineIdentifier).locateModule(moduleName)
                 .map(m -> (Object) m).orElseGet(() -> originalRequireFn.apply(new Object[] { moduleName }));
         delegate.getBindings(ScriptContext.ENGINE_SCOPE).put(REQUIRE_WRAPPER_NAME, wrapRequireFn);
         delegate.put("require", wrapRequireFn.apply((Function<Object[], Object>) delegate.get("require")));
