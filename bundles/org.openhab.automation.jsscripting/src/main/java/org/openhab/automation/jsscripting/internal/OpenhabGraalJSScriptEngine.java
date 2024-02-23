@@ -78,7 +78,7 @@ public class OpenhabGraalJSScriptEngine
             GLOBAL_SOURCE = Source.newBuilder("js", getFileAsReader("node_modules/@jsscripting-globals.js"),
                     "@jsscripting-globals.js").cached(true).build();
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load @jsscripting-globals.js", e);
+            throw new IllegalStateException("Failed to load @jsscripting-globals.js", e);
         }
     }
 
@@ -89,7 +89,7 @@ public class OpenhabGraalJSScriptEngine
                     .newBuilder("js", getFileAsReader("node_modules/@openhab-globals.js"), "@openhab-globals.js")
                     .cached(true).build();
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load @openhab-globals.js", e);
+            throw new IllegalStateException("Failed to load @openhab-globals.js", e);
         }
     }
     private static final String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
