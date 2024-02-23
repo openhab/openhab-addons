@@ -41,7 +41,7 @@ If you are using a Modbus TCP Slave and the WiNet-S Communication Module please 
 - that the white list is disabled or your openHAB instance IP is listed
 
 Enabling modbus and whitelist setting can be done in WiNet-S Web-UI as shown below:
-<img src="./doc/WiNet-S_Modbus.PNG" alt="WiNet-S Modbus configuration"/>
+<img src="./doc/WiNet-S_Modbus.png" alt="WiNet-S Modbus configuration"/>
 
 ## Thing Configuration
 
