@@ -890,22 +890,22 @@
 	</channel-type>
 	<channel-type id="percent_water_limit_min" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Percent Water limit min</label>
+		<label>Water Powerlimit min</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="percent_water_limit_max" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Percent Water limit max</label>
+		<label>Water Powerlimit max</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="percent_heating_limit_min" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Percent Heating limit min</label>
+		<label>Heating Powerlimit min</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="percent_heating_limit_max" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Percent Heating limit max</label>
+		<label>Heating Powerlimit max</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- The following tags are only available, if an Ecovent System is attached to the Ecotouch -->
