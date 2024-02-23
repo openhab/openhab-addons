@@ -42,14 +42,6 @@
 				<description>Number of Simple Protocol TCP Socket modules to keep loaded in the server</description>
 				<default>2</default>
 			</parameter>
-			<parameter name="simpleProtocolSinkIdleTimeout" type="integer" required="false">
-				<label>Idle Timeout</label>
-				<description>Timeout in ms after which the connection will be closed when no stream is running. This ensures that
-					your speaker is not on all the time and the pulseaudio sink can go to idle mode. -1 for no disconnection (improve
-					latency). 0 for immediate disconnection. (Causes problems with concurrent audio streaming)
-				</description>
-				<default>0</default>
-			</parameter>
 			<parameter name="simpleProtocolSOTimeout" type="integer" min="250" max="2000">
 				<label>Simple Protocol SO Timeout</label>
 				<description>Socket SO timeout when connecting to pulseaudio server though module-simple-protocol-tcp. You can tune

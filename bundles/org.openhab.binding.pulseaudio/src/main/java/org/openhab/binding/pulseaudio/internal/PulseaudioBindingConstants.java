@@ -51,9 +51,7 @@ public class PulseaudioBindingConstants {
     public static final String DEVICE_PARAMETER_NAME_OR_DESCRIPTION = "name";
     public static final String DEVICE_PARAMETER_ADDITIONAL_FILTERS = "additionalFilters";
     public static final String DEVICE_PARAMETER_AUDIO_SINK_ACTIVATION = "activateSimpleProtocolSink";
-    public static final String DEVICE_PARAMETER_AUDIO_SINK_IDLE_TIMEOUT = "simpleProtocolSinkIdleTimeout";
     public static final String DEVICE_PARAMETER_AUDIO_SOURCE_ACTIVATION = "activateSimpleProtocolSource";
-    public static final String DEVICE_PARAMETER_AUDIO_SOURCE_IDLE_TIMEOUT = "simpleProtocolSourceIdleTimeout";
     public static final String DEVICE_PARAMETER_AUDIO_SOURCE_RATE = "simpleProtocolSourceRate";
     public static final String DEVICE_PARAMETER_AUDIO_SOURCE_FORMAT = "simpleProtocolSourceFormat";
     public static final String DEVICE_PARAMETER_AUDIO_SOURCE_CHANNELS = "simpleProtocolSourceChannels";

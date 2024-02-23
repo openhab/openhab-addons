@@ -37,7 +37,6 @@ import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.SimpleProtocolTCPModule;
 import org.openhab.binding.pulseaudio.internal.items.Sink;
 import org.openhab.binding.pulseaudio.internal.items.SinkInput;
-import org.openhab.binding.pulseaudio.internal.items.Source;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.audio.AudioSource;
@@ -493,21 +492,6 @@ public class PulseaudioHandler extends BaseThingHandler {
             throw new IOException("bridge is not ready");
         }
         briHandler.getClient().unloadModule(module);
-    }
-
-    public int getIdleTimeout() {
-        var idleTimeout = 0;
-        var handler = getPulseaudioBridgeHandler();
-        if (handler != null) {
-            AbstractAudioDeviceConfig device = handler.getDevice(deviceIdentifier);
-            String idleTimeoutPropName = (device instanceof Source) ? DEVICE_PARAMETER_AUDIO_SOURCE_IDLE_TIMEOUT
-                    : DEVICE_PARAMETER_AUDIO_SINK_IDLE_TIMEOUT;
-            var idleTimeoutB = (BigDecimal) getThing().getConfiguration().get(idleTimeoutPropName);
-            if (idleTimeoutB != null) {
-                idleTimeout = idleTimeoutB.intValue();
-            }
-        }
-        return idleTimeout;
     }
 
     private String safeGetDeviceNameOrDescription() {

@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,10 +53,6 @@ public abstract class PulseaudioSimpleProtocolStream {
      * Collect sockets by module id.
      */
     protected final Map<Integer, Socket> moduleSockets = new HashMap<>();
-    /**
-     * Collect scheduled disconnection by socket
-     */
-    protected final Map<Socket, ScheduledFuture<?>> scheduledDisconnections = new HashMap<>();
     /**
      * Collect created unused modules
      */
@@ -110,10 +104,6 @@ public abstract class PulseaudioSimpleProtocolStream {
     public Socket connectIfNeeded(SimpleProtocolTCPModule spModule) throws IOException, InterruptedException {
         Socket spSocket = moduleSockets.get(spModule.getId());
         if (spSocket == null || !spSocket.isConnected() || spSocket.isClosed()) {
-            var scheduledFuture = scheduledDisconnections.get(spSocket);
-            if (scheduledFuture != null) {
-                scheduledFuture.cancel(true);
-            }
             logger.debug("Simple TCP Stream connecting to module {} in {}", spModule.getId(), getLabel(null));
             String host = pulseaudioHandler.getHost();
             var clientSocketFinal = new Socket(host, spModule.getPort());
@@ -148,9 +138,9 @@ public abstract class PulseaudioSimpleProtocolStream {
                 }
                 idleModules.add(new ModuleCache(audioFormat, spModule));
                 logger.debug("idle modules: {}", idleModules.size());
-                Socket spSocket = moduleSockets.get(spModule.getId());
+                Socket spSocket = moduleSockets.remove(spModule.getId());
                 if (spSocket != null) {
-                    scheduleDisconnectIfNoClient(spSocket);
+                    disconnect(spSocket);
                 }
             }
         } else {
@@ -159,7 +149,7 @@ public abstract class PulseaudioSimpleProtocolStream {
         for (var module : modulesToRemove) {
             try {
                 logger.debug("unloading module {}", module.getId());
-                Socket spSocket = moduleSockets.get(module.getId());
+                Socket spSocket = moduleSockets.remove(module.getId());
                 if (spSocket != null) {
                     disconnect(spSocket);
                 }
@@ -181,27 +171,6 @@ public abstract class PulseaudioSimpleProtocolStream {
         try {
             spSocket.close();
         } catch (IOException ignored) {
-        }
-    }
-
-    private void scheduleDisconnectIfNoClient(Socket socket) {
-        var scheduledDisconnectionFinal = scheduledDisconnections.get(socket);
-        if (scheduledDisconnectionFinal != null) {
-            logger.debug("Aborting next disconnect");
-            scheduledDisconnectionFinal.cancel(true);
-        }
-        if (!moduleSockets.containsValue(socket)) {
-            return;
-        }
-        int idleTimeout = pulseaudioHandler.getIdleTimeout();
-        if (idleTimeout > -1) {
-            if (idleTimeout == 0) {
-                this.disconnect(socket);
-            } else {
-                logger.debug("Scheduling next disconnect");
-                scheduledDisconnections.put(socket,
-                        scheduler.schedule(() -> this.disconnect(socket), idleTimeout, TimeUnit.MILLISECONDS));
-            }
         }
     }
 
