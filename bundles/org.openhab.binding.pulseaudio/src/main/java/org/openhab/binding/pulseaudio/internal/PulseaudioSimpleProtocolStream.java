@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioHandler;
 import org.openhab.binding.pulseaudio.internal.items.SimpleProtocolTCPModule;
 import org.openhab.core.audio.AudioFormat;
-import org.openhab.core.audio.AudioStream;
 import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +72,7 @@ public abstract class PulseaudioSimpleProtocolStream {
      * @throws IOException
      * @throws InterruptedException when interrupted during the loading module wait
      */
-    public Optional<SimpleProtocolTCPModule> acquireSimpleProtocolModule(AudioFormat audioFormat)
+    public AcquireModuleResult acquireSimpleProtocolModule(AudioFormat audioFormat)
             throws IOException, InterruptedException {
         @Nullable
         SimpleProtocolTCPModule idleModule = null;
@@ -89,9 +88,14 @@ public abstract class PulseaudioSimpleProtocolStream {
             }
         }
         logger.debug("loading simple protocol tcp module");
-        var spModule = pulseaudioHandler.loadSimpleProtocolModule(audioFormat, idleModule);
-        spModule.ifPresent(activeModules::add);
-        return spModule;
+        var optionalModule = pulseaudioHandler.loadSimpleProtocolModule(audioFormat, idleModule);
+        if (optionalModule.isEmpty()) {
+            return new AcquireModuleResult(Optional.empty(), () -> {
+            });
+        }
+        var spModule = optionalModule.get();
+        activeModules.add(spModule);
+        return new AcquireModuleResult(optionalModule, () -> releaseModule(audioFormat, spModule));
     }
 
     /**
@@ -119,11 +123,7 @@ public abstract class PulseaudioSimpleProtocolStream {
         return spSocket;
     }
 
-    public void releaseModule(AudioStream audioStream, SimpleProtocolTCPModule spModule) {
-        releaseModule(audioStream.getFormat(), spModule);
-    }
-
-    public void releaseModule(AudioFormat audioFormat, SimpleProtocolTCPModule spModule) {
+    private void releaseModule(AudioFormat audioFormat, SimpleProtocolTCPModule spModule) {
         logger.debug("releasing module: {}", spModule.getId());
         ArrayList<SimpleProtocolTCPModule> modulesToRemove = new ArrayList<>();
         activeModules.remove(spModule);
@@ -222,5 +222,8 @@ public abstract class PulseaudioSimpleProtocolStream {
     }
 
     private record ModuleCache(AudioFormat audioFormat, SimpleProtocolTCPModule module) {
+    };
+
+    public record AcquireModuleResult(Optional<SimpleProtocolTCPModule> module, Runnable releaseModule) {
     };
 }

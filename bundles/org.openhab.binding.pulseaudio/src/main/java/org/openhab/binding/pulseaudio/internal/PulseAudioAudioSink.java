@@ -17,11 +17,11 @@ import java.net.Socket;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -107,72 +107,111 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
                 duration = convertedInputStream.getDuration();
                 pcmSignedStream = convertedInputStream;
             } catch (UnsupportedAudioFileException | UnsupportedAudioFormatException | IOException e) {
+                try {
+                    audioStream.close();
+                } catch (IOException ex) {
+                    logger.warn("Error closing audio stream: {}", ex.getMessage());
+                }
                 return CompletableFuture.failedFuture(new UnsupportedAudioFormatException(
                         "Cannot send sound to the pulseaudio sink", audioStream.getFormat(), e));
             }
         }
-        Optional<SimpleProtocolTCPModule> spModule = Optional.empty();
-        try (pcmSignedStream) {
-            spModule = acquireSimpleProtocolModule(pcmSignedStream.getFormat());
-            if (spModule.isEmpty()) {
+        SimpleProtocolTCPModule spModule;
+        Runnable releaseModule;
+        try {
+            var acquireModuleResult = acquireSimpleProtocolModule(pcmSignedStream.getFormat());
+            if (acquireModuleResult.module().isEmpty()) {
                 throw new IOException("Unable to load new Simple Protocol module instance.");
             }
+            spModule = acquireModuleResult.module().get();
+            releaseModule = acquireModuleResult.releaseModule();
+        } catch (IOException | InterruptedException e) {
+            try {
+                pcmSignedStream.close();
+            } catch (IOException ex) {
+                logger.warn("IOException closing audio stream: {}", ex.getMessage());
+            }
+            return CompletableFuture.failedFuture(new UnsupportedAudioFormatException(
+                    "Cannot send sound to the pulseaudio sink", audioStream.getFormat(), e));
+        }
+        // If piped stream, assume real time audio, do not measure its duration and transfer in background until closed
+        if (pcmSignedStream instanceof PipedAudioStream pipedAudioStream) {
+            CompletableFuture<@Nullable Void> soundPlayed = new CompletableFuture<>();
+            final var module = spModule;
+            final var canceled = new AtomicBoolean(false);
+            scheduler.submit(() -> {
+                try {
+                    var moduleOutputStream = connectIfNeeded(module).getOutputStream();
+                    int bufferSize = 8192;
+                    byte[] buffer = new byte[bufferSize];
+                    int read;
+                    while (!canceled.get() && (read = pipedAudioStream.read(buffer, 0, bufferSize)) >= 0) {
+                        moduleOutputStream.write(buffer, 0, read);
+                    }
+                } catch (IOException e) {
+                    try {
+                        pipedAudioStream.close();
+                    } catch (IOException ignored) {
+                        logger.warn("IOException closing piped audio stream: {}", e.getMessage());
+                    }
+                    soundPlayed.completeExceptionally(e);
+                    return;
+                } catch (InterruptedException ignored) {
+                    // if interrupted complete normally
+                }
+                try {
+                    pipedAudioStream.close();
+                } catch (IOException e) {
+                    logger.warn("IOException closing piped audio stream: {}", e.getMessage());
+                }
+                soundPlayed.complete(null);
+            });
+            pipedAudioStream.onClose(() -> {
+                canceled.set(true);
+                releaseModule.run();
+            });
+            return soundPlayed;
+        }
+        // If not piped stream, complete future after estimated playback time
+        try (pcmSignedStream) {
             @Nullable
             Socket spSocket = null;
             try {
-                final Socket finalSPSocket = spSocket = connectIfNeeded(spModule.get());
-                // send raw audio to the socket and to pulse audio
+                spSocket = connectIfNeeded(spModule);
                 Instant start = Instant.now();
-                if (audioStream instanceof PipedAudioStream pipedAudioStream) {
-                    // Assuming real time stream and do not measure its duration and transfer in background
-                    CompletableFuture<@Nullable Void> soundPlayed = new CompletableFuture<>();
-                    final var asyncStream = scheduler.submit(() -> {
-                        try {
-                            pcmSignedStream.transferTo(finalSPSocket.getOutputStream());
-                        } catch (IOException e) {
-                            soundPlayed.completeExceptionally(e);
-                            try {
-                                pcmSignedStream.close();
-                            } catch (IOException ignored) {
-                                logger.warn("Error closing piped audio stream");
-                            }
-                        }
-                    });
-                    pipedAudioStream.onClose(() -> {
-                        if (!asyncStream.isDone()) {
-                            asyncStream.cancel(true);
-                        }
-                        soundPlayed.complete(null);
-                    });
-                    return soundPlayed;
-                } else if (duration != -1) {
+                CompletableFuture<@Nullable Void> soundPlayed = new CompletableFuture<>();
+                Runnable releaseAndComplete = () -> {
+                    releaseModule.run();
+                    soundPlayed.complete(null);
+                };
+                if (duration != -1) {
                     // ensure, if the sound has a duration
                     // that we let at least this time for the system to play
                     pcmSignedStream.transferTo(spSocket.getOutputStream());
                     Instant end = Instant.now();
                     long millisSecondTimedToSendAudioData = Duration.between(start, end).toMillis();
                     if (millisSecondTimedToSendAudioData < duration) {
-                        CompletableFuture<@Nullable Void> soundPlayed = new CompletableFuture<>();
                         long timeToWait = duration - millisSecondTimedToSendAudioData;
                         logger.debug("Some time to let the system play sound : {}", timeToWait);
-                        scheduler.schedule(() -> soundPlayed.complete(null), timeToWait, TimeUnit.MILLISECONDS);
+                        scheduler.schedule(releaseAndComplete, timeToWait, TimeUnit.MILLISECONDS);
                         return soundPlayed;
                     } else {
+                        releaseModule.run();
                         return CompletableFuture.completedFuture(null);
                     }
                 } else {
                     // We have a second method available to guess the duration, and it is during transfer
                     Long timeStampEnd = audioSinkUtils.transferAndAnalyzeLength(pcmSignedStream,
                             spSocket.getOutputStream(), pcmSignedStream.getFormat());
-                    CompletableFuture<@Nullable Void> soundPlayed = new CompletableFuture<>();
                     if (timeStampEnd != null) {
                         long now = System.nanoTime();
                         long timeToWait = timeStampEnd - now;
                         if (timeToWait > 0) {
-                            scheduler.schedule(() -> soundPlayed.complete(null), timeToWait, TimeUnit.NANOSECONDS);
+                            scheduler.schedule(releaseAndComplete, timeToWait, TimeUnit.NANOSECONDS);
                         }
                         return soundPlayed;
                     } else {
+                        releaseModule.run();
                         return CompletableFuture.completedFuture(null);
                     }
                 }
@@ -185,16 +224,17 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
                 logger.warn(
                         "Error while trying to send audio to pulseaudio audio sink. Cannot connect to {}:{}, error: {}",
                         pulseaudioHandler.getHost(), port, e.getMessage());
+                releaseModule.run();
                 return CompletableFuture.completedFuture(null);
             } catch (InterruptedException ie) {
                 logger.info("Interrupted during sink audio connection: {}", ie.getMessage());
+                releaseModule.run();
                 return CompletableFuture.completedFuture(null);
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             return CompletableFuture.failedFuture(new UnsupportedAudioFormatException(
                     "Cannot send sound to the pulseaudio sink", audioStream.getFormat(), e));
         } finally {
-            spModule.ifPresent(simpleProtocolTCPModule -> releaseModule(audioStream, simpleProtocolTCPModule));
             // if the stream is not needed anymore, then we should call back the AudioStream to let it a chance
             // to auto dispose.
             if (audioStream instanceof Disposable disposableAudioStream) {

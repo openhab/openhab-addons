@@ -14,7 +14,6 @@ package org.openhab.binding.pulseaudio.internal;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -108,11 +107,12 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
 
     private synchronized void startPipeWriteSynchronized() throws IOException, InterruptedException {
         if (this.pipeWriteTask == null) {
-            Optional<SimpleProtocolTCPModule> spModuleOpt = acquireSimpleProtocolModule(streamFormat);
-            if (spModuleOpt.isEmpty()) {
+            AcquireModuleResult acquireModuleResult = acquireSimpleProtocolModule(streamFormat);
+            if (acquireModuleResult.module().isEmpty()) {
                 throw new IOException("Unable to create simple protocol module instance on pulseaudio server.");
             }
-            SimpleProtocolTCPModule spModule = spModuleOpt.get();
+            SimpleProtocolTCPModule spModule = acquireModuleResult.module().get();
+            Runnable releaseModuleOp = acquireModuleResult.releaseModule();
             this.pipeWriteTask = executor.submit(() -> {
                 int lengthRead;
                 byte[] buffer = new byte[1024];
@@ -151,7 +151,7 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                         logger.warn("InterruptedException while reading from pulse source: {}", getExceptionMessage(e));
                     }
                 }
-                super.releaseModule(streamFormat, spModule);
+                releaseModuleOp.run();
                 this.pipeWriteTask = null;
             });
         }
