@@ -232,6 +232,7 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
                 return CompletableFuture.completedFuture(null);
             }
         } catch (IOException e) {
+            releaseModule.run();
             return CompletableFuture.failedFuture(new UnsupportedAudioFormatException(
                     "Cannot send sound to the pulseaudio sink", audioStream.getFormat(), e));
         } finally {
