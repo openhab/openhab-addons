@@ -207,7 +207,7 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
                     }
                 }
             };
-            connectionCheckTask = scheduler.scheduleWithFixedDelay(runnable, 0, 60, TimeUnit.SECONDS);
+            connectionCheckTask = scheduler.scheduleWithFixedDelay(runnable, 0, 300, TimeUnit.SECONDS);
         } else {
             logger.debug("Connection check task already running");
         }
