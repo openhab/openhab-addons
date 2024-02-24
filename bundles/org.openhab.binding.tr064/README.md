@@ -128,19 +128,23 @@ The call-types are the same as provided by the FritzBox, i.e. `1` (inbound), `2`
 
 ### LAN `subdeviceLan` channels
 
-| channel              | item-type                 | advanced | description                                                                                                  |
-|----------------------|---------------------------|:--------:|--------------------------------------------------------------------------------------------------------------|
-| `wifi24GHzEnable`    | `Switch`                  |          | Enable/Disable the 2.4 GHz WiFi device.                                                                      |
-| `wifi5GHzEnable`     | `Switch`                  |          | Enable/Disable the 5.0 GHz WiFi device.                                                                      |
-| `wifiGuestEnable`    | `Switch`                  |          | Enable/Disable the guest WiFi.                                                                               |
-| `macOnline`          | `Switch`                  |    x     | Online status of the device with the given MAC                                                               |
-| `macOnlineIpAddress` | `String`                  |    x     | IP of the MAC (uses same parameter as `macOnline`)                                                           |
-| `macSignalStrength1` | `Number`                  |    x     | Wifi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 2.4Ghz |
-| `macSpeed1`          | `Number:DataTransferRate` |    x     | Wifi Speed of the device with the given MAC. This is set in case the Device is connected to 2.4Ghz           |
-| `macSignalStrength2` | `Number`                  |    x     | Wifi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 5Ghz   |
-| `macSpeed2`          | `Number:DataTransferRate` |    x     | Wifi Speed of the device with the given MAC. This is set in case the Device is connected to 5Ghz             |
-Older FritzBox devices may not support 5 GHz WiFi.
+| channel                  | item-type                 | advanced | description                                                                                                  |
+|--------------------------|---------------------------|:--------:|--------------------------------------------------------------------------------------------------------------|
+| `wifi24GHzEnable`        | `Switch`                  |          | Enable/Disable the 2.4 GHz WiFi device.                                                                      |
+| `wifi5GHzEnable`         | `Switch`                  |          | Enable/Disable the 5.0 GHz WiFi device.                                                                      |
+| `wifiGuestEnable`        | `Switch`                  |          | Enable/Disable the guest WiFi.                                                                               |
+| `wifiGuestEnableTriband` | `Switch`                  |          | Enable/Disable the guest WiFi on triband devices.                                                                               |
+| `macOnline`              | `Switch`                  |    x     | Online status of the device with the given MAC                                                               |
+| `macOnlineIpAddress`     | `String`                  |    x     | IP of the MAC (uses same parameter as `macOnline`)                                                           |
+| `macSignalStrength1`     | `Number`                  |    x     | Wifi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 2.4Ghz |
+| `macSpeed1`              | `Number:DataTransferRate` |    x     | Wifi Speed of the device with the given MAC. This is set in case the Device is connected to 2.4Ghz           |
+| `macSignalStrength2`     | `Number`                  |    x     | Wifi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 5Ghz   |
+| `macSpeed2`              | `Number:DataTransferRate` |    x     | Wifi Speed of the device with the given MAC. This is set in case the Device is connected to 5Ghz             |
+
+**Note:** Older FritzBox devices may not support 5 GHz WiFi.
 In this case you have to use the `wifi5GHzEnable` channel for switching the guest WiFi.
+On triband FritzBox devices the `wifiGuestEnable` controls the second 5 GHz WiFi. 
+In this case you have to use the `wifiGuestEnableTriband` channel for switching the guest WiFi.
 
 ### WANConnection `subdevice` channels
 
