@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.solax.internal.local;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.Test;
-import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterType;
 import org.openhab.binding.solax.internal.model.local.LocalInverterData;
-import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
 
 /**
  * The {@link TestX1HybridG4Parser} Simple test that tests for proper parsing against a real data from the inverter
@@ -27,7 +24,7 @@ import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
  * @author Konstantin Polihronov - Initial contribution
  */
 @NonNullByDefault
-public class TestX1HybridG4Parser {
+public class TestX1HybridG4Parser extends AbstractParserTest {
 
     private static final String RAW_DATA = """
             {
@@ -43,17 +40,13 @@ public class TestX1HybridG4Parser {
                 Information:[7.500,15,H4752TI1063020,8,1.24,0.00,1.21,1.03,0.00,1]}
             """;
 
-    @Test
-    public void testParser() {
-        LocalConnectRawDataBean bean = LocalConnectRawDataBean.fromJson(RAW_DATA);
-        int type = bean.getType();
-        InverterType inverterType = InverterType.fromIndex(type);
-        assertEquals(InverterType.X1_HYBRID_G4, inverterType, "Inverter type not recognized properly");
+    @Override
+    protected InverterType getInverterType() {
+        return InverterType.X1_HYBRID_G4;
+    }
 
-        RawDataParser parser = inverterType.getParser();
-        assertNotNull(parser);
-
-        LocalInverterData data = parser.getData(bean);
+    @Override
+    protected void assertParserSpecific(LocalInverterData data) {
         assertEquals("SOME_SERIAL_NUMBER", data.getWifiSerial());
         assertEquals("3.008.10", data.getWifiVersion());
 
@@ -79,6 +72,11 @@ public class TestX1HybridG4Parser {
         assertEquals(99, data.getBatteryLevel()); // [18]
 
         assertEquals(12, data.getFeedInPower()); // [32]
+    }
+
+    @Override
+    protected String getRawData() {
+        return RAW_DATA;
     }
 
     // Yield_Today: Data[13] / 10,
