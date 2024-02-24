@@ -139,7 +139,7 @@
 		<setAction name="SetEnable" argument="NewEnable"/>
 	</channel>
 	<channel name="wifiGuestEnableTriband" label="WiFi Guest Triband"
-	    description="Enable/Disable the guest WiFi on triband devices.">
+		description="Enable/Disable the guest WiFi on triband devices.">
 		<item type="Switch"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration4"/>
