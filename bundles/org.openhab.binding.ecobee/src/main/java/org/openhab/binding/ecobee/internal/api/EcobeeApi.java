@@ -245,8 +245,10 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         if (response != null) {
             try {
                 ThermostatResponseDTO thermostatsResponse = GSON.fromJson(response, ThermostatResponseDTO.class);
-                if (isSuccess(thermostatsResponse)) {
-                    return thermostatsResponse.thermostatList;
+                if (thermostatsResponse != null && isSuccess(thermostatsResponse)) {
+                    if (thermostatsResponse.thermostatList != null) {
+                        return thermostatsResponse.thermostatList;
+                    }
                 }
             } catch (JsonSyntaxException e) {
                 logJSException(e, response);
@@ -335,7 +337,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         if (response == null) {
             logger.debug("API: Ecobee API returned null response");
         } else if (response.status.code.intValue() != 0) {
-            logger.debug("API: Ecobee API returned unsuccessful status: code={}, message={}", response.status.code,
+            logger.info("API: Ecobee API returned unsuccessful status: code={}, message={}", response.status.code,
                     response.status.message);
             if (response.status.code == ECOBEE_DEAUTHORIZED_TOKEN) {
                 // Token has been deauthorized, so restart the authorization process from the beginning
@@ -344,11 +346,13 @@ public class EcobeeApi implements AccessTokenRefreshListener {
                 createOAuthClientService();
             } else if (response.status.code == ECOBEE_TOKEN_EXPIRED) {
                 // Check isAuthorized again to see if we can get a valid token
-                logger.debug("API: Unable to complete API call because token is expired");
+                logger.info("API: Unable to complete API call because token is expired. Try to refresh the token...");
+                closeOAuthClientService();
+                createOAuthClientService();
                 if (isAuthorized()) {
                     return true;
                 } else {
-                    logger.debug("API: isAuthorized was NOT successful on second try");
+                    logger.info("API: isAuthorized was NOT successful on second try");
                 }
             }
         } else {
