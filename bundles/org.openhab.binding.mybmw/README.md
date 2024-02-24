@@ -261,17 +261,17 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 
 | Channel ID                 | Type                 | Description                                   | conv | phev | bev_rex | bev |
 |----------------------------|----------------------|-----------------------------------------------|------|------|---------|-----|
-| mileage                    | Number:Length        | current mileage of the vehicle                |  X   |  X   |    X    |  X  |
-| range-fuel                 | Number:Length        | fuel range                                    |  X   |  X   |    X    |     |
-| range-electric             | Number:Length        | electric range                                |      |  X   |    X    |  X  |
-| range-hybrid               | Number:Length        | combined hybrid range                         |      |  X   |    X    |     |
-| soc                        | Number:Dimensionless | state of charge                               |      |  X   |    X    |  X  |
-| remaining-fuel             | Number:Volume        | remaining fuel in l                           |  X   |  X   |    X    |     |
-| estimated-fuel-l-100km     | Number               | estimated fuel consumption in l               |  X   |  X   |    X    |     |
-| estimated-fuel-mpg         | Number               | estimated fuel consumption in mpg             |  X   |  X   |    X    |     |
-| range-radius-fuel          | Number:Length        | the calculated range radius combustion        |  X   |  X   |    X    |     |
-| range-radius-electric      | Number:Length        | the calculated range radius electric          |      |  X   |    X    |  X  |
-| range-radius-hybrid        | Number:Length        | the calculated range radius hybrid combined   |      |  X   |    X    |     |
+| mileage                    | Number:Length        | Current mileage of the vehicle                |  X   |  X   |    X    |  X  |
+| range-fuel                 | Number:Length        | Fuel range                                    |  X   |  X   |    X    |     |
+| range-electric             | Number:Length        | Electric range                                |      |  X   |    X    |  X  |
+| range-hybrid               | Number:Length        | Combined hybrid range                         |      |  X   |    X    |     |
+| soc                        | Number:Dimensionless | State of charge                               |      |  X   |    X    |  X  |
+| remaining-fuel             | Number:Volume        | Remaining fuel in l                           |  X   |  X   |    X    |     |
+| estimated-fuel-l-100km     | Number               | Estimated fuel consumption in l               |  X   |  X   |    X    |     |
+| estimated-fuel-mpg         | Number               | Estimated fuel consumption in mpg             |  X   |  X   |    X    |     |
+| range-radius-fuel          | Number:Length        | The calculated range radius combustion        |  X   |  X   |    X    |     |
+| range-radius-electric      | Number:Length        | The calculated range radius electric          |      |  X   |    X    |  X  |
+| range-radius-hybrid        | Number:Length        | The calculated range radius hybrid combined   |      |  X   |    X    |     |
 
 #### Doors Details
 
@@ -283,18 +283,18 @@ Detailed status of all doors and windows.
 
 | Channel ID              | Type          | Description                             |
 |-------------------------|---------------|-----------------------------------------|
-| driver-front            | String        | status of front door driver's side      |
-| driver-rear             | String        | status of rear door driver's side       |
-| passenger-front         | String        | status of front door passenger's side   |
-| passenger-rear          | String        | status of rear door passenger's side    |
-| trunk                   | String        | status of trunk                         |
-| hood                    | String        | status of hood                          |
-| win-driver-front        | String        | status of front window driver's side    |
-| win-driver-rear         | String        | status of rear window driver's side     |
-| win-passenger-front     | String        | status of front window passenger's side |
-| win-passenger-rear      | String        | status of rear window passenger's side  |
-| win-rear                | String        | status of rear window                   |
-| sunroof                 | String        | status of sunroof                       |
+| driver-front            | String        | Status of front door driver's side      |
+| driver-rear             | String        | Status of rear door driver's side       |
+| passenger-front         | String        | Status of front door passenger's side   |
+| passenger-rear          | String        | Status of rear door passenger's side    |
+| trunk                   | String        | Status of trunk                         |
+| hood                    | String        | Status of hood                          |
+| win-driver-front        | String        | Status of front window driver's side    |
+| win-driver-rear         | String        | Status of rear window driver's side     |
+| win-passenger-front     | String        | Status of front window passenger's side |
+| win-passenger-rear      | String        | Status of rear window passenger's side  |
+| win-rear                | String        | Status of rear window                   |
+| sunroof                 | String        | Status of sunroof                       |
 
 Possible states
 
@@ -351,10 +351,10 @@ GPS location and heading of the vehicle.
 
 | Channel ID          | Type          | Description                                                  |
 |---------------------|---------------|--------------------------------------------------------------|
-| gps                 | Location      | current GPS coordinates of the vehicle                       |
-| heading             | Number:Angle  | current direction of the vehicle                             |
-| address             | String        | current address                                              |
-| home-distance       | Number:Length | calculated distance from configured home position of Openhab |
+| gps                 | Location      | Current GPS coordinates of the vehicle                       |
+| heading             | Number:Angle  | Current direction of the vehicle                             |
+| address             | String        | Current address                                              |
+| home-distance       | Number:Length | Calculated distance from configured home position of Openhab |
 
 #### Remote Services
 
@@ -440,8 +440,8 @@ Shows charge statistics of the current month
 | Channel ID              | Type           | Description             |
 |-------------------------|----------------|-------------------------|
 | title                   | String         | Title of the statistics |
-| energy                  | Number:Energy  | consumed energy         |
-| sessions                | Number         | number of sessions      |
+| energy                  | Number:Energy  | Consumed energy         |
+| sessions                | Number         | Number of sessions      |
 
 #### Charge Sessions
 
@@ -456,9 +456,9 @@ If more than one message is active the channel _name_ contains all active messag
 |--------------|----------|-------------------------|
 | title        | String   | Title of the session    |
 | subtitle     | String   | Subtitle of the session |
-| energy       | String   | consumed energy         |
-| issue        | String   | if an issue occurred    |
-| status       | String   | status of the session   |
+| energy       | String   | Consumed energy         |
+| issue        | String   | If an issue occurred    |
+| status       | String   | Status of the session   |
 
 #### Tire Pressure
 
@@ -489,8 +489,8 @@ Image representation of the vehicle.
 
 | Channel ID          | Type   |  Access  | Description               |
 |---------------------|--------|----------|---------------------------|
-| png                 | Image  | Read     | the image as png          |
-| view                | String | Write    | the view port of the car  |
+| png                 | Image  | Read     | The image as png          |
+| view                | String | Write    | The view port of the car  |
 
 Possible view ports:
 
