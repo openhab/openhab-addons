@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.huesync.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * TODO: Description ...
+ * Binding configuration parameters,
  * 
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public class HueSyncConfiguration {
-    public String host;
-    public Integer port;
+    public String host = "";
+    public Integer port = 443;
 }

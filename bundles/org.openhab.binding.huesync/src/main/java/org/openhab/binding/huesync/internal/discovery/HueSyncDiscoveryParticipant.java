@@ -65,9 +65,6 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
      */
     private static final String SERVICE_TYPE = "_huesync._tcp.local.";
 
-    // TODO: Implement SSL certificate validation
-    // private static final HttpClient httpClient = new HttpClient(new
-    // SslContextFactory.Client(true));
     private boolean autoDiscoveryEnabled = true;
 
     protected final ThingRegistry thingRegistry;
@@ -98,7 +95,7 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
                     logger.debug("HDMI Sync Box {} discovered at {}:{}", service.getName(),
                             service.getHostAddresses()[0], service.getPort());
 
-                    Map<String, Object> properties = new HashMap<>(2);
+                    Map<String, Object> properties = new HashMap<>();
 
                     properties.put(HueSyncBindingConstants.PARAMETER_HOST, service.getHostAddresses()[0]);
                     properties.put(HueSyncBindingConstants.PARAMETER_PORT, service.getPort());
@@ -120,7 +117,7 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
         String[] addressses = service.getHostAddresses();
 
         if (addressses.length == 0 || id == null || id.isBlank()) {
-            logger.warn("Incomplete mDNS device discovery information - {} ignored.", id == null ? "[name: null]" : id);
+            logger.info("Incomplete mDNS device discovery information - {} ignored.", id == null ? "[name: null]" : id);
             return null;
         }
 

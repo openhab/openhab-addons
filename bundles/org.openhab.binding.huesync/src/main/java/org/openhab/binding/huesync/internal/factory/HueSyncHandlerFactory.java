@@ -63,7 +63,11 @@ public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (HueSyncBindingConstants.THING_TYPE_UID.equals(thingTypeUID)) {
-            return new HueSyncHandler(thing, this.httpClientFactory);
+            try {
+                return new HueSyncHandler(thing, this.httpClientFactory);
+            } catch (Exception e) {
+                // TODO: Implementation ...
+            }
         }
 
         return null;

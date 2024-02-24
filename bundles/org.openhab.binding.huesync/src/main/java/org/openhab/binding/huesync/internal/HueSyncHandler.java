@@ -12,20 +12,27 @@
  */
 package org.openhab.binding.huesync.internal;
 
+import java.io.IOException;
+import java.security.cert.CertificateException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory.Client;
 import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfo;
 import org.openhab.binding.huesync.internal.connection.HueSyncConnection;
+import org.openhab.binding.huesync.internal.connection.HueSyncTrustManagerProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,69 +47,50 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HueSyncHandler extends BaseThingHandler {
 
+    @SuppressWarnings("null")
     private final Logger logger = LoggerFactory.getLogger(HueSyncHandler.class);
 
-    private @Nullable HueSyncConfiguration config;
+    private HueSyncConfiguration config;
+    private @Nullable HueSyncConnection connection;
+    private @Nullable HueSyncDeviceInfo deviceInfo;
+    private @Nullable ServiceRegistration<?> serviceRegistration;
 
     private HttpClient httpClient;
 
-    private HueSyncConnection connection;
-
-    private HueSyncDeviceInfo deviceInfo;
-
-    @SuppressWarnings("null")
-    public HueSyncHandler(Thing thing, HttpClientFactory httpClientFactory) {
+    public HueSyncHandler(Thing thing, HttpClientFactory httpClientFactory)
+            throws CertificateException, IOException, Exception {
         super(thing);
-        this.httpClient = new HttpClient(new SslContextFactory.Client(true));
+
+        this.config = getConfigAs(HueSyncConfiguration.class);
+
+        @SuppressWarnings("null")
+        HueSyncTrustManagerProvider trustManagerProvider = new HueSyncTrustManagerProvider(this.config.host,
+                this.config.port);
+
+        this.serviceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext()
+                .registerService(TlsTrustManagerProvider.class.getName(), trustManagerProvider, null);
+
+        SslContextFactory context = new Client.Client();
+
+        this.logger.debug("SSL context - Alias: {}", context.getCertAlias());
+        this.logger.debug("Context: ", context.dumpSelf());
+
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // if (CHANNEL_1.equals(channelUID.getId())) {
-        // if (command instanceof RefreshType) {
-        // // TODO: handle data refresh
-        // }
-
-        // // TODO: handle command
-
-        // // Note: if communication with thing fails for some reason,
-        // // indicate that by setting the status with detail information:
-        // // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // // "Could not control device at IP address x.x.x.x");
-        // }
+        // TODO: Implementation ...
     }
 
-    // TODO: Check if we can go without the "null" warning ...
     @SuppressWarnings("null")
     @Override
     public void initialize() {
-        this.config = getConfigAs(HueSyncConfiguration.class);
-
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly, i.e. any
-        // network access must be done in
-        // the background initialization below.
-        // Also, before leaving this method a thing status from one of ONLINE, OFFLINE
-        // or UNKNOWN must be set. This
-        // might already be the real thing status in case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running
-        // connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the
-        // real status asynchronously in the
-        // background.
-
-        // set the thing status to UNKNOWN temporarily and let the background task
-        // decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler
-        // initialization.
-        // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
         scheduler.execute(() -> {
             try {
                 this.connection = new HueSyncConnection(this.httpClient, this.config);
-                this.connection.start();
 
                 this.deviceInfo = this.connection.getDeviceInfo();
 
@@ -116,27 +104,12 @@ public class HueSyncHandler extends BaseThingHandler {
 
                 updateStatus(ThingStatus.ONLINE);
             } catch (Exception e) {
-                // TODO: Log message ...
-                // TODO: thing status details ...
+                this.logger.error("Unable to initialize handler for {}({}): {}", this.thing.getLabel(),
+                        this.thing.getUID(), e);
+
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
-
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-        //
-        // Logging to INFO should be avoided normally.
-        // See https://www.openhab.org/docs/developer/guidelines.html#f-logging
-
-        // Note: When initialization can NOT be done set the status with more details
-        // for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not
-        // work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     @Override
@@ -144,10 +117,14 @@ public class HueSyncHandler extends BaseThingHandler {
         super.dispose();
 
         try {
-            // TODO: Check if we have to unregister openHAB form the Hue HDMI Sync Box
-            this.httpClient.stop();
+
+            if (this.serviceRegistration != null) {
+                this.serviceRegistration.unregister();
+                this.serviceRegistration = null;
+            }
         } catch (Exception e) {
-            // TODO: Handle ...
+            this.logger.error("Unable to properly dispose handler for {}({}): {}", this.thing.getLabel(),
+                    this.thing.getUID(), e);
         }
     }
 }

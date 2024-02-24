@@ -37,7 +37,7 @@ public class HueSyncConnection {
     private static final ObjectMapper ObjectMapper = new ObjectMapper();
 
     private @NonNull HttpClient httpClient;
-    private @NonNull HueSyncConfiguration config;
+    private HueSyncConfiguration config;
 
     public HueSyncConnection(@NonNull HttpClient httpClient, @NonNull HueSyncConfiguration config) {
         this.httpClient = httpClient;
@@ -54,8 +54,6 @@ public class HueSyncConnection {
         String request = String.format(REQUEST_FORMAT, this.config.host, this.config.port, DEVICE_INFO_ENDPOINT);
 
         ContentResponse response = this.httpClient.GET(request);
-
-        // TODO: Create private method to handle response code etc ....
         String json = response.getContentAsString();
 
         return ObjectMapper.readValue(json, HueSyncDeviceInfo.class);
