@@ -88,7 +88,8 @@ They have no specific function in the KNX binding, except that if the _address_ 
 Under normal real-world circumstances, either all devices on a bus are reachable, or the entire bus is down.
 If line couplers are installed, physical device addressing might be filtered; in this case please do not specify the addresses for devices on this line.
 When _fetch_ is set to true, the binding will read-out the memory of the KNX actuator in order to detect configuration data and so forth.
-This is however an experimental feature, very prone to the actual on the KNX bus.
+This is just for information and has no effect on the functionality of the binding.
+It can safely be turned off to save bandwith on the bus or avoid problems with older devices.
 
 | Name         | Required | Description                                                                                                              | Default value                                                               |
 |--------------|----------|--------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
@@ -272,6 +273,156 @@ With `*-control` channels, the state is not owned by any device on the KNX bus, 
 
 The element `dpt` is  highly recommended and may change to a mandatory element in future versions.
 If omitted, the corresponding default value will be used (see the channel descriptions above).
+
+## Mapping DPTs to openHAB Types
+
+Datapoint Types (DPTs) define how the content of a KNX telegram is interpreted.
+
+The following table is a complete list of DPTs currently supported by openHAB.
+OpenHAB supports all DPTs supported by the corresponding release of Calimero library, plus a few [specific additions](#special-dpts).
+
+The default mapping is given, however DPTs can be overwritten.
+KNX frames do not contain information about the encoding or DPT, so and DPT with a compatible byte size and a useful encoding can be used. A good example for this are bitfields represented as String which are mapped to a DPT of DecimalType for handling in rules.
+For more details, see the KNX specification (section 3.7.2, System Specifications, Interworking, Datapoint Types).
+
+In case a missing DPT or subtype is needed, there is a good chance that a DPT of matching size and DecimalType is found.
+Further DPTs and subtypes may be added later once implemented and released in [Calimero library](https://github.com/calimero-project/calimero-core).
+
+| DPT             | Primary openHAB type (things) (items with UOM)     | Remark                            |
+|-----------------|----------------------------------------------------|-----------------------------------|
+| 1.001-1.007     | OnOffType (switch), OpenClosedType (contact)       |                                   |
+| 1.008           | UpDownType (e.g. for dimmer, rollershutter)        |                                   |
+| 1.009           | OnOffType (switch), OpenClosedType (contact)       | Not according to spec, see above  |
+| 1.010           | StopMoveType (e.g. for rollershutter)              |                                   |
+| 1.011-1.016     | OnOffType (switch), OpenClosedType (contact)       |                                   |
+| 1.017           | OnOffType (switch), OpenClosedType (contact)       | Trigger, use states OFF or CLOSED |
+| 1.018-1.019     | OnOffType (switch), OpenClosedType (contact)       |                                   |
+| 1.021           | OnOffType (switch), OpenClosedType (contact)       |                                   |
+| 1.022           | DecimalType (number)                               | Counting from 0, use DPT if you need a DecimalType |
+| 1.023-1.024     | OnOffType (switch), OpenClosedType (contact)       |                                   |
+| 1.100           | OnOffType (switch), OpenClosedType (contact)       |                                   |
+| 1.1200-1.1201   | OnOffType (switch), OpenClosedType (contact)       |                                   |
+|||
+| 2.001-2.012     | DecimalType (number)                               |                                   |
+|||
+| 3.007           | IncreaseDecreaseType (e.g. dimmer)                 |                                   |
+| 3.008           | UpDownType (e.g. rollershutter)                    |                                   |
+|||
+| 5.001           | QuantityType\<> (number) (Number:Percent)          | Alternatively: PercentType        |
+| 5.003           | QuantityType\<> (number) (Number:Angle)            |                                   |
+| 5.004           | QuantityType\<> (number) (Number:Percent)          | 0-255%, no mapping to PercentType |
+| 5.005           | DecimalType (number)                               |                                   |
+| 5.006           | DecimalType (number)                               | 255 is reserved                   |
+| 5.010           | DecimalType (number)                               |                                   |
+|||
+| 6.001           | QuantityType\<> (number) (Number:Percent)          | -128..127%, no mapping to PercentType |
+| 6.010           | DecimalType (number)                               | -128..127                         |
+| 6.020           | StringType (string)                                | Override with DPT5.010 if you need DecimalType |
+|||
+| 7.001           | DecimalType (number)                               |                                   |
+| 7.002-7.007     | QuantityType\<> (number) (Number:Time)             |                                   |
+| 7.010           | DecimalType (number)                               |                                   |
+| 7.011           | QuantityType\<> (number) (Number:Length)           |                                   |
+| 7.012           | QuantityType\<> (number) (Number:ElectricCurrent)  |                                   |
+| 7.013           | QuantityType\<> (number) (Number:Length)           |                                   |
+| 7.600           | QuantityType\<> (number) (Number:Temperature)      |                                   |
+|||
+| 8.001           | DecimalType (number)                               |                                   |
+| 8.002-7.007     | QuantityType\<> (number) (Number:Time)             |                                   |
+| 8.010           | QuantityType\<> (number) (Number:Percent)          |                                   |
+| 8.011           | QuantityType\<> (number) (Number:Angle)            |                                   |
+| 8.012           | QuantityType\<> (number) (Number:Length)           |                                   |
+|||
+| 9.xxx           | QuantityType\<> (number) (Number:...)              | See [documentation on UOM](https://www.openhab.org/docs/concepts/units-of-measurement.html) |
+| 9.001           | QuantityType\<> (number) (Number:...)              | Lower values than absolute zero will be set to -273 °C |
+| 9.002-9.003     | QuantityType\<> (number) (Number:...)              |                                   |
+| 9.004-9.008     | QuantityType\<> (number) (Number:...)              | No negative values allowed        |
+| 9.009-9.011     | QuantityType\<> (number) (Number:...)              |                                   |
+| 9.020-9.027     | QuantityType\<> (number) (Number:...)              |                                   |
+| 9.027-9.030     | QuantityType\<> (number) (Number:...)              | No negative values allowed        |
+|||
+| 10.001          | DateTimeType (datetime)                            | Time. Date is set to 1/Jan/1970 + ofs if weekday is given. KNX can represent year 1990..2089. |
+|||
+| 11.001          | DateTimeType (datetime)                            | Date only.                        |
+|||
+| 12.001          | DecimalType (number)                               |                                   |
+| 12.100-12.102   | QuantityType\<> (number) (Number:Time)             |                                   |
+| 12.1200-12.1201 | QuantityType\<> (number) (Number:Volume)           |                                   |
+|||
+| 13.xxx          | QuantityType\<> (number) (Number:...)              | See [documentation on UOM](https://www.openhab.org/docs/concepts/units-of-measurement.html) |
+| 13.001          | DecimalType (number)                               |                                   |
+| 13.002          | QuantityType\<> (number) (Number:VolumetricFlowRate) |                                 |
+| 13.010-13.016   | QuantityType\<> (number) (Number:...)              |                                   |
+| 13.100          | QuantityType\<> (number) (Number:...)              |                                   |
+| 13.1200-13.1201 | QuantityType\<> (number) (Number:Time)             |                                   |
+|||
+| 14.xxx          | QuantityType\<> (number) (Number:...)              | See [documentation on UOM](https://www.openhab.org/docs/concepts/units-of-measurement.html) |
+| 14.000-14.080   | QuantityType\<> (number) (Number:...)              |                                   |
+| 14.1200-14.1201 | QuantityType\<> (number) (Number:...)              |                                   |
+|||
+| 16.000          | StringType (string)                                | ASCII                             |
+| 16.001          | StringType (string)                                | ISO 8859-1                        |
+|||
+| 17.001          | DecimalType (number)                               | Scene 0..63                       |
+|||
+| 18.001          | DecimalType (number)                               | Scene 0..63, add offset 0x80 (128) for storing scenes |
+|||
+| 19.001          | DateTimeType (datetime) (DateTime)                 | Date and Time, year can be 1900..2155 |
+|||
+| 20.xxx          |                                                    | Incomplete, only subtypes given below are supported; override with DPT5.010 if you need enum as DecimalType |
+| 20.001-20.009   | StringType (string)                                |                                   |
+| 20.011-20.014   | StringType (string)                                |                                   |
+| 20.017          | StringType (string)                                |                                   |
+| 20.020-20.021   | StringType (string)                                |                                   |
+| 20.100-20.114   | StringType (string)                                |                                   |
+| 20.120-20.122   | StringType (string)                                |                                   |
+| 20.600-20.610   | StringType (string)                                |                                   |
+| 20.801-20.804   | StringType (string)                                |                                   |
+| 20.1000-20.1005 | StringType (string)                                |                                   |
+| 20.1200         | StringType (string)                                |                                   |
+| 20.1202         | StringType (string)                                |                                   |
+|||
+| 21.xxx          |                                                    | Incomplete, only subtypes given below are supported; override with DPT5.010 if you need bitset as DecimalType |
+| 21.001-20.002   | StringType (string)                                |                                   |
+| 21.100-20.106   | StringType (string)                                |                                   |
+| 21.601          | StringType (string)                                |                                   |
+| 21.1000-21.1002 | StringType (string)                                |                                   |
+| 21.1010         | StringType (string)                                |                                   |
+|||
+| 22.xxx          |                                                    | Incomplete, only subtypes given below are supported; override with DPT7.010 if you need bitset as DecimalType |
+| 22.101          | StringType (string)                                |                                   |
+| 22.1000         | StringType (string)                                |                                   |
+|||
+| 28.001          | StringType (string)                                | KNX representation is Null-terminated, do not include null characters |
+|||
+| 29.010-29.012   | QuantityType\<> (number) (Number:...)              |                                   |
+|||
+| 229.001         | DecimalType (number)                               | Scaling coded in KNX frame is regarded; for sending always encoded with flag "dimensionless" |
+|||
+| 232.600         | HSBType (color)                                    | RGB                                  |
+| 232.60000       | HSBType (color)                                    | Non-Standard, DPT 232.600 with HSB instead of RGB data |
+||| 
+| 235.001         | QuantityType\<> (number) (Number:ActiveEnergy)     | Composed DPT 235.001, first element ActiveEnergy (Wh), read only  |
+| 235.61001       | DecimalType (number)                               | Non-Standard, composed DPT 235.001, second element Tariff (plain number), read only |
+|||
+| 242.600         | HSBType (color)                                    | xyY                               |
+|||
+| 243.600         | StringType (string)                                |                                   |
+|||
+| 249.600         | StringType (string)                                |                                   |
+|||
+| 250.600         | StringType (string)                                |                                   |
+|||
+| 251.600         | HSBType (color)                                    | RGBW, RGB part as HSBType         |
+| 251.600         | PercentType                                        | RGBW, W part separately for Dimmer |
+| 251.60600       | HSBType (color)                                    | Non-Standard, lossy conversion from HSBType to RGBW |
+|||
+| 252.600         | StringType (string)                                |                                   |
+|||
+| 253.600         | StringType (string)                                |                                   |
+|||
+| 254.600         | StringType (string)                                |                                   |
+|||
 
 ## Special DPTs
 
