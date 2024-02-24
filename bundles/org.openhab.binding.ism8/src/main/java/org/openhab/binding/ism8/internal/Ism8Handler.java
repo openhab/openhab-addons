@@ -74,7 +74,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        this.logger.debug("Ism8: Handle command = {} {}", channelUID.getId(), command);
+        logger.debug("Ism8: Handle command = {} {}", channelUID.getId(), command);
         Channel channel = getThing().getChannel(channelUID);
         if (channel == null) {
             return;
@@ -103,7 +103,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
         if (e != null) {
             IDataPoint dataPoint = e.getDataPoint();
             if (dataPoint != null) {
-                this.logger.debug("Ism8: dataPointChanged {}", dataPoint.toString());
+                logger.debug("Ism8: dataPointChanged {}", dataPoint.toString());
                 this.updateChannel(dataPoint);
             }
         }
@@ -125,12 +125,11 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                     return true;
                 }
             } catch (NumberFormatException e) {
-                this.logger.warn(
-                        "Ism8: ID couldn't be converted correctly. Check the configuration of channel {}. Cfg={}",
+                logger.warn("Ism8: ID couldn't be converted correctly. Check the configuration of channel {}. Cfg={}",
                         description, config);
             }
         } else {
-            this.logger.debug("Ism8: ID or type missing - Channel={}  Cfg={}", description, config);
+            logger.debug("Ism8: ID or type missing - Channel={}  Cfg={}", description, config);
         }
         return false;
     }
@@ -141,7 +140,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
             try {
                 svr.sendData(Ism8DomainMap.toISM8WriteData(dataPoint, command));
             } catch (IOException e) {
-                this.logger.debug("Writting to Ism8 DataPoint '{}' failed. '{}'", dataPoint.getId(), e.getMessage());
+                logger.debug("Writting to Ism8 DataPoint '{}' failed. '{}'", dataPoint.getId(), e.getMessage());
             }
         }
     }
@@ -158,11 +157,10 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                 int id = Integer.parseInt(config.get(CHANNEL_CONFIG_ID).toString());
                 dataPoint = svr.getDataPoint(id);
             } catch (NumberFormatException e) {
-                this.logger.debug("Retrieving Ism8 DataPoint '{}' failed. '{}'", channel.getConfiguration(),
-                        e.getMessage());
+                logger.debug("Retrieving Ism8 DataPoint '{}' failed. '{}'", channel.getConfiguration(), e.getMessage());
             }
         } else {
-            this.logger.debug("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
+            logger.debug("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
                     channel.getConfiguration());
         }
         return dataPoint;
@@ -173,17 +171,17 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
             int id = Integer.parseInt(channel.getConfiguration().get(CHANNEL_CONFIG_ID).toString());
             if (id == dataPoint.getId()) {
                 if (dataPoint.getValueObject() != null) {
-                    this.logger.debug("Ism8: updating channel {} with datapoint: {}", channel.getUID().getAsString(),
+                    logger.debug("Ism8: updating channel {} with datapoint: {}", channel.getUID().getAsString(),
                             dataPoint.getId());
                     updateState(channel.getUID(), Ism8DomainMap.toOpenHABState(dataPoint));
                     return true;
                 }
             } else {
-                this.logger.debug("Ism8 channel: {} and DataPoint do not have a matching Id: {} vs {}",
-                        channel.getUID(), id, dataPoint.getId());
+                logger.debug("Ism8 channel: {} and DataPoint do not have a matching Id: {} vs {}", channel.getUID(), id,
+                        dataPoint.getId());
             }
         } catch (NumberFormatException e) {
-            this.logger.warn(
+            logger.warn(
                     "Ism8 updateChannel: ID couldn't be converted correctly. Check the configuration of channel {}. {}",
                     channel.getLabel(), e.getMessage());
         }
@@ -199,6 +197,6 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                 }
             }
         }
-        this.logger.debug("Ism8: no channel was found for DataPoint id: {}", dataPoint.getId());
+        logger.debug("Ism8: no channel was found for DataPoint id: {}", dataPoint.getId());
     }
 }
