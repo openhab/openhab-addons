@@ -174,6 +174,12 @@ public class ValueDecoder {
                     return new DecimalType(decValue);
                 case "3":
                     return handleDpt3(subType, translator);
+                case "6":
+                    if ("020".equals(subType)) {
+                        return handleStringOrDecimal(data, value, preferredType, 8);
+                    } else {
+                        return handleNumericDpt(id, translator, preferredType);
+                    }
                 case "10":
                     return handleDpt10(value);
                 case "11":

@@ -274,6 +274,14 @@ public class ValueEncoder {
                 } else {
                     return "activate " + intVal;
                 }
+            case "8":
+                if ("8.010".equals(dptId)) {
+                    // 8.010 has a resolution of 0.01 and will be scaled. Calimero expects locale-specific separator.
+                    return bigDecimal.stripTrailingZeros().toPlainString().replace('.',
+                            ((DecimalFormat) DecimalFormat.getInstance()).getDecimalFormatSymbols()
+                                    .getDecimalSeparator());
+                }
+                // fallthrough
             default:
                 return bigDecimal.stripTrailingZeros().toPlainString();
         }

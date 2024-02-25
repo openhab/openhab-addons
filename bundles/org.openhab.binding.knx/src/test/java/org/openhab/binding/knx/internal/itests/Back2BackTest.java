@@ -365,6 +365,8 @@ public class Back2BackTest {
         helper("6.010", new byte[] { 0 }, new DecimalType(0));
         helper("6.010", new byte[] { (byte) 0x7f }, new DecimalType(127));
         helper("6.010", new byte[] { (byte) 0xff }, new DecimalType(-1));
+
+        helper("6.020", new byte[] { 9 }, StringType.valueOf("0/0/0/0/1 0"));
     }
 
     @Test
@@ -437,6 +439,7 @@ public class Back2BackTest {
         helper("8.007", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 h"));
         helper("8.007", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 h"));
 
+        helper("8.010", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-327.68 %"));
         helper("8.011", new byte[] { (byte) 0x80, (byte) 0x00 }, new QuantityType<>("-32768 °"));
         helper("8.011", new byte[] { (byte) 0x7f, (byte) 0xff }, new QuantityType<>("32767 °"));
         helper("8.011", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 °"));
@@ -472,10 +475,10 @@ public class Back2BackTest {
         helper("9.004", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 lx"));
         helper("9.004", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 lx"));
         helper("9.004", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 lx"));
+        // no negative values allowed for DPTs 9.004-9.008
         helper("9.005", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 m/s"));
         helper("9.005", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 m/s"));
         helper("9.005", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 m/s"));
-        // no negative values allowed for DPTs 9.005-9.008
         helper("9.005", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 m/s"));
         helper("9.005", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 m/s"));
         helper("9.005", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 m/s"));
@@ -804,6 +807,7 @@ public class Back2BackTest {
                 new DateTimeType("2019-07-15T17:30:00"), new byte[0], new byte[] { 0, 0, 0, 0, 0, 0, 0, 1 });
         helper("19.001", new byte[] { (byte) (2019 - 1900), 7, 15, 17, 30, 0, (byte) 0x24, (byte) 0x00 },
                 new DateTimeType("2019-07-15T17:30:00"), new byte[0], new byte[] { 0, 0, 0, 0, 0, 0, 0, 1 });
+        // TODO add tests for incompletly filled frames (e.g. containing only date or time)
     }
 
     @Test
