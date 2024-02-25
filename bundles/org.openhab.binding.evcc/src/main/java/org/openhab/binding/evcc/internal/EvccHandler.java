@@ -73,6 +73,8 @@ public class EvccHandler extends BaseThingHandler {
     private boolean gridConfigured = false;
     private boolean pvConfigured = false;
     private Set<String> vehicleFeatureHeating = new HashSet<String>();
+    private Set<String> loadpointFeatureHeating = new HashSet<String>();
+
     Map<String, Triple<Boolean, Float, ZonedDateTime>> vehiclePlans = new HashMap<>();
 
     public EvccHandler(Thing thing) {
@@ -477,7 +479,7 @@ public class EvccHandler extends BaseThingHandler {
         if (result == null) {
             return;
         }
-        final String channelGroup = CHANNEL_GROUP_ID_LOADPOINT + loadpointId;
+        final String channelGroup = CHANNEL_GROUP_ID_LOADPOINT + String.valueOf(loadpointId);
 
         Loadpoint loadpoint = result.getLoadpoints()[loadpointId];
         boolean chargerFeatureHeating = loadpoint.getChargerFeatureHeating();
@@ -518,7 +520,7 @@ public class EvccHandler extends BaseThingHandler {
             if ((vehicleName != null) && !vehicleName.isBlank()) {
                 this.vehicleFeatureHeating.add(vehicleName);
             }
-            this.vehicleFeatureHeating.add(channelGroup + "current");
+            this.loadpointFeatureHeating.add(channelGroup);
 
             createChannel(CHANNEL_LOADPOINT_LIMIT_TEMPERATURE, channelGroup,
                     CHANNEL_TYPE_UID_LOADPOINT_LIMIT_TEMPERATURE, "Number:Temperature");
@@ -534,7 +536,7 @@ public class EvccHandler extends BaseThingHandler {
             if ((vehicleName != null) && !vehicleName.isBlank()) {
                 this.vehicleFeatureHeating.remove(vehicleName);
             }
-            this.vehicleFeatureHeating.remove(channelGroup + "current");
+            this.loadpointFeatureHeating.remove(channelGroup);
 
             createChannel(CHANNEL_LOADPOINT_LIMIT_SOC, channelGroup, CHANNEL_TYPE_UID_LOADPOINT_LIMIT_SOC,
                     "Number:Dimensionless");
@@ -571,7 +573,7 @@ public class EvccHandler extends BaseThingHandler {
         removeChannel("vehicleCapacity", channelGroup);
 
         if (vehicleName != null) {
-            createChannelsVehicle(vehicleName, channelGroup + "current");
+            createChannelsVehicle(vehicleName, channelGroup);
         }
     }
 
@@ -579,17 +581,22 @@ public class EvccHandler extends BaseThingHandler {
         createChannelsVehicle(vehicleName, null);
     }
 
-    private void createChannelsVehicle(String vehicleName, @Nullable String channelGroup) {
+    private void createChannelsVehicle(String vehicleName, @Nullable String loadpointName) {
         boolean isHeating;
-        if (channelGroup == null) {
+        if (loadpointName == null) {
             isHeating = this.vehicleFeatureHeating.contains(vehicleName);
         } else {
-            isHeating = this.vehicleFeatureHeating.contains(channelGroup);
+            isHeating = this.loadpointFeatureHeating.contains(loadpointName);
         }
+
         if (isHeating) {
-            if (channelGroup == null) {
+            String channelGroup;
+            if (loadpointName == null) {
                 channelGroup = CHANNEL_GROUP_ID_HEATING + vehicleName;
+            } else {
+                channelGroup = loadpointName + CHANNEL_GROUP_ID_CURRENT;
             }
+
             createChannel(CHANNEL_HEATING_MIN_TEMPERATURE, channelGroup, CHANNEL_TYPE_UID_HEATING_MIN_TEMPERATURE,
                     "Number:Temperature");
             createChannel(CHANNEL_HEATING_LIMIT_TEMPERATURE, channelGroup, CHANNEL_TYPE_UID_HEATING_LIMIT_TEMPERATURE,
@@ -615,9 +622,13 @@ public class EvccHandler extends BaseThingHandler {
             removeChannel(CHANNEL_VEHICLE_PLAN_TIME, channelGroup);
             removeChannel(CHANNEL_VEHICLE_CAPACITY, channelGroup);
         } else {
-            if (channelGroup == null) {
+            String channelGroup;
+            if (loadpointName == null) {
                 channelGroup = CHANNEL_GROUP_ID_VEHICLE + vehicleName;
+            } else {
+                channelGroup = loadpointName + CHANNEL_GROUP_ID_CURRENT;
             }
+
             createChannel(CHANNEL_VEHICLE_MIN_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_MIN_SOC,
                     "Number:Dimensionless");
             createChannel(CHANNEL_VEHICLE_LIMIT_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_LIMIT_SOC,
@@ -845,7 +856,7 @@ public class EvccHandler extends BaseThingHandler {
         updateState(channel, new QuantityType<>(vehicleRange, MetricPrefix.KILO(SIUnits.METRE)));
 
         if (vehicleName != null) {
-            updateChannelsVehicle(vehicleName, channelGroup + "current");
+            updateChannelsVehicle(vehicleName, channelGroup);
         }
     }
 
@@ -853,7 +864,7 @@ public class EvccHandler extends BaseThingHandler {
         updateChannelsVehicle(vehicleName, null);
     }
 
-    private void updateChannelsVehicle(String vehicleName, @Nullable String channelGroup) {
+    private void updateChannelsVehicle(String vehicleName, @Nullable String loadpointName) {
         final Result result = this.result;
         if (result == null) {
             return;
@@ -861,19 +872,22 @@ public class EvccHandler extends BaseThingHandler {
         final ThingUID uid = getThing().getUID();
 
         boolean isHeating;
-        if (channelGroup == null) {
+        if (loadpointName == null) {
             isHeating = this.vehicleFeatureHeating.contains(vehicleName);
         } else {
-            isHeating = this.vehicleFeatureHeating.contains(channelGroup);
+            isHeating = this.loadpointFeatureHeating.contains(loadpointName);
         }
         Vehicle vehicle = null;
         if (!vehicleName.isBlank()) {
             vehicle = result.getVehicles().get(vehicleName);
         }
 
+        String channelGroup;
         if (isHeating) {
-            if (channelGroup == null) {
+            if (loadpointName == null) {
                 channelGroup = CHANNEL_GROUP_ID_HEATING + vehicleName;
+            } else {
+                channelGroup = loadpointName + CHANNEL_GROUP_ID_CURRENT;
             }
 
             if (vehicle == null) {
@@ -906,8 +920,10 @@ public class EvccHandler extends BaseThingHandler {
                 updateState(channel, new QuantityType<>(capacity, Units.KILOWATT_HOUR));
             }
         } else {
-            if (channelGroup == null) {
+            if (loadpointName == null) {
                 channelGroup = CHANNEL_GROUP_ID_VEHICLE + vehicleName;
+            } else {
+                channelGroup = loadpointName + CHANNEL_GROUP_ID_CURRENT;
             }
             if (vehicle == null) {
                 ChannelUID channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_MIN_SOC);
@@ -949,12 +965,11 @@ public class EvccHandler extends BaseThingHandler {
         } else if (plan != null) {
             vehiclePlans.put(vehicleName, new Triple<>(true, plan.getSoC(), ZonedDateTime.parse(plan.getTime())));
         }
-        updateVehiclePlanChannel(vehicleName, uid, channelGroup);
+        updateVehiclePlanChannel(uid, vehicleName, channelGroup, isHeating);
     }
 
-    private void updateVehiclePlanChannel(String vehicleName, ThingUID uid, String channelGroup) {
+    private void updateVehiclePlanChannel(ThingUID uid, String vehicleName, String channelGroup, boolean isHeating) {
         Triple<Boolean, Float, ZonedDateTime> planValues = vehiclePlans.get(vehicleName);
-        boolean isHeating = this.vehicleFeatureHeating.contains(vehicleName);
 
         if (isHeating) {
             ChannelUID channel = new ChannelUID(uid, channelGroup, CHANNEL_HEATING_PLAN_ENABLED);
