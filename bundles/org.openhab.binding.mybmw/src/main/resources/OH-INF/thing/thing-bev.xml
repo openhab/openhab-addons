@@ -13,6 +13,7 @@
 		<description>Battery Electric Vehicle (BEV)</description>
 
 		<channel-groups>
+			<channel-group id="update" typeId="ev-vehicle-update"/>
 			<channel-group id="status" typeId="ev-vehicle-status"/>
 			<channel-group id="doors" typeId="door-values"/>
 			<channel-group id="range" typeId="ev-range-values"/>
@@ -28,7 +29,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>vin</representation-property>

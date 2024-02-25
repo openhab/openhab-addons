@@ -13,6 +13,7 @@
 		<description>Conventional Fuel Vehicle (CONV)</description>
 
 		<channel-groups>
+			<channel-group id="update" typeId="vehicle-update"/>
 			<channel-group id="status" typeId="vehicle-status"/>
 			<channel-group id="doors" typeId="door-values"/>
 			<channel-group id="range" typeId="conv-range-values"/>
@@ -25,7 +26,7 @@
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>vin</representation-property>
