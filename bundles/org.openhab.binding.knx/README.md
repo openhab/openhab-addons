@@ -47,7 +47,8 @@ as multicast traffic is typically not forwarded.
 
 ### IP Gateway
 
-The IP Gateway is the most commonly used way to connect to the KNX bus. At its base, the _ip_ bridge accepts the following configuration parameters:
+The IP Gateway is the most commonly used way to connect to the KNX bus.
+At its base, the _ip_ bridge accepts the following configuration parameters:
 
 | Name                | Required     | Description                                                                                                  | Default value                                        |
 |---------------------|--------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
@@ -129,8 +130,9 @@ This is supported as "vendor-specific DPT" with a value of 232.60000.
 
 RGBW (DPT 251.600) can either be converted to HSBType, or represented by two items: a HSBType for RGB and an additional PercentType for the W channel.
 Default handling for RGBW is to use separate items.
-Note that this also requires two frames to be sent out separately when these elements are sent to the bus, as the binary representation uses a partially populated KNX frame.  
-Alternatively, a single HSB item can be used. Conversion to a single HSBType will lose the exact setting for W, and will reconstruct it when a conversion to RGBW is required.
+Note that this also requires two frames to be sent out separately when these elements are sent to the bus, as the binary representation uses a partially populated KNX frame.
+Alternatively, a single HSB item can be used.
+Conversion to a single HSBType will lose the exact setting for W, and will reconstruct it when a conversion to RGBW is required.
 This option can be selected using the special DPT 251.60600.
 
 ##### Channel Type `contact`, `contact-control`
@@ -169,7 +171,7 @@ Automatic type conversion will be applied if required.
 
 Incoming values from the KNX bus are converted to values with units (e.g. `23 °C`).
 If the channel is linked to the correct item-type (`Number:Temperature` in this case), the display unit can be controlled by item metadata (e.g., `%.1f °F` for 1 digit of precision in Fahrenheit).
-The unit is stripped if the channel is linked to a plain number item (type `Number`). 
+The unit is stripped if the channel is linked to a plain number item (type `Number`).
 
 Outgoing values with unit are first converted to the unit associated with the DPT (e.g., a value of `10 °F` is converted to `-8.33 °C` if the channel has DPT 9.001).
 Values from plain number channels are sent as-is (without any conversion).
@@ -267,7 +269,7 @@ where parts in brackets `[]` denote optional information.
 This is recommended if you have a dedicated status group address which is added as `listeningGA`.
 
 The optional `<` sign tells whether the group address of the datapoint accepts read requests on the KNX bus (it does, if the sign is there).
-The group addresses marked with `<` are read by openHAB during startup. 
+The group addresses marked with `<` are read by openHAB during startup.
 Future versions might support reading from one GA only.
 With `*-control` channels, the state is not owned by any device on the KNX bus, therefore no read requests will be sent by the binding, i.e. `<` signs will be ignored for them.
 
@@ -454,11 +456,15 @@ It is created by the ETS tool and cannot be changed via the ETS user interface.
 For _Secure tunneling_ with a Secure IP Interface (or a router in tunneling mode), more parameters are required.
 A unique device authentication key, and a specific tunnel identifier and password need to be available.
 
-- All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`. `tunnelUserId` is a number that is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...). `tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface, you will see the different tunnels listed) and denoted as "Password". `tunnelDeviceAuthentication` is set in the properties of the IP interface itself; check for the tab "IP" and the description "Authentication Code".
+- All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`.
+ `tunnelUserId` is a number that is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...).
+ `tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface, you will see the different tunnels listed) and denoted as "Password".
+ `tunnelDeviceAuthentication` is set in the properties of the IP interface itself; check for the tab "IP" and the description "Authentication Code".
 
 ### KNX Data Secure
 
-KNX Data Secure protects the content of messages on the KNX bus. In a KNX installation, both classic and secure group addresses can coexist.
+KNX Data Secure protects the content of messages on the KNX bus.
+In a KNX installation, both classic and secure group addresses can coexist.
 Data Secure does _not_ necessarily require a KNX Secure Router or a Secure IP Interface, but a KNX installation with newer KNX devices that support Data Secure and with **security features enabled in the ETS tool**.
 
 > NOTE: **openHAB currently ignores messages with secure group addresses.**
