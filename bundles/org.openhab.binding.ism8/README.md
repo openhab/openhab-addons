@@ -34,15 +34,9 @@ The ISM8 does currently support 4 different devices at the same moment of time (
 Once you have an overview of your heating system set you can start to create the channels accordingly.
 Each channel should be created in the following way:
 
-| Type   | Name    | Description                | Configuration   |
-|--------|---------|----------------------------|-----------------|
-| Number | DpId004 | "Kesseltemperatur"         | id, type, write |
-
-Type:
-
-- Switch use for boolean values
-- Number use for any number
-- Other types may work as well.
+| Type               | Name    | Description        | Configuration |
+|--------------------|---------|--------------------|---------------|
+| Number:Temperature | DpId004 | "Kesseltemperatur" |               |
 
 Name:
 
@@ -65,11 +59,18 @@ Note:
 Not all available types of the ISM8 interface are fully supported, but this can be extended.
 For the moment the following data types are implemented:
 
-- DPT-Bool:         `1.001`, `1.002`, `1.003`, `1.009`
-- DPT-Scaling:      `5.001`
-- DPT-Value:        `9.001`, `9.002`, `9.006`
-- DPT-FlowRate:     `13.002`
-- DPT-Mode:         `20.102`, `20.103`, `20.105`
+| Channel type   | Datapoint type                 | Item type                 | R/W | KNX-type's                 |
+|----------------|--------------------------------|---------------------------|-----|----------------------------|
+| switch-rw      | Digital DataPoint              | Switch                    | R/W | 1.001, 1.002, 1.003, 1.009 |
+| switch-r       | Digital Readonly DataPoint     | Switch                    | R   | 1.001, 1.002, 1.003, 1.009 |
+| percentage-rw  | Percentage  DataPoint          | Number:Dimensionless      | R/W | 5.001                      |
+| percentage-r   | Percentage Readonly DataPoint  | Number:Dimensionless      | R   | 5.001                      |
+| temperature-rw | Temperature DataPoint          | Number:Temperature        | R/W | 9.001,9.002                |
+| temperature-r  | Temperature Readonly DataPoint | Number:Temperature        | R   | 9.002,9.002                |
+| pressure-r     | Pressure Readonly DataPoint    | Number:Pressure           | R   | 9.006                      |
+| flowrate-r     | Flowrate Readonly DataPoint    | Number:VolumetricFlowRate | R   | 13.002                     |
+| mode-rw        | Mode DataPoint                 | Number:Dimensionless      | R/W | 20.102, 20.103, 20.105     |
+| mode-r         | Mode Readonly DataPoint        | Number:Dimensionless      | R   | 20.102, 20.103, 20.105     |
 
 ## Full Example
 
@@ -78,29 +79,29 @@ For the moment the following data types are implemented:
 ```java
 Thing ism8:device:heater "Wolf Heizung"         [portNumber=12004]
     {
-        Type switch-readonly : DpId001 "Störung Heizgerät"            [id=1, type="1.001"]
-        Type number-readonly : DpId002 "Betriebsart"                  [id=2, type="20.105"]
-        Type number-readonly : DpId003 "Brennerleistung"              [id=3, type="5.001"] 
-        Type number-readonly : DpId004 "Kesseltemperatur"             [id=4, type="9.001"] 
-        Type number-readonly : DpId006 "Rücklauftemperatur"           [id=6, type="9.001"] 
-        Type number-readonly : DpId007 "Warmwassertemperatur"         [id=7, type="9.001"] 
-        Type number-readonly : DpId008 "Außentemperatur"              [id=8, type="9.001"] 
-        Type switch-readonly : DpId009 "Status Flamme"                [id=9, type="1.001"] 
-        Type number-readonly : DpId013 "Anlagendruck"                 [id=13, type="9.006"] 
-        Type number-readonly : DpId053 "Störung Systemmodul"          [id=53, type="1.001"] 
-        Type number-readonly : DpId054 "Außentemperatur Systemmodul"  [id=54, type="9.001"] 
-        Type number          : DpId056 "Sollwert Warmwasser"          [id=56, type="9.001"] 
-        Type number          : DpId057 "Betriebsart Heizkreis"        [id=57, type="20.102"] 
-        Type number          : DpId058 "Betriebsart Warmwasser"       [id=58, type="20.103"] 
-        Type number          : DpId065 "Sollwertverschiebung"         [id=65, type="9.002"] 
-        Type number-readonly : DpId148 "CML Störung"                  [id=148, type="1.001"] 
-        Type number          : DpId149 "CWL Betriebsart"              [id=149, type="20.102"] 
-        Type number-readonly : DpId163 "CWL Lüftungsstufe"            [id=163, type="5.001"] 
-        Type number-readonly : DpId164 "CWL Ablufttemperatur"         [id=164, type="9.001"] 
-        Type number-readonly : DpId165 "CWL Zulufttemperatur"         [id=165, type="9.001"]
-        Type number-readonly : DpId166 "CWL Luftdurchsatz Zuluft"     [id=166, type="13.002"]
-        Type number-readonly : DpId167 "CWL Luftdurchsatz Abluft"     [id=167, type="13.002"]
-        Type number-readonly : DpId192 "CML Filterwarnung"            [id=192, type="1.001"]    
+        Type switch-r       : DpId001 "Störung Heizgerät"            [id=1, type="1.001"]
+        Type number-r       : DpId002 "Betriebsart"                  [id=2, type="20.105"]
+        Type percentage-r   : DpId003 "Brennerleistung"              [id=3, type="5.001"] 
+        Type temperature-r  : DpId004 "Kesseltemperatur"             [id=4, type="9.001"] 
+        Type temperature-r  : DpId006 "Rücklauftemperatur"           [id=6, type="9.001"] 
+        Type temperature-r  : DpId007 "Warmwassertemperatur"         [id=7, type="9.001"] 
+        Type temperature-r  : DpId008 "Außentemperatur"              [id=8, type="9.001"] 
+        Type switch-r       : DpId009 "Status Flamme"                [id=9, type="1.001"] 
+        Type temperature-r  : DpId013 "Anlagendruck"                 [id=13, type="9.006"] 
+        Type switch-r       : DpId053 "Störung Systemmodul"          [id=53, type="1.001"] 
+        Type temperature-r  : DpId054 "Außentemperatur Systemmodul"  [id=54, type="9.001"] 
+        Type temperature-rw : DpId056 "Sollwert Warmwasser"          [id=56, type="9.001"] 
+        Type mode-rw        : DpId057 "Betriebsart Heizkreis"        [id=57, type="20.102"] 
+        Type mode-rw        : DpId058 "Betriebsart Warmwasser"       [id=58, type="20.103"] 
+        Type temperature-rw : DpId065 "Sollwertverschiebung"         [id=65, type="9.002"] 
+        Type switch-rw      : DpId148 "CML Störung"                  [id=148, type="1.001"] 
+        Type mode-rw        : DpId149 "CWL Betriebsart"              [id=149, type="20.102"] 
+        Type percentage-r   : DpId163 "CWL Lüftungsstufe"            [id=163, type="5.001"] 
+        Type temperature-r  : DpId164 "CWL Ablufttemperatur"         [id=164, type="9.001"] 
+        Type temperature-r  : DpId165 "CWL Zulufttemperatur"         [id=165, type="9.001"]
+        Type flowrate-r     : DpId166 "CWL Luftdurchsatz Zuluft"     [id=166, type="13.002"]
+        Type flowrate-r     : DpId167 "CWL Luftdurchsatz Abluft"     [id=167, type="13.002"]
+        Type switch-r       : DpId192 "CML Filterwarnung"            [id=192, type="1.001"]    
     }
 ```
 
