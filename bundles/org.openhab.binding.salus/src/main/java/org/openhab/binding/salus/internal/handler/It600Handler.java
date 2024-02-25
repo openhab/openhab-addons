@@ -13,6 +13,7 @@
 package org.openhab.binding.salus.internal.handler;
 
 import static java.math.RoundingMode.HALF_EVEN;
+import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.It600.EXPECTED_TEMPERATURE;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.It600.TEMPERATURE;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.It600.WORK_TYPE;
@@ -21,6 +22,7 @@ import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Devi
 import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.OFF;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.TEMPORARY_MANUAL;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
+import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
@@ -161,14 +163,13 @@ public class It600Handler extends BaseThingHandler {
         }
 
         BigDecimal rawValue = null;
-        if (command instanceof QuantityType commandAsQuantityType) {
-            rawValue = commandAsQuantityType.toBigDecimal();
+        if (command instanceof QuantityType<?> commandAsQuantityType) {
+            rawValue = requireNonNull(commandAsQuantityType.toUnit(CELSIUS)).toBigDecimal();
         } else if (command instanceof DecimalType commandAsDecimalType) {
             rawValue = commandAsDecimalType.toBigDecimal();
         }
 
         if (rawValue != null) {
-
             var value = rawValue.multiply(ONE_HUNDRED).longValue();
             var property = findLongProperty("ep_9:sIT600TH:SetHeatingSetpoint_x100", "SetHeatingSetpoint_x100");
             if (property.isEmpty()) {
