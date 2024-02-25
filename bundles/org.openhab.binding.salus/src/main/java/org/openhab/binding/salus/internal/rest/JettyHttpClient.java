@@ -79,7 +79,7 @@ public class JettyHttpClient implements RestClient {
                 }
                 cause = cause.getCause();
             }
-            throw new HttpException("POST", url, ex);
+            return new Response<>(400, String.format("Request %s %s failed ", request.getMethod(), request.getURI()));
         }
     }
 }
