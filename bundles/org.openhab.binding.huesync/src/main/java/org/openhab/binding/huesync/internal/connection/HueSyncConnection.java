@@ -18,8 +18,8 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.openhab.binding.huesync.internal.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfo;
+import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;

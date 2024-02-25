@@ -33,6 +33,15 @@
 				<default>443</default>
 				<required>true</required>
 			</parameter>
+			<parameter name="apiAccessToken" type="text" groupName="connection">
+				<context>password</context>
+				<label>API Access Token</label>
+				<description>To enable the binding to communicate with the device, a registration is required. Once the registration
+					process is completed, the acquired token will authorize the binding to interact with the device. After initial
+					discovery and thing creation the device will stay offline. Press the registration button on the sync box for 3
+					seconds to grant the binding the required permissions.</description>
+				<required>false</required>
+			</parameter>
 		</config-description>
 
 	</thing-type>

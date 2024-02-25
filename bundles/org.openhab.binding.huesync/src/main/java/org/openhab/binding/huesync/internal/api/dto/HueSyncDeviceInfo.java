@@ -35,8 +35,6 @@ public class HueSyncDeviceInfo {
     /**
      * Increased between firmware versions when api changes. Only apiLevel >= 7 is
      * supported.
-     * 
-     * TODO: Check minimal API level ...
      */
     public int apiLevel;
     /**

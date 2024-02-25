@@ -1,11 +1,10 @@
 # HueSync Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding integrates the [Play HDMI Sync Box](https://www.philips-hue.com/en-us/p/hue-play-hdmi-sync-box-/046677555221) into openHAB.
+The integration happens directly through the Hue [HDMI Sync Box API](https://developers.meethue.com/develop/hue-entertainment/hue-hdmi-sync-box-api/) (not via a Hue Bridge).
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+![Play HDMI Sync Box](doc/bridge1.png) 
+![Play HDMI Sync Box](doc/bridge2.png)
 
 ## Supported Things
 
@@ -17,11 +16,6 @@ _Note that it is planned to generate some part of this based on the XML files wi
 - `sample`: Short description of the Thing with the ThingTypeUID `sample`
 
 ## Discovery
-
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
 
 The beinding is using [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS) to discover HDMI Sync devies in the local network.
 The LED on the Sync Box must be white or red.
@@ -35,7 +29,7 @@ If the device is not discovered you can check if it is properly configured and d
 ::: tab Linux
 
 ```bash
-avahi-browse --resolve _huesync._tcp 
+$ avahi-browse --resolve _huesync._tcp 
 + wlp0s20f3 IPv4 HueSyncBox-XXXXXXXXXXX                       _huesync._tcp        local
 = wlp0s20f3 IPv4 HueSyncBox-XXXXXXXXXXX                       _huesync._tcp        local
    hostname = [XXXXXXXXXXX.local]
@@ -46,30 +40,15 @@ avahi-browse --resolve _huesync._tcp
 
 :::
 
-::: tab Windows
-
-:::
-
 ::::
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the huesync Binding
-#
-# Default secret key for the pairing of the huesync Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
-
 ## Thing Configuration
+
+To enable the binding to communicate with the device, a registration is required. 
+Once the registration process is completed, the acquired token will authorize the binding to communicate with the device. 
+After initial discovery and thing creation the device will stay offline.
+To complete the authentication you need to pressed the registration button on the sync box for 3 seconds.
+
 
 _Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
 _This should be mainly about its mandatory and optional configuration parameters._

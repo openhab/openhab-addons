@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.huesync.internal;
+package org.openhab.binding.huesync.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class HueSyncConfiguration {
+    public String apiAccessToken = "";
     public String host = "";
     public Integer port = 443;
 }

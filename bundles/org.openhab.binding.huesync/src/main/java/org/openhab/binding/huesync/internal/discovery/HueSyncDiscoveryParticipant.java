@@ -43,10 +43,7 @@ import org.slf4j.LoggerFactory;
  * The {@link HueSyncDiscoveryParticipant} is responsible for discovering
  * the remote huesync.boxes using mDNS discovery service.
  *
- * @author Marco Kawon - Initial contribution
- * @author Patrik Gfeller - Integration into official repository, update to 4.x
- *         infrastructure
- * 
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
 @Component(service = MDNSDiscoveryParticipant.class, configurationPid = "mdnsdiscovery.huesync")
@@ -92,7 +89,7 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
             ThingUID uid = getThingUID(service);
             if (Objects.nonNull(uid)) {
                 try {
-                    logger.debug("HDMI Sync Box {} discovered at {}:{}", service.getName(),
+                    logger.trace("HDMI Sync Box {} discovered at {}:{}", service.getName(),
                             service.getHostAddresses()[0], service.getPort());
 
                     Map<String, Object> properties = new HashMap<>();
@@ -117,7 +114,8 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
         String[] addressses = service.getHostAddresses();
 
         if (addressses.length == 0 || id == null || id.isBlank()) {
-            logger.info("Incomplete mDNS device discovery information - {} ignored.", id == null ? "[name: null]" : id);
+            logger.debug("Incomplete mDNS device discovery information - {} ignored.",
+                    id == null ? "[name: null]" : id);
             return null;
         }
 

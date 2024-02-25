@@ -18,7 +18,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.huesync.internal.HueSyncBindingConstants;
-import org.openhab.binding.huesync.internal.HueSyncHandler;
+import org.openhab.binding.huesync.internal.handler.HueSyncHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -34,9 +34,7 @@ import org.osgi.service.component.annotations.Reference;
  * thing
  * handlers.
  *
- * @author Marco Kawon - Initial contribution
- * @author Patrik Gfeller - Integration into official repository, update to 4.x
- *         infrastructure
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.huesync", service = ThingHandlerFactory.class)

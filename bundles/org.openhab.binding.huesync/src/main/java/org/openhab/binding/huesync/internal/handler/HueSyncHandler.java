@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.huesync.internal;
+package org.openhab.binding.huesync.internal.handler;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -19,9 +19,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.util.ssl.SslContextFactory.Client;
 import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfo;
+import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncConnection;
 import org.openhab.binding.huesync.internal.connection.HueSyncTrustManagerProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -29,6 +28,7 @@ import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.osgi.framework.FrameworkUtil;
@@ -40,17 +40,21 @@ import org.slf4j.LoggerFactory;
  * The {@link HueSyncHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Marco Kawon - Initial contribution
- * @author Patrik Gfeller - Integration into official repository, update to 4.x
- *         infrastructure
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
 public class HueSyncHandler extends BaseThingHandler {
+
+    /** the key for the api version property */
+    static final String PROPERTY_API_VERSION = "apiVersion";
+    /** the ky for the network state property */
+    static final String PROPERTY_NETWORK_STATE = "networkState";
 
     @SuppressWarnings("null")
     private final Logger logger = LoggerFactory.getLogger(HueSyncHandler.class);
 
     private HueSyncConfiguration config;
+
     private @Nullable HueSyncConnection connection;
     private @Nullable HueSyncDeviceInfo deviceInfo;
     private @Nullable ServiceRegistration<?> serviceRegistration;
@@ -63,17 +67,11 @@ public class HueSyncHandler extends BaseThingHandler {
 
         this.config = getConfigAs(HueSyncConfiguration.class);
 
-        @SuppressWarnings("null")
         HueSyncTrustManagerProvider trustManagerProvider = new HueSyncTrustManagerProvider(this.config.host,
                 this.config.port);
 
         this.serviceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext()
                 .registerService(TlsTrustManagerProvider.class.getName(), trustManagerProvider, null);
-
-        SslContextFactory context = new Client.Client();
-
-        this.logger.debug("SSL context - Alias: {}", context.getCertAlias());
-        this.logger.debug("Context: ", context.dumpSelf());
 
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
@@ -98,11 +96,20 @@ public class HueSyncHandler extends BaseThingHandler {
 
                 properties.put(Thing.PROPERTY_SERIAL_NUMBER, this.deviceInfo.uniqueId);
                 properties.put(Thing.PROPERTY_MODEL_ID, this.deviceInfo.deviceType);
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, deviceInfo.firmwareVersion);
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, this.deviceInfo.firmwareVersion);
+
+                properties.put(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", this.deviceInfo.apiLevel));
+                properties.put(HueSyncHandler.PROPERTY_NETWORK_STATE, this.deviceInfo.wifiState);
 
                 updateProperties(properties);
 
-                updateStatus(ThingStatus.ONLINE);
+                // TODO: Check API Version ...
+
+                if (this.config.apiAccessToken.isEmpty() || this.config.apiAccessToken.isBlank()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+                } else {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             } catch (Exception e) {
                 this.logger.error("Unable to initialize handler for {}({}): {}", this.thing.getLabel(),
                         this.thing.getUID(), e);
@@ -117,7 +124,6 @@ public class HueSyncHandler extends BaseThingHandler {
         super.dispose();
 
         try {
-
             if (this.serviceRegistration != null) {
                 this.serviceRegistration.unregister();
                 this.serviceRegistration = null;

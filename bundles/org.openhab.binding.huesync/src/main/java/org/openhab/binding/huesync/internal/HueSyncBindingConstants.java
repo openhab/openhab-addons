@@ -19,12 +19,12 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link HueSyncBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Marco Kawon - Initial contribution
- * @author Patrik Gfeller - Integration into official repository, update to 4.x
- *         infrastructure
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
 public class HueSyncBindingConstants {
+    /** Minimal API Version required. Only apiLevel >= 7 is supported. */
+    public static final Integer MINIMAL_API_VERSION = 7;
 
     public static final String BINDING_ID = "huesync";
     public static final ThingTypeUID THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "box");

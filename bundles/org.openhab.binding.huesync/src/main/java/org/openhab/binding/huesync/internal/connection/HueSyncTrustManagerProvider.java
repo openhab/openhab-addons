@@ -26,7 +26,6 @@ import org.openhab.core.io.net.http.TlsTrustManagerProvider;
  * Sync Box
  * 
  * @author Patrik Gfeller - Initial Contribution
- *         Based on the hue binding implementation by Christoph Weitkamp
  */
 @NonNullByDefault
 public class HueSyncTrustManagerProvider implements TlsTrustManagerProvider {
