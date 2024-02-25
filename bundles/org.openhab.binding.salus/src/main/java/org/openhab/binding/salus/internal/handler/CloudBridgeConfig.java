@@ -26,6 +26,7 @@ public class CloudBridgeConfig {
     private String url = "";
     private long refreshInterval = 30;
     private long propertiesRefreshInterval = 5;
+    private int maxHttpRetries = 3;
 
     public CloudBridgeConfig() {
     }
@@ -80,6 +81,14 @@ public class CloudBridgeConfig {
 
     public void setPropertiesRefreshInterval(long propertiesRefreshInterval) {
         this.propertiesRefreshInterval = propertiesRefreshInterval;
+    }
+
+    public int getMaxHttpRetries() {
+        return maxHttpRetries;
+    }
+
+    public void setMaxHttpRetries(int maxHttpRetries) {
+        this.maxHttpRetries = maxHttpRetries;
     }
 
     public boolean isValid() {
