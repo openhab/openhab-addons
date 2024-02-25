@@ -69,12 +69,12 @@ public class SalusApi {
         var response = restClient.get(url, authHeader());
         if (response.statusCode() == 401) {
             logger.info("Refreshing access token");
-            login(username, password);
-            if (times > MAX_TIMES) {
-                logger.debug("Could not refresh access token after {} times", MAX_TIMES);
-                return response;
+            if (times <= MAX_TIMES) {
+                forceRefreshAccessToken();
+                return get(url, header, times + 1);
             }
-            return get(url, header, times + 1);
+            logger.debug("Could not refresh access token after {} times", MAX_TIMES);
+            return response;
         }
         return response;
     }
@@ -84,13 +84,12 @@ public class SalusApi {
         refreshAccessToken();
         var response = restClient.post(url, content, header);
         if (response.statusCode() == 401) {
-            logger.debug("Refreshing access token");
-            login(username, password);
-            if (times > MAX_TIMES) {
-                logger.debug("Could not refresh access token after {} times", MAX_TIMES);
-                return response;
+            if (times <= MAX_TIMES) {
+                forceRefreshAccessToken();
+                return post(url, content, header, times + 1);
             }
-            return post(url, content, header, times + 1);
+            logger.debug("Could not refresh access token after {} times", MAX_TIMES);
+            return response;
         }
         return response;
     }
@@ -102,11 +101,11 @@ public class SalusApi {
         return str;
     }
 
-    private void login(String username, char[] password) {
-        login(username, password, 1);
+    private RestClient.Response<@Nullable String> login(String username, char[] password) {
+        return login(username, password, 1);
     }
 
-    private void login(String username, char[] password, int times) {
+    private RestClient.Response<@Nullable String> login(String username, char[] password, int times) {
         logger.debug("Login with username '{}', times={}", username, times);
         authToken = null;
         authTokenExpireTime = null;
@@ -117,43 +116,49 @@ public class SalusApi {
                 new RestClient.Header("Accept", "application/json"));
         if (response.statusCode() == 401) {
             if (times < MAX_TIMES) {
-                login(username, password, times + 1);
-                return;
+                return login(username, password, times + 1);
             }
-            throw new HttpUnauthorizedException(method, finalUrl);
+            return response;
         }
         if (response.statusCode() == 403) {
             if (times < MAX_TIMES) {
-                login(username, password, times + 1);
-                return;
+                return login(username, password, times + 1);
             }
-            throw new HttpForbiddenException(method, finalUrl);
-        }
-        if (response.statusCode() / 100 == 4) {
-            throw new HttpClientException(response.statusCode(), method, finalUrl);
-        }
-        if (response.statusCode() / 100 == 5) {
-            throw new HttpServerException(response.statusCode(), method, finalUrl);
+            return response;
         }
         if (response.statusCode() != 200) {
-            throw new HttpUnknownException(response.statusCode(), method, finalUrl);
+            return new RestClient.Response<@Nullable String>(response.statusCode(), response.body());
         }
         var token = authToken = mapper.authToken(requireNonNull(response.body()));
         authTokenExpireTime = LocalDateTime.now(clock).plusSeconds(token.expiresIn());
         logger.info("Correctly logged in for user {}, role={}, expires at {} ({} secs)", username, token.role(),
                 authTokenExpireTime, token.expiresIn());
+        return response;
     }
 
-    private void refreshAccessToken() {
-        if (this.authToken == null) {
-            login(username, password);
-        } else if (expiredToken()) {
-            login(username, password);
-        } else if (shouldRefreshTokenBeforeExpire()) {
+    private void forceRefreshAccessToken() {
+        logger.debug("Force refresh access token");
+        authToken = null;
+        authTokenExpireTime = null;
+        refreshAccessToken();
+    }
+
+    private RestClient.@Nullable Response<@Nullable String> refreshAccessToken() {
+        if (this.authToken == null || expiredToken()) {
+            var response = login(username, password);
+            if (response.statusCode() != 200) {
+                logger.warn("Cannot login with username '{}', response={}", username, response);
+                this.authToken = null;
+                this.authTokenExpireTime = null;
+            }
+            return response;
+        }
+        if (shouldRefreshTokenBeforeExpire()) {
             refreshBeforeExpire();
         } else {
             logger.debug("Refreshing token is not required");
         }
+        return null;
     }
 
     private boolean expiredToken() {
@@ -178,7 +183,10 @@ public class SalusApi {
 
     public ApiResponse<SortedSet<Device>> findDevices() {
         logger.debug("findDevices()");
-        refreshAccessToken();
+        var loginResponse = refreshAccessToken();
+        if (loginResponse != null && loginResponse.statusCode() != 200) {
+            return error(new Error(loginResponse.statusCode(), loginResponse.body()));
+        }
         var response = get(url("/apiv1/devices.json"), authHeader(), 1);
         if (response.statusCode() != 200) {
             // there was an error when querying endpoint

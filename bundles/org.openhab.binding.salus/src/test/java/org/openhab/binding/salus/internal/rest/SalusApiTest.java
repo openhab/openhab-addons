@@ -13,7 +13,6 @@
 package org.openhab.binding.salus.internal.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.endsWith;
@@ -143,7 +142,13 @@ public class SalusApiTest {
         var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
 
         // When
-        assertThatThrownBy(salusApi::findDevices).isInstanceOf(HttpUnauthorizedException.class);
+        var findDevicesResponse = salusApi.findDevices();
+
+        // Then
+        assertThat(findDevicesResponse.succeed()).isFalse();
+        assertThat(findDevicesResponse.error()).isNotNull();
+        assertThat(findDevicesResponse.error().code()).isEqualTo("401");
+        assertThat(findDevicesResponse.error().message()).isEqualTo("unauthorized_error_json");
     }
 
     // Find devices with invalid auth token throws HttpUnauthorizedException
@@ -279,7 +284,13 @@ public class SalusApiTest {
         var salusApi = new SalusApi(username, password, baseUrl, restClient, mapper, clock);
 
         // When
-        assertThatThrownBy(salusApi::findDevices).isInstanceOf(HttpForbiddenException.class);
+        var findDevicesResponse = salusApi.findDevices();
+
+        // Then
+        assertThat(findDevicesResponse.succeed()).isFalse();
+        assertThat(findDevicesResponse.error()).isNotNull();
+        assertThat(findDevicesResponse.error().code()).isEqualTo("403");
+        assertThat(findDevicesResponse.error().message()).isEqualTo("forbidden_error_json");
     }
 
     private void setAuthToken(SalusApi salusApi, RestClient restClient, GsonMapper mapper, AuthToken authToken) {
