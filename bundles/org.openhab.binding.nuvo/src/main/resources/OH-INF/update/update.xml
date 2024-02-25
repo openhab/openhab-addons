@@ -6,7 +6,7 @@
 	<thing-type uid="nuvo:amplifier">
 		<instruction-set targetVersion="1">
 			<add-channel id="source_menu" groupIds="source1,source2,source3,source4,source5,source6">
-				<type>nuvo:sourceMenu</type>
+				<type>nuvo:source_menu</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
