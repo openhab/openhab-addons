@@ -75,13 +75,12 @@ public class DeviceHandler extends BaseThingHandler {
     public void initialize() {
         var bridge = getBridge();
         if (bridge == null) {
-            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED,
-                    "There is no bridge for this thing. Remove it and add it again.");
+            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/device-handler.initialize.errors.no-bridge");
             return;
         }
         var bridgeHandler = bridge.getHandler();
         if (!(bridgeHandler instanceof CloudBridgeHandler cloudHandler)) {
-            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "There is wrong type of bridge for cloud device!");
+            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/device-handler.initialize.errors.bridge-wrong-type");
             return;
         }
         this.cloudApi = cloudHandler;
@@ -90,28 +89,31 @@ public class DeviceHandler extends BaseThingHandler {
 
         if ("".equals(dsn)) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "There is no " + DSN + " for this thing. Remove it and add it again.");
+                    "@text/device-handler.initialize.errors.no-dsn [\"" + DSN + "\"]");
             return;
         }
 
         try {
             var device = this.cloudApi.findDevice(dsn);
             if (device.isEmpty()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, "Device with DSN " + dsn + " not found!");
+                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                        "@text/device-handler.initialize.errors.dsn-not-found [\"" + dsn + "\"]");
                 return;
             }
             if (!device.get().isConnected()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, "Device with DSN " + dsn + " is not connected!");
+                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                        "@text/device-handler.initialize.errors.dsn-not-connected [\"" + dsn + "\"]");
                 return;
             }
             var channels = findDeviceProperties().stream().map(this::buildChannel).toList();
             if (channels.isEmpty()) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, "There are no channels for " + dsn + ".");
+                updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                        "@text/device-handler.initialize.errors.no-channels [\"" + dsn + "\"]");
                 return;
             }
             updateChannels(channels);
         } catch (Exception e) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "Error when connecting to Salus Cloud!");
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, "@text/device-handler.initialize.errors.general-error");
             return;
         }
 

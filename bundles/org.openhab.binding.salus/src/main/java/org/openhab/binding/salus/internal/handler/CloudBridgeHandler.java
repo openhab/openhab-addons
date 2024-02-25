@@ -78,7 +78,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     public void initialize() {
         CloudBridgeConfig config = this.getConfigAs(CloudBridgeConfig.class);
         if (!config.isValid()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "Username or password is not valid");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/cloud-bridge-handler.initialize.username-pass-not-valid");
             return;
         }
         JettyHttpClient httpClient = new JettyHttpClient(httpClientFactory.getCommonHttpClient());
@@ -115,7 +115,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             }
         } catch (Exception ex) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR,
-                    "Cannot connect to Salus Cloud! Probably username/password mismatch! " + ex.getMessage());
+                    "@text/cloud-bridge-handler.initialize.cannot-connect-to-cloud [\"" + ex.getMessage() + "\"]");
         }
     }
 

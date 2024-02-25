@@ -74,12 +74,11 @@ public class It600Handler extends BaseThingHandler {
         {
             var bridge = getBridge();
             if (bridge == null) {
-                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED,
-                        "There is no bridge for this thing. Remove it and add it again.");
+                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/it600-handler.initialize.errors.no-bridge");
                 return;
             }
             if (!(bridge.getHandler() instanceof CloudBridgeHandler cloudHandler)) {
-                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "There is wrong type of bridge for cloud device!");
+                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/it600-handler.initialize.errors.bridge-wrong-type");
                 return;
             }
             this.cloudApi = cloudHandler;
@@ -87,9 +86,9 @@ public class It600Handler extends BaseThingHandler {
 
         dsn = (String) getConfig().get(DSN);
 
-        if (dsn == null || dsn.length() == 0) {
+        if ("".equals(dsn)) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "There is no " + DSN + " for this thing. Remove it and add it again.");
+                    "@text/it600-handler.initialize.errors.no-dsn [\"" + DSN + "\"]");
             return;
         }
 
@@ -97,12 +96,14 @@ public class It600Handler extends BaseThingHandler {
             var device = this.cloudApi.findDevice(dsn);
             // no device in cloud
             if (device.isEmpty()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, "Device with DSN " + dsn + " not found!");
+                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                        "@text/it600-handler.initialize.errors.dsn-not-found [\"" + dsn + "\"]");
                 return;
             }
             // device is not connected
             if (!device.get().isConnected()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, "Device with DSN " + dsn + " is not connected!");
+                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                        "@text/it600-handler.initialize.errors.dsn-not-connected [\"" + dsn + "\"]");
                 return;
             }
             // device is missing properties
@@ -110,12 +111,12 @@ public class It600Handler extends BaseThingHandler {
             var result = new ArrayList<>(REQUIRED_CHANNELS);
             result.removeAll(deviceProperties);
             if (!result.isEmpty()) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                        "Device with DSN " + dsn + " is missing required properties: " + String.join(", ", result));
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/it600-handler.initialize.errors.missing-channels [\""
+                        + dsn + "\", \"" + String.join(", ", result) + "\"]");
                 return;
             }
         } catch (Exception e) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "Error when connecting to Salus Cloud!");
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, "@text/it600-handler.initialize.errors.general-error");
             return;
         }
 
