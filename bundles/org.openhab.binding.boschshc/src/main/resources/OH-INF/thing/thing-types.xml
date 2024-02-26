@@ -201,7 +201,7 @@
 			<channel id="child-protection-2" typeId="child-protection"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:boschshc:device-with-two-child-devices"/>
+		<config-description-ref uri="thing-type:boschshc:device"/>
 
 	</thing-type>
 

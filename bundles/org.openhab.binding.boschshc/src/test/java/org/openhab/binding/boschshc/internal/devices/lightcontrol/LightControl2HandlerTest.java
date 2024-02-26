@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -31,12 +32,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.openhab.binding.boschshc.internal.devices.AbstractBoschSHCDeviceHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.childprotection.dto.ChildProtectionServiceState;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchService;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchState;
 import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitchServiceState;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -55,8 +56,8 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 class LightControl2HandlerTest extends AbstractBoschSHCDeviceHandlerTest<LightControl2Handler> {
 
-    private static final String CHILD_DEVICE_ID_1 = "hdm:ZigBee:70ac08fffefead2d#3";
-    private static final String CHILD_DEVICE_ID_2 = "hdm:ZigBee:70ac08fffefead2d#2";
+    private static final String CHILD_DEVICE_ID_1 = "hdm:ZigBee:70ac08fffefead2d#2";
+    private static final String CHILD_DEVICE_ID_2 = "hdm:ZigBee:70ac08fffefead2d#3";
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<QuantityType<Power>> powerCaptor;
 
@@ -82,11 +83,11 @@ class LightControl2HandlerTest extends AbstractBoschSHCDeviceHandlerTest<LightCo
     }
 
     @Override
-    protected Configuration getConfiguration() {
-        Configuration configuration = super.getConfiguration();
-        configuration.put("childId1", CHILD_DEVICE_ID_1);
-        configuration.put("childId2", CHILD_DEVICE_ID_2);
-        return configuration;
+    protected void configureDevice(Device device) {
+        super.configureDevice(device);
+
+        // order is reversed to test child ID sorting during initialization
+        device.childDeviceIds = List.of(CHILD_DEVICE_ID_2, CHILD_DEVICE_ID_1);
     }
 
     @Test

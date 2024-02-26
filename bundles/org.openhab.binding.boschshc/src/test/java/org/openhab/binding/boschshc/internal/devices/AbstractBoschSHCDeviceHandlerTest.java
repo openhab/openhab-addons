@@ -13,6 +13,7 @@
 package org.openhab.binding.boschshc.internal.devices;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.core.config.core.Configuration;
 
 /**
@@ -25,6 +26,13 @@ import org.openhab.core.config.core.Configuration;
 @NonNullByDefault
 public abstract class AbstractBoschSHCDeviceHandlerTest<T extends BoschSHCDeviceHandler>
         extends AbstractBoschSHCHandlerTest<T> {
+
+    @Override
+    protected void configureDevice(Device device) {
+        super.configureDevice(device);
+
+        device.id = getDeviceID();
+    }
 
     @Override
     protected Configuration getConfiguration() {

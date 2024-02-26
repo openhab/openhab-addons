@@ -20,12 +20,14 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_POWER_SWITCH_2;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_SIGNAL_STRENGTH;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCConfigurationWithTwoChildDevices;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCDeviceHandler;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.childprotection.ChildProtectionService;
 import org.openhab.binding.boschshc.internal.services.childprotection.dto.ChildProtectionServiceState;
@@ -41,8 +43,12 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 
@@ -58,8 +64,10 @@ import com.google.gson.JsonElement;
 @NonNullByDefault
 public class LightControl2Handler extends BoschSHCDeviceHandler {
 
-    @Nullable
-    private BoschSHCConfigurationWithTwoChildDevices configurationWithChildDevices;
+    private final Logger logger = LoggerFactory.getLogger(LightControl2Handler.class);
+
+    private @Nullable String childDeviceId1;
+    private @Nullable String childDeviceId2;
 
     private PowerSwitchService lightSwitchCircuit1PowerSwitchService;
     private PowerSwitchService lightSwitchCircuit2PowerSwitchService;
@@ -78,12 +86,35 @@ public class LightControl2Handler extends BoschSHCDeviceHandler {
     }
 
     @Override
-    public void initialize() {
-        configurationWithChildDevices = getConfigAs(BoschSHCConfigurationWithTwoChildDevices.class);
-        validateDeviceId(configurationWithChildDevices.childId1);
-        validateDeviceId(configurationWithChildDevices.childId2);
+    protected void processDeviceInfo(Device deviceInfo) {
+        super.processDeviceInfo(deviceInfo);
 
-        super.initialize();
+        logger.debug("Initializing child devices of Light Control II, child device IDs from device info: {}",
+                deviceInfo.childDeviceIds);
+
+        if (deviceInfo.childDeviceIds == null || deviceInfo.childDeviceIds.size() != 2) {
+            super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.child-device-ids-not-obtainable");
+            return;
+        }
+
+        List<String> childDeviceIds = new ArrayList<>(deviceInfo.childDeviceIds);
+        // since we were not sure whether the child device ID order is always the same,
+        // we ensure a deterministic order by sorting the child IDs
+        // see https://github.com/openhab/openhab-addons/pull/16400#discussion_r1497762612
+        Collections.sort(childDeviceIds);
+
+        logger.trace("Child device IDs for Light Control II after sorting: {}", childDeviceIds);
+
+        if (validateDeviceId(childDeviceIds.get(0)) != null) {
+            childDeviceId1 = childDeviceIds.get(0);
+        }
+
+        if (validateDeviceId(childDeviceIds.get(1)) != null) {
+            childDeviceId2 = childDeviceIds.get(1);
+        }
+
+        logger.debug("Child device IDs for Light Control II configured successfully.");
     }
 
     @Override
@@ -94,27 +125,26 @@ public class LightControl2Handler extends BoschSHCDeviceHandler {
         createService(PowerMeterService::new, this::updateChannels,
                 List.of(CHANNEL_POWER_CONSUMPTION, CHANNEL_ENERGY_CONSUMPTION), true);
 
-        @Nullable
-        String childId1 = configurationWithChildDevices.childId1;
-        @Nullable
-        String childId2 = configurationWithChildDevices.childId2;
-
-        if (childId1 == null) {
+        // local variable required to ensure non-nullness, member can theoretically be modified
+        String lChildDeviceId1 = childDeviceId1;
+        if (lChildDeviceId1 == null) {
             throw new BoschSHCException("Child device ID 1 is not set for thing " + getThing().getUID());
         }
 
-        if (childId2 == null) {
+        // local variable required to ensure non-nullness, member can theoretically be modified
+        String lChildDeviceId2 = childDeviceId2;
+        if (lChildDeviceId2 == null) {
             throw new BoschSHCException("Child device ID 2 is not set for thing " + getThing().getUID());
         }
 
-        lightSwitchCircuit1PowerSwitchService.initialize(getBridgeHandler(), childId1,
+        lightSwitchCircuit1PowerSwitchService.initialize(getBridgeHandler(), lChildDeviceId1,
                 state -> updatePowerSwitchChannel(state, CHANNEL_POWER_SWITCH_1));
-        lightSwitchCircuit2PowerSwitchService.initialize(getBridgeHandler(), childId2,
+        lightSwitchCircuit2PowerSwitchService.initialize(getBridgeHandler(), lChildDeviceId2,
                 state -> updatePowerSwitchChannel(state, CHANNEL_POWER_SWITCH_2));
 
-        lightSwitchCircuit1ChildProtectionService.initialize(getBridgeHandler(), childId1,
+        lightSwitchCircuit1ChildProtectionService.initialize(getBridgeHandler(), lChildDeviceId1,
                 state -> updateChildProtectionChannel(state, CHANNEL_CHILD_PROTECTION_1));
-        lightSwitchCircuit2ChildProtectionService.initialize(getBridgeHandler(), childId2,
+        lightSwitchCircuit2ChildProtectionService.initialize(getBridgeHandler(), lChildDeviceId2,
                 state -> updateChildProtectionChannel(state, CHANNEL_CHILD_PROTECTION_2));
     }
 
@@ -138,15 +168,15 @@ public class LightControl2Handler extends BoschSHCDeviceHandler {
         super.processChildUpdate(childDeviceId, serviceName, stateData);
 
         if (PowerSwitchService.POWER_SWITCH_SERVICE_NAME.equals(serviceName)) {
-            if (childDeviceId.equals(configurationWithChildDevices.childId1)) {
+            if (childDeviceId.equals(childDeviceId1)) {
                 lightSwitchCircuit1PowerSwitchService.onStateUpdate(stateData);
-            } else if (childDeviceId.equals(configurationWithChildDevices.childId2)) {
+            } else if (childDeviceId.equals(childDeviceId2)) {
                 lightSwitchCircuit2PowerSwitchService.onStateUpdate(stateData);
             }
         } else if (ChildProtectionService.CHILD_PROTECTION_SERVICE_NAME.equals(serviceName)) {
-            if (childDeviceId.equals(configurationWithChildDevices.childId1)) {
+            if (childDeviceId.equals(childDeviceId1)) {
                 lightSwitchCircuit1ChildProtectionService.onStateUpdate(stateData);
-            } else if (childDeviceId.equals(configurationWithChildDevices.childId2)) {
+            } else if (childDeviceId.equals(childDeviceId2)) {
                 lightSwitchCircuit2ChildProtectionService.onStateUpdate(stateData);
             }
         }

@@ -31,19 +31,4 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:boschshc:device-with-two-child-devices">
-		<parameter name="id" type="text" required="true">
-			<label>Device ID</label>
-			<description>Unique ID of the device.</description>
-		</parameter>
-		<parameter name="childId1" type="text" required="true">
-			<label>Child Device ID 1</label>
-			<description>ID of the first logical child device.</description>
-		</parameter>
-		<parameter name="childId2" type="text" required="true">
-			<label>Child Device ID 2</label>
-			<description>ID of the second logical child device.</description>
-		</parameter>
-	</config-description>
-
 </config-description:config-descriptions>
