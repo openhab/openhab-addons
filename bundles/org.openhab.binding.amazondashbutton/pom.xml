@@ -16,14 +16,13 @@
 
   <properties>
     <bnd.importpackage>!org.slf4j.impl.*</bnd.importpackage>
-    <dep.noembedding>jna</dep.noembedding>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>5.4.0</version>
+      <version>${jna.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -37,6 +36,16 @@
       <artifactId>pcap4j-packetfactory-static</artifactId>
       <version>1.8.2</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>${jna.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna-platform</artifactId>
+      <version>${jna.version}</version>
     </dependency>
   </dependencies>
 </project>
