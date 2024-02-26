@@ -644,6 +644,11 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                                 updateChannelState(target, CHANNEL_ALBUM_ART, UNDEF);
                             }
                         }
+                        break;
+                    case CHANNEL_SOURCE_MENU:
+                        if (command instanceof StringType) {
+                            updateChannelState(target, CHANNEL_BUTTON_PRESS, command.toString());
+                        }
                 }
             } catch (NuvoException e) {
                 logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());
@@ -1114,6 +1119,18 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                                     + topMenuItems.get(i).getText() + "\"");
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                         }
+
+                        // Build a State options selection that represents this source's custom menu
+                        List<StateOption> sourceMenuStateOptions = new ArrayList<>();
+                        topMenuItems.forEach(topItem -> {
+                            sourceMenuStateOptions.add(new StateOption(topItem.getText(), topItem.getText()));
+                            topItem.getItems().forEach(subItem -> sourceMenuStateOptions
+                                    .add(new StateOption(topItem.getText() + "|" + subItem, "-> " + subItem)));
+                        });
+                        stateDescriptionProvider.setStateOptions(
+                                new ChannelUID(getThing().getUID(),
+                                        source.name().toLowerCase() + CHANNEL_DELIMIT + CHANNEL_SOURCE_MENU),
+                                sourceMenuStateOptions);
                     }
 
                     String[] favorites = favoriteMap.get(source);
