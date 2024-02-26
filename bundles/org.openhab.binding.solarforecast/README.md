@@ -87,20 +87,18 @@ Each `sc-plane` reports it's own values including a `raw` channel holding JSON c
 The `sc-site` bridge sums up all attached `sc-plane` values and provides the total forecast for your home location.  
 
 Channels are covering today's actual data with current, remaining and today's total prediction.
-Forecasts are delivered up to 6 days in advance including 
+Forecasts are delivered up to 6 days in advance.
+Scenarios are clustered in groups 
 
-- a pessimistic scenario: 10th percentile 
-- an optimistic scenario: 90th percentile
+- `average` scenario
+- `pessimistic` scenario: 10th percentile 
+- `optimistic` scenario: 90th percentile
 
 
 | Channel                 | Type          | Unit | Description                                     | Advanced |
 |-------------------------|---------------|------|-------------------------------------------------|----------|
 | power-estimate          | Number:Power  | W    | Power forecast for next hours/days              | no       |
-| power-estimate10        | Number:Power  | W    | Pessimistic power forecast for next hours/days  | no       |
-| power-estimate90        | Number:Power  | W    | Optimistic power forecast for next hours/days   | no       |
 | energy-estimate         | Number:Energy | kWh  | Energy forecast for next hours/days             | no       |
-| energy-estimate10       | Number:Energy | kWh  | Pessimistic energy forecast for next hours/days | no       |
-| energy-estimate90       | Number:Energy | kWh  | Optimistic energy forecast for next hours/days  | no       |
 | power-actual            | Number:Power  | W    | Power prediction for this moment                | no       |
 | energy-actual           | Number:Energy | kWh  | Today's forecast till now                       | no       |
 | energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          | no       |
@@ -138,8 +136,6 @@ In case of empty the location configured in openHAB is obtained.
 
 `refreshInterval` of forecast data needs to respect the throttling of the ForecastSolar service. 
 12 calls per hour allowed from your caller IP address so for 2 planes lowest possible refresh rate is 10 minutes.
-
-Note: `channelRefreshInterval` from [Bridge Configuration](#forecastsolar-bridge-configuration) will calculate intermediate values without requesting new forecast data.
 
 #### Advanced Configuration
 
@@ -207,7 +203,7 @@ Returns `Instant` of the latest possible forecast data available.
 
 Returns `QuantityType<Power>` at the given `Instant` timestamp.
 Respect `getForecastBegin` and `getForecastEnd` to get a valid value.
-Check for `UndefType.UNDEF` in case of errors.
+Check for negative value in case of errors.
 
 ### `getDay`
 
@@ -218,7 +214,7 @@ Check for `UndefType.UNDEF` in case of errors.
 
 Returns `QuantityType<Energy>` at the given `localDate`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambiguous values.
-Check for `UndefType.UNDEF` in case of errors.
+Check for negative value in case of errors.
 
 ### `getEnergy`
 
@@ -230,7 +226,7 @@ Check for `UndefType.UNDEF` in case of errors.
 
 Returns `QuantityType<Energy>` between the timestamps `startTimestamp` and `endTimestamp`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambiguous values.
-Check for `UndefType.UNDEF` in case of errors.
+Check for negative value in case of errors.
 
 ## Date Time
 
@@ -302,7 +298,6 @@ Strategies {
  * Item (excl. the group Item itself).
  */
 Items {
-
         influxdb* : strategy = restoreOnStartup, forecast
 }
 ```
@@ -318,7 +313,6 @@ rule "Tomorrow Forecast Calculation"
         val energyState = solarforecastActions.getDay(LocalDate.now.plusDays(1))
         logInfo("SF Tests","{}",energyState)
         ForecastSolarHome_Tomorrow.postUpdate(energyState) 
-        //val energy = (ForecastSolar_PV_Plane_Power_Forecast.historicState(now.plusDays(1)).state as Number)
 end
 ```
 
