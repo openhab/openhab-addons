@@ -64,6 +64,8 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
 
+    private @NonNullByDefault({}) Device device;
+
     protected AbstractBoschSHCHandlerTest() {
         this.fixture = createFixture();
     }
@@ -78,7 +80,7 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
         when(bridge.getHandler()).thenReturn(bridgeHandler);
         lenient().when(thing.getConfiguration()).thenReturn(getConfiguration());
 
-        Device device = new Device();
+        device = new Device();
         configureDevice(device);
         lenient().when(bridgeHandler.getDeviceInfo(anyString())).thenReturn(device);
 
@@ -115,6 +117,10 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
 
     protected ThingHandlerCallback getCallback() {
         return callback;
+    }
+
+    protected Device getDevice() {
+        return device;
     }
 
     protected void configureDevice(Device device) {

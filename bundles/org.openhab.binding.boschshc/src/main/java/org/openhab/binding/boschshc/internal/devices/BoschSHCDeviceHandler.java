@@ -67,19 +67,23 @@ public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
             return;
         }
 
-        processDeviceInfo(deviceInfo);
+        if (!processDeviceInfo(deviceInfo)) {
+            return;
+        }
 
         super.initialize();
     }
 
     /**
-     * Allows subclasses to process the device info that was obtained from a REST
-     * call to the Smart Home Controller at {@code /devices/{deviceId}}.
+     * Allows the handler to process the device info that was obtained from a REST
+     * call to the Smart Home Controller at <code>/devices/{deviceId}</code>.
      * 
      * @param deviceInfo the device info obtained from the controller, guaranteed to be non-null
+     * @return <code>true</code> if the device info is valid and the initialization should proceed, <code>false</code>
+     *         otherwise
      */
-    protected void processDeviceInfo(Device deviceInfo) {
-        // abstract implementation is empty, subclasses may override
+    protected boolean processDeviceInfo(Device deviceInfo) {
+        return true;
     }
 
     /**

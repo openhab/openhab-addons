@@ -14,8 +14,11 @@ package org.openhab.binding.boschshc.internal.devices.lightcontrol;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -42,6 +45,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 
 import com.google.gson.JsonElement;
@@ -251,5 +256,29 @@ class LightControl2HandlerTest extends AbstractBoschSHCDeviceHandlerTest<LightCo
                 childProtectionServiceStateCaptor.capture());
         ChildProtectionServiceState state = childProtectionServiceStateCaptor.getValue();
         assertTrue(state.childLockActive);
+    }
+
+    @Test
+    void testInitializeNoChildIDsInDeviceInfo() {
+        getDevice().childDeviceIds = null;
+
+        getFixture().initialize();
+
+        verify(getCallback()).statusUpdated(same(getThing()),
+                argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
+                        && status.getStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)));
+    }
+
+    @Test
+    void testInitializeServicesNoChildIDsInDeviceInfo() {
+        getDevice().childDeviceIds = null;
+
+        LightControl2Handler lFixture = new LightControl2Handler(getThing());
+        lFixture.setCallback(getCallback());
+
+        // this call will return before reaching initializeServices()
+        lFixture.initialize();
+
+        assertThrows(BoschSHCException.class, () -> lFixture.initializeServices());
     }
 }

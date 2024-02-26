@@ -86,16 +86,15 @@ public class LightControl2Handler extends BoschSHCDeviceHandler {
     }
 
     @Override
-    protected void processDeviceInfo(Device deviceInfo) {
+    protected boolean processDeviceInfo(Device deviceInfo) {
         super.processDeviceInfo(deviceInfo);
 
         logger.debug("Initializing child devices of Light Control II, child device IDs from device info: {}",
                 deviceInfo.childDeviceIds);
 
         if (deviceInfo.childDeviceIds == null || deviceInfo.childDeviceIds.size() != 2) {
-            super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.child-device-ids-not-obtainable");
-            return;
+            updateStatusChildDeviceIDsNotObtainable();
+            return false;
         }
 
         List<String> childDeviceIds = new ArrayList<>(deviceInfo.childDeviceIds);
@@ -106,15 +105,21 @@ public class LightControl2Handler extends BoschSHCDeviceHandler {
 
         logger.trace("Child device IDs for Light Control II after sorting: {}", childDeviceIds);
 
-        if (validateDeviceId(childDeviceIds.get(0)) != null) {
-            childDeviceId1 = childDeviceIds.get(0);
+        if (validateDeviceId(childDeviceIds.get(0)) == null || validateDeviceId(childDeviceIds.get(1)) == null) {
+            updateStatusChildDeviceIDsNotObtainable();
+            return false;
         }
 
-        if (validateDeviceId(childDeviceIds.get(1)) != null) {
-            childDeviceId2 = childDeviceIds.get(1);
-        }
+        childDeviceId1 = childDeviceIds.get(0);
+        childDeviceId2 = childDeviceIds.get(1);
 
         logger.debug("Child device IDs for Light Control II configured successfully.");
+        return true;
+    }
+
+    private void updateStatusChildDeviceIDsNotObtainable() {
+        super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                "@text/offline.conf-error.child-device-ids-not-obtainable");
     }
 
     @Override
