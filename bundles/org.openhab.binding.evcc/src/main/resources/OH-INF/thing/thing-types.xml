@@ -82,34 +82,34 @@
 		<label>Loadpoint 9</label>
 	</channel-group-type>
 	<channel-group-type id="loadpoint0current">
-		<label>Loadpoint 0: Current Vehicle/Heating</label>
+		<label>Loadpoint 0: Current</label>
 	</channel-group-type>
 	<channel-group-type id="loadpoint1current">
-		<label>Loadpoint 1: Current Vehicle/Heating</label>
+		<label>Loadpoint 1: Current</label>
 	</channel-group-type>
 	<channel-group-type id="loadpoint2current">
-		<label>Loadpoint 2: Current Vehicle/Heating</label>
+		<label>Loadpoint 2: Current</label>
 	</channel-group-type>
 	<channel-group-type id="loadpoint3current">
-		<label>Loadpoint 3: Current Vehicle/Heating</label>
+		<label>Loadpoint 3: Current</label>
 	</channel-group-type>
 	<channel-group-type id="loadpoint4current">
-		<label>Loadpoint 4: Current Vehicle/Heating</label>
+		<label>Loadpoint 4: Current</label>
 	</channel-group-type>
 	<channel-group-type id="loadpoint5current">
-		<label>Loadpoint 5: Current Vehicle/Heating</label>
+		<label>Loadpoint 5: Current</label>
 	</channel-group-type>
 	<channel-group-type id="loadpoint6current">
-		<label>Loadpoint 6: Current Vehicle/Heating</label>
+		<label>Loadpoint 6: Current</label>
 	</channel-group-type>
 	<channel-group-type id="loadpoint7current">
-		<label>Loadpoint 7: Current Vehicle/Heating</label>
+		<label>Loadpoint 7: Current</label>
 	</channel-group-type>
 	<channel-group-type id="loadpoint8current">
-		<label>Loadpoint 8: Current Vehicle/Heating</label>
+		<label>Loadpoint 8: Current</label>
 	</channel-group-type>
 	<channel-group-type id="loadpoint9current">
-		<label>Loadpoint 9: Current Vehicle/Heating</label>
+		<label>Loadpoint 9: Current</label>
 	</channel-group-type>
 
 	<!-- Units and description on: https://docs.evcc.io/docs/reference/configuration/messaging/#msg -->
