@@ -70,7 +70,7 @@ public class UserDefinedState extends BoschSHCServiceState {
                 + type + '\'' + '}';
     }
 
-    public static Boolean isValid(UserDefinedState obj) {
+    public static boolean isValid(UserDefinedState obj) {
         return obj != null && obj.id != null;
     }
 }

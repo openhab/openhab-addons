@@ -39,6 +39,7 @@ import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.PublicInformation;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
@@ -432,6 +433,23 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    /**
+     * Get public information from Bosch SHC.
+     */
+    public PublicInformation getPublicInformation()
+            throws InterruptedException, BoschSHCException, ExecutionException, TimeoutException {
+        @Nullable
+        BoschHttpClient localHttpClient = this.httpClient;
+        if (localHttpClient == null) {
+            throw new BoschSHCException(HTTP_CLIENT_NOT_INITIALIZED);
+        }
+
+        String url = localHttpClient.getPublicInformationUrl();
+        Request request = localHttpClient.createRequest(url, GET);
+
+        return localHttpClient.sendRequest(request, PublicInformation.class, PublicInformation::isValid, null);
+    }
+
     public boolean registerDiscoveryListener(ThingDiscoveryService listener) {
         if (thingDiscoveryService == null) {
             thingDiscoveryService = listener;
@@ -604,7 +622,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         @Nullable
         BoschHttpClient localHttpClient = this.httpClient;
         if (localHttpClient == null) {
-            throw new BoschSHCException("HTTP client not initialized");
+            throw new BoschSHCException(HTTP_CLIENT_NOT_INITIALIZED);
         }
 
         String url = localHttpClient.getBoschSmartHomeUrl(String.format("devices/%s", deviceId));
@@ -634,7 +652,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         @Nullable
         BoschHttpClient locaHttpClient = this.httpClient;
         if (locaHttpClient == null) {
-            throw new BoschSHCException("HTTP client not initialized");
+            throw new BoschSHCException(HTTP_CLIENT_NOT_INITIALIZED);
         }
 
         String url = locaHttpClient.getBoschSmartHomeUrl(String.format("userdefinedstates/%s", stateId));
