@@ -180,4 +180,10 @@
 		<label>Lightning Distance</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="free-stack-size">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Free Stack Size</label>
+		<description>The available stack size. If it is reducing, it means the stack is using up.</description>
+	</channel-type>
 </thing:thing-descriptions>

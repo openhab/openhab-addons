@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_FREE_STACK_SIZE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_MAX_WIND_SPEED;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_MOISTURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_UV_INDEX;
@@ -142,6 +143,9 @@ public enum Measurand {
             new MeasurandParser("temperature-external-channel", "Soil or Water temperature", MeasureType.TEMPERATURE),
             // skip battery-level, since it is read via Command.CMD_READ_SENSOR_ID_NEW
             new Skip(1)),
+
+    // This is for heap : the available stack top. If it is reducing, it means the stack is using up.
+    ITEM_HEAP_FREE("free-heap-size", 0x6c, "Free Heap Size", MeasureType.INTEGER, CHANNEL_TYPE_FREE_STACK_SIZE),
 
     ITEM_SENSOR_CO2(0x70,
             new MeasurandParser("sensor-co2-temperature", "Temperature (CO₂-Sensor)", MeasureType.TEMPERATURE),
