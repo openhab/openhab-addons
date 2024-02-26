@@ -19,6 +19,8 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,7 +66,8 @@ public class SalusApi {
         this(username, password, baseUrl, restClient, mapper, Clock.systemDefaultZone());
     }
 
-    private RestClient.Response<@Nullable String> get(String url, RestClient.Header header, int times) {
+    private RestClient.Response<@Nullable String> get(String url, RestClient.Header header, int times)
+            throws ExecutionException, InterruptedException, TimeoutException {
         refreshAccessToken();
         var response = restClient.get(url, authHeader());
         if (response.statusCode() == 401) {
@@ -80,7 +83,7 @@ public class SalusApi {
     }
 
     private RestClient.Response<@Nullable String> post(String url, RestClient.Content content, RestClient.Header header,
-            int times) {
+            int times) throws ExecutionException, InterruptedException, TimeoutException {
         refreshAccessToken();
         var response = restClient.post(url, content, header);
         if (response.statusCode() == 401) {
@@ -101,11 +104,13 @@ public class SalusApi {
         return str;
     }
 
-    private RestClient.Response<@Nullable String> login(String username, char[] password) {
+    private RestClient.Response<@Nullable String> login(String username, char[] password)
+            throws ExecutionException, InterruptedException, TimeoutException {
         return login(username, password, 1);
     }
 
-    private RestClient.Response<@Nullable String> login(String username, char[] password, int times) {
+    private RestClient.Response<@Nullable String> login(String username, char[] password, int times)
+            throws ExecutionException, InterruptedException, TimeoutException {
         logger.debug("Login with username '{}', times={}", username, times);
         authToken = null;
         authTokenExpireTime = null;
@@ -136,14 +141,15 @@ public class SalusApi {
         return response;
     }
 
-    private void forceRefreshAccessToken() {
+    private void forceRefreshAccessToken() throws ExecutionException, InterruptedException, TimeoutException {
         logger.debug("Force refresh access token");
         authToken = null;
         authTokenExpireTime = null;
         refreshAccessToken();
     }
 
-    private RestClient.@Nullable Response<@Nullable String> refreshAccessToken() {
+    private RestClient.@Nullable Response<@Nullable String> refreshAccessToken()
+            throws ExecutionException, InterruptedException, TimeoutException {
         if (this.authToken == null || expiredToken()) {
             var response = login(username, password);
             if (response.statusCode() != 200) {
@@ -181,7 +187,8 @@ public class SalusApi {
         return baseUrl + url;
     }
 
-    public ApiResponse<SortedSet<Device>> findDevices() {
+    public ApiResponse<SortedSet<Device>> findDevices()
+            throws ExecutionException, InterruptedException, TimeoutException {
         logger.debug("findDevices()");
         var loginResponse = refreshAccessToken();
         if (loginResponse != null && loginResponse.statusCode() != 200) {
@@ -201,7 +208,8 @@ public class SalusApi {
         return new RestClient.Header("Authorization", "auth_token " + requireNonNull(authToken).accessToken());
     }
 
-    public ApiResponse<SortedSet<DeviceProperty<?>>> findDeviceProperties(String dsn) {
+    public ApiResponse<SortedSet<DeviceProperty<?>>> findDeviceProperties(String dsn)
+            throws ExecutionException, InterruptedException, TimeoutException {
         refreshAccessToken();
         var response = get(url("/apiv1/dsns/" + dsn + "/properties.json"), authHeader(), 1);
         if (response.statusCode() != 200) {
@@ -213,7 +221,8 @@ public class SalusApi {
         return ApiResponse.ok(deviceProperties);
     }
 
-    public ApiResponse<Object> setValueForProperty(String dsn, String propertyName, Object value) {
+    public ApiResponse<Object> setValueForProperty(String dsn, String propertyName, Object value)
+            throws ExecutionException, InterruptedException, TimeoutException {
         refreshAccessToken();
         var finalUrl = url("/apiv1/dsns/" + dsn + "/properties/" + propertyName + "/datapoints.json");
         var json = mapper.datapointParam(value);

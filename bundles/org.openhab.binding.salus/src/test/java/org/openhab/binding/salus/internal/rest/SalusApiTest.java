@@ -37,7 +37,7 @@ public class SalusApiTest {
     // Find devices returns sorted set of devices
     @Test
     @DisplayName("Find devices returns sorted set of devices")
-    public void testFindDevicesReturnsSortedSetOfDevices() {
+    public void testFindDevicesReturnsSortedSetOfDevices() throws Exception {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -67,7 +67,7 @@ public class SalusApiTest {
     // Find device properties returns sorted set of device properties
     @Test
     @DisplayName("Find device properties returns sorted set of device properties")
-    public void testFindDevicePropertiesReturnsSortedSetOfDeviceProperties() {
+    public void testFindDevicePropertiesReturnsSortedSetOfDeviceProperties() throws Exception {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -97,7 +97,7 @@ public class SalusApiTest {
     // Set value for property returns OK response with datapoint value
     @Test
     @DisplayName("Set value for property returns OK response with datapoint value")
-    public void testSetValueForPropertyReturnsOkResponseWithDatapointValue() {
+    public void testSetValueForPropertyReturnsOkResponseWithDatapointValue() throws Exception {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -127,7 +127,7 @@ public class SalusApiTest {
     // Login with incorrect credentials throws HttpUnauthorizedException
     @Test
     @DisplayName("Login with incorrect credentials throws HttpUnauthorizedException")
-    public void testLoginWithIncorrectCredentialsThrowsHttpUnauthorizedException() {
+    public void testLoginWithIncorrectCredentialsThrowsHttpUnauthorizedException() throws Exception {
         // Given
         var username = "incorrect_username";
         var password = "incorrect_password".toCharArray();
@@ -154,7 +154,7 @@ public class SalusApiTest {
     // Find devices with invalid auth token throws HttpUnauthorizedException
     @Test
     @DisplayName("Find devices with invalid auth token throws HttpUnauthorizedException")
-    public void testFindDevicesWithInvalidAuthTokenThrowsHttpUnauthorizedException() {
+    public void testFindDevicesWithInvalidAuthTokenThrowsHttpUnauthorizedException() throws Exception {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -183,7 +183,7 @@ public class SalusApiTest {
     // Find device properties with invalid auth token throws HttpUnauthorizedException
     @Test
     @DisplayName("Find device properties with invalid auth token throws HttpUnauthorizedException")
-    public void testFindDevicePropertiesWithInvalidAuthTokenThrowsHttpUnauthorizedException() {
+    public void testFindDevicePropertiesWithInvalidAuthTokenThrowsHttpUnauthorizedException() throws Exception {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -209,7 +209,7 @@ public class SalusApiTest {
     // Set value for property with invalid auth token throws HttpUnauthorizedException
     @Test
     @DisplayName("Set value for property with invalid auth token throws HttpUnauthorizedException")
-    public void testSetValueForPropertyWithInvalidAuthTokenThrowsHttpUnauthorizedException() {
+    public void testSetValueForPropertyWithInvalidAuthTokenThrowsHttpUnauthorizedException() throws Exception {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -238,7 +238,7 @@ public class SalusApiTest {
     // Find device properties with invalid DSN returns ApiResponse with error
     @Test
     @DisplayName("Find device properties with invalid DSN returns ApiResponse with error")
-    public void testFindDevicePropertiesWithInvalidDsnReturnsApiResponseWithError() {
+    public void testFindDevicePropertiesWithInvalidDsnReturnsApiResponseWithError() throws Exception {
         // Given
         var username = "correct_username";
         var password = "correct_password".toCharArray();
@@ -269,7 +269,7 @@ public class SalusApiTest {
     // Login with incorrect credentials 3 times throws HttpForbiddenException
     @Test
     @DisplayName("Login with incorrect credentials 3 times throws HttpForbiddenException")
-    public void testLoginWithIncorrectCredentials3TimesThrowsHttpForbiddenException() {
+    public void testLoginWithIncorrectCredentials3TimesThrowsHttpForbiddenException() throws Exception {
         // Given
         var username = "incorrect_username";
         var password = "incorrect_password".toCharArray();
@@ -293,7 +293,8 @@ public class SalusApiTest {
         assertThat(findDevicesResponse.error().message()).isEqualTo("forbidden_error_json");
     }
 
-    private void setAuthToken(SalusApi salusApi, RestClient restClient, GsonMapper mapper, AuthToken authToken) {
+    private void setAuthToken(SalusApi salusApi, RestClient restClient, GsonMapper mapper, AuthToken authToken)
+            throws Exception {
         var username = "correct_username";
         var password = "correct_password".toCharArray();
         var inputBody = "login_param_json";

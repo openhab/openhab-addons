@@ -26,8 +26,10 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,7 +47,6 @@ import org.openhab.binding.salus.internal.rest.SalusApi;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -146,14 +147,14 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                         logger.debug("No handler for thing {} refresh cancelled", thing.getUID());
                         continue;
                     }
-                    List<Channel> channels = thing.getChannels();
-                    for (Channel channel : channels) {
-                        handler.handleCommand(channel.getUID(), REFRESH);
-                    }
+                    thing.getChannels().forEach(channel -> handler.handleCommand(channel.getUID(), REFRESH));
                 } catch (Exception ex) {
                     logger.warn("Cannot refresh thing {} from CloudBridgeHandler", thing.getUID(), ex);
                 }
             }
+
+            // all things were updated,
+            updateStatus(ONLINE);
         } catch (Exception ex) {
             logger.warn("Cannot refresh devices from CloudBridgeHandler", ex);
         }
@@ -182,7 +183,8 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     }
 
     @Nullable
-    private SortedSet<DeviceProperty<?>> loadPropertiesForDevice(String dsn) {
+    private SortedSet<DeviceProperty<?>> loadPropertiesForDevice(String dsn)
+            throws ExecutionException, InterruptedException, TimeoutException {
         @Nullable
         SalusApi api = salusApi;
         if (api == null) {
@@ -200,85 +202,100 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     @Override
     public boolean setValueForProperty(String dsn, String propertyName, Object value) {
-        @Nullable
-        SalusApi api = salusApi;
-        if (api == null) {
-            logger.warn("Cannot set value for property {} on device {} because salusClient is null", propertyName, dsn);
-            return false;
-        }
-        logger.debug("Setting property {} on device {} to value {} using salusClient", propertyName, dsn, value);
-        ApiResponse<Object> response = api.setValueForProperty(dsn, propertyName, value);
-        if (response.failed()) {
-            logger.debug("Cannot set property {} on device {} to value {} using salusClient\n{}", propertyName, dsn,
-                    value, response.error());
-            devicePropertiesCache.invalidate(dsn);
-            return false;
-        }
-        @Nullable
-        Object setValue = response.body();
-        if (setValue != null
-                && (!(setValue instanceof Boolean) && !(setValue instanceof String) && !(setValue instanceof Number))) {
-            logger.warn(
-                    "Cannot set value {} ({}) for property {} on device {} because it is not a Boolean, String, Long or Integer",
-                    setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
-            return false;
-        }
-        Optional<DeviceProperty<?>> property = devicePropertiesCache.get(dsn).stream()
-                .filter(prop -> prop.getName().equals(propertyName)).findFirst();
-        if (property.isEmpty()) {
-            String simpleName = setValue != null ? setValue.getClass().getSimpleName() : "<null>";
-            logger.warn(
-                    "Cannot set value {} ({}) for property {} on device {} because it is not found in the cache. Invalidating cache",
-                    setValue, simpleName, propertyName, dsn);
-            devicePropertiesCache.invalidate(dsn);
-            return false;
-        }
-        DeviceProperty<?> prop = property.get();
-        if (setValue == null) {
-            prop.setValue(null);
-            return true;
-        }
-        if (setValue instanceof Boolean b && prop instanceof DeviceProperty.BooleanDeviceProperty boolProp) {
-            boolProp.setValue(b);
-            return true;
-        }
-        if (setValue instanceof String s && prop instanceof DeviceProperty.StringDeviceProperty stringProp) {
-            stringProp.setValue(s);
-            return true;
-        }
-        if (setValue instanceof Number l && prop instanceof DeviceProperty.LongDeviceProperty longProp) {
-            longProp.setValue(l.longValue());
-            return true;
-        }
+        try {
+            @Nullable
+            SalusApi api = salusApi;
+            if (api == null) {
+                logger.warn("Cannot set value for property {} on device {} because salusClient is null", propertyName,
+                        dsn);
+                return false;
+            }
+            logger.debug("Setting property {} on device {} to value {} using salusClient", propertyName, dsn, value);
+            ApiResponse<Object> response = api.setValueForProperty(dsn, propertyName, value);
+            if (response.failed()) {
+                logger.debug("Cannot set property {} on device {} to value {} using salusClient\n{}", propertyName, dsn,
+                        value, response.error());
+                devicePropertiesCache.invalidate(dsn);
+                return false;
+            }
+            @Nullable
+            Object setValue = response.body();
+            if (setValue != null && (!(setValue instanceof Boolean) && !(setValue instanceof String)
+                    && !(setValue instanceof Number))) {
+                logger.warn(
+                        "Cannot set value {} ({}) for property {} on device {} because it is not a Boolean, String, Long or Integer",
+                        setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
+                return false;
+            }
+            Optional<DeviceProperty<?>> property = devicePropertiesCache.get(dsn).stream()
+                    .filter(prop -> prop.getName().equals(propertyName)).findFirst();
+            if (property.isEmpty()) {
+                String simpleName = setValue != null ? setValue.getClass().getSimpleName() : "<null>";
+                logger.warn(
+                        "Cannot set value {} ({}) for property {} on device {} because it is not found in the cache. Invalidating cache",
+                        setValue, simpleName, propertyName, dsn);
+                devicePropertiesCache.invalidate(dsn);
+                return false;
+            }
+            DeviceProperty<?> prop = property.get();
+            if (setValue == null) {
+                prop.setValue(null);
+                return true;
+            }
+            if (setValue instanceof Boolean b && prop instanceof DeviceProperty.BooleanDeviceProperty boolProp) {
+                boolProp.setValue(b);
+                return true;
+            }
+            if (setValue instanceof String s && prop instanceof DeviceProperty.StringDeviceProperty stringProp) {
+                stringProp.setValue(s);
+                return true;
+            }
+            if (setValue instanceof Number l && prop instanceof DeviceProperty.LongDeviceProperty longProp) {
+                longProp.setValue(l.longValue());
+                return true;
+            }
 
-        logger.warn(
-                "Cannot set value {} ({}) for property {} ({}) on device {} because value class does not match property class",
-                setValue, setValue.getClass().getSimpleName(), propertyName, prop.getClass().getSimpleName(), dsn);
-        return false;
+            logger.warn(
+                    "Cannot set value {} ({}) for property {} ({}) on device {} because value class does not match property class",
+                    setValue, setValue.getClass().getSimpleName(), propertyName, prop.getClass().getSimpleName(), dsn);
+            return false;
+        } catch (Exception ex) {
+            updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                    "@text/cloud-bridge-handler.errors.http [\"" + ex.getLocalizedMessage() + "\"]");
+            devicePropertiesCache.invalidateAll();
+            return false;
+        }
     }
 
     @Override
     public SortedSet<Device> findDevices() {
-        @Nullable
-        SalusApi api = this.salusApi;
-        if (api == null) {
-            logger.debug("Cannot find devices because salusClient is null");
-            return emptySortedSet();
-        }
-        logger.debug("Finding devices using salusClient");
-        ApiResponse<SortedSet<Device>> response = api.findDevices();
-        if (response.failed()) {
-            logger.warn("Cannot find devices using salusClient\n{}", response.error());
-            return emptySortedSet();
-        }
+        try {
+            @Nullable
+            SalusApi api = this.salusApi;
+            if (api == null) {
+                logger.debug("Cannot find devices because salusClient is null");
+                return emptySortedSet();
+            }
+            logger.debug("Finding devices using salusClient");
+            ApiResponse<SortedSet<Device>> response = api.findDevices();
+            if (response.failed()) {
+                logger.warn("Cannot find devices using salusClient\n{}", response.error());
+                return emptySortedSet();
+            }
 
-        @Nullable
-        SortedSet<Device> body = response.body();
-        if (body == null) {
+            @Nullable
+            SortedSet<Device> body = response.body();
+            if (body == null) {
+                return emptySortedSet();
+            }
+
+            return body;
+        } catch (Exception ex) {
+            updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                    "@text/cloud-bridge-handler.errors.http [\"" + ex.getLocalizedMessage() + "\"]");
+            // have to return something because we are not rethrowing exception
             return emptySortedSet();
         }
-
-        return body;
     }
 
     @Override
