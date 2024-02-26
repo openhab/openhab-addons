@@ -113,6 +113,27 @@ Sets a temporary temperature override on the device
 | temperature | QuantityType<Temperature> | Override temperature. Must be between 5°C and 30°C                      |
 | duration    | QuantityType<Time>        | Duration of the override. Must be between 0 and 1440 minutes (24 hours) |
 
+Example:
+
+:::: tabs
+
+::: tab DSL
+
+```javascript
+getActions("warmup", "warmup:room:my_warmup:my_room").setOverride(18 | °C, 10 | min);
+```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+actions.get("warmup", "warmup:room:my_warmup:my_room").setOverride(Quantity("18 °C"), Quantity("10 min"));
+```
+:::
+
+::::
+
 ## Full Example
 
 ### .things file
