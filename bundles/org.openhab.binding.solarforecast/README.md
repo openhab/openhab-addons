@@ -83,8 +83,8 @@ Note: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-confi
 
 ## Solcast Channels
 
-Each `sc-plane` reports it's own values including a `raw` channel holding JSON content.
-The `sc-site` bridge sums up all attached `sc-plane` values and provides the total forecast for your home location.  
+Each `sc-plane` reports its own values including a `raw` channel holding JSON content.
+The `sc-site` bridge sums up all attached `sc-plane` values and provides total forecast for your home location.  
 
 Channels are covering today's actual data with current, remaining and today's total prediction.
 Forecasts are delivered up to 6 days in advance.
@@ -155,7 +155,7 @@ So you need to know what you're doing.
 
 ## ForecastSolar Channels
 
-Each `fs-plane` reports it's own values including a `raw` channel holding JSON content.
+Each `fs-plane` reports its own values including a `raw` channel holding JSON content.
 The `fs-site` bridge sums up all attached `fs-plane` values and provides the total forecast for your home location.  
 
 Channels are covering today's actual data with current, remaining and total prediction.
@@ -203,7 +203,7 @@ Returns `Instant` of the latest possible forecast data available.
 
 Returns `QuantityType<Power>` at the given `Instant` timestamp.
 Respect `getForecastBegin` and `getForecastEnd` to get a valid value.
-Check for negative value in case of errors.
+Check for `UndefType.UNDEF` in case of errors.
 
 ### `getDay`
 
@@ -214,7 +214,7 @@ Check for negative value in case of errors.
 
 Returns `QuantityType<Energy>` at the given `localDate`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambiguous values.
-Check for negative value in case of errors.
+Check for `UndefType.UNDEF` in case of errors.
 
 ### `getEnergy`
 
@@ -226,7 +226,7 @@ Check for negative value in case of errors.
 
 Returns `QuantityType<Energy>` between the timestamps `startTimestamp` and `endTimestamp`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambiguous values.
-Check for negative value in case of errors.
+Check for `UndefType.UNDEF` in case of errors.
 
 ## Date Time
 
