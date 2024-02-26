@@ -44,8 +44,8 @@ public class PublicInformation {
     public String shcGeneration;
     public SoftwareUpdateState softwareUpdateState;
 
-    public static Boolean isValid(PublicInformation obj) {
+    public static boolean isValid(PublicInformation obj) {
         return obj != null && obj.shcIpAddress != null && obj.shcGeneration != null && obj.apiVersions != null
-                && obj.softwareUpdateState != null && SoftwareUpdateState.isValid(obj.softwareUpdateState);
+                && SoftwareUpdateState.isValid(obj.softwareUpdateState);
     }
 }

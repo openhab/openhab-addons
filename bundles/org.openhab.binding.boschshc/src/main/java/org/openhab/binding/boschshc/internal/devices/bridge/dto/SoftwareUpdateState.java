@@ -23,7 +23,7 @@ public class SoftwareUpdateState {
     public String swInstalledVersion;
     public String swUpdateAvailableVersion;
 
-    public static Boolean isValid(SoftwareUpdateState obj) {
+    public static boolean isValid(SoftwareUpdateState obj) {
         return obj != null && obj.swUpdateState != null && obj.swInstalledVersion != null
                 && obj.swUpdateAvailableVersion != null;
     }
