@@ -280,7 +280,7 @@ Valid sensors:
 | piezo-rain-week                       | Number:Length        | R          | Piezo - Rainfall this Week                     |
 | piezo-rain-month                      | Number:Length        | R          | Piezo - Rainfall this Month                    |
 | piezo-rain-year                       | Number:Length        | R          | Piezo - Rainfall this Year                     |
-| free-heap-size                        | Number:Dimensionless | R          | Free Stack Size                                |
+| free-heap-size                        | Number:DataAmount    | R          | Free Heap Size                                 |
 
 NOTE: Not every gateway provides all available data, even if they are displayed in the WS-View app.
 Especially the channels `temperature-dew-point` or `temperature-wind-chill` are derived from other measured values.

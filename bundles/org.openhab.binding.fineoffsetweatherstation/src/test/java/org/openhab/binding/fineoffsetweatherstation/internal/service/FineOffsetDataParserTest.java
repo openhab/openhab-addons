@@ -138,7 +138,7 @@ class FineOffsetDataParserTest {
                         new Tuple("direction-wind", "76 °"), new Tuple("speed-wind", "1.2 m/s"),
                         new Tuple("speed-gust", "1.3 m/s"), new Tuple("illumination", "14100 lx"),
                         new Tuple("irradiation-uv", "9.9 mW/m²"), new Tuple("uv-index", "1"),
-                        new Tuple("wind-max-day", "1.9 m/s"), new Tuple("free-heap-size", "130776"));
+                        new Tuple("wind-max-day", "1.9 m/s"), new Tuple("free-heap-size", "130776 B"));
     }
 
     @Test
