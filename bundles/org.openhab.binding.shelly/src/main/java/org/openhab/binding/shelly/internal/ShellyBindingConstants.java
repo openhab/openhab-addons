@@ -105,6 +105,7 @@ public class ShellyBindingConstants {
             THING_TYPE_SHELLYBLUBUTTON, //
             THING_TYPE_SHELLYBLUDW, //
             THING_TYPE_SHELLYBLUMOTION, //
+            THING_TYPE_SHELLYBLUHT, //
             THING_TYPE_SHELLYBLUGW, //
 
             THING_TYPE_SHELLYPROTECTED, //
@@ -178,6 +179,11 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EMETER_CURRENT = "current";
     public static final String CHANNEL_EMETER_PFACTOR = "powerFactor";
     public static final String CHANNEL_EMETER_RESETTOTAL = "resetTotals";
+    public static final String CHANNEL_GROUP_NMETER = "nmeter";
+    public static final String CHANNEL_NMETER_CURRENT = "ncurrent";
+    public static final String CHANNEL_NMETER_IXSUM = "ixsum";
+    public static final String CHANNEL_NMETER_MISMATCH = "nmismatch";
+    public static final String CHANNEL_NMETER_MTRESHHOLD = "nmTreshhold";
 
     public static final String CHANNEL_GROUP_SENSOR = "sensors";
     public static final String CHANNEL_SENSOR_TEMP = "temperature";
