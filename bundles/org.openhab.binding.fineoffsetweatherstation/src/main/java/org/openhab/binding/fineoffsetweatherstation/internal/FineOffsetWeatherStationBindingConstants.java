@@ -54,6 +54,8 @@ public class FineOffsetWeatherStationBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_LIGHTNING_DISTANCE = new ChannelTypeUID(BINDING_ID,
             "lightning-distance");
 
+    public static final ChannelTypeUID CHANNEL_TYPE_FREE_HEAP_SIZE = new ChannelTypeUID(BINDING_ID, "free-heap-size");
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY, THING_TYPE_SENSOR);
 
     public static final String SENSOR_CHANNEL_SIGNAL = "signal";
