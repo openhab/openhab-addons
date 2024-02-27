@@ -56,6 +56,11 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     private final Logger logger = LoggerFactory.getLogger(ThingDiscoveryService.class);
 
+    /**
+     * Device model representing logical child devices of Light Control II
+     */
+    static final String DEVICE_MODEL_LIGHT_CONTROL_CHILD_DEVICE = "MICROMODULE_LIGHT_ATTACHED";
+
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(
             BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH, BoschSHCBindingConstants.THING_TYPE_TWINGUARD,
             BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT, BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2,
@@ -285,6 +290,15 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
         if (thingTypeId != null) {
             return new ThingTypeUID(BoschSHCBindingConstants.BINDING_ID, thingTypeId.getId());
         }
+
+        if (DEVICE_MODEL_LIGHT_CONTROL_CHILD_DEVICE.equals(device.deviceModel)) {
+            // Light Control II exposes a parent device and two child devices.
+            // We only add one thing for the parent device and the child devices are logically included.
+            // Therefore we do not need to add separate things for the child devices and need to suppress the
+            // log entry about the unknown device model.
+            return null;
+        }
+
         logger.debug("Unknown deviceModel '{}'! Please create a support request issue for this unknown device model.",
                 device.deviceModel);
         return null;
