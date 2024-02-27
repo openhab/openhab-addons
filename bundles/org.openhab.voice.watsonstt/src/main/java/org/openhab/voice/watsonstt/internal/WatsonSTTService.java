@@ -208,6 +208,10 @@ public class WatsonSTTService implements STTService {
         Long frequency = format.getFrequency();
         Integer bitDepth = format.getBitDepth();
         switch (container) {
+            case AudioFormat.CONTAINER_NONE:
+                if (AudioFormat.CODEC_MP3.equals(codec)) {
+                    return "audio/mp3";
+                }
             case AudioFormat.CONTAINER_WAVE:
                 if (AudioFormat.CODEC_PCM_SIGNED.equals(codec)) {
                     if (bitDepth == null || bitDepth != 16) {
@@ -237,11 +241,6 @@ public class WatsonSTTService implements STTService {
                         return "audio/ogg;codecs=vorbis";
                     case "OPUS":
                         return "audio/ogg;codecs=opus";
-                }
-                break;
-            case AudioFormat.CONTAINER_NONE:
-                if (AudioFormat.CODEC_MP3.equals(codec)) {
-                    return "audio/mp3";
                 }
                 break;
         }
