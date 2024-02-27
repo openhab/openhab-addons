@@ -231,8 +231,6 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
                 .withProperty("id", device.id).withLabel(getNiceName(device.name, roomName));
         discoveryResult.withBridge(thingHandler.getThing().getUID());
 
-        collectChildDeviceIDs(device, thingTypeUID, discoveryResult);
-
         if (!roomName.isEmpty()) {
             discoveryResult.withProperty("Location", roomName);
         }
@@ -240,25 +238,6 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
         logger.debug("Discovered device '{}' with thingTypeUID={}, thingUID={}, id={}, deviceModel={}", device.name,
                 thingUID, thingTypeUID, device.id, device.deviceModel);
-    }
-
-    private void collectChildDeviceIDs(Device device, ThingTypeUID thingTypeUID,
-            DiscoveryResultBuilder discoveryResultBuilder) {
-        // so far the only device that supports child devices is the Light Control II
-        if (!BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2.equals(thingTypeUID)) {
-            return;
-        }
-
-        List<String> childDeviceIds = device.childDeviceIds;
-        if (childDeviceIds == null || childDeviceIds.isEmpty()) {
-            return;
-        }
-
-        int childDeviceIdIndex = 1;
-        for (String childDeviceId : childDeviceIds) {
-            discoveryResultBuilder.withProperty("childId" + childDeviceIdIndex, childDeviceId);
-            childDeviceIdIndex++;
-        }
     }
 
     /**
