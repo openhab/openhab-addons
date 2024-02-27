@@ -1048,7 +1048,7 @@ public enum EcoTouchTags {
         }
     },
 
-    // German: % Heizung Leistungsbegrenzung Min Ausgang 
+    // German: % Heizung Leistungsbegrenzung Min Ausgang
     TYPE_PRECENT_HEATING_LIMIT_MIN {
         {
             command = "percent_heating_limit_min";
@@ -1057,7 +1057,7 @@ public enum EcoTouchTags {
         }
     },
 
-    // German: % Heizung Leistungsbegrenzung Max Ausgang 
+    // German: % Heizung Leistungsbegrenzung Max Ausgang
     TYPE_PRECENT_HEATING_LIMIT_MAX {
         {
             command = "percent_heating_limit_max";
