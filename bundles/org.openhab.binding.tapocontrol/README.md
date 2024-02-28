@@ -44,8 +44,9 @@ But you need to know the IP-Adress of your device. This must be set manually in 
 Udp-Discovery can find only devices which are online in your local network and get less informations as from cloud. But therefore it set's device-ip and protocol automaticly.
 If you have problems with udp-discovery, try to set the advanced setting 'broadcastAddress' to your local subnet ('e.g. 192.168.0.255'). Default is '255.255.255.255'
 
-You can combine both discovery methods to get any informations from local devices. 
-If you enable setting 'onlyLocalOnlineDevices' results will only generated for local online devices but with the combined data of cloud discovery. If this setting is disabled and you enabled both discovery-methods, you will get all devices stored in cloud, but if they are not online you have to set the device-ip and protocol manually.
+You can combine both discovery methods to get any informations from local devices.  
+If you enable setting 'onlyLocalOnlineDevices' results will only generated for local online devices but with the combined data of cloud discovery.
+If this setting is disabled and you enabled both discovery-methods, you will get all devices stored in cloud, but if they are not online you have to set the device-ip and protocol manually.
 
 RF-Devices will be discovered by the hub they are connected to. You can discover them manually or use ´backgroundDiscovery´ 
 
@@ -56,21 +57,21 @@ This is used for device discovery and to create a handshake (cookie) to act with
 
 The thing has the following configuration parameters:
 
-| Parameter              | Description                                                                                         |
-|------------------------|-----------------------------------------------------------------------------------------------------|
-| username               | Username (eMail) of your Tapo-Cloud                                                                 |
-| password               | Password of your Tapo-Cloud                                                                         |
-| cloudDiscovery         | Use Cloud Discovery-Service to get all in Tapo-App registered devices. Includes DeviceName. IP-Address and Encryption has to set manually                     |
-| udpDiscovery           | Use UDP Discovery-Service to discover online devices in the local network. Includes Encryption and IP-Address. Results will be merged with cloud discovery    |
+| Parameter              | Description                                                                                                    |
+|------------------------|----------------------------------------------------------------------------------------------------------------|
+| username               | Username (eMail) of your Tapo-Cloud                                                                            |
+| password               | Password of your Tapo-Cloud                                                                                    |
+| cloudDiscovery         | Use Cloud Discovery-Service to get all in Tapo-App registered devices. Includes DeviceName. IP-Address and Encryption has to set manually             |
+| udpDiscovery           | Use UDP Discovery-Service to discover online devices in the local network. Includes Encryption and IP-Address. Results will be merged with cloud discovery      |
 | onlyLocalOnlineDevices | [advanced] Uses Cloud and UPD-Discovery to get more informations but will only discover online devices via UDP |
-| broadcastAddress       | [advanced] Set broadcast address to your local subnet  if you have problems with default address   |
-| discoveryInterval      | [advanced] Interval in minutes when a background device scan should be executed. Default is 60     |
+| broadcastAddress       | [advanced] Set broadcast address to your local subnet  if you have problems with default address               |
+| discoveryInterval      | [advanced] Interval in minutes when a background device scan should be executed. Default is 60                 |
 
 
-## Thing Configurations
+## Thing Configuration
 
-WiFi-Things needs to be configured with `ipAddress`.
-RF-Things need a Hub (WiFi-Device) to operate. 
+WiFi-based things needs to be configured with `ipAddress`.
+RF-based things need a SmartHub(WiFi-Device) to operate.
 
 The things has the following configuration parameters:
 
@@ -99,7 +100,7 @@ All devices support some of the following channels:
 | sensor    | isOpen           | Switch                 | Contact (Door/Window) is Open       | T110                                                             |
 |           | currentTemp      | Number:Temperature     | Current Temperature                 | T310, T315                                                       |
 |           | currentHumidity  | Number:Dimensionless   | Current relative humidity in %      | T310, T315                                                       |
-| effects   | fxName           | String                 | Active lightning effect             | L530, L900, L920, L930                                                           |
+| effects   | fxName           | String                 | Active lightning effect             | L530, L900, L920, L930                                           |
 | device    | wifiSignal       | Number                 | WiFi-quality-level                  | P100, P105, P110, P115, L510, L530, L610, L630, L900, L920, L930 |
 |           | onTime           | Number:Time            | seconds output is on                | P100, P105, P110, P115, L510, L530, L900, L920, L930             |
 |           | signalStrength   | Number                 | RF-quality-level                    | T110                                                             |
