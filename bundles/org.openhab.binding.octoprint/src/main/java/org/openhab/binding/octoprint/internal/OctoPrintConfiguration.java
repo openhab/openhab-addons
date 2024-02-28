@@ -27,5 +27,7 @@ public class OctoPrintConfiguration {
      */
     public String hostname = "";
     public String password = "";
+
+    public String apikey = "";
     public int refreshInterval = 600;
 }

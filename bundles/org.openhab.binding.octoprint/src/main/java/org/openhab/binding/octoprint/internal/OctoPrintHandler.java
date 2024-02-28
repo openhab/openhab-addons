@@ -16,14 +16,22 @@ import static org.openhab.binding.octoprint.internal.OctoPrintBindingConstants.*
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.generic.ChannelHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link OctoPrintHandler} is responsible for handling commands, which are
@@ -44,24 +52,50 @@ public class OctoPrintHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        ChannelHandler channelHandler = channels.get(channelUID);
+        switch (channelUID.getId()) {
+            case PRINT_JOB_STATE:
+            case PRINT_JOB_FILE_NAME:
+            case PRINT_JOB_FILE_ORIGIN:
+                if (command instanceof RefreshType) {
+                    updateStates();
+                }
+                break;
+            default:
+                logger.warn("Framework sent command to unknown channel with id '{}'", channelUID.getId());
         }
+    }
+
+    private void updateStates() {
+        logger.trace("updating states of {}", getThing().getUID());
+
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(OctoPrintConfiguration.class);
-
+        Gson gson = new Gson();
+        String url = "http://192.168.0.104/api/server";
+        HttpClient httpClient = new HttpClient();
+        try {
+            httpClient.start();
+            Request req = httpClient.newRequest(url).method(HttpMethod.GET);
+            req.header("X-Api-Key", config.apikey);
+            ContentResponse response = req.send();
+            if (response.getStatus() == HttpStatus.OK_200) {
+                String res = new String(response.getContent());
+                String jsonObject = gson.toJson(res);
+                System.out.println(jsonObject);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                httpClient.stop();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly, i.e. any network access must be done in
         // the background initialization below.

@@ -5,18 +5,20 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="sample">
+	<thing-type id="octoprint">
 		<!-- Comment this in for Things which need a Bridge to function.
 			<supported-bridge-type-refs>
 			<bridge-type-ref id="OctoPrintBridge" />
 			</supported-bridge-type-refs>
 		-->
 
-		<label>OctoPrint Binding Thing</label>
-		<description>Sample thing for OctoPrint Binding</description>
+		<label>OctoPrint</label>
+		<description>Binding for connection of a 3D printer via OctoPrint</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="print_job_state" typeId="printJobState"/>
+			<channel id="print_job_file_name" typeId="printJobFileName"/>
+			<channel id="print_job_file_origin" typeId="printJobFileOrigin"/>
 		</channels>
 
 		<config-description>
@@ -30,6 +32,11 @@
 				<label>Password</label>
 				<description>Password to access the device</description>
 			</parameter>
+			<parameter name="apikey" type="text" required="false">
+				<context>api-key</context>
+				<label>Api Key</label>
+				<description>Api key to access the device</description>
+			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in sec.</description>
@@ -40,9 +47,40 @@
 	</thing-type>
 
 	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for OctoPrint Binding</description>
+	<channel-type id="printJobState">
+		<item-type>String</item-type>
+		<label>Print Job State</label>
+		<description>State of the current print job</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="printJobFileName">
+		<item-type>String</item-type>
+		<label>Print Job File Name</label>
+		<description>File name of the current print job</description>
+	</channel-type>
+
+	<channel-type id="printJobFileOrigin">
+		<item-type>String</item-type>
+		<label>Print Job File Path</label>
+		<description>File path of the current print job</description>
+	</channel-type>
+
+	<channel-type id="printJobFileSize">
+		<item-type>String</item-type>
+		<label>Print Job File Size</label>
+		<description>File size of the current print job</description>
+	</channel-type>
+
+	<channel-type id="printJobFileDate">
+		<item-type>DateTime</item-type>
+		<label>Print Job File Date</label>
+		<description>Last edit of the current print job file</description>
+	</channel-type>
+
+	<channel-type id="estPrintTime">
+		<item-type>Number</item-type>
+		<label>Estimated Print Time</label>
+		<description>Estimated print time of the current print job</description>
 	</channel-type>
 </thing:thing-descriptions>
