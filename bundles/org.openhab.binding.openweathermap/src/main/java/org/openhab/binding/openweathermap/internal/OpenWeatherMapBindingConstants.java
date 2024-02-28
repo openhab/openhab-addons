@@ -83,6 +83,9 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_TIME_STAMP = "time-stamp";
     public static final String CHANNEL_SUNRISE = "sunrise";
     public static final String CHANNEL_SUNSET = "sunset";
+    public static final String CHANNEL_MOONRISE = "moonrise";
+    public static final String CHANNEL_MOONSET = "moonset";
+    public static final String CHANNEL_MOON_PHASE = "moon-phase";
     public static final String CHANNEL_CONDITION = "condition";
     public static final String CHANNEL_CONDITION_ID = "condition-id";
     public static final String CHANNEL_CONDITION_ICON = "icon";
