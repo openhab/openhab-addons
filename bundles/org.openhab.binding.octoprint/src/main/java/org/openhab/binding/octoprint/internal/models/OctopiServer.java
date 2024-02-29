@@ -28,9 +28,15 @@ public class OctopiServer {
     public final String userName;
     String password;
 
-    OctopiServer(String ip, String apiKey, String userName) {
+    public OctopiServer(String ip, String apiKey, String userName) {
         this.ip = ip;
         this.apiKey = apiKey;
         this.userName = userName;
+    }
+
+    @Override
+    public String toString() {
+        return "OctopiServer{" + "ip='" + ip + '\'' + ", apiKey='" + apiKey + '\'' + ", userName='" + userName + '\''
+                + ", password='" + password + '\'' + '}';
     }
 }

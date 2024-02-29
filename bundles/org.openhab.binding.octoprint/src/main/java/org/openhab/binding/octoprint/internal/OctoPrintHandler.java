@@ -14,16 +14,24 @@ package org.openhab.binding.octoprint.internal;
 
 import static org.openhab.binding.octoprint.internal.OctoPrintBindingConstants.*;
 
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.octoprint.internal.models.OctopiServer;
+import org.openhab.binding.octoprint.internal.services.PollRequestService;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * The {@link OctoPrintHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -34,6 +42,9 @@ import org.slf4j.LoggerFactory;
 public class OctoPrintHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OctoPrintHandler.class);
+    private @Nullable PollRequestService pollRequestService;
+    private @Nullable OctopiServer octopiServer;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     private @Nullable OctoPrintConfiguration config;
 
@@ -56,13 +67,28 @@ public class OctoPrintHandler extends BaseThingHandler {
         }
     }
 
+    public void updateChannel(String channelUID, State state) {
+        updateState(channelUID, state);
+    }
+
     private void updateStates() {
         logger.trace("updating states of {}", getThing().getUID());
+    }
+
+    private void pollingCode() {
+        pollRequestService.poll();
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(OctoPrintConfiguration.class);
+        assert config != null;
+
+        octopiServer = new OctopiServer(config.ip, config.apikey, config.username);
+        logger.warn("Created {}", octopiServer);
+        pollRequestService = new PollRequestService(octopiServer, this);
+        pollRequestService.addPollRequest(SERVER_VERSION, "api/server", "safemode", new StringType());
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshInterval, TimeUnit.SECONDS);
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly, i.e. any network access must be done in
@@ -102,5 +128,13 @@ public class OctoPrintHandler extends BaseThingHandler {
         // Add a description to give user information to understand why thing does not work as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    @Override
+    public void dispose() {
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            pollingJob = null;
+        }
     }
 }
