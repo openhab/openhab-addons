@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link PollRequestService}.TODO
@@ -56,7 +57,7 @@ public class PollRequestService {
             PollRequestInformation pollRequestInformation = entry.getValue();
 
             ContentResponse res = requestService.getRequest(pollRequestInformation.route);
-            JsonObject json = gson.fromJson(res.getContentAsString(), JsonObject.class);
+            JsonObject json = JsonParser.parseString(res.getContentAsString()).getAsJsonObject();
             var updatedValue = json.get(pollRequestInformation.jsonKey);
             if (res.getStatus() == 200) {
                 if (pollRequestInformation.type instanceof StringType) {
@@ -65,5 +66,9 @@ public class PollRequestService {
                 }
             }
         }
+    }
+
+    public void dispose() {
+        requestService.dispose();
     }
 }

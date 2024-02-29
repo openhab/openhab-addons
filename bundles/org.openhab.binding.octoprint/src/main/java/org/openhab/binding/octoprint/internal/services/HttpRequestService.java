@@ -42,16 +42,20 @@ public class HttpRequestService {
 
     HttpRequestService(OctopiServer octopiServer) {
         server = octopiServer;
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     ContentResponse getRequest(String route) {
         String uri = String.format("http://%1$s/%2$s", server.ip, route);
         logger.warn("uri: {}", uri);
-        Request request = httpClient.newRequest(uri).header("X-Api-Key", server.apiKey)
-                .header(HttpHeader.ACCEPT, "application/json").method(HttpMethod.GET);
+        Request request = httpClient.newRequest(uri).header("X-Api-Key", server.apiKey).method(HttpMethod.GET);
         try {
             ContentResponse res = request.send();
-            logger.warn("response: status: {}, body: {}", res.getStatus(), res.getContent());
+            logger.warn("response: status: {}, body: {}", res.getStatus(), res.getContentAsString());
             return res;
         } catch (InterruptedException e) {
             // TODO
@@ -83,6 +87,14 @@ public class HttpRequestService {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
             // TODO
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void dispose() {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

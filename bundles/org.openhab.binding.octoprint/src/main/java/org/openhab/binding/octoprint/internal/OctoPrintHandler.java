@@ -87,7 +87,7 @@ public class OctoPrintHandler extends BaseThingHandler {
         octopiServer = new OctopiServer(config.ip, config.apikey, config.username);
         logger.warn("Created {}", octopiServer);
         pollRequestService = new PollRequestService(octopiServer, this);
-        pollRequestService.addPollRequest(SERVER_VERSION, "api/server", "safemode", new StringType());
+        pollRequestService.addPollRequest(SERVER_VERSION, "api/server", "version", new StringType());
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshInterval, TimeUnit.SECONDS);
 
         // TODO: Initialize the handler.
@@ -135,6 +135,10 @@ public class OctoPrintHandler extends BaseThingHandler {
         if (pollingJob != null) {
             pollingJob.cancel(true);
             pollingJob = null;
+        }
+        if (pollRequestService != null) {
+            pollRequestService.dispose();
+            pollRequestService = null;
         }
     }
 }
