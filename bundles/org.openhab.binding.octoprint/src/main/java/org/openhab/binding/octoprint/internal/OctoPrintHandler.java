@@ -25,7 +25,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.generic.ChannelHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -52,7 +51,6 @@ public class OctoPrintHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        ChannelHandler channelHandler = channels.get(channelUID);
         switch (channelUID.getId()) {
             case PRINT_JOB_STATE:
             case PRINT_JOB_FILE_NAME:
@@ -68,7 +66,6 @@ public class OctoPrintHandler extends BaseThingHandler {
 
     private void updateStates() {
         logger.trace("updating states of {}", getThing().getUID());
-
     }
 
     @Override

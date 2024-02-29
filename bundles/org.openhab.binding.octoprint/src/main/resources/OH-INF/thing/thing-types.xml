@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
+	<!-- Thing Type -->
 	<thing-type id="octoprint">
 		<!-- Comment this in for Things which need a Bridge to function.
 			<supported-bridge-type-refs>
@@ -12,13 +12,35 @@
 			</supported-bridge-type-refs>
 		-->
 
-		<label>OctoPrint</label>
+		<label>OctoPrint Binding Thing</label>
 		<description>Binding for connection of a 3D printer via OctoPrint</description>
 
 		<channels>
+			<channel id="server_version" typeId="serverVersion"/>
+			<channel id="server_safe_mode_state" typeId="serverSafeModeState"/>
+			<channel id="server_connection_state" typeId="serverConnectionState"/>
 			<channel id="print_job_state" typeId="printJobState"/>
 			<channel id="print_job_file_name" typeId="printJobFileName"/>
 			<channel id="print_job_file_origin" typeId="printJobFileOrigin"/>
+			<channel id="print_job_file_size" typeId="printJobFileSize"/>
+			<channel id="print_job_file_date" typeId="printJobFileDate"/>
+			<channel id="print_job_start" typeId="printJobStart"/>
+			<channel id="print_job_cancel" typeId="printJobCancel"/>
+			<channel id="print_job_pause" typeId="printJobCancel"/>
+			<channel id="print_job_restart" typeId="printJobRestart"/>
+			<channel id="print_job_estimated_print_time" typeId="printJobEstPrintTime"/>
+			<channel id="print_job_progress" typeId="printJobProgress"/>
+			<channel id="print_job_current_print_time" typeId="printJobCurrentPrintTime"/>
+			<channel id="print_job_estimated_print_time_left" typeId="printJobEstTimeLeft"/>
+			<channel id="printer_state" typeId="printerState"/>
+			<channel id="printer_homing" typeId="printerHoming"/>
+			<channel id="printer_tool_temp_actual" typeId="printerToolTempActual"/>
+			<channel id="printer_tool_temp_target" typeId="printerToolTempTarget"/>
+			<channel id="printer_bed_temp_actual" typeId="printerBedTempActual"/>
+			<channel id="printer_bed_temp_target" typeId="printerBedTempTarget"/>
+			<channel id="printer_chamber_temp_actual" typeId="printerChamberTempActual"/>
+			<channel id="printer_chamber_temp_target" typeId="printerChamberTempTarget"/>
+			<channel id="printer_sd_state" typeId="SDCardState"/>
 		</channels>
 
 		<config-description>
@@ -46,7 +68,28 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
+	<!-- Channels -->
+	<channel-type id="serverVersion">
+		<item-type>String</item-type>
+		<label>Server Version</label>
+		<description>Version of the OctoPrint server</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="serverSafeModeState">
+		<item-type>String</item-type>
+		<label>Server Safe Mode State</label>
+		<description>Safe mode state of the OctoPrint server</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="serverConnectionState">
+		<item-type>String</item-type>
+		<label>Server Connection State</label>
+		<description>Connection state of the OctoPrint server</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="printJobState">
 		<item-type>String</item-type>
 		<label>Print Job State</label>
@@ -58,29 +101,206 @@
 		<item-type>String</item-type>
 		<label>Print Job File Name</label>
 		<description>File name of the current print job</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="printJobFileOrigin">
 		<item-type>String</item-type>
 		<label>Print Job File Path</label>
 		<description>File path of the current print job</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="printJobFileSize">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Print Job File Size</label>
 		<description>File size of the current print job</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="printJobFileDate">
 		<item-type>DateTime</item-type>
 		<label>Print Job File Date</label>
 		<description>Last edit of the current print job file</description>
+		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="estPrintTime">
+	<channel-type id="printJobStart">
+		<item-type>String</item-type>
+		<label>Start Print Job</label>
+		<description>Start the print job of the selected file</description>
+		<state>
+			<options>
+				<option value="STARTING">starting</option>
+				<option value="RUNNING">running</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="START">start</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="printJobCancel">
+		<item-type>String</item-type>
+		<label>Cancel Print Job</label>
+		<description>Cancel the current print job</description>
+		<state>
+			<options>
+				<option value="CANCELING">canceling</option>
+				<option value="CANCELED">canceled</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="CANCEL">cancel</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="printJobPause">
+		<item-type>String</item-type>
+		<label>Pause Print Job</label>
+		<description>Pause/resume the current print job</description>
+		<state>
+			<options>
+				<option value="PAUSING">pausing</option>
+				<option value="PAUSED">paused</option>
+				<option value="RESUMING">resuming</option>
+				<option value="RUNNING">running</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="PAUSE">pause</option>
+				<option value="RESUME">resume</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="printJobRestart">
+		<item-type>String</item-type>
+		<label>Start Print Job</label>
+		<description>Start the print job of the selected file</description>
+		<state>
+			<options>
+				<option value="STARTING">starting</option>
+				<option value="RUNNING">running</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="START">start</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="printJobEstPrintTime">
 		<item-type>Number</item-type>
 		<label>Estimated Print Time</label>
 		<description>Estimated print time of the current print job</description>
+		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="printJobProgress">
+		<item-type>Number</item-type>
+		<label>Print Job Progress</label>
+		<description>Percentage of completion of current print job</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="printJobCurrentPrintTime">
+		<item-type>Number</item-type>
+		<label>Elapsed Print Time</label>
+		<description>Elapsed print time of the current print job</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="printJobEstTimeLeft">
+		<item-type>Number</item-type>
+		<label>Estimated Print Time Left</label>
+		<description>Estimated print time left for the current print job</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="printerState">
+		<item-type>String</item-type>
+		<label>Printer State</label>
+		<description>State of the printer</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="printerHoming">
+		<item-type>Switch</item-type>
+		<label>Homing Printer</label>
+		<description>Homing of the printer</description>
+		<state>
+			<options>
+				<option value="HOMING">homing</option>
+				<option value="HOMED">homed</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="HOMING">homing</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="printerToolTempActual">
+		<item-type>Number</item-type>
+		<label>Actual Tool Temperature</label>
+		<description>Actual temperature of the printer tool</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="printerToolTempTarget">
+		<item-type>Number</item-type>
+		<label>Target Tool Temperature</label>
+		<description>Target temperature of the printer tool</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="printerBedTempActual">
+		<item-type>Number</item-type>
+		<label>Actual Bed Temperature</label>
+		<description>Actual temperature of the printer bed</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="printerBedTempTarget">
+		<item-type>Number</item-type>
+		<label>Target Bed Temperature</label>
+		<description>Target temperature of the printer bed</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="printerChamberTempActual">
+		<item-type>Number</item-type>
+		<label>Actual Chamber Temperature</label>
+		<description>Actual temperature of the printer chamber</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="printerChamberTempTarget">
+		<item-type>Number</item-type>
+		<label>Target Chamber Temperature</label>
+		<description>Target temperature of the printer chamber</description>
+		<category>Temperature</category>
+		<state pattern="%.1f °C" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="SDCardState">
+		<item-type>Switch</item-type>
+		<label>SD Card State</label>
+		<description>State of the printers SD card</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>
