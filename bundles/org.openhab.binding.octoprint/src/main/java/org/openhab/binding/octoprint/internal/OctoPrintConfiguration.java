@@ -23,9 +23,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class OctoPrintConfiguration {
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Configuration parameters.
      */
-    public String hostname = "";
+    public String ip = "";
+    public String username = "";
     public String password = "";
-    public int refreshInterval = 600;
+    public String apikey = "";
+    public String serialPort = "";
+    public int baudRate = 115200;
+    public String printerProfile = "";
+    public int refreshInterval = 10;
 }
