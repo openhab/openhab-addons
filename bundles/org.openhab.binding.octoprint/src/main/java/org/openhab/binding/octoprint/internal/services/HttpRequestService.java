@@ -69,12 +69,12 @@ public class HttpRequestService {
         }
     }
 
-    Response postRequest(String route, Gson body) {
+    Response postRequest(String route, String body) {
         String uri = String.format("http://%1$s/%2$s", server.ip, route);
         logger.warn("uri: {}", uri);
         Request request = httpClient.newRequest(uri).header("X-Api-Key", server.apiKey)
                 .header(HttpHeader.ACCEPT, "application/json").header(HttpHeader.CONTENT_TYPE, "application/json")
-                .method(HttpMethod.POST).content(new StringContentProvider(body.toString()), "application/json");
+                .method(HttpMethod.POST).content(new StringContentProvider(body), "application/json");
         try {
             Response res = request.send();
             logger.warn("response: status: {}", res.getStatus());
