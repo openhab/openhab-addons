@@ -252,7 +252,7 @@
 /bundles/org.openhab.binding.nuvo/ @mlobstein
 /bundles/org.openhab.binding.nzwateralerts/ @cossey
 /bundles/org.openhab.binding.oceanic/ @kgoderis
-/bundles/org.openhab.binding.octoprint/ @TimNR94
+/bundles/org.openhab.binding.octoprint/ @TimNR94 @Urgoth
 /bundles/org.openhab.binding.ojelectronics/ @EvilPingu
 /bundles/org.openhab.binding.omnikinverter/ @hansbogert
 /bundles/org.openhab.binding.omnilink/ @ecdye
