@@ -23,6 +23,8 @@ import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfo;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncConnection;
 import org.openhab.binding.huesync.internal.connection.HueSyncTrustManagerProvider;
+import org.openhab.binding.huesync.internal.exceptions.HueSyncApiException;
+import org.openhab.binding.huesync.internal.util.HueSyncLogLocalizer;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.thing.ChannelUID;
@@ -101,22 +103,38 @@ public class HueSyncHandler extends BaseThingHandler {
                 properties.put(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", this.deviceInfo.apiLevel));
                 properties.put(HueSyncHandler.PROPERTY_NETWORK_STATE, this.deviceInfo.wifiState);
 
-                updateProperties(properties);
+                this.updateProperties(properties);
 
-                // TODO: Check API Version ...
+                this.checkCompatibility();
 
                 if (this.config.apiAccessToken.isEmpty() || this.config.apiAccessToken.isBlank()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
+            } catch (HueSyncApiException e) {
+                // TODO: Refacture - simplify use of logger ...
+                this.logger.error(HueSyncLogLocalizer.getResourceString("@text/logger.initialization-problem"),
+                        this.thing.getLabel(), this.thing.getUID(),
+                        HueSyncLogLocalizer.getResourceString(e.getMessage()));
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (Exception e) {
-                this.logger.error("Unable to initialize handler for {}({}): {}", this.thing.getLabel(),
-                        this.thing.getUID(), e);
+                this.logger.error(HueSyncLogLocalizer.getResourceString("@text/logger.initialization-problem"),
+                        this.thing.getLabel(), this.thing.getUID(),
+                        HueSyncLogLocalizer.getResourceString(e.getMessage()));
 
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
+    }
+
+    private void checkCompatibility() throws HueSyncApiException {
+        throw new HueSyncApiException("@text/api.minimal-version");
+
+        // if (this.deviceInfo != null && this.deviceInfo.apiLevel <
+        // HueSyncBindingConstants.MINIMAL_API_VERSION) {
+        // throw new HueSyncApiException("@text/api.minimal-version");
+        // }
     }
 
     @Override

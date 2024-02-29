@@ -16,13 +16,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link HueSyncBindingConstants} class defines common constants, which are
+ * The {@link HueSyncConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public class HueSyncBindingConstants {
+public class HueSyncConstants {
     /** Minimal API Version required. Only apiLevel >= 7 is supported. */
     public static final Integer MINIMAL_API_VERSION = 7;
 

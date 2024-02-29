@@ -17,7 +17,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.huesync.internal.HueSyncBindingConstants;
+import org.openhab.binding.huesync.internal.HueSyncConstants;
 import org.openhab.binding.huesync.internal.handler.HueSyncHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
@@ -49,7 +49,7 @@ public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
 
     @SuppressWarnings("null")
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(HueSyncBindingConstants.THING_TYPE_UID);
+            .singleton(HueSyncConstants.THING_TYPE_UID);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -60,7 +60,7 @@ public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (HueSyncBindingConstants.THING_TYPE_UID.equals(thingTypeUID)) {
+        if (HueSyncConstants.THING_TYPE_UID.equals(thingTypeUID)) {
             try {
                 return new HueSyncHandler(thing, this.httpClientFactory);
             } catch (Exception e) {

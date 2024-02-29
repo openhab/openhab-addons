@@ -23,7 +23,7 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.huesync.internal.HueSyncBindingConstants;
+import org.openhab.binding.huesync.internal.HueSyncConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -74,7 +74,7 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @SuppressWarnings("null")
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(HueSyncBindingConstants.THING_TYPE_UID);
+        return Collections.singleton(HueSyncConstants.THING_TYPE_UID);
     }
 
     @Override
@@ -94,8 +94,8 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
                     Map<String, Object> properties = new HashMap<>();
 
-                    properties.put(HueSyncBindingConstants.PARAMETER_HOST, service.getHostAddresses()[0]);
-                    properties.put(HueSyncBindingConstants.PARAMETER_PORT, service.getPort());
+                    properties.put(HueSyncConstants.PARAMETER_HOST, service.getHostAddresses()[0]);
+                    properties.put(HueSyncConstants.PARAMETER_PORT, service.getPort());
 
                     DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(service.getName())
                             .withProperties(properties).build();
@@ -119,7 +119,7 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
             return null;
         }
 
-        return new ThingUID(HueSyncBindingConstants.THING_TYPE_UID, id);
+        return new ThingUID(HueSyncConstants.THING_TYPE_UID, id);
     }
 
     @Activate
