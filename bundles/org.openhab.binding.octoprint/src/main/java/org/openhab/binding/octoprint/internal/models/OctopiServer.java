@@ -13,14 +13,24 @@
 
 package org.openhab.binding.octoprint.internal.models;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * The {@link Server} class defines the abstraction of the octoprint server.
+ * The {@link OctopiServer} class defines the abstraction of the octoprint server.
  *
  * @author Jan Niklas Freisinger - Initial contribution
  */
-class Server {
-    String ip;
-    String apiKey;
-    String userName;
+public class OctopiServer {
+    private final Logger logger = LoggerFactory.getLogger(OctopiServer.class);
+    public final String ip;
+    public final String apiKey;
+    public final String userName;
     String password;
+
+    OctopiServer(String ip, String apiKey, String userName) {
+        this.ip = ip;
+        this.apiKey = apiKey;
+        this.userName = userName;
+    }
 }
