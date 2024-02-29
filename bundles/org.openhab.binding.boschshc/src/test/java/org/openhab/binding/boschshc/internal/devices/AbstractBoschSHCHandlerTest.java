@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -60,7 +63,7 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
 
     private @Mock @NonNullByDefault({}) Bridge bridge;
 
-    protected @Mock @NonNullByDefault({}) BridgeHandler bridgeHandler;
+    private @Mock @NonNullByDefault({}) BridgeHandler bridgeHandler;
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
 
@@ -128,8 +131,25 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
     }
 
     @Test
-    public void testInitialize() {
+    void testInitialize() {
         ThingStatusInfo expectedStatusInfo = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
         verify(callback).statusUpdated(same(thing), eq(expectedStatusInfo));
+    }
+
+    @Test
+    void testGetBridgeHandler() throws BoschSHCException {
+        assertThat(fixture.getBridgeHandler(), sameInstance(bridgeHandler));
+    }
+
+    @Test
+    void testGetBridgeHandlerThrowExceptionIfBridgeIsNull() throws BoschSHCException {
+        when(callback.getBridge(any())).thenReturn(null);
+        assertThrows(BoschSHCException.class, () -> fixture.getBridgeHandler());
+    }
+
+    @Test
+    void testGetBridgeHandlerThrowExceptionIfBridgeHandlerIsNull() throws BoschSHCException {
+        when(bridge.getHandler()).thenReturn(null);
+        assertThrows(BoschSHCException.class, () -> fixture.getBridgeHandler());
     }
 }

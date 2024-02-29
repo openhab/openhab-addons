@@ -657,7 +657,7 @@ public class BridgeHandler extends BaseBridgeHandler {
      *
      * @param e error during long polling
      */
-    private void handleLongPollFailure(Throwable e) {
+    void handleLongPollFailure(Throwable e) {
         logger.warn("Long polling failed, will try to reconnect", e);
         @Nullable
         BoschHttpClient localHttpClient = this.httpClient;
@@ -722,7 +722,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                             return new BoschSHCException("@text/offline.conf-error.invalid-state-id");
                         } else {
                             return new BoschSHCException(String.format(
-                                    "Request for info of user-defines state %s failed with status code %d and error code %s",
+                                    "Request for info of user-defined state %s failed with status code %d and error code %s",
                                     stateId, errorResponse.statusCode, errorResponse.errorCode));
                         }
                     } else {

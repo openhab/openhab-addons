@@ -15,6 +15,7 @@ package org.openhab.binding.boschshc.internal.devices.shuttercontrol;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.ExecutionException;
@@ -139,5 +140,15 @@ class ShutterControl2HandlerTest extends ShutterControlHandlerTest {
                 childProtectionServiceStateCaptor.capture());
         ChildProtectionServiceState state = childProtectionServiceStateCaptor.getValue();
         assertTrue(state.childLockActive);
+    }
+
+    @Test
+    void testHandleCommandChildProtectionInvalidCommand()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        getFixture().handleCommand(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_PROTECTION),
+                DecimalType.ZERO);
+        verify(getBridgeHandler(), times(0)).putState(eq(getDeviceID()), eq("ChildProtection"),
+                childProtectionServiceStateCaptor.capture());
     }
 }
