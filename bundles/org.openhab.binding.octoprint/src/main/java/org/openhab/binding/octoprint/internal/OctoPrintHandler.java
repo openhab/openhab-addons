@@ -24,7 +24,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * The {@link OctoPrintHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -44,18 +43,21 @@ public class OctoPrintHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        switch (channelUID.getId()) {
+            case PRINT_JOB_STATE:
+            case PRINT_JOB_FILE_NAME:
+            case PRINT_JOB_FILE_ORIGIN:
+                if (command instanceof RefreshType) {
+                    updateStates();
+                }
+                break;
+            default:
+                logger.warn("Framework sent command to unknown channel with id '{}'", channelUID.getId());
         }
+    }
+
+    private void updateStates() {
+        logger.trace("updating states of {}", getThing().getUID());
     }
 
     @Override
