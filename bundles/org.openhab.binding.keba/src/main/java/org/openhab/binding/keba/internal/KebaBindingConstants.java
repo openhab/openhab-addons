@@ -81,8 +81,9 @@ public class KebaBindingConstants {
 
         E('0'),
         B('1'),
-        C('2', '3'),
-        X('A', 'B', 'C', 'D', 'E', 'G', 'H');
+        C('2'),
+        A('3'),
+        X('A', 'B', 'C', 'D', 'E', 'G', 'H', 'S', 'U');
 
         private final List<Character> things = new ArrayList<>();
 
