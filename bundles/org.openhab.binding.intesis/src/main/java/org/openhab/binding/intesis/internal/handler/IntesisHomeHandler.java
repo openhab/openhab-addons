@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Dpval;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Id;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Info;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Response;
+import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.ResponseError;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -86,6 +87,8 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
     private IntesisHomeConfiguration config = new IntesisHomeConfiguration();
 
+    private String m_sessionId = "";
+
     private @Nullable ScheduledFuture<?> refreshJob;
 
     public IntesisHomeHandler(final Thing thing, final HttpClient httpClient,
@@ -109,12 +112,15 @@ public class IntesisHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not set");
             return;
         } else {
+            logger.trace("trying to log in - current session ID: {}", m_sessionId);
+            login();
+
             // start background initialization:
             scheduler.submit(() -> {
                 populateProperties();
                 // query available dataPoints and build dynamic channels
-                postRequestInSession(sessionId -> "{\"command\":\"getavailabledatapoints\",\"data\":{\"sessionID\":\""
-                        + sessionId + "\"}}", this::handleDataPointsResponse);
+                postRequestInSession(m_sessionId -> "{\"command\":\"getavailabledatapoints\",\"data\":{\"sessionID\":\""
+                        + m_sessionId + "\"}}", this::handleDataPointsResponse);
                 updateProperties(properties);
             });
         }
@@ -129,6 +135,8 @@ public class IntesisHomeHandler extends BaseThingHandler {
             refreshJob.cancel(true);
             this.refreshJob = null;
         }
+
+        logout(m_sessionId);
     }
 
     @Override
@@ -208,7 +216,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
             final int newValue = value;
             scheduler.submit(() -> {
                 postRequestInSession(
-                        sessionId -> "{\"command\":\"setdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
+                        m_sessionId -> "{\"command\":\"setdatapointvalue\",\"data\":{\"sessionID\":\"" + m_sessionId
                                 + "\", \"uid\":" + uId + ",\"value\":" + newValue + "}}",
                         r -> updateStatus(ThingStatus.ONLINE));
             });
@@ -216,31 +224,35 @@ public class IntesisHomeHandler extends BaseThingHandler {
     }
 
     public @Nullable String login() {
-        // lambda's can't modify local variables, so we use an array here to get around the issue
-        String[] sessionId = new String[1];
         postRequest(
                 "{\"command\":\"login\",\"data\":{\"username\":\"Admin\",\"password\":\"" + config.password + "\"}}",
                 resp -> {
                     Data data = gson.fromJson(resp.data, Data.class);
+                    ResponseError error = gson.fromJson(resp.error, ResponseError.class);
+                    if (error != null) {
+                        logger.debug("Login - Error: {}", error);
+                    }
                     if (data != null) {
                         Id id = gson.fromJson(data.id, Id.class);
                         if (id != null) {
-                            sessionId[0] = id.sessionID;
+                            m_sessionId = id.sessionID.toString();
                         }
                     }
                 });
-        if (sessionId[0] != null && !sessionId[0].isEmpty()) {
+        logger.trace("Login - received session ID: {}", m_sessionId);
+        if (m_sessionId != null && !m_sessionId.isEmpty()) {
             updateStatus(ThingStatus.ONLINE);
-            return sessionId[0];
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "SessionId not received");
-            return null;
+            m_sessionId = "";
         }
+        return m_sessionId;
     }
 
     public @Nullable String logout(String sessionId) {
         String contentString = "{\"command\":\"logout\",\"data\":{\"sessionID\":\"" + sessionId + "\"}}";
-        return api.postRequest(config.ipAddress, contentString);
+        String response = api.postRequest(config.ipAddress, contentString);
+        return response;
     }
 
     public void populateProperties() {
@@ -309,18 +321,34 @@ public class IntesisHomeHandler extends BaseThingHandler {
     }
 
     private void postRequest(String request, Consumer<Response> handler) {
+        postRequest(request, handler, false);
+    }
+
+    private void postRequest(String request, Consumer<Response> handler, boolean retry) {
         try {
             logger.trace("request : '{}'", request);
             String response = api.postRequest(config.ipAddress, request);
             if (response != null) {
                 Response resp = gson.fromJson(response, Response.class);
                 if (resp != null) {
-                    boolean success = resp.success;
-                    if (success) {
+                    if (resp.success) {
                         handler.accept(resp);
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Request unsuccessful");
+                        ResponseError respError = gson.fromJson(resp.error, ResponseError.class);
+                        if (respError != null) {
+                            logger.error("postRequest failed - respErrorCode: {} / respErrorMessage: {} / retry {}",
+                                    respError.code, respError.message, retry);
+                            if (!retry && respError.code == 1) {
+                                logger.debug(
+                                        "postRequest: trying to log in and retry request - respErrorCode: {} / respErrorMessage: {} / retry {}",
+                                        respError.code, respError.message, retry);
+                                login();
+                                postRequest(request, handler, true);
+                            }
+                        }
+
                     }
                 }
             } else {
@@ -332,13 +360,11 @@ public class IntesisHomeHandler extends BaseThingHandler {
     }
 
     private void postRequestInSession(UnaryOperator<String> requestFactory, Consumer<Response> handler) {
-        String sessionId = login();
-        if (sessionId != null) {
+        if (m_sessionId != null) {
             try {
-                String request = requestFactory.apply(sessionId);
+                String request = requestFactory.apply(m_sessionId);
                 postRequest(request, handler);
             } finally {
-                logout(sessionId);
             }
         }
     }
@@ -472,7 +498,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
      * Update device status and all channels
      */
     private void getAllUidValues() {
-        postRequestInSession(sessionId -> "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
+        postRequestInSession(m_sessionId -> "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\"" + m_sessionId
                 + "\", \"uid\":\"all\"}}", this::handleDataPointValues);
         getWiFiSignal();
     }
