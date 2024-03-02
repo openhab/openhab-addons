@@ -166,8 +166,8 @@ public class MetOfficeDataHubBindingConstants {
     public static final String GROUP_POSTFIX_BOTH_FORECASTS = "Plus";
     public static final char GROUP_PREFIX_TO_ITEM = '#';
 
-    public static final String GET_FORECAST_URL_DAILY = "https://api-metoffice.apiconnect.ibmcloud.com/v0/forecasts/point/daily?includeLocationName=true&latitude=<LATITUDE>&longitude=<LONGITUDE>";
-    public static final String GET_FORECAST_URL_HOURLY = "https://api-metoffice.apiconnect.ibmcloud.com/v0/forecasts/point/hourly?includeLocationName=true&latitude=<LATITUDE>&longitude=<LONGITUDE>";
+    public static final String GET_FORECAST_URL_DAILY = "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/daily?includeLocationName=true&latitude=<LATITUDE>&longitude=<LONGITUDE>";
+    public static final String GET_FORECAST_URL_HOURLY = "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/hourly?includeLocationName=true&latitude=<LATITUDE>&longitude=<LONGITUDE>";
 
     public static final long DAY_IN_MILLIS = 86400000;
 

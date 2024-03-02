@@ -433,9 +433,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         }
 
         Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("Accept", "application/json")
-                .header("X-IBM-Client-Id", uplinkBridge.getClientId())
-                .header("X-IBM-Client-Secret", uplinkBridge.getClientSecret()).timeout(10, TimeUnit.SECONDS)
-                .idleTimeout(3, TimeUnit.SECONDS);
+                .header("apikey", uplinkBridge.getApiKey()).idleTimeout(3, TimeUnit.SECONDS);
 
         request.send(new BufferingResponseListener() { // 4.5kb buffer will cover both requests
             @Override

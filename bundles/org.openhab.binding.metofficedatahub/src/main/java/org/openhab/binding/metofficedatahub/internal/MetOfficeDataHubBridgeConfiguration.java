@@ -23,13 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class MetOfficeDataHubBridgeConfiguration {
 
     /**
-     * Site Specific API Subscription - Client ID
+     * Site Specific API Subscription - API Key
      */
-    public String siteSpecificClientId = "";
-    /**
-     * Site Specific API Subscription - Client Secret
-     */
-    public String siteSpecificClientSecret = "";
+    public String siteSpecificApiKey = "";
 
     /**
      * Rate limit of API call's in 24 hour period starting from 0000

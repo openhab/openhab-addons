@@ -14,15 +14,10 @@
 		</properties>
 
 		<config-description>
-			<parameter name="siteSpecificClientId" type="text" required="true">
+			<parameter name="siteSpecificApiKey" type="text" required="true">
 				<context>password</context>
-				<label>Site Specific Subscription Client Id</label>
-				<description>Site Specific Subscription API Client Id</description>
-			</parameter>
-			<parameter name="siteSpecificClientSecret" type="text" required="true">
-				<context>password</context>
-				<label>Site Specific Subscription Client Secret</label>
-				<description>Site Specific Subscription API Client Secret</description>
+				<label>Site Specific API Key</label>
+				<description>The API Key for the Site Specific subscription in your MET Office Data Hub account</description>
 			</parameter>
 			<parameter name="siteSpecificRateDailyLimit" type="integer" unit="s" min="1">
 				<label>Site Specific API Daily Limit</label>

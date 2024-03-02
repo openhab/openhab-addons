@@ -58,15 +58,10 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
         this.updateProperties(newProps);
     }
 
-    private String configuredClientId = "";
-    private String configuredClientSecret = "";
+    private String configuredApiKey = "";
 
-    protected String getClientId() {
-        return configuredClientId;
-    }
-
-    protected String getClientSecret() {
-        return configuredClientSecret;
+    protected String getApiKey() {
+        return configuredApiKey;
     }
 
     private static long getMillisUntilMidnight() {
@@ -82,8 +77,7 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
         updateLimiterStats();
         final MetOfficeDataHubBridgeConfiguration config = getConfigAs(MetOfficeDataHubBridgeConfiguration.class);
         forecastDataLimiter.updateLimit(config.siteSpecificRateDailyLimit);
-        configuredClientId = config.siteSpecificClientId;
-        configuredClientSecret = config.siteSpecificClientSecret;
+        configuredApiKey = config.siteSpecificApiKey;
 
         updateStatus(ThingStatus.UNKNOWN);
 

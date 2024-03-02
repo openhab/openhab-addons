@@ -44,8 +44,7 @@ The bridge counts the total number of requests from 00:00 -> 23:59 under its pro
 | Name                       | Type   | Description                                                                                                                     | Recommended Values |
 |----------------------------|--------|---------------------------------------------------------------------------------------------------------------------------------|--------------------|
 | siteSpecificRateDailyLimit | Number | For the runtime of the system, this is the limit of how many polls for updates are allowed for updates for the SiteSpecific API | 200                |
-| siteSpecificClientId       | String | The number of hours between polling for each sites daily data                                                                   | 3                  |
-| siteSpecificClientSecret   | String | The poll interval (seconds) for air filters / humidifiers                                                                       | 60                 |
+| siteSpecificApiKey         | String | The API Key for the Site Specific subscription in your MET Office Data Hub account.                                             |                    |
 
 **NOTE:** siteSpecificRateDailyLimit: This **should** prevent any more poll's for the rest of the day to the SiteSpecific API, once this limit is reached as a failsafe against a bad configuration,
 if you don't reboot / delete and re-add the bridge.
