@@ -23,6 +23,8 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class HueSyncConstants {
+    public static final String APPLICATION_NAME = "openHAB";
+
     /** Minimal API Version required. Only apiLevel >= 7 is supported. */
     public static final Integer MINIMAL_API_VERSION = 7;
 
@@ -31,4 +33,7 @@ public class HueSyncConstants {
 
     public static final String PARAMETER_HOST = "host";
     public static final String PARAMETER_PORT = "port";
+
+    public static final Integer REGISTRATION_INITIAL_DELAY = 3;
+    public static final Integer REGISTRATION_DELAY = 1;
 }

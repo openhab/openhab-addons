@@ -15,10 +15,13 @@ package org.openhab.binding.huesync.internal.handler;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.huesync.internal.HueSyncConstants;
 import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfo;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncConnection;
@@ -33,6 +36,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -57,12 +61,16 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private HueSyncConfiguration config;
 
+    private @Nullable BundleContext context;
+    private @Nullable ScheduledFuture<?> registrationJob;
+
     private @Nullable HueSyncConnection connection;
     private @Nullable HueSyncDeviceInfo deviceInfo;
     private @Nullable ServiceRegistration<?> serviceRegistration;
 
     private HttpClient httpClient;
 
+    @SuppressWarnings("null")
     public HueSyncHandler(Thing thing, HttpClientFactory httpClientFactory)
             throws CertificateException, IOException, Exception {
         super(thing);
@@ -72,8 +80,9 @@ public class HueSyncHandler extends BaseThingHandler {
         HueSyncTrustManagerProvider trustManagerProvider = new HueSyncTrustManagerProvider(this.config.host,
                 this.config.port);
 
-        this.serviceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext()
-                .registerService(TlsTrustManagerProvider.class.getName(), trustManagerProvider, null);
+        this.context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        this.serviceRegistration = this.context.registerService(TlsTrustManagerProvider.class.getName(),
+                trustManagerProvider, null);
 
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
@@ -106,42 +115,66 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.updateProperties(properties);
 
                 this.checkCompatibility();
+                this.checkRegistration();
 
-                if (this.config.apiAccessToken.isEmpty() || this.config.apiAccessToken.isBlank()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
-                } else {
-                    updateStatus(ThingStatus.ONLINE);
+                if (this.thing.getStatus() == ThingStatus.OFFLINE) {
+                    this.startRegistrationJob();
                 }
             } catch (HueSyncApiException e) {
-                // TODO: Refacture - simplify use of logger ...
-                this.logger.error(HueSyncLogLocalizer.getResourceString("@text/logger.initialization-problem"),
-                        this.thing.getLabel(), this.thing.getUID(),
-                        HueSyncLogLocalizer.getResourceString(e.getMessage()));
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                this.logInitializationException(e);
+                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (Exception e) {
-                this.logger.error(HueSyncLogLocalizer.getResourceString("@text/logger.initialization-problem"),
-                        this.thing.getLabel(), this.thing.getUID(),
-                        HueSyncLogLocalizer.getResourceString(e.getMessage()));
-
-                updateStatus(ThingStatus.OFFLINE);
+                this.logInitializationException(e);
+                this.updateStatus(ThingStatus.OFFLINE);
             }
         });
     }
 
-    private void checkCompatibility() throws HueSyncApiException {
-        throw new HueSyncApiException("@text/api.minimal-version");
-
-        // if (this.deviceInfo != null && this.deviceInfo.apiLevel <
-        // HueSyncBindingConstants.MINIMAL_API_VERSION) {
-        // throw new HueSyncApiException("@text/api.minimal-version");
-        // }
+    private void logInitializationException(Exception e) {
+        this.logger.error(HueSyncLogLocalizer.getResourceString("@text/logger.initialization-problem"),
+                this.thing.getLabel(), this.thing.getUID(), HueSyncLogLocalizer.getResourceString(e.getMessage()));
     }
 
+    @SuppressWarnings("null")
+    private void startRegistrationJob() {
+        this.logger.info("Starting registration job for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
+                this.deviceInfo.uniqueId);
+
+        this.registrationJob = scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                this.connection.registerDevice();
+            } catch (Exception e) {
+                // TODO: ...
+            }
+        }, HueSyncConstants.REGISTRATION_INITIAL_DELAY, HueSyncConstants.REGISTRATION_DELAY, TimeUnit.SECONDS);
+    }
+
+    private void checkRegistration() {
+        if (this.config.apiAccessToken.isEmpty() || this.config.apiAccessToken.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "@text/thing.config.huesync.box.registration");
+        } else {
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    private void checkCompatibility() throws HueSyncApiException {
+        if (this.deviceInfo != null && this.deviceInfo.apiLevel < HueSyncConstants.MINIMAL_API_VERSION) {
+            throw new HueSyncApiException("@text/api.minimal-version");
+        }
+    }
+
+    @SuppressWarnings("null")
     @Override
     public void dispose() {
         super.dispose();
 
         try {
+            if (this.registrationJob != null && !this.registrationJob.isDone()) {
+                this.registrationJob.cancel(true);
+                this.registrationJob = null;
+            }
+
             if (this.serviceRegistration != null) {
                 this.serviceRegistration.unregister();
                 this.serviceRegistration = null;
