@@ -53,6 +53,8 @@ import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,7 +126,6 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         logger.debug("API: Creating OAuth Client Service for {}", bridgeUID);
         OAuthClientService service = oAuthFactory.createOAuthClientService(bridgeUID, ECOBEE_TOKEN_URL, null, apiKey,
                 "", ECOBEE_SCOPE, false);
-        service.addAccessTokenRefreshListener(this);
         ecobeeAuth = new EcobeeAuth(bridgeHandler, apiKey, apiTimeout, service, httpClient);
         oAuthClientService = service;
     }
@@ -337,7 +338,7 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         if (response == null) {
             logger.debug("API: Ecobee API returned null response");
         } else if (response.status.code.intValue() != 0) {
-            logger.info("API: Ecobee API returned unsuccessful status: code={}, message={}", response.status.code,
+            logger.debug("API: Ecobee API returned unsuccessful status: code={}, message={}", response.status.code,
                     response.status.message);
             if (response.status.code == ECOBEE_DEAUTHORIZED_TOKEN) {
                 // Token has been deauthorized, so restart the authorization process from the beginning
@@ -345,17 +346,26 @@ public class EcobeeApi implements AccessTokenRefreshListener {
                 deleteOAuthClientService();
                 createOAuthClientService();
             } else if (response.status.code == ECOBEE_TOKEN_EXPIRED) {
-                // Check isAuthorized again to see if we can get a valid token
-                logger.info("API: Unable to complete API call because token is expired. Try to refresh the token...");
+                logger.debug("API: Unable to complete API call because token is expired. Try to refresh the token...");
+                // Log some additional debug information about the current AccessTokenResponse
+                AccessTokenResponse localAccessTokenResponse = accessTokenResponse;
+                if (localAccessTokenResponse != null) {
+                    logger.debug("API: AccessTokenResponse created on: {}", localAccessTokenResponse.getCreatedOn());
+                    logger.debug("API: AccessTokenResponse expires in: {}", localAccessTokenResponse.getExpiresIn());
+                }
+                // Recreating the OAuthClientService seems to be the only way to handle this error
                 closeOAuthClientService();
                 createOAuthClientService();
-                if (isAuthorized()) {
-                    return true;
-                } else {
-                    logger.info("API: isAuthorized was NOT successful on second try");
+                try {
+                    oAuthClientService.refreshToken();
+                } catch (OAuthException | IOException | OAuthResponseException e) {
+                    logger.warn("API: Unable to refresh token after receiving error code 14");
+                    bridgeHandler.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unable to refresh access token");
                 }
             }
         } else {
+            bridgeHandler.updateBridgeStatus(ThingStatus.ONLINE);
             return true;
         }
         return false;
