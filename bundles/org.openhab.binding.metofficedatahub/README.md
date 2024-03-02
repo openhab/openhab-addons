@@ -41,40 +41,23 @@ This binding supports the follow thing types:
 The bridge counts the total number of requests from 00:00 -> 23:59 under its properties during the runtime of the system.
 (This reset's if OH restarts, or the binding resets).
 
-| Name                       | Type   | Description                                                                                                                     | Recommended Values |
-|----------------------------|--------|---------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| siteSpecificRateDailyLimit | Number | For the runtime of the system, this is the limit of how many polls for updates are allowed for updates for the SiteSpecific API | 200                |
-| siteSpecificApiKey         | String | The API Key for the Site Specific subscription in your MET Office Data Hub account.                                             |                    |
+| Name                       | Type   | Description                                                                                                                     | Default Values |
+|----------------------------|--------|---------------------------------------------------------------------------------------------------------------------------------|----------------|
+| siteSpecificRateDailyLimit | Number | For the runtime of the system, this is the limit of how many polls for updates are allowed for updates for the SiteSpecific API | 250            |
+| siteSpecificApiKey         | String | The API Key for the Site Specific subscription in your MET Office Data Hub account.                                             |                |
 
 **NOTE:** siteSpecificRateDailyLimit: This **should** prevent any more poll's for the rest of the day to the SiteSpecific API, once this limit is reached as a failsafe against a bad configuration,
 if you don't reboot / delete and re-add the bridge.
 
 ### Site Specific API configuration parameters
 
-| Name                     | Type   | Description                                                    | Recommended Values |
-|--------------------------|--------|----------------------------------------------------------------|--------------------|
-| hourlyForecastPollRate   | Number | The number of hours between polling for each sites hourly data | 1                  |
-| dailyForecastPollRate    | Number | The number of hours between polling for each sites daily data  | 3                  |
-| location                 | String | The lat/long of the site e.g. "51.5072,0.1276"                 |                    |
+| Name                     | Type   | Description                                                    | Default Values |
+|--------------------------|--------|----------------------------------------------------------------|----------------|
+| hourlyForecastPollRate   | Number | The number of hours between polling for each sites hourly data | 1              |
+| dailyForecastPollRate    | Number | The number of hours between polling for each sites daily data  | 3              |
+| location                 | String | The lat/long of the site e.g. "51.5072,0.1276"                 |                |
 
 ## Channels
-
-This binding uses channel groups. 
-The channels under "Forecast for the current hour" will be mirrored for future hours forecasts.
-
-The channel naming follows the following format:
-
-```<Site Specific API Thing Id ><Plus 0x>#<Channel Name>```
-
-For a thing called "currentHoursForecast":
-
-1 hour into the future to get the siteScreenTemperature it would be:
-
-currentHoursForecast**Plus01**#siteScreenTemperature
-
-2 hour's into the future to get the siteScreenTemperature it would be:
-
-currentHoursForecast**Plus02**#siteScreenTemperature
 
 ### Hourly Forecast Channels
 
@@ -98,6 +81,24 @@ currentHoursForecast**Plus02**#siteScreenTemperature
 | max10mWindGust            | Number:Speed         | Maximum 10m Wind Gust Speed of Previous Hour | m/s  |
 | windDirectionFrom10m      | Number:Angle         | 10m Wind From Direction                      | °    |
 | screenDewPointTemperature | Number:Temperature   | Dew Point Temperature                        | °C   |
+
+This binding uses channel groups.
+The channels under "Forecast for the current hour" will be mirrored for future hours forecasts.
+
+The channel naming follows the following format:
+
+```<Site Specific API Thing Id ><Plus 0x>#<Channel Name>```
+
+For a thing called "currentHoursForecast":
+
+1 hour into the future to get the siteScreenTemperature it would be:
+
+currentHoursForecast**Plus01**#siteScreenTemperature
+
+2 hour's into the future to get the siteScreenTemperature it would be:
+
+currentHoursForecast**Plus02**#siteScreenTemperature
+
 
 #### Channel groups for Hourly Forecast Channels:
 
