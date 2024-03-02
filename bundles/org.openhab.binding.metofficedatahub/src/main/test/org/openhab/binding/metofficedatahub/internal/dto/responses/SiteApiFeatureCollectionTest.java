@@ -13,6 +13,7 @@
 package org.openhab.binding.metofficedatahub.internal.dto.responses;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -2106,8 +2107,9 @@ public class SiteApiFeatureCollectionTest {
     public void testSiteApiFeatureHourly() {
         SiteApiFeatureCollection response = MetOfficeDataHubBindingConstants.GSON.fromJson(siteApiHourlyResponse,
                 SiteApiFeatureCollection.class);
-
-        assertEquals(1,response.getFeature().length);
+        assertNotNull(response);
+        assertNotNull(response.getFeature());
+        assertEquals(1, response.getFeature().length);
         assertEquals(SiteApiFeature.TYPE_SITE_API_FEATURE, response.getFeature()[0].getType());
     }
 
@@ -2115,7 +2117,8 @@ public class SiteApiFeatureCollectionTest {
     public void testSiteApiFeatureDaily() {
         SiteApiFeatureCollection response = MetOfficeDataHubBindingConstants.GSON.fromJson(siteApiDailyResponse,
                 SiteApiFeatureCollection.class);
-
+        assertNotNull(response);
+        assertNotNull(response.getFeature());
         assertEquals(1,response.getFeature().length);
         assertEquals(SiteApiFeature.TYPE_SITE_API_FEATURE, response.getFeature()[0].getType());
     }
@@ -2124,7 +2127,9 @@ public class SiteApiFeatureCollectionTest {
     public void testSiteApiFeatureGeometryHourly() {
         SiteApiFeatureCollection response = MetOfficeDataHubBindingConstants.GSON.fromJson(siteApiHourlyResponse,
                 SiteApiFeatureCollection.class);
-
+        assertNotNull(response);
+        assertNotNull(response.getFeature());
+        assertEquals(1, response.getFeature().length);
         assertEquals(SiteApiFeaturePoint.TYPE_SITE_API_FEATURE, response.getFeature()[0].getGeometry().getType());
         assertEquals(-0.32430000000000003,response.getFeature()[0].getGeometry().getLongitude());
         assertEquals(51.0624,response.getFeature()[0].getGeometry().getLatitude());
@@ -2136,6 +2141,9 @@ public class SiteApiFeatureCollectionTest {
         SiteApiFeatureCollection response = MetOfficeDataHubBindingConstants.GSON.fromJson(siteApiDailyResponse,
                 SiteApiFeatureCollection.class);
 
+        assertNotNull(response);
+        assertNotNull(response.getFeature());
+        assertEquals(1, response.getFeature().length);
         assertEquals(SiteApiFeaturePoint.TYPE_SITE_API_FEATURE, response.getFeature()[0].getGeometry().getType());
         assertEquals(-0.32430000000000003,response.getFeature()[0].getGeometry().getLongitude());
         assertEquals(51.0624,response.getFeature()[0].getGeometry().getLatitude());
@@ -2143,77 +2151,89 @@ public class SiteApiFeatureCollectionTest {
     }
 
     @Test
-    public void testSiteApiFeatureProperitiesHourly() {
+    public void testSiteApiFeaturePropertiesHourly() {
         SiteApiFeatureCollection response = MetOfficeDataHubBindingConstants.GSON.fromJson(siteApiHourlyResponse,
                 SiteApiFeatureCollection.class);
 
-        assertEquals("Horsham",response.getFeature()[0].getProperities().getLocation().getName());
-        assertEquals(0.1508,response.getFeature()[0].getProperities().getRequestPointDistance());
-        assertEquals("2022-09-17T20:00Z",response.getFeature()[0].getProperities().getModelRunDate());
+        assertNotNull(response);
+        assertNotNull(response.getFeature());
+        assertEquals(1, response.getFeature().length);
+        assertEquals("Horsham",response.getFeature()[0].getProperties().getLocation().getName());
+        assertEquals(0.1508,response.getFeature()[0].getProperties().getRequestPointDistance());
+        assertEquals("2022-09-17T20:00Z",response.getFeature()[0].getProperties().getModelRunDate());
     }
 
     @Test
-    public void testSiteApiFeatureProperitiesDaily() {
+    public void testSiteApiFeaturePropertiesDaily() {
         SiteApiFeatureCollection response = MetOfficeDataHubBindingConstants.GSON.fromJson(siteApiDailyResponse,
                 SiteApiFeatureCollection.class);
 
-        assertEquals("Horsham",response.getFeature()[0].getProperities().getLocation().getName());
-        assertEquals(0.1508,response.getFeature()[0].getProperities().getRequestPointDistance());
-        assertEquals("2022-09-19T21:00Z",response.getFeature()[0].getProperities().getModelRunDate());
+        assertNotNull(response);
+        assertNotNull(response.getFeature());
+        assertEquals(1, response.getFeature().length);
+        assertEquals("Horsham",response.getFeature()[0].getProperties().getLocation().getName());
+        assertEquals(0.1508,response.getFeature()[0].getProperties().getRequestPointDistance());
+        assertEquals("2022-09-19T21:00Z",response.getFeature()[0].getProperties().getModelRunDate());
     }
 
     @Test
-    public void testSiteApiFeatureProperitiesTimeSeries0Hourly() {
+    public void testSiteApiFeaturePropertiesTimeSeries0Hourly() {
         SiteApiFeatureCollection response = MetOfficeDataHubBindingConstants.GSON.fromJson(siteApiHourlyResponse,
                 SiteApiFeatureCollection.class);
 
-        assertEquals("2022-09-17T20:00Z",response.getFeature()[0].getProperities().getTimeSeries()[0].getTime());
-        assertEquals( 8.55,response.getFeature()[0].getProperities().getTimeSeries()[0].getScreenTemperature());
-        assertEquals( 10.36,response.getFeature()[0].getProperities().getTimeSeries()[0].getMaxScreenTemperature());
-        assertEquals( 8.54,response.getFeature()[0].getProperities().getTimeSeries()[0].getMinScreenTemperature());
-        assertEquals( 4.67,response.getFeature()[0].getProperities().getTimeSeries()[0].getScreenDewPointTemperature());
-        assertEquals( 8.18,response.getFeature()[0].getProperities().getTimeSeries()[0].getFeelsLikeTemperature());
-        assertEquals( 0.46,response.getFeature()[0].getProperities().getTimeSeries()[0].getWindSpeed10m());
-        assertEquals( 297,response.getFeature()[0].getProperities().getTimeSeries()[0].getWindDirectionFrom10m());
-        assertEquals( 4.63,response.getFeature()[0].getProperities().getTimeSeries()[0].getWindGustSpeed10m());
-        assertEquals( 6.43,response.getFeature()[0].getProperities().getTimeSeries()[0].getMax10mWindGust());
-        assertEquals( 19040,response.getFeature()[0].getProperities().getTimeSeries()[0].getVisibility());
-        assertEquals( 76.51,response.getFeature()[0].getProperities().getTimeSeries()[0].getScreenRelativeHumidity());
-        assertEquals( 102230,response.getFeature()[0].getProperities().getTimeSeries()[0].getMslp());
-        assertEquals( 1,response.getFeature()[0].getProperities().getTimeSeries()[0].getUvIndex());
-        assertEquals( 2,response.getFeature()[0].getProperities().getTimeSeries()[0].getSignificantWeatherCode());
-        assertEquals( 3,response.getFeature()[0].getProperities().getTimeSeries()[0].getPrecipitationRate());
-        assertEquals( 4,response.getFeature()[0].getProperities().getTimeSeries()[0].getTotalPrecipAmount());
-        assertEquals( 5,response.getFeature()[0].getProperities().getTimeSeries()[0].getTotalSnowAmount());
-        assertEquals( 60,response.getFeature()[0].getProperities().getTimeSeries()[0].getProbOfPrecipitation());
+        assertNotNull(response);
+        assertNotNull(response.getFeature());
+        assertEquals(1, response.getFeature().length);
+        assertEquals("2022-09-17T20:00Z",response.getFeature()[0].getProperties().getTimeSeries()[0].getTime());
+        assertEquals( 8.55,response.getFeature()[0].getProperties().getTimeSeries()[0].getScreenTemperature());
+        assertEquals( 10.36,response.getFeature()[0].getProperties().getTimeSeries()[0].getMaxScreenTemperature());
+        assertEquals( 8.54,response.getFeature()[0].getProperties().getTimeSeries()[0].getMinScreenTemperature());
+        assertEquals( 4.67,response.getFeature()[0].getProperties().getTimeSeries()[0].getScreenDewPointTemperature());
+        assertEquals( 8.18,response.getFeature()[0].getProperties().getTimeSeries()[0].getFeelsLikeTemperature());
+        assertEquals( 0.46,response.getFeature()[0].getProperties().getTimeSeries()[0].getWindSpeed10m());
+        assertEquals( 297,response.getFeature()[0].getProperties().getTimeSeries()[0].getWindDirectionFrom10m());
+        assertEquals( 4.63,response.getFeature()[0].getProperties().getTimeSeries()[0].getWindGustSpeed10m());
+        assertEquals( 6.43,response.getFeature()[0].getProperties().getTimeSeries()[0].getMax10mWindGust());
+        assertEquals( 19040,response.getFeature()[0].getProperties().getTimeSeries()[0].getVisibility());
+        assertEquals( 76.51,response.getFeature()[0].getProperties().getTimeSeries()[0].getScreenRelativeHumidity());
+        assertEquals( 102230,response.getFeature()[0].getProperties().getTimeSeries()[0].getMslp());
+        assertEquals( 1,response.getFeature()[0].getProperties().getTimeSeries()[0].getUvIndex());
+        assertEquals( 2,response.getFeature()[0].getProperties().getTimeSeries()[0].getSignificantWeatherCode());
+        assertEquals( 3,response.getFeature()[0].getProperties().getTimeSeries()[0].getPrecipitationRate());
+        assertEquals( 4,response.getFeature()[0].getProperties().getTimeSeries()[0].getTotalPrecipAmount());
+        assertEquals( 5,response.getFeature()[0].getProperties().getTimeSeries()[0].getTotalSnowAmount());
+        assertEquals( 60,response.getFeature()[0].getProperties().getTimeSeries()[0].getProbOfPrecipitation());
     }
 
     @Test
-    public void testSiteApiFeatureProperitiesTimeSeries0Daily() {
+    public void testSiteApiFeaturePropertiesTimeSeries0Daily() {
         SiteApiFeatureCollection response = MetOfficeDataHubBindingConstants.GSON.fromJson(siteApiDailyResponse,
                 SiteApiFeatureCollection.class);
 
-        assertEquals("2022-09-18T00:00Z",response.getFeature()[0].getProperities().getTimeSeries()[0].getTime());
-        assertEquals( 1.39,response.getFeature()[0].getProperities().getTimeSeries()[0].getMidnight10MWindSpeed());
-        assertEquals( 31,response.getFeature()[0].getProperities().getTimeSeries()[0].getMidnight10MWindDirection());
-        assertEquals( 5.66,response.getFeature()[0].getProperities().getTimeSeries()[0].getMidnight10MWindGust());
-        assertEquals( 8776,response.getFeature()[0].getProperities().getTimeSeries()[0].getMidnightVisibility());
-        assertEquals( 91.42,response.getFeature()[0].getProperities().getTimeSeries()[0].getMidnightRelativeHumidity());
-        assertEquals( 102310,response.getFeature()[0].getProperities().getTimeSeries()[0].getMidnightMslp());
-        assertEquals( 2,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightSignificantWeatherCode());
-        assertEquals( 8.05,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightMinScreenTemperature());
-        assertEquals( 12.79,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightUpperBoundMinTemp());
-        assertEquals( 5.51,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightLowerBoundMinTemp());
-        assertEquals( 7.35,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightMinFeelsLikeTemp());
-        assertEquals( 12.83,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightUpperBoundMinFeelsLikeTemp());
-        assertEquals( 7.33,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightLowerBoundMinFeelsLikeTemp());
-        assertEquals( 5,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightProbabilityOfPrecipitation());
-        assertEquals( 0,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightProbabilityOfSnow());
-        assertEquals( 1,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightProbabilityOfHeavySnow());
-        assertEquals( 5,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightProbabilityOfRain());
-        assertEquals( 3,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightProbabilityOfHeavyRain());
-        assertEquals( 4,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightProbabilityOfHail());
-        assertEquals( 6,response.getFeature()[0].getProperities().getTimeSeries()[0].getNightProbabilityOfSferics());
+        assertNotNull(response);
+        assertNotNull(response.getFeature());
+        assertEquals(1, response.getFeature().length);
+        assertEquals("2022-09-18T00:00Z",response.getFeature()[0].getProperties().getTimeSeries()[0].getTime());
+        assertEquals( 1.39,response.getFeature()[0].getProperties().getTimeSeries()[0].getMidnight10MWindSpeed());
+        assertEquals( 31,response.getFeature()[0].getProperties().getTimeSeries()[0].getMidnight10MWindDirection());
+        assertEquals( 5.66,response.getFeature()[0].getProperties().getTimeSeries()[0].getMidnight10MWindGust());
+        assertEquals( 8776,response.getFeature()[0].getProperties().getTimeSeries()[0].getMidnightVisibility());
+        assertEquals( 91.42,response.getFeature()[0].getProperties().getTimeSeries()[0].getMidnightRelativeHumidity());
+        assertEquals( 102310,response.getFeature()[0].getProperties().getTimeSeries()[0].getMidnightMslp());
+        assertEquals( 2,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightSignificantWeatherCode());
+        assertEquals( 8.05,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightMinScreenTemperature());
+        assertEquals( 12.79,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightUpperBoundMinTemp());
+        assertEquals( 5.51,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightLowerBoundMinTemp());
+        assertEquals( 7.35,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightMinFeelsLikeTemp());
+        assertEquals( 12.83,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightUpperBoundMinFeelsLikeTemp());
+        assertEquals( 7.33,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightLowerBoundMinFeelsLikeTemp());
+        assertEquals( 5,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightProbabilityOfPrecipitation());
+        assertEquals( 0,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightProbabilityOfSnow());
+        assertEquals( 1,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightProbabilityOfHeavySnow());
+        assertEquals( 5,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightProbabilityOfRain());
+        assertEquals( 3,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightProbabilityOfHeavyRain());
+        assertEquals( 4,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightProbabilityOfHail());
+        assertEquals( 6,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightProbabilityOfSferics());
     }
 
     @Test
@@ -2221,12 +2241,15 @@ public class SiteApiFeatureCollectionTest {
         SiteApiFeatureCollection response = MetOfficeDataHubBindingConstants.GSON.fromJson(siteApiHourlyResponse,
                 SiteApiFeatureCollection.class);
 
-        assertEquals( 0,response.getFeature()[0].getProperities().getHourlyTimeSeriesPositionForCurrentHour("2022-09-17T20:00Z"));
-        assertEquals( 1,response.getFeature()[0].getProperities().getHourlyTimeSeriesPositionForCurrentHour("2022-09-17T21:00Z"));
-        assertEquals( 2,response.getFeature()[0].getProperities().getHourlyTimeSeriesPositionForCurrentHour("2022-09-17T22:00Z"));
-        assertEquals( 3,response.getFeature()[0].getProperities().getHourlyTimeSeriesPositionForCurrentHour("2022-09-17T23:00Z"));
-        assertEquals( 24,response.getFeature()[0].getProperities().getHourlyTimeSeriesPositionForCurrentHour("2022-09-18T20:00Z"));
-        assertEquals( 48,response.getFeature()[0].getProperities().getHourlyTimeSeriesPositionForCurrentHour("2022-09-19T20:00Z"));
+        assertNotNull(response);
+        assertNotNull(response.getFeature());
+        assertEquals(1, response.getFeature().length);
+        assertEquals( 0,response.getFeature()[0].getProperties().getHourlyTimeSeriesPositionForCurrentHour("2022-09-17T20:00Z"));
+        assertEquals( 1,response.getFeature()[0].getProperties().getHourlyTimeSeriesPositionForCurrentHour("2022-09-17T21:00Z"));
+        assertEquals( 2,response.getFeature()[0].getProperties().getHourlyTimeSeriesPositionForCurrentHour("2022-09-17T22:00Z"));
+        assertEquals( 3,response.getFeature()[0].getProperties().getHourlyTimeSeriesPositionForCurrentHour("2022-09-17T23:00Z"));
+        assertEquals( 24,response.getFeature()[0].getProperties().getHourlyTimeSeriesPositionForCurrentHour("2022-09-18T20:00Z"));
+        assertEquals( 48,response.getFeature()[0].getProperties().getHourlyTimeSeriesPositionForCurrentHour("2022-09-19T20:00Z"));
     }
 
 }

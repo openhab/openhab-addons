@@ -183,13 +183,13 @@
 				<label>Location of Weather</label>
 				<description>Location of weather forecast in geographical coordinates (latitude/longitude).</description>
 			</parameter>
-			<parameter name="siteSpecificHourlyForecastPollRate" type="integer" min="1" max="24">
+			<parameter name="hourlyForecastPollRate" type="integer" min="1" max="24">
 				<label>Hours between polls for Hourly Forecast data</label>
 				<description>The default number of hours to wait between retrieving hourly forecast data</description>
 				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="siteSpecificDailyForecastPollRate" type="integer" min="1" max="24">
+			<parameter name="dailyForecastPollRate" type="integer" min="1" max="24">
 				<label>Hours between polls for Daily Forecast data</label>
 				<description>The default number of hours to wait between retrieving hourly forecast data</description>
 				<default>3</default>

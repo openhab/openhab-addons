@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatureCollection;
-import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatureProperities;
+import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatureProperties;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiTimeSeries;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -170,7 +170,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             return;
         }
 
-        final SiteApiFeatureProperities props = response.getFirstProperities();
+        final SiteApiFeatureProperties props = response.getFirstProperties();
         if (props == null) {
             return;
         }
@@ -247,7 +247,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             return;
         }
 
-        final SiteApiFeatureProperities props = response.getFirstProperities();
+        final SiteApiFeatureProperties props = response.getFirstProperties();
         if (props == null) {
             return;
         }
@@ -462,7 +462,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private volatile String lastDailyResponse = "";
     private volatile String lastHourlyResponse = "";
 
-    private void updateCommonData(final SiteApiFeatureProperities responseProps) {
+    private void updateCommonData(final SiteApiFeatureProperties responseProps) {
         String name = null;
         if (responseProps.getLocation() != null) {
             name = responseProps.getLocation().getName();
@@ -574,7 +574,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private void reconfigureHourlyPolling() {
         final MetOfficeDataHubSiteApiConfiguration config = getConfigAs(MetOfficeDataHubSiteApiConfiguration.class);
         long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
-        long pollRateMillis = config.siteSpecificHourlyForecastPollRate * 3600000;
+        long pollRateMillis = config.hourlyForecastPollRate * 3600000;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
                 + pollRateMillis) - millisSinceDayStart;
         long lastPollExpectedTime = System.currentTimeMillis() - (pollRateMillis - initialDelayTimeToFirstCycle);
@@ -608,7 +608,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private void reconfigureDailyPolling() {
         final MetOfficeDataHubSiteApiConfiguration config = getConfigAs(MetOfficeDataHubSiteApiConfiguration.class);
         long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
-        long pollRateMillis = config.siteSpecificDailyForecastPollRate * 3600000;
+        long pollRateMillis = config.dailyForecastPollRate * 3600000;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
                 + pollRateMillis) - millisSinceDayStart;
         long lastPollExpectedTime = System.currentTimeMillis() - (pollRateMillis - initialDelayTimeToFirstCycle);
@@ -774,7 +774,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private void scheduleNextHourlyForecastPoll() {
         final MetOfficeDataHubSiteApiConfiguration config = getConfigAs(MetOfficeDataHubSiteApiConfiguration.class);
         long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
-        long pollRateMillis = config.siteSpecificHourlyForecastPollRate * 3600000;
+        long pollRateMillis = config.hourlyForecastPollRate * 3600000;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
                 + pollRateMillis) - millisSinceDayStart;
         initialDelayTimeToFirstCycle += RANDOM_GENERATOR.nextInt(60000);
@@ -803,7 +803,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private void scheduleNextDailyForecastPoll() {
         final MetOfficeDataHubSiteApiConfiguration config = getConfigAs(MetOfficeDataHubSiteApiConfiguration.class);
         long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
-        long pollRateMillis = config.siteSpecificDailyForecastPollRate * 3600000;
+        long pollRateMillis = config.dailyForecastPollRate * 3600000;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
                 + pollRateMillis) - millisSinceDayStart;
         if (initialDelayTimeToFirstCycle + millisSinceDayStart > DAY_IN_MILLIS) {

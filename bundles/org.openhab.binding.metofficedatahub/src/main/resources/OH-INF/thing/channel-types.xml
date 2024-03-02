@@ -14,7 +14,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="siteApiHourlyForecastGroup">
-		<label>Site API - Hourly Forecast</label>
+		<label>Hourly Forecast</label>
 		<description>Site Specific Location weather forecast - Hourly basis</description>
 		<channels>
 			<!-- SHOULD ADD FORECAST TIME HERE REALLY -->
@@ -40,7 +40,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="siteApiHourlyForecastCurrentHourGroup">
-		<label>Site API - Hourly Forecast</label>
+		<label>Hourly Forecast</label>
 		<description>Site Specific Location weather forecast - Hourly basis</description>
 		<channels>
 			<!-- SHOULD ADD FORECAST TIME HERE REALLY -->
@@ -66,7 +66,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="siteApiDailyForecastGroup">
-		<label>Site API - Daily Forecast</label>
+		<label>Daily Forecast</label>
 		<description>Site Specific Location weather forecast - Daily basis</description>
 		<channels>
 			<!-- SHOULD ADD FORECAST TIME HERE REALLY -->
@@ -113,7 +113,7 @@
 		</channels>
 	</channel-group-type>
 
-	<!-- Channels for MetOfficeDataHub Binding - Site API - Hourly Forecast -->
+	<!-- Channels for MetOfficeDataHub Binding - Hourly Forecast -->
 	<channel-type id="locationNameType">
 		<item-type>String</item-type>
 		<label>Name of location represented</label>
@@ -265,7 +265,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<!-- Channels for MetOfficeDataHub Binding - Site API - Daily Forecast -->
+	<!-- Channels for MetOfficeDataHub Binding - Daily Forecast -->
 	<channel-type id="middayWindSpeed10mType">
 		<item-type>Number:Speed</item-type>
 		<label>10m Wind Speed at Local Midday</label>
