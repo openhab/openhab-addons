@@ -18,7 +18,7 @@
     <dependency>
       <groupId>com.github.oshi</groupId>
       <artifactId>oshi-core</artifactId>
-      <version>6.4.8</version>
+      <version>6.4.12</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -26,6 +26,16 @@
           <artifactId>slf4j-api</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>${jna.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna-platform</artifactId>
+      <version>${jna.version}</version>
     </dependency>
   </dependencies>
 
