@@ -356,10 +356,10 @@ public class EcobeeApi implements AccessTokenRefreshListener {
                 // Recreating the OAuthClientService seems to be the only way to handle this error
                 closeOAuthClientService();
                 createOAuthClientService();
-                try {
-                    oAuthClientService.refreshToken();
-                } catch (OAuthException | IOException | OAuthResponseException e) {
-                    logger.warn("API: Unable to refresh token after receiving error code 14");
+                if (isAuthorized()) {
+                    return true;
+                } else {
+                    logger.warn("API: isAuthorized was NOT successful on second try");
                     bridgeHandler.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unable to refresh access token");
                 }
