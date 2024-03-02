@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.pulseaudio.internal;
 
-import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants.*;
+import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants.MODULE_SIMPLE_PROTOCOL_TCP_NAME;
 import static org.openhab.binding.pulseaudio.internal.cli.Parser.extractArgumentFromLine;
 
 import java.io.IOException;
@@ -356,7 +356,7 @@ public class PulseaudioClient {
         }
         String itemType = getItemCommandName(item);
         do {
-            int simpleTcpPortToTry = new Random().nextInt(minPort) + maxPort; // a random port above 1024
+            int simpleTcpPortToTry = new Random().nextInt(minPort, maxPort); // a random port above 1024
             logger.debug("trying to load simple protocol tcp module at port {}", simpleTcpPortToTry);
             String moduleOptions = String.format(" %s=%s port=%d format=%s rate=%d channels=%d", itemType,
                     item.getPaName(), simpleTcpPortToTry, paFormat, rate, channels);
@@ -398,7 +398,7 @@ public class PulseaudioClient {
             case 32:
                 return "s32" + (Objects.requireNonNull(format.isBigEndian()) ? "be" : "le");
             default:
-                throw new IllegalArgumentException("Unsupported format");
+                throw new IllegalArgumentException("Unsupported format : " + format.getBitDepth());
         }
     }
 

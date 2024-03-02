@@ -147,8 +147,6 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
                         }
                     } catch (RuntimeException e) {
                         logger.warn("RuntimeException while reading from pulse source: {}", getExceptionMessage(e));
-                    } catch (InterruptedException e) {
-                        logger.warn("InterruptedException while reading from pulse source: {}", getExceptionMessage(e));
                     }
                 }
                 releaseModuleOp.run();

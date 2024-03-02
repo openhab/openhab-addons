@@ -100,12 +100,10 @@ public abstract class PulseaudioSimpleProtocolStream {
 
     /**
      * Connect to pulseaudio with the simple protocol
-     * Will schedule an attempt for disconnection after timeout
      *
      * @throws IOException
-     * @throws InterruptedException when interrupted during the loading module wait
      */
-    public Socket connectIfNeeded(SimpleProtocolTCPModule spModule) throws IOException, InterruptedException {
+    public Socket connectIfNeeded(SimpleProtocolTCPModule spModule) throws IOException {
         Socket spSocket = moduleSockets.get(spModule.getId());
         if (spSocket == null || !spSocket.isConnected() || spSocket.isClosed()) {
             logger.debug("Simple TCP Stream connecting to module {} in {}", spModule.getId(), getLabel(null));
