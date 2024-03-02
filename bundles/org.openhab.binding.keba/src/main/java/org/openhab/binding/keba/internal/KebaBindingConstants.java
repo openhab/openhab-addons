@@ -87,8 +87,8 @@ public class KebaBindingConstants {
          */
         E('0'),
         B('1'),
-        C('2', 'A'),
-        A('3'),
+        C('2', '3', 'A'), // '3' is P20 c-series + PLC
+        // A('3'), // '3' is also P30 a-series - but P30 a-series doesn't support the required UDS protocol
         X('B', 'C', 'D', 'E', 'G', 'H', 'S', 'U');
 
         private final List<Character> things = new ArrayList<>();
