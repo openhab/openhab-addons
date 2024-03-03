@@ -28,6 +28,10 @@ public class Daily {
     private int dt;
     private int sunrise;
     private int sunset;
+    private int moonrise;
+    private int moonset;
+    @SerializedName("moon_phase")
+    private double moonPhase;
     private Temp temp;
     @SerializedName("feels_like")
     private FeelsLikeTemp feelsLikeTemp;
@@ -59,6 +63,18 @@ public class Daily {
 
     public int getSunset() {
         return sunset;
+    }
+
+    public int getMoonrise() {
+        return moonrise;
+    }
+
+    public int getMoonset() {
+        return moonset;
+    }
+
+    public double getMoonPhase() {
+        return moonPhase;
     }
 
     public Temp getTemp() {

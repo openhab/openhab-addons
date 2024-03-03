@@ -243,7 +243,7 @@ public class GoogleSTTService implements STTService {
         // Gather stream info and send config
         AudioFormat streamFormat = audioStream.getFormat();
         RecognitionConfig.AudioEncoding streamEncoding;
-        if (AudioFormat.WAV.isCompatible(streamFormat)) {
+        if (AudioFormat.PCM_SIGNED.isCompatible(streamFormat) || AudioFormat.WAV.isCompatible(streamFormat)) {
             streamEncoding = RecognitionConfig.AudioEncoding.LINEAR16;
         } else {
             logger.debug("Unsupported format {}", streamFormat);
