@@ -19,12 +19,12 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -43,6 +43,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
@@ -109,6 +110,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     private static final int BRIDGE_WEBSOCKET_RECONNECT_DELAY = 60;
     private static final int BRIDGE_WEBSOCKET_TIMEOUT = 90;
     private static final int BRIDGE_WEBSOCKET_KEEPALIVE = 50;
+    private static final String BRIDGE_URL_GETDEVICELIST = "/rest/devicelist";
 
     public FreeAtHomeBridgeHandler(Bridge thing, HttpClient client) {
         super(thing);
@@ -138,7 +140,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
         listOfComponentId.clear();
 
-        String url = baseUrl + "/rest/devicelist";
+        String url = baseUrl + BRIDGE_URL_GETDEVICELIST;
 
         // Perform a simple GET and wait for the response.
         try {
@@ -457,7 +459,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             URI uri1 = new URI(baseUrl);
             auth.addAuthenticationResult(new BasicAuthentication.BasicResult(uri1, username, password));
 
-            String url = baseUrl + "/rest/devicelist";
+            String url = baseUrl + BRIDGE_URL_GETDEVICELIST;
 
             Request req = httpClient.newRequest(url);
             ContentResponse res = req.send();

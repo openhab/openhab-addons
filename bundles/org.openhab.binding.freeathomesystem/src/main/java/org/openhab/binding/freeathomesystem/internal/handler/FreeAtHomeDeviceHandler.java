@@ -103,34 +103,29 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
             logger.debug("Start creating device - device id: {}", device.getDeviceId());
 
             if (bridge != null) {
-                ThingHandler handler = bridge.getHandler();
+                FreeAtHomeBridgeHandler bridgeHandler = (FreeAtHomeBridgeHandler) bridge.getHandler();
 
-                if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
-                    freeAtHomeBridge = bridgeHandler;
+                String locDeviceId = properties.get("deviceId");
 
-                        String locDeviceId = properties.get("deviceId");
-
-                        if (locDeviceId != null) {
-                            try {
-                                device = bridgeHandler.getFreeatHomeDeviceDescription(locDeviceId);
-                            } catch (FreeAtHomeHttpCommunicationException e) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "@text/comm-error.error-in-sysap-com");
-                            }
-
-                            // update or reload channels
-                            updateChannels();
-
-                            // register device for status updates
-                            bridgeHandler.registerDeviceStateListener(device.getDeviceId(), this);
-
-                            updateStatus(ThingStatus.ONLINE);
-
-                            logger.debug("Device created - device id: {}", device.getDeviceId());
-                        } else {
-                            logger.debug("Device cannot be created: device ID is null");
-                        }
+                if (locDeviceId != null) {
+                    try {
+                        device = bridgeHandler.getFreeatHomeDeviceDescription(locDeviceId);
+                    } catch (FreeAtHomeHttpCommunicationException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/comm-error.error-in-sysap-com");
                     }
+
+                    // update or reload channels
+                    updateChannels();
+
+                    // register device for status updates
+                    bridgeHandler.registerDeviceStateListener(device.getDeviceId(), this);
+
+                    updateStatus(ThingStatus.ONLINE);
+
+                    logger.debug("Device created - device id: {}", device.getDeviceId());
+                } else {
+                    logger.debug("Device cannot be created: device ID is null");
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -153,7 +148,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
             ThingHandler handler = bridge.getHandler();
 
             if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
-                bridgeHandler.unRegisterDeviceStateListener(device.getDeviceId());
+                bridgeHandler.unregisterDeviceStateListener(device.getDeviceId());
             }
         }
 

@@ -240,8 +240,6 @@ public class FreeAtHomeDatapointGroup {
                 valueStateConverter = new BooleanValueStateConverter();
                 break;
             case PidTranslationUtils.PID_VALUETYPE_DECIMAL:
-                valueStateConverter = new DecimalValueStateConverter();
-                break;
             case PidTranslationUtils.PID_VALUETYPE_INTEGER:
                 valueStateConverter = new DecimalValueStateConverter();
                 break;
@@ -270,8 +268,6 @@ public class FreeAtHomeDatapointGroup {
                 itemTypeString = CoreItemFactory.SWITCH;
                 break;
             case PidTranslationUtils.PID_VALUETYPE_DECIMAL:
-                itemTypeString = CoreItemFactory.NUMBER;
-                break;
             case PidTranslationUtils.PID_VALUETYPE_INTEGER:
                 itemTypeString = CoreItemFactory.NUMBER;
                 break;

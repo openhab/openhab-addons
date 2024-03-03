@@ -39,6 +39,6 @@ public class UidUtils {
     }
 
     public static ThingTypeUID generateThingUID() {
-        return new ThingTypeUID(BINDING_ID, FREEATHOMEDEVICE_TYPE_ID);
+        return new ThingTypeUID(BINDING_ID, DEVICE_TYPE_ID);
     }
 }

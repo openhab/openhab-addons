@@ -60,7 +60,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
                 for (int i = 0; (i < deviceList.size()) && !isScanTerminated; i++) {
                     FreeAtHomeDeviceDescription device = thingHandler.getFreeatHomeDeviceDescription(deviceList.get(i));
 
-                    ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.FREEATHOMEDEVICE_TYPE_UID, bridgeUID,
+                    ThingUID uid = new ThingUID(FreeAtHomeSystemBindingConstants.DEVICE_TYPE_UID, bridgeUID,
                             device.deviceId);
                     Map<String, Object> properties = new HashMap<>(1);
                     properties.put("deviceId", device.deviceId);
@@ -68,8 +68,9 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
 
                     String deviceLabel = device.deviceLabel;
 
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(deviceLabel).withRepresentationProperty(device.deviceId)
-                            .withBridge(bridgeUID).withProperties(properties).build();
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(deviceLabel)
+                            .withRepresentationProperty(device.deviceId).withBridge(bridgeUID)
+                            .withProperties(properties).build();
 
                     thingDiscovered(discoveryResult);
 

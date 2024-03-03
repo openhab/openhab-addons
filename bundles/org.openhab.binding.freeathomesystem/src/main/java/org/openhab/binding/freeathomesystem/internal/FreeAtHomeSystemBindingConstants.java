@@ -36,8 +36,7 @@ public class FreeAtHomeSystemBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_UID = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_ID);
-    public static final ThingTypeUID FREEATHOMEDEVICE_TYPE_UID = new ThingTypeUID(BINDING_ID, FREEATHOMEDEVICE_TYPE_ID);
+    public static final ThingTypeUID DEVICE_TYPE_UID = new ThingTypeUID(BINDING_ID, DEVICE_TYPE_ID);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_TYPE_UID,
-            FREEATHOMEDEVICE_TYPE_UID);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_TYPE_UID, DEVICE_TYPE_UID);
 }

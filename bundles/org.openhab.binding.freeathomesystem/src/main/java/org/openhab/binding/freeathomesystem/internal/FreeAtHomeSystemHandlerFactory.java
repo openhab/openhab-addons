@@ -107,7 +107,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
 
         if (BRIDGE_TYPE_UID.equals(thingTypeUID)) {
             return new FreeAtHomeBridgeHandler((Bridge) thing, httpClient);
-        } else if (FREEATHOMEDEVICE_TYPE_UID.equals(thingTypeUID)) {
+        } else if (DEVICE_TYPE_UID.equals(thingTypeUID)) {
             return new FreeAtHomeDeviceHandler(thing, channelTypeProvider, i18nProvider, localeProvider);
         }
 
