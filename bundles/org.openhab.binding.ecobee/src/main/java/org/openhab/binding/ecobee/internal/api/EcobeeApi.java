@@ -46,7 +46,6 @@ import org.openhab.binding.ecobee.internal.dto.thermostat.summary.SummaryRespons
 import org.openhab.binding.ecobee.internal.function.FunctionRequest;
 import org.openhab.binding.ecobee.internal.handler.EcobeeAccountBridgeHandler;
 import org.openhab.binding.ecobee.internal.util.ExceptionUtils;
-import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -69,7 +68,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-public class EcobeeApi implements AccessTokenRefreshListener {
+public class EcobeeApi {
 
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())
@@ -133,14 +132,12 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     public void deleteOAuthClientService() {
         String bridgeUID = bridgeHandler.getThing().getUID().getAsString();
         logger.debug("API: Deleting OAuth Client Service for {}", bridgeUID);
-        oAuthClientService.removeAccessTokenRefreshListener(this);
         oAuthFactory.deleteServiceAndAccessToken(bridgeUID);
     }
 
     public void closeOAuthClientService() {
         String bridgeUID = bridgeHandler.getThing().getUID().getAsString();
         logger.debug("API: Closing OAuth Client Service for {}", bridgeUID);
-        oAuthClientService.removeAccessTokenRefreshListener(this);
         oAuthFactory.ungetOAuthService(bridgeUID);
     }
 
@@ -201,10 +198,6 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             logger.debug("API: Exception getting access token: error='{}', description='{}'", e.getError(),
                     e.getErrorDescription());
         }
-    }
-
-    @Override
-    public void onAccessTokenResponse(AccessTokenResponse accessTokenResponse) {
     }
 
     public @Nullable SummaryResponseDTO performThermostatSummaryQuery() {
