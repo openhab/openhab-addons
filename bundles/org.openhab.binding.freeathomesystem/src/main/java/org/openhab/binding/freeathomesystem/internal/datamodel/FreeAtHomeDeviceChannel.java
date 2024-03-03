@@ -41,7 +41,7 @@ public class FreeAtHomeDeviceChannel {
     private String channelId = "";
     private String channelFunctionID = "";
 
-    public List<FreeAtHomeDatapointGroup> datapointGroups = new ArrayList<>();
+    private List<FreeAtHomeDatapointGroup> datapointGroups = new ArrayList<>();
 
     public boolean createChannelFromJson(String deviceLabel, String channelId, JsonObject jsonObjectOfChannels,
             boolean isScene, boolean isRule) {

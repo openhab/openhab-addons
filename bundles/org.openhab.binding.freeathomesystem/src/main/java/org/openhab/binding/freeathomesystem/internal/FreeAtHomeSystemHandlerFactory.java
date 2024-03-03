@@ -66,20 +66,20 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
         this.localeProvider = localeProvider;
 
         // create httpClient
-        this.httpClient = httpClientFactory.createHttpClient(FreeAtHomeSystemBindingConstants.BINDING_ID);
+        httpClient = httpClientFactory.createHttpClient(FreeAtHomeSystemBindingConstants.BINDING_ID);
 
         // Configure client
-        this.httpClient.setFollowRedirects(false);
-        this.httpClient.setMaxConnectionsPerDestination(1);
-        this.httpClient.setMaxRequestsQueuedPerDestination(50);
+        httpClient.setFollowRedirects(false);
+        httpClient.setMaxConnectionsPerDestination(1);
+        httpClient.setMaxRequestsQueuedPerDestination(50);
 
         // Set timeouts
-        this.httpClient.setIdleTimeout(-1);
-        this.httpClient.setConnectTimeout(5000);
+        httpClient.setIdleTimeout(-1);
+        httpClient.setConnectTimeout(5000);
 
         try {
             // Start HttpClient.
-            this.httpClient.start();
+            httpClient.start();
         } catch (Exception ex) {
             logger.error("ould not create HttpClient: {}", ex.getMessage());
 

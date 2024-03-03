@@ -82,7 +82,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeBridgeHandler.class);
 
-    private Map<String, FreeAtHomeDeviceHandler> mapEventListeners = new HashMap<String, FreeAtHomeDeviceHandler>();
+    private Map<String, FreeAtHomeDeviceHandler> mapEventListeners = new ConcurrentHashMap<>();
 
     // Clients for the network communication
     private HttpClient httpClient;
@@ -440,7 +440,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         mapEventListeners.put(deviceID, deviceHandler);
     }
 
-    public void unRegisterDeviceStateListener(String deviceID) {
+    public void unregisterDeviceStateListener(String deviceID) {
         mapEventListeners.remove(deviceID);
     }
 
@@ -463,7 +463,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             ContentResponse res = req.send();
 
             // check status
-            if (res.getStatus() == 200) {
+            if (res.getStatus() == HttpStatus.OK_200) {
                 // response OK
                 httpConnectionOK.set(true);
 
@@ -558,6 +558,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             } catch (Exception e1) {
                 logger.debug("Error by closing Websocket connection [{}]", e1.getMessage());
             }
+            jettyThreadPool = null;
         }
 
         WebSocketClient localWebSocketClient = websocketClient;
@@ -568,6 +569,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             } catch (Exception e2) {
                 logger.debug("Error by closing Websocket connection [{}]", e2.getMessage());
             }
+            websocketClient = null;
         }
     }
 

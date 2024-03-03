@@ -68,7 +68,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
 
                     String deviceLabel = device.deviceLabel;
 
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(deviceLabel)
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(deviceLabel).withRepresentationProperty(device.deviceId)
                             .withBridge(bridgeUID).withProperties(properties).build();
 
                     thingDiscovered(discoveryResult);
@@ -93,7 +93,7 @@ public class FreeAtHomeSystemDiscoveryService extends AbstractThingHandlerDiscov
     }
 
     public FreeAtHomeSystemDiscoveryService() {
-        super(FreeAtHomeBridgeHandler.class, FreeAtHomeSystemBindingConstants.SUPPORTED_THING_TYPES_UIDS, 90, false);
+        this(90);
     }
 
     @Override
