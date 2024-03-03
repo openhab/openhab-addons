@@ -13,5 +13,6 @@
 			<property name="vendor">Busch&amp;Jäger - ABB</property>
 			<property name="modelId">Generic free@home Device</property>
 		</properties>
+		<representation-property>deviceId</representation-property>
 	</thing-type>
 </thing:thing-descriptions>

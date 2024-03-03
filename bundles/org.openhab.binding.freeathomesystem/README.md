@@ -114,10 +114,10 @@ The creation of the openHAB channels to operate the free@home device is happenin
 Sample for the free@home thermostat device
 
 ```java
-Number Livingroom_MeasuredTemperature                     "Measured Temperature"            <temperature>  (Livingroom)  ["Measurement"]  { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatMeasuredTemperature" }
-Number LivingRoom_Thermostat_SetpointTemperature          "Setpoint Temperature"            <temperature>  (Livingroom)  ["Setpoint"]     { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatSetpointTemperature" }
-Switch LivingRoom_Thermostat_ThermostatActivationOnOff    "Thermostat Activation"           <switch>       (Livingroom)  ["Setpoint"]     { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatOnoffSwitch" }
-Switch LivingRoom_Thermostat_MainEcoOnOff                 "Thermostat Eco Activation"       <switch>       (Livingroom)  ["Setpoint"]     { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatEcoSwitch" }
+Number Livingroom_MeasuredTemperature                     "Measured Temperature"            <temperature>  (Livingroom)  ["Measurement", "Temperature"] { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatMeasuredTemperature" }
+Number LivingRoom_Thermostat_SetpointTemperature          "Setpoint Temperature"            <temperature>  (Livingroom)  ["Setpoint", "Temperature"] { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatSetpointTemperature" }
+Switch LivingRoom_Thermostat_ThermostatActivationOnOff    "Thermostat Activation"           <switch>       (Livingroom) { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatOnoffSwitch" }
+Switch LivingRoom_Thermostat_MainEcoOnOff                 "Thermostat Eco Activation"       <switch>       (Livingroom) { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatEcoSwitch" }
 Number LivingRoom_ThermostatHeatingActive                 "Thermostat Heating Active"       <temperature>  (Livingroom)  ["Status"]       { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatHeatingActive" }
 Number LivingRoom_ThermostatHeatingDemand                 "Thermostat Heating Demand"       <temperature>  (Livingroom)  ["Status"]       { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatHeatingDemand" }
 ```
