@@ -1030,6 +1030,42 @@ public enum EcoTouchTags {
         }
     },
 
+    // German: % Leistungsbegrenzung Min Ausgang
+    TYPE_PRECENT_WATER_LIMIT_MIN {
+        {
+            command = "percent_water_limit_min";
+            unit = PERCENT;
+            tagName = "A172";
+        }
+    },
+
+    // German: % Leistungsbegrenzung Max Ausgang
+    TYPE_PRECENT_WATER_LIMIT_MAX {
+        {
+            command = "percent_water_limit_max";
+            unit = PERCENT;
+            tagName = "A171";
+        }
+    },
+
+    // German: % Heizung Leistungsbegrenzung Min Ausgang
+    TYPE_PRECENT_HEATING_LIMIT_MIN {
+        {
+            command = "percent_heating_limit_min";
+            unit = PERCENT;
+            tagName = "A505";
+        }
+    },
+
+    // German: % Heizung Leistungsbegrenzung Max Ausgang
+    TYPE_PRECENT_HEATING_LIMIT_MAX {
+        {
+            command = "percent_heating_limit_max";
+            unit = PERCENT;
+            tagName = "A504";
+        }
+    },
+
     //
     // The following tags are only available, if an Ecovent System is attached to the Ecotouch
     //
