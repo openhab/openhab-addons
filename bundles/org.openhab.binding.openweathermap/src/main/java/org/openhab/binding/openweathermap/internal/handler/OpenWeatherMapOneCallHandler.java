@@ -666,6 +666,15 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
             case CHANNEL_SUNSET:
                 state = getDateTimeTypeState(forecastData.getSunset());
                 break;
+            case CHANNEL_MOONRISE:
+                state = getDateTimeTypeState(forecastData.getMoonrise());
+                break;
+            case CHANNEL_MOONSET:
+                state = getDateTimeTypeState(forecastData.getMoonset());
+                break;
+            case CHANNEL_MOON_PHASE:
+                state = getDecimalTypeState(forecastData.getMoonPhase());
+                break;
             case CHANNEL_CONDITION:
                 if (!forecastData.getWeather().isEmpty()) {
                     state = getStringTypeState(forecastData.getWeather().get(0).getDescription());

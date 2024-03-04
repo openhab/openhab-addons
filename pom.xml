@@ -73,6 +73,7 @@
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.2.1</eea.version>
     <jackson.version>2.16.0</jackson.version>
+    <jna.version>5.14.0</jna.version>
     <karaf.version>4.4.4</karaf.version>
     <netty.version>4.1.104.Final</netty.version>
     <okhttp.version>3.14.9</okhttp.version>

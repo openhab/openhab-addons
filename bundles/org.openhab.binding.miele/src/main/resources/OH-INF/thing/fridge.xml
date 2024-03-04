@@ -24,8 +24,14 @@
 				<description>Target temperature to be reached by the fridge</description>
 			</channel>
 			<channel id="door" typeId="door"/>
+			<channel id="info" typeId="info"/>
+			<channel id="failure" typeId="failure"/>
 			<channel id="start" typeId="switch"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>uid</representation-property>
 

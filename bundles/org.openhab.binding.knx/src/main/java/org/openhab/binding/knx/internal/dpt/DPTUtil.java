@@ -64,7 +64,7 @@ public class DPTUtil {
             Map.entry("3", Set.of(IncreaseDecreaseType.class)), //
             Map.entry("4", Set.of(StringType.class)), //
             Map.entry("5", Set.of(QuantityType.class, DecimalType.class)), //
-            Map.entry("6", Set.of(QuantityType.class, DecimalType.class)), //
+            Map.entry("6", Set.of(QuantityType.class, DecimalType.class, StringType.class)), //
             Map.entry("7", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("8", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("9", Set.of(QuantityType.class, DecimalType.class)), //
