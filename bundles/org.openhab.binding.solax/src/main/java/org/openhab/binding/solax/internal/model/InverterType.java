@@ -18,10 +18,11 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.solax.internal.model.parsers.RawDataParser;
-import org.openhab.binding.solax.internal.model.parsers.X1HybridG4DataParser;
-import org.openhab.binding.solax.internal.model.parsers.X3HybridG4DataParser;
-import org.openhab.binding.solax.internal.model.parsers.X3MicOrProG2DataParser;
+import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
+import org.openhab.binding.solax.internal.model.local.parsers.X1BoostAirMiniDataParser;
+import org.openhab.binding.solax.internal.model.local.parsers.X1HybridG4DataParser;
+import org.openhab.binding.solax.internal.model.local.parsers.X3HybridG4DataParser;
+import org.openhab.binding.solax.internal.model.local.parsers.X3MicOrProG2DataParser;
 
 /**
  * The {@link InverterType} class is enum representing the different inverter types with a simple logic to convert from
@@ -35,7 +36,7 @@ public enum InverterType {
     X1_LX(1),
     X_HYBRID(2),
     X1_HYBRID_FIT(3),
-    X1_BOOST_AIR_MINI(4),
+    X1_BOOST_AIR_MINI(4, new X1BoostAirMiniDataParser()),
     X3_HYBRID_FIT(5),
     X3_20K_30K(6),
     X3_MIC_PRO(7),

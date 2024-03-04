@@ -121,6 +121,7 @@ public class ShellyThingCreator {
     public static final String SHELLYDT_BLUBUTTON = "SBBT";
     public static final String SHELLYDT_BLUDW = "SBDW";
     public static final String SHELLYDT_BLUMOTION = "SBMO";
+    public static final String SHELLYDT_BLUHT = "SBHT";
     public static final String SHELLYDT_BLUGW = "SNGW-BT01";
 
     // Thing names
@@ -202,6 +203,7 @@ public class ShellyThingCreator {
     public static final String THING_TYPE_SHELLYBLUBUTTON_STR = THING_TYPE_SHELLYBLU_PREFIX + "button";
     public static final String THING_TYPE_SHELLYBLUDW_STR = THING_TYPE_SHELLYBLU_PREFIX + "dw";
     public static final String THING_TYPE_SHELLYBLUMOTION_STR = THING_TYPE_SHELLYBLU_PREFIX + "motion";
+    public static final String THING_TYPE_SHELLYBLUHT_STR = THING_TYPE_SHELLYBLU_PREFIX + "ht";
     public static final String THING_TYPE_SHELLYBLUGW_STR = THING_TYPE_SHELLYBLU_PREFIX + "gw";
 
     // Password protected or unknown device
@@ -324,6 +326,7 @@ public class ShellyThingCreator {
     public static final ThingTypeUID THING_TYPE_SHELLYBLUDW = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBLUDW_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYBLUMOTION = new ThingTypeUID(BINDING_ID,
             THING_TYPE_SHELLYBLUMOTION_STR);
+    public static final ThingTypeUID THING_TYPE_SHELLYBLUHT = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBLUHT_STR);
     public static final ThingTypeUID THING_TYPE_SHELLYBLUGW = new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYBLUGW_STR);
 
     private static final Map<String, String> THING_TYPE_MAPPING = new LinkedHashMap<>();
@@ -409,6 +412,7 @@ public class ShellyThingCreator {
         THING_TYPE_MAPPING.put(SHELLYDT_BLUBUTTON, THING_TYPE_SHELLYBLUBUTTON_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_BLUDW, THING_TYPE_SHELLYBLUDW_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_BLUMOTION, THING_TYPE_SHELLYBLUMOTION_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_BLUHT, THING_TYPE_SHELLYBLUHT_STR);
         THING_TYPE_MAPPING.put(SHELLYDT_BLUGW, THING_TYPE_SHELLYBLUGW_STR);
 
         // Wall displays
