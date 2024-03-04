@@ -80,7 +80,7 @@ public class ValueDecoder {
     // omitted
     public static final Pattern XYY_PATTERN = Pattern
             .compile("(?:\\((?<x>\\d+(?:[,.]\\d+)?) (?<y>\\d+(?:[,.]\\d+)?)\\))?\\s*(?:(?<Y>\\d+(?:[,.]\\d+)?)\\s%)?");
-    public static final Pattern TSD_SEPARATOR = Pattern.compile("[0-9]\\.[0-9][0-9][0-9].*");
+    public static final Pattern TSD_SEPARATOR = Pattern.compile("^[0-9](?<sep>[,\\.])[0-9][0-9][0-9].*");
 
     private static boolean check235001(byte[] data) throws KNXException {
         if (data.length != 6) {
@@ -214,8 +214,9 @@ public class ValueDecoder {
                     int sep = java.lang.Math.max(value.indexOf(" % "), value.indexOf(" K "));
                     String time = value.substring(sep + 3);
                     LOGGER.warn("RAW \"{}\", \"{}\"", value, time);
-                    if (TSD_SEPARATOR.matcher(time).matches()) {
-                        int dp = time.indexOf('.');
+                    Matcher mt = TSD_SEPARATOR.matcher(time);
+                    if (mt.matches()) {
+                        int dp = time.indexOf(mt.group("sep"));
                         value = value.substring(0, sep + dp + 3) + time.substring(dp + 1);
                         LOGGER.warn("FIX \"{}\", {}", value, dp);
                     }
