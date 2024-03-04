@@ -914,7 +914,7 @@
 	</channel-type>
 	<channel-type id="percent_heating_limit_max" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Heating Powerlimit max</label>
+		<label>Heating Powerlimit Max</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<!-- The following tags are only available, if an Ecovent System is attached to the Ecotouch -->
