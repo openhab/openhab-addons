@@ -213,12 +213,10 @@ public class ValueDecoder {
                     // time is last block and may contain . and ,
                     int sep = java.lang.Math.max(value.indexOf(" % "), value.indexOf(" K "));
                     String time = value.substring(sep + 3);
-                    LOGGER.warn("RAW \"{}\", \"{}\"", value, time);
                     Matcher mt = TSD_SEPARATOR.matcher(time);
                     if (mt.matches()) {
                         int dp = time.indexOf(mt.group("sep"));
                         value = value.substring(0, sep + dp + 3) + time.substring(dp + 1);
-                        LOGGER.warn("FIX \"{}\", {}", value, dp);
                     }
                     return StringType.valueOf(value.replace(',', '.').replace(". ", ", "));
                 case "232":
