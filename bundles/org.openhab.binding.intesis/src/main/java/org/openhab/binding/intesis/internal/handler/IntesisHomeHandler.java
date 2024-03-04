@@ -251,8 +251,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
     public @Nullable String logout(String sessionId) {
         String contentString = "{\"command\":\"logout\",\"data\":{\"sessionID\":\"" + sessionId + "\"}}";
-        String response = api.postRequest(config.ipAddress, contentString);
-        return response;
+        return api.postRequest(config.ipAddress, contentString);
     }
 
     public void populateProperties() {
