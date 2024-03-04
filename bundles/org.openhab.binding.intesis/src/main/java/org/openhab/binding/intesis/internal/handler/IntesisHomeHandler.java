@@ -251,8 +251,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
     public @Nullable String logout(String sessionId) {
         String contentString = "{\"command\":\"logout\",\"data\":{\"sessionID\":\"" + sessionId + "\"}}";
-        String response = api.postRequest(config.ipAddress, contentString);
-        return response;
+        return api.postRequest(config.ipAddress, contentString);
     }
 
     public void populateProperties() {
@@ -338,7 +337,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                 "Request unsuccessful");
                         ResponseError respError = gson.fromJson(resp.error, ResponseError.class);
                         if (respError != null) {
-                            logger.error("postRequest failed - respErrorCode: {} / respErrorMessage: {} / retry {}",
+                            logger.warn("postRequest failed - respErrorCode: {} / respErrorMessage: {} / retry {}",
                                     respError.code, respError.message, retry);
                             if (!retry && respError.code == 1) {
                                 logger.debug(
@@ -498,8 +497,8 @@ public class IntesisHomeHandler extends BaseThingHandler {
      * Update device status and all channels
      */
     private void getAllUidValues() {
-        postRequestInSession(m_sessionId -> "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\"" + m_sessionId
-                + "\", \"uid\":\"all\"}}", this::handleDataPointValues);
+        postRequestInSession(m_sessionId -> "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\""
+                + m_sessionId + "\", \"uid\":\"all\"}}", this::handleDataPointValues);
         getWiFiSignal();
     }
 
