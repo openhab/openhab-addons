@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class RotelThingConfiguration {
 
+    public @NonNullByDefault({}) Boolean newerUnit;
     public @NonNullByDefault({}) String serialPort;
     public @NonNullByDefault({}) String host;
     public @NonNullByDefault({}) Integer port;

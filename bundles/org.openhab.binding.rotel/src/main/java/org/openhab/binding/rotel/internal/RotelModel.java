@@ -44,18 +44,18 @@ public enum RotelModel {
             concatenate(DSP_CMDS_SET1, MENU2_CTRL_CMDS, OTHER_CMDS_SET1), (byte) 0xA1, 42, 5, true,
             RotelFlagsMapping.MAPPING2),
     RSP1069("RSP-1069", 38400, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2,
-            concatenate(DSP_CMDS_SET1, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2), (byte) 0xA2, 42, 5, true,
-            RotelFlagsMapping.MAPPING5),
+            concatenate(DSP_CMDS_SET1, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2, OTHER_CMDS_SET4), (byte) 0xA2,
+            42, 5, true, RotelFlagsMapping.MAPPING5),
     RSP1098("RSP-1098", 19200, 1, 1, true, 96, true, 6, false, ZONE_SELECT, 2,
             concatenate(DSP_CMDS_SET1, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, List.of(REMOTE_VOLUME_UP, REMOTE_VOLUME_DOWN)),
             (byte) 0xA0, 13, 8, true, RotelFlagsMapping.MAPPING1),
     RSP1570("RSP-1570", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3,
             concatenate(DSP_CMDS_SET2, DSP_CMDS_SET1, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2,
-                    List.of(RESET_FACTORY)),
+                    OTHER_CMDS_SET4, List.of(RESET_FACTORY)),
             (byte) 0xA3, 42, 5, true, RotelFlagsMapping.MAPPING5),
     RSP1572("RSP-1572", 115200, 2, 3, true, 96, true, null, false, RECORD_FONCTION_SELECT, 4,
             concatenate(DSP_CMDS_SET2, DSP_CMDS_SET1, NUMERIC_KEY_CMDS, MENU3_CTRL_CMDS, OTHER_CMDS_SET1,
-                    OTHER_CMDS_SET4),
+                    OTHER_CMDS_SET2, OTHER_CMDS_SET4, OTHER_CMDS_SET8),
             (byte) 0xA5, 42, 5, true, RotelFlagsMapping.MAPPING5),
     RSX1055("RSX-1055", 19200, 3, 1, false, 90, false, 12, false, ZONE_SELECT, 1,
             concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET1, NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1),
@@ -65,12 +65,12 @@ public enum RotelModel {
                     MENU2_CTRL_CMDS, OTHER_CMDS_SET1),
             (byte) 0xC5, 13, 8, true, RotelFlagsMapping.MAPPING1),
     RSX1057("RSX-1057", 19200, 1, 1, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2,
-            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, ZONE2_TUNER_CMDS_SET2, NUMERIC_KEY_CMDS, ZONE2_NUMERIC_KEY_CMDS,
-                    MENU2_CTRL_CMDS, OTHER_CMDS_SET1),
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, TUNER_CMDS_SET3, ZONE2_TUNER_CMDS_SET2, NUMERIC_KEY_CMDS,
+                    ZONE2_NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1),
             (byte) 0xC7, 13, 8, true, RotelFlagsMapping.MAPPING1),
     RSX1058("RSX-1058", 38400, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 2,
-            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS,
-                    ZONE234_NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2),
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, TUNER_CMDS_SET3, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS,
+                    ZONE234_NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2, OTHER_CMDS_SET4),
             (byte) 0xC8, 13, 8, true, RotelFlagsMapping.MAPPING4),
     RSX1065("RSX-1065", 19200, 3, 1, false, 96, false, 12, false, ZONE_SELECT, 1,
             concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET1, NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET3),
@@ -80,19 +80,28 @@ public enum RotelModel {
                     MENU2_CTRL_CMDS, OTHER_CMDS_SET1),
             (byte) 0xC4, 42, 5, true, RotelFlagsMapping.MAPPING2),
     RSX1550("RSX-1550", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3,
-            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS,
-                    ZONE234_NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2,
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, TUNER_CMDS_SET3, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS,
+                    ZONE234_NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2, OTHER_CMDS_SET4,
                     List.of(RESET_FACTORY)),
             (byte) 0xC9, 13, 8, true, RotelFlagsMapping.MAPPING3),
     RSX1560("RSX-1560", 115200, 1, 3, true, 96, true, 6, false, RECORD_FONCTION_SELECT, 3,
-            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS,
-                    ZONE234_NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2,
+            concatenate(DSP_CMDS_SET1, TUNER_CMDS_SET2, TUNER_CMDS_SET3, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS,
+                    ZONE234_NUMERIC_KEY_CMDS, MENU2_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2, OTHER_CMDS_SET4,
                     List.of(RESET_FACTORY)),
             (byte) 0xCA, 42, 5, true, RotelFlagsMapping.MAPPING5),
     RSX1562("RSX-1562", 115200, 2, 3, true, 96, true, null, false, RECORD_FONCTION_SELECT, 4,
-            concatenate(DSP_CMDS_SET2, DSP_CMDS_SET1, TUNER_CMDS_SET2, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS,
-                    ZONE234_NUMERIC_KEY_CMDS, MENU3_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET4),
+            concatenate(DSP_CMDS_SET2, DSP_CMDS_SET1, TUNER_CMDS_SET2, TUNER_CMDS_SET3, ZONE234_TUNER_CMDS_SET1,
+                    NUMERIC_KEY_CMDS, ZONE234_NUMERIC_KEY_CMDS, MENU3_CTRL_CMDS, OTHER_CMDS_SET1, OTHER_CMDS_SET2,
+                    OTHER_CMDS_SET4, OTHER_CMDS_SET8),
             (byte) 0xCC, 42, 5, true, RotelFlagsMapping.MAPPING5),
+    RX1052_19200("RX-1052 (baud rate 19200)", 19200, 22, 3, true, 90, true, 10, false, RECORD_FONCTION_SELECT, -1,
+            concatenate(TUNER_CMDS_SET2, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS, ZONE234_NUMERIC_KEY_CMDS,
+                    OTHER_CMDS_SET2, OTHER_CMDS_SET9),
+            (byte) 0x61, 11, 5, false, RotelFlagsMapping.MAPPING6),
+    RX1052_38400("RX-1052 (baud rate 38400)", 38400, 22, 3, true, 90, true, 10, false, RECORD_FONCTION_SELECT, -1,
+            concatenate(TUNER_CMDS_SET2, ZONE234_TUNER_CMDS_SET1, NUMERIC_KEY_CMDS, ZONE234_NUMERIC_KEY_CMDS,
+                    OTHER_CMDS_SET2, OTHER_CMDS_SET9),
+            (byte) 0x61, 11, 5, false, RotelFlagsMapping.MAPPING6),
     A11("A11", 115200, 4, 96, true, 10, 15, false, -1, false, true, true, 6, 0, SRC_CTRL_CMDS_SET1,
             NO_SPECIAL_CHARACTERS),
     A12("A12", 115200, 5, 96, true, 10, 15, false, -1, true, true, true, 6, 0,
@@ -761,6 +770,15 @@ public enum RotelModel {
     }
 
     /**
+     * Inform whether the zone 2 is present in flags
+     *
+     * @return true if the zone 2 is available
+     */
+    public boolean isZone2PresentInFlags() {
+        return flagsMapping.isZone2Available();
+    }
+
+    /**
      * Inform whether the zone 2 is set to ON in the flags
      *
      * @param flags the flag from the standard response message
@@ -783,6 +801,15 @@ public enum RotelModel {
      */
     public void setZone2(byte[] flags, boolean on) throws RotelException {
         flagsMapping.setZone2(flags, on);
+    }
+
+    /**
+     * Inform whether the zone 3 is present in flags
+     *
+     * @return true if the zone 3 is available
+     */
+    public boolean isZone3PresentInFlags() {
+        return flagsMapping.isZone3Available();
     }
 
     /**
@@ -811,6 +838,15 @@ public enum RotelModel {
     }
 
     /**
+     * Inform whether the zone 4 is present in flags
+     *
+     * @return true if the zone 4 is available
+     */
+    public boolean isZone4PresentInFlags() {
+        return flagsMapping.isZone4Available();
+    }
+
+    /**
      * Inform whether the zone 4 is set to ON in the flags
      *
      * @param flags the flag from the standard response message
@@ -833,6 +869,40 @@ public enum RotelModel {
      */
     public void setZone4(byte[] flags, boolean on) throws RotelException {
         flagsMapping.setZone4(flags, on);
+    }
+
+    /**
+     * Inform whether the zone is present in flags
+     *
+     * @return true if the zone is available
+     */
+    public boolean isZonePresentInFlags() {
+        return flagsMapping.isZoneAvailable();
+    }
+
+    /**
+     * Inform whether the zone is set to ON in the flags
+     *
+     * @param flags the flag from the standard response message
+     *
+     * @return true if the zone is ON
+     *
+     * @throws RotelException - If this information is not present in the flags for this model
+     */
+    public boolean isZoneOn(byte[] flags) throws RotelException {
+        return flagsMapping.isZoneOn(flags);
+    }
+
+    /**
+     * Set the zone to ON or OFF in the flags
+     *
+     * @param flags the flag from the standard response message
+     * @param on true for ON and false for OFF
+     *
+     * @throws RotelException - If this information is not present in the flags for this model
+     */
+    public void setZone(byte[] flags, boolean on) throws RotelException {
+        flagsMapping.setZone(flags, on);
     }
 
     /**
