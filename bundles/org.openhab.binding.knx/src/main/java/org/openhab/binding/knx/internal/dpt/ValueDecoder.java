@@ -80,6 +80,7 @@ public class ValueDecoder {
     // omitted
     public static final Pattern XYY_PATTERN = Pattern
             .compile("(?:\\((?<x>\\d+(?:[,.]\\d+)?) (?<y>\\d+(?:[,.]\\d+)?)\\))?\\s*(?:(?<Y>\\d+(?:[,.]\\d+)?)\\s%)?");
+    public static final Pattern TSD_SEPARATOR = Pattern.compile("^[0-9](?<sep>[,\\.])[0-9][0-9][0-9].*");
 
     private static boolean check235001(byte[] data) throws KNXException {
         if (data.length != 6) {
@@ -208,6 +209,15 @@ public class ValueDecoder {
                     return StringType.valueOf(value);
                 case "243": // color translation, fix regional
                 case "249": // settings
+                    // workaround for different number formats, this is to fix time>=1000s:
+                    // time is last block and may contain . and ,
+                    int sep = java.lang.Math.max(value.indexOf(" % "), value.indexOf(" K "));
+                    String time = value.substring(sep + 3);
+                    Matcher mt = TSD_SEPARATOR.matcher(time);
+                    if (mt.matches()) {
+                        int dp = time.indexOf(mt.group("sep"));
+                        value = value.substring(0, sep + dp + 3) + time.substring(dp + 1);
+                    }
                     return StringType.valueOf(value.replace(',', '.').replace(". ", ", "));
                 case "232":
                     return handleDpt232(value, subType);
