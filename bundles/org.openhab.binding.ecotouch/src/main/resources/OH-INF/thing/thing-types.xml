@@ -904,7 +904,7 @@
 	</channel-type>
 	<channel-type id="percent_water_limit_max" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Water Powerlimit max</label>
+		<label>Water Powerlimit Max</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="percent_heating_limit_min" advanced="true">
