@@ -1,6 +1,6 @@
 # Fronius Binding
 
-This binding uses the [Fronius Solar API V1](https://www.fronius.com/en/photovoltaics/products/all-products/system-monitoring/open-interfaces/fronius-solar-api-json-) to obtain data from Fronius devices.
+This binding uses the [Fronius Solar API V1](https://www.fronius.com/en/solar-energy/installers-partners/technical-data/all-products/system-monitoring/open-interfaces/fronius-solar-api-json-) to obtain data from Fronius devices.
 
 It supports Fronius inverters and Fronius Smart Meter.
 Supports:
@@ -22,7 +22,7 @@ Supports:
 
 ## Discovery
 
-There is no discovery implemented. You have to create your things manually and specify the hostname or IP address of the Datalogger and the device id.
+There is no discovery implemented. You have to create your Things manually and specify the hostname or IP address of the Datalogger and the device id.
 
 ## Binding Configuration
 
@@ -124,14 +124,14 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ## Properties
 
-### The `meter` thing has the following properties:
+### The `meter` Thing has the following properties:
 
 | Property       | Description                    |
 | -------------- | ------------------------------ |
 | `modelId`      | The model name of the meter    |
 | `serialNumber` | The serial number of the meter |
 
-### The `ohmpilot` thing has the following property:
+### The `ohmpilot` Thing has the following properties:
 
 | Property       | Description                       |
 | -------------- | --------------------------------- |
