@@ -930,9 +930,18 @@ public class Back2BackTest {
         // time(2) y(2) x(2), %brightness(1), flags(1)
         helper("243.600", new byte[] { 0, 5, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
                 new StringType("(0.9922, 0.4961) 16.5 % 0.5 s"));
+        helper("243.600", new byte[] { (byte) 0x02, (byte) 0x00, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
+                new StringType("(0.9922, 0.4961) 16.5 % 51.2 s"));
+        helper("243.600", new byte[] { (byte) 0x40, (byte) 0x00, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
+                new StringType("(0.9922, 0.4961) 16.5 % 1638.4 s"));
+        helper("243.600", new byte[] { (byte) 0xff, (byte) 0xff, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
+                new StringType("(0.9922, 0.4961) 16.5 % 6553.5 s"));
         // DPT 249.600 DPT_Brightness_Colour_Temperature_Transition
         // time(2) colortemp(2), brightness(1), flags(1)
         helper("249.600", new byte[] { 0, 5, 0, 40, 127, 7 }, new StringType("49.8 % 40 K 0.5 s"));
+        helper("249.600", new byte[] { (byte) 0xff, (byte) 0xfa, 0, 40, 127, 7 }, new StringType("49.8 % 40 K 6553 s"));
+        helper("249.600", new byte[] { (byte) 0xff, (byte) 0xff, 0, 40, 127, 7 },
+                new StringType("49.8 % 40 K 6553.5 s"));
         // DPT 250.600 DPT_Brightness_Colour_Temperature_Control
         // cct(1) cb(1) flags(1)
         helper("250.600", new byte[] { 0x0f, 0x0e, 3 }, new StringType("CT increase 7 steps BRT increase 6 steps"));
