@@ -909,7 +909,7 @@
 	</channel-type>
 	<channel-type id="percent_heating_limit_min" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Heating Powerlimit min</label>
+		<label>Heating Powerlimit Min</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="percent_heating_limit_max" advanced="true">
