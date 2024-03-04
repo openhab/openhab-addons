@@ -84,6 +84,60 @@ public class AirGradientAPIHandlerTest {
             nox{id="Airgradient"}1
             """;
 
+    private static final String OPEN_METRICS_CONTENT = """
+            # HELP airgradient_info AirGradient device information
+            # TYPE airgradient_info info
+            airgradient_info{airgradient_serial_number="4XXXXXXXXXXc",airgradient_device_type="ONE_I-9PSL",airgradient_library_version="3.0.4"} 1
+            # HELP airgradient_config_ok 1 if the AirGradient device was able to successfully fetch its configuration from the server
+            # TYPE airgradient_config_ok gauge
+            airgradient_config_ok{} 1
+            # HELP airgradient_post_ok 1 if the AirGradient device was able to successfully send to the server
+            # TYPE airgradient_post_ok gauge
+            airgradient_post_ok{} 1
+            # HELP airgradient_wifi_rssi_dbm WiFi signal strength from the AirGradient device perspective, in dBm
+            # TYPE airgradient_wifi_rssi_dbm gauge
+            # UNIT airgradient_wifi_rssi_dbm dbm
+            airgradient_wifi_rssi_dbm{} -51
+            # HELP airgradient_co2_ppm Carbon dioxide concentration as measured by the AirGradient S8 sensor, in parts per million
+            # TYPE airgradient_co2_ppm gauge
+            # UNIT airgradient_co2_ppm ppm
+            airgradient_co2_ppm{} 589
+            # HELP airgradient_pm1_ugm3 PM1.0 concentration as measured by the AirGradient PMS sensor, in micrograms per cubic meter
+            # TYPE airgradient_pm1_ugm3 gauge
+            # UNIT airgradient_pm1_ugm3 ugm3
+            airgradient_pm1_ugm3{} 3
+            # HELP airgradient_pm2d5_ugm3 PM2.5 concentration as measured by the AirGradient PMS sensor, in micrograms per cubic meter
+            # TYPE airgradient_pm2d5_ugm3 gauge
+            # UNIT airgradient_pm2d5_ugm3 ugm3
+            airgradient_pm2d5_ugm3{} 3
+            # HELP airgradient_pm10_ugm3 PM10 concentration as measured by the AirGradient PMS sensor, in micrograms per cubic meter
+            # TYPE airgradient_pm10_ugm3 gauge
+            # UNIT airgradient_pm10_ugm3 ugm3
+            airgradient_pm10_ugm3{} 3
+            # HELP airgradient_pm0d3_p100ml PM0.3 concentration as measured by the AirGradient PMS sensor, in number of particules per 100 milliliters
+            # TYPE airgradient_pm0d3_p100ml gauge
+            # UNIT airgradient_pm0d3_p100ml p100ml
+            airgradient_pm0d3_p100ml{} 594
+            # HELP airgradient_tvoc_index The processed Total Volatile Organic Compounds (TVOC) index as measured by the AirGradient SGP sensor
+            # TYPE airgradient_tvoc_index gauge
+            airgradient_tvoc_index{} 220
+            # HELP airgradient_tvoc_raw_index The raw input value to the Total Volatile Organic Compounds (TVOC) index as measured by the AirGradient SGP sensor
+            # TYPE airgradient_tvoc_raw_index gauge
+            airgradient_tvoc_raw_index{} 30801
+            # HELP airgradient_nox_index The processed Nitrous Oxide (NOx) index as measured by the AirGradient SGP sensor
+            # TYPE airgradient_nox_index gauge
+            airgradient_nox_index{} 1
+            # HELP airgradient_temperature_degc The ambient temperature as measured by the AirGradient SHT sensor, in degrees Celsius
+            # TYPE airgradient_temperature_degc gauge
+            # UNIT airgradient_temperature_degc degc
+            airgradient_temperature_degc{} 23.69
+            # HELP airgradient_humidity_percent The relative humidity as measured by the AirGradient SHT sensor
+            # TYPE airgradient_humidity_percent gauge
+            # UNIT airgradient_humidity_percent percent
+            airgradient_humidity_percent{} 39
+            # EOF
+            """;
+
     @Nullable
     private AirGradientAPIHandler sut;
 
@@ -186,6 +240,28 @@ public class AirGradientAPIHandlerTest {
         assertThat(res.get(0).locationId, is("Airgradient"));
         assertThat(res.get(0).locationName, is("Airgradient"));
         assertThat(res.get(0).serialno, is("Airgradient"));
+    }
+
+    @Test
+    public void testGetMeasuresOpenMetrics() throws Exception {
+        ContentResponse response = Mockito.mock(ContentResponse.class);
+        Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
+        Mockito.when(response.getStatus()).thenReturn(200);
+        Mockito.when(response.getMediaType()).thenReturn("application/openmetrics-text");
+        Mockito.when(response.getContentAsString()).thenReturn(OPEN_METRICS_CONTENT);
+
+        var res = sut.getMeasures();
+        assertThat(res, is(not(empty())));
+        assertThat(res.size(), is(1));
+        assertThat(res.get(0).pm01, closeTo(3, 0.1));
+        assertThat(res.get(0).pm02, closeTo(3, 0.1));
+        assertThat(res.get(0).pm10, closeTo(3, 0.1));
+        assertThat(res.get(0).rco2, closeTo(589, 0.1));
+        assertThat(res.get(0).atmp, closeTo(23.69, 0.1));
+        assertThat(res.get(0).rhum, closeTo(39, 0.1));
+        assertThat(res.get(0).tvoc, closeTo(220, 0.1));
+        assertThat(res.get(0).noxIndex, closeTo(1, 0.1));
+        assertThat(res.get(0).serialno, is("4XXXXXXXXXXc"));
     }
 
     @Test

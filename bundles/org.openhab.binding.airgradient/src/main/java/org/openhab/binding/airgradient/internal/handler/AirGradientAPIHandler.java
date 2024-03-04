@@ -168,6 +168,8 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
                     return parseJson(stringResponse);
                 } else if (CONTENTTYPE_TEXT.equals(contentType)) {
                     return parsePrometheus(stringResponse);
+                } else if (CONTENTTYPE_OPENMETRICS.equals(contentType)) {
+                    return parsePrometheus(stringResponse);
                 }
 
             } else {
@@ -185,8 +187,12 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         Measure measure = new Measure();
 
         for (PrometheusMetric metric : metrics) {
-            if (metric.getMetricName().equals("pm02")) {
+            if (metric.getMetricName().equals("pm01")) {
+                measure.pm01 = metric.getValue();
+            } else if (metric.getMetricName().equals("pm02")) {
                 measure.pm02 = metric.getValue();
+            } else if (metric.getMetricName().equals("pm10")) {
+                measure.pm10 = metric.getValue();
             } else if (metric.getMetricName().equals("rco2")) {
                 measure.rco2 = metric.getValue();
             } else if (metric.getMetricName().equals("atmp")) {
@@ -197,6 +203,28 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
                 measure.tvoc = metric.getValue();
             } else if (metric.getMetricName().equals("nox")) {
                 measure.noxIndex = metric.getValue();
+            } else if (metric.getMetricName().equals("airgradient_wifi_rssi_dbm")) {
+                measure.wifi = metric.getValue();
+            } else if (metric.getMetricName().equals("airgradient_co2_ppm")) {
+                measure.rco2 = metric.getValue();
+            } else if (metric.getMetricName().equals("airgradient_pm1_ugm3")) {
+                measure.pm01 = metric.getValue();
+            } else if (metric.getMetricName().equals("airgradient_pm2d5_ugm3")) {
+                measure.pm02 = metric.getValue();
+            } else if (metric.getMetricName().equals("airgradient_pm10_ugm3")) {
+                measure.pm10 = metric.getValue();
+            } else if (metric.getMetricName().equals("airgradient_pm0d3_p100ml")) {
+                measure.pm003Count = metric.getValue();
+            } else if (metric.getMetricName().equals("airgradient_tvoc_index")) {
+                measure.tvoc = metric.getValue();
+            } else if (metric.getMetricName().equals("airgradient_tvoc_raw_index")) {
+                measure.tvocIndex = metric.getValue();
+            } else if (metric.getMetricName().equals("airgradient_nox_index")) {
+                measure.noxIndex = metric.getValue();
+            } else if (metric.getMetricName().equals("airgradient_temperature_degc")) {
+                measure.atmp = metric.getValue();
+            } else if (metric.getMetricName().equals("airgradient_humidity_percent")) {
+                measure.rhum = metric.getValue();
             }
 
             if (metric.getLabels().containsKey("id")) {
@@ -204,6 +232,11 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
                 measure.serialno = id;
                 measure.locationId = id;
                 measure.locationName = id;
+            }
+
+            if (metric.getLabels().containsKey("airgradient_serial_number")) {
+                String id = metric.getLabels().get("airgradient_serial_number");
+                measure.serialno = id;
             }
         }
 
