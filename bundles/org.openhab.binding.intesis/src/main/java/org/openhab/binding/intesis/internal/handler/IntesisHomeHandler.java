@@ -87,7 +87,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
     private IntesisHomeConfiguration config = new IntesisHomeConfiguration();
 
-    private String m_sessionId = "";
+    private String sessionId = "";
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -112,15 +112,15 @@ public class IntesisHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not set");
             return;
         } else {
-            logger.trace("trying to log in - current session ID: {}", m_sessionId);
+            logger.trace("trying to log in - current session ID: {}", sessionId);
             login();
 
             // start background initialization:
             scheduler.submit(() -> {
                 populateProperties();
                 // query available dataPoints and build dynamic channels
-                postRequestInSession(m_sessionId -> "{\"command\":\"getavailabledatapoints\",\"data\":{\"sessionID\":\""
-                        + m_sessionId + "\"}}", this::handleDataPointsResponse);
+                postRequestInSession(sessionId -> "{\"command\":\"getavailabledatapoints\",\"data\":{\"sessionID\":\""
+                        + sessionId + "\"}}", this::handleDataPointsResponse);
                 updateProperties(properties);
             });
         }
@@ -136,7 +136,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
             this.refreshJob = null;
         }
 
-        logout(m_sessionId);
+        logout(sessionId);
     }
 
     @Override
@@ -216,7 +216,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
             final int newValue = value;
             scheduler.submit(() -> {
                 postRequestInSession(
-                        m_sessionId -> "{\"command\":\"setdatapointvalue\",\"data\":{\"sessionID\":\"" + m_sessionId
+                        sessionId -> "{\"command\":\"setdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
                                 + "\", \"uid\":" + uId + ",\"value\":" + newValue + "}}",
                         r -> updateStatus(ThingStatus.ONLINE));
             });
@@ -235,18 +235,18 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     if (data != null) {
                         Id id = gson.fromJson(data.id, Id.class);
                         if (id != null) {
-                            m_sessionId = id.sessionID.toString();
+                            sessionId = id.sessionID.toString();
                         }
                     }
                 });
-        logger.trace("Login - received session ID: {}", m_sessionId);
-        if (m_sessionId != null && !m_sessionId.isEmpty()) {
+        logger.trace("Login - received session ID: {}", sessionId);
+        if (sessionId != null && !sessionId.isEmpty()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "SessionId not received");
-            m_sessionId = "";
+            sessionId = "";
         }
-        return m_sessionId;
+        return sessionId;
     }
 
     public @Nullable String logout(String sessionId) {
@@ -359,9 +359,9 @@ public class IntesisHomeHandler extends BaseThingHandler {
     }
 
     private void postRequestInSession(UnaryOperator<String> requestFactory, Consumer<Response> handler) {
-        if (m_sessionId != null) {
+        if (sessionId != null) {
             try {
-                String request = requestFactory.apply(m_sessionId);
+                String request = requestFactory.apply(sessionId);
                 postRequest(request, handler);
             } finally {
             }
@@ -497,8 +497,8 @@ public class IntesisHomeHandler extends BaseThingHandler {
      * Update device status and all channels
      */
     private void getAllUidValues() {
-        postRequestInSession(m_sessionId -> "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\""
-                + m_sessionId + "\", \"uid\":\"all\"}}", this::handleDataPointValues);
+        postRequestInSession(sessionId -> "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
+                + "\", \"uid\":\"all\"}}", this::handleDataPointValues);
         getWiFiSignal();
     }
 
