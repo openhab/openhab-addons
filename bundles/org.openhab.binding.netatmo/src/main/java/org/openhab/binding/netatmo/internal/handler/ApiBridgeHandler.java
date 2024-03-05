@@ -103,6 +103,7 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class ApiBridgeHandler extends BaseBridgeHandler {
     private static final int TIMEOUT_S = 20;
+    private static final int API_LIMIT_INTERVAL_S = 3600;
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final AuthenticationApi connectApi = new AuthenticationApi(this);
@@ -207,8 +208,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             startAuthorizationFlow();
             return false;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            prepareReconnection(code, redirectUri);
+            prepareReconnection(getConfiguration().reconnectInterval, e.getMessage(), code, redirectUri);
             return false;
         }
 
@@ -235,11 +235,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         return getConfigAs(ApiHandlerConfiguration.class);
     }
 
-    private void prepareReconnection(@Nullable String code, @Nullable String redirectUri) {
+    private void prepareReconnection(int delay, @Nullable String message, @Nullable String code,
+            @Nullable String redirectUri) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         connectApi.dispose();
         freeConnectJob();
-        connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri),
-                getConfiguration().reconnectInterval, TimeUnit.SECONDS));
+        connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri), delay, TimeUnit.SECONDS));
+        logger.debug("Reconnection scheduled in {} seconds", delay);
     }
 
     private void freeConnectJob() {
@@ -298,12 +300,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload,
             @Nullable String contentType, int retryCount) throws NetatmoException {
         try {
+            boolean fail = false;
             logger.debug("executeUri {}  {} ", method.toString(), uri);
 
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
             if (!authenticate(null, null)) {
-                prepareReconnection(null, null);
+                prepareReconnection(getConfiguration().reconnectInterval, null, null, "@text/status-bridge-offline");
                 throw new NetatmoException("Not authenticated");
             }
             connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
@@ -336,6 +339,12 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
             logger.trace(" -returned: code {} body {}", statusCode, responseBody);
 
+            // DEBUG, TO REMOVE
+            if (fail) {
+                statusCode = Code.FORBIDDEN;
+                responseBody = "{\"error\":{\"code\":26,\"message\":\"User usage reached\"}}";
+            }
+
             if (statusCode == Code.OK) {
                 updateStatus(ThingStatus.ONLINE);
                 return deserializer.deserialize(clazz, responseBody);
@@ -350,10 +359,15 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             throw exception;
         } catch (NetatmoException e) {
             if (e.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
+<<<<<<< Upstream, based on main
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/maximum-usage-reached");
                 prepareReconnection(null, null);
             } else if (e.getStatusCode() == ServiceError.INVALID_TOKEN_MISSING) {
                 startAuthorizationFlow();
+=======
+                prepareReconnection(API_LIMIT_INTERVAL_S,
+                        "@text/maximum-usage-reached [ \"%d\" ]".formatted(API_LIMIT_INTERVAL_S), null, null);
+>>>>>>> 41c5ca0 Enhance API limit reached handling
             }
             throw e;
         } catch (InterruptedException e) {
@@ -365,8 +379,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Request timedout, retry counter: {}", retryCount);
                 return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/request-time-out");
-            prepareReconnection(null, null);
+            prepareReconnection(getConfiguration().reconnectInterval, "@text/request-time-out", null, null);
             throw new NetatmoException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
         }
     }
