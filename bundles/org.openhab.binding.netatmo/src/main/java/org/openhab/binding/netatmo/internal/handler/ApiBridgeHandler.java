@@ -300,7 +300,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload,
             @Nullable String contentType, int retryCount) throws NetatmoException {
         try {
-            boolean fail = false;
             logger.debug("executeUri {}  {} ", method.toString(), uri);
 
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
@@ -338,12 +337,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             Code statusCode = HttpStatus.getCode(response.getStatus());
             String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
             logger.trace(" -returned: code {} body {}", statusCode, responseBody);
-
-            // DEBUG, TO REMOVE
-            if (fail) {
-                statusCode = Code.FORBIDDEN;
-                responseBody = "{\"error\":{\"code\":26,\"message\":\"User usage reached\"}}";
-            }
 
             if (statusCode == Code.OK) {
                 updateStatus(ThingStatus.ONLINE);
