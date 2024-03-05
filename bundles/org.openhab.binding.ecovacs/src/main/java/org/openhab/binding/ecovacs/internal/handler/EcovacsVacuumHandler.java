@@ -761,7 +761,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     }
                 }
                 if (!roomIds.isEmpty()) {
-                    return new SpotAreaCleaningCommand(roomIds, passes);
+                    return new SpotAreaCleaningCommand(roomIds, passes,
+                            device.hasCapability(DeviceCapability.FREE_CLEAN_FOR_SPOT_AREA));
                 }
             } else {
                 logger.info("{}: spotArea command needs to have the form spotArea:<room1>[;<room2>][;<...roomX>][:x2]",
