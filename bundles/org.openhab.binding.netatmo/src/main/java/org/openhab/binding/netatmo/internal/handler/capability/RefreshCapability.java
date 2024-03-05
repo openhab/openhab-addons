@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static java.time.temporal.ChronoUnit.*;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 public class RefreshCapability extends Capability {
     private static final Duration DEFAULT_DELAY = Duration.of(20, SECONDS);
     private static final Duration PROBING_INTERVAL = Duration.of(120, SECONDS);
-    private static final Duration OFFLINE_INTERVAL = Duration.of(15, MINUTES);
 
     private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
 
@@ -91,6 +90,8 @@ public class RefreshCapability extends Capability {
         } else {
             delay = refreshConfigured ? dataValidity.getSeconds()
                     : (probing() ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY)).toSeconds();
+            delay = delay < 2 ? PROBING_INTERVAL.toSeconds() : delay;
+            logger.debug("Module refreshed, next one in {}s", delay);
         }
         delay = delay < 2 ? PROBING_INTERVAL.toSeconds() : delay;
         logger.debug("{} refreshed, next one in {}s", thingUID, delay);
