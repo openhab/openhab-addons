@@ -69,14 +69,20 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
         Set<String> registeredLocationIds = new HashSet<>(apiHandler.getRegisteredLocationIds());
 
         for (Measure measure : measures) {
-            if (!registeredLocationIds.contains(measure.getLocationId())) {
+            String id = measure.getLocationId();
+            if (id.isEmpty()) {
+                // Local devices don't have location ID.
+                id = measure.getSerialNo();
+            }
+
+            if (!registeredLocationIds.contains(id)) {
                 Map<String, Object> properties = new HashMap<>(1);
                 properties.put(PROPERTY_NAME, measure.getLocationName());
                 properties.put(PROPERTY_FIRMWARE_VERSION, measure.getFirmwareVersion());
                 properties.put(PROPERTY_SERIAL_NO, measure.getSerialNo());
-                properties.put(CONFIG_LOCATION, measure.getLocationId());
+                properties.put(CONFIG_LOCATION, id);
 
-                ThingUID thingUID = new ThingUID(THING_TYPE_LOCATION, bridgeUid, measure.getLocationId());
+                ThingUID thingUID = new ThingUID(THING_TYPE_LOCATION, bridgeUid, id);
 
                 logger.debug("Adding location {} with id {} to bridge {} with location id {}",
                         measure.getLocationName(), thingUID, bridgeUid, measure.getLocationId());

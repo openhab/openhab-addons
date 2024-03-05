@@ -19,9 +19,23 @@ This binding supports all the different AirGradient sensors, with most of the da
 
 ## Discovery
 
-Auto-discovery is not implemented, but autodiscovery of locations is feasible in the future.
+Auto-discovery of locations is implemented. Start by adding an AirGradient API thing. When that is added and online, run a scan for new things in the AirGradient binding.
 
 ## Thing Configuration
+
+This binding supports reading data both directly from AirGradient sensors and from the AirGradient API.
+If you don't specify any path on the server, the binding will behave as if the hostname is the hostname of the AifGradient API server, and append paths and tokens for it.
+
+The binding will adapt to the content type of the returned content to support different formats for getting data both from local and cloud installations.
+
+| Name              | Hostname                                                       | Content-Type                 | Parser |
+|-------------------|----------------------------------------------------------------|------------------------------|--------|
+| API               | Hostnames without any path (e.g. https://api.airgradient.com/) | application/json             | JSON parser for the AirGradient API, correct paths will be appended to the calls |
+| Local OpenMetrics | Hostnames with path (e.g. http://192.168.x.x/metrics)          | application/openmetrics-text | OpenMetrics parser |
+| Local Web         | Hostnames with path (e.g. http://192.168.x.x/measures/current) | application/json             | JSON parser for the AirGradient API, as if you returned value of sendToServer() payload |
+| Local Prometheus  | Hostnames with path (e.g. http://192.168.x.x/measures)         | text/plain                   | Prometheus parser for [Prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/) |
+
+### AirGradient API
 
 The connection to the API needs setup and configuration
 
@@ -35,20 +49,7 @@ To add a location, you need to know the location ID. To get the location ID, you
 2. Navigate to Locations from the upper left hamburger menu.
 3. Here you will find a list of all of your sensors, with a location ID in the left column. Use that id when you add new Location things.
 
-This binding supports changing the hostname you are reading the data from, and supports reading a single object instead of an array of objects.
-This makes it possible to use this binding to read from the sensor on your local network instead of from the API if you flash your own AirGradient sensor with a web server that return the postToServer() data on GET requests.
 
-This binding supports reading data both directly from AirGradient sensors and from the AirGradient API.
-If you don't specify any path on the server, the binding will behave as if the hostname is the hostname of the AifGradient API server, and append paths and tokens for it.
-If you specify a path, the binding will behave as if you are calling an airgradient running on your network with its own web server. 
-If it returns application/json it will parse the returned value in the same way as when it reads values from the API.
-It it returns text/plain, it will parse the text in [Prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/)
-
-| Name             | Hostname                                                       | Content-Type     | Parser |
-|------------------|----------------------------------------------------------------|------------------|--------|
-| API              | Hostnames without any path (e.g. https://api.airgradient.com/) | application/json | JSON parser for the AirGradient API, correct paths will be appended to the calls |
-| Local Web        | Hostnames with path (e.g. http://ip-address/measures)          | application/json | JSON parser for the AirGradient API, as if you returned value of sendToServer() payload |
-| Local Prometheus | Hostnames with path (e.g. http://ip-address/measures)          | text/plain       | Prometheus parser |
 
 ### `API` Thing Configuration
 

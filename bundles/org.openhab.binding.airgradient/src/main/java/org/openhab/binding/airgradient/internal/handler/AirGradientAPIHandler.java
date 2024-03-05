@@ -113,10 +113,19 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 5, config.refreshInterval, TimeUnit.SECONDS);
     }
 
+    private static String getMeasureId(Measure measure) {
+        String id = measure.getLocationId();
+        if (id.isEmpty()) {
+            // Local devices don't have location ID.
+            id = measure.getSerialNo();
+        }
+
+        return id;
+    }
+
     protected void pollingCode() {
         List<Measure> measures = getMeasures();
-        Map<String, Measure> measureMap = measures.stream()
-                .collect(Collectors.toMap((m) -> m.getLocationId(), (m) -> m));
+        Map<String, Measure> measureMap = measures.stream().collect(Collectors.toMap((m) -> getMeasureId(m), (m) -> m));
 
         for (Thing t : getThing().getThings()) {
             AirGradientLocationHandler handler = (AirGradientLocationHandler) t.getHandler();
@@ -126,6 +135,8 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
                 Measure measure = measureMap.get(locationId);
                 if (measure != null) {
                     handler.setMeasurment(locationId, measure);
+                } else {
+                    logger.debug("Could not find measures for location {}", locationId);
                 }
             }
         }
@@ -237,6 +248,8 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
             if (metric.getLabels().containsKey("airgradient_serial_number")) {
                 String id = metric.getLabels().get("airgradient_serial_number");
                 measure.serialno = id;
+                measure.locationId = id;
+                measure.locationName = id;
             }
         }
 
