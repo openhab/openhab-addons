@@ -119,9 +119,9 @@ public class SAICiSMARTHandler extends BaseThingHandler {
             } catch (URISyntaxException | ExecutionException | TimeoutException | InterruptedException e) {
                 logger.warn("A/C Off Command failed", e);
             }
-        } else if (channelUID.getId().equals(CHANNEL_LAST_ACTIVITY) && command instanceof DateTimeType) {
+                } else if (channelUID.getId().equals(CHANNEL_LAST_ACTIVITY) && command instanceof DateTimeType                 commnadAsDateTimeType) {
             // update internal activity date from external date
-            notifyCarActivity(((DateTimeType) command).getZonedDateTime(), true);
+            notifyCarActivity(commnadAsDateTimeType.getZonedDateTime(), true);
         }
     }
 
