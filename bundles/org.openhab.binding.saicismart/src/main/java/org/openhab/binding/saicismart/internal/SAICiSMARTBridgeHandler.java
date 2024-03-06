@@ -38,6 +38,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -47,6 +49,7 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.util.StringUtils;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,8 +88,16 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
     private HttpClient httpClient;
     private @Nullable Future<?> pollingJob;
 
-    public SAICiSMARTBridgeHandler(Bridge bridge, HttpClient httpClient) {
+    private BundleContext bundleContext;
+    private LocaleProvider localeProvider;
+    private TranslationProvider i18nProvider;
+
+    public SAICiSMARTBridgeHandler(BundleContext bundleContext, LocaleProvider localeProvider,
+            TranslationProvider i18nProvider, Bridge bridge, HttpClient httpClient) {
         super(bridge);
+        this.bundleContext = bundleContext;
+        this.localeProvider = localeProvider;
+        this.i18nProvider = i18nProvider;
         this.httpClient = httpClient;
     }
 
@@ -102,15 +113,24 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
 
         // Validate configuration
         if (this.config.username.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "iSMART Username is empty!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundleContext.getBundle(),
+                            "thing-type.config.saicismart.bridge.username.required", "iSMART Username is empty!",
+                            localeProvider.getLocale()));
             return;
         }
         if (this.config.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "iSMART Password is empty!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundleContext.getBundle(),
+                            "thing-type.config.saicismart.bridge.password.required", "iSMART Password is empty!",
+                            localeProvider.getLocale()));
             return;
         }
         if (this.config.username.length() > 50) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "iSMART Username too long!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundleContext.getBundle(),
+                            "thing-type.config.saicismart.bridge.username.toolong", "iSMART Username too long!",
+                            localeProvider.getLocale()));
             return;
         }
         pollingJob = scheduler.scheduleWithFixedDelay(this::updateStatus, 1,

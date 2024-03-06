@@ -33,7 +33,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -45,6 +47,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +80,9 @@ public class SAICiSMARTHandler extends BaseThingHandler {
     private @Nullable Future<?> pollingJob;
     private ZonedDateTime lastAlarmMessage;
     private ZonedDateTime lastCarActivity;
+    private BundleContext bundleContext;
+    private LocaleProvider localeProvider;
+    private TranslationProvider i18nProvider;
 
     /**
      * If the binding is initialized, treat the car as active (lastCarActivity = now) to get some first data.
@@ -85,8 +91,12 @@ public class SAICiSMARTHandler extends BaseThingHandler {
      * @param timeZoneProvider
      * @param thing
      */
-    public SAICiSMARTHandler(TimeZoneProvider timeZoneProvider, Thing thing) {
+    public SAICiSMARTHandler(BundleContext bundleContext, LocaleProvider localeProvider,
+            TranslationProvider i18nProvider, TimeZoneProvider timeZoneProvider, Thing thing) {
         super(thing);
+        this.bundleContext = bundleContext;
+        this.localeProvider = localeProvider;
+        this.i18nProvider = i18nProvider;
         this.timeZoneProvider = timeZoneProvider;
         lastAlarmMessage = ZonedDateTime.now(getTimeZone());
         lastCarActivity = ZonedDateTime.now(getTimeZone());
@@ -138,7 +148,9 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
         // Validate configuration
         if (this.config.vin.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "VIN is empty!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundleContext.getBundle(), "thing-type.config.saicismart.vehicle.vin.required",
+                            "VIN is empty!", localeProvider.getLocale()));
             return;
         }
 
