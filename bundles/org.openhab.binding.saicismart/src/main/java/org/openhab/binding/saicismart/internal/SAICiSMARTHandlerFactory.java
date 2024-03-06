@@ -29,7 +29,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -46,18 +45,15 @@ public class SAICiSMARTHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_VEHICLE);
     private final TimeZoneProvider timeZoneProvider;
-    private final BundleContext bundleContext;
-    private final LocaleProvider localeProvider;
-    private final TranslationProvider i18nProvider;
+    private final SAICTranslationProvider i18nProvider;
     private HttpClient httpClient;
 
     @Activate
-    public SAICiSMARTHandlerFactory(final @Reference BundleContext bundleContext,
-            final @Reference LocaleProvider localeProvider, final @Reference TranslationProvider i18nProvider,
-            final @Reference HttpClientFactory httpClientFactory, final @Reference TimeZoneProvider timeZoneProvider) {
-        this.bundleContext = bundleContext;
-        this.localeProvider = localeProvider;
-        this.i18nProvider = i18nProvider;
+    public SAICiSMARTHandlerFactory(final @Reference TranslationProvider translationProvider,
+            final @Reference LocaleProvider localeProvider, final @Reference HttpClientFactory httpClientFactory,
+            final @Reference TimeZoneProvider timeZoneProvider) {
+        this.i18nProvider = new SAICTranslationProvider(translationProvider, localeProvider);
+        ;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.timeZoneProvider = timeZoneProvider;
     }
@@ -72,9 +68,9 @@ public class SAICiSMARTHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new SAICiSMARTBridgeHandler(bundleContext, localeProvider, i18nProvider, (Bridge) thing, httpClient);
+            return new SAICiSMARTBridgeHandler(i18nProvider, (Bridge) thing, httpClient);
         } else if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
-            return new SAICiSMARTHandler(bundleContext, localeProvider, i18nProvider, timeZoneProvider, thing);
+            return new SAICiSMARTHandler(i18nProvider, timeZoneProvider, thing);
         }
 
         return null;
