@@ -119,7 +119,8 @@ public class SAICiSMARTHandler extends BaseThingHandler {
             } catch (URISyntaxException | ExecutionException | TimeoutException | InterruptedException e) {
                 logger.warn("A/C Off Command failed", e);
             }
-                } else if (channelUID.getId().equals(CHANNEL_LAST_ACTIVITY) && command instanceof DateTimeType                 commnadAsDateTimeType) {
+        } else if (channelUID.getId().equals(CHANNEL_LAST_ACTIVITY)
+                && command instanceof DateTimeType commnadAsDateTimeType) {
             // update internal activity date from external date
             notifyCarActivity(commnadAsDateTimeType.getZonedDateTime(), true);
         }
@@ -165,8 +166,9 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                         logger.debug("ABRP: {}", execute);
                     }
                 } catch (Exception e) {
-                    logger.debug("Could not refresh car data for {}. {}", config.vin, e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            i18nProvider.getText("addon.saicismart.error.refresh.car.data",
+                                    "Could not refresh car data", config.vin, e.getMessage()));
                 }
             }
         }

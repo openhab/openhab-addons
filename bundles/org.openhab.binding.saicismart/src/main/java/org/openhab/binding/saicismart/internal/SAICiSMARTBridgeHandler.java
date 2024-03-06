@@ -164,7 +164,7 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException
                 | NoSuchAlgorithmException | IOException e) {
-updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -207,7 +207,7 @@ updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getM
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
