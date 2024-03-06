@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,10 @@ package org.openhab.binding.ipcamera.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link ReolinkState} class holds the state and GSON parsed replies for a single Reolink Camera.
+ * The {@link ReolinkState} DTO holds the state and GSON parsed replies from a Reolink Camera.
  *
  * @author Matthew Skinner - Initial contribution
  */
@@ -24,19 +26,59 @@ public class ReolinkState {
     public class GetAiStateResponse {
         public class Value {
             public class Alarm {
-                public int alarm_state = 0;
-                public int support = 0;
+                @SerializedName(value = "alarmState", alternate = { "alarm_state" }) // alarm_state is used in json
+                public int alarmState = 0;
             }
 
-            public int channel = 0;
-            public Alarm dog_cat = new Alarm();
+            @SerializedName(value = "dogCat", alternate = { "dog_cat" }) // dog_cat is used in json
+            public Alarm dogCat = new Alarm();
             public Alarm face = new Alarm();
             public Alarm people = new Alarm();
             public Alarm vehicle = new Alarm();
         }
 
-        public String cmd = "";
-        public int code = 0;
+        public class Error {
+            public String detail = "";
+        }
+
         public Value value = new Value();
+        public Error error = new Error();
+    }
+
+    public class GetAbilityResponse {
+        public class Value {
+            public class Ability {
+                public class AbilityKey {
+                    public int permit = 0;
+                    public int ver = 0;
+                }
+
+                public class AbilityChn {
+                    public AbilityKey supportAiFace = new AbilityKey();
+                    public AbilityKey supportAiPeople = new AbilityKey();
+                    public AbilityKey supportAiVehicle = new AbilityKey();
+                    public AbilityKey supportAiDogCat = new AbilityKey();
+                }
+
+                public AbilityChn[] abilityChn = new AbilityChn[1];
+                public AbilityKey push = new AbilityKey();
+                public AbilityKey scheduleVersion = new AbilityKey();
+                public AbilityKey supportAudioAlarm = new AbilityKey();
+                public AbilityKey supportAudioAlarmEnable = new AbilityKey();
+                public AbilityKey supportEmailEnable = new AbilityKey();
+                public AbilityKey supportFtpEnable = new AbilityKey();
+                public AbilityKey supportRecordEnable = new AbilityKey();
+            }
+
+            @SerializedName(value = "ability", alternate = { "Ability" }) // uses uppercase A
+            public Ability ability = new Ability();
+        }
+
+        public class Error {
+            public String detail = "";
+        }
+
+        public Value value = new Value();
+        public Error error = new Error();
     }
 }

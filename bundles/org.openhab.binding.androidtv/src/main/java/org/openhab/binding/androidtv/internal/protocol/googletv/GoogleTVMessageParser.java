@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,6 +57,8 @@ public class GoogleTVMessageParser {
             if (msg.startsWith(DELIMITER_1A)) {
                 logger.warn("{} - GoogleTV Error Message: {}", thingId, msg);
                 callback.getHandler().dispose();
+            } else if (msg.equals(VERSION_01)) {
+                logger.warn("{} - GoogleTV version on device needs to be updated", thingId);
             } else if (msg.startsWith(DELIMITER_0A)) {
                 // First message on connection from GTV
                 //

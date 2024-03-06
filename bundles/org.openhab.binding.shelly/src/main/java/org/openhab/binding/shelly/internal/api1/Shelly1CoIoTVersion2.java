@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -304,13 +304,18 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
             case "4209": // emeter_1: A, current, 0/120A, -1
             case "4309": // emeter_2: A, current, 0/120A, -1
                 updateChannel(updates, rGroup, CHANNEL_EMETER_CURRENT,
-                        toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.AMPERE));
+                        toQuantityType(getDouble(s.value), DIGITS_AMPERE, Units.AMPERE));
                 break;
 
             case "4110": // emeter_0: S, powerFactor, 0/1, -1
             case "4210": // emeter_1: S, powerFactor, 0/1, -1
             case "4310": // emeter_2: S, powerFactor, 0/1, -1
                 updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR, getDecimal(s.value));
+                break;
+
+            case "6": // 3EM: emeter_n: nCurrent
+                updateChannel(updates, CHANNEL_GROUP_NMETER, CHANNEL_NMETER_CURRENT,
+                        toQuantityType(value, DIGITS_AMPERE, Units.AMPERE));
                 break;
 
             case "5101": // {"I":5101,"T":"S","D":"brightness","R":"0/100","L":1},

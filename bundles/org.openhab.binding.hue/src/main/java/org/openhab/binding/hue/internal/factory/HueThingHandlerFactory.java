@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -191,7 +191,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
                     itemChannelLinkRegistry);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new HueBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
-                    stateDescriptionProvider, i18nProvider, localeProvider);
+                    stateDescriptionProvider);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new HueLightHandler(thing, stateDescriptionProvider);
         } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.client.RpcClient;
 import org.openhab.binding.homematic.internal.communicator.client.XmlRpcClient;
+import org.openhab.core.i18n.ConfigurationException;
 
 /**
  * Factory which evaluates the type of the Homematic gateway and instantiates the appropriate class.
@@ -30,7 +31,7 @@ public class HomematicGatewayFactory {
      * Creates the HomematicGateway.
      */
     public static HomematicGateway createGateway(String id, HomematicConfig config,
-            HomematicGatewayAdapter gatewayAdapter, HttpClient httpClient) throws IOException {
+            HomematicGatewayAdapter gatewayAdapter, HttpClient httpClient) throws IOException, ConfigurationException {
         loadGatewayInfo(config, id, httpClient);
         if (config.getGatewayInfo().isCCU()) {
             return new CcuGateway(id, config, gatewayAdapter, httpClient);

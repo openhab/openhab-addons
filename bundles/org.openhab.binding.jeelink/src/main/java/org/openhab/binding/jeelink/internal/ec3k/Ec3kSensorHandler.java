@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class Ec3kSensorHandler extends JeeLinkSensorHandler<Ec3kReading> {
 
     @Override
     public ReadingPublisher<Ec3kReading> createPublisher() {
-        ReadingPublisher<Ec3kReading> publisher = new ReadingPublisher<Ec3kReading>() {
+        ReadingPublisher<Ec3kReading> publisher = new ReadingPublisher<>() {
             @Override
             public void publish(Ec3kReading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {
@@ -78,8 +78,7 @@ public class Ec3kSensorHandler extends JeeLinkSensorHandler<Ec3kReading> {
 
         BufferedSensorConfig cfg = getConfigAs(BufferedSensorConfig.class);
         if (cfg.bufferSize > 1 && cfg.updateInterval > 0) {
-            publisher = new RollingAveragePublisher<Ec3kReading>(cfg.bufferSize, cfg.updateInterval, publisher,
-                    scheduler) {
+            publisher = new RollingAveragePublisher<>(cfg.bufferSize, cfg.updateInterval, publisher, scheduler) {
                 @Override
                 public RollingReadingAverage<Ec3kReading> createRollingReadingAverage(int bufferSize) {
                     return new Ec3kRollingReadingAverage(bufferSize);

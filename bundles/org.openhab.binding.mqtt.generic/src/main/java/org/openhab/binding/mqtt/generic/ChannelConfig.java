@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,12 @@ public class ChannelConfig {
     public @Nullable String on;
     public @Nullable String off;
     public @Nullable String stop;
+    public @Nullable String onState;
+    public @Nullable String offState;
+    public @Nullable String nullValue;
 
     public int onBrightness = 10;
     public String colorMode = ColorMode.HSB.toString();
+    public boolean invert = false;
+    public boolean transformExtentsToString = false;
 }

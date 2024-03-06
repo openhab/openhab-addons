@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.roku.internal.communication;
 import java.io.StringReader;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.xml.bind.JAXBContext;
@@ -43,6 +44,8 @@ import org.openhab.binding.roku.internal.dto.TvChannels.Channel;
  */
 @NonNullByDefault
 public class RokuCommunicator {
+    private static final int REQUEST_TIMEOUT = 5000;
+
     private final HttpClient httpClient;
 
     private final String urlKeyPress;
@@ -265,7 +268,8 @@ public class RokuCommunicator {
      */
     private String getCommand(String url) throws RokuHttpException {
         try {
-            return httpClient.GET(url).getContentAsString();
+            return httpClient.newRequest(url).method(HttpMethod.GET).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS)
+                    .send().getContentAsString();
         } catch (TimeoutException | ExecutionException e) {
             throw new RokuHttpException("Error executing GET command for URL: " + url, e);
         } catch (InterruptedException e) {
@@ -282,7 +286,7 @@ public class RokuCommunicator {
      */
     private void postCommand(String url) throws RokuHttpException {
         try {
-            httpClient.POST(url).method(HttpMethod.POST).send();
+            httpClient.POST(url).method(HttpMethod.POST).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
         } catch (TimeoutException | ExecutionException e) {
             throw new RokuHttpException("Error executing POST command, URL: " + url, e);
         } catch (InterruptedException e) {

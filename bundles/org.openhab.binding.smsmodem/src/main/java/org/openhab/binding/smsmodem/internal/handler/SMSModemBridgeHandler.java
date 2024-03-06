@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,7 +91,7 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
     private @Nullable ScheduledFuture<?> checkScheduled;
 
     // we keep a list of msisdn sender for autodiscovery
-    private Set<String> senderMsisdn = new HashSet<String>();
+    private Set<String> senderMsisdn = new HashSet<>();
     private @Nullable SMSConversationDiscoveryService discoveryService;
 
     private boolean shouldRun = false;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -421,7 +421,7 @@ public class InsteonBinding {
 
     private String toGroupString(List<Byte> group) {
         List<Byte> sorted = new ArrayList<>(group);
-        Collections.sort(sorted, new Comparator<Byte>() {
+        Collections.sort(sorted, new Comparator<>() {
             @Override
             public int compare(Byte b1, Byte b2) {
                 int i1 = b1 & 0xFF;

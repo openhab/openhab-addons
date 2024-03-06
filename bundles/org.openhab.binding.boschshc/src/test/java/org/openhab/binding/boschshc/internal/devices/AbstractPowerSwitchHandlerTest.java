@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -134,7 +134,7 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION),
                 RefreshType.REFRESH);
         verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION),
-                new QuantityType<Power>(12.34d, Units.WATT));
+                new QuantityType<>(12.34d, Units.WATT));
     }
 
     @Test
@@ -142,6 +142,6 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION),
                 RefreshType.REFRESH);
         verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION),
-                new QuantityType<Energy>(56.78d, Units.WATT_HOUR));
+                new QuantityType<>(56.78d, Units.WATT_HOUR));
     }
 }

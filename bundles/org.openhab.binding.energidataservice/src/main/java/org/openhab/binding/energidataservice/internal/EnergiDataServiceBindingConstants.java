@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,12 +52,10 @@ public class EnergiDataServiceBindingConstants {
             + ChannelUID.CHANNEL_GROUP_SEPARATOR + "reduced-electricity-tax";
     public static final String CHANNEL_TRANSMISSION_GRID_TARIFF = CHANNEL_GROUP_ELECTRICITY
             + ChannelUID.CHANNEL_GROUP_SEPARATOR + "transmission-grid-tariff";
-    public static final String CHANNEL_HOURLY_PRICES = CHANNEL_GROUP_ELECTRICITY + ChannelUID.CHANNEL_GROUP_SEPARATOR
-            + "hourly-prices";
 
     public static final Set<String> ELECTRICITY_CHANNELS = Set.of(CHANNEL_SPOT_PRICE, CHANNEL_GRID_TARIFF,
             CHANNEL_SYSTEM_TARIFF, CHANNEL_TRANSMISSION_GRID_TARIFF, CHANNEL_ELECTRICITY_TAX,
-            CHANNEL_REDUCED_ELECTRICITY_TAX, CHANNEL_HOURLY_PRICES);
+            CHANNEL_REDUCED_ELECTRICITY_TAX);
 
     // List of all properties
     public static final String PROPERTY_REMAINING_CALLS = "remainingCalls";

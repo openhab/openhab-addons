@@ -4,7 +4,6 @@
 
 	<feature name="openhab-binding-xmltv" description="XMLTV Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature dependency="true">openhab.tp-jaxb</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.xmltv/${project.version}</bundle>
 	</feature>
 </features>

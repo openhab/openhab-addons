@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,6 +44,16 @@ public class TestNegateBit {
                 obis -> new MeterValue<>(obis, "65954", null));
 
         assertTrue(negateState);
+    }
+
+    @Test
+    public void testNegateHandlingDecimalTrue() {
+        String negateProperty = "1-0_16-7-0:31:0";
+
+        boolean negateStateDot = NegateHandler.shouldNegateState(negateProperty,
+                obis -> new MeterValue<>(obis, "49.0", null));
+
+        assertTrue(negateStateDot);
     }
 
     @Test
