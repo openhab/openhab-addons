@@ -207,8 +207,7 @@ updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getM
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (TimeoutException | URISyntaxException | ExecutionException | InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE);
-            logger.warn("Could not get messages from SAIC iSMART account", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
     }
 
