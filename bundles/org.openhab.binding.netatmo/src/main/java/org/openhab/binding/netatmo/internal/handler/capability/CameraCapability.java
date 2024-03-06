@@ -34,12 +34,13 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link CameraCapability} give to handle Welcome Camera specifics
@@ -49,6 +50,8 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class CameraCapability extends HomeSecurityThingCapability {
+    private final Logger logger = LoggerFactory.getLogger(CameraCapability.class);
+
     private final CameraChannelHelper cameraHelper;
     private final ChannelUID personChannelUID;
 
@@ -60,7 +63,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     public CameraCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
             List<ChannelHelper> channelHelpers) {
         super(handler, descriptionProvider, channelHelpers);
-        this.personChannelUID = new ChannelUID(thing.getUID(), GROUP_LAST_EVENT, CHANNEL_EVENT_PERSON_ID);
+        this.personChannelUID = new ChannelUID(thingUID, GROUP_LAST_EVENT, CHANNEL_EVENT_PERSON_ID);
         this.cameraHelper = (CameraChannelHelper) channelHelpers.stream().filter(c -> c instanceof CameraChannelHelper)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(
                         "CameraCapability must find a CameraChannelHelper, please file a bug report."));
@@ -68,7 +71,6 @@ public class CameraCapability extends HomeSecurityThingCapability {
 
     @Override
     public void initialize() {
-        Thing thing = handler.getThing();
         hasSubEventGroup = !thing.getChannelsOfGroup(GROUP_SUB_EVENT).isEmpty();
         hasLastEventGroup = !thing.getChannelsOfGroup(GROUP_LAST_EVENT).isEmpty();
     }
@@ -81,13 +83,14 @@ public class CameraCapability extends HomeSecurityThingCapability {
         if (newVpnUrl != null && !newVpnUrl.equals(vpnUrl)) {
             // This will also decrease the number of requests emitted toward Netatmo API.
             localUrl = newData.isLocal() ? getSecurityCapability().map(cap -> cap.ping(newVpnUrl)).orElse(null) : null;
+            logger.debug("localUrl set to {} for camera {}", localUrl, handler.getId());
             cameraHelper.setUrls(newVpnUrl, localUrl);
             eventHelper.setUrls(newVpnUrl, localUrl);
         }
         vpnUrl = newVpnUrl;
         if (!SdCardStatus.SD_CARD_WORKING.equals(newData.getSdStatus())
                 || !AlimentationStatus.ALIM_CORRECT_POWER.equals(newData.getAlimStatus())) {
-            statusReason = String.format("%s, %s", newData.getSdStatus(), newData.getAlimStatus());
+            statusReason = "%s, %s".formatted(newData.getSdStatus(), newData.getAlimStatus());
         }
     }
 
@@ -96,11 +99,11 @@ public class CameraCapability extends HomeSecurityThingCapability {
         super.updateWebhookEvent(event);
 
         if (hasSubEventGroup) {
-            updateSubGroup(event, thing.getUID(), GROUP_SUB_EVENT);
+            updateSubGroup(event, thingUID, GROUP_SUB_EVENT);
         }
 
         if (hasLastEventGroup) {
-            updateSubGroup(event, thing.getUID(), GROUP_LAST_EVENT);
+            updateSubGroup(event, thingUID, GROUP_LAST_EVENT);
         }
 
         // The channel should get triggered at last (after super and sub methods), because this allows rules to access

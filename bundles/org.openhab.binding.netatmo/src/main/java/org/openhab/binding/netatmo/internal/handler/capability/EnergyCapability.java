@@ -77,7 +77,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                                     .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
                         });
             });
-            descriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), GROUP_ENERGY, CHANNEL_PLANNING),
+            descriptionProvider.setStateOptions(new ChannelUID(thingUID, GROUP_ENERGY, CHANNEL_PLANNING),
                     energyData.getThermSchedules().stream().map(p -> new StateOption(p.getId(), p.getName())).toList());
             setPointDefaultDuration = energyData.getThermSetpointDefaultDuration();
         }
