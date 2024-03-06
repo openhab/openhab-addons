@@ -42,10 +42,7 @@ public class ParentUpdateCapability extends Capability {
     public void initialize() {
         job = Optional.of(handler.getScheduler().schedule(() -> {
             logger.debug("Requesting parents data update for Thing {}", handler.getId());
-            CommonInterface bridgeHandler = handler.getBridgeHandler();
-            if (bridgeHandler != null) {
-                bridgeHandler.expireData();
-            }
+            expireData();
         }, DEFAULT_DELAY_S, TimeUnit.SECONDS));
     }
 

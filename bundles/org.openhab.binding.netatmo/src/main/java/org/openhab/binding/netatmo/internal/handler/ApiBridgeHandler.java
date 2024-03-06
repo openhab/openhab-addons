@@ -359,10 +359,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                         "@text/maximum-usage-reached [ \"%d\" ]".formatted(API_LIMIT_INTERVAL_S), null, null);
             }
             throw e;
+            // } catch (InterruptedException e) {
+            // Thread.currentThread().interrupt();
+            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            // throw new NetatmoException("Request interrupted");
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
             if (retryCount > 0) {
                 logger.debug("Request error, retry counter: {}", retryCount);
                 return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
