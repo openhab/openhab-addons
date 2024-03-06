@@ -100,7 +100,8 @@ public class SAICiSMARTHandler extends BaseThingHandler {
             // reset channel to off
             updateState(CHANNEL_FORCE_REFRESH, OnOffType.from(false));
             // update internal activity date, to query the car for about a minute
-            notifyCarActivity(ZonedDateTime.now(getTimeZone()).minus(9, ChronoUnit.MINUTES), true);
+            notifyCarActivity(ZonedDateTime.now(getTimeZone())
+                    .minus(SAICiSMARTBindingConstants.POLLING_ACTIVE_MINS / 10, ChronoUnit.MINUTES), true);
         } else if (channelUID.getId().equals(CHANNEL_SWITCH_AC) && command == OnOffType.ON) {
             // reset channel to off
             updateState(CHANNEL_SWITCH_AC, OnOffType.ON);
@@ -153,7 +154,8 @@ public class SAICiSMARTHandler extends BaseThingHandler {
     }
 
     private void updateStatus() {
-        if (lastCarActivity.isAfter(ZonedDateTime.now().minus(10, ChronoUnit.MINUTES))) {
+        if (lastCarActivity.isAfter(
+                ZonedDateTime.now().minus(SAICiSMARTBindingConstants.POLLING_ACTIVE_MINS, ChronoUnit.MINUTES))) {
             if (this.getBridgeHandler().getUid() != null && this.getBridgeHandler().getToken() != null) {
                 try {
                     OTA_RVMVehicleStatusResp25857 otaRvmVehicleStatusResp25857 = new VehicleStateUpdater(this).call();

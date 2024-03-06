@@ -32,6 +32,11 @@ public class SAICiSMARTBindingConstants {
     public static final int REFRESH_INTERVAL = 10;
 
     /**
+     * Active polling period in minutes
+     */
+    public static final int POLLING_ACTIVE_MINS = 10;
+
+    /**
      * URL of the SAIC API Host.
      */
     private static final String API_HOST_URL = "https://tap-eu.soimt.com";
