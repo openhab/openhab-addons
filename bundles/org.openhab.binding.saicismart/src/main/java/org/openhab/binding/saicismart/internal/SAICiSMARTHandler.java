@@ -101,7 +101,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
             updateState(CHANNEL_FORCE_REFRESH, OnOffType.from(false));
             // update internal activity date, to query the car for about a minute
             notifyCarActivity(ZonedDateTime.now(getTimeZone())
-                    .minus(SAICiSMARTBindingConstants.POLLING_ACTIVE_MINS / 10, ChronoUnit.MINUTES), true);
+                    .minus(SAICiSMARTBindingConstants.POLLING_ACTIVE_MINS - 1, ChronoUnit.MINUTES), true);
         } else if (channelUID.getId().equals(CHANNEL_SWITCH_AC) && command == OnOffType.ON) {
             // reset channel to off
             updateState(CHANNEL_SWITCH_AC, OnOffType.ON);

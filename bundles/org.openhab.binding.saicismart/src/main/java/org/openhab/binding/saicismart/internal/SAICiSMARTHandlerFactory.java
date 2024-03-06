@@ -53,7 +53,6 @@ public class SAICiSMARTHandlerFactory extends BaseThingHandlerFactory {
             final @Reference LocaleProvider localeProvider, final @Reference HttpClientFactory httpClientFactory,
             final @Reference TimeZoneProvider timeZoneProvider) {
         this.i18nProvider = new SAICTranslationProvider(translationProvider, localeProvider);
-        ;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.timeZoneProvider = timeZoneProvider;
     }
