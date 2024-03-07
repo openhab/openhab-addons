@@ -64,17 +64,17 @@ tasmotaplug:plug:plug2 "Plug 2" [ hostName="myplug2", refresh=30 ]
 tasmotaplug.items:
 
 ```java
-Switch Plug1 "Plug 1 Power" { channel="tasmotaplug:plug:plug1:power" }
-Number Voltage              { channel="tasmotaplug:plug:plug1:voltage" }
-Number Current              { channel="tasmotaplug:plug:plug1:current" }
-Number Watts                { channel="tasmotaplug:plug:plug1:watts" }
-Number VoltAmpere           { channel="tasmotaplug:plug:plug1:volt-ampere" }
-Number VoltAmpereReactive   { channel="tasmotaplug:plug:plug1:volt-ampere-reactive" }
-Number PowerFactor          { channel="tasmotaplug:plug:plug1:power-factor" }
-Number EnergyToday          { channel="tasmotaplug:plug:plug1:energy-today" }
-Number EnergyYesterday      { channel="tasmotaplug:plug:plug1:energy-yesterday" }
-Number EnergyTotal          { channel="tasmotaplug:plug:plug1:energy-total" }
-Number EnergyTotalStart     { channel="tasmotaplug:plug:plug1:energy-total-start" }
+Switch Plug1 "Plug 1 Power"                   { channel="tasmotaplug:plug:plug1:power" }
+Number:ElectricPotential Voltage              { channel="tasmotaplug:plug:plug1:voltage" }
+Number:ElectricCurrent Current                { channel="tasmotaplug:plug:plug1:current" }
+Number:Power Watts                            { channel="tasmotaplug:plug:plug1:watts" }
+Number:Power VoltAmpere                       { channel="tasmotaplug:plug:plug1:volt-ampere" }
+Number:Power VoltAmpereReactive               { channel="tasmotaplug:plug:plug1:volt-ampere-reactive" }
+Number PowerFactor                            { channel="tasmotaplug:plug:plug1:power-factor" }
+Number:Energy EnergyToday                     { channel="tasmotaplug:plug:plug1:energy-today" }
+Number:Energy EnergyYesterday                 { channel="tasmotaplug:plug:plug1:energy-yesterday" }
+Number:Energy EnergyTotal                     { channel="tasmotaplug:plug:plug1:energy-total" }
+DateTime EnergyTotalStart  "Total Start [%s]" { channel="tasmotaplug:plug:plug1:energy-total-start" }
 
 Switch Plug2a "4ch Power 1" { channel="tasmotaplug:plug:plug2:power" }
 Switch Plug2b "4ch Power 2" { channel="tasmotaplug:plug:plug2:power2" }
@@ -90,16 +90,16 @@ sitemap tasmotaplug label="My Tasmota Plugs" {
         Switch item=Plug1
 
         // Energy monitoring
-        Number item=Voltage
-        Number item=Current
-        Number item=Watts
-        Number item=VoltAmpere
-        Number item=VoltAmpereReactive
-        Number item=PowerFactor
-        Number item=EnergyToday
-        Number item=EnergyYesterday
-        Number item=EnergyTotal
-        Number item=EnergyTotalStart
+        Text item=Voltage
+        Text item=Current
+        Text item=Watts
+        Text item=VoltAmpere
+        Text item=VoltAmpereReactive
+        Text item=PowerFactor
+        Text item=EnergyToday
+        Text item=EnergyYesterday
+        Text item=EnergyTotal
+        Text item=EnergyTotalStart
 
         Switch item=Plug2a
         Switch item=Plug2b
