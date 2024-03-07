@@ -178,7 +178,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
                 apiLocalUrl = builder.build();
                 if (apiLocalUrl.getHost().startsWith("169.254.")) {
                     logger.warn("Suspicious local IP adress received : {}", apiLocalUrl);
-                    String provided = handler.getThingConfigAs(CameraConfiguration.class).getLocalIp();
+                    String provided = handler.getThingConfigAs(CameraConfiguration.class).ipAddress;
                     apiLocalUrl = builder.host(provided).build();
                     logger.info("Using {} as local url for '{}'", apiLocalUrl, thingUID);
                 }
@@ -191,5 +191,4 @@ public class CameraCapability extends HomeSecurityThingCapability {
             return apiLocalUrl != null ? apiLocalUrl.toString() : null;
         }).orElse(null);
     }
-
 }

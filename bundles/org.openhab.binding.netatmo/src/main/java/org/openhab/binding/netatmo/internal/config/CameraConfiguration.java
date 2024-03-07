@@ -24,9 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class CameraConfiguration extends NAThingConfiguration {
     public static final String ID = "id";
 
-    protected String localIp = "";
-
-    public String getLocalIp() {
-        return localIp;
-    }
+    public String ipAddress = "";
 }
