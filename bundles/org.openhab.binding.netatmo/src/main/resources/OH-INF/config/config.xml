@@ -111,8 +111,8 @@
 		<parameter name="ipAddress" type="text" required="false">
 			<label>@text/config.ipAddress.label</label>
 			<description>@text/config.ipAddress.description</description>
-            <context>network-address</context>
-        </parameter>
+			<context>network-address</context>
+		</parameter>
 	</config-description>
 
 	<config-description uri="netatmo:virtual">
