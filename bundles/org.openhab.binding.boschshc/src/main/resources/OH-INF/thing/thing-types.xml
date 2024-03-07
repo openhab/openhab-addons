@@ -421,6 +421,24 @@
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
 
+	<thing-type id="dimmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Dimmer</label>
+		<description>Smart dimmer capable of controlling any dimmable lamp.</description>
+
+		<channels>
+			<channel id="power-switch" typeId="system.power"/>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="child-protection" typeId="child-protection"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+	</thing-type>
+
 	<!-- Channels -->
 
 	<channel-type id="system-availability">

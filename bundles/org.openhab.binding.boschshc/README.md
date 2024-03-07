@@ -70,6 +70,19 @@ A compact smart plug with energy monitoring capabilities.
 | power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.     |
 | energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device. |
 
+### Dimmer
+
+Smart dimmer capable of controlling any dimmable lamp.
+
+**Thing Type ID**: `dimmer`
+
+| Channel Type ID    | Item Type     | Writable | Description                                                    |
+| ------------------ | ------------- | :------: | -------------------------------------------------------------- |
+| power-switch       | Switch        | &#9745;  | Current state of the switch.                                   |
+| brightness         | Dimmer        | &#9745;  | Regulates the brightness on a percentage scale from 0 to 100%. |
+| signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| child-protection   | Switch        | &#9745;  | Indicates whether the child protection is active.              |
+
 ### Twinguard Smoke Detector
 
 The Twinguard smoke detector warns you in case of fire and constantly monitors the air.
