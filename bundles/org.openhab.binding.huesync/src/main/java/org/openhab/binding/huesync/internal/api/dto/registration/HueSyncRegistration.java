@@ -10,19 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.huesync.internal.config;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.huesync.internal.api.dto.registration;
 
 /**
- * Binding configuration parameters,
  * 
- * @author Patrik Gfeller - Initial contribution
+ * @author Patrik Gfeller - Initial Contribution
  */
-@NonNullByDefault
-public class HueSyncConfiguration {
-    public String registrationId = "";
-    public String apiAccessToken = "";
-    public String host = "";
-    public Integer port = 443;
+public class HueSyncRegistration {
+    public String registrationId;
+    public String accessToken;
 }

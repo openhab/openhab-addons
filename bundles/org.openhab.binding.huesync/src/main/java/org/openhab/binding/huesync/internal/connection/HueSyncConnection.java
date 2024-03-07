@@ -17,14 +17,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
 import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfo;
+import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequest;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.slf4j.Logger;
@@ -80,7 +83,17 @@ public class HueSyncConnection {
         return this.deviceInfo;
     }
 
-    public void registerDevice()
+    /**
+     * Try to register the application with the device.
+     * 
+     * @return null || HueSyncRegistration
+     * 
+     * @throws JsonProcessingException
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
+    public @Nullable HueSyncRegistration registerDevice()
             throws JsonProcessingException, InterruptedException, TimeoutException, ExecutionException {
 
         HueSyncRegistrationRequest dto = new HueSyncRegistrationRequest();
@@ -95,6 +108,8 @@ public class HueSyncConnection {
                 .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
                 .content(new StringContentProvider(json)).timeout(500, TimeUnit.MILLISECONDS).send();
 
-        logger.trace("registerDevice", response);
+        return (response.getStatus() == HttpStatus.OK_200)
+                ? ObjectMapper.readValue(response.getContentAsString(), HueSyncRegistration.class)
+                : null;
     }
 }
