@@ -59,7 +59,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     @Override
     public void initialize() {
         super.initialize();
-        energyId = handler.getConfiguration().as(HomeConfiguration.class).getIdForArea(FeatureArea.ENERGY);
+        energyId = handler.getThingConfigAs(HomeConfiguration.class).getIdForArea(FeatureArea.ENERGY);
     }
 
     @Override

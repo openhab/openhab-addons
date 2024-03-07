@@ -108,11 +108,7 @@ public class SecurityApi extends RestManager {
     public @Nullable String ping(String vpnUrl) {
         UriBuilder uriBuilder = UriBuilder.fromUri(vpnUrl).path(PATH_COMMAND).path(SUB_PATH_PING);
         try {
-            String result = get(uriBuilder, Ping.class).getStatus();
-            if (result.contains("169.254.")) {
-                logger.warn("Suspicious local IP adress received: {}", result);
-            }
-            return result;
+            return get(uriBuilder, Ping.class).getStatus();
         } catch (NetatmoException e) {
             logger.debug("Pinging {} failed : {}", vpnUrl, e.getMessage());
             return null;

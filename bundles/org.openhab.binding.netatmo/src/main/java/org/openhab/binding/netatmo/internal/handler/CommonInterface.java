@@ -32,7 +32,6 @@ import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -108,11 +107,11 @@ public interface CommonInterface {
     }
 
     default String getId() {
-        return getConfiguration().as(NAThingConfiguration.class).getId();
+        return getThingConfigAs(NAThingConfiguration.class).getId();
     }
 
-    default Configuration getConfiguration() {
-        return getThing().getConfiguration();
+    default <T> T getThingConfigAs(Class<T> configurationClass) {
+        return getThing().getConfiguration().as(configurationClass);
     }
 
     default Stream<Channel> getActiveChannels() {

@@ -102,6 +102,17 @@
 			<description>@text/config.equipmentId.description</description>
 		</parameter>
 	</config-description>
+	
+    <config-description uri="netatmo:camera">
+        <parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
+            <label>@text/config.equipmentId.label</label>
+            <description>@text/config.equipmentId.description</description>
+        </parameter>
+        <parameter name="localIp" type="text" required="false">
+            <label>Local IP Address</label>
+            <description>Fallback address used with erroneous API answers to ping requests</description>
+        </parameter>
+    </config-description>
 
 	<config-description uri="netatmo:virtual">
 		<parameter name="id" type="text" required="true">

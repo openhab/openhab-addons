@@ -204,10 +204,11 @@ public enum ModuleType {
     }
 
     public URI getConfigDescription() {
-        return URI.create(BINDING_ID + ":"
-                + (equals(ACCOUNT) ? "api_bridge"
-                        : equals(HOME) ? "home"
-                                : (isLogical() ? "virtual" : UNKNOWN.equals(getBridge()) ? "configurable" : "device")));
+        return URI.create(BINDING_ID + ":" + (equals(ACCOUNT) ? "api_bridge"
+                : equals(HOME) ? "home"
+                        : (isLogical() ? "virtual"
+                                : UNKNOWN.equals(getBridge()) ? "configurable"
+                                        : capabilities.contains(CameraCapability.class) ? "camera" : "device")));
     }
 
     public int getDepth() {

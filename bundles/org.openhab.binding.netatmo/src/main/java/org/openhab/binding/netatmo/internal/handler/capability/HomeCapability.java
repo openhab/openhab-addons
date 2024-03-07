@@ -58,7 +58,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
     @Override
     public void initialize() {
         super.initialize();
-        HomeConfiguration config = handler.getConfiguration().as(HomeConfiguration.class);
+        HomeConfiguration config = handler.getThingConfigAs(HomeConfiguration.class);
         homeIds.add(config.getId());
         if (!config.energyId.isBlank()) {
             homeIds.add(config.energyId);

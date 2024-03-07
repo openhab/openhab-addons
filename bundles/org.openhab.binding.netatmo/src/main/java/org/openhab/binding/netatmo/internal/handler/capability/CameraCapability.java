@@ -15,8 +15,12 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,6 +31,7 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
+import org.openhab.binding.netatmo.internal.config.CameraConfiguration;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
@@ -82,7 +87,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
         String newVpnUrl = newData.getVpnUrl();
         if (newVpnUrl != null && !newVpnUrl.equals(vpnUrl)) {
             // This will also decrease the number of requests emitted toward Netatmo API.
-            localUrl = newData.isLocal() ? getSecurityCapability().map(cap -> cap.ping(newVpnUrl)).orElse(null) : null;
+            localUrl = newData.isLocal() ? ping(newVpnUrl) : null;
             logger.debug("localUrl set to {} for camera {}", localUrl, handler.getId());
             cameraHelper.setUrls(newVpnUrl, localUrl);
             eventHelper.setUrls(newVpnUrl, localUrl);
@@ -164,4 +169,27 @@ public class CameraCapability extends HomeSecurityThingCapability {
         });
         return result;
     }
+
+    public @Nullable String ping(String vpnUrl) {
+        return getSecurityCapability().map(cap -> {
+            UriBuilder builder = UriBuilder.fromPath(cap.ping(vpnUrl));
+            URI apiLocalUrl = null;
+            try {
+                apiLocalUrl = builder.build();
+                if (apiLocalUrl.getHost().startsWith("169.254.")) {
+                    logger.warn("Suspicious local IP adress received : {}", apiLocalUrl);
+                    String provided = handler.getThingConfigAs(CameraConfiguration.class).getLocalIp();
+                    apiLocalUrl = builder.host(provided).build();
+                    logger.info("Using {} as local url for '{}'", apiLocalUrl, thingUID);
+                }
+            } catch (UriBuilderException e) { // Crashed at first URI build
+                logger.warn("API returned a badly formatted local url addess for '{}': {}", thingUID, e.getMessage());
+            } catch (IllegalArgumentException e) {
+                logger.warn("Invalid fallback address provided in configuration for '{}' keeping API answer: {}",
+                        thingUID, e.getMessage());
+            }
+            return apiLocalUrl != null ? apiLocalUrl.toString() : null;
+        }).orElse(null);
+    }
+
 }
