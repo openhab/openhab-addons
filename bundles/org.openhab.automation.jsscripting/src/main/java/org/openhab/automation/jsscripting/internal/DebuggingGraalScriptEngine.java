@@ -13,6 +13,7 @@
 package org.openhab.automation.jsscripting.internal;
 
 import javax.script.Invocable;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,11 +39,15 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
     }
 
     @Override
-    public Exception afterThrowsInvocation(Exception e) {
+    protected void beforeInvocation() {
+        super.beforeInvocation();
         if (logger == null) {
             initializeLogger();
         }
+    }
 
+    @Override
+    public Exception afterThrowsInvocation(Exception e) {
         Throwable cause = e.getCause();
         if (cause instanceof IllegalArgumentException) {
             logger.error("Failed to execute script:", e);
@@ -59,9 +64,10 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
      * Therefore, the logger needs to be initialized on the first use after script engine creation.
      */
     private void initializeLogger() {
-        Object fileName = delegate.getContext().getAttribute("javax.script.filename");
-        Object ruleUID = delegate.getContext().getAttribute("ruleUID");
-        Object ohEngineIdentifier = delegate.getContext().getAttribute("oh.engine-identifier");
+        ScriptContext ctx = delegate.getContext();
+        Object fileName = ctx.getAttribute("javax.script.filename");
+        Object ruleUID = ctx.getAttribute("ruleUID");
+        Object ohEngineIdentifier = ctx.getAttribute("oh.engine-identifier");
 
         String identifier = "stack";
         if (fileName != null) {
