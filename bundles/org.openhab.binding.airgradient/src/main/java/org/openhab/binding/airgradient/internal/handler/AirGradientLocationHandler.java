@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airgradient.internal.config.AirGradientLocationConfiguration;
 import org.openhab.binding.airgradient.internal.model.Measure;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -52,6 +53,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Channel {}: {}", channelUID, command.toFullString());
         if (command instanceof RefreshType) {
             Bridge bridge = getBridge();
             if (bridge != null) {
@@ -59,6 +61,19 @@ public class AirGradientLocationHandler extends BaseThingHandler {
                 if (handler != null) {
                     handler.pollingCode();
                 }
+            }
+        } else if (CHANNEL_LEDS_MODE.equals(channelUID.getId())) {
+            if (command instanceof StringType stringCommand) {
+                Bridge bridge = getBridge();
+                if (bridge != null) {
+                    AirGradientAPIHandler handler = (AirGradientAPIHandler) bridge.getHandler();
+                    if (handler != null) {
+                        handler.setLedMode(getSerialNo(), stringCommand.toFullString());
+                    }
+                }
+            } else {
+                logger.debug("Received command {} for channel {}, but it needs a string command", command.toString(),
+                        channelUID.getId());
             }
         } else {
             // This is read only
@@ -108,6 +123,12 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         updateStateNullSafe(CHANNEL_WIFI, measure.wifi, (d) -> new QuantityType<>(d, Units.DECIBEL_MILLIWATTS));
     }
 
+    public void setLedMode(String ledMode) {
+        ChannelUID ledsChannel = new ChannelUID(thing.getUID(), CHANNEL_LEDS_MODE);
+        logger.debug("Updating LEDs mode of '{}' to '{}'", ledsChannel.toString(), ledMode);
+        updateState(ledsChannel, StringType.valueOf(ledMode));
+    }
+
     private void updateStateNullSafe(String channelName, @Nullable Double measure,
             Function<Double, QuantityType<?>> value) {
         if (measure == null) {
@@ -121,5 +142,29 @@ public class AirGradientLocationHandler extends BaseThingHandler {
                 updateState(channelName, v);
             }
         }
+    }
+
+    /**
+     * Returns true if we should get LED status for this location.
+     *
+     * @return true if we should get LED status for this location.
+     */
+    public boolean needsLedsStatus() {
+        ChannelUID ledsChannel = new ChannelUID(thing.getUID(), CHANNEL_LEDS_MODE);
+        return isLinked(ledsChannel);
+    }
+
+    /**
+     * Returns the serial number of this sensor.
+     *
+     * @return serial number of this sensor.
+     */
+    public String getSerialNo() {
+        String serialNo = thing.getProperties().get(PROPERTY_SERIAL_NO);
+        if (serialNo == null) {
+            serialNo = "";
+        }
+
+        return serialNo;
     }
 }

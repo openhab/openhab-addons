@@ -16,6 +16,7 @@ import static org.openhab.binding.airgradient.internal.AirGradientBindingConstan
 
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,8 +35,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfiguration;
 import org.openhab.binding.airgradient.internal.discovery.AirGradientLocationDiscoveryService;
+import org.openhab.binding.airgradient.internal.model.LedMode;
 import org.openhab.binding.airgradient.internal.model.Measure;
 import org.openhab.binding.airgradient.internal.prometheus.PrometheusMetric;
 import org.openhab.binding.airgradient.internal.prometheus.PrometheusTextParser;
@@ -77,6 +83,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.info("Handle command {} for channel {}!", command.toFullString(), channelUID);
         if (command instanceof RefreshType) {
             pollingCode();
         } else {
@@ -138,6 +145,13 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
                 } else {
                     logger.debug("Could not find measures for location {}", locationId);
                 }
+
+                if (handler.needsLedsStatus()) {
+                    String ledMode = getLedMode(handler.getSerialNo());
+                    if (ledMode != null) {
+                        handler.setLedMode(ledMode);
+                    }
+                }
             }
         }
     }
@@ -191,6 +205,66 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         }
 
         return Collections.emptyList();
+    }
+
+    /**
+     * Returns the LED mode for a given sensor.
+     *
+     * @param serialNo Serial number of sensor
+     * @return The LED mode for the sensor
+     */
+    public @Nullable String getLedMode(String serialNo) {
+        LedMode mode = new LedMode();
+        mode.mode = "default";
+        try {
+            ContentResponse response = httpClient.GET(generateGetLedsModeUrl(serialNo));
+            String contentType = response.getMediaType();
+            logger.debug("Got LED status for {} with HTTP status {}: {} ({})", serialNo, response.getStatus(),
+                    response.getContentAsString(), contentType);
+            if (response.getStatus() == 200) {
+                updateStatus(ThingStatus.ONLINE);
+                String stringResponse = response.getContentAsString().trim();
+
+                if (CONTENTTYPE_JSON.equals(contentType)) {
+                    Type ledModeType = new TypeToken<@Nullable LedMode>() {
+                    }.getType();
+                    mode = gson.fromJson(stringResponse, ledModeType);
+                }
+
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.getContentAsString());
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+
+        if (mode != null && mode.mode != null) {
+            return mode.mode;
+        }
+
+        return "default";
+    }
+
+    public void setLedMode(String serialNo, String mode) {
+        Request request = httpClient.newRequest(generateGetLedsModeUrl(serialNo));
+        request.method(HttpMethod.PUT);
+        request.header(HttpHeader.CONTENT_TYPE, CONTENTTYPE_JSON);
+        LedMode ledMode = new LedMode();
+        ledMode.mode = mode;
+        String modeJson = gson.toJson(ledMode);
+        logger.debug("Setting LEDS mode for {}: {}", serialNo, modeJson);
+        request.content(new StringContentProvider(CONTENTTYPE_JSON, modeJson, StandardCharsets.UTF_8));
+        try {
+            ContentResponse response = request.send();
+            logger.debug("Response from setting LEDs mode: {}", response.getStatus());
+            if (response.getStatus() == 200) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.getContentAsString());
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     private List<Measure> parsePrometheus(String stringResponse) {
@@ -310,6 +384,15 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         AirGradientAPIConfiguration config = getConfiguration();
         if (hasCloudUrl(config)) {
             return config.hostname + String.format(CURRENT_MEASURES_PATH, config.token);
+        } else {
+            return config.hostname;
+        }
+    }
+
+    private @Nullable String generateGetLedsModeUrl(String serialNo) {
+        AirGradientAPIConfiguration config = getConfiguration();
+        if (hasCloudUrl(config)) {
+            return config.hostname + String.format(LEDS_MODE_PATH, serialNo, config.token);
         } else {
             return config.hostname;
         }

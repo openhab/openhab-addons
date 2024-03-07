@@ -40,6 +40,7 @@ public class AirGradientBindingConstants {
     public static final String CHANNEL_WIFI = "wifi";
     public static final String CHANNEL_RCO2 = "rco2";
     public static final String CHANNEL_TVOC = "tvoc";
+    public static final String CHANNEL_LEDS_MODE = "leds";
 
     // List of all properties
     public static final String PROPERTY_NAME = "name";
@@ -52,6 +53,7 @@ public class AirGradientBindingConstants {
     // URLs for API
     public static final String PING_PATH = "/public/api/v1/ping";
     public static final String CURRENT_MEASURES_PATH = "/public/api/v1/locations/measures/current?token=%s";
+    public static final String LEDS_MODE_PATH = "/public/api/v1/sensors/%s/config/leds/mode?token=%s";
 
     // Discovery
     public static final int SEARCH_TIME = 15;
