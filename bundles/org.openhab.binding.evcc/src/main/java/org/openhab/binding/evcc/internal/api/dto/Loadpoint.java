@@ -82,9 +82,6 @@ public class Loadpoint {
     @SerializedName("title")
     private String title;
 
-    @SerializedName("vehicleCapacity")
-    private float vehicleCapacity;
-
     @SerializedName("vehicleOdometer")
     private float vehicleOdometer;
 
@@ -240,13 +237,6 @@ public class Loadpoint {
      */
     public String getTitle() {
         return title;
-    }
-
-    /**
-     * @return vehicle's capacity
-     */
-    public float getVehicleCapacity() {
-        return vehicleCapacity;
     }
 
     /**
