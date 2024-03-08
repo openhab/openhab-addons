@@ -49,6 +49,10 @@
 			<channel id="trackNumber" typeId="trackNumber"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>deviceId</representation-property>
 
 		<config-description-ref uri="thing-type:chromecast:device"/>
@@ -98,6 +102,10 @@
 			<channel id="title" typeId="system.media-title"/>
 			<channel id="trackNumber" typeId="trackNumber"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>deviceId</representation-property>
 
@@ -149,6 +157,10 @@
 			<channel id="trackNumber" typeId="trackNumber"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>deviceId</representation-property>
 
 		<config-description-ref uri="thing-type:chromecast:device"/>
@@ -158,6 +170,7 @@
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stops the player. ON if the player is stopped.</description>
+		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="playuri" advanced="true">
@@ -171,6 +184,7 @@
 		<item-type>Switch</item-type>
 		<label>Idling</label>
 		<description>Is Chromecast active or idling</description>
+		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -200,6 +214,11 @@
 		<item-type>Number:Time</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing media</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -207,6 +226,11 @@
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Length of currently playing media</description>
+		<category>Time</category>
+		<tags>
+			<tag>Point</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -245,6 +269,10 @@
 		<label>Broadcast Date</label>
 		<description>The broadcast date of the currently playing media</description>
 		<category>Calendar</category>
+		<tags>
+			<tag>Point</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
@@ -260,6 +288,10 @@
 		<label>Creation Date</label>
 		<description>The creation date of the currently playing media</description>
 		<category>Calendar</category>
+		<tags>
+			<tag>Point</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
@@ -303,6 +335,10 @@
 		<label>Release Date</label>
 		<description>The release date of the currently playing media</description>
 		<category>Calendar</category>
+		<tags>
+			<tag>Point</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
