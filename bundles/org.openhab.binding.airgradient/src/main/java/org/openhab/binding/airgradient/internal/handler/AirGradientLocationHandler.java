@@ -121,6 +121,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         updateStateNullSafe(CHANNEL_TVOC, measure.tvoc,
                 (d) -> new QuantityType<>(d.longValue(), Units.PARTS_PER_BILLION));
         updateStateNullSafe(CHANNEL_WIFI, measure.wifi, (d) -> new QuantityType<>(d, Units.DECIBEL_MILLIWATTS));
+        updateStateNullSafe(CHANNEL_LEDS_MODE, measure.ledMode, (s) -> StringType.valueOf(s));
     }
 
     public void setLedMode(String ledMode) {
@@ -130,28 +131,33 @@ public class AirGradientLocationHandler extends BaseThingHandler {
     }
 
     private void updateStateNullSafe(String channelName, @Nullable Double measure,
-            Function<Double, QuantityType<?>> value) {
+            Function<Double, QuantityType<?>> valueFunc) {
         if (measure == null) {
             logger.debug("Channel name {} is {}", channelName, measure);
             updateState(channelName, UnDefType.NULL);
         } else {
             ChannelUID channelUid = new ChannelUID(thing.getUID(), channelName);
             if (isLinked(channelUid)) {
-                QuantityType<?> v = value.apply(measure);
+                QuantityType<?> v = valueFunc.apply(measure);
                 logger.debug("Setting Channel {} to: {}", channelUid, v);
                 updateState(channelName, v);
             }
         }
     }
 
-    /**
-     * Returns true if we should get LED status for this location.
-     *
-     * @return true if we should get LED status for this location.
-     */
-    public boolean needsLedsStatus() {
-        ChannelUID ledsChannel = new ChannelUID(thing.getUID(), CHANNEL_LEDS_MODE);
-        return isLinked(ledsChannel);
+    private void updateStateNullSafe(String channelName, @Nullable String value,
+            Function<String, StringType> valueFunc) {
+        if (value == null) {
+            logger.debug("Channel name {} is {}", channelName, value);
+            updateState(channelName, UnDefType.NULL);
+        } else {
+            ChannelUID channelUid = new ChannelUID(thing.getUID(), channelName);
+            if (isLinked(channelUid)) {
+                StringType v = valueFunc.apply(value);
+                logger.debug("Setting Channel {} to: {}", channelUid, v);
+                updateState(channelName, v);
+            }
+        }
     }
 
     /**

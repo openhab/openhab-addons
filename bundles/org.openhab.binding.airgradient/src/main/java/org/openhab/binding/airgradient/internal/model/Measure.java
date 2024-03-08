@@ -129,4 +129,16 @@ public class Measure {
 
     @Nullable
     public String firmwareVersion; // The firmware version running on the device, e.g. "9.2.6", not present for averages
+
+    @Nullable
+    public String ledMode; // co2, pm, off, default
+
+    @Nullable
+    public String ledCo2Threshold1;
+
+    @Nullable
+    public String ledCo2Threshold2;
+
+    @Nullable
+    public String ledCo2ThresholdEnd;
 }

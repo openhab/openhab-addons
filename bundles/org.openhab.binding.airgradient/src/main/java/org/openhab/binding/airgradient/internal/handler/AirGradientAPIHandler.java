@@ -145,13 +145,6 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
                 } else {
                     logger.debug("Could not find measures for location {}", locationId);
                 }
-
-                if (handler.needsLedsStatus()) {
-                    String ledMode = getLedMode(handler.getSerialNo());
-                    if (ledMode != null) {
-                        handler.setLedMode(ledMode);
-                    }
-                }
             }
         }
     }
@@ -205,44 +198,6 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         }
 
         return Collections.emptyList();
-    }
-
-    /**
-     * Returns the LED mode for a given sensor.
-     *
-     * @param serialNo Serial number of sensor
-     * @return The LED mode for the sensor
-     */
-    public @Nullable String getLedMode(String serialNo) {
-        LedMode mode = new LedMode();
-        mode.mode = "default";
-        try {
-            ContentResponse response = httpClient.GET(generateGetLedsModeUrl(serialNo));
-            String contentType = response.getMediaType();
-            logger.debug("Got LED status for {} with HTTP status {}: {} ({})", serialNo, response.getStatus(),
-                    response.getContentAsString(), contentType);
-            if (response.getStatus() == 200) {
-                updateStatus(ThingStatus.ONLINE);
-                String stringResponse = response.getContentAsString().trim();
-
-                if (CONTENTTYPE_JSON.equals(contentType)) {
-                    Type ledModeType = new TypeToken<@Nullable LedMode>() {
-                    }.getType();
-                    mode = gson.fromJson(stringResponse, ledModeType);
-                }
-
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.getContentAsString());
-            }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-
-        if (mode != null && mode.mode != null) {
-            return mode.mode;
-        }
-
-        return "default";
     }
 
     public void setLedMode(String serialNo, String mode) {
