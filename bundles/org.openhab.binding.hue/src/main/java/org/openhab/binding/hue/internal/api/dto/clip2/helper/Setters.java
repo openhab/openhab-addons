@@ -169,13 +169,10 @@ public class Setters {
      */
     public static Resource setColorXy(Resource target, Command command, @Nullable Resource source) {
         if (command instanceof HSBType cmdHsb) {
-            Gamut gamut = target.getGamut();
-            gamut = Objects.nonNull(gamut) ? gamut : Objects.nonNull(source) ? source.getGamut() : null;
-            gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
             HSBType hsb = cmdHsb.getBrightness().doubleValue() >= 0.1 ? cmdHsb
                     : new HSBType(cmdHsb.getHue(), cmdHsb.getBrightness(), new PercentType(BigDecimal.valueOf(0.1)));
             ColorXy color = target.getColorXy();
-            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb, gamut)));
+            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb)));
         }
         return target;
     }
