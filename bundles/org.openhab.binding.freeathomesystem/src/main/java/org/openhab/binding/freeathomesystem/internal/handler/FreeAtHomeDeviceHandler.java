@@ -100,8 +100,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
             Map<String, String> properties = getThing().getProperties();
             Bridge bridge = this.getBridge();
 
-            logger.debug("Start creating device - device id: {}", device.getDeviceId());
-
             if (bridge != null) {
                 FreeAtHomeBridgeHandler bridgeHandler = (FreeAtHomeBridgeHandler) bridge.getHandler();
 
