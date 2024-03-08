@@ -33,6 +33,9 @@ public class Vehicle {
     @SerializedName("limitSoc")
     private float limitSoC;
 
+    @SerializedName("capacity")
+    private float capacity;
+
     @SerializedName("plans")
     private Plan[] plans;
 
@@ -55,6 +58,13 @@ public class Vehicle {
      */
     public float getLimitSoC() {
         return limitSoC;
+    }
+
+    /**
+     * @return vehicle's capacity
+     */
+    public float getCapacity() {
+        return capacity;
     }
 
     /**
