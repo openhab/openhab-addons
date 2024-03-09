@@ -49,6 +49,9 @@ public class AirGradientBindingConstants {
 
     // All configurations
     public static final String CONFIG_LOCATION = "location";
+    public static final String CONFIG_API_TOKEN = "token";
+    public static final String CONFIG_API_HOST_NAME = "hostname";
+    public static final String CONFIG_API_REFRESH_INTERVAL = "refreshInterval";
 
     // URLs for API
     public static final String PING_PATH = "/public/api/v1/ping";
@@ -58,6 +61,7 @@ public class AirGradientBindingConstants {
     // Discovery
     public static final int SEARCH_TIME = 15;
     public static final boolean BACKGROUND_DISCOVERY = true;
+    public static final int DEFAULT_POLL_INTERVAL_LOCAL = 10; // Seconds
 
     // Media types
     public static final String CONTENTTYPE_JSON = "application/json";
