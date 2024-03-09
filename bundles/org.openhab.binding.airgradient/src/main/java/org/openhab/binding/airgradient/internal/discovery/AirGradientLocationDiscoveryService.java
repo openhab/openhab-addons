@@ -75,20 +75,24 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
                 id = measure.getSerialNo();
             }
 
+            String name = measure.getLocationName();
+            if (name.isEmpty()) {
+                name = "Sensor_" + measure.getSerialNo();
+            }
+
             if (!registeredLocationIds.contains(id)) {
                 Map<String, Object> properties = new HashMap<>(1);
-                properties.put(PROPERTY_NAME, measure.getLocationName());
+                properties.put(PROPERTY_NAME, name);
                 properties.put(PROPERTY_FIRMWARE_VERSION, measure.getFirmwareVersion());
                 properties.put(PROPERTY_SERIAL_NO, measure.getSerialNo());
                 properties.put(CONFIG_LOCATION, id);
 
                 ThingUID thingUID = new ThingUID(THING_TYPE_LOCATION, bridgeUid, id);
 
-                logger.debug("Adding location {} with id {} to bridge {} with location id {}",
-                        measure.getLocationName(), thingUID, bridgeUid, measure.getLocationId());
+                logger.debug("Adding location {} with id {} to bridge {} with location id {}", name, thingUID,
+                        bridgeUid, measure.getLocationId());
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUid).withLabel(measure.getLocationName())
-                        .withRepresentationProperty(CONFIG_LOCATION).build();
+                        .withBridge(bridgeUid).withLabel(name).withRepresentationProperty(CONFIG_LOCATION).build();
 
                 thingDiscovered(discoveryResult);
             }
