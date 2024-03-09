@@ -36,6 +36,7 @@ public class PJLinkDeviceBindingConstants {
     public static final String CHANNEL_TYPE_INPUT = "input";
     public static final String CHANNEL_TYPE_AUDIO_MUTE = "audioMute";
     public static final String CHANNEL_TYPE_VIDEO_MUTE = "videoMute";
+    public static final String CHANNEL_TYPE_AUDIO_AND_VIDEO_MUTE = "audioAndVideoMute";
     public static final String CHANNEL_TYPE_LAMP_HOURS = "lampHours";
     public static final String CHANNEL_TYPE_LAMP_ACTIVE = "lampActive";
 
