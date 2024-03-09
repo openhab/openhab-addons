@@ -172,7 +172,8 @@ public class Setters {
             HSBType hsb = cmdHsb.getBrightness().doubleValue() >= 0.1 ? cmdHsb
                     : new HSBType(cmdHsb.getHue(), cmdHsb.getBrightness(), new PercentType(BigDecimal.valueOf(0.1)));
             ColorXy color = target.getColorXy();
-            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb)));
+            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy())
+                    .setXY(ColorUtil.hsbToXY(hsb, ColorXy.REVISED_DEFAULT_GAMUT)));
         }
         return target;
     }
