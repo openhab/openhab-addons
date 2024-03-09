@@ -75,10 +75,26 @@ public class AirGradientLocationHandler extends BaseThingHandler {
                 logger.debug("Received command {} for channel {}, but it needs a string command", command.toString(),
                         channelUID.getId());
             }
+        } else if (CHANNEL_CALIBRATION.equals(channelUID.getId())) {
+            if (command instanceof StringType stringCommand) {
+                if ("co2".equals(stringCommand.toFullString())) {
+                    Bridge bridge = getBridge();
+                    if (bridge != null) {
+                        AirGradientAPIHandler handler = (AirGradientAPIHandler) bridge.getHandler();
+                        if (handler != null) {
+                            handler.calibrateCo2(getSerialNo());
+                        }
+                    }
+                } else {
+                    logger.debug(
+                            "Received unknown command {} for calibration on channel {}, which we don't know how to handle",
+                            command.toString(), channelUID.getId());
+                }
+            }
         } else {
             // This is read only
-            logger.debug("Received command {} for channel {}, but air gradient locations are read only",
-                    command.toString(), channelUID.getId());
+            logger.debug("Received command {} for channel {}, which we don't know how to handle", command.toString(),
+                    channelUID.getId());
         }
     }
 

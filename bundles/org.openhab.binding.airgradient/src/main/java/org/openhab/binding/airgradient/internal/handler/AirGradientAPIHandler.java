@@ -222,6 +222,22 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         }
     }
 
+    public void calibrateCo2(String serialNo) {
+        logger.debug("Triggering CO2 calibration for {}", serialNo);
+        try {
+            Request request = httpClient.POST(generateCalibrationCo2Url(serialNo));
+            ContentResponse response = request.send();
+            logger.debug("Response from calibration: {}", response.getStatus());
+            if (response.getStatus() == 200) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.getContentAsString());
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
     private List<Measure> parsePrometheus(String stringResponse) {
         List<PrometheusMetric> metrics = PrometheusTextParser.parse(stringResponse);
         Measure measure = new Measure();
@@ -339,6 +355,15 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         AirGradientAPIConfiguration config = getConfiguration();
         if (hasCloudUrl(config)) {
             return config.hostname + String.format(CURRENT_MEASURES_PATH, config.token);
+        } else {
+            return config.hostname;
+        }
+    }
+
+    private @Nullable String generateCalibrationCo2Url(String serialNo) {
+        AirGradientAPIConfiguration config = getConfiguration();
+        if (hasCloudUrl(config)) {
+            return config.hostname + String.format(CALIBRATE_CO2_PATH, serialNo, config.token);
         } else {
             return config.hostname;
         }

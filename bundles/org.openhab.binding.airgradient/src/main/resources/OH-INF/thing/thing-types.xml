@@ -51,6 +51,7 @@
 			<channel id="rco2" typeId="co2"/>
 			<channel id="tvoc" typeId="tvoc"/>
 			<channel id="leds" typeId="leds-mode"/>
+			<channel id="calibration" typeId="calibration"/>
 		</channels>
 
 		<properties>
@@ -146,6 +147,17 @@
 				<option value="co2">co2</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="calibration">
+		<item-type>String</item-type>
+		<label>Calibration</label>
+		<description>Calibrate Sensors</description>
+		<command>
+			<options>
+				<option value="co2">co2</option>
+			</options>
+		</command>
 	</channel-type>
 
 </thing:thing-descriptions>
