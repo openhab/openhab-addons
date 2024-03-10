@@ -27,8 +27,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.openhab.binding.tasmotaplug.dto.TasmotaDTO;
+import org.openhab.binding.tasmotaplug.dto.TasmotaDTO.Energy;
 import org.openhab.binding.tasmotaplug.internal.TasmotaPlugConfiguration;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -38,6 +44,10 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link TasmotaPlugHandler} is responsible for handling commands, which are
@@ -52,6 +62,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TasmotaPlugHandler.class);
     private final HttpClient httpClient;
+    private final Gson gson;
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -65,6 +76,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
     public TasmotaPlugHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
+        gson = new GsonBuilder().serializeNulls().create();
     }
 
     @Override
@@ -93,10 +105,10 @@ public class TasmotaPlugHandler extends BaseThingHandler {
         plugHost = "http://" + hostName;
 
         // remove the channels we are not using
-        if (this.numChannels < SUPPORTED_CHANNEL_IDS.size()) {
+        if (this.numChannels < CONTROL_CHANNEL_IDS.size()) {
             List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
 
-            List<Integer> channelsToRemove = IntStream.range(this.numChannels + 1, SUPPORTED_CHANNEL_IDS.size() + 1)
+            List<Integer> channelsToRemove = IntStream.range(this.numChannels + 1, CONTROL_CHANNEL_IDS.size() + 1)
                     .boxed().toList();
 
             channelsToRemove.forEach(channel -> {
@@ -124,12 +136,12 @@ public class TasmotaPlugHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().contains(POWER)) {
             if (command instanceof OnOffType) {
-                getCommand(channelUID.getId(), command);
+                getCommand(channelUID.getId(), command.toString());
             } else {
                 updateChannelState(channelUID.getId());
             }
         } else {
-            logger.warn("Unsupported command: {}", command.toString());
+            logger.debug("Unsupported command: {}", command.toString());
         }
     }
 
@@ -141,9 +153,13 @@ public class TasmotaPlugHandler extends BaseThingHandler {
         if (refreshJob == null || refreshJob.isCancelled()) {
             refreshJob = null;
             this.refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-                SUPPORTED_CHANNEL_IDS.stream().limit(numChannels).forEach(channelId -> {
+                CONTROL_CHANNEL_IDS.stream().limit(numChannels).forEach(channelId -> {
                     updateChannelState(channelId);
                 });
+
+                if (ENERGY_CHANNEL_IDS.stream().anyMatch(energyCh -> isLinked(energyCh))) {
+                    updateEnergyChannels();
+                }
             }, 0, refreshPeriod, TimeUnit.SECONDS);
         }
     }
@@ -157,18 +173,76 @@ public class TasmotaPlugHandler extends BaseThingHandler {
         }
     }
 
-    private String getCommand(String channelId, @Nullable Command command) {
-        final String plugChannel = channelId.substring(0, 1).toUpperCase() + channelId.substring(1);
-        String url;
-
-        if (isAuth) {
-            url = String.format(CMD_URI_AUTH, user, pass, plugChannel);
+    private void updateEnergyChannels() {
+        final Energy energyDto;
+        final String json = getCommand(STATUS, STATUS_CMD);
+        if (!json.isBlank()) {
+            try {
+                final TasmotaDTO dto = gson.fromJson(json, TasmotaDTO.class);
+                if (dto != null) {
+                    energyDto = dto.getStatus().getEnergy();
+                } else {
+                    logger.debug("TasmotaDTO was null for JSON: '{}'", json);
+                    return;
+                }
+            } catch (JsonSyntaxException e) {
+                logger.debug("Error parsing Tasmota status JSON: '{}' Exception: {}", json, e.getMessage());
+                return;
+            }
         } else {
-            url = String.format(CMD_URI, plugChannel);
+            return;
         }
 
-        if (command != null) {
-            url += "%20" + command;
+        if (isLinked(VOLTAGE)) {
+            updateState(VOLTAGE, new QuantityType<>(energyDto.getVoltage(), Units.VOLT));
+        }
+        if (isLinked(CURRENT)) {
+            updateState(CURRENT, new QuantityType<>(energyDto.getCurrent(), Units.AMPERE));
+        }
+        if (isLinked(WATTS)) {
+            updateState(WATTS, new QuantityType<>(energyDto.getActivePower(), Units.WATT));
+        }
+        if (isLinked(VOLT_AMPERE)) {
+            updateState(VOLT_AMPERE, new QuantityType<>(energyDto.getApparentPower(), Units.VOLT_AMPERE));
+        }
+        if (isLinked(VOLT_AMPERE_REACTIVE)) {
+            updateState(VOLT_AMPERE_REACTIVE, new QuantityType<>(energyDto.getReactivePower(), Units.VAR));
+        }
+        if (isLinked(POWER_FACTOR)) {
+            updateState(POWER_FACTOR, new DecimalType(energyDto.getPowerFactor()));
+        }
+        if (isLinked(ENERGY_TODAY)) {
+            updateState(ENERGY_TODAY, new QuantityType<>(energyDto.getEnergyToday(), Units.KILOWATT_HOUR));
+        }
+        if (isLinked(ENERGY_YESTERDAY)) {
+            updateState(ENERGY_YESTERDAY, new QuantityType<>(energyDto.getEnergyYesterday(), Units.KILOWATT_HOUR));
+        }
+        if (isLinked(ENERGY_TOTAL)) {
+            updateState(ENERGY_TOTAL, new QuantityType<>(energyDto.getEnergyTotal(), Units.KILOWATT_HOUR));
+        }
+        if (isLinked(ENERGY_TOTAL_START) && !energyDto.getEnergyTotalStart().isBlank()) {
+            updateState(ENERGY_TOTAL_START, new DateTimeType(energyDto.getEnergyTotalStart()));
+        }
+    }
+
+    private String getCommand(String commmand, @Nullable String commandArg) {
+        final String tasmotaCommand;
+        if (STATUS.equals(commmand)) {
+            tasmotaCommand = commmand;
+        } else {
+            // uppercase the first character of the channel id
+            tasmotaCommand = commmand.substring(0, 1).toUpperCase() + commmand.substring(1);
+        }
+
+        String url;
+        if (isAuth) {
+            url = String.format(CMD_URI_AUTH, user, pass, tasmotaCommand);
+        } else {
+            url = String.format(CMD_URI, tasmotaCommand);
+        }
+
+        if (commandArg != null) {
+            url += "%20" + commandArg;
         }
 
         try {
