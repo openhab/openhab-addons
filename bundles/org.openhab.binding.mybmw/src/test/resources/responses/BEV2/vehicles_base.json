@@ -1,0 +1,48 @@
+[
+    {
+        "vin": "anonymousBEV3",
+        "mappingInfo": {
+            "isAssociated": true,
+            "isLmmEnabled": false,
+            "mappingStatus": "CONFIRMED",
+            "isPrimaryUser": true
+        },
+        "appVehicleType": "CONNECTED",
+        "attributes": {
+            "lastFetched": "2023-01-21T18: 57: 39.114Z",
+            "model": "iX3 M Sport",
+            "year": 2022,
+            "color": 4280231501,
+            "brand": "BMW",
+            "driveTrain": "ELECTRIC",
+            "headUnitType": "MGU",
+            "headUnitRaw": "HU_MGU",
+            "hmiVersion": "ID7",
+            "softwareVersionCurrent": {
+                "puStep": {
+                    "month": 3,
+                    "year": 22
+                },
+                "iStep": 552,
+                "seriesCluster": "S15C"
+            },
+            "softwareVersionExFactory": {
+                "puStep": {
+                    "month": 11,
+                    "year": 21
+                },
+                "iStep": 564,
+                "seriesCluster": "S15C"
+            },
+            "telematicsUnit": "ATM2",
+            "bodyType": "G08",
+            "countryOfOrigin": "AT",
+            "driverGuideInfo": {
+                "androidAppScheme": "com.bmwgroup.driversguide.row",
+                "iosAppScheme": "bmwdriversguide: ///open",
+                "androidStoreUrl": "https://play.google.com/store/apps/details?id=com.bmwgroup.driversguide.row",
+                "iosStoreUrl": "https://apps.apple.com/de/app/id714042749?mt=8"
+            }
+        }
+    }
+]

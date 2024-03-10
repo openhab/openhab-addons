@@ -58,7 +58,7 @@ public interface MyBMWConstants {
 
     static final int DEFAULT_IMAGE_SIZE_PX = 1024;
 
-    static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 5;
+    static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 60;
 
     // See constants from bimmer-connected
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/vehicle.py
@@ -107,6 +107,7 @@ public interface MyBMWConstants {
             THING_TYPE_PHEV, THING_TYPE_BEV_REX, THING_TYPE_BEV);
 
     // Thing Group definitions
+    static final String CHANNEL_GROUP_UPDATE = "update";
     static final String CHANNEL_GROUP_STATUS = "status";
     static final String CHANNEL_GROUP_SERVICE = "service";
     static final String CHANNEL_GROUP_CHECK_CONTROL = "check";
@@ -119,6 +120,11 @@ public interface MyBMWConstants {
     static final String CHANNEL_GROUP_CHARGE_SESSION = "session";
     static final String CHANNEL_GROUP_TIRES = "tires";
     static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
+
+    // types of updates
+    static final String STATE_UPDATE = "state-update";
+    static final String CHARGING_UPDATE = "charging-update";
+    static final String IMAGE_UPDATE = "image-update";
 
     // Charge Statistics & Sessions
     static final String SESSIONS = "sessions";

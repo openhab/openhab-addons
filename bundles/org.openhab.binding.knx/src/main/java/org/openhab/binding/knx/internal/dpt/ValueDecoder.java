@@ -80,6 +80,7 @@ public class ValueDecoder {
     // omitted
     public static final Pattern XYY_PATTERN = Pattern
             .compile("(?:\\((?<x>\\d+(?:[,.]\\d+)?) (?<y>\\d+(?:[,.]\\d+)?)\\))?\\s*(?:(?<Y>\\d+(?:[,.]\\d+)?)\\s%)?");
+    public static final Pattern TSD_SEPARATOR = Pattern.compile("^[0-9](?<sep>[,\\.])[0-9][0-9][0-9].*");
 
     private static boolean check235001(byte[] data) throws KNXException {
         if (data.length != 6) {
@@ -174,6 +175,12 @@ public class ValueDecoder {
                     return new DecimalType(decValue);
                 case "3":
                     return handleDpt3(subType, translator);
+                case "6":
+                    if ("020".equals(subType)) {
+                        return handleStringOrDecimal(data, value, preferredType, 8);
+                    } else {
+                        return handleNumericDpt(id, translator, preferredType);
+                    }
                 case "10":
                     return handleDpt10(value);
                 case "11":
@@ -202,16 +209,24 @@ public class ValueDecoder {
                     return StringType.valueOf(value);
                 case "243": // color translation, fix regional
                 case "249": // settings
+                    // workaround for different number formats, this is to fix time>=1000s:
+                    // time is last block and may contain . and ,
+                    int sep = java.lang.Math.max(value.indexOf(" % "), value.indexOf(" K "));
+                    String time = value.substring(sep + 3);
+                    Matcher mt = TSD_SEPARATOR.matcher(time);
+                    if (mt.matches()) {
+                        int dp = time.indexOf(mt.group("sep"));
+                        value = value.substring(0, sep + dp + 3) + time.substring(dp + 1);
+                    }
                     return StringType.valueOf(value.replace(',', '.').replace(". ", ", "));
                 case "232":
                     return handleDpt232(value, subType);
                 case "242":
                     return handleDpt242(value);
                 case "251":
-                    return handleDpt251(value, preferredType);
+                    return handleDpt251(value, subType, preferredType);
                 default:
                     return handleNumericDpt(id, translator, preferredType);
-                // TODO 6.001 is mapped to PercentType, which can only cover 0-100%, not -128..127%
             }
         } catch (NumberFormatException | KNXFormatException | KNXIllegalArgumentException | ParseException e) {
             LOGGER.info("Translator couldn't parse data '{}' for datapoint type '{}' ({}).", data, dptId, e.getClass());
@@ -271,9 +286,6 @@ public class ValueDecoder {
     }
 
     private static Type handleDpt10(String value) throws ParseException {
-        // TODO check handling of DPT10: date is not set to current date, but 1970-01-01 + offset if day is given
-        // maybe we should change the semantics and use current date + offset if day is given
-
         // Calimero will provide either TIME_DAY_FORMAT or TIME_FORMAT, no-day is not printed
         Date date = null;
         try {
@@ -418,7 +430,7 @@ public class ValueDecoder {
         return null;
     }
 
-    private static @Nullable Type handleDpt251(String value, Class<? extends Type> preferredType) {
+    private static @Nullable Type handleDpt251(String value, String subType, Class<? extends Type> preferredType) {
         Matcher rgbw = RGBW_PATTERN.matcher(value);
         if (rgbw.matches()) {
             String rString = rgbw.group("r");
@@ -426,19 +438,39 @@ public class ValueDecoder {
             String bString = rgbw.group("b");
             String wString = rgbw.group("w");
 
-            if (rString != null && gString != null && bString != null && HSBType.class.equals(preferredType)) {
-                // does not support PercentType and r,g,b valid -> HSBType
-                int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
-                int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
-                int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
+            switch (subType) {
+                case "600":
+                    if (rString != null && gString != null && bString != null && HSBType.class.equals(preferredType)) {
+                        // does not support PercentType and r,g,b valid -> HSBType
+                        int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
+                        int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
+                        int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
 
-                return HSBType.fromRGB(r, g, b);
-            } else if (wString != null && PercentType.class.equals(preferredType)) {
-                // does support PercentType and w valid -> PercentType
-                BigDecimal w = new BigDecimal(wString.replace(",", "."));
+                        return HSBType.fromRGB(r, g, b);
+                    } else if (wString != null && PercentType.class.equals(preferredType)) {
+                        // does support PercentType and w valid -> PercentType
+                        BigDecimal w = new BigDecimal(wString.replace(",", "."));
 
-                return new PercentType(w);
+                        return new PercentType(w);
+                    }
+                case "60600":
+                    // special type used by OH for .600 indicating that RGBW should be handled with a single HSBType,
+                    // typically we use HSBType for RGB and PercentType for W.
+                    if (rString != null && gString != null && bString != null && wString != null
+                            && HSBType.class.equals(preferredType)) {
+                        // does support PercentType and w valid -> PercentType
+                        int r = coerceToRange((int) (Double.parseDouble(rString.replace(",", ".")) * 2.55), 0, 255);
+                        int g = coerceToRange((int) (Double.parseDouble(gString.replace(",", ".")) * 2.55), 0, 255);
+                        int b = coerceToRange((int) (Double.parseDouble(bString.replace(",", ".")) * 2.55), 0, 255);
+                        int w = coerceToRange((int) (Double.parseDouble(wString.replace(",", ".")) * 2.55), 0, 255);
+
+                        return ColorUtil.rgbToHsb(new int[] { r, g, b, w });
+                    }
+                default:
+                    LOGGER.warn("Unknown subtype '251.{}', no conversion possible.", subType);
+                    return null;
             }
+
         }
         LOGGER.warn("Failed to convert '{}' (DPT 251): Pattern does not match or invalid content", value);
         return null;

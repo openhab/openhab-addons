@@ -15,6 +15,6 @@
   </properties>
 
   <artifactId>org.openhab.binding.shelly</artifactId>
-  <name>openHAB Add-ons :: Bundles :: Shelly Binding Gen1+2</name>
+  <name>openHAB Add-ons :: Bundles :: Shelly Binding</name>
 
 </project>

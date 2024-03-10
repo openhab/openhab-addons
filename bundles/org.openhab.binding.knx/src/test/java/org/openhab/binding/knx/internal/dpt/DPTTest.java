@@ -14,6 +14,7 @@ package org.openhab.binding.knx.internal.dpt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -29,6 +30,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.util.ColorUtil;
@@ -73,8 +75,9 @@ class DPTTest {
     @Test
     void testToDPT7ValueFromQuantityType() {
         assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.002"));
-        assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.003"));
-        assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.004"));
+        // according to spec this should be 1000 for 7.003 and 7.004 - 1 is a workaround for Calimero 2.5.1
+        assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.003"));
+        assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.004"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.005"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 s"), "7.006"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 min"), "7.007"));
@@ -94,6 +97,12 @@ class DPTTest {
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "8.005"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 s"), "8.006"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 min"), "8.007"));
+        // 8.010 has a resolution of 0.01 and will be scaled. Calimero expects locale-specific separator.
+        String target = "-327.68".replace('.',
+                ((DecimalFormat) DecimalFormat.getInstance()).getDecimalFormatSymbols().getDecimalSeparator());
+        assertEquals(target, ValueEncoder.encode(new QuantityType<>("-327.68 %"), "8.010"));
+        assertEquals("-327.68 %", Objects
+                .toString(ValueDecoder.decode("8.010", new byte[] { (byte) 0x80, (byte) 0x00 }, QuantityType.class)));
 
         assertEquals("180", ValueEncoder.encode(new QuantityType<>("180 °"), "8.011"));
         assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1 km"), "8.012"));
@@ -295,6 +304,19 @@ class DPTTest {
         assertEquals("42", ValueEncoder.encode(new QuantityType<>("42 Wh"), "29.010"));
         assertEquals("42", ValueEncoder.encode(new QuantityType<>("42 VAh"), "29.011"));
         assertEquals("42", ValueEncoder.encode(new QuantityType<>("42 varh"), "29.012"));
+    }
+
+    @Test
+    public void dpt6Value() {
+        assertEquals("42", ValueEncoder.encode(new DecimalType(42), "6.001"));
+
+        assertEquals("42", ValueEncoder.encode(new DecimalType(42), "6.010"));
+
+        assertEquals("0/0/0/0/1 0", Objects.toString(ValueDecoder.decode("6.020", new byte[] { 9 }, StringType.class)));
+        assertEquals("0/0/0/0/0 1", Objects.toString(ValueDecoder.decode("6.020", new byte[] { 2 }, StringType.class)));
+        assertEquals("1/1/1/1/1 2",
+                Objects.toString(ValueDecoder.decode("6.020", new byte[] { (byte) 0xfc }, StringType.class)));
+        assertEquals("0/0/0/0/1 0", ValueEncoder.encode(StringType.valueOf("0/0/0/0/1 0"), "6.020"));
     }
 
     @Test

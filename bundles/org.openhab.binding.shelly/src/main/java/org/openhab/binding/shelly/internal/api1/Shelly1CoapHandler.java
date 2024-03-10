@@ -362,6 +362,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             if (!valid) {
                 logger.debug("{}: WARNING: Incompatible device description detected for CoIoT version {}!", thingName,
                         coiot.getVersion());
+                return;
             }
 
             coiot.completeMissingSensorDefinition(sensorMap); // fix incomplete format
@@ -386,8 +387,8 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         // This happens on firmware up/downgrades (version 1.8 brings CoIoT v2 with 4 digit IDs)
         int vers = coiot.getVersion();
         if (((vers == COIOT_VERSION_1) && (sen.id.length() > 3))
-                || ((vers >= COIOT_VERSION_2) && (sen.id.length() < 4))) {
-            logger.debug("{}: Invalid format for sensor defition detected, id={}", thingName, sen.id);
+                || ((vers >= COIOT_VERSION_2) && (sen.id.length() < 4) && !sen.id.equals("6"))) {
+            logger.debug("{}: Invalid format for sensor definition detected, id={}", thingName, sen.id);
             return false;
         }
 

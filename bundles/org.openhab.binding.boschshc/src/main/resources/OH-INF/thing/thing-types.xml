@@ -340,7 +340,7 @@
 			<channel id="key-event-timestamp" typeId="key-event-timestamp"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:boschshc:user-defined-state"/>
+		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
 
 	<thing-type id="universal-switch-2">
@@ -358,7 +358,25 @@
 			<channel id="key-event-timestamp" typeId="key-event-timestamp"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:boschshc:user-defined-state"/>
+		<config-description-ref uri="thing-type:boschshc:device"/>
+	</thing-type>
+
+	<thing-type id="smoke-detector-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Smoke Detector II</label>
+		<description>The smoke detector warns you in case of fire.</description>
+
+		<channels>
+			<channel id="smoke-check" typeId="smoke-check"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
 
 	<!-- Channels -->

@@ -124,6 +124,24 @@ class FineOffsetDataParserTest {
     }
 
     @Test
+    void testLiveDataWithHeapFreeMeasurand() {
+        byte[] bytes = HexUtils.hexToBytes(
+                "FFFF27002F01010B062A0826C10926C1020011074D0A004C0B000C0C000D15000226C816006317011900136C0001FED864");
+        DebugDetails debugDetails = new DebugDetails(bytes, Command.CMD_GW1000_LIVEDATA, Protocol.DEFAULT);
+        List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(bytes,
+                new ConversionContext(ZoneOffset.UTC), debugDetails);
+        Assertions.assertThat(data)
+                .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
+                .containsExactly(new Tuple("temperature-indoor", "26.7 °C"), new Tuple("humidity-indoor", "42 %"),
+                        new Tuple("pressure-absolute", "992.1 hPa"), new Tuple("pressure-relative", "992.1 hPa"),
+                        new Tuple("temperature-outdoor", "1.7 °C"), new Tuple("humidity-outdoor", "77 %"),
+                        new Tuple("direction-wind", "76 °"), new Tuple("speed-wind", "1.2 m/s"),
+                        new Tuple("speed-gust", "1.3 m/s"), new Tuple("illumination", "14100 lx"),
+                        new Tuple("irradiation-uv", "9.9 mW/m²"), new Tuple("uv-index", "1"),
+                        new Tuple("wind-max-day", "1.9 m/s"), new Tuple("free-heap-size", "130776 B"));
+    }
+
+    @Test
     void testLiveDataELV() {
         byte[] data = HexUtils.hexToBytes(
                 "FFFF0B00500401010B0201120300620401120501120629072108254B09254B0A01480B00040C000A0E000000001000000021110000002E120000014F130000100714000012FD15000B4BB816086917056D35");

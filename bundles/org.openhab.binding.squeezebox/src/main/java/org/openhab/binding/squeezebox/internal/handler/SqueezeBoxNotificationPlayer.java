@@ -77,10 +77,6 @@ class SqueezeBoxNotificationPlayer implements Closeable {
 
     private void setupPlayerForNotification() throws InterruptedException, SqueezeBoxTimeoutException {
         logger.debug("Setting up player for notification");
-        if (!playerState.isPoweredOn()) {
-            logger.debug("Powering on the player");
-            squeezeBoxServerHandler.powerOn(mac);
-        }
         if (playerState.isShuffling()) {
             logger.debug("Turning off shuffle");
             squeezeBoxServerHandler.setShuffleMode(mac, 0);

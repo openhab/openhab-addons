@@ -170,7 +170,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
 
     @Override
     public String getLabel(@Nullable Locale locale) {
-        return "InfluxDB persistence layer";
+        return "InfluxDB";
     }
 
     @Override

@@ -22,6 +22,8 @@ import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.Type;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Implements a rollershutter value.
@@ -146,7 +148,10 @@ public class RollershutterValue extends Value {
     }
 
     @Override
-    public Command parseMessage(Command command) throws IllegalArgumentException {
+    public Type parseMessage(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType string && string.toString().isEmpty()) {
+            return UnDefType.NULL;
+        }
         command = parseType(command, upStateString, downStateString);
         if (inverted && command instanceof PercentType percentType) {
             return new PercentType(100 - percentType.intValue());

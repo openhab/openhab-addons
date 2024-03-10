@@ -139,6 +139,9 @@ public class PlexPlayerHandler extends BaseThingHandler {
         currentSessionData.setSessionKey(sessionData.getSessionKey());
         currentSessionData.setUserId(sessionData.getUser().getId());
         currentSessionData.setUserTitle(sessionData.getUser().getTitle());
+        currentSessionData.setRatingKey(sessionData.getRatingKey());
+        currentSessionData.setParentRatingKey(sessionData.getParentRatingKey());
+        currentSessionData.setGrandparentRatingKey(sessionData.getGrandparentRatingKey());
 
         foundInSession = true;
         updateStatus(ThingStatus.ONLINE);
@@ -179,6 +182,14 @@ public class PlexPlayerHandler extends BaseThingHandler {
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getEndTime() : "")));
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_USER),
                 new StringType(String.valueOf(foundInSession ? currentSessionData.getUserTitle() : "")));
+        final String parentRatingKey = currentSessionData.getParentRatingKey();
+        final String grandparentRatingKey = currentSessionData.getGrandparentRatingKey();
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_RATING_KEY),
+                new StringType(String.valueOf(foundInSession ? currentSessionData.getRatingKey() : "")));
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_PARENT_RATING_KEY),
+                new StringType(String.valueOf(foundInSession && parentRatingKey != null ? parentRatingKey : "")));
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_PLAYER_GRANDPARENT_RATING_KEY), new StringType(
+                String.valueOf(foundInSession && grandparentRatingKey != null ? grandparentRatingKey : "")));
 
         // Make sure player control is in sync with the play state
         if (currentSessionData.getState() == PlexPlayerState.PLAYING) {

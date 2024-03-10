@@ -521,11 +521,26 @@ public class Shelly2ApiJsonDTO {
     }
 
     public static class Shelly2DeviceStatus {
+        public class Shelly2InputCounts {
+            public Integer total;
+            @SerializedName("by_minute")
+            public Double[] byMinute;
+            public Double xtotal;
+            @SerializedName("xby_minute")
+            public Double[] xbyMinute;
+            @SerializedName("minute_ts")
+            public Integer minuteTS;
+        }
+
         public class Shelly2InputStatus {
             public Integer id;
             public Boolean state;
             public Double percent; // analog input only
             public ArrayList<String> errors;// shown only if at least one error is present.
+            public Double xpercent;
+            public Shelly2InputCounts counts;
+            public Double freq;
+            public Double xfreq;
         }
 
         public static class Shelly2DeviceStatusLight {
@@ -1089,6 +1104,8 @@ public class Shelly2ApiJsonDTO {
         public Integer motionState;
         @SerializedName("Temperature")
         public Double temperature;
+        @SerializedName("Humidity")
+        public Double humidity;
 
         public Integer rssi;
         public Integer tx_power;

@@ -68,7 +68,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR);
 
     // @formatter:off
-    protected static final Map<String, ThingTypeUID> DEVICEMODEL_TO_THINGTYPE_MAP = Map.ofEntries(
+    public static final Map<String, ThingTypeUID> DEVICEMODEL_TO_THINGTYPE_MAP = Map.ofEntries(
             new AbstractMap.SimpleEntry<>("BBL", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL),
             new AbstractMap.SimpleEntry<>("TWINGUARD", BoschSHCBindingConstants.THING_TYPE_TWINGUARD),
             new AbstractMap.SimpleEntry<>("BSM", BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH),
@@ -88,7 +88,8 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             new AbstractMap.SimpleEntry<>("SWD2", BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2),
             new AbstractMap.SimpleEntry<>("TRV", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT),
             new AbstractMap.SimpleEntry<>("WRC2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH),
-            new AbstractMap.SimpleEntry<>("SWITCH2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2)
+            new AbstractMap.SimpleEntry<>("SWITCH2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2),
+            new AbstractMap.SimpleEntry<>("SMOKE_DETECTOR2", BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR_2)
 // Future Extension: map deviceModel names to BoschSHC Thing Types when they are supported
 //            new AbstractMap.SimpleEntry<>("SMOKE_DETECTION_SYSTEM", BoschSHCBindingConstants.),
 //            new AbstractMap.SimpleEntry<>("PRESENCE_SIMULATION_SERVICE", BoschSHCBindingConstants.),

@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link KNXBindingConstants} class defines common constants, which are
@@ -88,6 +89,9 @@ public class KNXBindingConstants {
     public static final String CHANNEL_STRING_CONTROL = "string-control";
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_SWITCH_CONTROL = "switch-control";
+
+    public static final ChannelTypeUID CHANNEL_CONTACT_CONTROL_UID = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_CONTACT_CONTROL);
 
     public static final Set<String> CONTROL_CHANNEL_TYPES = Set.of( //
             CHANNEL_COLOR_CONTROL, //

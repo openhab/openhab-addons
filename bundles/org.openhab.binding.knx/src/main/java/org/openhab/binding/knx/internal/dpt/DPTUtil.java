@@ -55,7 +55,7 @@ public class DPTUtil {
 
     // used to map vendor-specific data to standard DPT
     public static final Map<String, String> NORMALIZED_DPT = Map.of(//
-            "232.60000", "232.600");
+            "232.60000", "232.600", "251.60600", "251.600");
 
     // fall back if no specific type is defined in DPT_TYPE_MAP
     private static final Map<String, Set<Class<? extends Type>>> DPT_MAIN_TYPE_MAP = Map.ofEntries( //
@@ -64,7 +64,7 @@ public class DPTUtil {
             Map.entry("3", Set.of(IncreaseDecreaseType.class)), //
             Map.entry("4", Set.of(StringType.class)), //
             Map.entry("5", Set.of(QuantityType.class, DecimalType.class)), //
-            Map.entry("6", Set.of(QuantityType.class, DecimalType.class)), //
+            Map.entry("6", Set.of(QuantityType.class, DecimalType.class, StringType.class)), //
             Map.entry("7", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("8", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("9", Set.of(QuantityType.class, DecimalType.class)), //

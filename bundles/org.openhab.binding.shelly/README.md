@@ -28,8 +28,8 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 The binding supports both hardware generations
 
 - Generation 1: The original Shelly devices like the Shelly 1, Shelly 2.5, Shelly Flood etc.
-- Generation 2: The new Plus / Pro series of devices
-- Shelly Plus Mini: Shelly Plus devices in compact format
+- Generation 2: Plus / Pro series of devices
+- Shelly Plus Mini: Shelly Plus devices in compact format (Gen 2+3)
 - Shelly BLU: Bluetooth based series of devices
 
 The binding provides the same feature set across all devices as good as possible and depending on device specific features.
@@ -95,13 +95,13 @@ The binding provides the same feature set across all devices as good as possible
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
 
-### Generation 2 Plus Mini series
+### Generation 2 Plus Mini series (incl. Gen 3)
 
-| thing-type           | Model                                                    | Vendor ID                    |
-| -------------------- | -------------------------------------------------------- | ---------------------------- |
-| shellymini1          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU                 |
-| shellymini1pm        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU                 |
-| shellyminipm         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16               |
+ | thing-type           | Model                                                    | Vendor ID                      |
+ | -------------------- | -------------------------------------------------------- | ------------------------------ |
+ | shellymini1          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
+ | shellymini1pm        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
+ | shellyminipm         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
 
 ### Generation 2 Pro series
 
@@ -123,6 +123,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellyblubutton   | Shelly BLU Button 1                                    | SBBT      |
 | shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
 | shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
+| shellybluht       | Shelly BLU H&T                                         | SBMO      |
 
 ## Binding Configuration
 
@@ -492,7 +493,7 @@ In this case the is no real measurement based on power consumption, but the Shel
 |         | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                      |
 |         | button       | Trigger  | yes       | Event trigger, see section Button Events                                        |
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                            |
+|         | lastPower1   | Number   | yes       | The average power for the previous minute                                       |
 |         | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart) |
 |         |              |          |           |                                                                                 |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
@@ -573,6 +574,15 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| nmeter | ncurrent      | Number   | yes       | Current current based on N clamp (requires calibration)                           |
+|        | ixsum         | Number   | yes       | Measured current over all phases                                                  |
+|        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
+|        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
+
+_Note:
+You should calibrate the device if you want to use "neutral current" measurements.
+Check the Shelly documentation for details._
+
 
 ### Shelly 2 - relay mode (thing-type: shelly2-relay)
 
@@ -1506,6 +1516,18 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Shelly BLU H&T(thing-type: shellybluht)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                             |
+| ------- | ------------- | -------- | --------- | ------------------------------------------------------- |
+| sensors | temperature   | Number   | yes       | Temperature, unit is reported by tempUnit               |
+|         | humidity      | Number   | yes       | Relative humidity in %                                  |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
 
 ## Shelly Wall Displays
 

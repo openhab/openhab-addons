@@ -31,7 +31,7 @@ public class SubscribeResult {
         return this.jsonrpc;
     }
 
-    public static Boolean isValid(SubscribeResult obj) {
+    public static boolean isValid(SubscribeResult obj) {
         return obj != null && obj.result != null && obj.jsonrpc != null;
     }
 }

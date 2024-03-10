@@ -11,3 +11,21 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+httpclient
+* License: Apache 2.0 License
+* Project: https://hc.apache.org/httpcomponents-client-ga
+* Source: https://hc.apache.org/httpcomponents-client-ga
+
+httpcore
+* License: Apache 2.0 License
+* Project: http://hc.apache.org/httpcomponents-core-ga
+* Source:  http://hc.apache.org/httpcomponents-core-ga
+
+jackson
+* License: Apache 2.0 License
+* Project: https://github.com/FasterXML/jackson
+* Source:  https://github.com/FasterXML/jackson
+

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ism8.server;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -28,7 +30,8 @@ public interface IDataPoint {
      * Gets the unit of the data-point.
      *
      */
-    String getUnit();
+    @Nullable
+    Unit<?> getUnit();
 
     /**
      * Gets the type of the data-point.

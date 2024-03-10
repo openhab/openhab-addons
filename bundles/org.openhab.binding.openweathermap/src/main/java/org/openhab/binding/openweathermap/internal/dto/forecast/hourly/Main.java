@@ -17,7 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Generated Plain Old Java Objects class for {@link Main} from JSON.
+ * Holds the data from the <code>main</code> object of the JSON response of the Hourly forecast API and the 5 day
+ * weather forecast API.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

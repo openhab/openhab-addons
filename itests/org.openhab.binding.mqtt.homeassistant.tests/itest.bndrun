@@ -115,4 +115,5 @@ Import-Package: \
 	io.netty.resolver;version='[4.1.104,4.1.105)',\
 	io.netty.transport;version='[4.1.104,4.1.105)',\
 	io.netty.transport-native-unix-common;version='[4.1.104,4.1.105)',\
-	org.osgi.service.component.annotations;version='[1.5.0,1.5.1)'
+	org.osgi.service.component.annotations;version='[1.5.0,1.5.1)',\
+	org.openhab.core.addon;version='[4.2.0,4.2.1)'

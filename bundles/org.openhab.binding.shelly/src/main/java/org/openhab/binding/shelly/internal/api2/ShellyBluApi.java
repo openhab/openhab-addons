@@ -33,6 +33,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorAccel;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorBat;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorHum;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorState;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
@@ -274,8 +275,15 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             if (sensorData.tmp == null) {
                                 sensorData.tmp = new ShellySensorTmp();
                             }
+                            sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
                             sensorData.tmp.tC = e.data.temperature;
                             sensorData.tmp.isValid = true;
+                        }
+                        if (e.data.humidity != null) {
+                            if (sensorData.hum == null) {
+                                sensorData.hum = new ShellySensorHum();
+                            }
+                            sensorData.hum.value = e.data.humidity;
                         }
                         if (e.data.rotation != null) {
                             if (sensorData.accel == null) {

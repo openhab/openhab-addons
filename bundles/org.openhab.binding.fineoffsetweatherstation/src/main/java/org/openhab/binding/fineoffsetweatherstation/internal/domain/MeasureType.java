@@ -122,6 +122,7 @@ public enum MeasureType {
             (data, offset) -> Utils.toUInt16(data, offset) / 10.),
 
     BYTE(1, null, (data, offset, context) -> new DecimalType(toUInt8(data[offset]))),
+    MEMORY(Units.BYTE, 4, null, Utils::toUInt32),
 
     DATE_TIME2(6, null, (data, offset, context) -> new DateTimeType(
             ZonedDateTime.ofInstant(Instant.ofEpochSecond(toUInt32(data, offset)), context.getZoneId())));

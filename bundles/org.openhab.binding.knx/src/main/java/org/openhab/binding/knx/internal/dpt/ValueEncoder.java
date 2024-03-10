@@ -45,6 +45,7 @@ import tuwien.auto.calimero.dptxlator.DPT;
 import tuwien.auto.calimero.dptxlator.DPTXlator;
 import tuwien.auto.calimero.dptxlator.DPTXlator1BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator2ByteFloat;
+import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
@@ -171,6 +172,10 @@ public class ValueEncoder {
                 PercentType[] rgbw = ColorUtil.hsbToRgbPercent(hsb);
                 return String.format("%,.1f %,.1f %,.1f - %%", rgbw[0].doubleValue(), rgbw[1].doubleValue(),
                         rgbw[2].doubleValue());
+            case "251.60600":
+                PercentType[] rgbw2 = ColorUtil.hsbToRgbwPercent(hsb);
+                return String.format("%,.1f %,.1f %,.1f %,.1f %%", rgbw2[0].doubleValue(), rgbw2[1].doubleValue(),
+                        rgbw2[2].doubleValue(), rgbw2[3].doubleValue());
             case "5.003":
                 return hsb.getHue().toString();
             default:
@@ -254,6 +259,14 @@ public class ValueEncoder {
                     default:
                         return "1 " + valueDPT.getUpperValue();
                 }
+            case "7":
+                if (DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getID().equals(dptId)
+                        || DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getID().equals(dptId)) {
+                    return bigDecimal.divide(BigDecimal.valueOf(1000)).stripTrailingZeros().toPlainString().replace('.',
+                            ((DecimalFormat) DecimalFormat.getInstance()).getDecimalFormatSymbols()
+                                    .getDecimalSeparator());
+                }
+                return bigDecimal.stripTrailingZeros().toPlainString();
             case "18":
                 int intVal = bigDecimal.intValue();
                 if (intVal > 63) {
@@ -261,6 +274,14 @@ public class ValueEncoder {
                 } else {
                     return "activate " + intVal;
                 }
+            case "8":
+                if ("8.010".equals(dptId)) {
+                    // 8.010 has a resolution of 0.01 and will be scaled. Calimero expects locale-specific separator.
+                    return bigDecimal.stripTrailingZeros().toPlainString().replace('.',
+                            ((DecimalFormat) DecimalFormat.getInstance()).getDecimalFormatSymbols()
+                                    .getDecimalSeparator());
+                }
+                // fallthrough
             default:
                 return bigDecimal.stripTrailingZeros().toPlainString();
         }

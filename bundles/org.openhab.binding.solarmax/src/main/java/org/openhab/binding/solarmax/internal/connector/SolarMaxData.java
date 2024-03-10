@@ -182,7 +182,7 @@ public class SolarMaxData {
     }
 
     public Number getCurrentPowerGenerated() {
-        return getIntegerValueFrom(SolarMaxCommandKey.currentPowerGenerated, 0.5);
+        return getDecimalValueFrom(SolarMaxCommandKey.currentPowerGenerated, 0.5);
     }
 
     Number getAcFrequency() {

@@ -27,6 +27,23 @@
 			</add-channel>
 			<!-- channels to be updated -->
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<!-- channels to be removed -->
+			<!-- channels to be added -->
+			<add-channel id="state-update" groupIds="update">
+				<type>mybmw:state-update-channel</type>
+				<label>Force state update channel</label>
+			</add-channel>
+			<add-channel id="charging-update" groupIds="update">
+				<type>mybmw:charging-update-channel</type>
+				<label>Force charging update channel</label>
+			</add-channel>
+			<add-channel id="image-update" groupIds="update">
+				<type>mybmw:image-update-channel</type>
+				<label>Force image update channel</label>
+			</add-channel>
+			<!-- channels to be updated -->
+		</instruction-set>
 	</thing-type>
 	<thing-type uid="mybmw:bev">
 		<instruction-set targetVersion="1">
@@ -41,6 +58,23 @@
 			<add-channel id="last-fetched" groupIds="status">
 				<type>mybmw:last-fetched-channel</type>
 				<label>Last Openhab Update Timestamp</label>
+			</add-channel>
+			<!-- channels to be updated -->
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<!-- channels to be removed -->
+			<!-- channels to be added -->
+			<add-channel id="state-update" groupIds="update">
+				<type>mybmw:state-update-channel</type>
+				<label>Force state update channel</label>
+			</add-channel>
+			<add-channel id="charging-update" groupIds="update">
+				<type>mybmw:charging-update-channel</type>
+				<label>Force charging update channel</label>
+			</add-channel>
+			<add-channel id="image-update" groupIds="update">
+				<type>mybmw:image-update-channel</type>
+				<label>Force image update channel</label>
 			</add-channel>
 			<!-- channels to be updated -->
 		</instruction-set>
@@ -60,6 +94,19 @@
 			<add-channel id="estimated-fuel-mpg" groupIds="range">
 				<type>mybmw:estimated-fuel-mpg-channel</type>
 				<label>Estimated Fuel Consumption mpg</label>
+			</add-channel>
+			<!-- channels to be updated -->
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<!-- channels to be removed -->
+			<!-- channels to be added -->
+			<add-channel id="state-update" groupIds="update">
+				<type>mybmw:state-update-channel</type>
+				<label>Force state update channel</label>
+			</add-channel>
+			<add-channel id="image-update" groupIds="update">
+				<type>mybmw:image-update-channel</type>
+				<label>Force image update channel</label>
 			</add-channel>
 			<!-- channels to be updated -->
 		</instruction-set>
@@ -85,6 +132,23 @@
 			<add-channel id="estimated-fuel-mpg" groupIds="range">
 				<type>mybmw:estimated-fuel-mpg-channel</type>
 				<label>Estimated Fuel Consumption mpg</label>
+			</add-channel>
+			<!-- channels to be updated -->
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<!-- channels to be removed -->
+			<!-- channels to be added -->
+			<add-channel id="state-update" groupIds="update">
+				<type>mybmw:state-update-channel</type>
+				<label>Force state update channel</label>
+			</add-channel>
+			<add-channel id="charging-update" groupIds="update">
+				<type>mybmw:charging-update-channel</type>
+				<label>Force charging update channel</label>
+			</add-channel>
+			<add-channel id="image-update" groupIds="update">
+				<type>mybmw:image-update-channel</type>
+				<label>Force image update channel</label>
 			</add-channel>
 			<!-- channels to be updated -->
 		</instruction-set>

@@ -87,7 +87,7 @@ public class RemoteServiceExecutor {
                             ExecutionState.TIMEOUT.name().toLowerCase());
                     reset();
                     // immediately refresh data
-                    handler.getData();
+                    handler.updateData();
                 } else {
                     counter++;
                     try {

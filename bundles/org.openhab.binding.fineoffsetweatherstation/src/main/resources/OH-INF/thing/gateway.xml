@@ -180,4 +180,11 @@
 		<label>Lightning Distance</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="free-heap-size" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Free Heap Size</label>
+		<description>The available heap size. If it is reducing, it means the heap is using up.</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

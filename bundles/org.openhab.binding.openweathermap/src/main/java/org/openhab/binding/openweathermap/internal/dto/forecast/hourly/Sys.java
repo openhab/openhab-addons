@@ -13,7 +13,8 @@
 package org.openhab.binding.openweathermap.internal.dto.forecast.hourly;
 
 /**
- * Generated Plain Old Java Objects class for {@link Sys} from JSON.
+ * Holds the data from the <code>pod</code> object of the JSON response of the Hourly forecast API and the 5 day weather
+ * forecast API.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

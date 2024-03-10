@@ -60,6 +60,10 @@ public class HomematicConfig {
     private HmGatewayInfo gatewayInfo;
     private int callbackRegTimeout;
 
+    private boolean useAuthentication;
+    private String userName;
+    private String password;
+
     /**
      * Returns the Homematic gateway address.
      */
@@ -270,6 +274,48 @@ public class HomematicConfig {
      */
     public int getRpcPort(HmChannel channel) {
         return getRpcPort(channel.getDevice().getHmInterface());
+    }
+
+    /**
+     * Returns true if authorization for the gateway has to be used; otherwise false
+     */
+    public boolean getUseAuthentication() {
+        return useAuthentication;
+    }
+
+    /**
+     * Sets if authorization for the gateway has to be used
+     */
+    public void setUseAuthentication(Boolean useAuthentication) {
+        this.useAuthentication = useAuthentication;
+    }
+
+    /**
+     * Returns the user name for authorize against the gateway
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * Sets the user name for authorize against the gateway
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    /**
+     * Returns the password for authorize against the gateway
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Sets the password for authorize against the gateway
+     */
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**

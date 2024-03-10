@@ -158,6 +158,106 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="delay" type="integer" min="0">
+				<label>Message Delay</label>
+				<description>Delay between messages</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="philipstv">
+		<label>Philips TV</label>
+		<description>A Philips TV device</description>
+
+		<channels>
+			<channel id="debug" typeId="debug"/>
+			<channel id="keypress" typeId="keypress"/>
+			<channel id="keyboard" typeId="keyboard"/>
+			<channel id="keycode" typeId="keycode"/>
+			<channel id="pincode" typeId="pincode"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="power" typeId="system.power"/>
+			<channel id="brightness" typeId="brightness"/>
+			<channel id="contrast" typeId="contrast"/>
+			<channel id="sharpness" typeId="sharpness"/>
+			<channel id="app" typeId="app"/>
+			<channel id="appname" typeId="appname"/>
+			<channel id="appicon" typeId="appicon"/>
+			<channel id="tvChannel" typeId="tvChannel"/>
+			<channel id="player" typeId="player"/>
+			<channel id="searchContent" typeId="searchContent"/>
+			<channel id="ambilightPower" typeId="ambilightPower"/>
+			<channel id="ambilightHuePower" typeId="ambilightHuePower"/>
+			<channel id="ambilightLoungePower" typeId="ambilightLoungePower"/>
+			<channel id="ambilightStyle" typeId="ambilightStyle"/>
+			<channel id="ambilightColor" typeId="ambilightColor"/>
+			<channel id="ambilightLeftColor" typeId="ambilightLeftColor"/>
+			<channel id="ambilightRightColor" typeId="ambilightRightColor"/>
+			<channel id="ambilightTopColor" typeId="ambilightTopColor"/>
+			<channel id="ambilightBottomColor" typeId="ambilightBottomColor"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="googletvPort" type="integer">
+				<label>GoogleTV Port</label>
+				<description>Port to connect to</description>
+				<default>6466</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="philipstvPort" type="integer">
+				<label>PhilipsTV Port</label>
+				<description>Port to connect to</description>
+				<default>1926</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshRate" type="integer">
+				<label>Refresh Rate</label>
+				<description>
+					How often the Philips TV status details get refreshed. Value in seconds. '0' deactives refreshing.
+				</description>
+				<advanced>true</advanced>
+				<default>10</default>
+			</parameter>
+			<parameter name="useUpnpDiscovery" type="boolean">
+				<label>Use UPnP Discovery</label>
+				<description>
+					Enables UPnP Discovery. If disabled, constant HTTPS polling will happen.
+				</description>
+				<advanced>true</advanced>
+				<default>true</default>
+			</parameter>
+			<parameter name="keystoreFileName" type="text">
+				<label>Keystore File Name</label>
+				<description>Java keystore containing key and certs</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="keystorePassword" type="text">
+				<context>password</context>
+				<label>Keystore Password</label>
+				<description>Password for the keystore file</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="reconnect" type="integer" min="0">
+				<label>Reconnect Delay</label>
+				<description>Delay between reconnection attempts</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="heartbeat" type="integer" min="0">
+				<label>Heartbeat Frequency</label>
+				<description>Frequency of heartbeats</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="delay" type="integer" min="0">
 				<label>Delay</label>
 				<description>Delay between messages</description>
 				<default>0</default>
@@ -197,6 +297,12 @@
 		<description>App URL</description>
 	</channel-type>
 
+	<channel-type id="appicon" advanced="true">
+		<item-type>Image</item-type>
+		<label>App Icon</label>
+		<description>App Icon</description>
+	</channel-type>
+
 	<channel-type id="keypress">
 		<item-type>String</item-type>
 		<label>Key Press</label>
@@ -225,6 +331,133 @@
 		<item-type>Player</item-type>
 		<label>Player</label>
 		<description>Player Control</description>
+	</channel-type>
+
+	<channel-type id="tvChannel" advanced="true">
+		<item-type>String</item-type>
+		<label>TV Channel</label>
+		<description>Name of the currently running TV Channel. Changing this to a value from the List, switches the
+			channel.
+		</description>
+	</channel-type>
+
+	<channel-type id="searchContent" advanced="true">
+		<item-type>String</item-type>
+		<label>Search Content</label>
+		<description>Keyword(s) to search for on TV via Google Assistant</description>
+	</channel-type>
+
+	<channel-type id="ambilightPower">
+		<item-type>Switch</item-type>
+		<label>Ambilight Power</label>
+		<description>Ambilight power. Turns ambilight on or off.</description>
+		<category>Ambilight</category>
+	</channel-type>
+
+	<channel-type id="ambilightHuePower">
+		<item-type>Switch</item-type>
+		<label>Ambilight + Hue Power</label>
+		<description>Ambilight + Hue power. Turns ambilight with connected Philips Hue Lamps on or off.</description>
+		<category>Ambilight</category>
+	</channel-type>
+
+	<channel-type id="ambilightLoungePower">
+		<item-type>Switch</item-type>
+		<label>Ambilight Lounge Power</label>
+		<description>Ambilight lounge power. Turns ambilight lounge on or off.</description>
+		<category>Ambilight</category>
+	</channel-type>
+
+	<channel-type id="ambilightStyle" advanced="true">
+		<item-type>String</item-type>
+		<label>Ambilight Style</label>
+		<description>Current ambilight style. Changing this to a value from the List, switches the ambilight style.
+		</description>
+		<category>Ambilight</category>
+		<state>
+			<options>
+				<option value="FOLLOW_VIDEO STANDARD">FOLLOW_VIDEO STANDARD</option>
+				<option value="FOLLOW_VIDEO NATURAL">FOLLOW_VIDEO NATURAL</option>
+				<option value="FOLLOW_VIDEO IMMERSIVE">FOLLOW_VIDEO IMMERSIVE</option>
+				<option value="FOLLOW_VIDEO VIVID">FOLLOW_VIDEO VIVID</option>
+				<option value="FOLLOW_VIDEO GAME">FOLLOW_VIDEO GAME</option>
+				<option value="FOLLOW_VIDEO COMFORT">FOLLOW_VIDEO COMFORT</option>
+				<option value="FOLLOW_VIDEO RELAX">FOLLOW_VIDEO RELAX</option>
+
+				<option value="FOLLOW_AUDIO ENERGY_ADAPTIVE_BRIGHTNESS">FOLLOW_AUDIO ENERGY_ADAPTIVE_BRIGHTNESS</option>
+				<option value="FOLLOW_AUDIO ENERGY_ADAPTIVE_COLORS">FOLLOW_AUDIO ENERGY_ADAPTIVE_COLORS</option>
+				<option value="FOLLOW_AUDIO VU_METER">FOLLOW_AUDIO VU_METER</option>
+				<option value="FOLLOW_AUDIO SPECTRUM_ANALYZER">FOLLOW_AUDIO SPECTRUM_ANALYZER</option>
+				<option value="FOLLOW_AUDIO KNIGHT_RIDER_CLOCKWISE">FOLLOW_AUDIO KNIGHT_RIDER_CLOCKWISE</option>
+				<option value="FOLLOW_AUDIO KNIGHT_RIDER_ALTERNATING">FOLLOW_AUDIO KNIGHT_RIDER_ALTERNATING</option>
+				<option value="FOLLOW_AUDIO RANDOM_PIXEL_FLASH">FOLLOW_AUDIO RANDOM_PIXEL_FLASH</option>
+				<option value="FOLLOW_AUDIO PARTY">FOLLOW_AUDIO PARTY</option>
+				<option value="FOLLOW_AUDIO MODE_RANDOM">FOLLOW_AUDIO MODE_RANDOM</option>
+
+				<option value="FOLLOW_COLOR MANUAL_HUE">FOLLOW_COLOR MANUAL_HUE</option>
+				<option value="FOLLOW_COLOR HOT_LAVA">FOLLOW_COLOR HOT_LAVA</option>
+				<option value="FOLLOW_COLOR DEEP_WATER">FOLLOW_COLOR DEEP_WATER</option>
+				<option value="FOLLOW_COLOR FRESH_NATURE">FOLLOW_COLOR FRESH_NATURE</option>
+				<option value="FOLLOW_COLOR ISF">FOLLOW_COLOR ISF</option>
+				<option value="FOLLOW_COLOR PTA_LOUNGE">FOLLOW_COLOR PTA_LOUNGE</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ambilightColor" advanced="true">
+		<item-type>Color</item-type>
+		<label>All Ambilight</label>
+		<description>Sets the Ambilight color for all sides.</description>
+		<category>Ambilight</category>
+	</channel-type>
+
+	<channel-type id="ambilightLeftColor" advanced="true">
+		<item-type>Color</item-type>
+		<label>Left Ambilight</label>
+		<description>Sets the Ambilight color for the left side.</description>
+		<category>Ambilight</category>
+	</channel-type>
+
+	<channel-type id="ambilightRightColor" advanced="true">
+		<item-type>Color</item-type>
+		<label>Right Ambilight</label>
+		<description>Sets the Ambilight color for the right side.</description>
+		<category>Ambilight</category>
+	</channel-type>
+
+	<channel-type id="ambilightTopColor" advanced="true">
+		<item-type>Color</item-type>
+		<label>Top Ambilight</label>
+		<description>Sets the Ambilight color for the top.</description>
+		<category>Ambilight</category>
+	</channel-type>
+
+	<channel-type id="ambilightBottomColor" advanced="true">
+		<item-type>Color</item-type>
+		<label>Bottom Ambilight</label>
+		<description>Sets the Ambilight color for the bottom.</description>
+		<category>Ambilight</category>
+	</channel-type>
+
+	<channel-type id="brightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Brightness of the TV picture.</description>
+		<category>Tv Picture</category>
+	</channel-type>
+
+	<channel-type id="contrast" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Contrast</label>
+		<description>Contrast of the TV picture.</description>
+		<category>Tv Picture</category>
+	</channel-type>
+
+	<channel-type id="sharpness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Sharpness</label>
+		<description>Sharpness of the TV picture.</description>
+		<category>Tv Picture</category>
 	</channel-type>
 
 </thing:thing-descriptions>

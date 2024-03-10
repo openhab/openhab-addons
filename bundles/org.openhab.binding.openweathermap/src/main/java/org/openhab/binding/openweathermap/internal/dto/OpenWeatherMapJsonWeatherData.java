@@ -24,8 +24,8 @@ import org.openhab.binding.openweathermap.internal.dto.weather.Main;
 import org.openhab.binding.openweathermap.internal.dto.weather.Sys;
 
 /**
- * The {@link OpenWeatherMapJsonWeatherData} is the Java class used to map the JSON response to an OpenWeatherMap
- * request.
+ * Holds the data from the deserialised JSON response of the <a href="https://openweathermap.org/current">Current
+ * weather data API</a>
  *
  * @author Christoph Weitkamp - Initial contribution
  */

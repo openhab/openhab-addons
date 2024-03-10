@@ -131,6 +131,10 @@ Advanced channels:
 | temperature_storage              | Number:Temperature   | yes       | Temperature Storage                                                     |
 | temperature_suction              | Number:Temperature   | yes       | Temperature Suction                                                     |
 | temperature_water_set            | Number:Temperature   | yes       | Temperature Water Setpoint                                              |
+| percent_water_limit_min          | Number:Dimensionless | no        | Percent Water Power limit Min                                           |
+| percent_water_limit_max          | Number:Dimensionless | no        | Percent Water Power limit Max                                           |
+| percent_heating_limit_min        | Number:Dimensionless | no        | Percent Heating Power limit Min                                         |
+| percent_heating_limit_max        | Number:Dimensionless | no        | Percent Heating Power limit Min                                         |
 | time_hour                        | Number:Dimensionless | yes       | Hour                                                                    |
 | time_minute                      | Number:Dimensionless | yes       | Minute                                                                  |
 | version_bios                     | Number:Dimensionless | yes       | Version BIOS                                                            |

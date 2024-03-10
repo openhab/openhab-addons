@@ -66,6 +66,9 @@ public class PlexBindingConstants {
     // Player
     public static final String CHANNEL_PLAYER_STATE = "state";
     public static final String CHANNEL_PLAYER_TITLE = "title";
+    public static final String CHANNEL_PLAYER_RATING_KEY = "ratingKey";
+    public static final String CHANNEL_PLAYER_PARENT_RATING_KEY = "parentRatingKey";
+    public static final String CHANNEL_PLAYER_GRANDPARENT_RATING_KEY = "grandparentRatingKey";
     public static final String CHANNEL_PLAYER_TYPE = "type";
     public static final String CHANNEL_PLAYER_POWER = "power";
     public static final String CHANNEL_PLAYER_ART = "art";

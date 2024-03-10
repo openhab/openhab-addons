@@ -41,6 +41,7 @@ import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Dpval;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Id;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Info;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.Response;
+import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.ResponseError;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -86,6 +87,8 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
     private IntesisHomeConfiguration config = new IntesisHomeConfiguration();
 
+    private String sessionId = "";
+
     private @Nullable ScheduledFuture<?> refreshJob;
 
     public IntesisHomeHandler(final Thing thing, final HttpClient httpClient,
@@ -109,6 +112,9 @@ public class IntesisHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not set");
             return;
         } else {
+            logger.trace("trying to log in - current session ID: {}", sessionId);
+            login();
+
             // start background initialization:
             scheduler.submit(() -> {
                 populateProperties();
@@ -129,6 +135,8 @@ public class IntesisHomeHandler extends BaseThingHandler {
             refreshJob.cancel(true);
             this.refreshJob = null;
         }
+
+        logout(sessionId);
     }
 
     @Override
@@ -216,26 +224,29 @@ public class IntesisHomeHandler extends BaseThingHandler {
     }
 
     public @Nullable String login() {
-        // lambda's can't modify local variables, so we use an array here to get around the issue
-        String[] sessionId = new String[1];
         postRequest(
                 "{\"command\":\"login\",\"data\":{\"username\":\"Admin\",\"password\":\"" + config.password + "\"}}",
                 resp -> {
                     Data data = gson.fromJson(resp.data, Data.class);
+                    ResponseError error = gson.fromJson(resp.error, ResponseError.class);
+                    if (error != null) {
+                        logger.debug("Login - Error: {}", error);
+                    }
                     if (data != null) {
                         Id id = gson.fromJson(data.id, Id.class);
                         if (id != null) {
-                            sessionId[0] = id.sessionID;
+                            sessionId = id.sessionID.toString();
                         }
                     }
                 });
-        if (sessionId[0] != null && !sessionId[0].isEmpty()) {
+        logger.trace("Login - received session ID: {}", sessionId);
+        if (sessionId != null && !sessionId.isEmpty()) {
             updateStatus(ThingStatus.ONLINE);
-            return sessionId[0];
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "SessionId not received");
-            return null;
+            sessionId = "";
         }
+        return sessionId;
     }
 
     public @Nullable String logout(String sessionId) {
@@ -309,18 +320,34 @@ public class IntesisHomeHandler extends BaseThingHandler {
     }
 
     private void postRequest(String request, Consumer<Response> handler) {
+        postRequest(request, handler, false);
+    }
+
+    private void postRequest(String request, Consumer<Response> handler, boolean retry) {
         try {
             logger.trace("request : '{}'", request);
             String response = api.postRequest(config.ipAddress, request);
             if (response != null) {
                 Response resp = gson.fromJson(response, Response.class);
                 if (resp != null) {
-                    boolean success = resp.success;
-                    if (success) {
+                    if (resp.success) {
                         handler.accept(resp);
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Request unsuccessful");
+                        ResponseError respError = gson.fromJson(resp.error, ResponseError.class);
+                        if (respError != null) {
+                            logger.warn("postRequest failed - respErrorCode: {} / respErrorMessage: {} / retry {}",
+                                    respError.code, respError.message, retry);
+                            if (!retry && respError.code == 1) {
+                                logger.debug(
+                                        "postRequest: trying to log in and retry request - respErrorCode: {} / respErrorMessage: {} / retry {}",
+                                        respError.code, respError.message, retry);
+                                login();
+                                postRequest(request, handler, true);
+                            }
+                        }
+
                     }
                 }
             } else {
@@ -332,13 +359,11 @@ public class IntesisHomeHandler extends BaseThingHandler {
     }
 
     private void postRequestInSession(UnaryOperator<String> requestFactory, Consumer<Response> handler) {
-        String sessionId = login();
         if (sessionId != null) {
             try {
                 String request = requestFactory.apply(sessionId);
                 postRequest(request, handler);
             } finally {
-                logout(sessionId);
             }
         }
     }
