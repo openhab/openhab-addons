@@ -31,12 +31,12 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
-import org.openhab.binding.netatmo.internal.config.CameraConfiguration;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -54,6 +54,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class CameraCapability extends HomeSecurityThingCapability {
+    private static final String IP_ADDRESS = "ipAddress";
+
     private final Logger logger = LoggerFactory.getLogger(CameraCapability.class);
 
     private final CameraChannelHelper cameraHelper;
@@ -175,9 +177,14 @@ public class CameraCapability extends HomeSecurityThingCapability {
                 apiLocalUrl = builder.build();
                 if (apiLocalUrl.getHost().startsWith("169.254.")) {
                     logger.warn("Suspicious local IP address received: {}", apiLocalUrl);
-                    String provided = handler.getThingConfigAs(CameraConfiguration.class).ipAddress;
-                    apiLocalUrl = builder.host(provided).build();
-                    logger.info("Using {} as local url for '{}'", apiLocalUrl, thingUID);
+                    Configuration config = handler.getThing().getConfiguration();
+                    if (config.containsKey(IP_ADDRESS)) {
+                        String provided = (String) config.get(IP_ADDRESS);
+                        apiLocalUrl = builder.host(provided).build();
+                        logger.info("Using {} as local url for '{}'", apiLocalUrl, thingUID);
+                    } else {
+                        logger.debug("No alternative ip Address provided, keeping API answer");
+                    }
                 }
             } catch (UriBuilderException e) { // Crashed at first URI build
                 logger.warn("API returned a badly formatted local url address for '{}': {}", thingUID, e.getMessage());
