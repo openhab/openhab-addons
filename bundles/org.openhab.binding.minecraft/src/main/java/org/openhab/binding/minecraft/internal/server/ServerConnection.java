@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,7 +126,7 @@ public class ServerConnection {
     public static Observable<ServerConnection> create(final ThingUID thingUID, final String host, final int port) {
         final String serverUrl = String.format("ws://%s:%d/stream", host, port);
 
-        return Observable.<ServerConnection> create(new OnSubscribe<ServerConnection>() {
+        return Observable.create(new OnSubscribe<>() {
 
             private final Logger logger = LoggerFactory.getLogger(ServerConnection.class);
 

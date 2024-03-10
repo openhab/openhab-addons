@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -433,12 +433,12 @@ public class PlugwiseHAController {
     }
 
     private <T> PlugwiseHAControllerRequest<T> newRequest(Class<T> responseType, @Nullable Transformer transformer) {
-        return new PlugwiseHAControllerRequest<T>(responseType, this.xStream, transformer, this.httpClient, this.host,
+        return new PlugwiseHAControllerRequest<>(responseType, this.xStream, transformer, this.httpClient, this.host,
                 this.port, this.username, this.smileId);
     }
 
     private <T> PlugwiseHAControllerRequest<T> newRequest(Class<T> responseType) {
-        return new PlugwiseHAControllerRequest<T>(responseType, this.xStream, null, this.httpClient, this.host,
+        return new PlugwiseHAControllerRequest<>(responseType, this.xStream, null, this.httpClient, this.host,
                 this.port, this.username, this.smileId);
     }
 

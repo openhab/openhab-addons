@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,15 +13,14 @@
 package org.openhab.persistence.inmemory.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.closeTo;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -142,6 +141,38 @@ public class InMemoryPersistenceTests {
         service.query(filterCriteria).forEach(storedStates::add);
 
         assertThat(storedStates, is(empty()));
+    }
+
+    @Test
+    public void querySupportsAscendingOrdering() {
+        ZonedDateTime start = ZonedDateTime.of(2020, 12, 1, 12, 0, 0, 0, ZoneId.systemDefault());
+        service.store(item, start, new DecimalType(1));
+        service.store(item, start.plusHours(1), new DecimalType(2));
+        service.store(item, start.plusHours(2), new DecimalType(3));
+
+        filterCriteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
+        filterCriteria.setBeginDate(start);
+
+        List<Integer> resultSet = new ArrayList<>();
+        service.query(filterCriteria).forEach(h -> resultSet.add(((DecimalType) h.getState()).intValue()));
+
+        assertThat(resultSet, contains(1, 2, 3));
+    }
+
+    @Test
+    public void querySupportsDescendingOrdering() {
+        ZonedDateTime start = ZonedDateTime.of(2020, 12, 1, 12, 0, 0, 0, ZoneId.systemDefault());
+        service.store(item, start, new DecimalType(1));
+        service.store(item, start.plusHours(1), new DecimalType(2));
+        service.store(item, start.plusHours(2), new DecimalType(3));
+
+        filterCriteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
+        filterCriteria.setBeginDate(start);
+
+        List<Integer> resultSet = new ArrayList<>();
+        service.query(filterCriteria).forEach(h -> resultSet.add(((DecimalType) h.getState()).intValue()));
+
+        assertThat(resultSet, contains(3, 2, 1));
     }
 
     @Test

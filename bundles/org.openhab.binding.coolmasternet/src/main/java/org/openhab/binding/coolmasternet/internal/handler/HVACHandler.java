@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -146,7 +146,7 @@ public class HVACHandler extends BaseThingHandler {
                     if (command instanceof RefreshType) {
                         final String on = query(controller, "o");
                         if (on != null) {
-                            updateState(ON, "1".equals(on) ? OnOffType.ON : OnOffType.OFF);
+                            updateState(ON, OnOffType.from("1".equals(on)));
                         }
                     } else if (command instanceof OnOffType onOffCommand) {
                         controller

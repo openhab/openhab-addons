@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -174,7 +174,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         break;
                     case "flood":
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
-                                s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                                OnOffType.from(s.value == 1));
                         break;
                     case "tilt": // DW with FW1.6.5+ //+
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
@@ -184,7 +184,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         if (profile.isMotion) {
                             // handle as status
                             updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                                    s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                                    OnOffType.from(s.value == 1));
                         } else if (s.value == 1) {
                             // handle as event
                             thingHandler.triggerChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE,

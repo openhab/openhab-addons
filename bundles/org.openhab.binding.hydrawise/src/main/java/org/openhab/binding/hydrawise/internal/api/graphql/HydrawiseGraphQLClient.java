@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -324,6 +324,8 @@ public class HydrawiseGraphQLClient {
         } catch (ExecutionException e) {
             // Hydrawise returns back a 40x status, but without a valid Realm , so jetty throws an exception,
             // this allows us to catch this in a callback and handle accordingly
+            logger.debug("ExecutionException", e);
+            logger.debug("ExecutionException {} {}", responseCode.get(), responseMessage);
             switch (responseCode.get()) {
                 case 401:
                 case 403:

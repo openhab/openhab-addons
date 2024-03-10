@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -161,6 +161,9 @@ class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<Intrusio
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ARMING_STATE),
                 new StringType("SYSTEM_ARMING"));
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ACTIVE_CONFIGURATION_PROFILE),
+                new StringType("0"));
     }
 
     @Test

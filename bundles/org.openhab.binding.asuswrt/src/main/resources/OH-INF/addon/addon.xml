@@ -6,4 +6,21 @@
 	<name>Asuswrt Binding</name>
 	<description>Binding for ASUS routers (Asuswrt / Asuswrt-Merlin only)</description>
 	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i).*ASUS.*</regex>
+				</match-property>
+				<match-property>
+					<name>modelName</name>
+					<regex>(?i)ASUS Wireless Router</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

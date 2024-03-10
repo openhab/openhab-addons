@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,7 +99,7 @@ public class KVVStopHandler extends BaseThingHandler {
                 logger.warn("maxTrains is '0', not creating any channels");
             }
 
-            final List<Channel> channels = new ArrayList<Channel>();
+            final List<Channel> channels = new ArrayList<>();
             for (int i = 0; i < bridgeHandler.getBridgeConfig().maxTrains; i++) {
                 ChannelUID c = new ChannelUID(this.thing.getUID(), "train" + i + "-name");
                 channels.add(ChannelBuilder.create(c, "String").withType(nameType).build());

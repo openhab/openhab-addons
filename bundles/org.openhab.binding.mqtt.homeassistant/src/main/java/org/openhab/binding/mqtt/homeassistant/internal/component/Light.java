@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,12 +13,7 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,7 +27,6 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
-import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -47,7 +41,7 @@ import com.google.gson.annotations.SerializedName;
  * three different schemas.
  *
  * As of now, only on/off, brightness, and RGB are fully implemented and tested.
- * HS and XY are implemented, but not tested. Color temp and effect are only
+ * HS and XY are implemented, but not tested. Color temp is only
  * implemented (but not tested) for the default schema.
  *
  * @author David Graeff - Initial contribution
@@ -246,10 +240,9 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     protected OnOffValue onOffValue;
     protected PercentageValue brightnessValue;
     protected final NumberValue colorTempValue;
-    protected final TextValue effectValue = new TextValue();
+    protected final @Nullable TextValue effectValue;
     protected final ColorValue colorValue = new ColorValue(ColorMode.HSB, null, null, 100);
 
-    protected final List<ComponentChannel> hiddenChannels = new ArrayList<>();
     protected final ChannelStateUpdateListener channelStateUpdateListener;
 
     public static Light create(ComponentFactory.ComponentConfiguration builder) throws UnsupportedComponentException {
@@ -281,6 +274,13 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
         brightnessValue = new PercentageValue(null, new BigDecimal(channelConfiguration.brightnessScale), null, null,
                 null);
         @Nullable
+        List<String> effectList = channelConfiguration.effectList;
+        if (effectList != null) {
+            effectValue = new TextValue(effectList.toArray(new String[0]));
+        } else {
+            effectValue = null;
+        }
+        @Nullable
         BigDecimal min = null, max = null;
         if (channelConfiguration.minMireds != null) {
             min = new BigDecimal(channelConfiguration.minMireds);
@@ -294,22 +294,6 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     }
 
     protected abstract void buildChannels();
-
-    @Override
-    public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
-            int timeout) {
-        return Stream.concat(channels.values().stream(), hiddenChannels.stream()) //
-                .map(v -> v.start(connection, scheduler, timeout)) //
-                .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
-    }
-
-    @Override
-    public CompletableFuture<@Nullable Void> stop() {
-        return Stream.concat(channels.values().stream(), hiddenChannels.stream()) //
-                .filter(Objects::nonNull) //
-                .map(ComponentChannel::stop) //
-                .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
-    }
 
     @Override
     public void postChannelCommand(ChannelUID channelUID, Command value) {

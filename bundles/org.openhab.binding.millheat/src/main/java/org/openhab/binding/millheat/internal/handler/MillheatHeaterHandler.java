@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,11 +71,11 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
                 }
             } else if (MillheatBindingConstants.CHANNEL_HEATING_ACTIVE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, heater.isHeatingActive() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, OnOffType.from(heater.isHeatingActive()));
                 }
             } else if (MillheatBindingConstants.CHANNEL_FAN_ACTIVE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, heater.fanActive() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, OnOffType.from(heater.fanActive()));
                 } else if (heater.canChangeTemp() && heater.getRoom() == null) {
                     updateIndependentHeaterProperties(null, null, command);
                 } else {
@@ -87,7 +87,7 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
                 }
             } else if (MillheatBindingConstants.CHANNEL_INDEPENDENT.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, heater.getRoom() == null ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, OnOffType.from(heater.getRoom() == null));
                 }
             } else if (MillheatBindingConstants.CHANNEL_CURRENT_POWER.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
@@ -128,13 +128,13 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
                 }
             } else if (MillheatBindingConstants.CHANNEL_MASTER_SWITCH.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, heater.powerStatus() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, OnOffType.from(heater.powerStatus()));
                 } else {
                     if (heater.canChangeTemp() && heater.getRoom() == null) {
                         updateIndependentHeaterProperties(null, command, null);
                     } else {
                         // Just overwrite with old state
-                        updateState(channelUID, heater.powerStatus() ? OnOffType.ON : OnOffType.OFF);
+                        updateState(channelUID, OnOffType.from(heater.powerStatus()));
                     }
                 }
             } else {

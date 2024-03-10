@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,6 @@ import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapAPIConfi
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonAirPollutionData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonDailyForecastData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonHourlyForecastData;
-import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonUVIndexData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonWeatherData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapOneCallAPIData;
 import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapOneCallHistAPIData;
@@ -88,9 +86,6 @@ public class OpenWeatherMapConnection {
     private static final String THREE_HOUR_FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast";
     // 16 day / daily forecast (see https://openweathermap.org/forecast16)
     private static final String DAILY_FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast/daily";
-    // UV Index (see https://openweathermap.org/api/uvi)
-    private static final String UVINDEX_URL = "https://api.openweathermap.org/data/2.5/uvi";
-    private static final String UVINDEX_FORECAST_URL = "https://api.openweathermap.org/data/2.5/uvi/forecast";
     // Air Pollution (see https://openweathermap.org/api/air-pollution)
     private static final String AIR_POLLUTION_URL = "https://api.openweathermap.org/data/2.5/air_pollution";
     private static final String AIR_POLLUTION_FORECAST_URL = "https://api.openweathermap.org/data/2.5/air_pollution/forecast";
@@ -179,46 +174,6 @@ public class OpenWeatherMapConnection {
 
         return gson.fromJson(getResponseFromCache(buildURL(DAILY_FORECAST_URL, params)),
                 OpenWeatherMapJsonDailyForecastData.class);
-    }
-
-    /**
-     * Requests the UV Index data for the given location (see https://openweathermap.org/api/uvi).
-     *
-     * @param location location represented as {@link PointType}
-     * @return the UV Index data
-     * @throws JsonSyntaxException
-     * @throws CommunicationException
-     * @throws ConfigurationException
-     */
-    public synchronized @Nullable OpenWeatherMapJsonUVIndexData getUVIndexData(@Nullable PointType location)
-            throws JsonSyntaxException, CommunicationException, ConfigurationException {
-        return gson.fromJson(
-                getResponseFromCache(
-                        buildURL(UVINDEX_URL, getRequestParams(handler.getOpenWeatherMapAPIConfig(), location))),
-                OpenWeatherMapJsonUVIndexData.class);
-    }
-
-    /**
-     * Requests the UV Index forecast data for the given location (see https://openweathermap.org/api/uvi).
-     *
-     * @param location location represented as {@link PointType}
-     * @return the UV Index forecast data
-     * @throws JsonSyntaxException
-     * @throws CommunicationException
-     * @throws ConfigurationException
-     */
-    public synchronized @Nullable List<OpenWeatherMapJsonUVIndexData> getUVIndexForecastData(
-            @Nullable PointType location, int count)
-            throws JsonSyntaxException, CommunicationException, ConfigurationException {
-        if (count <= 0) {
-            throw new ConfigurationException("@text/offline.conf-error-not-supported-uvindex-number-of-days");
-        }
-
-        Map<String, String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
-        params.put(PARAM_FORECAST_CNT, Integer.toString(count));
-
-        return Arrays.asList(gson.fromJson(getResponseFromCache(buildURL(UVINDEX_FORECAST_URL, params)),
-                OpenWeatherMapJsonUVIndexData[].class));
     }
 
     /**

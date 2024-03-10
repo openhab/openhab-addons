@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,6 +29,7 @@ import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
 import org.openhab.core.config.core.Configuration;
@@ -128,6 +128,26 @@ public interface CommonInterface {
                 : recurseUpToHomeHandler(handler.getBridgeHandler());
     }
 
+    /**
+     * Recurses down in the home/module/device tree
+     *
+     * @param bridge
+     * @return the list of childs of the bridge
+     */
+    default List<CommonInterface> getAllActiveChildren(Bridge bridge) {
+        List<CommonInterface> result = new ArrayList<>();
+        bridge.getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler).forEach(childHandler -> {
+            if (childHandler != null) {
+                Thing childThing = childHandler.getThing();
+                if (childThing instanceof Bridge bridgeChild) {
+                    result.addAll(getAllActiveChildren(bridgeChild));
+                }
+                result.add((CommonInterface) childHandler);
+            }
+        });
+        return result;
+    }
+
     default List<CommonInterface> getActiveChildren() {
         Thing thing = getThing();
         if (thing instanceof Bridge bridge) {
@@ -200,35 +220,20 @@ public interface CommonInterface {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
         } else if (!ThingStatus.ONLINE.equals(bridge.getStatus())) {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
-            removeRefreshCapability();
+            getCapabilities().remove(RefreshCapability.class);
+            getCapabilities().remove(ParentUpdateCapability.class);
         } else {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
-            setRefreshCapability();
-            getScheduler().schedule(() -> {
-                CommonInterface bridgeHandler = getBridgeHandler();
-                if (bridgeHandler != null) {
-                    bridgeHandler.expireData();
-                }
-            }, 1, TimeUnit.SECONDS);
+            if (ModuleType.ACCOUNT.equals(getModuleType().getBridge())) {
+                NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
+                getCapabilities().put(new RefreshCapability(this, config.refreshInterval));
+            }
+            getCapabilities().put(new ParentUpdateCapability(this));
         }
     }
 
     default ModuleType getModuleType() {
         return ModuleType.from(getThing().getThingTypeUID());
-    }
-
-    default void setRefreshCapability() {
-        if (ModuleType.ACCOUNT.equals(getModuleType().getBridge())) {
-            NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
-            getCapabilities().put(new RefreshCapability(this, getScheduler(), config.refreshInterval));
-        }
-    }
-
-    default void removeRefreshCapability() {
-        Capability refreshCap = getCapabilities().remove(RefreshCapability.class);
-        if (refreshCap != null) {
-            refreshCap.dispose();
-        }
     }
 
     default void commonDispose() {

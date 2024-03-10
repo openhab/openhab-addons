@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataModule;
 import org.openhab.binding.netatmo.internal.api.dto.HomeDataRoom;
 import org.openhab.binding.netatmo.internal.api.dto.HomeStatusModule;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.Room;
 import org.openhab.binding.netatmo.internal.config.HomeConfiguration;
@@ -85,21 +84,27 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     }
 
     @Override
-    protected void updateHomeStatus(HomeStatus homeStatus) {
-        if (homeStatus instanceof NAHomeStatus.Energy energyStatus) {
-            NAObjectMap<Room> rooms = energyStatus.getRooms();
-            NAObjectMap<HomeStatusModule> modules = energyStatus.getModules();
-            handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
-                String childId = childHandler.getId();
-                rooms.getOpt(childId).ifPresentOrElse(roomData -> childHandler.setNewData(roomData), () -> {
-                    modules.getOpt(childId).ifPresent(moduleData -> {
-                        childHandler.setNewData(moduleData);
-                        modules.values().stream().filter(module -> childId.equals(module.getBridge()))
-                                .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
-                    });
+    protected void updateHomeStatus(HomeStatus energyStatus) {
+        NAObjectMap<Room> rooms = energyStatus.getRooms();
+        NAObjectMap<HomeStatusModule> modules = energyStatus.getModules();
+        handler.getActiveChildren(FeatureArea.ENERGY).forEach(childHandler -> {
+            String childId = childHandler.getId();
+            logger.trace("childId: {}", childId);
+            rooms.getOpt(childId).ifPresentOrElse(roomData -> {
+                logger.trace("roomData: {}", roomData);
+                childHandler.setNewData(roomData);
+            }, () -> {
+                modules.getOpt(childId).ifPresent(moduleData -> {
+                    logger.trace("moduleData: {}", moduleData);
+                    childHandler.setNewData(moduleData);
+                    modules.values().stream().filter(module -> childId.equals(module.getBridge()))
+                            .forEach(bridgedModule -> {
+                                logger.trace("bridgedModule: {}", bridgedModule);
+                                childHandler.setNewData(bridgedModule);
+                            });
                 });
             });
-        }
+        });
     }
 
     public void setThermPoint(String roomId, SetpointMode mode, long endtime, double temp) {

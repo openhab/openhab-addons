@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,18 +16,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
 import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,24 +35,20 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  *
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = NetatmoDiscoveryService.class)
 @NonNullByDefault
-public class NetatmoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService, DiscoveryService {
+public class NetatmoDiscoveryService extends AbstractThingHandlerDiscoveryService<ApiBridgeHandler> {
     private static final int DISCOVER_TIMEOUT_SECONDS = 3;
     private final Logger logger = LoggerFactory.getLogger(NetatmoDiscoveryService.class);
 
-    private @Nullable ApiBridgeHandler handler;
-
     public NetatmoDiscoveryService() {
-        super(ModuleType.AS_SET.stream().filter(mt -> !mt.apiName.isBlank()).map(mt -> mt.thingTypeUID)
-                .collect(Collectors.toSet()), DISCOVER_TIMEOUT_SECONDS);
+        super(ApiBridgeHandler.class, ModuleType.AS_SET.stream().filter(mt -> !mt.apiName.isBlank())
+                .map(mt -> mt.thingTypeUID).collect(Collectors.toSet()), DISCOVER_TIMEOUT_SECONDS);
     }
 
     @Override
     public void startScan() {
-        ApiBridgeHandler localHandler = handler;
-        if (localHandler != null) {
-            localHandler.identifyAllModulesAndApplyAction(this::createThing);
-        }
+        thingHandler.identifyAllModulesAndApplyAction(this::createThing);
     }
 
     private Optional<ThingUID> findThingUID(ModuleType moduleType, String thingId, ThingUID bridgeUID) {
@@ -75,22 +69,5 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
             logger.info("Module '{}' is not handled by this version of the binding - it is ignored.", module.getName());
         }
         return moduleUID;
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof ApiBridgeHandler bridgeHandler) {
-            this.handler = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
     }
 }

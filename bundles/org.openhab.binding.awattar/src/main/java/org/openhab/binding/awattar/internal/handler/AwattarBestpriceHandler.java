@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -153,7 +153,7 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
 
         AwattarBestPriceResult result;
         if (config.consecutive) {
-            ArrayList<AwattarPrice> range = new ArrayList<AwattarPrice>(config.rangeDuration);
+            ArrayList<AwattarPrice> range = new ArrayList<>(config.rangeDuration);
             range.addAll(getPriceRange(bridgeHandler, timerange,
                     (o1, o2) -> Long.compare(o1.getStartTimestamp(), o2.getStartTimestamp())));
             AwattarConsecutiveBestPriceResult res = new AwattarConsecutiveBestPriceResult(

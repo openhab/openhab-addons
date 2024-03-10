@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.haywardomnilogic.internal;
 
 import java.util.HashMap;
@@ -67,7 +66,7 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
             case "Number":
                 return new DecimalType(value);
             case "Switch":
-                return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(Integer.parseInt(value) > 0);
             case "Number:Dimensionless":
                 switch (channelID) {
                     case HaywardBindingConstants.CHANNEL_CHLORINATOR_AVGSALTLEVEL:

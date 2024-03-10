@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,13 +69,8 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
             throw new ConfigurationException("Component:Switch does not support forced optimistic mode");
         }
 
-        String stateOn = channelConfiguration.stateOn != null ? channelConfiguration.stateOn
-                : channelConfiguration.payloadOn;
-        String stateOff = channelConfiguration.stateOff != null ? channelConfiguration.stateOff
-                : channelConfiguration.payloadOff;
-
-        OnOffValue value = new OnOffValue(stateOn, stateOff, channelConfiguration.payloadOn,
-                channelConfiguration.payloadOff);
+        OnOffValue value = new OnOffValue(channelConfiguration.stateOn, channelConfiguration.stateOff,
+                channelConfiguration.payloadOn, channelConfiguration.payloadOff);
 
         buildChannel(SWITCH_CHANNEL_ID, value, "state", componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())

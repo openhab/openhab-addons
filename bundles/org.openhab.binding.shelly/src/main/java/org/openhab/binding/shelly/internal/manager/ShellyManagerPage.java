@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -254,7 +254,8 @@ public class ShellyManagerPage {
         properties.put(ATTRIBUTE_APR_TRESHOLD,
                 profile.settings.apRoaming != null ? getOption(profile.settings.apRoaming.threshold) : "n/a");
         properties.put(ATTRIBUTE_PWD_PROTECT,
-                profile.auth ? "enabled, user=" + getString(profile.settings.login.username) : "disabled");
+                getBool(profile.device.auth) ? "enabled, user=" + getString(profile.settings.login.username)
+                        : "disabled");
         String tz = getString(profile.settings.timezone);
         properties.put(ATTRIBUTE_TIMEZONE,
                 (tz.isEmpty() ? "n/a" : tz) + ", auto-detect: " + getBool(profile.settings.tzautodetect));
@@ -456,7 +457,7 @@ public class ShellyManagerPage {
             // no files available for this device type
             logger.info("{}: No firmware files found for device type {}", LOG_PREFIX, deviceType);
             list = new FwArchList();
-            list.versions = new ArrayList<FwArchEntry>();
+            list.versions = new ArrayList<>();
         } else {
             // Create selection list
             json = "{" + json.replace("[{", "\"versions\":[{") + "}"; // make it a named array
@@ -537,7 +538,7 @@ public class ShellyManagerPage {
     }
 
     protected static String getDeviceIp(Map<String, String> properties) {
-        return getString(properties.get("deviceIp"));
+        return getString(properties.get(ATTRIBUTE_DEVICEIP));
     }
 
     protected static String getDeviceName(Map<String, String> properties) {
@@ -587,11 +588,12 @@ public class ShellyManagerPage {
         timer.schedule(task, delay * 1000);
     }
 
-    protected Map<String, ShellyManagerInterface> getThingHandlers() {
+    protected @Nullable Map<String, ShellyManagerInterface> getThingHandlers() {
         return handlerFactory.getThingHandlers();
     }
 
     protected @Nullable ShellyManagerInterface getThingHandler(String uid) {
-        return getThingHandlers().get(uid);
+        Map<String, ShellyManagerInterface> th = getThingHandlers();
+        return th != null ? th.get(uid) : null;
     }
 }

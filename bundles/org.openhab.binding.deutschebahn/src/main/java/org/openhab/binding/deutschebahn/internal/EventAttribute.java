@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -428,7 +428,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
      * Used for derived attributes that can't be set.
      */
     private static <VALUE_TYPE> BiConsumer<Event, VALUE_TYPE> voidSetter() {
-        return new BiConsumer<Event, VALUE_TYPE>() {
+        return new BiConsumer<>() {
 
             @Override
             public void accept(Event t, VALUE_TYPE u) {

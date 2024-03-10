@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.knx.internal.dpt;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.text.DecimalFormat;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.stream.IntStream;
@@ -28,8 +30,10 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.util.ColorUtil;
 
 import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
@@ -59,21 +63,21 @@ class DPTTest {
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT5ValueFromQuantityType() {
         assertEquals("80", ValueEncoder.encode(new QuantityType<>("80 %"), "5.001"));
 
         assertEquals("180", ValueEncoder.encode(new QuantityType<>("180 °"), "5.003"));
-        assertTrue(ValueEncoder.encode(new QuantityType<>("3.14 rad"), "5.003").startsWith("179."));
+        assertTrue(Objects.requireNonNullElse(ValueEncoder.encode(new QuantityType<>("3.14 rad"), "5.003"), "")
+                .startsWith("179."));
         assertEquals("80", ValueEncoder.encode(new QuantityType<>("80 %"), "5.004"));
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT7ValueFromQuantityType() {
         assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.002"));
-        assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.003"));
-        assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.004"));
+        // according to spec this should be 1000 for 7.003 and 7.004 - 1 is a workaround for Calimero 2.5.1
+        assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.003"));
+        assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.004"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.005"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 s"), "7.006"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 min"), "7.007"));
@@ -86,7 +90,6 @@ class DPTTest {
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT8ValueFromQuantityType() {
         assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "8.002"));
         assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "8.003"));
@@ -94,13 +97,18 @@ class DPTTest {
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "8.005"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 s"), "8.006"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 min"), "8.007"));
+        // 8.010 has a resolution of 0.01 and will be scaled. Calimero expects locale-specific separator.
+        String target = "-327.68".replace('.',
+                ((DecimalFormat) DecimalFormat.getInstance()).getDecimalFormatSymbols().getDecimalSeparator());
+        assertEquals(target, ValueEncoder.encode(new QuantityType<>("-327.68 %"), "8.010"));
+        assertEquals("-327.68 %", Objects
+                .toString(ValueDecoder.decode("8.010", new byte[] { (byte) 0x80, (byte) 0x00 }, QuantityType.class)));
 
         assertEquals("180", ValueEncoder.encode(new QuantityType<>("180 °"), "8.011"));
         assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1 km"), "8.012"));
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT9ValueFromQuantityType() {
         assertEquals("23.1", ValueEncoder.encode(new QuantityType<>("23.1 °C"), "9.001"));
         assertEquals(5.0,
@@ -109,14 +117,16 @@ class DPTTest {
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 K"), "9.002"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 mK"), "9.002"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 °C"), "9.002"));
-        assertTrue(ValueEncoder.encode(new QuantityType<>("1 °F"), "9.002").startsWith("0.55"));
+        assertTrue(Objects.requireNonNullElse(ValueEncoder.encode(new QuantityType<>("1 °F"), "9.002"), "")
+                .startsWith("0.55"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 K/h"), "9.003"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 °C/h"), "9.003"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 mK/h"), "9.003"));
         assertEquals("600", ValueEncoder.encode(new QuantityType<>("10 K/min"), "9.003"));
         assertEquals("100", ValueEncoder.encode(new QuantityType<>("100 lx"), "9.004"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 m/s"), "9.005"));
-        assertTrue(ValueEncoder.encode(new QuantityType<>("1.94 kn"), "9.005").startsWith("0.99"));
+        assertTrue(Objects.requireNonNullElse(ValueEncoder.encode(new QuantityType<>("1.94 kn"), "9.005"), "")
+                .startsWith("0.99"));
         assertEquals(1.0, Double
                 .parseDouble(Objects.requireNonNull(ValueEncoder.encode(new QuantityType<>("3.6 km/h"), "9.005"))));
         assertEquals("456", ValueEncoder.encode(new QuantityType<>("456 Pa"), "9.006"));
@@ -133,34 +143,33 @@ class DPTTest {
         assertEquals("12", ValueEncoder.encode(new QuantityType<>("12 W/m²"), "9.022"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 K/%"), "9.023"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 °C/%"), "9.023"));
-        assertTrue(ValueEncoder.encode(new QuantityType<>("1 °F/%"), "9.023").startsWith("0.55"));
+        assertTrue(Objects.requireNonNullElse(ValueEncoder.encode(new QuantityType<>("1 °F/%"), "9.023"), "")
+                .startsWith("0.55"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 kW"), "9.024"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 l/h"), "9.025"));
         assertEquals("60", ValueEncoder.encode(new QuantityType<>("1 l/min"), "9.025"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 l/m²"), "9.026"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 °F"), "9.027"));
-        assertTrue(ValueEncoder.encode(new QuantityType<>("-12 °C"), "9.027").startsWith("10."));
+        assertTrue(Objects.requireNonNullElse(ValueEncoder.encode(new QuantityType<>("-12 °C"), "9.027"), "")
+                .startsWith("10."));
         assertEquals("10", ValueEncoder.encode(new QuantityType<>("10 km/h"), "9.028"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 g/m³"), "9.029"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 µg/m³"), "9.030"));
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT10ValueFromQuantityType() {
-        // DateTimeTyype, not QuantityType
+        // DateTimeType, not QuantityType
         assertEquals("Wed, 17:30:00", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00Z"), "10.001"));
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT11ValueFromQuantityType() {
-        // DateTimeTyype, not QuantityType
+        // DateTimeType, not QuantityType
         assertEquals("2019-06-12", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00Z"), "11.001"));
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT12ValueFromQuantityType() {
         // 12.001: dimensionless
 
@@ -174,7 +183,6 @@ class DPTTest {
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT13ValueFromQuantityType() {
         // 13.001 dimensionless
         assertEquals("24", ValueEncoder.encode(new QuantityType<>("24 m³/h"), "13.002"));
@@ -195,7 +203,6 @@ class DPTTest {
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT14ValueFromQuantityType() {
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 m/s²"), "14.000"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1 rad/s²"), "14.001"));
@@ -287,9 +294,8 @@ class DPTTest {
     }
 
     @Test
-    @SuppressWarnings("null")
     void testToDPT19ValueFromQuantityType() {
-        // DateTimeTyype, not QuantityType
+        // DateTimeType, not QuantityType
         assertEquals("2019-06-12 17:30:00", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00Z"), "19.001"));
     }
 
@@ -298,6 +304,19 @@ class DPTTest {
         assertEquals("42", ValueEncoder.encode(new QuantityType<>("42 Wh"), "29.010"));
         assertEquals("42", ValueEncoder.encode(new QuantityType<>("42 VAh"), "29.011"));
         assertEquals("42", ValueEncoder.encode(new QuantityType<>("42 varh"), "29.012"));
+    }
+
+    @Test
+    public void dpt6Value() {
+        assertEquals("42", ValueEncoder.encode(new DecimalType(42), "6.001"));
+
+        assertEquals("42", ValueEncoder.encode(new DecimalType(42), "6.010"));
+
+        assertEquals("0/0/0/0/1 0", Objects.toString(ValueDecoder.decode("6.020", new byte[] { 9 }, StringType.class)));
+        assertEquals("0/0/0/0/0 1", Objects.toString(ValueDecoder.decode("6.020", new byte[] { 2 }, StringType.class)));
+        assertEquals("1/1/1/1/1 2",
+                Objects.toString(ValueDecoder.decode("6.020", new byte[] { (byte) 0xfc }, StringType.class)));
+        assertEquals("0/0/0/0/1 0", ValueEncoder.encode(StringType.valueOf("0/0/0/0/1 0"), "6.020"));
     }
 
     @Test
@@ -334,7 +353,53 @@ class DPTTest {
     }
 
     @Test
-    public void dpt252EncoderTest() {
+    public void dpt235Decoder() {
+        byte[] noActiveEnergy = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xfd };
+        assertNull(ValueDecoder.decode("235.001", noActiveEnergy, QuantityType.class));
+
+        byte[] noTariff = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xfe };
+        assertNull(ValueDecoder.decode("235.61001", noTariff, DecimalType.class));
+
+        byte[] activeEnergy = new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x03, (byte) 0xff, (byte) 0x0a, (byte) 0x02 };
+        assertEquals(new QuantityType<>("1023 Wh"), ValueDecoder.decode("235.001", activeEnergy, QuantityType.class));
+
+        byte[] activeTariff = new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x03, (byte) 0xff, (byte) 0x0a, (byte) 0x01 };
+        assertEquals(new DecimalType("10"), ValueDecoder.decode("235.61001", activeTariff, DecimalType.class));
+
+        byte[] activeAll = new byte[] { (byte) 0x0, (byte) 0x0, (byte) 0x03, (byte) 0xff, (byte) 0x0a, (byte) 0x03 };
+        assertEquals(new QuantityType<>("1023 Wh"), ValueDecoder.decode("235.001", activeAll, QuantityType.class));
+        assertEquals(new DecimalType("10"), ValueDecoder.decode("235.61001", activeAll, DecimalType.class));
+
+        byte[] negativeEnergy = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00,
+                (byte) 0x02 };
+        assertEquals(new QuantityType<>("-1 Wh"), ValueDecoder.decode("235.001", negativeEnergy, QuantityType.class));
+    }
+
+    @Test
+    public void dpt251White() {
+        // input data: color white
+        byte[] data = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x00, 0x00, 0x0e };
+        HSBType hsbType = (HSBType) ValueDecoder.decode("251.600", data, HSBType.class);
+
+        assertNotNull(hsbType);
+        assertEquals(0, hsbType.getHue().doubleValue(), 0.5);
+        assertEquals(0, hsbType.getSaturation().doubleValue(), 0.5);
+        assertEquals(100, hsbType.getBrightness().doubleValue(), 0.5);
+
+        String enc = ValueEncoder.encode(hsbType, "251.600");
+        // white should be "100 100 100 - %", but expect small deviation due to rounding
+        assertNotNull(enc);
+        String[] parts = enc.split(" ");
+        assertEquals(5, parts.length);
+        int[] rgb = ColorUtil.hsbToRgb(hsbType);
+        assertEquals(rgb[0] * 100d / 255, Double.valueOf(parts[0].replace(',', '.')), 1);
+        assertEquals(rgb[1] * 100d / 255, Double.valueOf(parts[1].replace(',', '.')), 1);
+        assertEquals(rgb[2] * 100d / 255, Double.valueOf(parts[2].replace(',', '.')), 1);
+    }
+
+    @Test
+    public void dpt251Value() {
         // input data
         byte[] data = new byte[] { 0x26, 0x2b, 0x31, 0x00, 0x00, 0x0e };
         HSBType hsbType = (HSBType) ValueDecoder.decode("251.600", data, HSBType.class);
@@ -343,6 +408,16 @@ class DPTTest {
         assertEquals(207, hsbType.getHue().doubleValue(), 0.5);
         assertEquals(23, hsbType.getSaturation().doubleValue(), 0.5);
         assertEquals(19, hsbType.getBrightness().doubleValue(), 0.5);
+
+        String enc = ValueEncoder.encode(hsbType, "251.600");
+        // white should be "100 100 100 - %", but expect small deviation due to rounding
+        assertNotNull(enc);
+        String[] parts = enc.split(" ");
+        assertEquals(5, parts.length);
+        int[] rgb = ColorUtil.hsbToRgb(hsbType);
+        assertEquals(rgb[0] * 100d / 255, Double.valueOf(parts[0].replace(',', '.')), 1);
+        assertEquals(rgb[1] * 100d / 255, Double.valueOf(parts[1].replace(',', '.')), 1);
+        assertEquals(rgb[2] * 100d / 255, Double.valueOf(parts[2].replace(',', '.')), 1);
     }
 
     // This test checks all our overrides for units. It allows to detect unnecessary overrides when we
@@ -358,7 +433,7 @@ class DPTTest {
         assertNotEquals(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getUnit(), "ms"); // according to spec, it is ms
 
         // two byte signed (DPT 8, DPTXlator is missing in calimero 2.5-M1)
-        assertNotEquals("", DptXlator2ByteSigned.DptValueCount.getUnit()); // pulses habe no unit
+        assertNotEquals("", DptXlator2ByteSigned.DptValueCount.getUnit()); // pulses have no unit
 
         // 4 byte unsigned (DPT 12)
         assertNotEquals("", DPTXlator4ByteUnsigned.DPT_VALUE_4_UCOUNT.getUnit()); // counts have no unit
@@ -391,16 +466,20 @@ class DPTTest {
         assertNotEquals(DPTXlator64BitSigned.DPT_REACTIVE_ENERGY.getUnit(), Units.VAR_HOUR.toString());
     }
 
-    private static Stream<String> unitProvider() {
+    private static Stream<Map.Entry<String, String>> unitProvider() {
         return DPTUnits.getAllUnitStrings();
     }
 
     @ParameterizedTest
     @MethodSource("unitProvider")
-    public void unitsValid(String unit) {
-        String valueStr = "1 " + unit;
-        QuantityType<?> value = new QuantityType<>(valueStr);
-        Assertions.assertNotNull(value);
+    public void unitsValid(Map.Entry<String, String> unit) {
+        String valueStr = "1 " + unit.getValue();
+        try {
+            QuantityType<?> value = new QuantityType<>(valueStr);
+            Assertions.assertNotNull(value, "Failed to parse " + unit + "(result null)");
+        } catch (Exception e) {
+            fail("Failed to parse " + unit + ": " + e.getMessage());
+        }
     }
 
     private static Stream<byte[]> rgbValueProvider() {

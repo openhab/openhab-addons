@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,10 +19,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sonyprojector.internal.SonyProjectorCommandDescriptionOptionProvider;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorModel;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorStateDescriptionOptionProvider;
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorConnector;
+import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorItem;
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorStatusPower;
 import org.openhab.binding.sonyprojector.internal.communication.sdcp.SonyProjectorSdcpConnector;
 import org.openhab.binding.sonyprojector.internal.communication.sdcp.SonyProjectorSdcpSimuConnector;
@@ -60,6 +62,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Wehrle - Initial contribution
  * @author Laurent Garnier - Refactoring, poll thread for regular channels updates, new serial thing type, new channels
+ * @author Laurent Garnier - Add new channel "ircommand"
  */
 @NonNullByDefault
 public class SonyProjectorHandler extends BaseThingHandler {
@@ -70,6 +73,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SonyProjectorHandler.class);
 
     private final SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider;
+    private final SonyProjectorCommandDescriptionOptionProvider commandDescriptionProvider;
     private final SerialPortManager serialPortManager;
     private final TranslationProvider i18nProvider;
 
@@ -88,9 +92,11 @@ public class SonyProjectorHandler extends BaseThingHandler {
     private final Object commandLock = new Object();
 
     public SonyProjectorHandler(Thing thing, SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider,
+            SonyProjectorCommandDescriptionOptionProvider commandDescriptionProvider,
             SerialPortManager serialPortManager, TranslationProvider i18nProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
         this.serialPortManager = serialPortManager;
         this.i18nProvider = i18nProvider;
         this.bundle = FrameworkUtil.getBundle(this.getClass());
@@ -286,6 +292,9 @@ public class SonyProjectorHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_PICTURE_POSITION:
                         connector.setPicturePosition(command.toString());
+                        break;
+                    case CHANNEL_IR_COMMAND:
+                        connector.sendIrCommand(command.toString());
                         break;
                     default:
                         throw new SonyProjectorException("Unexpected command");
@@ -521,6 +530,9 @@ public class SonyProjectorHandler extends BaseThingHandler {
                     model.getAspectStateOptions());
             stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_PICTURE_POSITION),
                     model.getPicturePositionStateOptions());
+            commandDescriptionProvider.setCommandOptions(new ChannelUID(getThing().getUID(), CHANNEL_IR_COMMAND),
+                    SonyProjectorItem.getIRCommandOptions(model.getInputCommandOptions(),
+                            model.getCalibrPresetCommandOptions(), model.getAspectCommandOptions()));
         }
         return model;
     }
@@ -536,7 +548,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
         } catch (SonyProjectorException e) {
             logger.debug("Get Status Power failed: {}", e.getMessage());
         }
-        updateChannelStateAndCache(CHANNEL_POWER, on ? OnOffType.ON : OnOffType.OFF);
+        updateChannelStateAndCache(CHANNEL_POWER, OnOffType.from(on));
         updateChannelStateAndCache(CHANNEL_POWERSTATE, state);
         return on;
     }
@@ -615,7 +627,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
                 try {
                     switch (channel) {
                         case CHANNEL_POWER:
-                            state = connector.getStatusPower().isOn() ? OnOffType.ON : OnOffType.OFF;
+                            state = OnOffType.from(connector.getStatusPower().isOn());
                             break;
                         case CHANNEL_POWERSTATE:
                             state = new StringType(connector.getStatusPower().name());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,7 @@ public class ObjectPropertyRequest<T extends ObjectProperties> implements Iterab
 
     @Override
     public Iterator<T> iterator() {
-        List<T> messages = new ArrayList<T>();
+        List<T> messages = new ArrayList<>();
         int currentObjectNumber = objectNumber;
 
         while (true) {
@@ -122,8 +122,7 @@ public class ObjectPropertyRequest<T extends ObjectProperties> implements Iterab
         }
 
         public ObjectPropertyRequest<T> build() {
-            return new ObjectPropertyRequest<T>(bridgeHandler, request, objectNumber, filter1, filter2, filter3,
-                    offset);
+            return new ObjectPropertyRequest<>(bridgeHandler, request, objectNumber, filter1, filter2, filter3, offset);
         }
     }
 }

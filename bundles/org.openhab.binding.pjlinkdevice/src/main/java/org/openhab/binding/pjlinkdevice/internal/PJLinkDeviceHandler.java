@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -188,9 +188,9 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                             // refresh both video and audio mute, as it's one request
                             MuteQueryResponseValue muteStatus = device.getMuteStatus();
                             updateState(PJLinkDeviceBindingConstants.CHANNEL_AUDIO_MUTE,
-                                    muteStatus.isAudioMuted() ? OnOffType.ON : OnOffType.OFF);
+                                    OnOffType.from(muteStatus.isAudioMuted()));
                             updateState(PJLinkDeviceBindingConstants.CHANNEL_VIDEO_MUTE,
-                                    muteStatus.isVideoMuted() ? OnOffType.ON : OnOffType.OFF);
+                                    OnOffType.from(muteStatus.isVideoMuted()));
                         } else {
                             if (isAudioMute) {
                                 logger.trace("Received audio mute command {}", command);
@@ -226,8 +226,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                                 try {
                                     LampState lampState = lampStates.get(lampNumber - 1);
                                     if (isLampActiveChannel) {
-                                        updateState(lampChannel.getUID(),
-                                                lampState.isActive() ? OnOffType.ON : OnOffType.OFF);
+                                        updateState(lampChannel.getUID(), OnOffType.from(lampState.isActive()));
                                     }
                                     if (isLampHoursChannel) {
                                         updateState(lampChannel.getUID(), new DecimalType(lampState.getLampHours()));

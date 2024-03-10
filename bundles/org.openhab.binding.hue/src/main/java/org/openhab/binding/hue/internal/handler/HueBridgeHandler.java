@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,20 +35,20 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.hue.internal.api.dto.clip1.ApiVersionUtils;
+import org.openhab.binding.hue.internal.api.dto.clip1.Config;
+import org.openhab.binding.hue.internal.api.dto.clip1.ConfigUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullConfig;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullGroup;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullLight;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullSensor;
+import org.openhab.binding.hue.internal.api.dto.clip1.Scene;
+import org.openhab.binding.hue.internal.api.dto.clip1.State;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
 import org.openhab.binding.hue.internal.config.HueBridgeConfig;
 import org.openhab.binding.hue.internal.connection.HueBridge;
 import org.openhab.binding.hue.internal.connection.HueTlsTrustManagerProvider;
 import org.openhab.binding.hue.internal.discovery.HueDeviceDiscoveryService;
-import org.openhab.binding.hue.internal.dto.ApiVersionUtils;
-import org.openhab.binding.hue.internal.dto.Config;
-import org.openhab.binding.hue.internal.dto.ConfigUpdate;
-import org.openhab.binding.hue.internal.dto.FullConfig;
-import org.openhab.binding.hue.internal.dto.FullGroup;
-import org.openhab.binding.hue.internal.dto.FullLight;
-import org.openhab.binding.hue.internal.dto.FullSensor;
-import org.openhab.binding.hue.internal.dto.Scene;
-import org.openhab.binding.hue.internal.dto.State;
-import org.openhab.binding.hue.internal.dto.StateUpdate;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.DeviceOffException;
 import org.openhab.binding.hue.internal.exceptions.EmptyResponseException;
@@ -59,8 +59,6 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.i18n.ConfigurationException;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -109,8 +107,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private @Nullable ServiceRegistration<?> serviceRegistration;
     private final HttpClient httpClient;
     private final HueStateDescriptionProvider stateDescriptionOptionProvider;
-    private final TranslationProvider i18nProvider;
-    private final LocaleProvider localeProvider;
 
     private final Map<String, FullLight> lastLightStates = new ConcurrentHashMap<>();
     private final Map<String, FullSensor> lastSensorStates = new ConcurrentHashMap<>();
@@ -424,13 +420,10 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private List<String> consoleScenesList = new ArrayList<>();
 
     public HueBridgeHandler(Bridge bridge, HttpClient httpClient,
-            HueStateDescriptionProvider stateDescriptionOptionProvider, TranslationProvider i18nProvider,
-            LocaleProvider localeProvider) {
+            HueStateDescriptionProvider stateDescriptionOptionProvider) {
         super(bridge);
         this.httpClient = httpClient;
         this.stateDescriptionOptionProvider = stateDescriptionOptionProvider;
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -1078,13 +1071,5 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         } else {
             return List.of();
         }
-    }
-
-    public TranslationProvider getI18nProvider() {
-        return i18nProvider;
-    }
-
-    public LocaleProvider getLocaleProvider() {
-        return localeProvider;
     }
 }

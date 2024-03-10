@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class Sysinfo extends ErrorResponse {
         }
 
         public OnOffType getRelayStatus() {
-            return "ON".equals(relayStatus) ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from("ON".equals(relayStatus));
         }
     }
 
@@ -105,7 +105,7 @@ public class Sysinfo extends ErrorResponse {
         }
 
         public OnOffType getState() {
-            return state == 1 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(state == 1);
         }
     }
 
@@ -220,7 +220,7 @@ public class Sysinfo extends ErrorResponse {
     }
 
     public OnOffType getRelayState() {
-        return relayState == 1 ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(relayState == 1);
     }
 
     public int getBrightness() {
@@ -245,7 +245,7 @@ public class Sysinfo extends ErrorResponse {
     }
 
     public OnOffType getLedOff() {
-        return ledOff == 1 ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(ledOff != 1);
     }
 
     public double getLatitude() {
@@ -277,7 +277,7 @@ public class Sysinfo extends ErrorResponse {
     }
 
     public OnOffType getLedStatus() {
-        return "ON".equals(ledStatus) ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(!"ON".equals(ledStatus));
     }
 
     public Plug getPlug() {

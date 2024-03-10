@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -376,8 +376,10 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
         boolean gen2 = profile.isGen2;
 
         list.put(ACTION_RES_STATS, "Reset Statistics");
-        list.put(ACTION_RESTART, "Reboot Device");
-        if (gen2) {
+        if (!profile.isBlu) {
+            list.put(ACTION_RESTART, "Reboot Device");
+        }
+        if (!gen2 || !profile.isBlu) {
             list.put(ACTION_PROTECT, "Protect Device");
         }
 
@@ -413,10 +415,13 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     !profile.settings.bluetooth ? "Enable Bluetooth" : "Disable Bluetooth");
         }
 
-        boolean set = profile.settings.cloud != null && getBool(profile.settings.cloud.enabled);
-        list.put(set ? ACTION_DISCLOUD : ACTION_ENCLOUD, set ? "Disable Cloud" : "Enable Cloud");
+        if (!profile.isBlu) {
+            boolean set = profile.settings.cloud != null && getBool(profile.settings.cloud.enabled);
+            list.put(set ? ACTION_DISCLOUD : ACTION_ENCLOUD, set ? "Disable Cloud" : "Enable Cloud");
 
-        list.put(ACTION_RESET, "-Factory Reset");
+            list.put(ACTION_RESET, "-Factory Reset");
+        }
+
         if (!gen2 && profile.extFeatures) {
             list.put(ACTION_OTACHECK, "Check for Update");
             boolean debug_enable = getBool(profile.settings.debugEnable);

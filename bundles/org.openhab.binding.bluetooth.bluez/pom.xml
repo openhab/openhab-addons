@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.bluetooth.bluez</artifactId>
@@ -26,7 +26,7 @@
     <dependency>
       <groupId>com.github.hypfvieh</groupId>
       <artifactId>bluez-dbus-osgi</artifactId>
-      <version>0.1.3</version>
+      <version>0.1.4</version>
       <scope>provided</scope>
     </dependency>
 

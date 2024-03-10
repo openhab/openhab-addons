@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,6 @@ public enum CameraNotificationState {
      * @return the on/off state corresponding to the notification state of this enumeration literal
      */
     public OnOffType toOnOffType() {
-        return this == ENABLED ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(this == ENABLED);
     }
 }

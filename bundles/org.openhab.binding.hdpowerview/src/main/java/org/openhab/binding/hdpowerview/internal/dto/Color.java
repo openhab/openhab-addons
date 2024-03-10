@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,11 +34,19 @@ public class Color {
         this(brightness, color.getRed(), color.getGreen(), color.getBlue());
     }
 
+    public Color(int brightness, Color color) {
+        this(brightness, color.red, color.green, color.blue);
+    }
+
     public Color(int brightness, int red, int green, int blue) {
         this.brightness = brightness;
         this.red = red;
         this.green = green;
         this.blue = blue;
+    }
+
+    public boolean isBlack() {
+        return red == 0 && green == 0 && blue == 0;
     }
 
     @Override

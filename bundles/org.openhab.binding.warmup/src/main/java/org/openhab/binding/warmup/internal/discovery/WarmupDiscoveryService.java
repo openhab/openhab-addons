@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,28 +25,27 @@ import org.openhab.binding.warmup.internal.handler.WarmupRefreshListener;
 import org.openhab.binding.warmup.internal.model.query.LocationDTO;
 import org.openhab.binding.warmup.internal.model.query.QueryResponseDTO;
 import org.openhab.binding.warmup.internal.model.query.RoomDTO;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link WarmupDiscoveryService} is used to discover devices that are connected to a My Warmup account.
  *
  * @author James Melville - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = WarmupDiscoveryService.class)
 @NonNullByDefault
-public class WarmupDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService, WarmupRefreshListener {
+public class WarmupDiscoveryService extends AbstractThingHandlerDiscoveryService<MyWarmupAccountHandler>
+        implements WarmupRefreshListener {
 
-    private @Nullable MyWarmupAccountHandler bridgeHandler;
     private @Nullable ThingUID bridgeUID;
 
     public WarmupDiscoveryService() {
-        super(DISCOVERABLE_THING_TYPES_UIDS, 5, false);
+        super(MyWarmupAccountHandler.class, DISCOVERABLE_THING_TYPES_UIDS, 5, false);
     }
 
     @Override
@@ -55,11 +54,8 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void startScan() {
-        final MyWarmupAccountHandler handler = bridgeHandler;
-        if (handler != null) {
-            removeOlderResults(getTimestampOfLastScan());
-            handler.setDiscoveryService(this);
-        }
+        removeOlderResults(getTimestampOfLastScan());
+        thingHandler.setDiscoveryService(this);
     }
 
     /**
@@ -70,7 +66,7 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService
     @Override
     public void refresh(@Nullable QueryResponseDTO domain) {
         if (domain != null) {
-            HashSet<ThingUID> discoveredThings = new HashSet<ThingUID>();
+            HashSet<ThingUID> discoveredThings = new HashSet<>();
             for (LocationDTO location : domain.getData().getUser().getLocations()) {
                 for (RoomDTO room : location.getRooms()) {
                     discoverRoom(location, room, discoveredThings);
@@ -99,21 +95,5 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService
                 discoveredThings.add(roomThingUID);
             }
         }
-    }
-
-    @Override
-    public void setThingHandler(@Nullable final ThingHandler handler) {
-        if (handler instanceof MyWarmupAccountHandler accountHandler) {
-            bridgeHandler = accountHandler;
-            bridgeUID = handler.getThing().getUID();
-        } else {
-            bridgeHandler = null;
-            bridgeUID = null;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
     }
 }

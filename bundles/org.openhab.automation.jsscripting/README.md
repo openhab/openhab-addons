@@ -6,35 +6,7 @@ It is based on [GraalJS](https://www.graalvm.org/javascript/) from the [GraalVM 
 Also included is [openhab-js](https://github.com/openhab/openhab-js/), a fairly high-level ES6 library to support automation in openHAB. It provides convenient access
 to common openHAB functionality within rules including items, things, actions, logging and more.
 
-- [Configuration](#configuration)
-  - [UI Based Rules](#ui-based-rules)
-  - [Adding Triggers](#adding-triggers)
-  - [Adding Actions](#adding-actions)
-  - [UI Event Object](#ui-event-object)
-- [Scripting Basics](#scripting-basics)
-  - [`let` and `const`](#let-and-const)
-  - [`require`](#require)
-  - [`console`](#console)
-  - [Timers](#timers)
-  - [Paths](#paths)
-  - [Deinitialization Hook](#deinitialization-hook)
-- [`JS` Transformation](#js-transformation)
-- [Standard Library](#standard-library)
-  - [Items](#items)
-  - [Things](#things)
-  - [Actions](#actions)
-  - [Cache](#cache)
-  - [Time](#time)
-  - [Quantity](#quantity)
-  - [Log](#log)
-  - [Utils](#utils)
-- [File Based Rules](#file-based-rules)
-  - [JSRule](#jsrule)
-  - [Rule Builder](#rule-builder)
-  - [Event Object](#event-object)
-- [Advanced Scripting](#advanced-scripting)
-  - [Libraries](#libraries)
-  - [@runtime](#runtime)
+[[toc]]
 
 ## Configuration
 
@@ -222,10 +194,11 @@ The global [`setTimeout()`](https://developer.mozilla.org/en-US/docs/Web/API/set
 `setTimeout()` returns a `timeoutId` (a positive integer value) which identifies the timer created.
 
 ```javascript
-var timeoutId = setTimeout(callbackFunction, delay);
+var timeoutId = setTimeout(callbackFunction, delay, param1, /* ... */ paramN);
 ```
 
 `delay` is an integer value that represents the amount of milliseconds to wait before the timer expires.
+`param1` ... `paramN` are optional, additional arguments which are passed through to the `callbackFunction`.
 
 The global [`clearTimeout(timeoutId)`](https://developer.mozilla.org/en-US/docs/Web/API/clearTimeout) method cancels a timeout previously established by calling `setTimeout()`.
 
@@ -237,10 +210,11 @@ The global [`setInterval()`](https://developer.mozilla.org/en-US/docs/Web/API/se
 `setInterval()` returns an `intervalId` (a positive integer value) which identifies the interval created.
 
 ```javascript
-var intervalId = setInterval(callbackFunction, delay);
+var intervalId = setInterval(callbackFunction, delay, param1, /* ... */ paramN);
 ```
 
 `delay` is an integer value that represents the amount of milliseconds to wait before the timer expires.
+`param1` ... `paramN` are optional, additional arguments which are passed through to the `callbackFunction`.
 
 The global [`clearInterval(intervalId)`](https://developer.mozilla.org/en-US/docs/Web/API/clearInterval) method cancels a timed, repeating action which was previously established by a call to `setInterval()`.
 
@@ -256,34 +230,27 @@ var myVar = 'Hello world!';
 
 // Schedule a timer that expires in ten seconds
 setTimeout(() => {
-  console.info(`Timer expired with myVar = "${myVar}"`);
+  console.info(`Timer expired with variable value = "${myVar}"`);
 }, 10000);
 
 myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello mutation!" instead of "Hello world!"
 ```
 
-If you need to pass some variables to the timer but avoid that they can get mutated, use a function generator.
+If you need to pass some variables to the timer but avoid that they can get mutated, pass those variables as parameters to `setTimeout`/`setInterval` or `createTimer`:
 
-**Pass variables using a function generator** <!-- markdownlint-disable-line MD036 -->
-
-This allows you to pass variables to the timer's callback function during timer creation.
-The variables can NOT be mutated after the timer function generator was used to create the callback function.
 
 ```javascript
-// Function generator for the timer's callback function
-function cbFuncGen (myVariable) {
-  return function () {
-    console.info(`Timer expired with myVar = "${myVariable}"`);
-  };
-}
-
 var myVar = 'Hello world!';
 
 // Schedule a timer that expires in ten seconds
-setTimeout(cbFuncGen(myVar), 10000);
+setTimeout((myVariable) => {
+  console.info(`Timer expired with variable value = "${myVariable}"`);
+}, 10000, myVar); // Pass one or more variables as parameters here. They are passed through to the callback function.
 
 myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello world!"
 ```
+
+This also works for timers created with [`actions.ScriptExecution.createTimer`](#createtimer).
 
 ### Paths
 
@@ -340,7 +307,7 @@ If an API does not provide type definitions and therefore autocompletion won't w
 ### Items
 
 The `items` namespace allows interactions with openHAB Items.
-Anywhere that a native openHAB `Item` is required, the runtime will automatically convert the JS-`Item` to its Java counterpart.
+Anywhere a native openHAB `Item` is required, the runtime will automatically convert the JS-`Item` to its Java counterpart.
 
 See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for full API documentation.
 
@@ -467,7 +434,7 @@ See [openhab-js : ItemConfig](https://openhab.github.io/openhab-js/global.html#I
 
 #### `ItemHistory`
 
-Calling `Item.history` returns a `ItemHistory` object with the following functions:
+Calling `Item.history` returns an `ItemHistory` object with the following functions:
 
 - ItemHistory :`object`
   - .averageBetween(begin, end, serviceId) ⇒ `number | null`
@@ -480,6 +447,8 @@ Calling `Item.history` returns a `ItemHistory` object with the following functio
   - .deviationSince(timestamp, serviceId) ⇒ `number | null`
   - .evolutionRateBetween(begin, end, serviceId) ⇒ `number | null`
   - .evolutionRateSince(timestamp, serviceId) ⇒ `number | null`
+  - .getAllStatesBetween(begin, end, serviceId)  ⇒ `Array[HistoricItem]`
+  - .getAllStatesSince(timestamp, serviceId)  ⇒ `Array[HistoricItem]`
   - .historicState(timestamp, serviceId) ⇒ `HistoricItem | null`
   - .lastUpdate(serviceId) ⇒ `ZonedDateTime | null`
   - .latestState(serviceId) ⇒ `string | null`
@@ -527,12 +496,12 @@ The Things namespace allows to interact with openHAB Things.
 See [openhab-js : things](https://openhab.github.io/openhab-js/things.html) for full API documentation.
 
 - things : <code>object</code>
-  - .getThing(uid, nullIfMissing) ⇒ <code>Thing</code>
-  - .getThings() ⇒ <code>Array.&lt;Thing&gt;</code>
+  - .getThing(uid) ⇒ <code>Thing|null</code>
+  - .getThings() ⇒ <code>Array[Thing]</code>
 
 #### `getThing(uid, nullIfMissing)`
 
-Calling `getThing(...)` returns a `Thing` object with the following properties:
+Calling `getThing(uid)` returns a `Thing` object with the following properties:
 
 - Thing : <code>object</code>
   - .bridgeUID ⇒ <code>String</code>
@@ -620,24 +589,26 @@ Replace `<url>` with the request url.
 The `ScriptExecution` actions provide the `callScript(string scriptName)` method, which calls a script located at the `$OH_CONF/scripts` folder, as well as the `createTimer` method.
 
 You can also create timers using the [native JS methods for timer creation](#timers), your choice depends on the versatility you need.
-Sometimes, using `setTimer` is much faster and easier, but other times, you need the versatility that `createTimer` provides.
+Sometimes, using `setTimeout` is much faster and easier, but other times, you need the versatility that `createTimer` provides.
 
 Keep in mind that you should somehow manage the timers you create using `createTimer`, otherwise you could end up with unmanageable timers running until you restart openHAB.
 A possible solution is to store all timers in the [private cache](#cache) and let openHAB automatically cancel them when the script is unloaded and the cache is cleared.
+When using `createTimer`, please read [Accessing Variables](#accessing-variables) to avoid having unexpected results when using variables in timers.
 
 ##### `createTimer`
 
 ```javascript
-actions.ScriptExecution.createTimer(time.ZonedDateTime instant, function callback);
+actions.ScriptExecution.createTimer(time.ZonedDateTime zdt, function functionRef, any param1, /* ... */ paramN);
 
-actions.ScriptExecution.createTimer(string identifier, time.ZonedDateTime instant, function callback);
+actions.ScriptExecution.createTimer(string identifier, time.ZonedDateTime zdt, function functionRef, any param1, /* ... */ paramN);
 ```
 
 `createTimer` accepts the following arguments:
 
 - `string` identifier (optional): Identifies the timer by a string, used e.g. for logging errors that occur during the callback execution.
-- [`time.ZonedDateTime`](#timetozdt) instant: Point in time when the callback should be executed.
-- `function` callback: Callback function to execute when the timer expires.
+- [`time.ZonedDateTime`](#timetozdt) zdt: Point in time when the callback should be executed.
+- `function` functionRef: Callback function to execute when the timer expires.
+- `*` param1, ..., paramN: Additional arguments which are passed through to the function specified by `functionRef`.
 
 `createTimer` returns an openHAB Timer, that provides the following methods:
 
@@ -765,7 +736,7 @@ console.log('Count', counter.times++);
 
 openHAB internally makes extensive use of the `java.time` package.
 openHAB-JS exports the excellent [JS-Joda](https://js-joda.github.io/js-joda/) library via the `time` namespace, which is a native JavaScript port of the same API standard used in Java for `java.time`.
-Anywhere that a native Java `ZonedDateTime` or `Duration` is required, the runtime will automatically convert a JS-Joda `ZonedDateTime` or `Duration` to its Java counterpart.
+Anywhere a native Java `ZonedDateTime` or `Duration` is required, the runtime will automatically convert a JS-Joda `ZonedDateTime` or `Duration` to its Java counterpart.
 
 The exported JS-Joda library is also extended with convenient functions relevant to openHAB usage.
 
@@ -805,6 +776,7 @@ The following rules are used during the conversion:
 | `"kk:mm[:ss][ ]a"` (12 hour time)                                            | today's date with the time indicated, the space between the time and am/pm and seconds are optional             | `time.toZDT('1:23:45 PM');`                                                            |
 | [ISO 8601 Duration](https://en.wikipedia.org/wiki/ISO_8601#Durations) String | added to `now`                                                                                                  | `time.toZDT('PT1H4M6.789S');`                                                          |
 
+If no time zone is explicitly set, the system default time zone is used.
 When a type or string that cannot be handled is encountered, an error is thrown.
 
 #### `toToday()`
@@ -919,13 +891,13 @@ A Quantity consists of a measurement and its [Unit of Measurement (UoM)](https:/
 
 Internally using the openHAB `QuantityType`, which relies on [`javax.measure`](https://unitsofmeasurement.github.io/unit-api/), it supports all units and dimensions that openHAB supports.
 If your unit is not listed in the UoM docs, it is very likely that it is still supported, e.g. the Angstrom Å for very small lengths (1 Å = 10 nm).
-Anywhere that a native openHAB `QuantityType` is required, the runtime will automatically convert the JS-`Quantity` to its Java counterpart.
+Anywhere a native openHAB `QuantityType` is required, the runtime will automatically convert the JS-`Quantity` to its Java counterpart.
 
 #### Creation
 
 `Quantity(value)` is used without new (it's a factory, not a constructor), pass an amount **and** a unit to it to create a new `Quantity` object:
 
-The argument `value` can be a string, a `Quantity` instance or an openHAB Java [`QuantityType`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/types/quantitytype).
+The argument `value` can be a Quantity-compatible `Item`, a string, a `Quantity` instance or an openHAB Java [`QuantityType`](https://www.openhab.org/javadoc/latest/org/openhab/core/library/types/quantitytype).
 
 `value` strings have the `$amount $unit` format and must follow these rules:
 
@@ -948,6 +920,7 @@ qty = Quantity('1 m/s');
 qty = Quantity('1 m^2/s^2');
 qty = Quantity('1 m^2/s^-2'); // negative powers
 qty = Quantity('1'); // unitless quantity
+qty = Quantity(items.my_uom_item);
 
 // Not allowed:
 qty = Quantity('m');
@@ -987,10 +960,10 @@ var floatValue = qty.float;
 
 #### Mathematical Operators
 
-- `add(value)` ⇒ `Quantity`: `value` can be a string or a `Quantity`
-- `divide(value)` ⇒ `Quantity`: `value` can be a number, a string or a `Quantity`
-- `multiply(value)` ⇒ `Quantity`: `value` can be a number, a string or a `Quantity`
-- `subtract(value)` ⇒ `Quantity`: `value` can be a string or a `Quantity`
+- `add(value)` ⇒ `Quantity`: `value` can be a Quantity-compatible `Item`, a string or a `Quantity`
+- `divide(value)` ⇒ `Quantity`: `value` can be a Quantity-compatible or Number `Item`, a number, a string or a `Quantity`
+- `multiply(value)` ⇒ `Quantity`: `value` can be a Quantity-compatible or Number `Item`, a number, a string or a `Quantity`
+- `subtract(value)` ⇒ `Quantity`: `value` can be a Quantity-compatible `Item`, a string or a `Quantity`
 
 For the string the same rules apply as described above.
 
@@ -1136,34 +1109,43 @@ See [Examples](#rule-builder-examples) for further patterns.
   - `.channel(channelName)` Specifies a channel event as a source for the rule to fire.
     - `.triggered(event)` Trigger on a specific event name
   - `.cron(cronExpression)` Specifies a cron schedule for the rule to fire.
-  - `.item(itemName)` Specifies an item as the source of changes to trigger a rule.
+  - `.timeOfDay(time)` Specifies a time of day in `HH:mm` for the rule to fire.
+  - `.item(itemName)` Specifies an Item as the source of changes to trigger a rule.
     - `.for(duration)`
     - `.from(state)`
-    - `.to(state)`
+    - `.fromOn()`
     - `.fromOff()`
+    - `.to(state)`
     - `.toOn()`
+    - `.toOff()`
     - `.receivedCommand()`
     - `.receivedUpdate()`
-  - `.memberOf(groupName)`
+    - `.changed()`
+  - `.memberOf(groupName)` Specifies a group Item as the source of changes to trigger the rule.
     - `.for(duration)`
     - `.from(state)`
-    - `.to(state)`
+    - `.fromOn()`
     - `.fromOff()`
+    - `.to(state)`
     - `.toOn()`
+    - `.toOff()`
     - `.receivedCommand()`
     - `.receivedUpdate()`
-  - `.system()`
+    - `.changed()`
+  - `.system()` Specifies a system event as a source for the rule to fire.
     - `.ruleEngineStarted()`
     - `.rulesLoaded()`
     - `.startupComplete()`
     - `.thingsInitialized()`
     - `.userInterfacesStarted()`
     - `.startLevel(level)`
-  - `.thing(thingName)`
+  - `.thing(thingName)` Specifies a Thing event as a source for the rule to fire.
     - `changed()`
     - `updated()`
     - `from(state)`
     - `to(state)`
+  - `.dateTime(itemName)` Specifies a DateTime Item whose (optional) date and time schedule the rule to fire.
+    - `.timeOnly()` Only the time of the Item should be compared, the date should be ignored.
 
 Additionally, all the above triggers have the following functions:
 
@@ -1201,28 +1183,31 @@ rules.when().item('BedroomLight1').changed().then(e => {
   console.log("BedroomLight1 state", e.newState)
 }).build();
 
-// Turn on the kitchen light at SUNSET
-rules.when().timeOfDay("SUNSET").then().sendOn().toItem("KitchenLight").build("Sunset Rule","turn on the kitchen light at SUNSET");
+// Turn on the kitchen light at SUNSET (using the Astro binding)
+rules.when().channel('astro:sun:home:set#event').triggered('START').then().sendOn().toItem('KitchenLight').build('Sunset Rule', 'Turn on the kitchen light at SUNSET');
 
 // Turn off the kitchen light at 9PM and tag rule
-rules.when().cron("0 0 21 * * ?").then().sendOff().toItem("KitchenLight").build("9PM Rule", "turn off the kitchen light at 9PM", ["Tag1", "Tag2"]);
+rules.when().timeOfDay('21:00').then().sendOff().toItem('KitchenLight').build('9PM Rule', 'Turn off the kitchen light at 9PM', ['Tag1', 'Tag2']);
 
 // Set the colour of the hall light to pink at 9PM, tag rule and use a custom ID
-rules.when().cron("0 0 21 * * ?").then().send("300,100,100").toItem("HallLight").build("Pink Rule", "set the colour of the hall light to pink at 9PM", ["Tag1", "Tag2"], "MyCustomID");
+rules.when().cron('0 0 21 * * ?').then().send('300,100,100').toItem('HallLight').build('Pink Rule', 'Set the colour of the hall light to pink at 9PM', ['Tag1', 'Tag2'], 'MyCustomID');
 
 // When the switch S1 status changes to ON, then turn on the HallLight
-rules.when().item('S1').changed().toOn().then(sendOn().toItem('HallLight')).build("S1 Rule");
+rules.when().item('S1').changed().toOn().then().sendOn().toItem('HallLight').build('S1 Rule');
 
 // When the HallLight colour changes pink, if the function fn returns true, then toggle the state of the OutsideLight
-rules.when().item('HallLight').changed().to("300,100,100").if(fn).then().sendToggle().toItem('OutsideLight').build();
+rules.when().item('HallLight').changed().to('300,100,100').if(fn).then().sendToggle().toItem('OutsideLight').build();
+
+// Turn on the outdoor lights based on a DateTime Item's time portion
+rules.when().dateTime('OutdoorLights_OffTime').timeOnly().then().sendOff().toItem('OutdoorLights').build('Outdoor Lights off');
 
 // And some rules which can be toggled by the items created in the 'gRules' Group:
 
 // When the HallLight receives a command, send the same command to the KitchenLight
-rules.when().item('HallLight').receivedCommand().then().sendIt().toItem('KitchenLight').build("Hall Light", "");
+rules.when(true).item('HallLight').receivedCommand().then().sendIt().toItem('KitchenLight').build('Hall Light to Kitchen Light');
 
 // When the HallLight is updated to ON, make sure that BedroomLight1 is set to the same state as the BedroomLight2
-rules.when().item('HallLight').receivedUpdate().then().copyState().fromItem('BedroomLight1').toItem('BedroomLight2').build();
+rules.when(true).item('HallLight').receivedUpdate().then().copyState().fromItem('BedroomLight1').toItem('BedroomLight2').build();
 ```
 
 ### Event Object
@@ -1237,24 +1222,32 @@ The `event` object provides some information about that trigger.
 
 This table gives an overview over the `event` object:
 
-| Property Name     | Trigger Types                                        | Description                                                             | Rules DSL Equivalent   |
-|-------------------|------------------------------------------------------|-------------------------------------------------------------------------|------------------------|
-| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | Previous state of Item or Group that triggered event                    | `previousState`        |
-| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger`  | New state of Item or Group that triggered event                         | N/A                    |
-| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger`  | State of Item that triggered event                                      | `triggeringItem.state` |
-| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`          | Command that triggered event                                            | `receivedCommand`      |
-| `itemName`        | `Item****Trigger`, `Group****Trigger`                | Name of Item that triggered event                                       | `triggeringItem.name`  |
-| `groupName`       | `Group****Trigger`                                   | Name of the group whose member triggered event                          | N/A                    |
-| `receivedEvent`   | `ChannelEventTrigger`                                | Channel event that triggered event                                      | N/A                    |
-| `channelUID`      | `ChannelEventTrigger`                                | UID of channel that triggered event                                     | N/A                    |
-| `oldStatus`       | `ThingStatusChangeTrigger`                           | Previous state of Thing that triggered event                            | N/A                    |
-| `newStatus`       | `ThingStatusChangeTrigger`                           | New state of Thing that triggered event                                 | N/A                    |
-| `status`          | `ThingStatusUpdateTrigger`                           | State of Thing that triggered event                                     | N/A                    |
-| `thingUID`        | `Thing****Trigger`                                   | UID of Thing that triggered event                                       | N/A                    |
-| `eventType`       | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of event that triggered event (change, command, triggered, update) | N/A                    |
-| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`, time triggers | Type of trigger that triggered event                                    | N/A                    |
+| Property Name     | Trigger Types                                       | Description                                                                   | Rules DSL Equivalent   |
+|-------------------|-----------------------------------------------------|-------------------------------------------------------------------------------|------------------------|
+| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | Previous state of Item or Group that triggered event                          | `previousState`        |
+| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | New state of Item or Group that triggered event                               | N/A                    |
+| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger` | State of Item that triggered event                                            | `triggeringItem.state` |
+| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`         | Command that triggered event                                                  | `receivedCommand`      |
+| `itemName`        | `Item****Trigger`, `Group****Trigger`               | Name of Item that triggered event                                             | `triggeringItem.name`  |
+| `groupName`       | `Group****Trigger`                                  | Name of the group whose member triggered event                                | N/A                    |
+| `receivedEvent`   | `ChannelEventTrigger`                               | Channel event that triggered event                                            | N/A                    |
+| `channelUID`      | `ChannelEventTrigger`                               | UID of channel that triggered event                                           | N/A                    |
+| `oldStatus`       | `ThingStatusChangeTrigger`                          | Previous state of Thing that triggered event                                  | N/A                    |
+| `newStatus`       | `ThingStatusChangeTrigger`                          | New state of Thing that triggered event                                       | N/A                    |
+| `status`          | `ThingStatusUpdateTrigger`                          | State of Thing that triggered event                                           | N/A                    |
+| `thingUID`        | `Thing****Trigger`                                  | UID of Thing that triggered event                                             | N/A                    |
+| `cronExpression`  | `GenericCronTrigger`                                | Cron expression of the trigger                                                | N/A                    |
+| `time`            | `TimeOfDayTrigger`                                  | Time of day value of the trigger                                              | N/A                    |
+| `eventType`       | all except `PWMTrigger`, `PIDTrigger`               | Type of event that triggered event (change, command, triggered, update, time) | N/A                    |
+| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`               | Type of trigger that triggered event                                          | N/A                    |
+| `eventClass`      | all                                                 | Java class name of the triggering event                                       | N/A                    |
+| `module`          | all                                                 | (user-defined or auto-generated) name of trigger                              | N/A                    |
 
 All properties are typeof `string`.
+
+Please note that when using `GenericEventTrigger`, the available properties depend on the chosen event types.
+It is not possible for the openhab-js library to provide type conversions for all properties of all openHAB events, as those are too many.
+In case the event object does not provide type-conversed properties for your chosen event type, use the `payload` property to gain access to the event's (Java data type) payload.
 
 **NOTE:**
 `Group****Trigger`s use the equivalent `Item****Trigger` as trigger for each member.

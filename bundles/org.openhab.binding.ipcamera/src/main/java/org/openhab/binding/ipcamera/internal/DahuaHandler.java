@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,12 +43,13 @@ import io.netty.util.ReferenceCountUtil;
 @NonNullByDefault
 public class DahuaHandler extends ChannelDuplexHandler {
     private IpCameraHandler ipCameraHandler;
-    private int nvrChannel;
+    private int nvrChannelAdjusted;
     private Pattern boundaryPattern;
 
     public DahuaHandler(IpCameraHandler handler, int nvrChannel) {
         ipCameraHandler = handler;
-        this.nvrChannel = nvrChannel;
+        // Most of the API is the NVR channel -1, but some of it is not, like streams and snapshot URLS.
+        nvrChannelAdjusted = nvrChannel - 1;
         boundaryPattern = Pattern.compile("^-- ?myboundary$", Pattern.MULTILINE);
     }
 
@@ -209,35 +210,36 @@ public class DahuaHandler extends ChannelDuplexHandler {
 
     private void processSettings(String content) {
         // determine if the motion detection is turned on or off.
-        if (content.contains("table.MotionDetect[0].Enable=true")) {
+        if (content.contains("table.MotionDetect[" + nvrChannelAdjusted + "].Enable=true")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
-        } else if (content.contains("table.MotionDetect[" + nvrChannel + "].Enable=false")) {
+        } else if (content.contains("table.MotionDetect[" + nvrChannelAdjusted + "].Enable=false")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
         }
 
         // determine if the audio alarm is turned on or off.
-        if (content.contains("table.AudioDetect[0].MutationDetect=true")) {
+        if (content.contains("table.AudioDetect[" + nvrChannelAdjusted + "].MutationDetect=true")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
-        } else if (content.contains("table.AudioDetect[0].MutationDetect=false")) {
+        } else if (content.contains("table.AudioDetect[" + nvrChannelAdjusted + "].MutationDetect=false")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
         }
 
         // Handle AudioMutationThreshold alarm
-        if (content.contains("table.AudioDetect[0].MutationThreold=")) {
-            String value = ipCameraHandler.returnValueFromString(content, "table.AudioDetect[0].MutationThreold=");
+        if (content.contains("table.AudioDetect[" + nvrChannelAdjusted + "].MutationThreold=")) {
+            String value = ipCameraHandler.returnValueFromString(content,
+                    "table.AudioDetect[" + nvrChannelAdjusted + "].MutationThreold=");
             ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value));
         }
 
         // CrossLineDetection alarm on/off
-        if (content.contains("table.VideoAnalyseRule[0][1].Enable=true")) {
+        if (content.contains("table.VideoAnalyseRule[" + nvrChannelAdjusted + "][1].Enable=true")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.ON);
-        } else if (content.contains("table.VideoAnalyseRule[0][1].Enable=false")) {
+        } else if (content.contains("table.VideoAnalyseRule[" + nvrChannelAdjusted + "][1].Enable=false")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.OFF);
         }
         // Privacy Mode on/off
-        if (content.contains("table.LeLensMask[0].Enable=true")) {
+        if (content.contains("table.LeLensMask[" + nvrChannelAdjusted + "].Enable=true")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.ON);
-        } else if (content.contains("table.LeLensMask[0].Enable=false")) {
+        } else if (content.contains("table.LeLensMask[" + nvrChannelAdjusted + "].Enable=false")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
         }
     }
@@ -269,16 +271,30 @@ public class DahuaHandler extends ChannelDuplexHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_ENABLE_AUDIO_ALARM:
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=AudioDetect[0]");
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=getConfig&name=AudioDetect[" + nvrChannelAdjusted + "]");
                     return;
                 case CHANNEL_ENABLE_LINE_CROSSING_ALARM:
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=VideoAnalyseRule");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=VideoAnalyseRule["
+                            + nvrChannelAdjusted + "]");
                     return;
                 case CHANNEL_ENABLE_MOTION_ALARM:
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect[0]");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect["
+                            + nvrChannelAdjusted + "]");
                     return;
                 case CHANNEL_ENABLE_PRIVACY_MODE:
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=LeLensMask[0]");
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=getConfig&name=LeLensMask[" + nvrChannelAdjusted + "]");
+                    return;
+                case CHANNEL_AUTO_LED:
+                case CHANNEL_ENABLE_LED:
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=getConfig&name=Light[" + nvrChannelAdjusted + "]");
+                    return;
+                case CHANNEL_AUTO_WHITE_LED:
+                case CHANNEL_WHITE_LED:
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=Lighting_V2["
+                            + nvrChannelAdjusted + "][0][1].Mode");
                     return;
             }
             return;
@@ -287,76 +303,109 @@ public class DahuaHandler extends ChannelDuplexHandler {
             case CHANNEL_TEXT_OVERLAY:
                 String text = Helper.encodeSpecialChars(command.toString());
                 if (text.isEmpty()) {
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&VideoWidget["
+                            + nvrChannelAdjusted + "].CustomTitle[1].EncodeBlend=false");
+                } else {
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&VideoWidget[" + nvrChannelAdjusted
+                                    + "].CustomTitle[1].EncodeBlend=true&VideoWidget[0].CustomTitle[1].Text=" + text);
+                }
+                return;
+            case CHANNEL_WHITE_LED:
+                if (DecimalType.ZERO.equals(command) || OnOffType.OFF.equals(command)) {
+                    // IR to auto and white light off.
+                    ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.ON);
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2[" + nvrChannelAdjusted
+                                    + "][0][1].Mode=Off&Lighting_V2[" + nvrChannelAdjusted + "][0][0].Mode=Auto");
+                } else if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2["
+                            + nvrChannelAdjusted + "][0][1].Mode=Manual");
+                } else if (command instanceof PercentType percentCommand) {
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2["
+                            + nvrChannelAdjusted + "][0][1].Mode=Manual&Lighting_V2[" + nvrChannelAdjusted
+                            + "][0][1].NearLight[0].Light=" + command.toString());
+                }
+                return;
+            case CHANNEL_AUTO_WHITE_LED:
+                if (OnOffType.ON.equals(command)) {
+                    // we do not know the state anymore as it now will turns on and off via motion
+                    ipCameraHandler.setChannelState(CHANNEL_WHITE_LED, UnDefType.UNDEF);
                     ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=false");
+                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmLighting[" + nvrChannelAdjusted
+                                    + "][0].Enable=true&Alarm[2].EventHandler.LightingLink.LightDuration=300");
                 } else {
                     ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=true&VideoWidget[0].CustomTitle[1].Text="
-                                    + text);
+                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmLighting[" + nvrChannelAdjusted
+                                    + "][0].Enable=false&Alarm[2].EventHandler.LightingLink.LightDuration=0");
                 }
                 return;
             case CHANNEL_ENABLE_LED:
                 ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
                 if (DecimalType.ZERO.equals(command) || OnOffType.OFF.equals(command)) {
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Off");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting["
+                            + nvrChannelAdjusted + "][0].Mode=Off");
                 } else if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler
-                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Manual");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting["
+                            + nvrChannelAdjusted + "][0].Mode=Manual");
                 } else {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Manual&Lighting[0][0].MiddleLight[0].Light="
-                                    + command.toString());
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting["
+                            + nvrChannelAdjusted + "][0].Mode=Manual&Lighting[" + nvrChannelAdjusted
+                            + "][0].MiddleLight[0].Light=" + command.toString());
                 }
                 return;
             case CHANNEL_AUTO_LED:
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, UnDefType.UNDEF);
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Auto");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting["
+                            + nvrChannelAdjusted + "][0].Mode=Auto");
                 }
                 return;
             case CHANNEL_THRESHOLD_AUDIO_ALARM:
                 int threshold = Math.round(Float.valueOf(command.toString()));
 
                 if (threshold == 0) {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&AudioDetect[0].MutationThreold=1");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AudioDetect["
+                            + nvrChannelAdjusted + "].MutationThreold=1");
                 } else {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&AudioDetect[0].MutationThreold=" + threshold);
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AudioDetect["
+                            + nvrChannelAdjusted + "].MutationThreold=" + threshold);
                 }
                 return;
             case CHANNEL_ENABLE_AUDIO_ALARM:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&AudioDetect[0].MutationDetect=true&AudioDetect[0].EventHandler.Dejitter=1");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AudioDetect["
+                            + nvrChannelAdjusted + "].MutationDetect=true&AudioDetect[0].EventHandler.Dejitter=1");
                 } else {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&AudioDetect[0].MutationDetect=false");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AudioDetect["
+                            + nvrChannelAdjusted + "].MutationDetect=false");
                 }
                 return;
             case CHANNEL_ENABLE_LINE_CROSSING_ALARM:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&VideoAnalyseRule[0][1].Enable=true");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&VideoAnalyseRule["
+                            + nvrChannelAdjusted + "][1].Enable=true");
                 } else {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&VideoAnalyseRule[0][1].Enable=false");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&VideoAnalyseRule["
+                            + nvrChannelAdjusted + "][1].Enable=false");
                 }
                 return;
             case CHANNEL_ENABLE_MOTION_ALARM:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpGET(
-                            "/cgi-bin/configManager.cgi?action=setConfig&MotionDetect[0].Enable=true&MotionDetect[0].EventHandler.Dejitter=1");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&MotionDetect["
+                            + nvrChannelAdjusted + "].Enable=true&MotionDetect[0].EventHandler.Dejitter=1");
                 } else {
-                    ipCameraHandler
-                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&MotionDetect[0].Enable=false");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&MotionDetect["
+                            + nvrChannelAdjusted + "].Enable=false");
                 }
                 return;
             case CHANNEL_ACTIVATE_ALARM_OUTPUT:
                 if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AlarmOut[0].Mode=1");
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmOut[" + nvrChannelAdjusted + "].Mode=1");
                 } else {
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AlarmOut[0].Mode=0");
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&AlarmOut[" + nvrChannelAdjusted + "].Mode=0");
                 }
                 return;
             case CHANNEL_ACTIVATE_ALARM_OUTPUT2:
@@ -368,11 +417,11 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_ENABLE_PRIVACY_MODE:
                 if (OnOffType.OFF.equals(command)) {
-                    ipCameraHandler
-                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask[0].Enable=false");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask["
+                            + nvrChannelAdjusted + "].Enable=false");
                 } else if (OnOffType.ON.equals(command)) {
-                    ipCameraHandler
-                            .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask[0].Enable=true");
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask["
+                            + nvrChannelAdjusted + "].Enable=true");
                 }
                 return;
         }
