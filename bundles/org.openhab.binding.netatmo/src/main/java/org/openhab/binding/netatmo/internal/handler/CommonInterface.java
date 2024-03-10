@@ -68,6 +68,10 @@ public interface CommonInterface {
 
     void updateState(ChannelUID channelUID, State state);
 
+    default void updateState(String groupId, String id, State state) {
+        updateState(new ChannelUID(getThing().getUID(), groupId, id), state);
+    }
+
     void setThingStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail,
             @Nullable String thingStatusReason);
 

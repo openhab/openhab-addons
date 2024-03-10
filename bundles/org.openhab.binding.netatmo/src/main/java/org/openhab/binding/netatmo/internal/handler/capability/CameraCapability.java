@@ -39,7 +39,6 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
@@ -88,7 +87,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
         if (newVpnUrl != null && !newVpnUrl.equals(vpnUrl)) {
             // This will also decrease the number of requests emitted toward Netatmo API.
             localUrl = newData.isLocal() ? ping(newVpnUrl) : null;
-            logger.debug("localUrl set to {} for camera {}", localUrl, handler.getId());
+            logger.debug("localUrl set to {} for camera {}", localUrl, thingUID);
             cameraHelper.setUrls(newVpnUrl, localUrl);
             eventHelper.setUrls(newVpnUrl, localUrl);
         }
@@ -104,11 +103,11 @@ public class CameraCapability extends HomeSecurityThingCapability {
         super.updateWebhookEvent(event);
 
         if (hasSubEventGroup) {
-            updateSubGroup(event, thingUID, GROUP_SUB_EVENT);
+            updateSubGroup(event, GROUP_SUB_EVENT);
         }
 
         if (hasLastEventGroup) {
-            updateSubGroup(event, thingUID, GROUP_LAST_EVENT);
+            updateSubGroup(event, GROUP_LAST_EVENT);
         }
 
         // The channel should get triggered at last (after super and sub methods), because this allows rules to access
@@ -119,19 +118,17 @@ public class CameraCapability extends HomeSecurityThingCapability {
         handler.triggerChannel(CHANNEL_HOME_EVENT, eventType);
     }
 
-    private void updateSubGroup(WebhookEvent event, ThingUID thingUid, String group) {
-        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_TYPE), toStringType(event.getEventType()));
-        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_TIME), toDateTimeType(event.getTime()));
-        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_SNAPSHOT), toRawType(event.getSnapshotUrl()));
-        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_SNAPSHOT_URL),
-                toStringType(event.getSnapshotUrl()));
-        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_VIGNETTE), toRawType(event.getVignetteUrl()));
-        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_VIGNETTE_URL),
-                toStringType(event.getVignetteUrl()));
-        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_SUBTYPE),
+    private void updateSubGroup(WebhookEvent event, String group) {
+        handler.updateState(group, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
+        handler.updateState(group, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime()));
+        handler.updateState(group, CHANNEL_EVENT_SNAPSHOT, toRawType(event.getSnapshotUrl()));
+        handler.updateState(group, CHANNEL_EVENT_SNAPSHOT_URL, toStringType(event.getSnapshotUrl()));
+        handler.updateState(group, CHANNEL_EVENT_VIGNETTE, toRawType(event.getVignetteUrl()));
+        handler.updateState(group, CHANNEL_EVENT_VIGNETTE_URL, toStringType(event.getVignetteUrl()));
+        handler.updateState(group, CHANNEL_EVENT_SUBTYPE,
                 event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
         final String message = event.getName();
-        handler.updateState(new ChannelUID(thingUid, group, CHANNEL_EVENT_MESSAGE),
+        handler.updateState(group, CHANNEL_EVENT_MESSAGE,
                 message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
         State personId = event.getPersons().isEmpty() ? UnDefType.NULL
                 : toStringType(event.getPersons().values().iterator().next().getId());
@@ -177,13 +174,13 @@ public class CameraCapability extends HomeSecurityThingCapability {
             try {
                 apiLocalUrl = builder.build();
                 if (apiLocalUrl.getHost().startsWith("169.254.")) {
-                    logger.warn("Suspicious local IP adress received : {}", apiLocalUrl);
+                    logger.warn("Suspicious local IP address received: {}", apiLocalUrl);
                     String provided = handler.getThingConfigAs(CameraConfiguration.class).ipAddress;
                     apiLocalUrl = builder.host(provided).build();
                     logger.info("Using {} as local url for '{}'", apiLocalUrl, thingUID);
                 }
             } catch (UriBuilderException e) { // Crashed at first URI build
-                logger.warn("API returned a badly formatted local url addess for '{}': {}", thingUID, e.getMessage());
+                logger.warn("API returned a badly formatted local url address for '{}': {}", thingUID, e.getMessage());
             } catch (IllegalArgumentException e) {
                 logger.warn("Invalid fallback address provided in configuration for '{}' keeping API answer: {}",
                         thingUID, e.getMessage());

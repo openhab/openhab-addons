@@ -77,19 +77,15 @@ public class PersonCapability extends HomeSecurityThingCapability {
     protected void updateWebhookEvent(WebhookEvent event) {
         super.updateWebhookEvent(event);
 
-        handler.updateState(new ChannelUID(thingUID, GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE),
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE,
                 event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
 
         final String message = event.getName();
-        handler.updateState(new ChannelUID(thingUID, GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE),
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE,
                 message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
 
-        handler.updateState(new ChannelUID(thingUID, GROUP_LAST_EVENT, CHANNEL_EVENT_TIME),
-                toDateTimeType(event.getTime()));
-
-        handler.updateState(new ChannelUID(thingUID, GROUP_LAST_EVENT, CHANNEL_EVENT_SNAPSHOT),
-                toRawType(event.getSnapshotUrl()));
-
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime()));
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SNAPSHOT, toRawType(event.getSnapshotUrl()));
         handler.updateState(cameraChannelUID, toStringType(event.getCameraId()));
     }
 
