@@ -56,6 +56,13 @@
       <artifactId>okio</artifactId>
       <groupId>com.squareup.okio</groupId>
       <version>${okio.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okio</groupId>
+      <artifactId>okio-jvm</artifactId>
+      <version>${okio.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <artifactId>commons-csv</artifactId>
