@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,12 +33,14 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelDefinitionBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.StateDescriptionFragment;
 
 /**
@@ -130,6 +132,7 @@ public class ComponentChannel {
         private boolean retain;
         private boolean trigger;
         private boolean isAdvanced;
+        private @Nullable AutoUpdatePolicy autoUpdatePolicy;
         private @Nullable Integer qos;
         private @Nullable Predicate<Command> commandFilter;
 
@@ -203,6 +206,11 @@ public class ComponentChannel {
             return this;
         }
 
+        public Builder withAutoUpdatePolicy(@Nullable AutoUpdatePolicy autoUpdatePolicy) {
+            this.autoUpdatePolicy = autoUpdatePolicy;
+            return this;
+        }
+
         public Builder commandFilter(@Nullable Predicate<Command> commandFilter) {
             this.commandFilter = commandFilter;
             return this;
@@ -224,7 +232,7 @@ public class ComponentChannel {
             ChannelType type;
             ChannelTypeUID channelTypeUID;
 
-            channelUID = new ChannelUID(component.getGroupUID(), channelID);
+            channelUID = component.buildChannelUID(channelID);
             channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
                     channelUID.getGroupId() + "_" + channelID);
             channelState = new HomeAssistantChannelState(
@@ -237,23 +245,26 @@ public class ComponentChannel {
                 isAdvanced = true;
             }
 
+            ChannelTypeBuilder typeBuilder;
             if (this.trigger) {
-                type = ChannelTypeBuilder.trigger(channelTypeUID, label)
-                        .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
-                        .isAdvanced(isAdvanced).build();
+                typeBuilder = ChannelTypeBuilder.trigger(channelTypeUID, label);
             } else {
-                StateDescriptionFragment description = valueState.createStateDescription(commandTopic == null).build();
-                type = ChannelTypeBuilder.state(channelTypeUID, label, channelState.getItemType())
-                        .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
-                        .withStateDescriptionFragment(description).isAdvanced(isAdvanced).build();
+                StateDescriptionFragment stateDescription = valueState.createStateDescription(commandTopic == null)
+                        .build();
+                CommandDescription commandDescription = valueState.createCommandDescription().build();
+                typeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, channelState.getItemType())
+                        .withStateDescriptionFragment(stateDescription).withCommandDescription(commandDescription);
             }
+            type = typeBuilder.withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
+                    .isAdvanced(isAdvanced).build();
 
             Configuration configuration = new Configuration();
             configuration.put("config", component.getChannelConfigurationJson());
             component.getHaID().toConfig(configuration);
 
             channel = ChannelBuilder.create(channelUID, channelState.getItemType()).withType(channelTypeUID)
-                    .withKind(type.getKind()).withLabel(label).withConfiguration(configuration).build();
+                    .withKind(type.getKind()).withLabel(label).withConfiguration(configuration)
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
 
             ComponentChannel result = new ComponentChannel(channelUID, channelState, channel, type, channelTypeUID,
                     channelStateUpdateListener);

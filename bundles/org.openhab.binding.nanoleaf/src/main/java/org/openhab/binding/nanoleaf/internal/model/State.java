@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public class State {
 
     public OnOffType getOnOff() {
         On localOn = on;
-        return (localOn != null && localOn.getValue()) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from((localOn != null && localOn.getValue()));
     }
 
     public void setOn(On on) {

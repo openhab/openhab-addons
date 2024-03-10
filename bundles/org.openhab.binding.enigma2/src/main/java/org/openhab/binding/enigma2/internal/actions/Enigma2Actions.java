@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * This is the automation engine actions handler service for the
@@ -28,6 +30,7 @@ import org.openhab.core.thing.binding.ThingHandler;
  *
  * @author Guido Dolfen - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = Enigma2Actions.class)
 @ThingActionsScope(name = "enigma2")
 @NonNullByDefault
 public class Enigma2Actions implements ThingActions {

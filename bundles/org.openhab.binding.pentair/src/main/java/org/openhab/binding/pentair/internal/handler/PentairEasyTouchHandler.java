@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -338,87 +338,87 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
         switch (channel) {
             case EASYTOUCH_POOL:
                 if (p29 == null || (p29.pool != p29cur.pool)) {
-                    updateState(channel, (p29cur.pool) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.pool)));
                 }
                 break;
             case EASYTOUCH_SPA:
                 if (p29 == null || (p29.spa != p29cur.spa)) {
-                    updateState(channel, (p29cur.spa) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.spa)));
                 }
                 break;
             case EASYTOUCH_AUX1:
                 if (p29 == null || (p29.aux1 != p29cur.aux1)) {
-                    updateState(channel, (p29cur.aux1) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.aux1)));
                 }
                 break;
             case EASYTOUCH_AUX2:
                 if (p29 == null || (p29.aux2 != p29cur.aux2)) {
-                    updateState(channel, (p29cur.aux2) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.aux2)));
                 }
                 break;
             case EASYTOUCH_AUX3:
                 if (p29 == null || (p29.aux3 != p29cur.aux3)) {
-                    updateState(channel, (p29cur.aux3) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.aux3)));
                 }
                 break;
             case EASYTOUCH_AUX4:
                 if (p29 == null || (p29.aux4 != p29cur.aux4)) {
-                    updateState(channel, (p29cur.aux4) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.aux4)));
                 }
                 break;
             case EASYTOUCH_AUX5:
                 if (p29 == null || (p29.aux5 != p29cur.aux5)) {
-                    updateState(channel, (p29cur.aux5) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.aux5)));
                 }
                 break;
             case EASYTOUCH_AUX6:
                 if (p29 == null || (p29.aux6 != p29cur.aux6)) {
-                    updateState(channel, (p29cur.aux6) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.aux6)));
                 }
                 break;
             case EASYTOUCH_AUX7:
                 if (p29 == null || (p29.aux7 != p29cur.aux7)) {
-                    updateState(channel, (p29cur.aux7) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.aux7)));
                 }
                 break;
             case EASYTOUCH_FEATURE1:
                 if (p29 == null || (p29.feature1 != p29cur.feature1)) {
-                    updateState(channel, (p29cur.feature1) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.feature1)));
                 }
                 break;
             case EASYTOUCH_FEATURE2:
                 if (p29 == null || (p29.feature2 != p29cur.feature2)) {
-                    updateState(channel, (p29cur.feature2) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.feature2)));
                 }
                 break;
             case EASYTOUCH_FEATURE3:
                 if (p29 == null || (p29.feature3 != p29cur.feature3)) {
-                    updateState(channel, (p29cur.feature3) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.feature3)));
                 }
                 break;
             case EASYTOUCH_FEATURE4:
                 if (p29 == null || (p29.feature4 != p29cur.feature4)) {
-                    updateState(channel, (p29cur.feature4) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.feature4)));
                 }
                 break;
             case EASYTOUCH_FEATURE5:
                 if (p29 == null || (p29.feature5 != p29cur.feature5)) {
-                    updateState(channel, (p29cur.feature5) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.feature5)));
                 }
                 break;
             case EASYTOUCH_FEATURE6:
                 if (p29 == null || (p29.feature6 != p29cur.feature6)) {
-                    updateState(channel, (p29cur.feature6) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.feature6)));
                 }
                 break;
             case EASYTOUCH_FEATURE7:
                 if (p29 == null || (p29.feature7 != p29cur.feature7)) {
-                    updateState(channel, (p29cur.feature7) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.feature7)));
                 }
                 break;
             case EASYTOUCH_FEATURE8:
                 if (p29 == null || (p29.feature8 != p29cur.feature8)) {
-                    updateState(channel, (p29cur.feature8) ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channel, OnOffType.from((p29cur.feature8)));
                 }
                 break;
             case EASYTOUCH_POOLTEMP:

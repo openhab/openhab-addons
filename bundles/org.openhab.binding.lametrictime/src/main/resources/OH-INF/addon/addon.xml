@@ -8,4 +8,25 @@
 	<description>This is the binding for LaMetric Time.</description>
 	<connection>hybrid</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i)LAMETRIC.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>modelName</name>
+					<regex>(?i)LAMETRIC.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

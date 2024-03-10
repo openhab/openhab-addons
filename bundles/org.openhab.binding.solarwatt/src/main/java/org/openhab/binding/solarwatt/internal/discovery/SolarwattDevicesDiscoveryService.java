@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,15 +39,14 @@ import org.openhab.binding.solarwatt.internal.domain.model.PVPlant;
 import org.openhab.binding.solarwatt.internal.domain.model.PowerMeter;
 import org.openhab.binding.solarwatt.internal.domain.model.SmartHeater;
 import org.openhab.binding.solarwatt.internal.handler.EnergyManagerHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,14 +55,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sven Carstens - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = SolarwattDevicesDiscoveryService.class)
 @NonNullByDefault
-public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService, DiscoveryService {
+public class SolarwattDevicesDiscoveryService extends AbstractThingHandlerDiscoveryService<EnergyManagerHandler> {
 
     private static final int TIMEOUT_SECONDS = 20;
 
     private final Logger logger = LoggerFactory.getLogger(SolarwattDevicesDiscoveryService.class);
-    private @Nullable EnergyManagerHandler energyManagerHandler;
 
     /**
      * Job which will do the background scanning
@@ -76,27 +74,10 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
     private @Nullable ScheduledFuture<?> scanningJob;
 
     public SolarwattDevicesDiscoveryService() {
-        super(TIMEOUT_SECONDS);
+        super(EnergyManagerHandler.class, TIMEOUT_SECONDS);
         this.scanningRunnable = new EnergymanagerScan();
 
         this.activate(null);
-    }
-
-    @Override
-    public void setThingHandler(final @Nullable ThingHandler handler) {
-        if (handler instanceof EnergyManagerHandler energyManagerHandler) {
-            this.energyManagerHandler = energyManagerHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return this.energyManagerHandler;
-    }
-
-    @Override
-    public void deactivate() {
-        this.stopBackgroundDiscovery();
     }
 
     @Override
@@ -120,11 +101,9 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
     @Override
     protected synchronized void startScan() {
         this.removeOlderResults(this.getTimestampOfLastScan());
-        final EnergyManagerHandler localEnergyManagerHandler = this.energyManagerHandler;
 
-        if (localEnergyManagerHandler == null
-                || localEnergyManagerHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            this.logger.warn("Energymanager handler not available: {}", localEnergyManagerHandler);
+        if (thingHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+            this.logger.warn("Energymanager handler not available: {}", thingHandler.getThing().getUID());
             return;
         }
         this.scanForDeviceThings();
@@ -136,38 +115,35 @@ public class SolarwattDevicesDiscoveryService extends AbstractDiscoveryService
      * Walks through the list of devices and adds discovery results for the supported devices.
      */
     private void scanForDeviceThings() {
-        EnergyManagerHandler localEnergyManagerHandler = this.energyManagerHandler;
-        if (localEnergyManagerHandler != null) {
-            final Map<String, Device> devices = localEnergyManagerHandler.getDevices();
+        final Map<String, Device> devices = thingHandler.getDevices();
 
-            final ThingUID bridgeUID = localEnergyManagerHandler.getThing().getUID();
+        final ThingUID bridgeUID = thingHandler.getThing().getUID();
 
-            if (devices == null) {
-                this.logger.warn("No device data for solarwatt devices in discovery for energy manager {}.", bridgeUID);
-            } else {
-                devices.forEach((key, entry) -> {
-                    this.logger.debug("scanForDeviceThings: {}-{}", entry.getClass(), entry.getGuid());
-                    if (entry instanceof BatteryConverter) {
-                        this.discover(bridgeUID, entry, THING_TYPE_BATTERYCONVERTER);
-                    } else if (entry instanceof Inverter) {
-                        this.discover(bridgeUID, entry, THING_TYPE_INVERTER);
-                    } else if (entry instanceof PowerMeter) {
-                        this.discover(bridgeUID, entry, THING_TYPE_POWERMETER);
-                    } else if (entry instanceof EVStation) {
-                        this.discover(bridgeUID, entry, THING_TYPE_EVSTATION);
-                    } else if (entry instanceof Location) {
-                        this.discover(bridgeUID, entry, THING_TYPE_LOCATION);
-                    } else if (entry instanceof PVPlant) {
-                        this.discover(bridgeUID, entry, THING_TYPE_PVPLANT);
-                    } else if (entry instanceof GridFlow) {
-                        this.discover(bridgeUID, entry, THING_TYPE_GRIDFLOW);
-                    } else if (entry instanceof SmartHeater) {
-                        this.discover(bridgeUID, entry, THING_TYPE_SMARTHEATER);
-                    } else {
-                        this.logger.debug("Found unhandled device");
-                    }
-                });
-            }
+        if (devices == null) {
+            this.logger.warn("No device data for solarwatt devices in discovery for energy manager {}.", bridgeUID);
+        } else {
+            devices.forEach((key, entry) -> {
+                this.logger.debug("scanForDeviceThings: {}-{}", entry.getClass(), entry.getGuid());
+                if (entry instanceof BatteryConverter) {
+                    this.discover(bridgeUID, entry, THING_TYPE_BATTERYCONVERTER);
+                } else if (entry instanceof Inverter) {
+                    this.discover(bridgeUID, entry, THING_TYPE_INVERTER);
+                } else if (entry instanceof PowerMeter) {
+                    this.discover(bridgeUID, entry, THING_TYPE_POWERMETER);
+                } else if (entry instanceof EVStation) {
+                    this.discover(bridgeUID, entry, THING_TYPE_EVSTATION);
+                } else if (entry instanceof Location) {
+                    this.discover(bridgeUID, entry, THING_TYPE_LOCATION);
+                } else if (entry instanceof PVPlant) {
+                    this.discover(bridgeUID, entry, THING_TYPE_PVPLANT);
+                } else if (entry instanceof GridFlow) {
+                    this.discover(bridgeUID, entry, THING_TYPE_GRIDFLOW);
+                } else if (entry instanceof SmartHeater) {
+                    this.discover(bridgeUID, entry, THING_TYPE_SMARTHEATER);
+                } else {
+                    this.logger.debug("Found unhandled device");
+                }
+            });
         }
     }
 

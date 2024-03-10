@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -333,7 +333,7 @@ public class TiVoHandler extends BaseThingHandler {
                                     newStatusData.getChannelNum() + "." + newStatusData.getSubChannelNum()));
                         }
                     }
-                    updateState(CHANNEL_TIVO_IS_RECORDING, newStatusData.isRecording() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(CHANNEL_TIVO_IS_RECORDING, OnOffType.from(newStatusData.isRecording()));
                 }
 
                 // Now set the pubToUI flag to false, as we have already published this status

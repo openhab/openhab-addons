@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,8 +65,7 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
             value = new TextValue();
         }
 
-        buildChannel(channelConfiguration.type, value, channelConfiguration.getName(),
-                componentConfiguration.getUpdateListener())
+        buildChannel(channelConfiguration.type, value, getName(), componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.topic, channelConfiguration.getValueTemplate()).trigger(true).build();
     }
 }

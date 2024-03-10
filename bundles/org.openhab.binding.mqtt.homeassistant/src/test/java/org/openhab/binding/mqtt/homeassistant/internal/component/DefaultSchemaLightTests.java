@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,11 +27,13 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
+import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 
 /**
  * Tests for {@link Light} confirming to the default schema
@@ -283,6 +285,40 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
 
         sendCommand(component, Light.ON_OFF_CHANNEL_ID, OnOffType.OFF);
         assertPublished("zigbee2mqtt/light/set/state", "OFF_");
+    }
+
+    @Test
+    public void testOnOffWithEffect() throws InterruptedException {
+        // @formatter:off
+        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+                "{ " +
+                        "  \"name\": \"light\", " +
+                        "  \"state_topic\": \"zigbee2mqtt/light/state\", " +
+                        "  \"command_topic\": \"zigbee2mqtt/light/set/state\", " +
+                        "  \"effect_command_topic\": \"zigbee2mqtt/light/set/effect\", " +
+                        "  \"state_value_template\": \"{{ value_json.power }}\", " +
+                        "  \"effect_list\": [\"party\", \"rainbow\"]," +
+                        "  \"effect_state_topic\": \"zigbee2mqtt/light/effect\"" +
+                        "}");
+        // @formatter:on
+
+        assertThat(component.channels.size(), is(2));
+        assertThat(component.getName(), is("light"));
+
+        assertChannel(component, Light.ON_OFF_CHANNEL_ID, "zigbee2mqtt/light/state", "zigbee2mqtt/light/set/state",
+                "On/Off State", OnOffValue.class);
+        assertChannel(component, Light.EFFECT_CHANNEL_ID, "zigbee2mqtt/light/effect", "zigbee2mqtt/light/set/effect",
+                "Lighting Effect", TextValue.class);
+
+        publishMessage("zigbee2mqtt/light/state", "{\"power\": \"ON\"}");
+        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.ON);
+        publishMessage("zigbee2mqtt/light/effect", "party");
+        assertState(component, Light.EFFECT_CHANNEL_ID, new StringType("party"));
+        publishMessage("zigbee2mqtt/light/state", "{\"power\": \"OFF\"}");
+        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.OFF);
+
+        sendCommand(component, Light.EFFECT_CHANNEL_ID, new StringType("rainbow"));
+        assertPublished("zigbee2mqtt/light/set/effect", "rainbow");
     }
 
     @Override

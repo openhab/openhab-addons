@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,12 +24,12 @@ import org.openhab.binding.bondhome.internal.BondException;
 import org.openhab.binding.bondhome.internal.api.BondDevice;
 import org.openhab.binding.bondhome.internal.api.BondHttpApi;
 import org.openhab.binding.bondhome.internal.handler.BondBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,36 +38,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Sara Geleskie Damiano - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = BondDiscoveryService.class)
 @NonNullByDefault
-public class BondDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class BondDiscoveryService extends AbstractThingHandlerDiscoveryService<BondBridgeHandler> {
     private static final long REFRESH_INTERVAL_MINUTES = 60;
     private final Logger logger = LoggerFactory.getLogger(BondDiscoveryService.class);
     private @Nullable ScheduledFuture<?> discoveryJob;
-    private @Nullable BondBridgeHandler bridgeHandler;
     private @Nullable BondHttpApi api;
 
     public BondDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, 10);
+        super(BondBridgeHandler.class, SUPPORTED_THING_TYPES, 10);
         this.discoveryJob = null;
     }
 
     @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof BondBridgeHandler localHandler) {
-            bridgeHandler = localHandler;
-            localHandler.setDiscoveryService(this);
-            api = localHandler.getBridgeAPI();
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        api = thingHandler.getBridgeAPI();
+        super.initialize();
     }
 
     @Override
@@ -87,6 +75,7 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
     protected synchronized void startScan() {
         logger.debug("Start scan for Bond devices.");
         try {
+            BondBridgeHandler bridgeHandler = thingHandler;
             final ThingUID bridgeUid = bridgeHandler.getThing().getUID();
             api = bridgeHandler.getBridgeAPI();
             List<String> deviceList = api.getDevices();
@@ -106,7 +95,7 @@ public class BondDiscoveryService extends AbstractDiscoveryService implements Th
                 }
             }
         } catch (BondException ignored) {
-            logger.warn("Error getting devices for discovery: {}", ignored.getMessage());
+            logger.debug("Error getting devices for discovery: {}", ignored.getMessage());
         } finally {
             removeOlderResults(getTimestampOfLastScan());
         }

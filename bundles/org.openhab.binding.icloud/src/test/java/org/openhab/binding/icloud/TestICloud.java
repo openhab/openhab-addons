@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,6 +53,7 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,8 +93,8 @@ public class TestICloud {
         File jsonStorageFile = new File(System.getProperty("user.home"), "openhab.json");
         logger.info(jsonStorageFile.toString());
 
-        JsonStorage<String> stateStorage = new JsonStorage<String>(jsonStorageFile, TestICloud.class.getClassLoader(),
-                0, 1000, 1000, List.of());
+        JsonStorage<String> stateStorage = new JsonStorage<>(jsonStorageFile, TestICloud.class.getClassLoader(), 0,
+                1000, 1000, List.of());
 
         ICloudService service = new ICloudService(iCloudTestEmail, iCloudTestPassword, stateStorage);
         service.authenticate(false);
@@ -466,6 +467,10 @@ public class TestICloud {
             }
 
             @Override
+            public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
+            }
+
+            @Override
             public void migrateThingType(Thing thing, ThingTypeUID thingTypeUID, Configuration configuration) {
             }
 
@@ -497,7 +502,7 @@ public class TestICloud {
             @Override
             public List<ChannelBuilder> createChannelBuilders(ChannelGroupUID channelGroupUID,
                     ChannelGroupTypeUID channelGroupTypeUID) {
-                return new ArrayList<ChannelBuilder>(); // dummy implementation, probably won't work.
+                return new ArrayList<>(); // dummy implementation, probably won't work.
             }
 
             @Override

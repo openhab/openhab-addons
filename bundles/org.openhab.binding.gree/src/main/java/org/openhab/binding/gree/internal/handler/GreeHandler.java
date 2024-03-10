@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -481,7 +481,7 @@ public class GreeHandler extends BaseThingHandler {
 
     private @Nullable State updateOnOff(final String valueName) throws GreeException {
         if (device.hasStatusValChanged(valueName)) {
-            return device.getIntStatusVal(valueName) == 1 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(device.getIntStatusVal(valueName) == 1);
         }
         return null;
     }

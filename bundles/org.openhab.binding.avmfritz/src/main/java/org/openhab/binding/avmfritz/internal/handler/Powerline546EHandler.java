@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,7 +147,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
             if (state == null) {
                 updateThingChannelState(CHANNEL_OUTLET, UnDefType.UNDEF);
             } else {
-                updateThingChannelState(CHANNEL_OUTLET, SwitchModel.ON.equals(state) ? OnOffType.ON : OnOffType.OFF);
+                updateThingChannelState(CHANNEL_OUTLET, OnOffType.from(SwitchModel.ON.equals(state)));
             }
         }
     }

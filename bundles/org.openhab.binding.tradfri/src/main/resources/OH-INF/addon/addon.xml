@@ -8,4 +8,22 @@
 	<description>This binding supports IKEA TRÅDFRI lighting devices through the IKEA gateway.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_coap._udp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>name</name>
+					<regex>(gw[:-]{1}([a-f0-9]{2}[-]?){6}){1}</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

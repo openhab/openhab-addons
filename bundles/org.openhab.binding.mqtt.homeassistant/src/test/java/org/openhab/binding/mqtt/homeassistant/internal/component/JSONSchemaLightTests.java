@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -118,6 +118,9 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
         publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"ON\", \"brightness\": 128 }");
         assertState(component, Light.BRIGHTNESS_CHANNEL_ID,
                 new PercentType(new BigDecimal(128 * 100).divide(new BigDecimal(255), MathContext.DECIMAL128)));
+
+        publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"OFF\", \"brightness\": 128 }");
+        assertState(component, Light.BRIGHTNESS_CHANNEL_ID, PercentType.ZERO);
 
         sendCommand(component, Light.BRIGHTNESS_CHANNEL_ID, PercentType.HUNDRED);
         assertPublished("zigbee2mqtt/light/set/state", "{\"state\":\"ON\",\"brightness\":255}");

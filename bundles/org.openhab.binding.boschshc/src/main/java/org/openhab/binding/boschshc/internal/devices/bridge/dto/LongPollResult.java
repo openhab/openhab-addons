@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,8 @@
 package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
 import java.util.ArrayList;
+
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * Response of the Controller for a Long Poll API call.
@@ -35,6 +37,6 @@ public class LongPollResult {
      * ],"jsonrpc":"2.0"}
      */
 
-    public ArrayList<DeviceServiceData> result;
+    public ArrayList<BoschSHCServiceState> result;
     public String jsonrpc;
 }

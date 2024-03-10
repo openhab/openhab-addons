@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -141,7 +141,11 @@ public enum LifxProduct {
     PRODUCT_135(135, "LIFX GU10", new Features(TR_1500_9000, COLOR)),
     PRODUCT_136(136, "LIFX GU10", new Features(TR_1500_9000, COLOR)),
     PRODUCT_137(137, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_138(138, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX));
+    PRODUCT_138(138, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_141(141, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_142(142, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_143(143, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_144(144, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE));
 
     /**
      * Enumerates the product features.

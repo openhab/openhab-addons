@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Optional;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +41,6 @@ public class RefreshCapability extends Capability {
     private static final Duration OFFLINE_INTERVAL = Duration.of(15, MINUTES);
 
     private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
-    private final ScheduledExecutorService scheduler;
 
     private Duration dataValidity;
     private Instant dataTimeStamp = Instant.now();
@@ -50,10 +48,13 @@ public class RefreshCapability extends Capability {
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private boolean refreshConfigured;
 
-    public RefreshCapability(CommonInterface handler, ScheduledExecutorService scheduler, int refreshInterval) {
+    public RefreshCapability(CommonInterface handler, int refreshInterval) {
         super(handler);
-        this.scheduler = scheduler;
         this.dataValidity = Duration.ofSeconds(Math.max(0, refreshInterval));
+    }
+
+    @Override
+    public void initialize() {
         this.refreshConfigured = !probing();
         freeJobAndReschedule(2);
     }
@@ -109,7 +110,7 @@ public class RefreshCapability extends Capability {
                     refreshConfigured = true;
                     logger.debug("Data validity period identified to be {}", dataValidity);
                 } else {
-                    logger.debug("Data validity period not yet found - data timestamp unchanged");
+                    logger.debug("Data validity period not yet found, data timestamp unchanged");
                 }
             }
             dataTimeStamp = tsInstant;
@@ -117,8 +118,8 @@ public class RefreshCapability extends Capability {
     }
 
     private void freeJobAndReschedule(long delay) {
-        refreshJob.ifPresent(job -> job.cancel(false));
-        refreshJob = Optional
-                .ofNullable(delay == 0 ? null : scheduler.schedule(() -> proceedWithUpdate(), delay, TimeUnit.SECONDS));
+        refreshJob.ifPresent(job -> job.cancel(true));
+        refreshJob = Optional.ofNullable(delay == 0 ? null
+                : handler.getScheduler().schedule(() -> proceedWithUpdate(), delay, TimeUnit.SECONDS));
     }
 }

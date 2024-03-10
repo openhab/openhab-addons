@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -157,6 +157,8 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_CU_AT_LEAST_ONE_PROBE_MANUAL = "atLeastOneProbeManual";
     // energy management
     public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_ENERGY_TOTALIZER_DAY = "energyToday";
+    public static final String CHANNEL_ENERGY_TOTALIZER_MONTH = "energyThisMonth";
     // scenario button channels
     public static final String CHANNEL_SCENARIO_BUTTON = "button#";
     public static final String CHANNEL_TYPE_CEN_BUTTON_EVENT = "cenButtonEvent";
@@ -180,6 +182,7 @@ public class OpenWebNetBindingConstants {
     public static final String CONFIG_PROPERTY_SHUTTER_RUN = "shutterRun";
     public static final String CONFIG_PROPERTY_SCENARIO_BUTTONS = "buttons";
     public static final String CONFIG_PROPERTY_STANDALONE = "standAlone";
+    public static final String CONFIG_PROPERTY_REFRESH_PERIOD = "energyRefreshPeriod";
 
     // gw config properties
     public static final String CONFIG_PROPERTY_HOST = "host";

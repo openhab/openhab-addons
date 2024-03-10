@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.TopologyChange;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
 
@@ -37,6 +38,7 @@ public class WebhookEvent extends Event {
     private String deviceId = "";
     private @Nullable String snapshotUrl;
     private @Nullable String vignetteUrl;
+    private TopologyChange change = TopologyChange.UNKNOWN;
     private NAObjectMap<Person> persons = new NAObjectMap<>();
     // Webhook does not provide the event generation time, so we'll use the event reception time
     private ZonedDateTime time = ZonedDateTime.now();
@@ -88,5 +90,9 @@ public class WebhookEvent extends Event {
         if (!value.isBlank()) {
             collection.add(value);
         }
+    }
+
+    public TopologyChange getChange() {
+        return change;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,16 +17,12 @@ import static org.openhab.binding.electroluxair.internal.ElectroluxAirBindingCon
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants;
 import org.openhab.binding.electroluxair.internal.ElectroluxAirConfiguration;
 import org.openhab.binding.electroluxair.internal.api.ElectroluxDeltaAPI;
 import org.openhab.binding.electroluxair.internal.dto.ElectroluxPureA9DTO;
-import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
@@ -187,29 +183,23 @@ public class ElectroluxAirHandler extends BaseThingHandler {
     private State getValue(String channelId, ElectroluxPureA9DTO dto) {
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
-                return new QuantityType<Temperature>(dto.getProperties().getReported().getTemp(), SIUnits.CELSIUS);
+                return new QuantityType<>(dto.getProperties().getReported().getTemp(), SIUnits.CELSIUS);
             case CHANNEL_HUMIDITY:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getHumidity(), Units.PERCENT);
+                return new QuantityType<>(dto.getProperties().getReported().getHumidity(), Units.PERCENT);
             case CHANNEL_TVOC:
-                return new QuantityType<Density>(dto.getProperties().getReported().getTVOC(),
-                        Units.MICROGRAM_PER_CUBICMETRE);
+                return new QuantityType<>(dto.getProperties().getReported().getTVOC(), Units.MICROGRAM_PER_CUBICMETRE);
             case CHANNEL_PM1:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getPM1(),
-                        Units.PARTS_PER_BILLION);
+                return new QuantityType<>(dto.getProperties().getReported().getPM1(), Units.PARTS_PER_BILLION);
             case CHANNEL_PM25:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getPM25(),
-                        Units.PARTS_PER_BILLION);
+                return new QuantityType<>(dto.getProperties().getReported().getPM25(), Units.PARTS_PER_BILLION);
             case CHANNEL_PM10:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getPM10(),
-                        Units.PARTS_PER_BILLION);
+                return new QuantityType<>(dto.getProperties().getReported().getPM10(), Units.PARTS_PER_BILLION);
             case CHANNEL_CO2:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getCO2(),
-                        Units.PARTS_PER_MILLION);
+                return new QuantityType<>(dto.getProperties().getReported().getCO2(), Units.PARTS_PER_MILLION);
             case CHANNEL_FAN_SPEED:
                 return new StringType(Integer.toString(dto.getProperties().getReported().getFanspeed()));
             case CHANNEL_FILTER_LIFE:
-                return new QuantityType<Dimensionless>(dto.getProperties().getReported().getFilterLife(),
-                        Units.PERCENT);
+                return new QuantityType<>(dto.getProperties().getReported().getFilterLife(), Units.PERCENT);
             case CHANNEL_IONIZER:
                 return OnOffType.from(dto.getProperties().getReported().isIonizer());
             case CHANNEL_UI_LIGHT:

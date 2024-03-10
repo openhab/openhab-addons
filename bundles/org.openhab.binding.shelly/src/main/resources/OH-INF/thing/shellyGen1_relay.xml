@@ -77,6 +77,7 @@
 			<channel-group id="meter3" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter3.label</label>
 			</channel-group>
+			<channel-group id="nmeter" typeId="nmeter"/>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -255,7 +256,6 @@
 	<thing-type id="shellydimmer">
 		<label>Shelly Dimmer</label>
 		<description>@text/thing-type.shelly.shellydimmer.description</description>
-		<category>DimmableLight</category>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -269,7 +269,6 @@
 	<thing-type id="shellydimmer2">
 		<label>Shelly Dimmer 2</label>
 		<description>@text/thing-type.shelly.shellydimmer2.description</description>
-		<category>DimmableLight</category>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -328,6 +327,11 @@
 	<channel-group-type id="meter">
 		<label>@text/channel-group-type.shelly.meter.label</label>
 		<description>@text/channel-group-type.shelly.meter.description</description>
+	</channel-group-type>
+
+	<channel-group-type id="nmeter">
+		<label>@text/channel-group-type.shelly.nmeter.label</label>
+		<description>@text/channel-group-type.shelly.nmeter.description</description>
 	</channel-group-type>
 
 	<channel-group-type id="externalSensors">
@@ -469,7 +473,7 @@
 		<item-type>Dimmer</item-type>
 		<label>@text/channel-type.shelly.dimmerBrightness.label</label>
 		<description>@text/channel-type.shelly.dimmerBrightness.description</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 	</channel-type>
 
 	<channel-type id="meterWatts">
@@ -604,6 +608,51 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.shelly.meterResetTotals.label</label>
 		<description>@text/channel-type.shelly.meterResetTotals.description</description>
+	</channel-type>
+
+	<channel-type id="ncurrent">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>@text/channel-type.shelly.ncurrent.label</label>
+		<description>@text/channel-type.shelly.ncurrent.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="ixsum">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>@text/channel-type.shelly.ixsum.label</label>
+		<description>@text/channel-type.shelly.ixsum.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="nmTreshhold">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>@text/channel-type.shelly.nmTreshhold.label</label>
+		<description>@text/channel-type.shelly.nmTreshhold.description</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="nmismatch">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.nmismatch.label</label>
+		<description>@text/channel-type.shelly.nmismatch.description</description>
 	</channel-type>
 
 	<channel-type id="timestamp">

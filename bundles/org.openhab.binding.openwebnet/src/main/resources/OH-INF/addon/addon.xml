@@ -8,4 +8,17 @@
 	<description>The OpenWebNet Binding integrates the BTicino/Legrand 'MyHOME' connected home system using the OpenWebNet
 		protocol. It supports BUS (SCS) and Zigbee USB gateways and devices.</description>
 	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i).*BTICINO.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

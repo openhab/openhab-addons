@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,12 @@ package org.openhab.binding.velbus.internal.discovery;
 
 import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 import org.openhab.binding.velbus.internal.VelbusFirstGenerationDeviceModuleAddress;
 import org.openhab.binding.velbus.internal.VelbusModule;
@@ -29,12 +28,12 @@ import org.openhab.binding.velbus.internal.VelbusPacketListener;
 import org.openhab.binding.velbus.internal.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusScanPacket;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,29 +44,25 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cedric Boon - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = VelbusThingDiscoveryService.class)
 @NonNullByDefault
-public class VelbusThingDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService, VelbusPacketListener {
+public class VelbusThingDiscoveryService extends AbstractThingHandlerDiscoveryService<VelbusBridgeHandler>
+        implements VelbusPacketListener {
     private static final int SEARCH_TIME = 60;
 
     private final Logger logger = LoggerFactory.getLogger(VelbusThingDiscoveryService.class);
 
     private Map<Byte, VelbusModule> velbusModules = new HashMap<>();
 
-    private @Nullable VelbusBridgeHandler velbusBridgeHandler;
-
     public VelbusThingDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
+        super(VelbusBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
     }
 
     @Override
-    public void deactivate() {
-        removeOlderResults(new Date().getTime());
-
-        final VelbusBridgeHandler velbusBridgeHandler = this.velbusBridgeHandler;
-        if (velbusBridgeHandler != null) {
-            velbusBridgeHandler.clearDefaultPacketListener();
-        }
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli());
+        thingHandler.clearDefaultPacketListener();
     }
 
     @Override
@@ -76,10 +71,7 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
             VelbusScanPacket packet = new VelbusScanPacket((byte) i);
             byte[] packetBytes = packet.getBytes();
 
-            final VelbusBridgeHandler velbusBridgeHandler = this.velbusBridgeHandler;
-            if (velbusBridgeHandler != null) {
-                velbusBridgeHandler.sendPacket(packetBytes);
-            }
+            thingHandler.sendPacket(packetBytes);
         }
     }
 
@@ -352,7 +344,7 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
     protected void registerVelbusModule(byte address, VelbusModule velbusModule) {
         velbusModules.put(address, velbusModule);
         notifyDiscoveredVelbusModule(velbusModule);
-        velbusModule.sendChannelNameRequests(velbusBridgeHandler);
+        velbusModule.sendChannelNameRequests(thingHandler);
     }
 
     private void handleChannelNameCommand(byte[] packet, byte address, byte length, int namePartNumber) {
@@ -369,29 +361,18 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
     }
 
     private void notifyDiscoveredVelbusModule(VelbusModule velbusModule) {
-        final VelbusBridgeHandler velbusBridgeHandler = this.velbusBridgeHandler;
-        if (velbusBridgeHandler != null) {
-            ThingUID bridgeUID = velbusBridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
 
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(velbusModule.getThingUID(bridgeUID))
-                    .withThingType(velbusModule.getThingTypeUID()).withProperties(velbusModule.getProperties())
-                    .withRepresentationProperty(ADDRESS).withBridge(bridgeUID).withLabel(velbusModule.getLabel())
-                    .build();
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(velbusModule.getThingUID(bridgeUID))
+                .withThingType(velbusModule.getThingTypeUID()).withProperties(velbusModule.getProperties())
+                .withRepresentationProperty(ADDRESS).withBridge(bridgeUID).withLabel(velbusModule.getLabel()).build();
 
-            thingDiscovered(discoveryResult);
-        }
+        thingDiscovered(discoveryResult);
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VelbusBridgeHandler velbusBridgeHandler) {
-            this.velbusBridgeHandler = velbusBridgeHandler;
-            velbusBridgeHandler.setDefaultPacketListener(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return this.velbusBridgeHandler;
+    public void initialize() {
+        thingHandler.setDefaultPacketListener(this);
+        super.initialize();
     }
 }

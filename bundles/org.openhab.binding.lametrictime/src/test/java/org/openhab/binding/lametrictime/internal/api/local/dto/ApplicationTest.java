@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,8 +45,8 @@ public class ApplicationTest extends AbstractTest {
         Application app = new Application().withPackageName("com.lametric.radio").withVendor("LaMetric")
                 .withVersion("1.0.10").withVersionCode("22")
                 // @formatter:off
-                                           .withWidgets(new TreeMap<String, Widget>(){{put("589ed1b3fcdaa5180bf4848e55ba8061", new Widget());}})
-                                           .withActions(new TreeMap<String, Action>(){{put("radio.next", new Action());
+                                           .withWidgets(new TreeMap<>(){{put("589ed1b3fcdaa5180bf4848e55ba8061", new Widget());}})
+                                           .withActions(new TreeMap<>(){{put("radio.next", new Action());
                                                                                        put("radio.play", new Action());
                                                                                        put("radio.prev", new Action());
                                                                                        put("radio.stop", new Action());}});

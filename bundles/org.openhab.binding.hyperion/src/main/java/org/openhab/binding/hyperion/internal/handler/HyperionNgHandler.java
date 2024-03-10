@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -260,7 +260,7 @@ public class HyperionNgHandler extends BaseThingHandler {
 
     private void updateHyperion(Hyperion hyperion) {
         boolean isOff = hyperion.isOff();
-        OnOffType hyperionState = isOff ? OnOffType.OFF : OnOffType.ON;
+        OnOffType hyperionState = OnOffType.from(!isOff);
         updateState(CHANNEL_HYPERION_ENABLED, hyperionState);
     }
 
@@ -268,7 +268,7 @@ public class HyperionNgHandler extends BaseThingHandler {
         for (Component component : components) {
             String componentName = component.getName();
             boolean componentIsEnabled = component.isEnabled();
-            OnOffType componentState = componentIsEnabled ? OnOffType.ON : OnOffType.OFF;
+            OnOffType componentState = OnOffType.from(componentIsEnabled);
             switch (componentName) {
                 case COMPONENT_BLACKBORDER:
                     updateState(CHANNEL_BLACKBORDER, componentState);

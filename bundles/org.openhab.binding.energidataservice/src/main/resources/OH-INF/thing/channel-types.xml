@@ -5,28 +5,20 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="spot-price">
-		<item-type>Number</item-type>
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Spot Price</label>
 		<description>Spot price.</description>
 		<category>Price</category>
-		<state readOnly="true" pattern="%.9f"></state>
+		<state readOnly="true" pattern="%.9f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="datahub-price">
-		<item-type>Number</item-type>
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Datahub Price</label>
 		<description>Datahub price.</description>
 		<category>Price</category>
-		<state readOnly="true" pattern="%.6f"></state>
+		<state readOnly="true" pattern="%.6f %unit%"></state>
 		<config-description-ref uri="channel-type:energidataservice:datahub-price"/>
-	</channel-type>
-
-	<channel-type id="hourly-prices" advanced="true">
-		<item-type>String</item-type>
-		<label>Hourly Prices</label>
-		<description>JSON array with hourly prices from 24 hours ago and onward.</description>
-		<category>Price</category>
-		<state readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

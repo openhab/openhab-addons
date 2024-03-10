@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,6 @@ public class DoorbirdEvent {
      * - if both of these attempts fail, the binding will be functional, except for
      * its ability to decrypt the UDP events.
      */
-    @NonNullByDefault
     private static class LazySodiumJavaHolder {
         private static final Logger LOGGER = LoggerFactory.getLogger(LazySodiumJavaHolder.class);
 
@@ -125,7 +124,7 @@ public class DoorbirdEvent {
      * The following functions support the decryption of the doorbell event
      * using the LazySodium wrapper for the libsodium crypto library
      */
-    public void decrypt(DatagramPacket p, String password) {
+    public void decrypt(DatagramPacket p, String password, @Nullable String v2DecryptionKey) {
         isDoorbellEvent = false;
 
         int length = p.getLength();
@@ -158,6 +157,9 @@ public class DoorbirdEvent {
             if (version == 1) {
                 // Decrypt using version 1 decryption scheme
                 decryptV1(bb, passwordFirstFive);
+            } else if (version == 2) {
+                // Decrypt using version 2 decryption scheme
+                decryptV2(bb, v2DecryptionKey);
             } else {
                 logger.info("Don't know how to decrypt version {} doorbell event", version);
             }
@@ -181,13 +183,16 @@ public class DoorbirdEvent {
     private void decryptV1(ByteBuffer bb, String password5) throws IndexOutOfBoundsException, BufferUnderflowException {
         LazySodiumJava sodium = getLazySodiumJavaInstance();
         if (sodium == null) {
-            logger.debug("Unable to decrypt event because libsodium is not loaded");
+            logger.debug("Unable to decrypt v1 event because libsodium is not loaded");
             return;
         }
         if (bb.capacity() != 70) {
             logger.info("Received malformed version 1 doorbell event, length not 70 bytes");
             return;
         }
+
+        logger.debug("Decrypting v1 event, size of buffer: {}", bb.capacity());
+
         // opslimit and memlimit are 4 bytes each
         opslimit = bb.getInt();
         memlimit = bb.getInt();
@@ -233,11 +238,62 @@ public class DoorbirdEvent {
             logger.trace("Decryption FAILED");
             return;
         }
+        getFieldsFromDecryptedText(m, mLen);
+    }
+
+    private void decryptV2(ByteBuffer bb, @Nullable String v2DecryptionKey)
+            throws IndexOutOfBoundsException, BufferUnderflowException {
+        LazySodiumJava sodium = getLazySodiumJavaInstance();
+        if (sodium == null) {
+            logger.debug("Unable to decrypt v2 event because libsodium is not loaded");
+            return;
+        }
+
+        if (v2DecryptionKey == null) {
+            logger.debug("Unable to decrypt v2 event because decryption key is null");
+            return;
+        }
+
+        logger.debug("Decrypting v2 event, size of buffer: {}", bb.capacity());
+
+        // Get nonce and ciphertext arrays
+        bb.get(nonce, 0, nonce.length);
+        bb.get(ciphertext, 0, ciphertext.length);
+
+        // Set up the variables for the decryption algorithm
+        byte[] m = new byte[30];
+        long[] mLen = new long[30];
+        byte[] nSec = null;
+        byte[] c = ciphertext;
+        long cLen = ciphertext.length;
+        byte[] ad = null;
+        long adLen = 0;
+        byte[] nPub = nonce;
+        byte[] k = v2DecryptionKey.getBytes();
+
+        // Decrypt the ciphertext
+        logger.trace("Call cryptoAeadChaCha20Poly1305Decrypt with ciphertext='{}', nonce='{}', key='{}'",
+                HexUtils.bytesToHex(ciphertext, " "), HexUtils.bytesToHex(nonce, " "), HexUtils.bytesToHex(k, " "));
+        boolean success = sodium.cryptoAeadChaCha20Poly1305Decrypt(m, mLen, nSec, c, cLen, ad, adLen, nPub, k);
+        if (!success) {
+            /*
+             * Don't log at debug level since the decryption will fail for events encrypted with
+             * passwords other than the password contained in the thing configuration (reference API
+             * documentation for details)
+             */
+            logger.trace("Decryption FAILED");
+            return;
+        }
+        getFieldsFromDecryptedText(m, mLen);
+    }
+
+    private void getFieldsFromDecryptedText(byte[] m, long[] mLen) {
         int decryptedTextLength = (int) mLen[0];
         if (decryptedTextLength != 18L) {
             logger.info("Length of decrypted text is invalid, must be 18 bytes");
             return;
         }
+
         // Get event fields from decrypted text
         logger.debug("Received and successfully decrypted a Doorbird event!!");
         ByteBuffer b = ByteBuffer.allocate(decryptedTextLength);

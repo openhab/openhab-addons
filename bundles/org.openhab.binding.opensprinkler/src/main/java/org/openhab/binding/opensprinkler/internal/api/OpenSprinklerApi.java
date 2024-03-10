@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -253,4 +253,34 @@ public interface OpenSprinklerApi {
      * @return {@code QuantityType<Time>}
      */
     QuantityType<Time> getRainDelay();
+
+    /**
+     * Returns the Number of zones in the queue as an int.
+     *
+     * @return Number of zones in the queue as an int.
+     */
+    int getQueuedZones();
+
+    /**
+     * Returns the connection status of the OpenSprinkler Cloud.
+     *
+     * @return Connection state 0: not enabled, 1: connecting, 2: disconnected, 3: connected
+     */
+    int getCloudConnected();
+
+    /**
+     * Returns the paused status of the OpenSprinkler.
+     *
+     * @return int 0 to 600 seconds
+     */
+    int getPausedState();
+
+    /**
+     * Sets the amount of time that the OpenSprinkler will stop/pause zones.
+     *
+     * @param seconds for the pause duration in seconds (0 to 600)
+     * @throws UnauthorizedApiException
+     * @throws CommunicationApiException
+     */
+    void setPausePrograms(int seconds) throws UnauthorizedApiException, CommunicationApiException;
 }

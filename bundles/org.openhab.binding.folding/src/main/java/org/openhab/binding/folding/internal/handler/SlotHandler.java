@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,8 +83,8 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
         updateState(getThing().getChannel("status").getUID(), new StringType(si.status));
         boolean finishing = "FINISHING".equals(si.status);
         boolean run = finishing || "READY".equals(si.status) || "RUNNING".equals(si.status);
-        updateState(getThing().getChannel("finish").getUID(), finishing ? OnOffType.ON : OnOffType.OFF);
-        updateState(getThing().getChannel("run").getUID(), run ? OnOffType.ON : OnOffType.OFF);
+        updateState(getThing().getChannel("finish").getUID(), OnOffType.from(finishing));
+        updateState(getThing().getChannel("run").getUID(), OnOffType.from(run));
         updateState(getThing().getChannel("description").getUID(), new StringType(si.description));
     }
 }

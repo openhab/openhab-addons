@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,7 +72,7 @@ public class EcoTouchHandler extends BaseThingHandler {
                     // this type needs special treatment
                     // the following reads: value = value / 2 - 2
                     value = value.divide(new BigDecimal(2), 1, RoundingMode.UNNECESSARY).subtract(new BigDecimal(2));
-                    QuantityType<?> quantity = new QuantityType<javax.measure.quantity.Temperature>(value, CELSIUS);
+                    QuantityType<?> quantity = new QuantityType<>(value, CELSIUS);
                     updateState(channel, quantity);
                 } else {
                     if (ecoTouchTag.getUnit() != ONE) {
@@ -191,7 +191,7 @@ public class EcoTouchHandler extends BaseThingHandler {
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
             Runnable runnable = () -> {
                 try {
-                    Set<String> tags = new HashSet<String>();
+                    Set<String> tags = new HashSet<>();
                     for (EcoTouchTags ecoTouchTag : EcoTouchTags.values()) {
                         String channel = ecoTouchTag.getCommand();
                         boolean linked = isLinked(channel);

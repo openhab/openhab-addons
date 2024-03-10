@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -252,7 +252,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                         state = new DecimalType(value);
                         break;
                     case RELAY:
-                        state = value == 1 ? OnOffType.ON : OnOffType.OFF;
+                        state = OnOffType.from(value == 1);
                         break;
                     case ANALOG:
                         state = new DecimalType(value);

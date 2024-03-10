@@ -12,4 +12,16 @@
 
 	<config-description-ref uri="persistence:influxdb"/>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>process</service-type>
+			<match-properties>
+				<match-property>
+					<name>command</name>
+					<regex>(?i).*[/\\](influxd)(\.exe)?$</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

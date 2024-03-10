@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -195,7 +195,7 @@ public class QbusBistabielHandler extends QbusGlobalHandler {
     public void handleStateUpdate(QbusBistabiel qBistabiel) {
         Integer bistabielState = qBistabiel.getState();
         if (bistabielState != null) {
-            updateState(CHANNEL_SWITCH, (bistabielState == 0) ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_SWITCH, OnOffType.from(bistabielState != 0));
         }
     }
 

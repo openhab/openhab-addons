@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,6 +96,9 @@ public enum MiIoCommand {
     GET_CUSTOMIZED_CLEAN_MODE("get_customize_clean_mode"),
     GET_MULTI_MAP_LIST("get_multi_maps_list"),
     GET_ROOM_MAPPING("get_room_mapping"),
+    SET_COLLECT_DUST("app_start_collect_dust"),
+    SET_CLEAN_MOP_START("app_start_wash"),
+    SET_CLEAN_MOP_STOP("app_stop_wash"),
 
     // Gateway & child device commands
     GET_ARMING("get_arming"),

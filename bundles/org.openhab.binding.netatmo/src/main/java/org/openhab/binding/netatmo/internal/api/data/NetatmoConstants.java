@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -200,6 +200,23 @@ public class NetatmoConstants {
         ACCESS_DOORBELL,
         @SerializedName("read_carbonmonoxidedetector")
         READ_CARBONMONOXIDEDETECTOR,
+        UNKNOWN
+    }
+
+    // Topology Changes
+    public enum TopologyChange {
+        @SerializedName("home_owner_added")
+        HOME_OWNER_ADDED,
+        @SerializedName("device_associated_to_user")
+        DEVICE_ASSOCIATED_TO_USER,
+        @SerializedName("device_associated_to_home")
+        DEVICE_ASSOCIATED_TO_HOME,
+        @SerializedName("device_updated")
+        DEVICE_UPDATED,
+        @SerializedName("device_associated_to_room")
+        DEVICE_ASSOCIATED_TO_ROOM,
+        @SerializedName("room_created")
+        ROOM_CREATED,
         UNKNOWN
     }
 

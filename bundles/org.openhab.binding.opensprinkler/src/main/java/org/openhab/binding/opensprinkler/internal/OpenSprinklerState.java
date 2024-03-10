@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,6 +63,9 @@ public class OpenSprinklerState {
         public int rssi = 1;
         public int flcrt = -1;
         public int curr = -1;
+        public int pt = -1;
+        public int nq = -1;
+        public int otcs = -1;
     }
 
     public static class JnResponse {

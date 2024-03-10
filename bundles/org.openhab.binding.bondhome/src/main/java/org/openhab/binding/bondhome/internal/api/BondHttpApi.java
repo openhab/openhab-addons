@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -194,7 +194,7 @@ public class BondHttpApi {
         try {
             response = request.send();
         } catch (Exception e) {
-            logger.warn("Unable to execute device action {} against device {}: {}", deviceId, action, e.getMessage());
+            logger.debug("Unable to execute device action {} against device {}: {}", deviceId, action, e.getMessage());
             return;
         }
 

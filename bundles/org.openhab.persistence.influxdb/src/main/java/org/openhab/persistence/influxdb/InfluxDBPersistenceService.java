@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -170,7 +170,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
 
     @Override
     public String getLabel(@Nullable Locale locale) {
-        return "InfluxDB persistence layer";
+        return "InfluxDB";
     }
 
     @Override
@@ -199,6 +199,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
         store(item, date, state, null);
     }
 
+    @Override
     public void store(Item item, ZonedDateTime date, State state, @Nullable String alias) {
         if (!serviceActivated) {
             logger.warn("InfluxDB service not ready. Storing {} rejected.", item);
@@ -285,6 +286,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
             if (!influxDBRepository.write(points)) {
                 logger.warn("Re-queuing {} elements, failed to write batch.", points.size());
                 pointsQueue.addAll(points);
+                influxDBRepository.disconnect();
             } else {
                 logger.trace("Wrote {} elements to database", points.size());
             }

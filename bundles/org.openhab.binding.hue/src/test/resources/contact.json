@@ -1,0 +1,19 @@
+{
+    "errors": [
+    ],
+    "data": [
+        {
+            "id": "bcaee909-1b37-454b-814d-9928776ad350",
+            "owner": {
+                "rid": "faac7940-a303-4e8e-9f06-075fffb7229c",
+                "rtype": "device"
+            },
+            "enabled": true,
+            "contact_report": {
+                "changed": "2023-10-10T19:10:55.919Z",
+                "state": "contact"
+            },
+            "type": "contact"
+        }
+    ]
+}

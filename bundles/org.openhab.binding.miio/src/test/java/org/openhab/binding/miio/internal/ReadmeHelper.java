@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -259,7 +259,7 @@ public class ReadmeHelper {
         StringBuilder sb = new StringBuilder();
         StringBuilder commentSb = new StringBuilder("Adding support for the following models:\r\n");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        HashMap<String, String> names = new HashMap<String, String>();
+        HashMap<String, String> names = new HashMap<>();
         try {
             JsonReader reader = new JsonReader(new FileReader(DEVICE_NAMES_FILE));
             names = gson.fromJson(reader, names.getClass());

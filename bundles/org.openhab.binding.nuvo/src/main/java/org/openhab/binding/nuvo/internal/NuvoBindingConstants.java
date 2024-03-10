@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.nuvo.internal;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -64,6 +66,7 @@ public class NuvoBindingConstants {
     public static final String CHANNEL_BUTTON_PRESS = "button_press";
     public static final String CHANNEL_ART_URL = "art_url";
     public static final String CHANNEL_ALBUM_ART = "album_art";
+    public static final String CHANNEL_SOURCE_MENU = "source_menu";
 
     // Message types
     public static final String TYPE_VERSION = "version";
@@ -110,4 +113,12 @@ public class NuvoBindingConstants {
     public static final String HTTP = "http://";
     public static final String HTTPS = "https://";
     public static final String PLAY_MUSIC_PRESET = "PLAY_MUSIC_PRESET:";
+
+    public static final List<String> MPS4_PLAYING_MODES = List.of("2", "6", "7", "8");
+    public static final List<String> MPS4_IDLE_MODES = List.of("0", "1");
+
+    public static final String GET_MCS_INSTANCE = "http://%s/api/Script/MRAD.SetZone%%20Zone_%s/MRAD.GetStatus/?clientId=%s";
+    public static final String GET_MCS_STATUS = "http://%s/api/Script/SetInstance%%20%s/GetStatus?clientId=%s";
+    public static final String GET_MCS_JSON = "http://%s/api/?clientId=%s";
+    public static final String GET_MCS_ART = "http://%s/getArt?guid=%s&instance=%s&h=143&w=143&changed=true&c=1&fmt=jpg";
 }

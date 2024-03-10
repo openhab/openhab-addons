@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,6 +87,7 @@ public class HueBindingConstants {
     public static final String CHANNEL_STATUS = "status";
     public static final String CHANNEL_FLAG = "flag";
     public static final String CHANNEL_SCENE = "scene";
+    public static final String CHANNEL_TYPE_2_SCENE = "scene-v2";
 
     // List all triggers
     public static final String EVENT_DIMMER_SWITCH = "dimmer_switch_event";
@@ -169,6 +170,11 @@ public class HueBindingConstants {
     public static final String CHANNEL_2_COLOR_XY_ONLY = "color-xy-only";
     public static final String CHANNEL_2_DIMMING_ONLY = "dimming-only";
     public static final String CHANNEL_2_ON_OFF_ONLY = "on-off-only";
+    public static final String CHANNEL_2_SECURITY_CONTACT = "security-contact";
+    public static final String CHANNEL_2_SECURITY_CONTACT_ENABLED = "security-contact-enabled";
+    public static final String CHANNEL_2_SECURITY_CONTACT_LAST_UPDATED = "security-contact-last-updated";
+    public static final String CHANNEL_2_SECURITY_TAMPER = "security-tamper";
+    public static final String CHANNEL_2_SECURITY_TAMPER_LAST_UPDATED = "security-tamper-last-updated";
 
     // channel IDs that (optionally) support dynamics
     public static final Set<String> DYNAMIC_CHANNELS = Set.of(CHANNEL_2_BRIGHTNESS, CHANNEL_2_COLOR,

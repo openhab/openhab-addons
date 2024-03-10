@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,8 +70,10 @@ public class OpenSprinklerApiFactory {
             return new OpenSprinklerHttpApiV213(this.httpClient, config);
         } else if (version >= 217 && version < 219) {
             return new OpenSprinklerHttpApiV217(this.httpClient, config);
-        } else if (version >= 219) {
+        } else if (version >= 219 && version < 220) {
             return new OpenSprinklerHttpApiV219(this.httpClient, config);
+        } else if (version >= 220) {
+            return new OpenSprinklerHttpApiV220(this.httpClient, config);
         } else {
             /* Need to make sure we have an older OpenSprinkler device by checking the first station. */
             try {

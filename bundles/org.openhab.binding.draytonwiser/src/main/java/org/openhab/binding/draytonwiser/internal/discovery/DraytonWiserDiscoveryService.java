@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,14 +29,13 @@ import org.openhab.binding.draytonwiser.internal.model.RoomDTO;
 import org.openhab.binding.draytonwiser.internal.model.RoomStatDTO;
 import org.openhab.binding.draytonwiser.internal.model.SmartPlugDTO;
 import org.openhab.binding.draytonwiser.internal.model.SmartValveDTO;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,36 +44,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Schofield - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = DraytonWiserDiscoveryService.class)
 @NonNullByDefault
-public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService, DraytonWiserRefreshListener {
+public class DraytonWiserDiscoveryService extends AbstractThingHandlerDiscoveryService<HeatHubHandler>
+        implements DraytonWiserRefreshListener {
 
     private final Logger logger = LoggerFactory.getLogger(DraytonWiserDiscoveryService.class);
 
-    private @Nullable HeatHubHandler bridgeHandler;
     private @Nullable ThingUID bridgeUID;
 
     public DraytonWiserDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, 30, false);
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(HeatHubHandler.class, SUPPORTED_THING_TYPES_UIDS, 30, false);
     }
 
     @Override
     protected void startScan() {
-        final HeatHubHandler handler = bridgeHandler;
-        if (handler != null) {
-            removeOlderResults(getTimestampOfLastScan());
-            handler.setDiscoveryService(this);
-        }
+        removeOlderResults(getTimestampOfLastScan());
+        thingHandler.setDiscoveryService(this);
     }
 
     @Override
@@ -192,27 +178,13 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public synchronized void stopScan() {
-        final HeatHubHandler handler = bridgeHandler;
-
-        if (handler != null) {
-            handler.unsetDiscoveryService();
-        }
+        thingHandler.unsetDiscoveryService();
         super.stopScan();
     }
 
     @Override
-    public void setThingHandler(@Nullable final ThingHandler handler) {
-        if (handler instanceof HeatHubHandler hubHandler) {
-            bridgeHandler = hubHandler;
-            bridgeUID = handler.getThing().getUID();
-        } else {
-            bridgeHandler = null;
-            bridgeUID = null;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+    public void initialize() {
+        bridgeUID = thingHandler.getThing().getUID();
+        super.initialize();
     }
 }

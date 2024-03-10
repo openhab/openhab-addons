@@ -27,6 +27,8 @@
 			<channel id="elapsed" typeId="elapsed"/>
 			<channel id="finish" typeId="finish"/>
 			<channel id="door" typeId="door"/>
+			<channel id="info" typeId="info"/>
+			<channel id="failure" typeId="failure"/>
 			<channel id="switch" typeId="switch"/>
 			<channel id="target" typeId="targetTemperature">
 				<label>Temperature</label>
@@ -38,7 +40,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>uid</representation-property>

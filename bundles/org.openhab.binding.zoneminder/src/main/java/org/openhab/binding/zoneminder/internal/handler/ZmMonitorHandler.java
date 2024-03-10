@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -185,7 +183,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
         updateChannelState(CHANNEL_ID, new StringType(m.getId()));
         updateChannelState(CHANNEL_NAME, new StringType(m.getName()));
         updateChannelState(CHANNEL_FUNCTION, new StringType(m.getFunction()));
-        updateChannelState(CHANNEL_ENABLE, m.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+        updateChannelState(CHANNEL_ENABLE, OnOffType.from(m.isEnabled()));
         updateChannelState(CHANNEL_HOUR_EVENTS, new DecimalType(m.getHourEvents()));
         updateChannelState(CHANNEL_DAY_EVENTS, new DecimalType(m.getDayEvents()));
         updateChannelState(CHANNEL_WEEK_EVENTS, new DecimalType(m.getWeekEvents()));
@@ -193,10 +191,10 @@ public class ZmMonitorHandler extends BaseThingHandler {
         updateChannelState(CHANNEL_TOTAL_EVENTS, new DecimalType(m.getTotalEvents()));
         updateChannelState(CHANNEL_IMAGE_URL, new StringType(m.getImageUrl()));
         updateChannelState(CHANNEL_VIDEO_URL, new StringType(m.getVideoUrl()));
-        updateChannelState(CHANNEL_ALARM, m.isAlarm() ? OnOffType.ON : OnOffType.OFF);
+        updateChannelState(CHANNEL_ALARM, OnOffType.from(m.isAlarm()));
         updateChannelState(CHANNEL_STATE, new StringType(m.getState().toString()));
         if (!m.isAlarm()) {
-            updateChannelState(CHANNEL_TRIGGER_ALARM, m.isAlarm() ? OnOffType.ON : OnOffType.OFF);
+            updateChannelState(CHANNEL_TRIGGER_ALARM, OnOffType.from(m.isAlarm()));
         }
         Event event = m.getMostRecentCompletedEvent();
         if (event == null) {
@@ -217,7 +215,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
                 new DateTimeType(ZonedDateTime.ofInstant(event.getEnd().toInstant(), timeZoneProvider.getTimeZone())));
         updateChannelState(CHANNEL_EVENT_FRAMES, new DecimalType(event.getFrames()));
         updateChannelState(CHANNEL_EVENT_ALARM_FRAMES, new DecimalType(event.getAlarmFrames()));
-        updateChannelState(CHANNEL_EVENT_LENGTH, new QuantityType<Time>(event.getLength(), Units.SECOND));
+        updateChannelState(CHANNEL_EVENT_LENGTH, new QuantityType<>(event.getLength(), Units.SECOND));
     }
 
     private void clearEventChannels() {

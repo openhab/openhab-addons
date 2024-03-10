@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TypeParser;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Test cases for the value classes. They should throw exceptions if the wrong command type is used
@@ -81,6 +82,8 @@ public class ValueTests {
         assertThat(hsb.getBrightness().intValue(), is(0));
         hsb = (HSBType) v.parseCommand(p(v, "1"));
         assertThat(hsb.getBrightness().intValue(), is(1));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -136,6 +139,18 @@ public class ValueTests {
         // Test custom formatting
         assertThat(v.getMQTTpublishValue(OnOffType.OFF, "=%s"), is("=fancyOff"));
         assertThat(v.getMQTTpublishValue(OnOffType.ON, "=%s"), is("=fancyON"));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
+    }
+
+    @Test
+    public void onoffMultiStates() {
+        OnOffValue v = new OnOffValue(new String[] { "LOCKED" }, new String[] { "UNLOCKED", "JAMMED" }, "LOCK",
+                "UNLOCK");
+
+        assertThat(v.parseCommand(new StringType("LOCKED")), is(OnOffType.ON));
+        assertThat(v.parseCommand(new StringType("UNLOCKED")), is(OnOffType.OFF));
+        assertThat(v.parseCommand(new StringType("JAMMED")), is(OnOffType.OFF));
     }
 
     @Test
@@ -157,6 +172,8 @@ public class ValueTests {
         // Test basic formatting
         assertThat(v.getMQTTpublishValue(OpenClosedType.CLOSED, null), is("fancyOff"));
         assertThat(v.getMQTTpublishValue(OpenClosedType.OPEN, null), is("fancyON"));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -175,6 +192,13 @@ public class ValueTests {
         command = v.parseCommand(new QuantityType<>("20"));
         assertThat(command, is(new QuantityType<>(20, Units.WATT)));
         assertThat(v.getMQTTpublishValue(command, null), is("20"));
+
+        assertThat(v.parseMessage(new StringType("NaN")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("nan")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("-NaN")), is(UnDefType.UNDEF));
+        assertThat(v.parseMessage(new StringType("-nan")), is(UnDefType.UNDEF));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -223,6 +247,41 @@ public class ValueTests {
         // Test formatting 0/100
         assertThat(v.getMQTTpublishValue(PercentType.ZERO, null), is("fancyON"));
         assertThat(v.getMQTTpublishValue(PercentType.HUNDRED, null), is("fancyOff"));
+
+        // Test parsing from MQTT
+        assertThat(v.parseMessage(new StringType("fancyON")), is(UpDownType.UP));
+        assertThat(v.parseMessage(new StringType("fancyOff")), is(UpDownType.DOWN));
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
+    }
+
+    @Test
+    public void rollershutterUpdateWithDiscreteCommandAndStateStrings() {
+        RollershutterValue v = new RollershutterValue("OPEN", "CLOSE", "STOP", "open", "closed", false, true);
+        // Test with UP/DOWN/STOP command
+        assertThat(v.parseCommand(UpDownType.UP), is(UpDownType.UP));
+        assertThat(v.getMQTTpublishValue(UpDownType.UP, null), is("OPEN"));
+        assertThat(v.parseCommand(UpDownType.DOWN), is(UpDownType.DOWN));
+        assertThat(v.getMQTTpublishValue(UpDownType.DOWN, null), is("CLOSE"));
+        assertThat(v.parseCommand(StopMoveType.STOP), is(StopMoveType.STOP));
+        assertThat(v.getMQTTpublishValue(StopMoveType.STOP, null), is("STOP"));
+
+        // Test with custom string
+        assertThat(v.parseCommand(new StringType("OPEN")), is(UpDownType.UP));
+        assertThat(v.parseCommand(new StringType("CLOSE")), is(UpDownType.DOWN));
+
+        // Test with exact percent
+        Command command = new PercentType(27);
+        assertThat(v.parseCommand((Command) command), is(command));
+        assertThat(v.getMQTTpublishValue(command, null), is("27"));
+
+        // Test formatting 0/100
+        assertThat(v.getMQTTpublishValue(PercentType.ZERO, null), is("OPEN"));
+        assertThat(v.getMQTTpublishValue(PercentType.HUNDRED, null), is("CLOSE"));
+
+        // Test parsing from MQTT
+        assertThat(v.parseMessage(new StringType("open")), is(UpDownType.UP));
+        assertThat(v.parseMessage(new StringType("closed")), is(UpDownType.DOWN));
     }
 
     @Test
@@ -261,6 +320,8 @@ public class ValueTests {
             command = v.parseCommand(new DecimalType(i));
             assertThat(v.getMQTTpublishValue(command, null), is("" + i));
         }
+
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
     }
 
     @Test
@@ -344,5 +405,21 @@ public class ValueTests {
         PercentageValue v = new PercentageValue(new BigDecimal(10.0), new BigDecimal(110.0), new BigDecimal(1.0), null,
                 null);
         assertThrows(IllegalArgumentException.class, () -> v.parseCommand(new DecimalType(9.0)));
+    }
+
+    @Test
+    public void textUpdate() {
+        TextValue v = new TextValue();
+
+        assertThat(v.parseMessage(new StringType("")), is(new StringType("")));
+        assertThat(v.parseMessage(new StringType("NULL")), is(new StringType("NULL")));
+
+        v.setNullValue("");
+        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
+        assertThat(v.parseMessage(new StringType("NULL")), is(new StringType("NULL")));
+
+        v.setNullValue("NULL");
+        assertThat(v.parseMessage(new StringType("NULL")), is(UnDefType.NULL));
+        assertThat(v.parseMessage(new StringType("")), is(new StringType("")));
     }
 }
