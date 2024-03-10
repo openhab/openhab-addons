@@ -11,10 +11,11 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 @org.osgi.annotation.bundle.Header(name = org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE, value = "*")
-package org.openhab.automation.jythonscripting;
+package org.openhab.automation.jythonscripting.internal;
 
 /**
  * Additional information for the Jython Scripting package
  *
  * @author Wouter Born - Initial contribution
+ * @author Holger Hees - Further development
  */
