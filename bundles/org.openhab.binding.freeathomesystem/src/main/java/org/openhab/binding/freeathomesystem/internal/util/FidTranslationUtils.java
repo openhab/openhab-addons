@@ -349,7 +349,14 @@ public class FidTranslationUtils {
     );
 
     @Nullable
-    public static String getFunctionIdText(String Key) {
-        return MAP_FUNCTION_ID.get(Key);
+    public static String getFunctionIdText(String Key) throws FreeAtHomeGeneralException {
+        String result = MAP_FUNCTION_ID.get(Key);
+
+        if (result != null) {
+            return MAP_FUNCTION_ID.get(Key);
+        } else {
+            throw new FreeAtHomeGeneralException(0,
+                    String.format("%s - Key:%s", "FID is not in the translation table", Key));
+        }
     }
 }

@@ -16,6 +16,7 @@ import static org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHome
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeGeneralException;
 import org.openhab.binding.freeathomesystem.internal.util.PidTranslationUtils;
 import org.openhab.binding.freeathomesystem.internal.valuestateconverter.BooleanValueStateConverter;
 import org.openhab.binding.freeathomesystem.internal.valuestateconverter.DecimalValueStateConverter;
@@ -140,7 +141,7 @@ public class FreeAtHomeDatapointGroup {
         return datapointGroupDirection;
     }
 
-    public boolean isDecimal() {
+    public boolean isDecimal() throws FreeAtHomeGeneralException {
         boolean ret = false;
 
         functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
@@ -157,7 +158,7 @@ public class FreeAtHomeDatapointGroup {
         return ret;
     }
 
-    public boolean isInteger() {
+    public boolean isInteger() throws FreeAtHomeGeneralException {
         boolean ret = false;
 
         functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
@@ -188,27 +189,27 @@ public class FreeAtHomeDatapointGroup {
         return result;
     }
 
-    public int getMax() {
+    public int getMax() throws FreeAtHomeGeneralException {
         return PidTranslationUtils.getMax(String.format("0x%04X", pairingId));
     }
 
-    public int getMin() {
+    public int getMin() throws FreeAtHomeGeneralException {
         return PidTranslationUtils.getMin(String.format("0x%04X", pairingId));
     }
 
-    public String getLabel() {
+    public String getLabel() throws FreeAtHomeGeneralException {
         return PidTranslationUtils.getShortTextForPairingId(String.format("0x%04X", pairingId));
     }
 
-    public String getDescription() {
+    public String getDescription() throws FreeAtHomeGeneralException {
         return PidTranslationUtils.getDescriptionTextForPairingId(String.format("0x%04X", pairingId));
     }
 
-    public String getValueType() {
+    public String getValueType() throws FreeAtHomeGeneralException {
         return PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
     }
 
-    public String getTypePattern() {
+    public String getTypePattern() throws FreeAtHomeGeneralException {
         String pattern = "";
 
         functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
@@ -230,7 +231,7 @@ public class FreeAtHomeDatapointGroup {
         return pattern;
     }
 
-    public ValueStateConverter getValueStateConverter() {
+    public ValueStateConverter getValueStateConverter() throws FreeAtHomeGeneralException {
         ValueStateConverter valueStateConverter = new BooleanValueStateConverter();
 
         functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
@@ -258,7 +259,7 @@ public class FreeAtHomeDatapointGroup {
         return valueStateConverter;
     }
 
-    public String getOpenHabItemType() {
+    public String getOpenHabItemType() throws FreeAtHomeGeneralException {
         String itemTypeString = "";
 
         functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
@@ -284,7 +285,7 @@ public class FreeAtHomeDatapointGroup {
         return itemTypeString;
     }
 
-    public String getOpenHabCategory() {
+    public String getOpenHabCategory() throws FreeAtHomeGeneralException {
         return PidTranslationUtils.getCategoryForPairingId(String.format("0x%04X", pairingId));
     }
 }

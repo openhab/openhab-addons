@@ -739,51 +739,91 @@ public class PidTranslationUtils {
             Map.entry("0x0621", new PIdContainerClass(PID_VALUETYPE_INTEGER, CATEGORY_UNDEFINED, "", "",
                     "pid-air-quality-voc-value", "pid-air-quality-voc-value-text")));
 
-    public static String getShortTextForPairingId(String Key) {
+    public static String getShortTextForPairingId(String Key) throws FreeAtHomeGeneralException {
         PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
-        return (desc != null) ? desc.label : "Unknown label";
+        if (desc == null) {
+            throw new FreeAtHomeGeneralException(0,
+                    String.format("%s - Key:%s", "PID is not in the translation table", Key));
+        }
+
+        return desc.label;
     }
 
-    public static String getDescriptionTextForPairingId(String Key) {
+    public static String getDescriptionTextForPairingId(String Key) throws FreeAtHomeGeneralException {
         PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
-        return (desc != null) ? desc.description : "Unknown description";
+        if (desc == null) {
+            throw new FreeAtHomeGeneralException(0,
+                    String.format("%s - Key:%s", "PID is not in the translation table", Key));
+        }
+
+        return desc.description;
     }
 
-    public static String getValueTypeForPairingId(String Key) {
+    public static String getValueTypeForPairingId(String Key) throws FreeAtHomeGeneralException {
         PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
-        return (desc != null) ? desc.valueType : PID_VALUETYPE_DECIMAL;
+        if (desc == null) {
+            throw new FreeAtHomeGeneralException(0,
+                    String.format("%s - Key:%s", "PID is not in the translation table", Key));
+        }
+
+        return desc.valueType;
     }
 
-    public static String getItemTypeForPairingId(String Key) {
+    public static String getItemTypeForPairingId(String Key) throws FreeAtHomeGeneralException {
         PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
-        return (desc != null) ? desc.category : CATEGORY_UNDEFINED;
+        if (desc == null) {
+            throw new FreeAtHomeGeneralException(0,
+                    String.format("%s - Key:%s", "PID is not in the translation table", Key));
+        }
+
+        return desc.category;
     }
 
-    public static String getCategoryForPairingId(String Key) {
+    public static String getCategoryForPairingId(String Key) throws FreeAtHomeGeneralException {
         PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
-        return (desc != null) ? desc.category : CATEGORY_UNDEFINED;
+        if (desc == null) {
+            throw new FreeAtHomeGeneralException(0,
+                    String.format("%s - Key:%s", "PID is not in the translation table", Key));
+        }
+
+        return desc.category;
     }
 
-    public static String getPatternForPairingId(String Key) {
+    public static String getPatternForPairingId(String Key) throws FreeAtHomeGeneralException {
         PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
-        return (desc != null) ? desc.category : CATEGORY_UNDEFINED;
+        if (desc == null) {
+            throw new FreeAtHomeGeneralException(0,
+                    String.format("%s - Key:%s", "PID is not in the translation table", Key));
+        }
+
+        return desc.category;
     }
 
-    public static int getMax(String Key) {
+    public static int getMax(String Key) throws FreeAtHomeGeneralException {
         PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
-        return (desc != null) ? desc.max : 1;
+        if (desc == null) {
+            throw new FreeAtHomeGeneralException(0,
+                    String.format("%s - Key:%s", "PID is not in the translation table", Key));
+        }
+
+        return desc.max;
     }
 
-    public static int getMin(String Key) {
+    public static int getMin(String Key) throws FreeAtHomeGeneralException {
         PIdContainerClass desc = MAP_PAIRING_ID.get(Key);
 
-        return (desc != null) ? desc.min : 0;
+        if (desc == null) {
+            throw new FreeAtHomeGeneralException(0,
+                    String.format("%s - Key:%s", "PID is not in the translation table", Key));
+        }
+
+        return desc.min;
     }
 }

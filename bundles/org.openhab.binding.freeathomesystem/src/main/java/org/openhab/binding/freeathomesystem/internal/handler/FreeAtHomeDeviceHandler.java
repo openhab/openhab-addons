@@ -27,12 +27,12 @@ import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapoi
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceChannel;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
 import org.openhab.binding.freeathomesystem.internal.type.FreeAtHomeChannelTypeProvider;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeGeneralException;
 import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeHttpCommunicationException;
 import org.openhab.binding.freeathomesystem.internal.util.UidUtils;
 import org.openhab.binding.freeathomesystem.internal.valuestateconverter.ValueStateConverter;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -46,6 +46,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
@@ -70,6 +71,7 @@ import org.slf4j.LoggerFactory;
 public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtHomeDeviceStateListener {
 
     private static final String CHANNEL_URI = "channel-type:freeathomesystem:config";
+    private static final String DEVICE_ID_CONFIG = "deviceId";
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDeviceHandler.class);
     private FreeAtHomeDeviceDescription device = new FreeAtHomeDeviceDescription();
@@ -96,38 +98,48 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
-            FreeAtHomeBridgeHandler freeAtHomeBridge = null;
-            Map<String, String> properties = getThing().getProperties();
+            final String locDeviceId = (String) getConfig().get(DEVICE_ID_CONFIG);
+
             Bridge bridge = this.getBridge();
 
             if (bridge != null) {
-                FreeAtHomeBridgeHandler bridgeHandler = (FreeAtHomeBridgeHandler) bridge.getHandler();
+                ThingHandler handler = bridge.getHandler();
 
-                String locDeviceId = properties.get("deviceId");
+                if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
+                    if (locDeviceId != null) {
+                        try {
+                            device = bridgeHandler.getFreeatHomeDeviceDescription(locDeviceId);
 
-                if (locDeviceId != null) {
-                    try {
-                        device = bridgeHandler.getFreeatHomeDeviceDescription(locDeviceId);
-                    } catch (FreeAtHomeHttpCommunicationException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/comm-error.error-in-sysap-com");
+                            updateChannels();
+                        } catch (FreeAtHomeHttpCommunicationException e) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "@text/comm-error.error-in-sysap-com");
+                        } catch (FreeAtHomeGeneralException e) {
+                            logger.debug("General error in the binding - during initialization {}",
+                                    device.getDeviceId());
+
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "@text/conf-error.general-binding-error");
+                        }
+
+                        // register device for status updates
+                        bridgeHandler.registerDeviceStateListener(device.getDeviceId(), this);
+
+                        updateStatus(ThingStatus.ONLINE);
+
+                        logger.debug("Device created - device id: {}", device.getDeviceId());
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "@text/conf-error.invalid-deviceconfig");
+
+                        logger.debug("Device cannot be created: device ID is null!");
                     }
-
-                    // update or reload channels
-                    updateChannels();
-
-                    // register device for status updates
-                    bridgeHandler.registerDeviceStateListener(device.getDeviceId(), this);
-
-                    updateStatus(ThingStatus.ONLINE);
-
-                    logger.debug("Device created - device id: {}", device.getDeviceId());
-                } else {
-                    logger.debug("Device cannot be created: device ID is null");
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/conf-error.bridge-not-configured");
+
+                logger.debug("Device cannot be created: no bridge is configured!");
                 return;
             }
         });
@@ -135,13 +147,9 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
     @Override
     public void dispose() {
-        // Unregister device and specific channel for event based state updated
-        removeChannels();
-
         Bridge bridge = this.getBridge();
 
-        logger.debug("Start creating device - device id: {}", device.getDeviceId());
-
+        // Unregister device and specific channel for event based state updated
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
 
@@ -149,6 +157,11 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                 bridgeHandler.unregisterDeviceStateListener(device.getDeviceId());
             }
         }
+
+        // Remove mapping tables
+        mapChannelUID.clear();
+
+        mapEventToChannelUID.clear();
 
         logger.debug("Device removed - device id: {}", device.getDeviceId());
     }
@@ -189,23 +202,21 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/comm-error.error-in-sysap-com");
+        } catch (FreeAtHomeGeneralException e) {
+            logger.debug("General error in the binding - during REFRESH command {} - at channel {} - Error string {}",
+                    device.getDeviceId(), channelUID.getAsString(), e.getMessage());
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error.general-binding-error");
         }
     }
 
     private void handleSetCommand(FreeAtHomeBridgeHandler freeAtHomeBridge, FreeAtHomeDatapointGroup dpg,
             ChannelUID channelUID, Command command) {
-        ValueStateConverter vsc = dpg.getValueStateConverter();
-
         State state = null;
         String valueString = "0";
 
-        if (command instanceof StopMoveType) {
-            valueString = "0";
-        } else {
-            state = ((State) command);
-            valueString = vsc.convertToValueString(state);
-        }
-
+        // initial error handling. look for the data point group validity
         FreeAtHomeDatapoint datapoint = dpg.getInputDatapoint();
 
         if (datapoint == null) {
@@ -216,28 +227,24 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         }
 
         try {
+            ValueStateConverter vsc = dpg.getValueStateConverter();
+
+            if (command instanceof StopMoveType) {
+                valueString = "0";
+            } else {
+                state = ((State) command);
+                valueString = vsc.convertToValueString(state);
+            }
+
             freeAtHomeBridge.setDatapoint(device.getDeviceId(), datapoint.channelId, datapoint.getDatapointId(),
                     valueString);
 
-            if (state != null) {
-                updateState(channelUID, state);
-            } else {
-                updateState(channelUID, new StringType("STOP"));
-            }
-
-            // in case of of a scene, simulate the button push state
-            if (device.isScene()) {
-                // the scene can be triggered only therefore reset after 3 seconds
-                scheduler.execute(() -> {
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                        logger.debug("Handle wait for scene {} - at channel {} - full command {}", device.getDeviceId(),
-                                channelUID.getAsString(), command.toFullString());
-                    }
-
-                    updateState(channelUID, OnOffType.OFF);
-                });
+            if (!device.isScene()) {
+                if (state != null) {
+                    updateState(channelUID, state);
+                } else {
+                    updateState(channelUID, new StringType("STOP"));
+                }
             }
         } catch (FreeAtHomeHttpCommunicationException e) {
             logger.debug(
@@ -246,6 +253,12 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/comm-error.error-in-sysap-com");
+        } catch (FreeAtHomeGeneralException e) {
+            logger.debug("General error in the binding - during SET command {} - at channel {} - Error string {}",
+                    device.getDeviceId(), channelUID.getAsString(), e.getMessage());
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error.general-binding-error");
         }
     }
 
@@ -292,7 +305,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         }
     }
 
-    public void onDeviceRemoved(String event) {
+    public void onDeviceRemoved() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.GONE);
     }
 
@@ -300,21 +313,29 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         // Get the channle UID belonging to this event
         ChannelUID channelUID = mapEventToChannelUID.get(event);
 
-        if (channelUID != null) {
-            // get the value State Converter for the channel
-            FreeAtHomeDatapointGroup dpg = mapChannelUID.get(channelUID);
+        try {
+            if (channelUID != null) {
+                // get the value State Converter for the channel
+                FreeAtHomeDatapointGroup dpg = mapChannelUID.get(channelUID);
 
-            if (dpg != null) {
-                State state = dpg.getValueStateConverter().convertToState(valueString);
+                if (dpg != null) {
+                    State state;
+                    state = dpg.getValueStateConverter().convertToState(valueString);
 
-                // Handle state change
-                handleEventBasedUpdate(channelUID, state);
+                    // Handle state change
+                    handleEventBasedUpdate(channelUID, state);
 
-                // if it is virtual device, give a feedback to free@home also
-                if (isThingHandlesVirtualDevice()) {
-                    feedbackForVirtualDevice(channelUID, valueString);
+                    // if it is virtual device, give a feedback to free@home also
+                    if (isThingHandlesVirtualDevice()) {
+                        feedbackForVirtualDevice(channelUID, valueString);
+                    }
                 }
             }
+        } catch (FreeAtHomeGeneralException e) {
+            logger.debug("General error in the binding during onDeviceStateChange");
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error.general-binding-error");
         }
     }
 
@@ -380,7 +401,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
     }
 
     public ChannelTypeUID createChannelTypeForDatapointgroup(FreeAtHomeDatapointGroup dpg,
-            ChannelTypeUID channelTypeUID) {
+            ChannelTypeUID channelTypeUID) throws FreeAtHomeGeneralException {
         StateDescriptionFragmentBuilder stateFragment = StateDescriptionFragmentBuilder.create();
 
         stateFragment.withReadOnly(dpg.isReadOnly());
@@ -417,7 +438,14 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         return channelTypeUID;
     }
 
-    public void updateChannels() {
+    public void updateChannels() throws FreeAtHomeGeneralException {
+        // define update policy
+        AutoUpdatePolicy policy = AutoUpdatePolicy.DEFAULT;
+
+        if (device.isScene()) {
+            policy = AutoUpdatePolicy.VETO;
+        }
+
         // Initialize channels
         List<Channel> thingChannels = new ArrayList<>(this.getThing().getChannels());
 
@@ -463,7 +491,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                     Channel thingChannel = ChannelBuilder.create(channelUID)
                             .withAcceptedItemType(dpg.getOpenHabItemType()).withKind(ChannelKind.STATE)
                             .withProperties(channelProps).withLabel(channelLabel).withDescription(channelDescription)
-                            .withType(channelTypeUID).build();
+                            .withType(channelTypeUID).withAutoUpdatePolicy(policy).build();
                     thingChannels.add(thingChannel);
 
                     logger.debug("Thing channel created - device: {} - channelUID: {} - channel label: {}",
@@ -508,7 +536,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         });
     }
 
-    private void reloadChannelTypes() {
+    private void reloadChannelTypes() throws FreeAtHomeGeneralException {
         FreeAtHomeBridgeHandler freeAtHomeBridge = null;
 
         Bridge bridge = this.getBridge();

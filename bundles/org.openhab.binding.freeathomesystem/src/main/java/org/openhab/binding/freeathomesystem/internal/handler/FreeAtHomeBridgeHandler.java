@@ -423,8 +423,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                 JsonElement element = jsonObject.get(eventDatapointID);
                 String value = element.getAsString();
 
-                // channelUpdateHandler.updateChannelByDatapointEvent(eventDatapointID, value);
-
                 String[] parts = eventDatapointID.split("/");
 
                 FreeAtHomeDeviceHandler deviceHandler = mapEventListeners.get(parts[0]);
@@ -434,6 +432,30 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                 }
 
                 logger.debug("Socket event processed: event-datapoint-ID {} value {}", eventDatapointID, value);
+            }
+        }
+    }
+
+    public void markDeviceRemovedOnWebsocketFeedback(String receivedText) {
+        JsonReader reader = new JsonReader(new StringReader(receivedText));
+        reader.setLenient(true);
+        JsonElement jsonTree = JsonParser.parseReader(reader);
+
+        // check the output
+        if (jsonTree.isJsonObject()) {
+            JsonObject jsonObject = jsonTree.getAsJsonObject();
+
+            jsonObject = jsonObject.getAsJsonObject(sysApUID);
+            JsonArray jsonArray = jsonObject.getAsJsonArray("devicesRemoved");
+
+            for (JsonElement element : jsonArray) {
+                FreeAtHomeDeviceHandler deviceHandler = mapEventListeners.get(element.getAsString());
+
+                if (deviceHandler != null) {
+                    deviceHandler.onDeviceRemoved();
+
+                    logger.debug("Device removal processed");
+                }
             }
         }
     }
@@ -681,18 +703,6 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
         });
     }
 
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters);
-
-        // load configuration
-        FreeAtHomeBridgeHandlerConfiguration locConfig = getConfigAs(FreeAtHomeBridgeHandlerConfiguration.class);
-
-        ipAddress = locConfig.ipAddress;
-        password = locConfig.password;
-        username = locConfig.username;
-    }
-
     /**
      * Method to dispose
      */
@@ -877,6 +887,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                 logger.debug("Received websocket text: {} ", message);
 
                 setDatapointOnWebsocketFeedback(message);
+
+                markDeviceRemovedOnWebsocketFeedback(message);
             }
         } else {
             logger.debug("Invalid message string");

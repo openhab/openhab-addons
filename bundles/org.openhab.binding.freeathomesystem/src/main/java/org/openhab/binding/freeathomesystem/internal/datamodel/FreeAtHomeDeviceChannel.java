@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeathomesystem.internal.util.FidTranslationUtils;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeGeneralException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -520,7 +521,7 @@ public class FreeAtHomeDeviceChannel {
         return channelFunctionID;
     }
 
-    public @Nullable String getFunctionIdText() {
+    public @Nullable String getFunctionIdText() throws FreeAtHomeGeneralException {
         String functionIdText = FidTranslationUtils
                 .getFunctionIdText(String.format("0x%04X", Integer.parseInt(channelFunctionID, 16)));
         return functionIdText;

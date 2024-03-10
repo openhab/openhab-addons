@@ -81,7 +81,7 @@ public class FreeAtHomeSystemHandlerFactory extends BaseThingHandlerFactory {
             // Start HttpClient.
             httpClient.start();
         } catch (Exception ex) {
-            logger.error("ould not create HttpClient: {}", ex.getMessage());
+            logger.error("Could not create HttpClient: {}", ex.getMessage());
 
             throw new IllegalStateException("Could not create HttpClient", ex);
         }
