@@ -19,6 +19,7 @@ import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tapocontrol.internal.devices.dto.TapoLightDynamicFx;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
+import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -208,8 +209,8 @@ public class TapoBulbHandler extends TapoBaseDeviceHandler {
             TapoLightDynamicFx fxData = new TapoLightDynamicFx();
             fxData.setEffect(fxId);
             connector.sendCommandAndQuery(DEVICE_CMD_SET_DYNAIMCLIGHT_FX, fxData, bulbData.supportsMultiRequest());
-        } catch (Exception e) {
-            logger.warn("({}) could not load effect '{}'", uid, fxId);
+        } catch (TapoErrorHandler te) {
+            logger.warn("({}) could not load effect '{}' - {}", uid, fxId, te.getMessage());
         }
     }
 

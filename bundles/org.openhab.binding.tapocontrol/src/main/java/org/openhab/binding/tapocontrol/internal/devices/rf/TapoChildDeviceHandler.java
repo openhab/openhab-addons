@@ -74,19 +74,15 @@ public abstract class TapoChildDeviceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.trace("({}) Initializing thing ", uid);
-        try {
-            Bridge bridgeThing = getBridge();
-            if (bridgeThing != null) {
-                if (bridgeThing.getHandler() instanceof TapoHubHandler tapoHubHandler) {
-                    this.hub = tapoHubHandler;
-                }
-                activateDevice();
-            } else {
-                deviceError.raiseError(ERR_CONFIG_NO_BRIDGE);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
+        Bridge bridgeThing = getBridge();
+        if (bridgeThing != null) {
+            if (bridgeThing.getHandler() instanceof TapoHubHandler tapoHubHandler) {
+                this.hub = tapoHubHandler;
             }
-        } catch (Exception e) {
-            logger.debug("({}) configuration error : {}", uid, e.getMessage());
+            activateDevice();
+        } else {
+            deviceError.raiseError(ERR_CONFIG_NO_BRIDGE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
         }
     }
 
@@ -112,18 +108,11 @@ public abstract class TapoChildDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        boolean refreshInfo = false;
-
         /* perform actions */
         if (command instanceof RefreshType) {
-            refreshInfo = true;
+            setDeviceData();
         } else {
             logger.warn("({}) command type '{}' not supported for channel '{}'", uid, command, channelUID.getId());
-        }
-
-        /* refreshInfo */
-        if (refreshInfo) {
-            setDeviceData();
         }
     }
 

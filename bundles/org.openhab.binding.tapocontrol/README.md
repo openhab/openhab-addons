@@ -41,12 +41,15 @@ If enabled, all devices stored in your cloud account will be detected even if th
 From cloud you can get more informations such as "Device-Alias" as from udp-discovery.
 But you need to know the IP-Adress of your device. This must be set manually in the thing configuration.
 
-Udp-Discovery can find only devices which are online in your local network and get less informations as from cloud. But therefore it set's device-ip and protocol automaticly.
-If you have problems with udp-discovery, try to set the advanced setting 'broadcastAddress' to your local subnet ('e.g. 192.168.0.255'). Default is '255.255.255.255'
+UDP-Discovery can find only devices which are online in your local network and get less informations as from cloud.
+But therefore it set's device-ip and protocol automaticly.
+If you have problems with udp-discovery, try to set the advanced setting 'broadcastAddress' to your local subnet ('e.g. 192.168.0.255').
+Default is '255.255.255.255'
 
 You can combine both discovery methods to get any informations from local devices.  
 If you enable setting 'onlyLocalOnlineDevices' results will only generated for local online devices but with the combined data of cloud discovery.
-If this setting is disabled and you enabled both discovery-methods, you will get all devices stored in cloud, but if they are not online you have to set the device-ip and protocol manually.
+RF-Devices will be discovered by the hub they are connected to.
+You can discover them manually or use ´backgroundDiscovery´ 
 
 RF-Devices will be discovered by the hub they are connected to. You can discover them manually or use ´backgroundDiscovery´ 
 

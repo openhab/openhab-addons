@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.devices.wifi.hub;
 
-import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
-import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
 
@@ -30,7 +28,6 @@ import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandl
 import org.openhab.binding.tapocontrol.internal.discovery.TapoChildDiscoveryService;
 import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
 import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
-import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -125,19 +122,6 @@ public class TapoHubHandler extends TapoBaseDeviceHandler implements BridgeHandl
     /****************************
      * PUBLIC FUNCTIONS
      ****************************/
-
-    /**
-     * Check Device Configuration
-     */
-    @Override
-    protected boolean checkConfig() {
-        /* check ip-address */
-        if (!deviceConfig.ipAddress.matches(IPV4_REGEX)) {
-            setError(new TapoErrorHandler(ERR_CONFIG_IP));
-            return false;
-        }
-        return true;
-    }
 
     /**
      * query device Properties

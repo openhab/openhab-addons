@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.tapocontrol.internal.devices.wifi;
 
+import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolEnum;
+import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 
 /**
  * The {@link TapoDeviceConfiguration} class contains fields mapping bridge configuration parameters.
@@ -35,4 +40,22 @@ public final class TapoDeviceConfiguration {
     public int httpPort = 80;
     public int pollingInterval = 30;
     public boolean backgroundDiscovery = false;
+
+    /**
+     * Check for configuration errors
+     * 
+     * @return true if config is valid
+     * @throws TapoErrorHandler
+     */
+    public boolean checkConfig() throws TapoErrorHandler {
+        if (!ipAddress.matches(IPV4_REGEX)) {
+            throw new TapoErrorHandler(ERR_CONFIG_IP);
+        }
+        try {
+            TapoProtocolEnum.valueOfString(protocol);
+        } catch (Exception e) {
+            throw new TapoErrorHandler(ERR_CONFIG_PROTOCOL);
+        }
+        return true;
+    }
 }

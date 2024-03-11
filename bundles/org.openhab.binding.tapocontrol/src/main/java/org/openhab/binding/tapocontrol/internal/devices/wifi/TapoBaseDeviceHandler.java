@@ -91,8 +91,11 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
             if (checkRequirements()) {
                 activateDevice();
             }
+        } catch (TapoErrorHandler te) {
+            logger.warn("({}) deviceConfiguration error : {}", uid, te.getMessage());
+            setError(te);
         } catch (Exception e) {
-            logger.debug("({}) deviceConfiguration error : {}", uid, e.getMessage());
+            logger.debug("({}) error initializing device : {}", uid, e.getMessage());
         }
     }
 
@@ -103,8 +106,8 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
         Bridge bridgeThing = getBridge();
         if (bridgeThing != null) {
             BridgeHandler bridgeHandler = bridgeThing.getHandler();
-            if (bridgeHandler != null) {
-                this.bridge = (TapoBridgeHandler) bridgeHandler;
+            if (bridgeHandler instanceof TapoBridgeHandler tapoBridgeHandler) {
+                this.bridge = tapoBridgeHandler;
                 this.connector = new TapoDeviceConnector(this, bridge);
             }
         }
@@ -139,28 +142,14 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     /**
      * Check if bridge is set
      */
-    protected boolean checkBridge() {
+    protected boolean checkBridge() throws TapoErrorHandler {
         /* check bridge */
         if (!(bridge instanceof TapoBridgeHandler)) {
-            setError(new TapoErrorHandler(ERR_CONFIG_NO_BRIDGE));
-            return false;
+            throw new TapoErrorHandler(ERR_CONFIG_NO_BRIDGE);
         }
         /* check credentials */
         if (!bridge.getCredentials().areSet()) {
-            setError(new TapoErrorHandler(ERR_CONFIG_CREDENTIALS));
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Check Device Configuration
-     */
-    protected boolean checkConfig() {
-        /* check ip-address */
-        if (!deviceConfig.ipAddress.matches(IPV4_REGEX)) {
-            setError(new TapoErrorHandler(ERR_CONFIG_IP));
-            return false;
+            throw new TapoErrorHandler(ERR_CONFIG_CREDENTIALS);
         }
         return true;
     }
@@ -168,8 +157,8 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
     /**
      * Check if Bridge is set and deviceConfiguration is set
      */
-    protected boolean checkRequirements() {
-        return (checkBridge() && checkConfig());
+    protected boolean checkRequirements() throws TapoErrorHandler {
+        return (checkBridge() && deviceConfig.checkConfig());
     }
 
     /**

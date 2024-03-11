@@ -28,7 +28,7 @@ public enum TapoErrorCode {
     ERR_API_NULL_TRANSPORT(1000),
     ERR_API_REQUEST(1002),
     ERR_API_PROTOCOL(1003, TapoErrorType.CONFIGURATION_ERROR),
-    ERR_API_HAND_SHAKE_FAILED(1100, TapoErrorType.COMMUNICATION_RETRY),
+    ERR_API_HAND_SHAKE_FAILED(1100, TapoErrorType.COMMUNICATION_ERROR),
     ERR_API_LOGIN_FAILED(1111),
     ERR_API_HTTP_TRANSPORT_FAILED(1112),
     ERR_API_MULTI_REQUEST_FAILED(1200),
@@ -96,7 +96,8 @@ public enum TapoErrorCode {
     // List of Binding-Config-ErrorCodes
     ERR_CONFIG_IP(10001, TapoErrorType.CONFIGURATION_ERROR), // ip not set
     ERR_CONFIG_CREDENTIALS(10002, TapoErrorType.CONFIGURATION_ERROR), // credentials not set
-    ERR_CONFIG_NO_BRIDGE(10003, TapoErrorType.CONFIGURATION_ERROR); // no bridge configured
+    ERR_CONFIG_NO_BRIDGE(10003, TapoErrorType.CONFIGURATION_ERROR), // no bridge configured
+    ERR_CONFIG_PROTOCOL(10004, TapoErrorType.CONFIGURATION_ERROR); // unknown protocol
 
     private Integer code;
     private TapoErrorType errorType;

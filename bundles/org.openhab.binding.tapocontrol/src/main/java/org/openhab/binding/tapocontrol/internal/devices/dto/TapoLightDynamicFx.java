@@ -88,6 +88,14 @@ public class TapoLightDynamicFx {
         return name;
     }
 
+    public boolean hasEffect(String id) {
+        try {
+            return getEffect(id) instanceof TapoLightDynamicFx;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     /***********************************
      *
      * PRIVATE HELPERS
@@ -123,7 +131,6 @@ public class TapoLightDynamicFx {
             } catch (Exception e) {
                 throw new TapoErrorHandler(TapoErrorCode.ERR_API_JSON_DECODE_FAIL);
             }
-
         } else {
             throw new TapoErrorHandler(TapoErrorCode.ERR_BINDING_FX_NOT_FOUND);
         }
