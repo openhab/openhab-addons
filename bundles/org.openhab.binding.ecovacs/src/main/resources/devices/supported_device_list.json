@@ -557,5 +557,41 @@
         "modelName": "DEEBOT U2 SE",
         "deviceClass": "zjna8m",
         "deviceClassLink": "ipzjy0"
+    },
+
+    {
+        "modelName": "DEEBOT X2",
+        "deviceClass": "e6ofmn",
+        "protoVersion": "json_v2",
+        "usesMqtt": true,
+        "capabilities": [
+            "mopping_system",
+            "main_brush",
+            "spot_area_cleaning",
+            "free_clean_command",
+            "custom_area_cleaning",
+            "clean_speed_control",
+            "voice_reporting",
+            "read_network_info",
+            "unit_care_lifespan",
+            "true_detect_3d",
+            "mapping",
+            "auto_empty_station"
+        ]
+    },
+    {
+        "modelName": "DEEBOT X2 OMNI",
+        "deviceClass": "lf3bn4",
+        "deviceClassLink": "e6ofmn"
+    },
+    {
+        "modelName": "DEEBOT X2 COMBO",
+        "deviceClass": "e6rcnf",
+        "deviceClassLink": "e6ofmn"
+    },
+    {
+        "modelName": "DEEBOT X2 PRO OMNI",
+        "deviceClass": "ip3mmy",
+        "deviceClassLink": "e6ofmn"
     }
 ]
