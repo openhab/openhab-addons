@@ -370,6 +370,7 @@ See oven.
 | spinningspeed       | String               | Read       | Spinning speed in the program running on the appliance               |
 | energyConsumption   | Number:Energy        | Read       | Energy consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance  |
+| laundryWeight       | Number:Mass          | Read       | Weight of the laundry inside the appliance                           |
 
 ##### Programs
 

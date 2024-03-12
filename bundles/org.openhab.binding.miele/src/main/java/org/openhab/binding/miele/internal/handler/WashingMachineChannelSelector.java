@@ -143,7 +143,8 @@ public enum WashingMachineChannelSelector implements ApplianceChannelSelector {
     ENERGY_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, ENERGY_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
             true),
     WATER_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, WATER_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
-            true);
+            true),
+    LAUNDRY_WEIGHT(EXTENDED_DEVICE_STATE_PROPERTY_NAME, LAUNDRY_WEIGHT_CHANNEL_ID, QuantityType.class, false, true);
 
     private final Logger logger = LoggerFactory.getLogger(WashingMachineChannelSelector.class);
 

@@ -263,4 +263,11 @@
 		<state readOnly="true" pattern="%.1f l"/>
 	</channel-type>
 
+	<channel-type id="laundry-weight" advanced="true">
+		<item-type>Number:Mass</item-type>
+		<label>Laundry Weight</label>
+		<description>Weight of the laundry inside the appliance</description>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+
 </thing:thing-descriptions>
