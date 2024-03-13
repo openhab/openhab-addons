@@ -6,7 +6,7 @@ There are several open source utilities available for generating the certificate
 One good choice is included with the popular pylutron library which is available on Github at https://github.com/gurumitts/pylutron-caseta.
 On a Unix-like system, you can easily install it via `pip`:
 
-```
+```bash
 $ pip install pylutron_caseta[cli]
 Defaulting to user installation because normal site-packages is not writeable
 Collecting pylutron_caseta[cli]
@@ -16,7 +16,7 @@ Successfully installed pylutron_caseta-0.20.0
 ```
 
 First, you need to locate your bridge using `leap-scan`:
-```
+```bash
 $ leap-scan
 Lutron-05701a1c.local. 192.168.1.10 fe80::5a2b:aee:ed11:c6d5
 <Ctrl-C>
@@ -24,7 +24,7 @@ Lutron-05701a1c.local. 192.168.1.10 fe80::5a2b:aee:ed11:c6d5
 
 Then, you can pair with the found device using the address found above:
 
-```
+```bash
 $ lap-pair Lutron-05701a1c.local. --cert caseta.crt --key caseta.key --cacert caseta-bridge.crt
 Press the small black button on the back of the bridge to complete pairing.
 Successfully paired with 1.119
@@ -38,7 +38,7 @@ Once the key and certificate files have been generated, you will need to load th
 You can load a keystore from the key and certificate files on a Linux system with the following commands.
 You’ll need access to both the java keytool and openssl.
 
-```
+```bash
 $ openssl pkcs12 -export -in caseta.crt -inkey caseta.key -out caseta.p12 -name caseta
 Enter Export Password:
 Verifying - Enter Export Password:
