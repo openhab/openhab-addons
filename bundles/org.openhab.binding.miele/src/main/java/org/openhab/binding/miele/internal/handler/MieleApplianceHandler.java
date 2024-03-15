@@ -193,7 +193,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             if (bridgeHandler != null) {
                 bridgeHandler.unregisterApplianceStatusListener(applianceId, this);
             }
-            applianceId = null;
+            this.applianceId = null;
         }
         startTimeStabilizer.clear();
         finishTimeStabilizer.clear();
