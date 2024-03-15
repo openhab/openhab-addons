@@ -953,6 +953,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         }
                         break;
                     case CHANNEL_SPEAKER_A:
+                    case CHANNEL_MAIN_SPEAKER_A:
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
@@ -962,6 +963,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         }
                         break;
                     case CHANNEL_SPEAKER_B:
+                    case CHANNEL_MAIN_SPEAKER_B:
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
@@ -1761,21 +1763,29 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         speakerb = false;
                         updateChannelState(CHANNEL_SPEAKER_A);
                         updateChannelState(CHANNEL_SPEAKER_B);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_A);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_B);
                     } else if (MSG_VALUE_SPEAKER_B.equalsIgnoreCase(value)) {
                         speakera = false;
                         speakerb = true;
                         updateChannelState(CHANNEL_SPEAKER_A);
                         updateChannelState(CHANNEL_SPEAKER_B);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_A);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_B);
                     } else if (MSG_VALUE_SPEAKER_AB.equalsIgnoreCase(value)) {
                         speakera = true;
                         speakerb = true;
                         updateChannelState(CHANNEL_SPEAKER_A);
                         updateChannelState(CHANNEL_SPEAKER_B);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_A);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_B);
                     } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
                         speakera = false;
                         speakerb = false;
                         updateChannelState(CHANNEL_SPEAKER_A);
                         updateChannelState(CHANNEL_SPEAKER_B);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_A);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_B);
                     } else {
                         throw new RotelException("Invalid value");
                     }
@@ -1878,6 +1888,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         updateChannelState(CHANNEL_MAIN_MUTE);
         updateChannelState(CHANNEL_MAIN_BASS);
         updateChannelState(CHANNEL_MAIN_TREBLE);
+        updateChannelState(CHANNEL_MAIN_SPEAKER_A);
+        updateChannelState(CHANNEL_MAIN_SPEAKER_B);
 
         updateChannelState(CHANNEL_ALL_POWER);
         updateChannelState(CHANNEL_ALL_BRIGHTNESS);
@@ -2509,11 +2521,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 }
                 break;
             case CHANNEL_SPEAKER_A:
+            case CHANNEL_MAIN_SPEAKER_A:
                 if (isPowerOn()) {
                     state = OnOffType.from(speakera);
                 }
                 break;
             case CHANNEL_SPEAKER_B:
+            case CHANNEL_MAIN_SPEAKER_B:
                 if (isPowerOn()) {
                     state = OnOffType.from(speakerb);
                 }

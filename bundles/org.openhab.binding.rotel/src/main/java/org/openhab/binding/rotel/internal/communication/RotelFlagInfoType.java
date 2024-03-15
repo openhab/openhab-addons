@@ -28,5 +28,9 @@ public enum RotelFlagInfoType {
     ZONE,
     CENTER,
     SURROUND_LEFT,
-    SURROUND_RIGHT
+    SURROUND_RIGHT,
+    AM,
+    FM,
+    SPEAKER_A,
+    SPEAKER_B
 }

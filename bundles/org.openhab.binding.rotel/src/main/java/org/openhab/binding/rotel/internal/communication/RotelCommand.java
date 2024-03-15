@@ -580,7 +580,7 @@ public enum RotelCommand {
     public static final List<RotelCommand> OTHER_CMDS_SET8 = List.of(ROOM_EQ_TOGGLE, SPEAKER_SETTING_TOGGLE,
             RESET_FACTORY);
     public static final List<RotelCommand> OTHER_CMDS_SET9 = List.of(RECORD_FONCTION_SELECT, TONE_CONTROL_SELECT,
-            ZONE_TOGGLE, SPEAKER_A_TOGGLE, SPEAKER_B_TOGGLE);
+            ZONE_TOGGLE);
 
     public static final byte PRIMARY_COMMAND = (byte) 0x10;
 

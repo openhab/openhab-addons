@@ -365,6 +365,23 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
                 // Ignore it
             }
         }
+        if (model.isInfoPresentInFlags(RotelFlagInfoType.SPEAKER_A)
+                && model.isInfoPresentInFlags(RotelFlagInfoType.SPEAKER_B)) {
+            try {
+                String speakerValue = MSG_VALUE_OFF;
+                if (model.isInfoOnInFlags(RotelFlagInfoType.SPEAKER_A, flags)
+                        && model.isInfoOnInFlags(RotelFlagInfoType.SPEAKER_B, flags)) {
+                    speakerValue = MSG_VALUE_SPEAKER_AB;
+                } else if (model.isInfoOnInFlags(RotelFlagInfoType.SPEAKER_A, flags)) {
+                    speakerValue = MSG_VALUE_SPEAKER_A;
+                } else if (model.isInfoOnInFlags(RotelFlagInfoType.SPEAKER_B, flags)) {
+                    speakerValue = MSG_VALUE_SPEAKER_B;
+                }
+                dispatchKeyValue(KEY_SPEAKER, speakerValue);
+            } catch (RotelException e1) {
+                // Ignore it
+            }
+        }
         boolean checkMultiIn = false;
         boolean checkSource = true;
         try {

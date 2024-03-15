@@ -1250,6 +1250,18 @@ public class RotelSimuConnector extends RotelConnector {
                 } catch (RotelException e) {
                 }
             }
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.SPEAKER_A)) {
+                try {
+                    model.setInfoInFlags(RotelFlagInfoType.SPEAKER_A, flags, speakerA);
+                } catch (RotelException e) {
+                }
+            }
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.SPEAKER_B)) {
+                try {
+                    model.setInfoInFlags(RotelFlagInfoType.SPEAKER_B, flags, speakerB);
+                } catch (RotelException e) {
+                }
+            }
             int size = 6 + model.getRespNbChars() + model.getRespNbFlags();
             byte[] dataBuffer = new byte[size];
             int idx = 0;

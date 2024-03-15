@@ -61,7 +61,11 @@ public class RotelFlagsMapping {
                     RotelFlagInfoType.SURROUND_LEFT, new int[] { 5, 4 }, //
                     RotelFlagInfoType.SURROUND_RIGHT, new int[] { 5, 3 }));
     public static final RotelFlagsMapping MAPPING6 = new RotelFlagsMapping(
-            Map.of(RotelFlagInfoType.ZONE, new int[] { 1, 1 }));
+            Map.of(RotelFlagInfoType.ZONE, new int[] { 1, 1 }, //
+                    RotelFlagInfoType.SPEAKER_A, new int[] { 1, 3 }, //
+                    RotelFlagInfoType.SPEAKER_B, new int[] { 1, 2 }, //
+                    RotelFlagInfoType.FM, new int[] { 3, 5 }, //
+                    RotelFlagInfoType.AM, new int[] { 4, 0 }));
     public static final RotelFlagsMapping NO_MAPPING = new RotelFlagsMapping(Map.of());
 
     private Map<RotelFlagInfoType, int @Nullable []> infos;
