@@ -65,7 +65,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     public void initialize() {
         super.initialize();
         freshestEventTime = null;
-        securityId = handler.getConfiguration().as(HomeConfiguration.class).getIdForArea(FeatureArea.SECURITY);
+        securityId = handler.getThingConfigAs(HomeConfiguration.class).getIdForArea(FeatureArea.SECURITY);
     }
 
     @Override
