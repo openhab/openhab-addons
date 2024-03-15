@@ -32,6 +32,14 @@
 				<label>Reduced Electricity Tax</label>
 				<description>Reduced electricity tax in DKK per kWh. For electric heating customers only.</description>
 			</channel>
+			<channel id="co2-emission-prognosis" typeId="co2-emission">
+				<label>CO₂ Emission Prognosis</label>
+				<description>Estimated prognosis for CO₂ emission following the day-ahead market in g/kWh.</description>
+			</channel>
+			<channel id="co2-emission-realtime" typeId="co2-emission">
+				<label>CO₂ Emission Realtime</label>
+				<description>Near up-to-date history for CO₂ emission from electricity consumed in Denmark in g/kWh.</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 

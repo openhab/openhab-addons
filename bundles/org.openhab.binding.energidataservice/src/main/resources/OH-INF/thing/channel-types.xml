@@ -21,4 +21,12 @@
 		<config-description-ref uri="channel-type:energidataservice:datahub-price"/>
 	</channel-type>
 
+	<channel-type id="co2-emission">
+		<item-type>Number:EmissionIntensity</item-type>
+		<label>CO₂ Emission</label>
+		<description>CO₂ emission in g/kWh.</description>
+		<category>Smoke</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
 </thing:thing-descriptions>

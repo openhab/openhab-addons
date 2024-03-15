@@ -47,22 +47,24 @@ It will not impact channels, see [Electricity Tax](#electricity-tax) for further
 
 ### Channel Group `electricity`
 
-| Channel                  | Type               | Description                                                                    | Advanced |
-|--------------------------|--------------------|--------------------------------------------------------------------------------|----------|
-| spot-price               | Number:EnergyPrice | Spot price in DKK or EUR per kWh                                               | no       |
-| grid-tariff              | Number:EnergyPrice | Grid tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured | no       |
-| system-tariff            | Number:EnergyPrice | System tariff in DKK per kWh                                                   | no       |
-| transmission-grid-tariff | Number:EnergyPrice | Transmission grid tariff in DKK per kWh                                        | no       |
-| electricity-tax          | Number:EnergyPrice | Electricity tax in DKK per kWh                                                 | no       |
-| reduced-electricity-tax  | Number:EnergyPrice | Reduced electricity tax in DKK per kWh. For electric heating customers only    | no       |
+| Channel                  | Type                     | Description                                                                            |
+|--------------------------|--------------------------|----------------------------------------------------------------------------------------|
+| spot-price               | Number:EnergyPrice       | Spot price in DKK or EUR per kWh                                                       |
+| grid-tariff              | Number:EnergyPrice       | Grid tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured         |
+| system-tariff            | Number:EnergyPrice       | System tariff in DKK per kWh                                                           |
+| transmission-grid-tariff | Number:EnergyPrice       | Transmission grid tariff in DKK per kWh                                                | 
+| electricity-tax          | Number:EnergyPrice       | Electricity tax in DKK per kWh                                                         |
+| reduced-electricity-tax  | Number:EnergyPrice       | Reduced electricity tax in DKK per kWh. For electric heating customers only            |
+| co2-emission-prognosis   | Number:EmissionIntensity | Estimated prognosis for CO₂ emission following the day-ahead market in g/kWh           |
+| co2-emission-realtime    | Number:EmissionIntensity | Near up-to-date history for CO₂ emission from electricity consumed in Denmark in g/kWh |
 
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
 This has the following advantages:
 
-- Full customization possible: Freely choose the channels which should be included in the total.
-- An additional item containing the kWh fee from your electricity supplier can be added also.
-- Spot price can be configured in EUR while tariffs are in DKK.
+- Full customization possible: Freely choose the channels which should be included in the total (even between different bindings).
+- Spot price can be configured in EUR while tariffs are in DKK (and currency conversions are performed outside the binding).
+- An additional item containing the kWh fee from your electricity supplier can be added also (and it can be dynamic).
 
 If you want electricity tax included in your total price, please add either `electricity-tax` or `reduced-electricity-tax` to the group - depending on which one applies.
 See [Electricity Tax](#electricity-tax) for further information.
@@ -140,6 +142,17 @@ This reduced rate is made available through channel `reduced-electricity-tax`.
 
 The binding cannot determine or manage rate variations as they depend on metering data.
 Usually `reduced-electricity-tax` is preferred when using electricity for heating.
+
+#### CO₂ Emissions
+
+Data for the CO₂ emission channels is published as time series with a resolution of 5 minutes.
+
+Channel `co2-emission-realtime` provides near up-to-date historic emission and is refreshed every 5 minutes.
+When the binding is started, or a new item is linked, or a linked item receives an update command, historic data for the last 24 hours is provided in addition to the current value.
+
+Channel `co2-emission-prognosis` provides estimated prognosis for future emissions and is refreshed every 15 minutes.
+Depending on the time of the day, an update of the prognosis may include estimates for more than 9 hours, but every update will have at least 9 hours into the future.
+A persistence configuration is required for this channel.
 
 ## Thing Actions
 
