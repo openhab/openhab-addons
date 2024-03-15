@@ -36,6 +36,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 
@@ -50,6 +51,7 @@ public class Capability {
     protected final Thing thing;
     protected final CommonInterface handler;
     protected final ModuleType moduleType;
+    protected final ThingUID thingUID;
 
     protected boolean firstLaunch;
     protected Map<String, String> properties = Map.of();
@@ -58,6 +60,7 @@ public class Capability {
     Capability(CommonInterface handler) {
         this.handler = handler;
         this.thing = handler.getThing();
+        this.thingUID = thing.getUID();
         this.moduleType = ModuleType.from(thing.getThingTypeUID());
     }
 

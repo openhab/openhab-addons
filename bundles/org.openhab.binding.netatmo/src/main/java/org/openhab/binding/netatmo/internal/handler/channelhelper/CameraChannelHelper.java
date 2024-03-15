@@ -85,7 +85,7 @@ public class CameraChannelHelper extends ChannelHelper {
         if (!isMonitoring || (local && !isLocal) || url == null) {
             return null;
         }
-        return String.format("%s%s", url, LIVE_PICTURE);
+        return "%s%s".formatted(url, LIVE_PICTURE);
     }
 
     private State getLiveStreamURL(boolean local, @Nullable String configQual, boolean isMonitoring) {
@@ -94,6 +94,6 @@ public class CameraChannelHelper extends ChannelHelper {
             return UnDefType.NULL;
         }
         String finalQual = configQual != null ? configQual : "poor";
-        return toStringType("%s/live/%s", url, local ? String.format("files/%s/index.m3u8", finalQual) : "index.m3u8");
+        return toStringType("%s/live/%s", url, local ? "files/%s/index.m3u8".formatted(finalQual) : "index.m3u8");
     }
 }
