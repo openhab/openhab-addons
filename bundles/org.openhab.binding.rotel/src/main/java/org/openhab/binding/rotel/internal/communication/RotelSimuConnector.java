@@ -1220,31 +1220,33 @@ public class RotelSimuConnector extends RotelConnector {
         if (protocol == RotelProtocol.HEX) {
             byte[] chars = Arrays.copyOf(text.getBytes(StandardCharsets.US_ASCII), model.getRespNbChars());
             byte[] flags = new byte[model.getRespNbFlags()];
-            try {
-                model.setMultiInput(flags, multiinput);
-            } catch (RotelException e) {
-            }
-            if (model.isZone2PresentInFlags()) {
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.MULTI_INPUT)) {
                 try {
-                    model.setZone2(flags, powers[2]);
+                    model.setInfoInFlags(RotelFlagInfoType.MULTI_INPUT, flags, multiinput);
                 } catch (RotelException e) {
                 }
             }
-            if (model.isZone3PresentInFlags()) {
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE2)) {
                 try {
-                    model.setZone3(flags, powers[3]);
+                    model.setInfoInFlags(RotelFlagInfoType.ZONE2, flags, powers[2]);
                 } catch (RotelException e) {
                 }
             }
-            if (model.isZone4PresentInFlags()) {
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE3)) {
                 try {
-                    model.setZone4(flags, powers[4]);
+                    model.setInfoInFlags(RotelFlagInfoType.ZONE3, flags, powers[3]);
                 } catch (RotelException e) {
                 }
             }
-            if (model.isZonePresentInFlags()) {
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE4)) {
                 try {
-                    model.setZone(flags, powers[2] || powers[3] || powers[4]);
+                    model.setInfoInFlags(RotelFlagInfoType.ZONE4, flags, powers[4]);
+                } catch (RotelException e) {
+                }
+            }
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE)) {
+                try {
+                    model.setInfoInFlags(RotelFlagInfoType.ZONE, flags, powers[2] || powers[3] || powers[4]);
                 } catch (RotelException e) {
                 }
             }

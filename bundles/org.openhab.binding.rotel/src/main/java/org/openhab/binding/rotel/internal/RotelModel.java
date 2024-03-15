@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.communication.RotelCommand;
 import org.openhab.binding.rotel.internal.communication.RotelDsp;
+import org.openhab.binding.rotel.internal.communication.RotelFlagInfoType;
 import org.openhab.binding.rotel.internal.communication.RotelFlagsMapping;
 import org.openhab.binding.rotel.internal.communication.RotelSource;
 import org.openhab.binding.rotel.internal.protocol.RotelProtocol;
@@ -741,164 +742,41 @@ public enum RotelModel {
     }
 
     /**
-     * Inform whether the multiple input source is set to ON in the flags
+     * Inform whether the information is present in flags
      *
+     * @param infoType the type of information
+     *
+     * @return true if the information is available
+     */
+    public boolean isInfoPresentInFlags(RotelFlagInfoType infoType) {
+        return flagsMapping.isInfoPresent(infoType);
+    }
+
+    /**
+     * Inform whether the information is set to ON in the flags
+     *
+     * @param infoType the type of information
      * @param flags the flag from the standard response message
      *
-     * @return true if the multiple input source is ON
+     * @return true if the information is ON
      *
      * @throws RotelException - If this information is not present in the flags for this model
      */
-    public boolean isMultiInputOn(byte[] flags) throws RotelException {
-        return flagsMapping.isMultiInputOn(flags);
+    public boolean isInfoOnInFlags(RotelFlagInfoType infoType, byte[] flags) throws RotelException {
+        return flagsMapping.isInfoOn(infoType, flags);
     }
 
     /**
-     * Set the multiple input source to ON or OFF in the flags
+     * Set the information to ON or OFF in the flags
      *
-     * @param flags the flag from the standard response message
-     * @param on true for ON and false for OFF
-     *
-     * @throws RotelException - If this information is not present in the flags for this model
-     */
-    public void setMultiInput(byte[] flags, boolean on) throws RotelException {
-        flagsMapping.setMultiInput(flags, on);
-    }
-
-    /**
-     * Inform whether the zone 2 is present in flags
-     *
-     * @return true if the zone 2 is available
-     */
-    public boolean isZone2PresentInFlags() {
-        return flagsMapping.isZone2Available();
-    }
-
-    /**
-     * Inform whether the zone 2 is set to ON in the flags
-     *
-     * @param flags the flag from the standard response message
-     *
-     * @return true if the zone 2 is ON
-     *
-     * @throws RotelException - If this information is not present in the flags for this model
-     */
-    public boolean isZone2On(byte[] flags) throws RotelException {
-        return flagsMapping.isZone2On(flags);
-    }
-
-    /**
-     * Set the zone 2 to ON or OFF in the flags
-     *
+     * @param infoType the type of information
      * @param flags the flag from the standard response message
      * @param on true for ON and false for OFF
      *
      * @throws RotelException - If this information is not present in the flags for this model
      */
-    public void setZone2(byte[] flags, boolean on) throws RotelException {
-        flagsMapping.setZone2(flags, on);
-    }
-
-    /**
-     * Inform whether the zone 3 is present in flags
-     *
-     * @return true if the zone 3 is available
-     */
-    public boolean isZone3PresentInFlags() {
-        return flagsMapping.isZone3Available();
-    }
-
-    /**
-     * Inform whether the zone 3 is set to ON in the flags
-     *
-     * @param flags the flag from the standard response message
-     *
-     * @return true if the zone 3 is ON
-     *
-     * @throws RotelException - If this information is not present in the flags for this model
-     */
-    public boolean isZone3On(byte[] flags) throws RotelException {
-        return flagsMapping.isZone3On(flags);
-    }
-
-    /**
-     * Set the zone 3 to ON or OFF in the flags
-     *
-     * @param flags the flag from the standard response message
-     * @param on true for ON and false for OFF
-     *
-     * @throws RotelException - If this information is not present in the flags for this model
-     */
-    public void setZone3(byte[] flags, boolean on) throws RotelException {
-        flagsMapping.setZone3(flags, on);
-    }
-
-    /**
-     * Inform whether the zone 4 is present in flags
-     *
-     * @return true if the zone 4 is available
-     */
-    public boolean isZone4PresentInFlags() {
-        return flagsMapping.isZone4Available();
-    }
-
-    /**
-     * Inform whether the zone 4 is set to ON in the flags
-     *
-     * @param flags the flag from the standard response message
-     *
-     * @return true if the zone 4 is ON
-     *
-     * @throws RotelException - If this information is not present in the flags for this model
-     */
-    public boolean isZone4On(byte[] flags) throws RotelException {
-        return flagsMapping.isZone4On(flags);
-    }
-
-    /**
-     * Set the zone 4 to ON or OFF in the flags
-     *
-     * @param flags the flag from the standard response message
-     * @param on true for ON and false for OFF
-     *
-     * @throws RotelException - If this information is not present in the flags for this model
-     */
-    public void setZone4(byte[] flags, boolean on) throws RotelException {
-        flagsMapping.setZone4(flags, on);
-    }
-
-    /**
-     * Inform whether the zone is present in flags
-     *
-     * @return true if the zone is available
-     */
-    public boolean isZonePresentInFlags() {
-        return flagsMapping.isZoneAvailable();
-    }
-
-    /**
-     * Inform whether the zone is set to ON in the flags
-     *
-     * @param flags the flag from the standard response message
-     *
-     * @return true if the zone is ON
-     *
-     * @throws RotelException - If this information is not present in the flags for this model
-     */
-    public boolean isZoneOn(byte[] flags) throws RotelException {
-        return flagsMapping.isZoneOn(flags);
-    }
-
-    /**
-     * Set the zone to ON or OFF in the flags
-     *
-     * @param flags the flag from the standard response message
-     * @param on true for ON and false for OFF
-     *
-     * @throws RotelException - If this information is not present in the flags for this model
-     */
-    public void setZone(byte[] flags, boolean on) throws RotelException {
-        flagsMapping.setZone(flags, on);
+    public void setInfoInFlags(RotelFlagInfoType infoType, byte[] flags, boolean on) throws RotelException {
+        flagsMapping.setInfo(infoType, flags, on);
     }
 
     /**

@@ -25,6 +25,7 @@ import org.openhab.binding.rotel.internal.RotelException;
 import org.openhab.binding.rotel.internal.RotelModel;
 import org.openhab.binding.rotel.internal.communication.RotelCommand;
 import org.openhab.binding.rotel.internal.communication.RotelDsp;
+import org.openhab.binding.rotel.internal.communication.RotelFlagInfoType;
 import org.openhab.binding.rotel.internal.communication.RotelFlagsMapping;
 import org.openhab.binding.rotel.internal.communication.RotelSource;
 import org.openhab.binding.rotel.internal.protocol.RotelAbstractProtocolHandler;
@@ -332,30 +333,34 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
                 }
             }
         }
-        if (model.isZone2PresentInFlags()) {
+        if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE2)) {
             try {
-                dispatchKeyValue(KEY_POWER_ZONE2, model.isZone2On(flags) ? POWER_ON : STANDBY);
+                dispatchKeyValue(KEY_POWER_ZONE2,
+                        model.isInfoOnInFlags(RotelFlagInfoType.ZONE2, flags) ? POWER_ON : STANDBY);
             } catch (RotelException e1) {
                 // Ignore it
             }
         }
-        if (model.isZone3PresentInFlags()) {
+        if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE3)) {
             try {
-                dispatchKeyValue(KEY_POWER_ZONE3, model.isZone3On(flags) ? POWER_ON : STANDBY);
+                dispatchKeyValue(KEY_POWER_ZONE3,
+                        model.isInfoOnInFlags(RotelFlagInfoType.ZONE3, flags) ? POWER_ON : STANDBY);
             } catch (RotelException e1) {
                 // Ignore it
             }
         }
-        if (model.isZone4PresentInFlags()) {
+        if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE4)) {
             try {
-                dispatchKeyValue(KEY_POWER_ZONE4, model.isZone4On(flags) ? POWER_ON : STANDBY);
+                dispatchKeyValue(KEY_POWER_ZONE4,
+                        model.isInfoOnInFlags(RotelFlagInfoType.ZONE4, flags) ? POWER_ON : STANDBY);
             } catch (RotelException e1) {
                 // Ignore it
             }
         }
-        if (model.isZonePresentInFlags()) {
+        if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE)) {
             try {
-                dispatchKeyValue(KEY_POWER_ZONES, model.isZoneOn(flags) ? POWER_ON : STANDBY);
+                dispatchKeyValue(KEY_POWER_ZONES,
+                        model.isInfoOnInFlags(RotelFlagInfoType.ZONE, flags) ? POWER_ON : STANDBY);
             } catch (RotelException e1) {
                 // Ignore it
             }
@@ -363,7 +368,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
         boolean checkMultiIn = false;
         boolean checkSource = true;
         try {
-            if (model.isMultiInputOn(flags)) {
+            if (model.isInfoOnInFlags(RotelFlagInfoType.MULTI_INPUT, flags)) {
                 checkSource = false;
                 try {
                     RotelSource source = model.getSourceFromName(RotelSource.CAT1_MULTI.getName());
@@ -717,7 +722,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
 
     private void parseZone2(String text, boolean multipleInfo) {
         String value = text.trim();
-        if (!model.isZone2PresentInFlags()) {
+        if (!model.isInfoPresentInFlags(RotelFlagInfoType.ZONE2)) {
             dispatchKeyValue(KEY_POWER_ZONE2, MSG_VALUE_OFF.equalsIgnoreCase(value) ? STANDBY : MSG_VALUE_ON);
         }
         String valueLowerCase = value.toLowerCase();
@@ -754,7 +759,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
 
     private void parseZone3(String text, boolean multipleInfo) {
         String value = text.trim();
-        if (!model.isZone3PresentInFlags()) {
+        if (!model.isInfoPresentInFlags(RotelFlagInfoType.ZONE3)) {
             dispatchKeyValue(KEY_POWER_ZONE3, MSG_VALUE_OFF.equalsIgnoreCase(value) ? STANDBY : MSG_VALUE_ON);
         }
         String valueLowerCase = value.toLowerCase();
@@ -791,7 +796,7 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
 
     private void parseZone4(String text, boolean multipleInfo) {
         String value = text.trim();
-        if (!model.isZone4PresentInFlags()) {
+        if (!model.isInfoPresentInFlags(RotelFlagInfoType.ZONE4)) {
             dispatchKeyValue(KEY_POWER_ZONE4, MSG_VALUE_OFF.equalsIgnoreCase(value) ? STANDBY : MSG_VALUE_ON);
         }
         String valueLowerCase = value.toLowerCase();
