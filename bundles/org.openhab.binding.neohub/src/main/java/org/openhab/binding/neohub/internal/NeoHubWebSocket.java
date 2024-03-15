@@ -242,6 +242,7 @@ public class NeoHubWebSocket extends NeoHubSocketBase {
         Session session = this.session;
         if (session != null) {
             session.close();
+            this.session = null;
         }
         try {
             trustManagerRegistration.unregister();
