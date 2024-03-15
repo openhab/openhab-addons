@@ -222,7 +222,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 model = RotelModel.RSX1562;
                 break;
             case THING_TYPE_ID_RX1052:
-                model = config.newerUnit ? RotelModel.RX1052_38400 : RotelModel.RX1052_19200;
+                model = RotelModel.RX1052;
                 break;
             case THING_TYPE_ID_A11:
                 model = RotelModel.A11;
@@ -440,8 +440,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             if (USE_SIMULATED_DEVICE) {
                 connector = new RotelSimuConnector(model, protocolHandler, sourcesLabels, readerThreadName);
             } else if (config.serialPort != null) {
-                connector = new RotelSerialConnector(serialPortManager, config.serialPort, model.getBaudRate(),
-                        protocolHandler, readerThreadName);
+                connector = new RotelSerialConnector(serialPortManager, config.serialPort,
+                        config.baudRate != null ? config.baudRate : model.getBaudRate(), protocolHandler,
+                        readerThreadName);
             } else {
                 connector = new RotelIpConnector(config.host, config.port, protocolHandler, readerThreadName);
             }
@@ -2603,9 +2604,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 0:
                 // Spec for RX-1052 defines an unusual code for main zone volume up.
                 // An error in the spec is suspected. The general volume up code is preferred.
-                return (model.hasOtherThanPrimaryCommands() && model != RotelModel.RX1052_19200
-                        && model != RotelModel.RX1052_38400) ? RotelCommand.MAIN_ZONE_VOLUME_UP
-                                : RotelCommand.VOLUME_UP;
+                return (model.hasOtherThanPrimaryCommands() && model != RotelModel.RX1052)
+                        ? RotelCommand.MAIN_ZONE_VOLUME_UP
+                        : RotelCommand.VOLUME_UP;
             case 1:
                 return RotelCommand.ZONE1_VOLUME_UP;
             case 2:
@@ -2631,9 +2632,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             case 0:
                 // Spec for RX-1052 defines an unusual code for main zone volume down.
                 // An error in the spec is suspected. The general volume down code is preferred.
-                return (model.hasOtherThanPrimaryCommands() && model != RotelModel.RX1052_19200
-                        && model != RotelModel.RX1052_38400) ? RotelCommand.MAIN_ZONE_VOLUME_DOWN
-                                : RotelCommand.VOLUME_DOWN;
+                return (model.hasOtherThanPrimaryCommands() && model != RotelModel.RX1052)
+                        ? RotelCommand.MAIN_ZONE_VOLUME_DOWN
+                        : RotelCommand.VOLUME_DOWN;
             case 1:
                 return RotelCommand.ZONE1_VOLUME_DOWN;
             case 2:

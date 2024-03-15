@@ -13,6 +13,7 @@
 package org.openhab.binding.rotel.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link RotelThingConfiguration} class contains fields mapping thing configuration parameters.
@@ -22,8 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class RotelThingConfiguration {
 
-    public @NonNullByDefault({}) Boolean newerUnit;
     public @NonNullByDefault({}) String serialPort;
+    public @Nullable Integer baudRate;
     public @NonNullByDefault({}) String host;
     public @NonNullByDefault({}) Integer port;
     public @NonNullByDefault({}) String inputLabelCd;

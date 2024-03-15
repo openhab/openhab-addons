@@ -102,10 +102,10 @@ public class RotelHexProtocolHandler extends RotelAbstractProtocolHandler {
     private static final String KEY_HEX_RECORD = "rec ";
     private static final String SOURCE = "source";
 
-    private final Logger logger = LoggerFactory.getLogger(RotelHexProtocolHandler.class);
+    private static final Pattern PATTERN_TUNER_FREQ_FM = Pattern.compile("\\d{2,3}[\\.,]\\d{1,2}[MS].*");
+    private static final Pattern PATTERN_TUNER_FREQ_AM = Pattern.compile("\\d{3,4}K.*");
 
-    private final Pattern PATTERN_TUNER_FREQ_FM = Pattern.compile("\\d{2,3}[\\.,]\\d{1,2}[MS].*");
-    private final Pattern PATTERN_TUNER_FREQ_AM = Pattern.compile("\\d{3,4}K.*");
+    private final Logger logger = LoggerFactory.getLogger(RotelHexProtocolHandler.class);
 
     private final Map<RotelSource, String> sourcesLabels;
 

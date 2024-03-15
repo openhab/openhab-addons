@@ -321,16 +321,21 @@
 	</config-description>
 
 	<config-description uri="thing-type:rotel:serial6">
-		<parameter name="newerUnit" type="boolean" required="false">
-			<label>@text/config.newerUnit.label</label>
-			<description>@text/config.newerUnit.description</description>
-			<default>true</default>
-		</parameter>
 		<parameter name="serialPort" type="text" required="false">
 			<context>serial-port</context>
 			<limitToOptions>false</limitToOptions>
 			<label>@text/config.serialPort.label</label>
 			<description>@text/config.serialPort.description</description>
+		</parameter>
+		<parameter name="baudRate" type="integer" required="false">
+			<label>@text/config.baudRate.label</label>
+			<description>@text/config.baudRate.description</description>
+			<limitToOptions>true</limitToOptions>
+			<options>
+				<option value="19200">19200</option>
+				<option value="38400">38400</option>
+			</options>
+			<default>38400</default>
 		</parameter>
 		<parameter name="host" type="text" required="false">
 			<context>network-address</context>
