@@ -52,6 +52,10 @@ public class EnergiDataServiceBindingConstants {
             + ChannelUID.CHANNEL_GROUP_SEPARATOR + "reduced-electricity-tax";
     public static final String CHANNEL_TRANSMISSION_GRID_TARIFF = CHANNEL_GROUP_ELECTRICITY
             + ChannelUID.CHANNEL_GROUP_SEPARATOR + "transmission-grid-tariff";
+    public static final String CHANNEL_CO2_EMISSION_PROGNOSIS = CHANNEL_GROUP_ELECTRICITY
+            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "co2-emission-prognosis";
+    public static final String CHANNEL_CO2_EMISSION_REALTIME = CHANNEL_GROUP_ELECTRICITY
+            + ChannelUID.CHANNEL_GROUP_SEPARATOR + "co2-emission-realtime";
 
     public static final Set<String> ELECTRICITY_CHANNELS = Set.of(CHANNEL_SPOT_PRICE, CHANNEL_GRID_TARIFF,
             CHANNEL_SYSTEM_TARIFF, CHANNEL_TRANSMISSION_GRID_TARIFF, CHANNEL_ELECTRICITY_TAX,
