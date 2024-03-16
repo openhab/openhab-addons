@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The EventFilterConfiguration holds configuration for the Event Filter Item Type.
  *
  * @author Michael Wodniok - Initial contribution
+ * @author Christian Heinemann - Introduction of 'datetimeMode'
  */
 @NonNullByDefault
 public class EventFilterConfiguration {
@@ -36,6 +37,8 @@ public class EventFilterConfiguration {
     public BigDecimal datetimeEnd;
     @Nullable
     public Boolean datetimeRound;
+    @Nullable
+    public String datetimeMode;
     @Nullable
     public String textEventField;
     @Nullable

@@ -61,6 +61,7 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Michael Wodniok - Added logic for events moved with "RECURRENCE-ID" (issue 9647)
  * @author Michael Wodniok - Extended logic for defined behavior with parallel current events
  *         (issue 10808)
+ * @author Christian Heinemann - Extension for the time-based filtering strategy
  */
 @NonNullByDefault
 class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
@@ -89,14 +90,14 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public List<Event> getJustBegunEvents(Instant frameBegin, Instant frameEnd) {
-        return this.getVEventWPeriodsBetween(frameBegin, frameEnd, 0).stream().map(e -> e.toEvent())
-                .collect(Collectors.toList());
+        return this.getVEventWPeriodsBetween(frameBegin, frameEnd, 0, EventTimeFilter.searchByStart()).stream()
+                .map(VEventWPeriod::toEvent).collect(Collectors.toList());
     }
 
     @Override
     public List<Event> getJustEndedEvents(Instant frameBegin, Instant frameEnd) {
-        return this.getVEventWPeriodsBetween(frameBegin, frameEnd, 0, true).stream().map(e -> e.toEvent())
-                .collect(Collectors.toList());
+        return this.getVEventWPeriodsBetween(frameBegin, frameEnd, 0, EventTimeFilter.searchByJustEnded()).stream()
+                .map(VEventWPeriod::toEvent).collect(Collectors.toList());
     }
 
     @Override
@@ -142,22 +143,22 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     @Override
-    public List<Event> getFilteredEventsBetween(Instant begin, Instant end, @Nullable EventTextFilter filter,
-            int maximumCount) {
-        List<VEventWPeriod> candidates = this.getVEventWPeriodsBetween(begin, end, maximumCount);
+    public List<Event> getFilteredEventsBetween(Instant begin, Instant end, EventTimeFilter eventTimeFilter,
+            @Nullable EventTextFilter eventTextFilter, int maximumCount) {
+        List<VEventWPeriod> candidates = this.getVEventWPeriodsBetween(begin, end, maximumCount, eventTimeFilter);
         final List<Event> results = new ArrayList<>(candidates.size());
 
-        if (filter != null) {
+        if (eventTextFilter != null) {
             Pattern filterPattern;
-            if (filter.type == Type.TEXT) {
-                filterPattern = Pattern.compile(".*" + Pattern.quote(filter.value) + ".*",
+            if (eventTextFilter.type == Type.TEXT) {
+                filterPattern = Pattern.compile(".*" + Pattern.quote(eventTextFilter.value) + ".*",
                         Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
             } else {
-                filterPattern = Pattern.compile(filter.value);
+                filterPattern = Pattern.compile(eventTextFilter.value);
             }
 
             Class<? extends TextProperty> propertyClass;
-            switch (filter.field) {
+            switch (eventTextFilter.field) {
                 case SUMMARY:
                     propertyClass = Summary.class;
                     break;
@@ -199,28 +200,16 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     /**
-     * Finds events which begin in the given frame.
+     * Finds events which begin in the given frame by end time and date
      *
      * @param frameBegin Begin of the frame where to search events.
      * @param frameEnd End of the time frame where to search events.
      * @param maximumPerSeries Limit the results per series. Set to 0 for no limit.
-     * @return All events which begin in the time frame.
-     */
-    private List<VEventWPeriod> getVEventWPeriodsBetween(Instant frameBegin, Instant frameEnd, int maximumPerSeries) {
-        return this.getVEventWPeriodsBetween(frameBegin, frameEnd, maximumPerSeries, false);
-    }
-
-    /**
-     * Finds events which begin in the given frame by end time and date
-     *
-     * @param frameBegin Begin of the frame where to search events.
-     * @param frameEnd End of the time frame where to search events. The Instant is inclusive when searchByEnd is true.
-     * @param maximumPerSeries Limit the results per series. Set to 0 for no limit.
-     * @param searchByEnd Whether to search by begin of the event or by end.
+     * @param eventTimeFilter Strategy that decides which events should be considered in the time frame.
      * @return All events which begin in the time frame.
      */
     private List<VEventWPeriod> getVEventWPeriodsBetween(Instant frameBegin, Instant frameEnd, int maximumPerSeries,
-            boolean searchByEnd) {
+            EventTimeFilter eventTimeFilter) {
         final List<VEvent> positiveEvents = new ArrayList<>();
         final List<VEvent> negativeEvents = new ArrayList<>();
         classifyEvents(positiveEvents, negativeEvents);
@@ -232,17 +221,15 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             if (duration == null) {
                 duration = Duration.ZERO;
             }
-            positiveBeginDates.advanceTo(Date.from(frameBegin.minus(searchByEnd ? duration : Duration.ZERO)));
+            positiveBeginDates.advanceTo(Date.from(eventTimeFilter.searchFrom(frameBegin, duration)));
             int foundInSeries = 0;
             while (positiveBeginDates.hasNext()) {
                 final Instant begInst = positiveBeginDates.next().toInstant();
-                if ((!searchByEnd && (begInst.isAfter(frameEnd) || begInst.equals(frameEnd)))
-                        || (searchByEnd && begInst.plus(duration).isAfter(frameEnd))) {
+                if (eventTimeFilter.eventAfterFrame(frameEnd, begInst, duration)) {
                     break;
                 }
                 // biweekly is not as precise as java.time. An exact check is required.
-                if ((!searchByEnd && begInst.isBefore(frameBegin))
-                        || (searchByEnd && begInst.plus(duration).isBefore(frameBegin))) {
+                if (eventTimeFilter.eventBeforeFrame(frameBegin, begInst, duration)) {
                     continue;
                 }
 
