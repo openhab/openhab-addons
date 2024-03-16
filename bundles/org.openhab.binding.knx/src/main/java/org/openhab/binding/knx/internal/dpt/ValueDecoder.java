@@ -231,7 +231,8 @@ public class ValueDecoder {
         } catch (NumberFormatException | KNXFormatException | KNXIllegalArgumentException | ParseException e) {
             LOGGER.info("Translator couldn't parse data '{}' for datapoint type '{}' ({}).", data, dptId, e.getClass());
         } catch (KNXException e) {
-            LOGGER.warn("Failed creating a translator for datapoint type '{}'.", dptId, e);
+            // should never happen unless Calimero changes
+            LOGGER.warn("Failed creating a translator for datapoint type '{}'. Please open an issue.", dptId, e);
         }
 
         return null;
@@ -280,7 +281,8 @@ public class ValueDecoder {
             case "008":
                 return translator3BitControlled.getControlBit() ? UpDownType.DOWN : UpDownType.UP;
             default:
-                LOGGER.warn("DPT3, subtype '{}' is unknown.", subType);
+                // should never happen unless Calimero introduces new subtypes
+                LOGGER.warn("DPT3, subtype '{}' is unknown. Please open an issue.", subType);
                 return null;
         }
     }
@@ -324,7 +326,12 @@ public class ValueDecoder {
         if (translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
                 && !translatorDateTime.isValidField(DPTXlatorDateTime.TIME)) {
             // Pure date format, no time information
-            cal.setTimeInMillis(translatorDateTime.getValueMilliseconds());
+            try {
+                cal.setTimeInMillis(translatorDateTime.getValueMilliseconds());
+            } catch (KNXFormatException e) {
+                LOGGER.debug("KNX clock msg ignored: {}", e.getMessage());
+                throw e;
+            }
             String value = new SimpleDateFormat(DateTimeType.DATE_PATTERN).format(cal.getTime());
             return DateTimeType.valueOf(value);
         } else if (!translatorDateTime.isValidField(DPTXlatorDateTime.YEAR)
