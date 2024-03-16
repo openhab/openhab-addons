@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
+import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -37,7 +38,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HueSyncDiscoveryParticipant} is responsible for discovering
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = MDNSDiscoveryParticipant.class, configurationPid = "mdnsdiscovery.huesync")
 public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @SuppressWarnings("null")
-    private Logger logger = LoggerFactory.getLogger(HueSyncDiscoveryParticipant.class);
+    private Logger logger = HueSyncLogFactory.getLogger(HueSyncDiscoveryParticipant.class);
 
     /**
      *
@@ -101,7 +101,9 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
                             .withProperties(properties).build();
                     return result;
                 } catch (Exception e) {
-                    logger.error("Unable to query device information for {}: {}", service.getQualifiedName(), e);
+                    // TODO ...
+                    // logger.error("Unable to query device information for {}: {}",
+                    // service.getQualifiedName(), e);
                 }
             }
         }

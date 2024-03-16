@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,8 +30,8 @@ import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfo;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequest;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
+import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -55,7 +55,7 @@ public class HueSyncConnection {
     private static final String REGISTRATIONS = "registrations";
 
     private static final ObjectMapper ObjectMapper = new ObjectMapper();
-    private final Logger logger = LoggerFactory.getLogger(HueSyncConnection.class);
+    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncConnection.class);
 
     private @NonNull HttpClient httpClient;
 

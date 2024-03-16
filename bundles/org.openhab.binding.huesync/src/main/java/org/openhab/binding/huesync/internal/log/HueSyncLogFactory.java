@@ -10,19 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.huesync.internal.config;
+package org.openhab.binding.huesync.internal.log;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Binding configuration parameters,
+ * Helper class to use [en] resource files to log messages to be consistent
+ * with exception message displayed on screen.
  * 
  * @author Patrik Gfeller - Initial contribution
  */
-@NonNullByDefault
-public class HueSyncConfiguration {
-    public String registrationId = "";
-    public String apiAccessToken = "";
-    public String host = "";
-    public Integer port = 443;
+public class HueSyncLogFactory {
+
+    public static Logger getLogger(Class<?> clazz) {
+        return LoggerFactory.getLogger(clazz);
+    }
 }

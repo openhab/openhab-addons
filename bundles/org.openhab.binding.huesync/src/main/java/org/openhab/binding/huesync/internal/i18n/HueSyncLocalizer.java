@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.huesync.internal.util;
+package org.openhab.binding.huesync.internal.i18n;
 
 import java.util.Locale;
 
@@ -21,17 +21,20 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 
-public class HueSyncLogLocalizer {
+/**
+ * 
+ * @author Patrik Gfeller - Initial Contribution
+ */
+public class HueSyncLocalizer {
 
     private static final Locale locale = Locale.ENGLISH;
 
-    private static final BundleContext bundleContext = FrameworkUtil.getBundle(HueSyncLogLocalizer.class)
+    private static final BundleContext bundleContext = FrameworkUtil.getBundle(HueSyncLocalizer.class)
             .getBundleContext();
     private static final @Nullable ServiceReference<@NonNull TranslationProvider> serviceReference = bundleContext != null
             ? bundleContext.getServiceReference(TranslationProvider.class)
             : null;
 
-    // TODO: Resolve warning ...
     private static final TranslationProvider translationProvider = serviceReference != null
             ? bundleContext.getService(serviceReference)
             : null;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncConnection;
 import org.openhab.binding.huesync.internal.connection.HueSyncTrustManagerProvider;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncApiException;
-import org.openhab.binding.huesync.internal.util.HueSyncLogLocalizer;
+import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
@@ -42,7 +42,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HueSyncHandler} is responsible for handling commands, which are
@@ -62,7 +61,7 @@ public class HueSyncHandler extends BaseThingHandler {
     static final String PROPERTY_NETWORK_STATE = "networkState";
 
     @SuppressWarnings("null")
-    private final Logger logger = LoggerFactory.getLogger(HueSyncHandler.class);
+    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncHandler.class);
 
     private HueSyncConfiguration config;
 
@@ -136,8 +135,11 @@ public class HueSyncHandler extends BaseThingHandler {
     }
 
     private void logInitializationException(Exception e) {
-        this.logger.error(HueSyncLogLocalizer.getResourceString("@text/logger.initialization-problem"),
-                this.thing.getLabel(), this.thing.getUID(), HueSyncLogLocalizer.getResourceString(e.getMessage()));
+        // TODO: Use EN local string to format log & exception message ...
+
+        // this.logger.error("@text/logger.initialization-problem",
+        // this.thing.getLabel(), this.thing.getUID(),
+        // HueSyncLocalizer.getResourceString(e.getMessage()));
     }
 
     @SuppressWarnings("null")
@@ -209,8 +211,10 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.serviceRegistration = null;
             }
         } catch (Exception e) {
-            this.logger.error("Unable to properly dispose handler for {}({}): {}", this.thing.getLabel(),
-                    this.thing.getUID(), e);
+            // TODO: ...
+            // this.logger.error("Unable to properly dispose handler for {}({}): {}",
+            // this.thing.getLabel(),
+            // this.thing.getUID(), e);
         }
     }
 }
