@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.VENDOR;
 import static org.openhab.core.thing.Thing.*;
 
 import java.util.Collection;
@@ -104,15 +104,14 @@ public class Capability {
 
     protected void beforeNewData() {
         properties = new HashMap<>(thing.getProperties());
-        firstLaunch = properties.isEmpty();
-        if (firstLaunch) {
-            properties.put(PROPERTY_THING_TYPE_VERSION, moduleType.thingTypeVersion);
-            if (!moduleType.isLogical()) {
-                String name = moduleType.apiName.isBlank() ? moduleType.name() : moduleType.apiName;
-                properties.put(PROPERTY_MODEL_ID, name);
-                properties.put(PROPERTY_VENDOR, VENDOR);
-            }
+
+        // only the thingTypeVersion is present
+        firstLaunch = properties.size() <= 1;
+        if (firstLaunch && !moduleType.isLogical()) {
+            properties.put(PROPERTY_MODEL_ID, moduleType.apiName.isBlank() ? moduleType.name() : moduleType.apiName);
+            properties.put(PROPERTY_VENDOR, VENDOR);
         }
+
         statusReason = null;
     }
 
