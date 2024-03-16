@@ -48,6 +48,7 @@
                     <include name="*/src/main/feature/feature.xml"/>
                     <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
                     <exclude name="**/org.openhab.binding.modbus*/**/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.sbus*/**/feature.xml"/>
                     <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
                   </fileset>
                   <filterchain>
@@ -73,6 +74,7 @@
               <features>
                 <feature>openhab-binding-bluetooth</feature>
                 <feature>openhab-binding-modbus</feature>
+                <feature>openhab-binding-sbus</feature>
                 <feature>openhab-binding-mqtt</feature>
               </features>
             </configuration>
