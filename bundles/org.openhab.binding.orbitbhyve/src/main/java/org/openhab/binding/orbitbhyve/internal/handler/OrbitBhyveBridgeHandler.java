@@ -212,7 +212,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                         "Get devices returned response status: " + response.getStatus());
             }
         } catch (JsonSyntaxException e) {
-            logger.info("Exception parsing devices json: {}", e.getMessage(), e);
+            logger.debug("Exception parsing devices json: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing devices json");
         } catch (TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during getting devices");
@@ -241,6 +241,9 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Returned status: " + response.getStatus());
             }
+        } catch (JsonSyntaxException e) {
+            logger.debug("Exception parsing device json: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing device json");
         } catch (TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error during getting device info: " + deviceId);
