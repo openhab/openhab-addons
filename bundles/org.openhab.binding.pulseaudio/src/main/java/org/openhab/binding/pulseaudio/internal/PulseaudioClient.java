@@ -233,10 +233,10 @@ public class PulseaudioClient {
     }
 
     /**
-     * Retrieves a filtered list of {@link SimpleProtocolTCPModule}
+     * Retrieves a filtered stream of {@link SimpleProtocolTCPModule}
      * 
      * @param predicate a filter to apply
-     * @return a list of {@link SimpleProtocolTCPModule} filtered by provided predicate
+     * @return a stream of {@link SimpleProtocolTCPModule} filtered by provided predicate
      */
     private Stream<SimpleProtocolTCPModule> filterSimpleProtocolTCPModules(
             Predicate<SimpleProtocolTCPModule> predicate) {
