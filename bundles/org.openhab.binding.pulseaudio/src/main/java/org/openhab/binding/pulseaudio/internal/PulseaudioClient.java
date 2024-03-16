@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -150,7 +152,7 @@ public class PulseaudioClient {
      * updates the item states and their relationships
      */
     public synchronized void update() {
-        // one step copy
+        // one-step copy
         modules = new ArrayList<>(Parser.parseModules(listModules()));
 
         List<AbstractAudioDeviceConfig> newItems = new ArrayList<>(); // prepare new list before assigning it
@@ -207,6 +209,42 @@ public class PulseaudioClient {
             }
         }
         return null;
+    }
+
+    /**
+     * Retrieves a list of {@link SimpleProtocolTCPModule} for the provided item in the provided port range.
+     *
+     * @param item Sink/Source item.
+     * @param minPort min port to include.
+     * @param maxPort max port to include.
+     * @return a list of {@link SimpleProtocolTCPModule} instances
+     */
+    public List<SimpleProtocolTCPModule> getSimpleProtocolTCPModulesByDevice(AbstractAudioDeviceConfig item,
+            int minPort, int maxPort) {
+        String itemType = getItemCommandName(item);
+        if (itemType == null) {
+            return List.of();
+        }
+        return filterSimpleProtocolTCPModules((spModule) -> spModule.getPort() >= minPort && //
+                spModule.getPort() <= maxPort && //
+                extractArgumentFromLine(itemType, spModule.getArgument()) // extract sick|source
+                        .map(name -> name.equals(item.getPaName())).orElse(false))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves a filtered list of {@link SimpleProtocolTCPModule}
+     * 
+     * @param predicate a filter to apply
+     * @return a list of {@link SimpleProtocolTCPModule} filtered by provided predicate
+     */
+    private Stream<SimpleProtocolTCPModule> filterSimpleProtocolTCPModules(
+            Predicate<SimpleProtocolTCPModule> predicate) {
+        List<Module> modulesCopy = new ArrayList<>(modules);
+        return modulesCopy.stream() //
+                .filter(SimpleProtocolTCPModule.class::isInstance) //
+                .map(SimpleProtocolTCPModule.class::cast) //
+                .filter(predicate);
     }
 
     /**
@@ -330,7 +368,7 @@ public class PulseaudioClient {
     }
 
     /**
-     * Creates a new Simple Protocol TCP module instance on the server or reuse an idle one if still available.
+     * Creates a new Simple Protocol TCP module instance on the server or return the provided one if still available.
      * The module loading (if needed) will be tried several times, on a new random port each time.
      *
      * @param item the sink we are searching for
@@ -356,7 +394,12 @@ public class PulseaudioClient {
         }
         String itemType = getItemCommandName(item);
         do {
-            int simpleTcpPortToTry = new Random().nextInt(minPort, maxPort); // a random port above 1024
+            int simpleTcpPortToTry = new Random().nextInt(minPort, maxPort + 1);
+            if (filterSimpleProtocolTCPModules(m -> m.getPort() == simpleTcpPortToTry).findAny().isPresent()) {
+                logger.warn("port {} already in use in the server, retrying random port generation",
+                        simpleTcpPortToTry);
+                continue;
+            }
             logger.debug("trying to load simple protocol tcp module at port {}", simpleTcpPortToTry);
             String moduleOptions = String.format(" %s=%s port=%d format=%s rate=%d channels=%d", itemType,
                     item.getPaName(), simpleTcpPortToTry, paFormat, rate, channels);
@@ -416,56 +459,48 @@ public class PulseaudioClient {
         if (itemType == null) {
             return Optional.empty();
         }
-        List<Module> modulesCopy = new ArrayList<>(modules);
-        var isSource = item instanceof Source;
-        return modulesCopy.stream() // iteration on modules
-                .filter(module -> MODULE_SIMPLE_PROTOCOL_TCP_NAME.equals(module.getPaName())) // filter on module name
-                .filter(module -> {
-                    if (!(module instanceof SimpleProtocolTCPModule simpleProtocolTCPModule)) {
+        boolean isSource = item instanceof Source;
+        return filterSimpleProtocolTCPModules(spModule -> {
+            if (id != null && spModule.getId() != id) {
+                return false;
+            }
+            if (port != null && spModule.getPort() != port) {
+                return false;
+            }
+            boolean nameMatch = extractArgumentFromLine(itemType, spModule.getArgument()) // extract sick|source
+                    .map(name -> name.equals(item.getPaName())).orElse(false);
+            if (nameMatch) {
+                if (isSource) {
+                    boolean recordStream = extractArgumentFromLine("record", spModule.getArgument()).map("true"::equals)
+                            .orElse(false);
+                    if (!recordStream) {
                         return false;
                     }
-                    if (id != null && simpleProtocolTCPModule.getId() != id) {
+                }
+                if (format != null) {
+                    boolean rateMatch = extractArgumentFromLine("format", spModule.getArgument()).map(format::equals)
+                            .orElse(false);
+                    if (!rateMatch) {
                         return false;
                     }
-                    if (port != null && simpleProtocolTCPModule.getPort() != port) {
+                }
+                if (rate != null) {
+                    boolean rateMatch = extractArgumentFromLine("rate", spModule.getArgument())
+                            .map(value -> Long.parseLong(value) == rate).orElse(false);
+                    if (!rateMatch) {
                         return false;
                     }
-                    boolean nameMatch = extractArgumentFromLine(itemType, module.getArgument()) // extract sick|source
-                            .map(name -> name.equals(item.getPaName())).orElse(false);
-                    if (nameMatch) {
-                        if (isSource) {
-                            boolean recordStream = extractArgumentFromLine("record", module.getArgument())
-                                    .map("true"::equals).orElse(false);
-                            if (!recordStream) {
-                                return false;
-                            }
-                        }
-                        if (format != null) {
-                            boolean rateMatch = extractArgumentFromLine("format", module.getArgument())
-                                    .map(format::equals).orElse(false);
-                            if (!rateMatch) {
-                                return false;
-                            }
-                        }
-                        if (rate != null) {
-                            boolean rateMatch = extractArgumentFromLine("rate", module.getArgument())
-                                    .map(value -> Long.parseLong(value) == rate).orElse(false);
-                            if (!rateMatch) {
-                                return false;
-                            }
-                        }
-                        if (channels != null) {
-                            boolean channelsMatch = extractArgumentFromLine("channels", module.getArgument())
-                                    .map(value -> Integer.parseInt(value) == channels.intValue()).orElse(false);
-                            if (!channelsMatch) {
-                                return false;
-                            }
-                        }
+                }
+                if (channels != null) {
+                    boolean channelsMatch = extractArgumentFromLine("channels", spModule.getArgument())
+                            .map(value -> Integer.parseInt(value) == channels.intValue()).orElse(false);
+                    if (!channelsMatch) {
+                        return false;
                     }
-                    return nameMatch;
-                }) // filter on sink name
-                .findAny() // get a corresponding module
-                .map(module -> (SimpleProtocolTCPModule) module);
+                }
+            }
+            return nameMatch;
+        }).findAny();
     }
 
     public void unloadModule(Module module) {

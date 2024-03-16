@@ -47,6 +47,7 @@ public abstract class PulseaudioSimpleProtocolStream {
 
     protected final PulseaudioHandler pulseaudioHandler;
     protected final ScheduledExecutorService scheduler;
+    protected boolean initialized = false;
     protected boolean closed = false;
     /**
      * Collect sockets by module id.
@@ -74,9 +75,17 @@ public abstract class PulseaudioSimpleProtocolStream {
      */
     public AcquireModuleResult acquireSimpleProtocolModule(AudioFormat audioFormat)
             throws IOException, InterruptedException {
+        if (closed) {
+            throw new IOException("Resource is closed");
+        }
         @Nullable
         SimpleProtocolTCPModule idleModule = null;
         synchronized (idleModules) {
+            if (!initialized) {
+                // remove pre-existent modules for device in port range
+                pulseaudioHandler.clearSimpleProtocolTCPModules();
+                initialized = true;
+            }
             logger.debug("idle modules: {}", idleModules.size());
             var cachedModule = idleModules.stream() //
                     .filter(c -> c.audioFormat.equals(audioFormat)) //

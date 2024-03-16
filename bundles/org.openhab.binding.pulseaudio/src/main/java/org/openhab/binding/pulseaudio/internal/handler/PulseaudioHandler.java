@@ -418,6 +418,31 @@ public class PulseaudioHandler extends BaseThingHandler {
     }
 
     /**
+     * Unload existing Simple Protocol TCP modules for this device on the remote pulseaudio.
+     *
+     * @throws IOException if unable to load device config
+     */
+    public void clearSimpleProtocolTCPModules() throws IOException {
+        var briHandler = getPulseaudioBridgeHandler();
+        if (briHandler == null) {
+            throw new IOException("bridge is not ready");
+        }
+        AbstractAudioDeviceConfig device = briHandler.getDevice(deviceIdentifier);
+        if (device == null) {
+            throw new IOException(
+                    "missing device info, device " + safeGetDeviceNameOrDescription() + " appears to be offline");
+        }
+        briHandler.getClient().getSimpleProtocolTCPModulesByDevice(device, simpleProtocolMinPort, simpleProtocolMaxPort)
+                .forEach(spModule -> {
+                    try {
+                        unloadModule(spModule);
+                    } catch (IOException e) {
+                        logger.warn("IOException unloading module {}: ", spModule.getId(), e);
+                    }
+                });
+    }
+
+    /**
      * Creates a new Simple Protocol TCP module instance on the server or reuse an idle one if still available.
      *
      * @return the Simple Protocol module instance
