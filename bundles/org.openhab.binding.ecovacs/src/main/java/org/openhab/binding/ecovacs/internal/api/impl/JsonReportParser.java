@@ -109,8 +109,12 @@ class JsonReportParser implements ReportParser {
             }
             case "error": {
                 ErrorReport report = payloadAs(response, ErrorReport.class);
-                for (Integer code : report.errorCodes) {
-                    listener.onErrorReported(device, code);
+                if (report.errorCodes.isEmpty()) {
+                    listener.onErrorReported(device, 0);
+                } else {
+                    for (Integer code : report.errorCodes) {
+                        listener.onErrorReported(device, code);
+                    }
                 }
             }
             case "stats": {

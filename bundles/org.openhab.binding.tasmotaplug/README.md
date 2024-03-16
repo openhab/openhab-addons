@@ -1,7 +1,8 @@
 # TasmotaPlug Binding
 
-This binding connects Tasmota flashed smart plugs with 1, 2, 3 or 4 relay channels to openHAB.
-The plug must report the status of the relay via the url `http://$PLUG_IP/cm?cmnd=Power` in order for the binding to work.
+This binding connects Tasmota flashed smart plugs with 1, 2, 3 or 4 relay channels to openHAB.  
+The plug must report the status of the relay via the url `http://$PLUG_IP/cm?cmnd=Power` in order for the binding to work.  
+The energy monitoring channels can be used if the plug reports energy status via the url `http://$PLUG_IP/cm?cmnd=Status%2010`.  
 See the [Tasmota Supported Devices Repository](https://templates.blakadder.com/plug.html) for a list of supported plugs.
 
 ## Supported Things
@@ -34,12 +35,22 @@ Channels above the number specified are automatically removed.
 Therefore `numChannels` cannot be changed upward after Thing creation.
 If the number of channels must be increased, delete the Thing and re-create it with the correct number.
 
-| Channel ID | Item Type | Description                             |
-|------------|-----------|-----------------------------------------|
-| power      | Switch    | Turns the smart plug relay #1 ON or OFF |
-| power2     | Switch    | Turns the smart plug relay #2 ON or OFF |
-| power3     | Switch    | Turns the smart plug relay #3 ON or OFF |
-| power4     | Switch    | Turns the smart plug relay #4 ON or OFF |
+| Channel ID           | Item Type                | Description                                     |
+|----------------------|--------------------------|-------------------------------------------------|
+| power                | Switch                   | Turns the smart plug relay #1 ON or OFF         |
+| power2               | Switch                   | Turns the smart plug relay #2 ON or OFF         |
+| power3               | Switch                   | Turns the smart plug relay #3 ON or OFF         |
+| power4               | Switch                   | Turns the smart plug relay #4 ON or OFF         |
+| voltage              | Number:ElectricPotential | Channel for output voltage measurement          |
+| current              | Number:ElectricCurrent   | Channel for output current measurement          |
+| watts                | Number:Power             | Channel for output power measurement            |
+| volt-ampere          | Number:Power             | Channel for output VA measurement               |
+| volt-ampere-reactive | Number:Power             | Channel for output VAr measurement              |
+| power-factor         | Number:Dimensionless     | Channel for output power factor measurement     |
+| energy-today         | Number:Energy            | Channel for output energy today measurement     |
+| energy-yesterday     | Number:Energy            | Channel for output energy yesterday measurement |
+| energy-total         | Number:Energy            | Channel for output energy total measurement     |
+| energy-total-start   | DateTime                 | Channel for output energy total start date/time |
 
 ## Full Example
 
@@ -53,7 +64,17 @@ tasmotaplug:plug:plug2 "Plug 2" [ hostName="myplug2", refresh=30 ]
 tasmotaplug.items:
 
 ```java
-Switch Plug1 "Plug 1 Power" { channel="tasmotaplug:plug:plug1:power" }
+Switch Plug1 "Plug 1 Power"                   { channel="tasmotaplug:plug:plug1:power" }
+Number:ElectricPotential Voltage              { channel="tasmotaplug:plug:plug1:voltage" }
+Number:ElectricCurrent Current                { channel="tasmotaplug:plug:plug1:current" }
+Number:Power Watts                            { channel="tasmotaplug:plug:plug1:watts" }
+Number:Power VoltAmpere                       { channel="tasmotaplug:plug:plug1:volt-ampere" }
+Number:Power VoltAmpereReactive               { channel="tasmotaplug:plug:plug1:volt-ampere-reactive" }
+Number PowerFactor                            { channel="tasmotaplug:plug:plug1:power-factor" }
+Number:Energy EnergyToday                     { channel="tasmotaplug:plug:plug1:energy-today" }
+Number:Energy EnergyYesterday                 { channel="tasmotaplug:plug:plug1:energy-yesterday" }
+Number:Energy EnergyTotal                     { channel="tasmotaplug:plug:plug1:energy-total" }
+DateTime EnergyTotalStart  "Total Start [%s]" { channel="tasmotaplug:plug:plug1:energy-total-start" }
 
 Switch Plug2a "4ch Power 1" { channel="tasmotaplug:plug:plug2:power" }
 Switch Plug2b "4ch Power 2" { channel="tasmotaplug:plug:plug2:power2" }
@@ -67,6 +88,18 @@ tasmotaplug.sitemap:
 sitemap tasmotaplug label="My Tasmota Plugs" {
     Frame label="Plugs" {
         Switch item=Plug1
+
+        // Energy monitoring
+        Text item=Voltage
+        Text item=Current
+        Text item=Watts
+        Text item=VoltAmpere
+        Text item=VoltAmpereReactive
+        Text item=PowerFactor
+        Text item=EnergyToday
+        Text item=EnergyYesterday
+        Text item=EnergyTotal
+        Text item=EnergyTotalStart
 
         Switch item=Plug2a
         Switch item=Plug2b
