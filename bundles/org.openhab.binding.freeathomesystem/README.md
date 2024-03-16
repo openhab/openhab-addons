@@ -137,7 +137,7 @@ Switch Switch_Livingroom_Double_2                         "Moodlight Livingroom"
 
 # Communities
 
-[openhAB communitiy of this binding](https://community.openhab.org/t/abb-busch-jager-free-home-official-rest-api/141698/71)
+[openHAB community of this binding](https://community.openhab.org/t/abb-busch-jager-free-home-official-rest-api/141698/71)
 
 [Busch-Jaeger Community](https://community.busch-jaeger.de/)
 

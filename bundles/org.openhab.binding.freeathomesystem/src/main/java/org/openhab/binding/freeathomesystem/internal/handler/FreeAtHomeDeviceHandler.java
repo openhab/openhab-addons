@@ -548,9 +548,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                 ThingHandler handler = bridge.getHandler();
 
                 if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
-                    freeAtHomeBridge = bridgeHandler;
-
-                    device = freeAtHomeBridge.getFreeatHomeDeviceDescription(device.getDeviceId());
+                    device = bridgeHandler.getFreeatHomeDeviceDescription(device.getDeviceId());
                 }
             }
         } catch (FreeAtHomeHttpCommunicationException e) {

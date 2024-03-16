@@ -142,20 +142,7 @@ public class FreeAtHomeDatapointGroup {
     }
 
     public boolean isDecimal() throws FreeAtHomeGeneralException {
-        boolean ret = false;
-
-        functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
-
-        switch (functionString) {
-            case PidTranslationUtils.PID_VALUETYPE_DECIMAL:
-                ret = true;
-                break;
-            default:
-                ret = false;
-                break;
-        }
-
-        return ret;
+        return PidTranslationUtils.PID_VALUETYPE_DECIMAL.equals(PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId)));
     }
 
     public boolean isInteger() throws FreeAtHomeGeneralException {
