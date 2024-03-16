@@ -22,18 +22,32 @@ You can find here the used [whisper.cpp Java wrapper](https://github.com/GiviMAD
 
 The following platforms are supported:
 
-* debian-armv7l
-* debian-arm64
-* debian-x86_64
-* macos-arm64 (+v11.0)
-* macos-x86_64 (+v11.0)
-* windows-x86_64
+* Windows10 x86_64
+* Debian GLIBC x86_64/arm64 (min GLIBC version 2.31 / min Debian version Focal)
+* macOS x86_64/arm64 (min version v11.0)
 
-The add-on has been tested on a Raspberry PI 5 with execution times:
+The native binaries for those platforms are included in the distributed jar.
 
-* tiny model ~=1.5s
-* base model ~=3.5s
-* small model ~=8s
+## CPU compatibility
+
+If you are going to use the binding in a `x86_64` host the CPU should support the flags: `avx2`, `fma`, `f16c`, `avx`.
+You can check those flags on linux using the terminal with `lscpu`.
+You can check those flags on Windows using a program like CPU-Z.
+
+If you are going to use the binding in a `arm64` host the CPU should support the flags: `fphp`.
+You can check those flags on linux using the terminal with `lscpu`.
+
+## Transcription time
+
+On a Raspberry PI 5, the approximate transcription times are:
+
+| model      | exec time |
+| ---------- | --------: |
+| tiny.bin   |      1.5s |
+| base.bin   |        3s |
+| small.bin  |      8.5s |
+| medium.bin |       17s |
+
 
 ## Configuring the model
 
@@ -55,26 +69,6 @@ It's possible to use your own build of the whisper.cpp shared library with this 
 On `Linux/macOs` you need to place the `libwhisper.so/libwhisper.dydib` at `/usr/local/lib/`.
 
 On `Windows` the `whisper.dll` file can be placed at in any directory listed at the variable `$env:PATH`, for example `X:\\Windows\System32\`.
-
-Here is a sample script for building a device specific whisper.cpp shared library using cmake in debian:
-
-```bash
-#!/bin/bash
-sudo apt update
-sudo apt install -y git build-essential
-git clone https://github.com/ggerganov/whisper.cpp
-cd whisper.cpp
-# Tells the compiler to optimize the build for our device cpu.
-COMMON_FLAGS="-mcpu=native -march=native"
-
-cmake -B build \
--DCMAKE_C_FLAGS="$COMMON_FLAGS" \
--DCMAKE_CXX_FLAGS="$COMMON_FLAGS"
-
-cmake --build build -j --config Release
-
-sudo mv build/libwhisper.so /usr/local/lib/
-```
 
 In the [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) README you can find information about the required flags to enable different acceleration methods on the cmake build and other relevant information.
 
