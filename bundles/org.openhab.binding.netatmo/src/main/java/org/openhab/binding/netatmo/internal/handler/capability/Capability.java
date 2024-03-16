@@ -53,7 +53,7 @@ public class Capability {
     protected final ModuleType moduleType;
     protected final ThingUID thingUID;
 
-    protected boolean firstLaunch;
+    protected boolean firstLaunch = true;
     protected Map<String, String> properties = Map.of();
     protected @Nullable String statusReason;
 
@@ -104,9 +104,6 @@ public class Capability {
 
     protected void beforeNewData() {
         properties = new HashMap<>(thing.getProperties());
-
-        // only the thingTypeVersion is present
-        firstLaunch = properties.size() <= 1;
         if (firstLaunch && !moduleType.isLogical()) {
             properties.put(PROPERTY_MODEL_ID, moduleType.apiName.isBlank() ? moduleType.name() : moduleType.apiName);
             properties.put(PROPERTY_VENDOR, VENDOR);
@@ -119,6 +116,7 @@ public class Capability {
         if (!properties.equals(thing.getProperties())) {
             thing.setProperties(properties);
         }
+        firstLaunch = false;
     }
 
     protected void updateNAThing(NAThing newData) {
