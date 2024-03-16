@@ -301,7 +301,8 @@ public class Back2BackTest {
     @Test
     void testDpt2() {
         for (int subType = 1; subType <= 12; subType++) {
-            helper("2." + String.format("%03d", subType), new byte[] { 3 }, new DecimalType(3));
+            helper("2." + String.format("%03d", subType), new byte[] { (byte) (subType % 4) },
+                    new DecimalType(subType % 4));
         }
     }
 
