@@ -122,10 +122,7 @@ public class Capability {
     }
 
     protected void updateNAThing(NAThing newData) {
-        String firmware = newData.getFirmware();
-        if (firmware != null && !firmware.isBlank()) {
-            properties.put(PROPERTY_FIRMWARE_VERSION, firmware);
-        }
+        newData.getFirmware().map(fw -> properties.put(PROPERTY_FIRMWARE_VERSION, fw));
         if (!newData.isReachable()) {
             statusReason = "@text/device-not-connected";
         }
@@ -168,11 +165,9 @@ public class Capability {
     }
 
     public void expireData() {
-        if (!handler.getCapabilities().containsKey(RefreshCapability.class)) {
-            CommonInterface bridgeHandler = handler.getBridgeHandler();
-            if (bridgeHandler != null) {
-                bridgeHandler.expireData();
-            }
+        CommonInterface bridgeHandler = handler.getBridgeHandler();
+        if (bridgeHandler != null && !handler.getCapabilities().containsKey(RefreshCapability.class)) {
+            bridgeHandler.expireData();
         }
     }
 
