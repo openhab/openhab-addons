@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tsmart"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="thermostat">
+
+		<label>Tesla T-Smart</label>
+		<description>Tesla T-Smart Immersion Heater Thermostat</description>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="temperature" typeId="temperature">
+				<label>Temperature</label>
+				<description>Measured temperature across the sensors</description>
+			</channel>
+			<channel id="temperature-high" typeId="temperature">
+				<label>High Temperature</label>
+				<description>Measured temperature on the High sensor</description>
+			</channel>
+			<channel id="temperature-low" typeId="temperature">
+				<label>Low Temperature</label>
+				<description>Measured temperature on the Low sensor</description>
+			</channel>
+			<channel id="setpoint" typeId="temperature-setpoint"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="smart-mode" typeId="smart-mode"/>
+			<channel id="relay" typeId="relay-state"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>IP address of the device</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in seconds.</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="relay-state">
+		<item-type>Switch</item-type>
+		<label>Relay State</label>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature of water in cylinder sensed by thermostat</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature-setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint</label>
+		<description>Setpoint currently set on device</description>
+		<category>Heating</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="15" max="70" step="5" readOnly="false" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>The mode of the thermostat</description>
+		<state>
+			<options>
+				<option value="Manual">Manual</option>
+				<option value="Eco">Eco</option>
+				<option value="Smart">Smart</option>
+				<option value="Timer">Timer</option>
+				<option value="Travel">Travel</option>
+				<option value="Boost">Boost</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smart-mode">
+		<item-type>String</item-type>
+		<label>Smart Mode</label>
+		<description>The mode of the thermostat&apos;s smart capability</description>
+		<state readOnly="true">
+			<options>
+				<option value="Uninitialised">Uninitialised</option>
+				<option value="Idle">Idle</option>
+				<option value="Recording">Recording</option>
+				<option value="Reproduction">Reproduction</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
