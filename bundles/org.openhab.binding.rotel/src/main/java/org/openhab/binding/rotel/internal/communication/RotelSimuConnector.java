@@ -1513,7 +1513,7 @@ public class RotelSimuConnector extends RotelConnector {
             text = getSourceLabel(sources[0], false);
             if (model.getRespNbChars() == 11) {
                 if ("TUNER".equals(text)) {
-                    text = "104.30S 10 ";
+                    text = "104.30M 10 ";
                 } else {
                     text += " " + buildVolumeValue(0);
                 }

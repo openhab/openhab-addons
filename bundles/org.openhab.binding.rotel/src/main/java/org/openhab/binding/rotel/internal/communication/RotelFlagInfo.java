@@ -15,20 +15,10 @@ package org.openhab.binding.rotel.internal.communication;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Represents the different types of information that can be included in response flags (HEX protocol)
+ * Record describing one information in response flags (HEX protocol)
  *
  * @author Laurent Garnier - Initial contribution
  */
 @NonNullByDefault
-public enum RotelFlagInfoType {
-    MULTI_INPUT,
-    ZONE2,
-    ZONE3,
-    ZONE4,
-    ZONE,
-    CENTER,
-    SURROUND_LEFT,
-    SURROUND_RIGHT,
-    SPEAKER_A,
-    SPEAKER_B
+public record RotelFlagInfo(RotelFlagInfoType infoType, int flagNumber, int bitNumber) {
 }

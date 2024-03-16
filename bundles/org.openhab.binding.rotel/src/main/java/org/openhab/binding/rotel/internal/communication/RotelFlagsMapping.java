@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.rotel.internal.communication;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.rotel.internal.RotelException;
 
 /**
@@ -27,51 +28,35 @@ import org.openhab.binding.rotel.internal.RotelException;
 public class RotelFlagsMapping {
 
     public static final RotelFlagsMapping MAPPING1 = new RotelFlagsMapping(
-            Map.of(RotelFlagInfoType.MULTI_INPUT, new int[] { 3, 1 }, //
-                    RotelFlagInfoType.ZONE2, new int[] { 5, 0 }, //
-                    RotelFlagInfoType.CENTER, new int[] { 8, 6 }, //
-                    RotelFlagInfoType.SURROUND_LEFT, new int[] { 8, 4 }, //
-                    RotelFlagInfoType.SURROUND_RIGHT, new int[] { 8, 3 }));
+            List.of(new RotelFlagInfo(RotelFlagInfoType.MULTI_INPUT, 3, 1), //
+                    new RotelFlagInfo(RotelFlagInfoType.ZONE2, 5, 0), //
+                    new RotelFlagInfo(RotelFlagInfoType.CENTER, 8, 6), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_LEFT, 8, 4), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_RIGHT, 8, 3)));
     public static final RotelFlagsMapping MAPPING2 = new RotelFlagsMapping(
-            Map.of(RotelFlagInfoType.ZONE2, new int[] { 4, 7 }, //
-                    RotelFlagInfoType.CENTER, new int[] { 5, 6 }, //
-                    RotelFlagInfoType.SURROUND_LEFT, new int[] { 5, 4 }, //
-                    RotelFlagInfoType.SURROUND_RIGHT, new int[] { 5, 3 }));
+            List.of(new RotelFlagInfo(RotelFlagInfoType.ZONE2, 4, 7), //
+                    new RotelFlagInfo(RotelFlagInfoType.CENTER, 5, 6), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_LEFT, 5, 4), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_RIGHT, 5, 3)));
     public static final RotelFlagsMapping MAPPING3 = new RotelFlagsMapping(
-            Map.of(RotelFlagInfoType.MULTI_INPUT, new int[] { 4, 7 }, //
-                    RotelFlagInfoType.ZONE2, new int[] { 1, 7 }, //
-                    RotelFlagInfoType.ZONE3, new int[] { 2, 7 }, //
-                    RotelFlagInfoType.ZONE4, new int[] { 6, 2 }, //
-                    RotelFlagInfoType.CENTER, new int[] { 5, 6 }, //
-                    RotelFlagInfoType.SURROUND_LEFT, new int[] { 5, 4 }, //
-                    RotelFlagInfoType.SURROUND_RIGHT, new int[] { 5, 3 }));
-    public static final RotelFlagsMapping MAPPING4 = new RotelFlagsMapping(
-            Map.of(RotelFlagInfoType.MULTI_INPUT, new int[] { 3, 1 }, //
-                    RotelFlagInfoType.ZONE2, new int[] { 1, 7 }, //
-                    RotelFlagInfoType.ZONE3, new int[] { 2, 7 }, //
-                    RotelFlagInfoType.ZONE4, new int[] { 6, 2 }, //
-                    RotelFlagInfoType.CENTER, new int[] { 8, 6 }, //
-                    RotelFlagInfoType.SURROUND_LEFT, new int[] { 8, 4 }, //
-                    RotelFlagInfoType.SURROUND_RIGHT, new int[] { 8, 3 }));
-    public static final RotelFlagsMapping MAPPING5 = new RotelFlagsMapping(
-            Map.of(RotelFlagInfoType.ZONE2, new int[] { 3, 2 }, //
-                    RotelFlagInfoType.ZONE3, new int[] { 4, 2 }, //
-                    RotelFlagInfoType.ZONE4, new int[] { 4, 1 }, //
-                    RotelFlagInfoType.CENTER, new int[] { 5, 6 }, //
-                    RotelFlagInfoType.SURROUND_LEFT, new int[] { 5, 4 }, //
-                    RotelFlagInfoType.SURROUND_RIGHT, new int[] { 5, 3 }));
-    public static final RotelFlagsMapping MAPPING6 = new RotelFlagsMapping(
-            Map.of(RotelFlagInfoType.ZONE, new int[] { 1, 1 }, //
-                    RotelFlagInfoType.SPEAKER_A, new int[] { 1, 3 }, //
-                    RotelFlagInfoType.SPEAKER_B, new int[] { 1, 2 }, //
-                    RotelFlagInfoType.FM, new int[] { 3, 5 }, //
-                    RotelFlagInfoType.AM, new int[] { 4, 0 }));
-    public static final RotelFlagsMapping NO_MAPPING = new RotelFlagsMapping(Map.of());
+            List.of(new RotelFlagInfo(RotelFlagInfoType.ZONE2, 3, 2), //
+                    new RotelFlagInfo(RotelFlagInfoType.ZONE3, 4, 2), //
+                    new RotelFlagInfo(RotelFlagInfoType.ZONE4, 4, 1), //
+                    new RotelFlagInfo(RotelFlagInfoType.CENTER, 5, 6), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_LEFT, 5, 4), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_RIGHT, 5, 3)));
 
-    private Map<RotelFlagInfoType, int @Nullable []> infos;
+    private Map<RotelFlagInfoType, RotelFlagInfo> infos;
 
-    private RotelFlagsMapping(Map<RotelFlagInfoType, int @Nullable []> infos) {
-        this.infos = infos;
+    public RotelFlagsMapping() {
+        this.infos = new HashMap<>();
+    }
+
+    public RotelFlagsMapping(List<RotelFlagInfo> infos) {
+        this.infos = new HashMap<>();
+        for (RotelFlagInfo info : infos) {
+            this.infos.put(info.infoType(), info);
+        }
     }
 
     /**
@@ -94,11 +79,11 @@ public class RotelFlagsMapping {
      * @throws RotelException in case the information is undefined
      */
     public boolean isInfoOn(RotelFlagInfoType infoType, byte[] flags) throws RotelException {
-        int[] info = infos.get(infoType);
-        if (info == null || info.length != 2 || info[0] > flags.length) {
+        RotelFlagInfo info = infos.get(infoType);
+        if (info == null || info.flagNumber() > flags.length) {
             throw new RotelException("Info " + infoType.name() + " not available in flags");
         }
-        return RotelFlagsMapping.isBitFlagOn(flags, info[0], info[1]);
+        return RotelFlagsMapping.isBitFlagOn(flags, info.flagNumber(), info.bitNumber());
     }
 
     /**
@@ -111,11 +96,11 @@ public class RotelFlagsMapping {
      * @throws RotelException in case the information is undefined
      */
     public void setInfo(RotelFlagInfoType infoType, byte[] flags, boolean on) throws RotelException {
-        int[] info = infos.get(infoType);
-        if (info == null || info.length != 2 || info[0] > flags.length) {
+        RotelFlagInfo info = infos.get(infoType);
+        if (info == null || info.flagNumber() > flags.length) {
             throw new RotelException("Info " + infoType.name() + " not available in flags");
         }
-        RotelFlagsMapping.setBitFlag(flags, info[0], info[1], on);
+        RotelFlagsMapping.setBitFlag(flags, info.flagNumber(), info.bitNumber(), on);
     }
 
     /**
@@ -128,15 +113,15 @@ public class RotelFlagsMapping {
      * @throws RotelException in case the center or surround channel indicators are undefined
      */
     public boolean isMoreThan2Channels(byte[] flags) throws RotelException {
-        int[] center = infos.get(RotelFlagInfoType.CENTER);
-        int[] surroundLeft = infos.get(RotelFlagInfoType.SURROUND_LEFT);
-        int[] surroundRight = infos.get(RotelFlagInfoType.SURROUND_RIGHT);
-        return (center != null && center.length == 2 && center[0] <= flags.length
-                && RotelFlagsMapping.isBitFlagOn(flags, center[0], center[1]))
-                || (surroundLeft != null && surroundLeft.length == 2 && surroundLeft[0] <= flags.length
-                        && RotelFlagsMapping.isBitFlagOn(flags, surroundLeft[0], surroundLeft[1]))
-                || (surroundRight != null && surroundRight.length == 2 && surroundRight[0] <= flags.length
-                        && RotelFlagsMapping.isBitFlagOn(flags, surroundRight[0], surroundRight[1]));
+        RotelFlagInfo center = infos.get(RotelFlagInfoType.CENTER);
+        RotelFlagInfo surroundLeft = infos.get(RotelFlagInfoType.SURROUND_LEFT);
+        RotelFlagInfo surroundRight = infos.get(RotelFlagInfoType.SURROUND_RIGHT);
+        return (center != null && center.flagNumber() <= flags.length
+                && RotelFlagsMapping.isBitFlagOn(flags, center.flagNumber(), center.bitNumber()))
+                || (surroundLeft != null && surroundLeft.flagNumber() <= flags.length
+                        && RotelFlagsMapping.isBitFlagOn(flags, surroundLeft.flagNumber(), surroundLeft.bitNumber()))
+                || (surroundRight != null && surroundRight.flagNumber() <= flags.length
+                        && RotelFlagsMapping.isBitFlagOn(flags, surroundRight.flagNumber(), surroundRight.bitNumber()));
     }
 
     /**
