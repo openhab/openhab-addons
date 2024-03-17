@@ -51,7 +51,7 @@ public class HueSyncConnection {
     private static final String REQUEST_FORMAT = "https://%s:%s/%s/%s";
 
     private static final String API = "api/v1";
-    private static final String RESOURCE = "device";
+    private static final String DEVICE = "device";
     private static final String REGISTRATIONS = "registrations";
 
     private static final ObjectMapper ObjectMapper = new ObjectMapper();
@@ -71,7 +71,7 @@ public class HueSyncConnection {
     public HueSyncDeviceInfo getDeviceInfo() throws InterruptedException, ExecutionException, TimeoutException,
             JsonMappingException, JsonProcessingException {
 
-        String uri = String.format(REQUEST_FORMAT, this.config.host, this.config.port, API, RESOURCE);
+        String uri = String.format(REQUEST_FORMAT, this.config.host, this.config.port, API, DEVICE);
 
         ContentResponse response = this.httpClient.GET(uri);
         String json = response.getContentAsString();

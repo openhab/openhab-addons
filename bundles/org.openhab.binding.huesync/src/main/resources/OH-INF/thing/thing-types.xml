@@ -38,7 +38,7 @@
 				<context></context>
 				<label>Application Registration Id</label>
 				<description>The id of the API registration.</description>
-				<required>false</required>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="apiAccessToken" type="text" groupName="connection">
 				<context>password</context>
@@ -47,7 +47,7 @@
 					process is completed, the acquired token will authorize the binding to interact with the device. After initial
 					discovery and thing creation the device will stay offline. Press the registration button on the sync box for 3
 					seconds to grant the binding the required permissions.</description>
-				<required>false</required>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
