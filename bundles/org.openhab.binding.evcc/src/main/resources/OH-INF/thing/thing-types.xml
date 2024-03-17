@@ -11,16 +11,26 @@
 
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>
-			<channel-group id="loadpoint0" typeId="loadpoint"/>
-			<channel-group id="loadpoint1" typeId="loadpoint"/>
-			<channel-group id="loadpoint2" typeId="loadpoint"/>
-			<channel-group id="loadpoint3" typeId="loadpoint"/>
-			<channel-group id="loadpoint4" typeId="loadpoint"/>
-			<channel-group id="loadpoint5" typeId="loadpoint"/>
-			<channel-group id="loadpoint6" typeId="loadpoint"/>
-			<channel-group id="loadpoint7" typeId="loadpoint"/>
-			<channel-group id="loadpoint8" typeId="loadpoint"/>
-			<channel-group id="loadpoint9" typeId="loadpoint"/>
+			<channel-group id="loadpoint0" typeId="loadpoint0"/>
+			<channel-group id="loadpoint1" typeId="loadpoint1"/>
+			<channel-group id="loadpoint2" typeId="loadpoint2"/>
+			<channel-group id="loadpoint3" typeId="loadpoint3"/>
+			<channel-group id="loadpoint4" typeId="loadpoint4"/>
+			<channel-group id="loadpoint5" typeId="loadpoint5"/>
+			<channel-group id="loadpoint6" typeId="loadpoint6"/>
+			<channel-group id="loadpoint7" typeId="loadpoint7"/>
+			<channel-group id="loadpoint8" typeId="loadpoint8"/>
+			<channel-group id="loadpoint9" typeId="loadpoint9"/>
+			<channel-group id="loadpoint0current" typeId="loadpoint0current"/>
+			<channel-group id="loadpoint1current" typeId="loadpoint1current"/>
+			<channel-group id="loadpoint2current" typeId="loadpoint2current"/>
+			<channel-group id="loadpoint3current" typeId="loadpoint3current"/>
+			<channel-group id="loadpoint4current" typeId="loadpoint4current"/>
+			<channel-group id="loadpoint5current" typeId="loadpoint5current"/>
+			<channel-group id="loadpoint6current" typeId="loadpoint6current"/>
+			<channel-group id="loadpoint7current" typeId="loadpoint7current"/>
+			<channel-group id="loadpoint8current" typeId="loadpoint8current"/>
+			<channel-group id="loadpoint9current" typeId="loadpoint9current"/>
 		</channel-groups>
 
 		<config-description>
@@ -41,8 +51,65 @@
 	<channel-group-type id="general">
 		<label>General Data</label>
 	</channel-group-type>
-	<channel-group-type id="loadpoint">
-		<label>Loadpoint</label>
+	<channel-group-type id="loadpoint0">
+		<label>Loadpoint 0</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint1">
+		<label>Loadpoint 1</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint2">
+		<label>Loadpoint 2</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint3">
+		<label>Loadpoint 3</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint4">
+		<label>Loadpoint 4</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint5">
+		<label>Loadpoint 5</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint6">
+		<label>Loadpoint 6</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint7">
+		<label>Loadpoint 7</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint8">
+		<label>Loadpoint 8</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint9">
+		<label>Loadpoint 9</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint0current">
+		<label>Loadpoint 0: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint1current">
+		<label>Loadpoint 1: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint2current">
+		<label>Loadpoint 2: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint3current">
+		<label>Loadpoint 3: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint4current">
+		<label>Loadpoint 4: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint5current">
+		<label>Loadpoint 5: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint6current">
+		<label>Loadpoint 6: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint7current">
+		<label>Loadpoint 7: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint8current">
+		<label>Loadpoint 8: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint9current">
+		<label>Loadpoint 9: Current</label>
 	</channel-group-type>
 
 	<!-- Units and description on: https://docs.evcc.io/docs/reference/configuration/messaging/#msg -->
@@ -332,13 +399,6 @@
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="vehicleCapacity">
-		<item-type>Number:Energy</item-type>
-		<label>Vehicle Capacity</label>
-		<description>Capacity of EV battery</description>
-		<category>Energy</category>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
 	<channel-type id="vehicleOdometer">
 		<item-type>Number:Length</item-type>
 		<label>Vehicle Odometer</label>
@@ -458,6 +518,20 @@
 		<category>Temperature</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehicleCapacity">
+		<item-type>Number:Energy</item-type>
+		<label>Vehicle Capacity</label>
+		<description>Capacity of EV battery</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="heatingCapacity">
+		<item-type>Number:Energy</item-type>
+		<label>Heating Capacity</label>
+		<description>Capacity of heating device</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehiclePlanEnabled">
 		<item-type>Switch</item-type>

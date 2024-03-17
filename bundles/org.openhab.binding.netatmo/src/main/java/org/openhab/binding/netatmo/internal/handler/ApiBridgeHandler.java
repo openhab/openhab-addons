@@ -340,6 +340,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             logger.trace(" -returned: code {} body {}", statusCode, responseBody);
 
             if (statusCode == Code.OK) {
+                updateStatus(ThingStatus.ONLINE);
                 return deserializer.deserialize(clazz, responseBody);
             }
 

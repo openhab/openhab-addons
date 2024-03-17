@@ -79,7 +79,6 @@ Please note that you have to replace _\<N\>_ with your loadpoint id/number.
 | loadpoint\<N\>#title                          | String                 | R          | Title of loadpoint                                                                                                |
 | loadpoint\<N\>#vehicleConnected               | Switch                 | R          | Whether vehicle is connected to loadpoint                                                                         |
 | loadpoint\<N\>#vehicleConnectedDuration       | Number:Time            | R          | Duration the vehicle is connected to loadpoint                                                                    |
-| loadpoint\<N\>#vehicleCapacity                | Number:Energy          | R          | Capacity of EV battery                                                                                            |
 | loadpoint\<N\>#vehicleOdometer                | Number:Length          | R          | Total distance travelled by EV                                                                                    |
 | loadpoint\<N\>#vehiclePresent                 | Switch                 | R          | Whether evcc is able to get data from vehicle                                                                     |
 | loadpoint\<N\>#vehicleRange                   | Number:Length          | R          | Battery range for EV                                                                                              |
@@ -105,31 +104,43 @@ Please note that you have to replace _\<N\>_ with your loadpoint id/number.
 
 ### Vehicle Channels
 
-Those channels exist per configured vehicle.
-Please note that you have to replace _\<ID\>_ with your vehicle id/name.
+Those channels exist:
 
-| Channel                          | Type                 | Read/Write | Description                                                              |
-|----------------------------------|----------------------|------------|--------------------------------------------------------------------------|
-| vehicle\<ID\>#vehicleTitle       | String               | R          | Title of vehicle                                                         |
-| vehicle\<ID\>#vehicleMinSoC      | Number:Dimensionless | RW         | Minimum state of charge (SoC) a vehicle should have                      |
-| vehicle\<ID\>#vehicleLimitSoC    | Number:Dimensionless | RW         | Until which state of charge (SoC) should the specific vehicle be charged |
-| vehicle\<ID\>#vehiclePlanEnabled | Switch               | RW         | Plan for charging enabled                                                |
-| vehicle\<ID\>#vehiclePlanSoC     | Number:Dimensionless | RW         | Until which state of charge (SoC) should vehicle be charged in plan      |
-| vehicle\<ID\>#vehiclePlanTime    | DateTime             | RW         | When the plan SoC should be reached                                      |
+* 1 per configured loadpoint with `chargerFeatureHeating = false`:
+  * These channels point to the heating device that is currently active/connected at/to the loadpoint
+  * Please note that you have to replace _\<N\>_ with your loadpoint id/number
+* 1 per configured vehicle:
+  * Please note that you have to replace _\<ID\>_ with your vehicle id/name
+
+| Channel                                            | Type                 | Read/Write | Description                                                              |
+|----------------------------------------------------|----------------------|------------|--------------------------------------------------------------------------|
+| [loadpoint\<N\>\|vehicle\<ID\]>#vehicleTitle       | String               | R          | Title of vehicle                                                         |
+| [loadpoint\<N\>\|vehicle\<ID\]>#vehicleMinSoC      | Number:Dimensionless | RW         | Minimum state of charge (SoC) a vehicle should have                      |
+| [loadpoint\<N\>\|vehicle\<ID\]>#vehicleLimitSoC    | Number:Dimensionless | RW         | Until which state of charge (SoC) should the specific vehicle be charged |
+| [loadpoint\<N\>\|vehicle\<ID\]>#vehicleCapacity    | Number:Energy        | R          | Capacity of EV battery                                                   |
+| [loadpoint\<N\>\|vehicle\<ID\]>#vehiclePlanEnabled | Switch               | RW         | Plan for charging enabled                                                |
+| [loadpoint\<N\>\|vehicle\<ID\]>#vehiclePlanSoC     | Number:Dimensionless | RW         | Until which state of charge (SoC) should vehicle be charged in plan      |
+| [loadpoint\<N\>\|vehicle\<ID\]>#vehiclePlanTime    | DateTime             | RW         | When the plan SoC should be reached                                      |
 
 ### Heating Channels
 
-Those channels exist per configured heating device.
-Please note that you have to replace _\<ID\>_ with your heating device id/name.
+Those channels exist:
 
-| Channel                               | Type               | Read/Write | Description                                                           |
-|---------------------------------------|--------------------|------------|-----------------------------------------------------------------------|
-| heating\<ID\>#heatingTitle            | String             | R          | Title of heating device                                               |
-| heating\<ID\>#heatingMinTemperature   | Number:Temperature | RW         | Minimum Temperature a heating device should have                      |
-| heating\<ID\>#heatingLimitTemperature | Number:Temperature | RW         | Until which Temperature should the specific heating device be charged |
-| heating\<ID\>#heatingPlanEnabled      | Switch             | RW         | Plan for charging enabled                                             |
-| heating\<ID\>#heatingPlanTemperature  | Number:Temperature | RW         | Until which Temperature should heating device be charged in plan      |
-| heating\<ID\>#heatingPlanTime         | DateTime           | RW         | When the plan Temperature should be reached                           |
+* 1 per configured loadpoint with `chargerFeatureHeating = true`:
+  * These channels point to the heating device that is currently active/connected at/to the loadpoint
+  * Please note that you have to replace _\<N\>_ with your loadpoint id/number
+* 1 per configured heating device:
+  * Please note that you have to replace _\<ID\>_ with your heating device id/name
+
+| Channel                                                 | Type               | Read/Write | Description                                                           |
+|---------------------------------------------------------|--------------------|------------|-----------------------------------------------------------------------|
+| [loadpoint\<N\>\|heating\<ID\]>#heatingTitle            | String             | R          | Title of heating device                                               |
+| [loadpoint\<N\>\|heating\<ID\]>#heatingMinTemperature   | Number:Temperature | RW         | Minimum Temperature a heating device should have                      |
+| [loadpoint\<N\>\|heating\<ID\]>#heatingLimitTemperature | Number:Temperature | RW         | Until which Temperature should the specific heating device be charged |
+| [loadpoint\<N\>\|heating\<ID\]>#heatingCapacity         | Number:Energy      | R          | Capacity of heating device                                            |
+| [loadpoint\<N\>\|heating\<ID\]>#heatingPlanEnabled      | Switch             | RW         | Plan for charging enabled                                             |
+| [loadpoint\<N\>\|heating\<ID\]>#heatingPlanTemperature  | Number:Temperature | RW         | Until which Temperature should heating device be charged in plan      |
+| [loadpoint\<N\>\|heating\<ID\]>#heatingPlanTime         | DateTime           | RW         | When the plan Temperature should be reached                           |
 
 ## Full Example
 
@@ -179,23 +190,23 @@ String                 evcc_loadpoint0_title                          "Loadpoint
 Switch                 evcc_loadpoint0_chargerFeatureHeating          "Feature: Heating [%s]"                              <switch>       {channel="evcc:device:demo:loadpoint0#chargerFeatureHeating"}
 Switch                 evcc_loadpoint0_chargerFeatureIntegratedDevice "Feature: Integrated Device [%s]"                    <switch>       {channel="evcc:device:demo:loadpoint0#chargerFeatureIntegratedDevice"}
 
-// Vehicle on loadpoint
+// Loadpoint vehicle channels
 Switch                 evcc_loadpoint0_vehicleConnected               "Vehicle connected [%s]"                             <switch>       {channel="evcc:device:demo:loadpoint0#vehicleConnected"}
 Number:Time            evcc_loadpoint0_vehicleConnectedDuration       "Vehicle connected duration [%.1f h]"                <time>         {channel="evcc:device:demo:loadpoint0#vehicleConnectedDuration"}
-Number:Energy          evcc_loadpoint0_vehicleCapacity                "Vehicle capacity [%.0f kWh]"                        <batterylevel> {channel="evcc:device:demo:loadpoint0#vehicleCapacity"}
 Number:Length          evcc_loadpoint0_vehicleOdometer                "Vehicle odometer [%.1f km]"                                        {channel="evcc:device:demo:loadpoint0#vehicleOdometer"}
 Switch                 evcc_loadpoint0_vehiclePresent                 "Vehicle present [%s]"                               <switch>       {channel="evcc:device:demo:loadpoint0#vehiclePresent"}
 Number:Length          evcc_loadpoint0_vehicleRange                   "Vehicle Range [%.0f km]"                                           {channel="evcc:device:demo:loadpoint0#vehicleRange"}
 Number:Dimensionless   evcc_loadpoint0_vehicleSoC                     "Vehicle SoC [%d %%]"                                <batterylevel> {channel="evcc:device:demo:loadpoint0#vehicleSoC"}
 String                 evcc_loadpoint0_VehicleName                    "Vehicle name [%s]"                                  <text>         {channel="evcc:device:demo:loadpoint0#vehicleName"}
 
-// Vehicle
-String                 evcc_vehicle0_vehicleTitle                     "Vehicle title [%s]"                                 <text>         {channel="evcc:device:demo:vehicle0#vehicleTitle"}
-Number:Dimensionless   evcc_vehicle0_vehicleMinSoC                    "Vehicle minimum SoC [%d %%]"                        <batterylevel> {channel="evcc:device:demo:vehicle0#vehicleMinSoC"}
-Number:Dimensionless   evcc_vehicle0_vehicleLimitSoC                  "Vehicle limit SoC [%d %%]"                          <batterylevel> {channel="evcc:device:demo:vehicle0#vehicleLimitSoC"}
-Switch                 evcc_vehicle0_vehiclePlanEnabled               "Vehicle plan enabled [%s]"                          <switch>       {channel="evcc:device:demo:vehicle0#vehiclePlanEnabled"}
-Number:Dimensionless   evcc_vehicle0_vehiclePlanSoC                   "Vehicle plan SoC [%d %%]"                           <batterylevel> {channel="evcc:device:demo:vehicle0#vehiclePlanSoC"}
-DateTime               evcc_vehicle0_vehiclePlanTime                  "Vehicle plan time [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" <time>         {channel="evcc:device:demo:vehicle0#vehiclePlanTime"}
+// Vehicle on loadpoint
+String                 evcc_loadpoint0current_vehicleTitle            "Vehicle title [%s]"                                 <text>         {channel="evcc:device:demo:loadpoint0current#vehicleTitle"}
+Number:Dimensionless   evcc_loadpoint0current_vehicleMinSoC           "Vehicle minimum SoC [%d %%]"                        <batterylevel> {channel="evcc:device:demo:loadpoint0current#vehicleMinSoC"}
+Number:Dimensionless   evcc_loadpoint0current_vehicleLimitSoC         "Vehicle limit SoC [%d %%]"                          <batterylevel> {channel="evcc:device:demo:loadpoint0current#vehicleLimitSoC"}
+Number:Energy          evcc_loadpoint0current_vehicleCapacity         "Vehicle capacity [%.0f kWh]"                        <batterylevel> {channel="evcc:device:demo:loadpoint0current#vehicleCapacity"}
+Switch                 evcc_loadpoint0current_vehiclePlanEnabled      "Vehicle plan enabled [%s]"                          <switch>       {channel="evcc:device:demo:loadpoint0current#vehiclePlanEnabled"}
+Number:Dimensionless   evcc_loadpoint0current_vehiclePlanSoC          "Vehicle plan SoC [%d %%]"                           <batterylevel> {channel="evcc:device:demo:loadpoint0current#vehiclePlanSoC"}
+DateTime               evcc_loadpoint0current_vehiclePlanTime         "Vehicle plan time [%1$td.%1$tm.%1$tY, %1$tH:%1$tM]" <time>         {channel="evcc:device:demo:loadpoint0current#vehiclePlanTime"}
 ```
 
 ### Sitemap
@@ -230,16 +241,16 @@ sitemap evcc label="evcc Demo" {
             Setpoint item=evcc_loadpoint0_phases minValue=1 maxValue=3 step=2
         }
         Text item=evcc_loadpoint0_vehicleName label="Vehicle" {
-            Text item=evcc_loadpoint0_vehicleCapacity
+            Text item=evcc_loadpoint0current_vehicleCapacity
             Text item=evcc_loadpoint0_vehicleOdometer
             Text item=evcc_loadpoint0_vehicleRange
             Text item=evcc_loadpoint0_vehicleSoC
-            Text item=evcc_vehicle0_vehicleTitle
-            Setpoint item=evcc_vehicle0_vehicleMinSoC minValue=0 maxValue=100 step=5
-            Setpoint item=evcc_vehicle0_vehicleLimitSoC minValue=5 maxValue=100 step=5
-            Switch item=evcc_vehicle0_vehiclePlanEnabled
-            Setpoint item=evcc_vehicle0_vehiclePlanSoC minValue=5 maxValue=100 step=5
-            Input item=evcc_vehicle0_vehiclePlanTime
+            Text item=evcc_loadpoint0current_vehicleTitle
+            Setpoint item=evcc_loadpoint0current_vehicleMinSoC minValue=0 maxValue=100 step=5
+            Setpoint item=evcc_loadpoint0current_vehicleLimitSoC minValue=5 maxValue=100 step=5
+            Switch item=evcc_loadpoint0current_vehiclePlanEnabled
+            Setpoint item=evcc_loadpoint0current_vehiclePlanSoC minValue=5 maxValue=100 step=5
+            Input item=evcc_loadpoint0current_vehiclePlanTime
         }
     }
 }

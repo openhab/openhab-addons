@@ -37,10 +37,11 @@
 			<channel id="spinningspeed" typeId="spinningspeed"/>
 			<channel id="energyConsumption" typeId="energy-consumption"/>
 			<channel id="waterConsumption" typeId="water-consumption"/>
+			<channel id="laundryWeight" typeId="laundry-weight"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<representation-property>uid</representation-property>
