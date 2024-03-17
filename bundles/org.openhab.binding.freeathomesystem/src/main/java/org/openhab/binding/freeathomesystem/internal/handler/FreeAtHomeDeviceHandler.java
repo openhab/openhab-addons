@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.freeathomesystem.internal.configuration.FreeAtHomeDeviceHandlerConfiguration;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapoint;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapointGroup;
 import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceChannel;
@@ -98,15 +99,16 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
-            final String locDeviceId = (String) getConfig().get(DEVICE_ID_CONFIG);
+            FreeAtHomeDeviceHandlerConfiguration config = getConfigAs(FreeAtHomeDeviceHandlerConfiguration.class);
 
             Bridge bridge = this.getBridge();
+            String locDeviceId = config.deviceId;
 
             if (bridge != null) {
                 ThingHandler handler = bridge.getHandler();
 
                 if (handler instanceof FreeAtHomeBridgeHandler bridgeHandler) {
-                    if (locDeviceId != null) {
+                    if (!locDeviceId.isBlank()) {
                         try {
                             device = bridgeHandler.getFreeatHomeDeviceDescription(locDeviceId);
 
@@ -481,8 +483,7 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
 
                     ChannelUID channelUID = new ChannelUID(thingUID, channel.getChannelId(), dpg.getLabel());
 
-                    String channelLabel = String.format("%s - %s - %s", channel.getChannelLabel(),
-                            i18nProvider.getText(bundle, channel.getFunctionIdText(), "-", locale),
+                    String channelLabel = String.format("%s - %s", channel.getChannelLabel(),
                             i18nProvider.getText(bundle, dpg.getLabel(), "-", locale));
 
                     String channelDescription = String.format("%s",

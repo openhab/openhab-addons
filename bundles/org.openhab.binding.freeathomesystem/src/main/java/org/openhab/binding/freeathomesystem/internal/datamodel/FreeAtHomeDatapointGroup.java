@@ -142,38 +142,18 @@ public class FreeAtHomeDatapointGroup {
     }
 
     public boolean isDecimal() throws FreeAtHomeGeneralException {
-        return PidTranslationUtils.PID_VALUETYPE_DECIMAL.equals(PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId)));
+        return PidTranslationUtils.PID_VALUETYPE_DECIMAL
+                .equals(PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId)));
     }
 
     public boolean isInteger() throws FreeAtHomeGeneralException {
-        boolean ret = false;
-
-        functionString = PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId));
-
-        switch (functionString) {
-            case PidTranslationUtils.PID_VALUETYPE_INTEGER:
-                ret = true;
-                break;
-            default:
-                ret = false;
-                break;
-        }
-
-        return ret;
+        return PidTranslationUtils.PID_VALUETYPE_INTEGER
+                .equals(PidTranslationUtils.getValueTypeForPairingId(String.format("0x%04X", pairingId)));
     }
 
     public boolean isReadOnly() {
-        boolean result = true;
-
-        if (DatapointGroupDirection.INPUTOUTPUT == datapointGroupDirection) {
-            result = false;
-        }
-
-        if (DatapointGroupDirection.INPUT == datapointGroupDirection) {
-            result = false;
-        }
-
-        return result;
+        return (DatapointGroupDirection.INPUTOUTPUT == datapointGroupDirection) ? false
+                : ((DatapointGroupDirection.INPUT == datapointGroupDirection) ? false : true);
     }
 
     public int getMax() throws FreeAtHomeGeneralException {
