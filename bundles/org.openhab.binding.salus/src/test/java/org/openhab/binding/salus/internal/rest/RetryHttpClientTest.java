@@ -1,5 +1,18 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.salus.internal.rest;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -10,6 +23,8 @@ import static org.mockito.Mockito.verify;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,14 +34,19 @@ import org.openhab.binding.salus.internal.rest.RestClient.Content;
 import org.openhab.binding.salus.internal.rest.RestClient.Header;
 import org.openhab.binding.salus.internal.rest.RestClient.Response;
 
+/**
+ * @author Martin Grześlowski - Initial contribution
+ */
+@NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 class RetryHttpClientTest {
     @Mock
+    @Nullable
     RestClient restClient;
     String url = "https://example.com";
     Header header = new Header("Authorization", "Bearer token");
     Header[] headers = new Header[] { header };
-    Response<String> response = new Response<>(200, "Success");
+    Response<java.lang.@Nullable String> response = new Response<>(200, "Success");
     Content content = new Content("Request body");
 
     @Test
@@ -34,7 +54,7 @@ class RetryHttpClientTest {
     void testGetMethodRetriesUntilSucceeds() throws Exception {
         // Given
         var maxRetries = 4;
-        var retryHttpClient = new RetryHttpClient(restClient, maxRetries);
+        var retryHttpClient = new RetryHttpClient(requireNonNull(restClient), maxRetries);
 
         given(restClient.get(url, headers))//
                 .willThrow(new RuntimeException())//
@@ -55,7 +75,7 @@ class RetryHttpClientTest {
     void testPostMethodRetriesUntilSucceeds() throws ExecutionException, InterruptedException, TimeoutException {
         // Given
         int maxRetries = 4;
-        var retryHttpClient = new RetryHttpClient(restClient, maxRetries);
+        var retryHttpClient = new RetryHttpClient(requireNonNull(restClient), maxRetries);
 
         given(restClient.post(url, content, headers))//
                 .willThrow(new RuntimeException()) //
@@ -77,7 +97,7 @@ class RetryHttpClientTest {
             throws ExecutionException, InterruptedException, TimeoutException {
         // Given
         var maxRetries = 3;
-        var retryHttpClient = new RetryHttpClient(restClient, maxRetries);
+        var retryHttpClient = new RetryHttpClient(requireNonNull(restClient), maxRetries);
 
         given(restClient.get(url, headers)).willThrow(new RuntimeException("Error"));
 
@@ -93,7 +113,7 @@ class RetryHttpClientTest {
             throws ExecutionException, InterruptedException, TimeoutException {
         // Given
         int maxRetries = 3;
-        var retryHttpClient = new RetryHttpClient(restClient, maxRetries);
+        var retryHttpClient = new RetryHttpClient(requireNonNull(restClient), maxRetries);
 
         given(restClient.post(url, content, headers)).willThrow(new RuntimeException("Error"));
 
