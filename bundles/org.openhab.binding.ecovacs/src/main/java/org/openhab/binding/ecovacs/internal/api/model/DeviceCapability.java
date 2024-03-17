@@ -47,6 +47,8 @@ public enum DeviceCapability {
     TRUE_DETECT_3D,
     @SerializedName("unit_care_lifespan")
     UNIT_CARE_LIFESPAN,
+    @SerializedName("uses_clean_results_log_api")
+    USES_CLEAN_RESULTS_LOG_API,
     // implicit capabilities added in code
     EDGE_CLEANING,
     SPOT_CLEANING,
