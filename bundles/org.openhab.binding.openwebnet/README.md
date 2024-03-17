@@ -44,7 +44,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Gateway Management            |    `13`     |                       `bus_gateway`                        | Any IP gateway supporting OpenWebNet protocol should work        | Successfully tested: F452, F453, F453AV,F454, F455, MyHOMEServer1, MyHOME_Screen10, MyHOME_Screen3,5, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202            |
 | Lighting                      |     `1`     |             `bus_on_off_switch`, `bus_dimmer`              | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)                                                                                           |
 | Automation                    |     `2`     |                      `bus_automation`                      | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2                                                                                                                                                                              |
-| Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes)         | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455; Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details |
+| Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes)         | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455. Partially tested: Central Units 4-zones (models L/N/NT/HD/HC/HS4695) and 99-zones (model 3550). See [Channels - Thermo](#configuring-thermo) for more details |
 | Alarm                         |     `5`     |  `bus_alarm_system`, `bus_alarm_zone`                      | BUS Alarm system and zones                                       | Successfully tested: Burglar-alarm Unit 3486  |
 | Auxiliary (AUX)               |     `9`     |  `bus_aux`                                                 | AUX commands                                                     | Successfully tested: AUX configured for Burglar-alarm Unit 3486. **Only sending AUX commands is supported**    |
 | Basic, CEN & CEN+ Scenarios   | `0`, `15`, `25` | `bus_scenario_control`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ Scenarios events and virtual activation                 | Successfully tested: CEN/CEN+ scenario control: HC/HD/HS/L/N/NT4680 and basic scenario modules F420/IR3456 + L4680 (WHO=0)      |
@@ -159,11 +159,12 @@ Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with 
   - example sensor `5` of external zone `00` --> `where="500"`
   - example: slave sensor `3` of zone `2` --> `where="302"`
 
-The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="#0"` for a 99-zone Central Unit or `where="#0#1"` for a 4-zone Central Unit configured as zone 1.
+The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="#0"` for a 99-zone Central Unit (model 3550) or `where="#0#1"` for a 4-zone Central Unit (models L/N/NT/HD/HC/HS 4695) configured as zone 1.
 
-##### Thermo Central Unit integration missing points
+##### Thermo Central Unit integration known limitations
 
 - Read setPoint temperature and current mode
+- Central Unit Programming and Customisations settings (T1/2/3 temperature levels, date & time, weekly/scenarios/holiday programming, etc.)
 - Holiday/Vacation activation command
 
 #### Configuring Alarm and Auxiliary (AUX)

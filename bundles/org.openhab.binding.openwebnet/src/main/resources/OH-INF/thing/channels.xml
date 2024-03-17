@@ -219,7 +219,7 @@
 				<option value="PLUS_3">+3</option>
 				<option value="PLUS_2">+2</option>
 				<option value="PLUS_1">+1</option>
-				<option value="NORMAL">0</option>
+				<option value="NORMAL">No offset</option>
 				<option value="MINUS_1">-1</option>
 				<option value="MINUS_2">-2</option>
 				<option value="MINUS_3">-3</option>
