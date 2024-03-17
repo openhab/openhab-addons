@@ -93,13 +93,13 @@ public class HomeCapability extends RestCapability<HomeApi> {
 
     @Override
     protected void afterNewData(@Nullable NAObject newData) {
-        super.afterNewData(newData);
         if (firstLaunch && !hasArea(FeatureArea.SECURITY)) {
             handler.removeChannels(thing.getChannelsOfGroup(GROUP_SECURITY));
         }
         if (firstLaunch && !hasArea(FeatureArea.ENERGY)) {
             handler.removeChannels(thing.getChannelsOfGroup(GROUP_ENERGY));
         }
+        super.afterNewData(newData);
     }
 
     private boolean hasArea(FeatureArea searched) {

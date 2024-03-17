@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.VENDOR;
-import static org.openhab.core.thing.Thing.*;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -104,11 +101,6 @@ public class Capability {
 
     protected void beforeNewData() {
         properties = new HashMap<>(thing.getProperties());
-        if (firstLaunch && !moduleType.isLogical()) {
-            properties.put(PROPERTY_MODEL_ID, moduleType.apiName.isBlank() ? moduleType.name() : moduleType.apiName);
-            properties.put(PROPERTY_VENDOR, VENDOR);
-        }
-
         statusReason = null;
     }
 
@@ -120,10 +112,7 @@ public class Capability {
     }
 
     protected void updateNAThing(NAThing newData) {
-        newData.getFirmware().map(fw -> properties.put(PROPERTY_FIRMWARE_VERSION, fw));
-        if (!newData.isReachable()) {
-            statusReason = "@text/device-not-connected";
-        }
+        // do nothing by default, can be overridden by subclasses
     }
 
     protected void updateNAMain(NAMain newData) {
