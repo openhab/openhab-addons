@@ -169,8 +169,7 @@ public class Setters {
         if (command instanceof HSBType hsb) {
             hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             ColorXy color = target.getColorXy();
-            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy())
-                    .setXY(ColorUtil.hsbToXY(hsb, ColorXy.REVISED_DEFAULT_GAMUT)));
+            target.setColorXy((Objects.nonNull(color) ? color : new ColorXy()).setXY(ColorUtil.hsbToXY(hsb)));
         }
         return target;
     }

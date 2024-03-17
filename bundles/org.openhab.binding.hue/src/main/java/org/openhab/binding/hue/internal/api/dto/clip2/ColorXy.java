@@ -26,10 +26,6 @@ import org.openhab.core.util.ColorUtil.Gamut;
  */
 @NonNullByDefault
 public class ColorXy {
-    // revision of Philips Default Gamut to prevent clipping XY colors to the CIE chart hypotenuse
-    public static final Gamut REVISED_DEFAULT_GAMUT = new Gamut(new double[] { 0.825, 0.185 },
-            new double[] { 0, 0.9961 }, new double[] { 0, 0.0001 });
-
     private @Nullable PairXy xy;
     private @Nullable Gamut2 gamut;
 

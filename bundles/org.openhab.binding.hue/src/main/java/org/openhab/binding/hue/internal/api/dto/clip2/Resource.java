@@ -286,7 +286,7 @@ public class Resource {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
             try {
-                HSBType hsb = ColorUtil.xyToHsb(color.getXY(), ColorXy.REVISED_DEFAULT_GAMUT);
+                HSBType hsb = ColorUtil.xyToHsb(color.getXY());
                 OnState on = this.on;
                 Dimming dimming = this.dimming;
                 double brightness = Objects.nonNull(on) && !on.isOn() ? 0
@@ -353,7 +353,7 @@ public class Resource {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
             try {
-                HSBType hsb = ColorUtil.xyToHsb(color.getXY(), ColorXy.REVISED_DEFAULT_GAMUT);
+                HSBType hsb = ColorUtil.xyToHsb(color.getXY());
                 return new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             } catch (DTOPresentButEmptyException e) {
                 return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
