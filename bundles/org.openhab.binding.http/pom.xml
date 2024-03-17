@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: HTTP Binding</name>
 
   <properties>
-    <jetty.version>9.4.52.v20230823</jetty.version>
+    <jetty.version>9.4.53.v20231009</jetty.version>
   </properties>
 
   <dependencies>
