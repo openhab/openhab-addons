@@ -285,7 +285,7 @@ public class SysteminfoBindingConstants {
     public static final String CHANNEL_CPU_MAXFREQ = "cpu#maxfreq";
 
     /**
-     * Maximum frequency of the CPU
+     * Frequency of the CPU
      */
     public static final String CHANNEL_CPU_FREQ = "cpu#freq";
 
