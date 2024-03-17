@@ -60,6 +60,7 @@
 
 		<properties>
 			<property name="vendor">tado°</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>id</representation-property>
 
@@ -135,7 +136,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current humidity in %</description>
 		<category>Humidity</category>
@@ -143,7 +144,7 @@
 	</channel-type>
 
 	<channel-type id="heatingPower">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Heating Power</label>
 		<description>Current heating power</description>
 		<category>Fire</category>
