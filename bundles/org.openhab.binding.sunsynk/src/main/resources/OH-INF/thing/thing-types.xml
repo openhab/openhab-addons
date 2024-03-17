@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sunsynk"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- Bridge Thing Type -->
+
+	<bridge-type id="sunsynkaccount">
+		<label>Sunsynk Account</label>
+		<description>Access to SunSynk Account. Used to discover sites and inverters tied to account.</description>
+
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<label>E-mail Address</label>
+				<description>E-mail address for your SunSynk Cloud account.</description>
+				<context>email</context>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password for your SunSynk Cloud account.</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+
+	<!-- Inverter Thing Type -->
+	<thing-type id="inverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="sunsynkaccount"/>
+		</supported-bridge-type-refs>
+		<!-- Comment this in for Things which need a Bridge to function.
+		-->
+
+		<label>SunSynk Inverter</label>
+		<description>Inverter thing for SunSynk Binding</description>
+
+		<channels>
+
+			<channel id="Interval-1-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-2-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-3-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-4-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-5-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-6-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-1-gen-charge" typeId="gen-charge"/>
+			<channel id="Interval-2-gen-charge" typeId="gen-charge"/>
+			<channel id="Interval-3-gen-charge" typeId="gen-charge"/>
+			<channel id="Interval-4-gen-charge" typeId="gen-charge"/>
+			<channel id="Interval-5-gen-charge" typeId="gen-charge"/>
+			<channel id="Interval-6-gen-charge" typeId="gen-charge"/>
+			<channel id="Interval-1-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-2-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-3-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-4-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-5-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-6-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-1-grid-capacity" typeId="battery-Level"/>
+			<channel id="Interval-2-grid-capacity" typeId="battery-Level"/>
+			<channel id="Interval-3-grid-capacity" typeId="battery-Level"/>
+			<channel id="Interval-4-grid-capacity" typeId="battery-Level"/>
+			<channel id="Interval-5-grid-capacity" typeId="battery-Level"/>
+			<channel id="Interval-6-grid-capacity" typeId="battery-Level"/>
+			<channel id="Interval-1-grid-power-limit" typeId="electric-power"/>
+			<channel id="Interval-2-grid-power-limit" typeId="electric-power"/>
+			<channel id="Interval-3-grid-power-limit" typeId="electric-power"/>
+			<channel id="Interval-4-grid-power-limit" typeId="electric-power"/>
+			<channel id="Interval-5-grid-power-limit" typeId="electric-power"/>
+			<channel id="Interval-6-grid-power-limit" typeId="electric-power"/>
+			<channel id="Interter-grid-power" typeId="electric-power"/>
+			<channel id="Interter-grid-voltage" typeId="electric-voltage"/>
+			<channel id="Interter-grid-current" typeId="electric-current"/>
+			<channel id="Inverter-ac-temperature" typeId="indoor-temperature"/>
+			<channel id="Inverter-dc-temperature" typeId="indoor-temperature"/>
+			<channel id="Battery-grid-voltage" typeId="electric-voltage"/>
+			<channel id="Battery-grid-current" typeId="electric-current"/>
+			<channel id="Battery-grid-power" typeId="electric-power"/>
+			<channel id="Battery-SOC" typeId="battery-Level"/>
+			<channel id="Battery-temperature" typeId="indoor-temperature"/>
+			<channel id="Inverter-solar-energy-today" typeId="electrical-energy"/>
+			<channel id="Inverter-solar-energy-total" typeId="electrical-energy"/>
+			<channel id="Inverter-solar-power-now" typeId="electric-current"/>
+
+		</channels>
+	</thing-type>
+
+	<!-- Plant Thing Type -->
+	<!--
+		<thing-type id="plant">
+		<supported-bridge-type-refs>
+		<bridge-type-ref id="sunsynkaccount" />
+		</supported-bridge-type-refs>
+	-->
+	<!-- Comment this in for Things which need a Bridge to function.
+	-->
+	<thing-type id="plant">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="sunsynkaccount"/>
+		</supported-bridge-type-refs>
+		<label>SunSynk Plant</label>
+		<description>Plant thing for SunSynk Binding</description>
+
+		<channels>
+			<channel id="plant-status" typeId="plant-status"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the device</description>
+			</parameter>
+			<parameter name="serial" type="text" required="true">
+				<context>password</context>
+				<label>Gateway Serial Number</label>
+				<description>Serial number of the gateway</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="grid-tme">
+		<item-type>DateTime</item-type>
+		<label>Grid charge interval start time</label>
+		<description>"24hr time for the start of the interval. 00:00 to 23:55 are valid in 5 min increments with leading zero
+			on the hour and minute. Times must ascending order. ".</description>
+		<state readOnly="false" pattern="%HH:%MM"/>
+	</channel-type>
+
+	<channel-type id="grid-charge">
+		<item-type>Switch</item-type>
+		<label>Grid charge this interval</label>
+		<description>charge the inverter battery from the grid.</description>
+		<state readOnly="false" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="gen-charge">
+		<item-type>Switch</item-type>
+		<label>Generator (auxilary) charge this interval</label>
+		<description>charge the inverter battery from the generator auxilary.</description>
+		<state readOnly="false" pattern="%s"/>
+	</channel-type>
+
+
+	<!-- Sample Channel Type -->
+	<channel-type id="sample-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Sample channel for SunSynk Binding</description>
+	</channel-type>
+
+	<!-- plant-status Channel Type -->
+	<channel-type id="plant-status">
+		<item-type>String</item-type>
+		<label>Current State</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>State of plant</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="OFFLINE">Offline</option>
+				<option value="FAULT">Fault</option>
+				<option value="WARNING">Warning</option>
+				<option value="Normal">Pormal</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
