@@ -60,7 +60,7 @@ public class JythonScriptEngineFactory extends AbstractScriptEngineFactory {
 
     private final List<String> scriptTypes = (List<String>) Stream.of(factory.getExtensions(), factory.getMimeTypes())
             .flatMap(List::stream) //
-            .collect(Collectors.toUnmodifiableList());
+            .toList();
 
     @Activate
     public JythonScriptEngineFactory() {
