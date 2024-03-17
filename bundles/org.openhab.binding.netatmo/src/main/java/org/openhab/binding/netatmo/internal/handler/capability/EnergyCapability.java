@@ -46,9 +46,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class EnergyCapability extends RestCapability<EnergyApi> {
     private final Logger logger = LoggerFactory.getLogger(EnergyCapability.class);
+    private final NetatmoDescriptionProvider descriptionProvider;
 
     private int setPointDefaultDuration = -1;
-    private final NetatmoDescriptionProvider descriptionProvider;
     private String energyId = "";
 
     EnergyCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {

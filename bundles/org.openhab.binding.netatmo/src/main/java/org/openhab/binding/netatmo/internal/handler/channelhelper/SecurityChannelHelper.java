@@ -62,14 +62,12 @@ public class SecurityChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetOther(String channelId) {
-        switch (channelId) {
-            case CHANNEL_PERSON_COUNT:
-                return persons != -1 ? new DecimalType(persons) : UnDefType.NULL;
-            case CHANNEL_UNKNOWN_PERSON_COUNT:
-                return unknowns != -1 ? new DecimalType(unknowns) : UnDefType.NULL;
-            case CHANNEL_UNKNOWN_PERSON_PICTURE:
-                return unknownSnapshot != null ? toRawType(unknownSnapshot) : UnDefType.NULL;
-        }
-        return null;
+        return switch (channelId) {
+            case CHANNEL_PERSON_COUNT -> persons != -1 ? new DecimalType(persons) : UnDefType.NULL;
+            case CHANNEL_UNKNOWN_PERSON_COUNT -> unknowns != -1 ? new DecimalType(unknowns) : UnDefType.NULL;
+            case CHANNEL_UNKNOWN_PERSON_PICTURE ->
+                unknownSnapshot != null ? toRawType(unknownSnapshot) : UnDefType.NULL;
+            default -> null;
+        };
     }
 }
