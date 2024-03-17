@@ -17,21 +17,22 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @author Johannes Ptaszyk - Initial contribution
+ * @author Danny Baumann - Initial contribution
  */
-public class PortalCleanLogsResponse {
-    @SerializedName("logs")
+public class PortalCleanResultsResponse {
+    @SerializedName("data")
     public final List<PortalCleanLogRecord> records;
 
-    @SerializedName("ret")
-    final String result;
+    final int code;
+    final String message;
 
-    PortalCleanLogsResponse(String result, List<PortalCleanLogRecord> records) {
-        this.result = result;
+    PortalCleanResultsResponse(int code, String message, List<PortalCleanLogRecord> records) {
+        this.code = code;
+        this.message = message;
         this.records = records;
     }
 
     public boolean wasSuccessful() {
-        return "ok".equals(result);
+        return code == 0;
     }
 }
