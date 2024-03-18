@@ -377,7 +377,6 @@
 		<item-type>Number</item-type>
 		<label>@text/channelOverruletimeLabel</label>
 		<description>@text/channelOverruletimeDescription</description>
-		<category>Number</category>
 		<state min="0" max="1440" step="5"/>
 	</channel-type>
 	<channel-type id="heatingmode">
@@ -443,49 +442,42 @@
 		<item-type>Number:Power</item-type>
 		<label>@text/channelPowerLabel</label>
 		<description>@text/channelPowerDescription</description>
-		<category>Number</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="energy">
 		<item-type>Number:Energy</item-type>
 		<label>@text/channelEnergyLabel</label>
 		<description>@text/channelEnergyDescription</description>
-		<category>Number</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="energyday">
 		<item-type>Number:Energy</item-type>
 		<label>@text/channelEnergyDayLabel</label>
 		<description>@text/channelEnergyDayDescription</description>
-		<category>Number</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="gas">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelGasLabel</label>
 		<description>@text/channelGasDescription</description>
-		<category>Number</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="gasday">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelGasDayLabel</label>
 		<description>@text/channelGasDayDescription</description>
-		<category>Number</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="water">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelWaterLabel</label>
 		<description>@text/channelWaterDescription</description>
-		<category>Number</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="waterday">
 		<item-type>Number:Volume</item-type>
 		<label>@text/channelWaterDayLabel</label>
 		<description>@text/channelWaterDayDescription</description>
-		<category>Number</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="measurementtime">

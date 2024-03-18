@@ -153,8 +153,8 @@ public class NikoHomeControlDiscoveryService
                             METER_ID, deviceId, thingName, thingLocation);
                     break;
                 case GAS:
-                    addDevice(new ThingUID(THING_TYPE_GASMETER, bridgeHandler.getThing().getUID(), deviceId), deviceId,
-                            METER_ID, thingName, thingLocation);
+                    addDevice(new ThingUID(THING_TYPE_GASMETER, bridgeHandler.getThing().getUID(), deviceId), METER_ID,
+                            deviceId, thingName, thingLocation);
                     break;
                 case WATER:
                     addDevice(new ThingUID(THING_TYPE_WATERMETER, bridgeHandler.getThing().getUID(), deviceId),

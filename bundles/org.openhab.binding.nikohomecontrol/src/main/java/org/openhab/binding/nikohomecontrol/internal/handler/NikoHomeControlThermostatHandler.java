@@ -172,7 +172,7 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
         NhcThermostat nhcThermostat = nhcComm.getThermostats().get(deviceId);
         if (nhcThermostat == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.thermostatId");
+                    "@text/offline.configuration-error.deviceId");
             return;
         }
 
