@@ -80,7 +80,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MINSPEED)))
                             .withMaximum(new BigDecimal(
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXSPEED)))
-                            .build();
+                            .withPattern("%d %%").withStep(new BigDecimal(5)).withReadOnly(false).build();
                     bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
                 }
 
@@ -92,7 +92,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MINRPM)))
                             .withMaximum(new BigDecimal(
                                     getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXRPM)))
-                            .build();
+                            .withPattern("%d rpm").withStep(new BigDecimal(200)).withReadOnly(false).build();
                     bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
                 }
 
@@ -218,7 +218,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                             // Convert cmdString from RPM to Percent
                             if (pumpMaxRpm != null && pumpMaxSpeed != null && pumpMinSpeed != null) {
                                 cmdString = Integer
-                                        .toString((Integer.parseInt(cmdString) * 100 / Integer.parseInt(pumpMaxSpeed)));
+                                        .toString((Integer.parseInt(cmdString) * 100 / Integer.parseInt(pumpMaxRpm)));
                                 if (Integer.parseInt(cmdString) > 0
                                         && Integer.parseInt(cmdString) < Integer.parseInt(pumpMinSpeed)) {
                                     cmdString = pumpMinSpeed;
