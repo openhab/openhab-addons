@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="tasmotaplug:plug">
+		<instruction-set targetVersion="1">
+			<add-channel id="voltage">
+				<type>system:electric-voltage</type>
+			</add-channel>
+			<add-channel id="current">
+				<type>system:electric-current</type>
+			</add-channel>
+			<add-channel id="watts">
+				<type>system:electric-power</type>
+				<label>Active Power</label>
+				<description>Active Power (W)</description>
+			</add-channel>
+			<add-channel id="volt-ampere">
+				<type>tasmotaplug:volt-ampere</type>
+			</add-channel>
+			<add-channel id="volt-ampere-reactive">
+				<type>tasmotaplug:volt-ampere-reactive</type>
+			</add-channel>
+			<add-channel id="power-factor">
+				<type>tasmotaplug:power-factor</type>
+			</add-channel>
+			<add-channel id="energy-today">
+				<type>system:electric-energy</type>
+				<label>Energy Today</label>
+				<description>Energy consumed today (kWh)</description>
+			</add-channel>
+			<add-channel id="energy-yesterday">
+				<type>system:electric-energy</type>
+				<label>Energy Yesterday</label>
+				<description>Energy consumed yesterday (kWh)</description>
+			</add-channel>
+			<add-channel id="energy-total">
+				<type>system:electric-energy</type>
+				<label>Energy Total</label>
+				<description>Total energy consumed (kWh)</description>
+			</add-channel>
+			<add-channel id="energy-total-start">
+				<type>tasmotaplug:energy-total-start</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

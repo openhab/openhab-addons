@@ -24,6 +24,7 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -47,6 +48,7 @@ import com.google.gson.JsonElement;
 public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector>
         implements ExtendedDeviceStateListener {
 
+    private static final int LAUNDRY_WEIGHT_BYTE_POSITION = 44;
     private static final int ENERGY_CONSUMPTION_BYTE_POSITION = 51;
     private static final int WATER_CONSUMPTION_BYTE_POSITION = 53;
     private static final int EXTENDED_STATE_MIN_SIZE_BYTES = 54;
@@ -136,5 +138,11 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
         var litres = new QuantityType<>(BigDecimal.valueOf(extendedDeviceState[WATER_CONSUMPTION_BYTE_POSITION] & 0xff),
                 Units.LITRE);
         updateExtendedState(WATER_CONSUMPTION_CHANNEL_ID, litres);
+
+        var weight = new QuantityType<>(
+                BigDecimal.valueOf(256 * (extendedDeviceState[LAUNDRY_WEIGHT_BYTE_POSITION] & 0xff)
+                        + (extendedDeviceState[LAUNDRY_WEIGHT_BYTE_POSITION + 1] & 0xff)),
+                SIUnits.GRAM);
+        updateExtendedState(LAUNDRY_WEIGHT_CHANNEL_ID, weight);
     }
 }

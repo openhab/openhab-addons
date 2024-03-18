@@ -38,8 +38,11 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.energidataservice.internal.api.ChargeType;
 import org.openhab.binding.energidataservice.internal.api.DatahubTariffFilter;
+import org.openhab.binding.energidataservice.internal.api.Dataset;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameter;
 import org.openhab.binding.energidataservice.internal.api.GlobalLocationNumber;
+import org.openhab.binding.energidataservice.internal.api.dto.CO2EmissionRecord;
+import org.openhab.binding.energidataservice.internal.api.dto.CO2EmissionRecords;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecords;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
@@ -65,9 +68,6 @@ import com.google.gson.JsonSyntaxException;
 public class ApiController {
     private static final String ENDPOINT = "https://api.energidataservice.dk/";
     private static final String DATASET_PATH = "dataset/";
-
-    private static final String DATASET_NAME_SPOT_PRICES = "Elspotprices";
-    private static final String DATASET_NAME_DATAHUB_PRICELIST = "DatahubPricelist";
 
     private static final String FILTER_KEY_PRICE_AREA = "PriceArea";
     private static final String FILTER_KEY_CHARGE_TYPE = "ChargeType";
@@ -111,7 +111,7 @@ public class ApiController {
             throw new IllegalArgumentException("Invalid currency " + currency.getCurrencyCode());
         }
 
-        Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + DATASET_NAME_SPOT_PRICES)
+        Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + Dataset.SpotPrices)
                 .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) //
                 .param("start", start.toString()) //
                 .param("filter", "{\"" + FILTER_KEY_PRICE_AREA + "\":\"" + priceArea + "\"}") //
@@ -119,23 +119,8 @@ public class ApiController {
                 .agent(userAgent) //
                 .method(HttpMethod.GET);
 
-        logger.trace("GET request for {}", request.getURI());
-
         try {
-            ContentResponse response = request.send();
-
-            updatePropertiesFromResponse(response, properties);
-
-            int status = response.getStatus();
-            if (!HttpStatus.isSuccess(status)) {
-                throw new DataServiceException("The request failed with HTTP error " + status, status);
-            }
-            String responseContent = response.getContentAsString();
-            if (responseContent.isEmpty()) {
-                throw new DataServiceException("Empty response");
-            }
-            logger.trace("Response content: '{}'", responseContent);
-
+            String responseContent = sendRequest(request, properties);
             ElspotpriceRecords records = gson.fromJson(responseContent, ElspotpriceRecords.class);
             if (records == null) {
                 throw new DataServiceException("Error parsing response");
@@ -151,6 +136,27 @@ public class ApiController {
         } catch (TimeoutException | ExecutionException e) {
             throw new DataServiceException(e);
         }
+    }
+
+    private String sendRequest(Request request, Map<String, String> properties)
+            throws TimeoutException, ExecutionException, InterruptedException, DataServiceException {
+        logger.trace("GET request for {}", request.getURI());
+
+        ContentResponse response = request.send();
+
+        updatePropertiesFromResponse(response, properties);
+
+        int status = response.getStatus();
+        if (!HttpStatus.isSuccess(status)) {
+            throw new DataServiceException("The request failed with HTTP error " + status, status);
+        }
+        String responseContent = response.getContentAsString();
+        if (responseContent.isEmpty()) {
+            throw new DataServiceException("Empty response");
+        }
+        logger.trace("Response content: '{}'", responseContent);
+
+        return responseContent;
     }
 
     private void updatePropertiesFromResponse(ContentResponse response, Map<String, String> properties) {
@@ -200,7 +206,7 @@ public class ApiController {
             filterMap.put(FILTER_KEY_NOTE, notes);
         }
 
-        Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + DATASET_NAME_DATAHUB_PRICELIST)
+        Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + Dataset.DatahubPricelist)
                 .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) //
                 .param("filter", mapToFilter(filterMap)) //
                 .param("columns", columns) //
@@ -212,23 +218,8 @@ public class ApiController {
             request = request.param("start", dateQueryParameter.toString());
         }
 
-        logger.trace("GET request for {}", request.getURI());
-
         try {
-            ContentResponse response = request.send();
-
-            updatePropertiesFromResponse(response, properties);
-
-            int status = response.getStatus();
-            if (!HttpStatus.isSuccess(status)) {
-                throw new DataServiceException("The request failed with HTTP error " + status, status);
-            }
-            String responseContent = response.getContentAsString();
-            if (responseContent.isEmpty()) {
-                throw new DataServiceException("Empty response");
-            }
-            logger.trace("Response content: '{}'", responseContent);
-
+            String responseContent = sendRequest(request, properties);
             DatahubPricelistRecords records = gson.fromJson(responseContent, DatahubPricelistRecords.class);
             if (records == null) {
                 throw new DataServiceException("Error parsing response");
@@ -254,5 +245,49 @@ public class ApiController {
         return "{" + map.entrySet().stream().map(
                 e -> "\"" + e.getKey() + "\":[\"" + e.getValue().stream().collect(Collectors.joining("\",\"")) + "\"]")
                 .collect(Collectors.joining(",")) + "}";
+    }
+
+    /**
+     * Retrieve CO2 emissions for requested area.
+     *
+     * @param dataset Dataset to obtain
+     * @param priceArea Usually DK1 or DK2
+     * @param start Specifies the start point of the period for the data request
+     * @param properties Map of properties which will be updated with metadata from headers
+     * @return Records with 5 minute periods and emissions in g/kWh.
+     * @throws InterruptedException
+     * @throws DataServiceException
+     */
+    public CO2EmissionRecord[] getCo2Emissions(Dataset dataset, String priceArea, DateQueryParameter start,
+            Map<String, String> properties) throws InterruptedException, DataServiceException {
+        if (dataset != Dataset.CO2Emission && dataset != Dataset.CO2EmissionPrognosis) {
+            throw new IllegalArgumentException("Invalid dataset " + dataset + " for getting CO2 emissions");
+        }
+        Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + dataset)
+                .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) //
+                .param("start", start.toString()) //
+                .param("filter", "{\"" + FILTER_KEY_PRICE_AREA + "\":\"" + priceArea + "\"}") //
+                .param("columns", "Minutes5UTC,CO2Emission") //
+                .param("sort", "Minutes5UTC DESC") //
+                .agent(userAgent) //
+                .method(HttpMethod.GET);
+
+        try {
+            String responseContent = sendRequest(request, properties);
+            CO2EmissionRecords records = gson.fromJson(responseContent, CO2EmissionRecords.class);
+            if (records == null) {
+                throw new DataServiceException("Error parsing response");
+            }
+
+            if (records.total() == 0 || Objects.isNull(records.records()) || records.records().length == 0) {
+                throw new DataServiceException("No records");
+            }
+
+            return Arrays.stream(records.records()).filter(Objects::nonNull).toArray(CO2EmissionRecord[]::new);
+        } catch (JsonSyntaxException e) {
+            throw new DataServiceException("Error parsing response", e);
+        } catch (TimeoutException | ExecutionException e) {
+            throw new DataServiceException(e);
+        }
     }
 }

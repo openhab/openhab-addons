@@ -49,8 +49,11 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_SMART_PLUG_COMPACT = new ThingTypeUID(BINDING_ID, "smart-plug-compact");
     public static final ThingTypeUID THING_TYPE_SMART_BULB = new ThingTypeUID(BINDING_ID, "smart-bulb");
     public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR = new ThingTypeUID(BINDING_ID, "smoke-detector");
+    public static final ThingTypeUID THING_TYPE_UNIVERSAL_SWITCH = new ThingTypeUID(BINDING_ID, "universal-switch");
+    public static final ThingTypeUID THING_TYPE_UNIVERSAL_SWITCH_2 = new ThingTypeUID(BINDING_ID, "universal-switch-2");
 
     public static final ThingTypeUID THING_TYPE_USER_DEFINED_STATE = new ThingTypeUID(BINDING_ID, "user-defined-state");
+    public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR_2 = new ThingTypeUID(BINDING_ID, "smoke-detector-2");
 
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
@@ -91,6 +94,10 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_ILLUMINANCE = "illuminance";
     public static final String CHANNEL_BYPASS_STATE = "bypass-state";
     public static final String CHANNEL_SIGNAL_STRENGTH = "signal-strength";
+    public static final String CHANNEL_KEY_CODE = "key-code";
+    public static final String CHANNEL_KEY_NAME = "key-name";
+    public static final String CHANNEL_KEY_EVENT_TYPE = "key-event-type";
+    public static final String CHANNEL_KEY_EVENT_TIMESTAMP = "key-event-timestamp";
 
     public static final String CHANNEL_USER_DEFINED_STATE = "user-state";
 

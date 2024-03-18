@@ -117,8 +117,10 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT = "triggerExternalAlarmInput";
     public static final String CHANNEL_EXTERNAL_ALARM_INPUT = "externalAlarmInput";
     public static final String CHANNEL_EXTERNAL_ALARM_INPUT2 = "externalAlarmInput2";
+    public static final String CHANNEL_AUTO_WHITE_LED = "autoWhiteLED";
     public static final String CHANNEL_AUTO_LED = "autoLED";
     public static final String CHANNEL_ENABLE_LED = "enableLED";
+    public static final String CHANNEL_WHITE_LED = "whiteLED";
     public static final String CHANNEL_ENABLE_PIR_ALARM = "enablePirAlarm";
     public static final String CHANNEL_PIR_ALARM = "pirAlarm";
     public static final String CHANNEL_CELL_MOTION_ALARM = "cellMotionAlarm";
@@ -143,5 +145,7 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_HUMAN_ALARM = "humanAlarm";
     public static final String CHANNEL_ANIMAL_ALARM = "animalAlarm";
     public static final String CHANNEL_ENABLE_FTP = "enableFTP";
+    public static final String CHANNEL_ENABLE_EMAIL = "enableEmail";
+    public static final String CHANNEL_ENABLE_PUSH = "enablePush";
     public static final String CHANNEL_ENABLE_RECORDINGS = "enableRecordings";
 }

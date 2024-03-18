@@ -42,4 +42,10 @@ public class PublicInformation {
     public List<String> apiVersions;
     public String shcIpAddress;
     public String shcGeneration;
+    public SoftwareUpdateState softwareUpdateState;
+
+    public static boolean isValid(PublicInformation obj) {
+        return obj != null && obj.shcIpAddress != null && obj.shcGeneration != null && obj.apiVersions != null
+                && SoftwareUpdateState.isValid(obj.softwareUpdateState);
+    }
 }
