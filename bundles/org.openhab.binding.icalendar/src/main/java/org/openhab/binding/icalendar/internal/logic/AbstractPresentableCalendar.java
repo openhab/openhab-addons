@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Methods getJustBegunEvents() and getJustEndedEvents()
  * @author Michael Wodniok - Added getFilteredEventsBetween()
+ * @author Michael Wodniok - Added filtered versions of getCurrentEvent(), getNextEvent() and isEventPresent()
  */
 @NonNullByDefault
 public abstract class AbstractPresentableCalendar {
@@ -51,6 +52,16 @@ public abstract class AbstractPresentableCalendar {
      *         null if no event is present.
      */
     public abstract @Nullable Event getCurrentEvent(Instant instant);
+
+    /**
+     * Searches the event currently (at given Instant) present.
+     *
+     * @param instant The Instant, the event should be returned for.
+     * @param filter The TextEventFilter to filter events by.
+     * @return The current {@link Event} containing the data of the event or
+     *         null if no event is present.
+     */
+    public abstract @Nullable Event getCurrentEvent(Instant instant, @Nullable EventTextFilter filter);
 
     /**
      * Return a list of events that have just begun within the time frame
@@ -81,12 +92,32 @@ public abstract class AbstractPresentableCalendar {
     public abstract @Nullable Event getNextEvent(Instant instant);
 
     /**
+     * The next event after given instant.
+     *
+     * @param instant The Instant after which the next event should be
+     *            searched.
+     * @param filter An EventTextFilter to filter events by.
+     * @return The next event after the given Instant or null if there is any
+     *         further in the calendar.
+     */
+    public abstract @Nullable Event getNextEvent(Instant instant, @Nullable EventTextFilter filter);
+
+    /**
      * Checks whether an event is present at given Instant.
      *
      * @param instant The Instant, that should be checked.
      * @return True if an event is present.
      */
     public abstract boolean isEventPresent(Instant instant);
+
+    /**
+     * Checks whether an event is present at given Instant.
+     *
+     * @param instant The Instant, that should be checked.
+     * @param filter The filter to apply on events.
+     * @return True if an event is present.
+     */
+    public abstract boolean isEventPresent(Instant instant, @Nullable EventTextFilter filter);
 
     /**
      * Return a filtered List of events with a maximum count, ordered by start.

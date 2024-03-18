@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,8 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Michael Wodniok - Added logic for events moved with "RECURRENCE-ID" (issue 9647)
  * @author Michael Wodniok - Extended logic for defined behavior with parallel current events
  *         (issue 10808)
+ * @author Michael Wodniok - Extracted filter logc into a Predicate and extended logic in current
+ *         event getters to use that predicate. (issue 13649)
  */
 @NonNullByDefault
 class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
@@ -78,13 +81,18 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     @Override
-    public @Nullable Event getCurrentEvent(Instant instant) {
-        final VEventWPeriod currentComponentWPeriod = this.getCurrentComponentWPeriod(instant);
+    public @Nullable Event getCurrentEvent(Instant instant, @Nullable EventTextFilter filter) {
+        final VEventWPeriod currentComponentWPeriod = this.getCurrentComponentWPeriod(instant, filter);
         if (currentComponentWPeriod == null) {
             return null;
         }
 
         return currentComponentWPeriod.toEvent();
+    }
+
+    @Override
+    public @Nullable Event getCurrentEvent(Instant instant) {
+        return this.getCurrentEvent(instant, null);
     }
 
     @Override
@@ -100,12 +108,16 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     @Override
-    public @Nullable Event getNextEvent(Instant instant) {
+    public @Nullable Event getNextEvent(Instant instant, @Nullable EventTextFilter filter) {
         final Collection<VEventWPeriod> candidates = new ArrayList<>();
         final Collection<VEvent> negativeEvents = new ArrayList<>();
         final Collection<VEvent> positiveEvents = new ArrayList<>();
         classifyEvents(positiveEvents, negativeEvents);
+        Predicate<VEvent> matcher = (filter != null ? new TextFilterMatcher(filter) : (any) -> true);
         for (final VEvent currentEvent : positiveEvents) {
+            if (!matcher.test(currentEvent)) {
+                continue;
+            }
             final DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
             final Duration duration = getEventLength(currentEvent);
             if (duration == null) {
@@ -137,8 +149,18 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
     }
 
     @Override
+    public @Nullable Event getNextEvent(Instant instant) {
+        return getNextEvent(instant, null);
+    }
+
+    @Override
     public boolean isEventPresent(Instant instant) {
-        return (this.getCurrentComponentWPeriod(instant) != null);
+        return this.isEventPresent(instant, null);
+    }
+
+    @Override
+    public boolean isEventPresent(Instant instant, @Nullable EventTextFilter filter) {
+        return (this.getCurrentComponentWPeriod(instant, filter) != null);
     }
 
     @Override
@@ -148,44 +170,10 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         final List<Event> results = new ArrayList<>(candidates.size());
 
         if (filter != null) {
-            Pattern filterPattern;
-            if (filter.type == Type.TEXT) {
-                filterPattern = Pattern.compile(".*" + Pattern.quote(filter.value) + ".*",
-                        Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-            } else {
-                filterPattern = Pattern.compile(filter.value);
-            }
+            TextFilterMatcher filterImpl = new TextFilterMatcher(filter);
 
-            Class<? extends TextProperty> propertyClass;
-            switch (filter.field) {
-                case SUMMARY:
-                    propertyClass = Summary.class;
-                    break;
-                case COMMENT:
-                    propertyClass = Comment.class;
-                    break;
-                case CONTACT:
-                    propertyClass = Contact.class;
-                    break;
-                case DESCRIPTION:
-                    propertyClass = Description.class;
-                    break;
-                case LOCATION:
-                    propertyClass = Location.class;
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown Property to filter for.");
-            }
-
-            List<VEventWPeriod> filteredCandidates = candidates.stream().filter(current -> {
-                List<? extends TextProperty> properties = current.vEvent.getProperties(propertyClass);
-                for (TextProperty prop : properties) {
-                    if (filterPattern.matcher(prop.getValue()).matches()) {
-                        return true;
-                    }
-                }
-                return false;
-            }).collect(Collectors.toList());
+            List<VEventWPeriod> filteredCandidates = candidates.stream().filter((can) -> filterImpl.test(can.vEvent))
+                    .toList();
             candidates = filteredCandidates;
         }
 
@@ -297,14 +285,18 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @param instant The Instant to use for finding events.
      * @return A VEventWPeriod describing the event or null if there is none.
      */
-    private @Nullable VEventWPeriod getCurrentComponentWPeriod(Instant instant) {
+    private @Nullable VEventWPeriod getCurrentComponentWPeriod(Instant instant, @Nullable EventTextFilter filter) {
         final List<VEvent> negativeEvents = new ArrayList<>();
         final List<VEvent> positiveEvents = new ArrayList<>();
         classifyEvents(positiveEvents, negativeEvents);
 
         VEventWPeriod earliestEndingEvent = null;
+        Predicate<VEvent> matcher = (filter != null ? new TextFilterMatcher(filter) : (any) -> true);
 
         for (final VEvent currentEvent : positiveEvents) {
+            if (!matcher.test(currentEvent)) {
+                continue;
+            }
             final DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
             final Duration duration = getEventLength(currentEvent);
             if (duration == null) {
@@ -439,8 +431,45 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
             final Summary eventSummary = vEvent.getSummary();
             final String title = eventSummary != null ? eventSummary.getValue() : "-";
             final Description eventDescription = vEvent.getDescription();
-            final String description = eventDescription != null ? eventDescription.getValue() : "";
-            return new Event(title, start, end, description);
+            final String description = eventDescription != null ? eventDescription.getValue() : null;
+            final Location eventLocation = vEvent.getLocation();
+            final String location = eventLocation != null ? eventLocation.getValue() : null;
+            final String contactsMerged = vEvent.getContacts().stream().map((c) -> c.getValue())
+                    .collect(Collectors.joining("; "));
+            final String contact = contactsMerged.isEmpty() ? null : contactsMerged;
+            final String commentMerged = vEvent.getComments().stream().map((c) -> c.getValue())
+                    .collect(Collectors.joining("\n"));
+            final String comment = commentMerged.isEmpty() ? null : commentMerged;
+            return new Event(title, start, end, description, location, comment, contact);
+        }
+    }
+
+    private static class TextFilterMatcher implements Predicate<VEvent> {
+        final Class<? extends TextProperty> propertyClass;
+        final Pattern filterPattern;
+
+        public TextFilterMatcher(EventTextFilter filter) {
+            if (filter.type == Type.TEXT) {
+                this.filterPattern = Pattern.compile(".*" + Pattern.quote(filter.value) + ".*",
+                        Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+            } else {
+                this.filterPattern = Pattern.compile(filter.value);
+            }
+
+            this.propertyClass = switch (filter.field) {
+                case SUMMARY -> Summary.class;
+                case COMMENT -> Comment.class;
+                case CONTACT -> Contact.class;
+                case DESCRIPTION -> Description.class;
+                case LOCATION -> Location.class;
+                default -> throw new IllegalArgumentException("Unknown Property to filter for.");
+            };
+        }
+
+        @Override
+        public boolean test(VEvent t) {
+            return t.getProperties(propertyClass).stream()
+                    .anyMatch(prop -> filterPattern.matcher(prop.getValue()).matches());
         }
     }
 }
