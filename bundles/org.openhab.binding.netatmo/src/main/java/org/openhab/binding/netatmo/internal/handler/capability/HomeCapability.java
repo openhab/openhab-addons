@@ -48,7 +48,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
     private final Logger logger = LoggerFactory.getLogger(HomeCapability.class);
     private final Set<FeatureArea> featureAreas = new HashSet<>();
     private final NetatmoDescriptionProvider descriptionProvider;
-    private final Set<String> homeIds = new HashSet<>();
+    private final Set<String> homeIds = new HashSet<>(3);
 
     public HomeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
         super(handler, HomeApi.class);
@@ -58,13 +58,19 @@ public class HomeCapability extends RestCapability<HomeApi> {
     @Override
     public void initialize() {
         super.initialize();
-        HomeConfiguration config = handler.getConfiguration().as(HomeConfiguration.class);
+        HomeConfiguration config = handler.getThingConfigAs(HomeConfiguration.class);
         homeIds.add(config.getId());
         if (!config.energyId.isBlank()) {
             homeIds.add(config.energyId);
         }
         if (!config.securityId.isBlank()) {
             homeIds.add(config.securityId);
+        }
+        if (hasArea(FeatureArea.SECURITY) && !handler.getCapabilities().containsKey(SecurityCapability.class)) {
+            handler.getCapabilities().put(new SecurityCapability(handler));
+        }
+        if (hasArea(FeatureArea.ENERGY) && !handler.getCapabilities().containsKey(EnergyCapability.class)) {
+            handler.getCapabilities().put(new EnergyCapability(handler, descriptionProvider));
         }
     }
 
@@ -76,12 +82,6 @@ public class HomeCapability extends RestCapability<HomeApi> {
 
     @Override
     protected void updateHomeData(HomeData home) {
-        if (hasArea(FeatureArea.SECURITY) && !handler.getCapabilities().containsKey(SecurityCapability.class)) {
-            handler.getCapabilities().put(new SecurityCapability(handler));
-        }
-        if (hasArea(FeatureArea.ENERGY) && !handler.getCapabilities().containsKey(EnergyCapability.class)) {
-            handler.getCapabilities().put(new EnergyCapability(handler, descriptionProvider));
-        }
         if (firstLaunch) {
             home.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
             home.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
@@ -93,13 +93,13 @@ public class HomeCapability extends RestCapability<HomeApi> {
 
     @Override
     protected void afterNewData(@Nullable NAObject newData) {
-        super.afterNewData(newData);
         if (firstLaunch && !hasArea(FeatureArea.SECURITY)) {
             handler.removeChannels(thing.getChannelsOfGroup(GROUP_SECURITY));
         }
         if (firstLaunch && !hasArea(FeatureArea.ENERGY)) {
             handler.removeChannels(thing.getChannelsOfGroup(GROUP_ENERGY));
         }
+        super.afterNewData(newData);
     }
 
     private boolean hasArea(FeatureArea searched) {
