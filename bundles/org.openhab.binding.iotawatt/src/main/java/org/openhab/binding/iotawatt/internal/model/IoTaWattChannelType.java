@@ -24,9 +24,14 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public enum IoTaWattChannelType {
-    WATTS("watts", "watts", "Number:Power", Units.WATT),
+    AMPS("amps", "amps", "Number:power", Units.AMPERE), // CURRENT
+    FREQUENCY("frequency", "frequency", "Number:Frequency", Units.HERTZ),
+    POWER_FACTOR("power-factor", "power-factor", "Number:Dimensionless", Units.ONE),
+    APPARENT_POWER("apparent-power", "apparent-power", "Number:power", Units.VOLT_AMPERE),
+    REACTIVE_POWER("reactive-power", "reactive-power", "Number:power", Units.VAR),
+    REACTIVE_POWER_HOUR("reactive-power-hour", "reactive-power-hour", "Number:Energy", Units.VAR_HOUR),
     VOLTAGE("voltage", "voltage", "Number:ElectricPotential", Units.VOLT),
-    FREQUENCY("frequency", "frequency", "Number:Frequency", Units.HERTZ);
+    WATTS("watts", "watts", "Number:Power", Units.WATT);// ACTIVE_POWER
 
     /**
      * Id of the channel in XML definition channel-type id.
@@ -50,5 +55,19 @@ public enum IoTaWattChannelType {
         this.typeId = typeId;
         this.channelIdSuffix = channelIdSuffix;
         this.unit = unit;
+    }
+
+    public static IoTaWattChannelType fromOutputUnits(String value) {
+        return switch (value) {
+            case "Amps" -> IoTaWattChannelType.AMPS;
+            case "Hz" -> IoTaWattChannelType.FREQUENCY;
+            case "PF" -> IoTaWattChannelType.POWER_FACTOR;
+            case "VA" -> IoTaWattChannelType.APPARENT_POWER;
+            case "VAR" -> IoTaWattChannelType.REACTIVE_POWER;
+            case "VARh" -> IoTaWattChannelType.REACTIVE_POWER_HOUR;
+            case "Volts" -> IoTaWattChannelType.VOLTAGE;
+            case "Watts" -> IoTaWattChannelType.WATTS;
+            default -> throw new IllegalArgumentException("Unknown value " + value);
+        };
     }
 }

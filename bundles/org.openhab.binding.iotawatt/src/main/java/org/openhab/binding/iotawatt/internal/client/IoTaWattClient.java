@@ -37,7 +37,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class IoTaWattClient {
-    private static final String REQUEST_URL = "http://%s/status?state=&inputs=";
+    private static final String REQUEST_URL = "http://%s/status?state=&inputs=&outputs=";
 
     private final Logger logger = LoggerFactory.getLogger(IoTaWattClient.class);
 
@@ -64,6 +64,12 @@ public class IoTaWattClient {
         @Nullable
         final StatusResponse statusResponse = gson.fromJson(content, StatusResponse.class);
         logger.trace("statusResponse: {}", statusResponse);
+        if (statusResponse.inputs() == null) {
+            logger.error("List of inputs in response from IoTaWatt is null on device {}.", hostname);
+        }
+        if (statusResponse.outputs() == null) {
+            logger.error("List of outputs in response from IoTaWatt is null on device {}.", hostname);
+        }
         // noinspection ConstantConditions
         return Optional.ofNullable(statusResponse);
     }

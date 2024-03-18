@@ -12,25 +12,24 @@
  */
 package org.openhab.binding.iotawatt.internal.model;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-
-import com.google.gson.annotations.SerializedName;
+import org.junit.jupiter.api.Test;
 
 /**
- * Status response of IoTaWatt.
- *
  * @author Peter Rosenberg - Initial contribution
  */
 @NonNullByDefault
-public record StatusResponse(@Nullable List<Input> inputs, @Nullable List<Output> outputs) {
-    public record Input(int channel, @Nullable @SerializedName("Vrms") Float vrms,
-            @Nullable @SerializedName("Hz") Float hz, @Nullable Float phase,
-            @Nullable @SerializedName("Watts") Float watts) {
-    }
+class IoTaWattChannelTypeTest {
 
-    public record Output(String name, String units, Float value) {
+    @Test
+    void valueOf_whenUnknownValue_thenThrowException() {
+        // given
+        final String unknownValue = "unknownValue";
+
+        // when/then
+        // noinspection ResultOfMethodCallIgnored
+        assertThrows(IllegalArgumentException.class, () -> IoTaWattChannelType.fromOutputUnits(unknownValue));
     }
 }

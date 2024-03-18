@@ -25,17 +25,41 @@
 	</thing-type>
 
 	<!-- Channel Types -->
-	<channel-type id="watts">
-		<item-type>Number:Power</item-type>
-		<label>Power Consumption</label>
-		<description>The current power consumption.</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state pattern="%.2f W" readOnly="true">
-		</state>
+	<channel-type id="amps">
+		<item-type>Number:power</item-type>
+		<label>Amps</label>
+		<description>The current Amps.</description>
+		<state pattern="%.2f A" readOnly="true"/>
+	</channel-type>
+	<channel-type id="frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>AC Frequency</label>
+		<description>The current AC frequency.</description>
+		<state pattern="%.2f Hz" readOnly="true"/>
+	</channel-type>
+	<channel-type id="power-factor">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Power Factor</label>
+		<description>The current power factor.</description>
+		<state pattern="%.2f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="apparent-power">
+		<item-type>Number:power</item-type>
+		<label>Apparent Power</label>
+		<description>The current apparent power.</description>
+		<state pattern="%.2f VA" readOnly="true"/>
+	</channel-type>
+	<channel-type id="reactive-power">
+		<item-type>Number:power</item-type>
+		<label>Reactive Power</label>
+		<description>The current reactive power.</description>
+		<state pattern="%.2f VAR" readOnly="true"/>
+	</channel-type>
+	<channel-type id="reactive-power-hour">
+		<item-type>Number:Energy</item-type>
+		<label>Reactive Power</label>
+		<description>The current reactive power hour.</description>
+		<state pattern="%.2f VARh" readOnly="true"/>
 	</channel-type>
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
@@ -49,10 +73,16 @@
 		<state pattern="%.3f V" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="frequency">
-		<item-type>Number:Frequency</item-type>
-		<label>AC Frequency</label>
-		<description>The current AC frequency.</description>
-		<state pattern="%.2f Hz" readOnly="true"/>
+	<channel-type id="watts">
+		<item-type>Number:Power</item-type>
+		<label>Power Consumption</label>
+		<description>The current power consumption.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f W" readOnly="true">
+		</state>
 	</channel-type>
 </thing:thing-descriptions>
