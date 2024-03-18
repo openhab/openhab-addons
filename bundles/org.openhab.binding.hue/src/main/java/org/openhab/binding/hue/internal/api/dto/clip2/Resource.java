@@ -67,7 +67,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Resource {
 
-    public static final double PERCENT_DELTA = 30f;
     public static final MathContext PERCENT_MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_UP);
 
     /**

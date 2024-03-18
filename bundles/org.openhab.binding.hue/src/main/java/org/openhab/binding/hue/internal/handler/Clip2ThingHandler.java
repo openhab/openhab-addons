@@ -356,15 +356,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_2_COLOR_TEMP_PERCENT:
-                if (command instanceof IncreaseDecreaseType) {
-                    if (Objects.nonNull(cache)) {
-                        State current = cache.getColorTemperaturePercentState();
-                        if (current instanceof PercentType) {
-                            int sign = IncreaseDecreaseType.INCREASE == command ? 1 : -1;
-                            int percent = ((PercentType) current).intValue() + (sign * (int) Resource.PERCENT_DELTA);
-                            command = new PercentType(Math.min(100, Math.max(0, percent)));
-                        }
-                    }
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
+                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand,
+                            cache.getColorTemperaturePercentState());
                 } else if (command instanceof OnOffType) {
                     command = OnOffType.OFF == command ? PercentType.ZERO : PercentType.HUNDRED;
                 }
@@ -386,16 +380,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
             case CHANNEL_2_BRIGHTNESS:
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
-                if (command instanceof IncreaseDecreaseType) {
-                    if (Objects.nonNull(cache)) {
-                        State current = cache.getBrightnessState();
-                        if (current instanceof PercentType) {
-                            int sign = IncreaseDecreaseType.INCREASE == command ? 1 : -1;
-                            double percent = ((PercentType) current).doubleValue() + (sign * Resource.PERCENT_DELTA);
-                            command = new PercentType(new BigDecimal(Math.min(100f, Math.max(0f, percent)),
-                                    Resource.PERCENT_MATH_CONTEXT));
-                        }
-                    }
+                if (command instanceof IncreaseDecreaseType increaseDecreaseCommand && Objects.nonNull(cache)) {
+                    command = translateIncreaseDecreaseCommand(increaseDecreaseCommand, cache.getBrightnessState());
                 }
                 if (command instanceof PercentType) {
                     PercentType brightness = (PercentType) command;
@@ -545,6 +531,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
         } catch (InterruptedException e) {
         }
+    }
+
+    private Command translateIncreaseDecreaseCommand(IncreaseDecreaseType command, State currentValue) {
+        if (currentValue instanceof PercentType currentPercent) {
+            int delta = command == IncreaseDecreaseType.INCREASE ? 10 : -10;
+            double newPercent = Math.min(100.0, Math.max(0.0, currentPercent.doubleValue() + delta));
+            return new PercentType(new BigDecimal(newPercent, Resource.PERCENT_MATH_CONTEXT));
+        }
+
+        return command;
     }
 
     private void refreshAllChannels() {
