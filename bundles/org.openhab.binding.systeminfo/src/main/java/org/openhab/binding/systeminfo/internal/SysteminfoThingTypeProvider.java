@@ -230,9 +230,14 @@ public class SysteminfoThingTypeProvider extends AbstractStorageBasedTypeProvide
         ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelTypeUID)
                 .withConfiguration(baseChannel.getConfiguration());
         builder.withLabel(channelType.getLabel() + " " + index);
+        builder.withDefaultTags(channelType.getTags());
         String description = channelType.getDescription();
         if (description != null) {
             builder.withDescription(description);
+        }
+        String itemType = channelType.getItemType();
+        if (itemType != null) {
+            builder.withAcceptedItemType(itemType);
         }
         return builder.build();
     }

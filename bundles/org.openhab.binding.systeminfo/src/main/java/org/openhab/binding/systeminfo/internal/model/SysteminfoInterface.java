@@ -13,6 +13,7 @@
 package org.openhab.binding.systeminfo.internal.model;
 
 import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
@@ -31,6 +32,7 @@ import org.openhab.core.library.types.StringType;
  * @author Wouter Born - Add null annotations
  * @author Mark Herwege - Add dynamic creation of extra channels
  * @author Mark Herwege - Use units of measure
+ * @author Mark Herwege - Processor frequency channels
  */
 @NonNullByDefault
 public interface SysteminfoInterface {
@@ -79,6 +81,18 @@ public interface SysteminfoInterface {
      * Get the number of physical CPUs/cores available for processing.
      */
     DecimalType getCpuPhysicalCores();
+
+    /**
+     * Get the maximum CPU frequency of the processor.
+     */
+    @Nullable
+    QuantityType<Frequency> getCpuMaxFreq();
+
+    /**
+     * Get the current CPU frequency of a logical processor.
+     */
+    @Nullable
+    QuantityType<Frequency> getCpuFreq(int logicalProcessorIndex);
 
     /**
      * Returns the system cpu load.
