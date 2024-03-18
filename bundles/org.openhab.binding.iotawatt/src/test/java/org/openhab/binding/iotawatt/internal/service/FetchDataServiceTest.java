@@ -18,6 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.iotawatt.internal.service.FetchDataService.INPUT_CHANNEL_ID_PREFIX;
+import static org.openhab.binding.iotawatt.internal.service.FetchDataService.OUTPUT_CHANNEL_ID_PREFIX;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -67,7 +68,7 @@ class FetchDataServiceTest {
     private final ThingUID thingUID = new ThingUID(IoTaWattBindingConstants.BINDING_ID, "d231dea2e4");
 
     @Test
-    void pollDevice_whenAllSupportedTypes_updateAllChannels()
+    void pollDevice_whenAllSupportedInputTypes_updateAllChannels()
             throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
         // given
         service.setIoTaWattClient(ioTaWattClient);
@@ -79,7 +80,7 @@ class FetchDataServiceTest {
         when(deviceHandlerCallback.getThingUID()).thenReturn(thingUID);
         final List<StatusResponse.Input> inputs = List.of(new StatusResponse.Input(0, voltageRms, hertz, phase0, null),
                 new StatusResponse.Input(1, null, null, phase1, wattsValue));
-        final StatusResponse statusResponse = new StatusResponse(inputs);
+        final StatusResponse statusResponse = new StatusResponse(inputs, List.of());
         when(ioTaWattClient.fetchStatus()).thenReturn(Optional.of(statusResponse));
 
         // when
@@ -87,10 +88,50 @@ class FetchDataServiceTest {
 
         // then
         verify(deviceHandlerCallback).updateStatus(ThingStatus.ONLINE);
-        verify(deviceHandlerCallback).updateState(createChannelUID("00", "voltage"),
+        verify(deviceHandlerCallback).updateState(createInputChannelUID("00", "voltage"),
                 createState(voltageRms, Units.VOLT));
-        verify(deviceHandlerCallback).updateState(createChannelUID("00", "frequency"), createState(hertz, Units.HERTZ));
-        verify(deviceHandlerCallback).updateState(createChannelUID("01", "watts"), createState(wattsValue, Units.WATT));
+        verify(deviceHandlerCallback).updateState(createInputChannelUID("00", "frequency"),
+                createState(hertz, Units.HERTZ));
+        verify(deviceHandlerCallback).updateState(createInputChannelUID("01", "watts"),
+                createState(wattsValue, Units.WATT));
+    }
+
+    @Test
+    void pollDevice_whenAllSupportedOutputTypes_updateAllChannels()
+            throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
+        // given
+        service.setIoTaWattClient(ioTaWattClient);
+        when(deviceHandlerCallback.getThingUID()).thenReturn(thingUID);
+        final List<StatusResponse.Output> outputs = List.of(new StatusResponse.Output("name_amps", "Amps", 1.01f),
+                new StatusResponse.Output("name_hz", "Hz", 1.02f), new StatusResponse.Output("name_pf", "PF", 1.03f),
+                new StatusResponse.Output("name_va", "VA", 1.04f), new StatusResponse.Output("name_var", "VAR", 1.05f),
+                new StatusResponse.Output("name_varh", "VARh", 1.06f),
+                new StatusResponse.Output("name_volts", "Volts", 1.07f),
+                new StatusResponse.Output("name_watts", "Watts", 1.08f));
+        final StatusResponse statusResponse = new StatusResponse(List.of(), outputs);
+        when(ioTaWattClient.fetchStatus()).thenReturn(Optional.of(statusResponse));
+
+        // when
+        service.pollDevice();
+
+        // then
+        verify(deviceHandlerCallback).updateStatus(ThingStatus.ONLINE);
+        verify(deviceHandlerCallback).updateState(createOutputChannelUID("00", "name_amps"),
+                createState(1.01f, Units.AMPERE));
+        verify(deviceHandlerCallback).updateState(createOutputChannelUID("01", "name_hz"),
+                createState(1.02f, Units.HERTZ));
+        verify(deviceHandlerCallback).updateState(createOutputChannelUID("02", "name_pf"),
+                createState(1.03f, Units.ONE));
+        verify(deviceHandlerCallback).updateState(createOutputChannelUID("03", "name_va"),
+                createState(1.04f, Units.VOLT_AMPERE));
+        verify(deviceHandlerCallback).updateState(createOutputChannelUID("04", "name_var"),
+                createState(1.05f, Units.VAR));
+        verify(deviceHandlerCallback).updateState(createOutputChannelUID("05", "name_varh"),
+                createState(1.06f, Units.VAR_HOUR));
+        verify(deviceHandlerCallback).updateState(createOutputChannelUID("06", "name_volts"),
+                createState(1.07f, Units.VOLT));
+        verify(deviceHandlerCallback).updateState(createOutputChannelUID("07", "name_watts"),
+                createState(1.08f, Units.WATT));
     }
 
     @Test
@@ -147,7 +188,7 @@ class FetchDataServiceTest {
             throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
         // given
         service.setIoTaWattClient(ioTaWattClient);
-        final StatusResponse statusResponse = new StatusResponse(List.of());
+        final StatusResponse statusResponse = new StatusResponse(List.of(), List.of());
         when(ioTaWattClient.fetchStatus()).thenReturn(Optional.of(statusResponse));
 
         // when
@@ -191,8 +232,12 @@ class FetchDataServiceTest {
                 Arguments.of(ExecutionException.class, ThingStatusDetail.NONE, true));
     }
 
-    private ChannelUID createChannelUID(String channelNumberStr, String channelName) {
+    private ChannelUID createInputChannelUID(String channelNumberStr, String channelName) {
         return new ChannelUID(thingUID, INPUT_CHANNEL_ID_PREFIX + channelNumberStr + "#" + channelName);
+    }
+
+    private ChannelUID createOutputChannelUID(String channelNumber, String channelName) {
+        return new ChannelUID(thingUID, OUTPUT_CHANNEL_ID_PREFIX + channelNumber + "#" + channelName);
     }
 
     private State createState(Float value, Unit<?> unit) {

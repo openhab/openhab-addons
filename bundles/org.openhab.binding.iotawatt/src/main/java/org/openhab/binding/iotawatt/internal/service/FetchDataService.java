@@ -13,6 +13,7 @@
 package org.openhab.binding.iotawatt.internal.service;
 
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FetchDataService {
     static final String INPUT_CHANNEL_ID_PREFIX = "input_";
+    static final String OUTPUT_CHANNEL_ID_PREFIX = "output_";
 
     private final Logger logger = LoggerFactory.getLogger(FetchDataService.class);
 
@@ -90,11 +92,33 @@ public class FetchDataService {
     }
 
     private void updateChannels(StatusResponse statusResponse) {
-        for (final StatusResponse.Input input : statusResponse.inputs()) {
+        if (statusResponse.inputs() != null) {
+            updateInputs(statusResponse.inputs());
+        }
+        if (statusResponse.outputs() != null) {
+            updateOutputs(statusResponse.outputs());
+        }
+    }
+
+    private void updateInputs(List<StatusResponse.Input> inputs) {
+        for (final StatusResponse.Input input : inputs) {
             final int channelNumber = input.channel();
             createAndUpdateInputChannel(channelNumber, input.watts(), IoTaWattChannelType.WATTS);
             createAndUpdateInputChannel(channelNumber, input.vrms(), IoTaWattChannelType.VOLTAGE);
             createAndUpdateInputChannel(channelNumber, input.hz(), IoTaWattChannelType.FREQUENCY);
+        }
+    }
+
+    private void updateOutputs(List<StatusResponse.Output> outputs) {
+        int index = 0;
+        for (final StatusResponse.Output output : outputs) {
+            final ChannelUID channelUID = new ChannelUID(thingHandler.getThingUID(),
+                    OUTPUT_CHANNEL_ID_PREFIX + toTwoDigits(index++) + "#" + output.name());
+            final Float value = output.value();
+            final IoTaWattChannelType ioTaWattChannelType = IoTaWattChannelType.fromOutputUnits(output.units());
+            thingHandler.addChannelIfNotExists(channelUID, ioTaWattChannelType);
+            thingHandler.updateState(channelUID, new QuantityType<>(value, ioTaWattChannelType.unit));
+            // TODO removed channels are not in array anymore
         }
     }
 
@@ -109,8 +133,11 @@ public class FetchDataService {
     }
 
     private ChannelUID getInputChannelUID(int channelNumber, IoTaWattChannelType ioTaWattChannelType) {
-        final String channelNumberStr = channelNumber < 10 ? ("0" + channelNumber) : String.valueOf(channelNumber);
         return new ChannelUID(thingHandler.getThingUID(),
-                INPUT_CHANNEL_ID_PREFIX + channelNumberStr + "#" + ioTaWattChannelType.channelIdSuffix);
+                INPUT_CHANNEL_ID_PREFIX + toTwoDigits(channelNumber) + "#" + ioTaWattChannelType.channelIdSuffix);
+    }
+
+    private String toTwoDigits(int value) {
+        return value < 10 ? ("0" + value) : String.valueOf(value);
     }
 }

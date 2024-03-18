@@ -14,6 +14,7 @@ package org.openhab.binding.iotawatt.internal.client;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -90,7 +91,30 @@ class IoTaWattClientTest {
         final IoTaWattClient client = new IoTaWattClient(" ", httpClient, mock(Gson.class));
 
         // when
-        assertThrows(URISyntaxException.class, () -> client.fetchStatus());
+        assertThrows(URISyntaxException.class, client::fetchStatus);
+    }
+
+    @Test
+    void fetchStatus_whenInputsAndOutputsEmpty_returnEmpty()
+            throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
+        // given
+        final IoTaWattClient client = new IoTaWattClient("hostname", httpClient, gson);
+        Request request = mock(Request.class);
+        when(httpClient.newRequest(any(URI.class))).thenReturn(request);
+        when(request.method(any(HttpMethod.class))).thenReturn(request);
+        ContentResponse contentResponse = mock(ContentResponse.class);
+        when(request.send()).thenReturn(contentResponse);
+        when(contentResponse.getContentAsString()).thenReturn("{}");
+        final StatusResponse statusResponse = new StatusResponse(null, null);
+
+        // when
+        Optional<StatusResponse> resultOptional = client.fetchStatus();
+
+        // then
+        // noinspection OptionalGetWithoutIsPresent
+        StatusResponse result = resultOptional.get();
+        assertNull(result.inputs());
+        assertNull(result.outputs());
     }
 
     private String readFile(String filename) throws IOException {
