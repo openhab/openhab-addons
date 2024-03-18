@@ -132,7 +132,7 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="humidity">
@@ -140,7 +140,7 @@
 		<label>Humidity</label>
 		<description>Current humidity in %</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f %%"></state>
+		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="heatingPower">
@@ -148,7 +148,7 @@
 		<label>Heating Power</label>
 		<description>Current heating power</description>
 		<category>Fire</category>
-		<state readOnly="true" pattern="%.0f %%"></state>
+		<state readOnly="true" pattern="%.0f %% r.H."/>
 	</channel-type>
 
 	<channel-type id="hvacMode">
@@ -172,7 +172,7 @@
 		<label>Target Temperature</label>
 		<description>Thermostat temperature setpoint</description>
 		<category>Temperature</category>
-		<state step="0.1" pattern="%.1f %unit%" readOnly="false"></state>
+		<state step="0.1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="fanspeed">
@@ -279,7 +279,7 @@
 		<label>Timer Duration</label>
 		<description>Total duration of a timer</description>
 		<category>Time</category>
-		<state min="0" step="1" pattern="%d min" readOnly="false"></state>
+		<state min="0" step="1" pattern="%d min" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="overlayExpiry">
@@ -301,7 +301,7 @@
 		<label>Air-conditioning Power</label>
 		<description>Current power state of the air-conditioning</description>
 		<category>Climate</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="openWindowDetected">
@@ -309,7 +309,7 @@
 		<label>Open Window Detected</label>
 		<description>Indicates if an open window has been detected</description>
 		<category>Window</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

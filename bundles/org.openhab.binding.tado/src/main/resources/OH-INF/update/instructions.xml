@@ -6,10 +6,10 @@
 	<thing-type uid="tado:zone">
 		<instruction-set targetVersion="1">
 			<update-channel id="heatingPower">
-				<type>Number:Dimensionless</type>
+				<type>tado:heatingPower</type>
 			</update-channel>
 			<update-channel id="humidity">
-				<type>Number:Dimensionless</type>
+				<type>tado:humidity</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
