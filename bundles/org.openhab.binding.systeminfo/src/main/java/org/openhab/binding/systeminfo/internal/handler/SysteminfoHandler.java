@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * @author Lyubomir Papzov - Separate the creation of the systeminfo object and its initialization
  * @author Wouter Born - Add null annotations
  * @author Mark Herwege - Add dynamic creation of extra channels
+ * @author Mark Herwege - Processor frequency channels
  */
 @NonNullByDefault
 public class SysteminfoHandler extends BaseThingHandler {
@@ -258,6 +259,7 @@ public class SysteminfoHandler extends BaseThingHandler {
 
         List<Channel> newChannels = new ArrayList<>();
         newChannels.addAll(createChannels(thingUID, CHANNEL_SENSORS_FAN_SPEED, systeminfo.getFanCount()));
+        newChannels.addAll(createChannels(thingUID, CHANNEL_CPU_FREQ, systeminfo.getCpuLogicalCores().intValue()));
         if (!newChannels.isEmpty()) {
             logger.debug("Creating additional channels");
             newChannels.addAll(0, thing.getChannels());
@@ -481,6 +483,12 @@ public class SysteminfoHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_SENSORS_FAN_SPEED:
                     state = systeminfo.getSensorsFanSpeed(deviceIndex);
+                    break;
+                case CHANNEL_CPU_MAXFREQ:
+                    state = systeminfo.getCpuMaxFreq();
+                    break;
+                case CHANNEL_CPU_FREQ:
+                    state = systeminfo.getCpuFreq(deviceIndex);
                     break;
                 case CHANNEL_CPU_LOAD:
                     PercentType cpuLoad = cpuLoadCache.getValue();
