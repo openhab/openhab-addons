@@ -34,7 +34,6 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
@@ -53,7 +52,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
     public PersonCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
             List<ChannelHelper> channelHelpers) {
         super(handler, descriptionProvider, channelHelpers);
-        this.cameraChannelUID = new ChannelUID(thing.getUID(), GROUP_PERSON_LAST_EVENT, CHANNEL_EVENT_CAMERA_ID);
+        this.cameraChannelUID = new ChannelUID(thingUID, GROUP_PERSON_LAST_EVENT, CHANNEL_EVENT_CAMERA_ID);
     }
 
     @Override
@@ -78,21 +77,15 @@ public class PersonCapability extends HomeSecurityThingCapability {
     protected void updateWebhookEvent(WebhookEvent event) {
         super.updateWebhookEvent(event);
 
-        ThingUID thingUid = thing.getUID();
-
-        handler.updateState(new ChannelUID(thingUid, GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE),
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE,
                 event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
 
         final String message = event.getName();
-        handler.updateState(new ChannelUID(thingUid, GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE),
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE,
                 message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
 
-        handler.updateState(new ChannelUID(thingUid, GROUP_LAST_EVENT, CHANNEL_EVENT_TIME),
-                toDateTimeType(event.getTime()));
-
-        handler.updateState(new ChannelUID(thingUid, GROUP_LAST_EVENT, CHANNEL_EVENT_SNAPSHOT),
-                toRawType(event.getSnapshotUrl()));
-
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime()));
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SNAPSHOT, toRawType(event.getSnapshotUrl()));
         handler.updateState(cameraChannelUID, toStringType(event.getCameraId()));
     }
 

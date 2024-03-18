@@ -588,11 +588,12 @@ public class ShellyManagerPage {
         timer.schedule(task, delay * 1000);
     }
 
-    protected Map<String, ShellyManagerInterface> getThingHandlers() {
+    protected @Nullable Map<String, ShellyManagerInterface> getThingHandlers() {
         return handlerFactory.getThingHandlers();
     }
 
     protected @Nullable ShellyManagerInterface getThingHandler(String uid) {
-        return getThingHandlers().get(uid);
+        Map<String, ShellyManagerInterface> th = getThingHandlers();
+        return th != null ? th.get(uid) : null;
     }
 }

@@ -1259,6 +1259,14 @@ public enum HeatpumpChannel {
     CHANNEL_BA_BW_AKT(4, "hotWaterMode", NumberItem.class, null, true, HeatpumpVisibility.BRAUWASSER),
 
     /**
+     * Target heating return temperature if heat pump is set to fixed temperature
+     * (will directly set the target return temperature, no automatic changes depending on outside temperature)
+     * (original: Rücklauf FestwerteHK)
+     */
+    CHANNEL_EINST_HZFTRL_AKT(17, "temperatureHeatingFixedReturnTarget", NumberItem.class, SIUnits.CELSIUS, true,
+            HeatpumpVisibility.HEIZUNG),
+
+    /**
      * Thermal disinfection (Monday)
      * (original: Thermische Desinfektion (Montag))
      */

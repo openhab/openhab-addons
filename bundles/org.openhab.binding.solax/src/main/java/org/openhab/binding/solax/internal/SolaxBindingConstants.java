@@ -26,14 +26,18 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class SolaxBindingConstants {
 
-    protected static final String BINDING_ID = "solax";
+    public static final String BINDING_ID = "solax";
     private static final String THING_LOCAL_CONNECT_INVERTER_ID = "local-connect-inverter";
+    private static final String THING_CLOUD_CONNECT_INVERTER_ID = "cloud-connect-inverter";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_LOCAL_CONNECT_INVERTER = new ThingTypeUID(BINDING_ID,
             THING_LOCAL_CONNECT_INVERTER_ID);
+    public static final ThingTypeUID THING_TYPE_CLOUD_CONNECT_INVERTER = new ThingTypeUID(BINDING_ID,
+            THING_CLOUD_CONNECT_INVERTER_ID);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LOCAL_CONNECT_INVERTER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_LOCAL_CONNECT_INVERTER,
+            THING_TYPE_CLOUD_CONNECT_INVERTER);
 
     // List of properties
     public static final String PROPERTY_INVERTER_TYPE = "inverterType";
@@ -61,6 +65,9 @@ public class SolaxBindingConstants {
     public static final String CHANNEL_INVERTER_OUTPUT_FREQUENCY_PHASE1 = "inverter-frequency-phase1";
     public static final String CHANNEL_INVERTER_OUTPUT_FREQUENCY_PHASE2 = "inverter-frequency-phase2";
     public static final String CHANNEL_INVERTER_OUTPUT_FREQUENCY_PHASE3 = "inverter-frequency-phase3";
+    public static final String CHANNEL_INVERTER_TEMPERATURE1 = "inverter-temperature1";
+    public static final String CHANNEL_INVERTER_TEMPERATURE2 = "inverter-temperature2";
+    public static final String CHANNEL_INVERTER_WORKMODE = "inverter-workmode";
 
     // Generic
     public static final String CHANNEL_INVERTER_PV1_POWER = "pv1-power";
@@ -101,6 +108,14 @@ public class SolaxBindingConstants {
     public static final String CHANNEL_TODAY_FEED_IN_ENERGY = "today-feed-in-energy";
     public static final String CHANNEL_TODAY_CONSUMPTION = "today-consumption";
 
+    // Cloud specific channels
+    public static final String CHANNEL_INVERTER_PV3_POWER = "pv3-power";
+    public static final String CHANNEL_INVERTER_PV4_POWER = "pv4-power";
+    public static final String CHANNEL_INVERTER_OUTPUT_POWER_METER2 = "inverter-meter2-power";
+    public static final String CHANNEL_INVERTER_EPS_POWER_R = "inverter-eps-power-r";
+    public static final String CHANNEL_INVERTER_EPS_POWER_S = "inverter-eps-power-s";
+    public static final String CHANNEL_INVERTER_EPS_POWER_T = "inverter-eps-power-t";
+
     // I18N Keys
-    protected static final String I18N_KEY_OFFLINE_COMMUNICATION_ERROR_JSON_CANNOT_BE_RETRIEVED = "@text/offline.communication-error.json-cannot-be-retrieved";
+    public static final String I18N_KEY_OFFLINE_COMMUNICATION_ERROR_JSON_CANNOT_BE_RETRIEVED = "@text/offline.communication-error.json-cannot-be-retrieved";
 }

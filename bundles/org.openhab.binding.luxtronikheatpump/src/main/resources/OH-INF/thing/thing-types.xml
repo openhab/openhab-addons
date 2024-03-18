@@ -16,6 +16,7 @@
 			<channel id="temperatureOutsideMean" typeId="temperatureOutsideMean"/>
 			<channel id="temperatureHotWater" typeId="temperatureHotWater"/>
 			<channel id="temperatureHotWaterTarget" typeId="temperatureHotWaterTarget"/>
+			<channel id="temperatureHeatingFixedReturnTarget" typeId="temperatureHeatingFixedReturnTarget"/>
 			<channel id="temperatureHotWaterCoverage" typeId="temperatureHotWaterCoverage"/>
 			<channel id="temperatureHeatSourceInlet" typeId="temperatureHeatSourceInlet"/>
 			<channel id="temperatureHeatSourceOutlet" typeId="temperatureHeatSourceOutlet"/>
@@ -311,6 +312,10 @@
 			<channel id="comfortCoolingATExcess" typeId="comfortCoolingATExcess"/>
 			<channel id="comfortCoolingATUndercut" typeId="comfortCoolingATUndercut"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">

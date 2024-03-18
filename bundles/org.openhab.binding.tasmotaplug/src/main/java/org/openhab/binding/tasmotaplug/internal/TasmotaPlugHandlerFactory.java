@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.tasmotaplug.internal;
 
-import static org.openhab.binding.tasmotaplug.internal.TasmotaPlugBindingConstants.THING_TYPE_PLUG;
-
-import java.util.Set;
+import static org.openhab.binding.tasmotaplug.internal.TasmotaPlugBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,8 +37,6 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tasmotaplug")
 public class TasmotaPlugHandlerFactory extends BaseThingHandlerFactory {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLUG);
     private final HttpClient httpClient;
 
     @Activate
@@ -55,7 +51,7 @@ public class TasmotaPlugHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (THING_TYPE_PLUG.equals(thing.getThingTypeUID())) {
+        if (SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             return new TasmotaPlugHandler(thing, httpClient);
         }
 

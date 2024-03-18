@@ -20,7 +20,10 @@ Binding for the Bosch Smart Home.
     - [Intrusion Detection System](#intrusion-detection-system)
     - [Smart Bulb](#smart-bulb)
     - [Smoke Detector](#smoke-detector)
+    - [Smoke Detector II](#smoke-detector-ii)
     - [User-defined States](#user-defined-states)
+    - [Universal Switch](#universal-switch)
+    - [Universal Switch II](#universal-switch-ii)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
   - [Bridge Configuration](#bridge-configuration)
@@ -233,6 +236,19 @@ The smoke detector warns you in case of fire.
 | ------------------ | -------------------- | :------: | ------------------------------------------------------------------------------------------------- |
 | smoke-check        | String               | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                 |
 
+### Smoke Detector II
+
+The smoke detector warns you in case of fire.
+
+**Thing Type ID**: `smoke-detector`
+
+| Channel Type ID   | Item Type   | Writable | Description                                                                                                                                                                                                                 |
+|-------------------|-------------| :------: |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| smoke-check       | String      | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                                                                                                                                           |
+| battery-level     | Number      | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery       | Switch      | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| signal-strength   | Number      | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
+
 
 ### User-defined States
 
@@ -246,6 +262,31 @@ Individual states can be activated/deactivated and can be used as triggers, cond
 |-----------------|-----------| :------: |--------------------------------------------|
 | user-state      | Switch    | &#9745;  | Switches the User-defined state on or off. |
 
+### Universal Switch
+
+A universally configurable switch with two buttons.
+
+**Thing Type ID**: `universal-switch`
+
+| Channel Type ID     | Item Type            | Writable | Description                               |
+| ------------------- | -------------------- | :------: | ----------------------------------------- |
+| key-code            | Number:Dimensionless | &#9744;  | Integer code of the key that was pressed. |
+| key-name            | String               | &#9744;  | Name of a key pressed on a device. Possible values for Universal Switch: `LOWER_BUTTON`, `UPPER_BUTTON`. |
+| key-event-type      | String               | &#9744;  | Indicates how the key was pressed. Possible values are `PRESS_SHORT`, `PRESS_LONG` and `PRESS_LONG_RELEASED`. |
+| key-event-timestamp | DateTime             | &#9744;  | Timestamp indicating when the key was pressed. |
+
+### Universal Switch II
+
+A universally configurable switch with four buttons.
+
+**Thing Type ID**: `universal-switch-2`
+
+| Channel Type ID     | Item Type            | Writable | Description                               |
+| ------------------- | -------------------- | :------: | ----------------------------------------- |
+| key-code            | Number:Dimensionless | &#9744;  | Integer code of the key that was pressed. |
+| key-name            | String               | &#9744;  | Name of the key that was pressed. Possible values for Universal Switch II: `LOWER_LEFT_BUTTON`, `LOWER_RIGHT_BUTTON`, `UPPER_LEFT_BUTTON`, `UPPER_RIGHT_BUTTON`. |
+| key-event-type      | String               | &#9744;  | Indicates how the key was pressed. Possible values are `PRESS_SHORT`, `PRESS_LONG` and `PRESS_LONG_RELEASED`. |
+| key-event-timestamp | DateTime             | &#9744;  | Timestamp indicating when the key was pressed. |
 
 ## Limitations
 
