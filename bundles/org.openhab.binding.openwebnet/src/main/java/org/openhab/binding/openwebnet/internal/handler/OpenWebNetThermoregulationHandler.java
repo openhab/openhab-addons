@@ -87,6 +87,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private static final String CU_REMOTE_CONTROL_DISABLED = "DISABLED";
     private static final String CU_BATTERY_OK = "OK";
     private static final String CU_BATTERY_KO = "KO";
+    private static final String MODE_WEEKLY = "WEEKLY";
+    private static final String MODE_AUTO = "AUTO";
 
     public OpenWebNetThermoregulationHandler(Thing thing) {
         super(thing);
@@ -253,7 +255,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
                     if (isCentralUnit && WhatThermo.isComplex(command.toString())) {
                         int programNumber = 0;
-                        if ("WEEKLY".equalsIgnoreCase(command.toString())) {
+                        if (MODE_WEEKLY.equalsIgnoreCase(command.toString())) {
                             programNumber = currentWeeklyPrgNum;
                         } else {
                             programNumber = currentScenarioPrgNum;
@@ -261,7 +263,11 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                         newMode = Thermoregulation.OperationMode.valueOf(command.toString() + "_" + programNumber);
                         currentMode = newMode;
                     } else {
-                        newMode = Thermoregulation.OperationMode.valueOf(command.toString());
+                        if (MODE_AUTO.equalsIgnoreCase(command.toString())) {
+                            newMode = Thermoregulation.OperationMode.PROGRAM;
+                        } else {
+                            newMode = Thermoregulation.OperationMode.valueOf(command.toString());
+                        }
                     }
                     send(Thermoregulation.requestWriteMode(getWhere(w.value()), newMode, currentFunction,
                             currentSetPointTemp));
@@ -418,7 +424,13 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
         // must convert from OperationMode to Mode and set ProgramNumber when necessary
         if (operationMode != null) {
-            updateState(CHANNEL_MODE, new StringType(operationMode.mode()));
+            String newMode;
+            if (operationMode == Thermoregulation.OperationMode.PROGRAM) { // translate PROGRAM -> AUTO
+                newMode = MODE_AUTO;
+            } else {
+                newMode = operationMode.mode();
+            }
+            updateState(CHANNEL_MODE, new StringType(newMode));
             Integer programN = 0;
             try {
                 @Nullable

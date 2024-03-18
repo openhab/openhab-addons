@@ -95,8 +95,8 @@
 		<description>Thermo function of the Central Unit (read only)</description>
 		<state readOnly="true">
 			<options>
-				<option value="HEATING">Heating</option>
-				<option value="COOLING">Cooling</option>
+				<option value="HEATING">Winter</option>
+				<option value="COOLING">Summer</option>
 			</options>
 		</state>
 	</channel-type>
@@ -119,10 +119,10 @@
 		<description>Set mode of the zone (read/write)</description>
 		<state>
 			<options>
+				<option value="AUTO">Automatic</option>
 				<option value="MANUAL">Manual</option>
 				<option value="PROTECTION">Antifreeze / Heat Protection</option>
 				<option value="OFF">Off</option>
-				<option value="AUTO">Automatic</option>
 			</options>
 		</state>
 	</channel-type>
@@ -219,7 +219,7 @@
 				<option value="PLUS_3">+3</option>
 				<option value="PLUS_2">+2</option>
 				<option value="PLUS_1">+1</option>
-				<option value="NORMAL">0</option>
+				<option value="NORMAL">No offset</option>
 				<option value="MINUS_1">-1</option>
 				<option value="MINUS_2">-2</option>
 				<option value="MINUS_3">-3</option>
@@ -233,11 +233,11 @@
 		<description>Set mode of the Central Unit (read/write)</description>
 		<state>
 			<options>
+				<option value="WEEKLY">Weekly</option>
+				<option value="SCENARIO">Scenarios</option>
 				<option value="MANUAL">Manual</option>
 				<option value="PROTECTION">Antifreeze / Heat Protection</option>
 				<option value="OFF">Off</option>
-				<option value="WEEKLY">Weekly</option>
-				<option value="SCENARIO">Scenario</option>
 			</options>
 		</state>
 	</channel-type>
@@ -248,9 +248,9 @@
 		<description>Set weekly program number for the Central Unit, valid only with Central Unit mode = "WEEKLY" (read/write)</description>
 		<state>
 			<options>
-				<option value="1">Program 1</option>
-				<option value="2">Program 2</option>
-				<option value="3">Program 3</option>
+				<option value="1">Weekly Program 1</option>
+				<option value="2">Weekly Program 2</option>
+				<option value="3">Weekly Program 3</option>
 			</options>
 		</state>
 	</channel-type>
@@ -262,22 +262,22 @@
 			(read/write)</description>
 		<state>
 			<options>
-				<option value="1">Program 1</option>
-				<option value="2">Program 2</option>
-				<option value="3">Program 3</option>
-				<option value="4">Program 4</option>
-				<option value="5">Program 5</option>
-				<option value="6">Program 6</option>
-				<option value="7">Program 7</option>
-				<option value="8">Program 8</option>
-				<option value="9">Program 9</option>
-				<option value="10">Program 10</option>
-				<option value="11">Program 11</option>
-				<option value="12">Program 12</option>
-				<option value="13">Program 13</option>
-				<option value="14">Program 14</option>
-				<option value="15">Program 15</option>
-				<option value="16">Program 16</option>
+				<option value="1">Scenario 1</option>
+				<option value="2">Scenario 2</option>
+				<option value="3">Scenario 3</option>
+				<option value="4">Scenario 4</option>
+				<option value="5">Scenario 5</option>
+				<option value="6">Scenario 6</option>
+				<option value="7">Scenario 7</option>
+				<option value="8">Scenario 8</option>
+				<option value="9">Scenario 9</option>
+				<option value="10">Scenario 10</option>
+				<option value="11">Scenario 11</option>
+				<option value="12">Scenario 12</option>
+				<option value="13">Scenario 13</option>
+				<option value="14">Scenario 14</option>
+				<option value="15">Scenario 15</option>
+				<option value="16">Scenario 16</option>
 			</options>
 		</state>
 	</channel-type>
@@ -316,21 +316,22 @@
 	<channel-type id="atLeastOneProbeOff" advanced="true">
 		<item-type>Switch</item-type>
 		<label>At least one probe OFF</label>
-		<description>At least one probe OFF indicator in Central Unit (read only)</description>
+		<description>At least one probe in OFF mode indicator from Central Unit (read only)</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="atLeastOneProbeProtection" advanced="true">
 		<item-type>Switch</item-type>
 		<label>At least one probe in PROTECTION</label>
-		<description>At least one probe in PROTECTION (Antifreeze / Heat Protection) indicator in Central Unit (read only)</description>
+		<description>At least one probe in PROTECTION mode (Antifreeze / Heat Protection) indicator from Central Unit (read
+			only)</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="atLeastOneProbeManual" advanced="true">
 		<item-type>Switch</item-type>
 		<label>At least one probe in MANUAL</label>
-		<description>At least one probe in MANUAL indicator in Central Unit (read only)</description>
+		<description>At least one probe in MANUAL mode indicator from Central Unit (read only)</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
