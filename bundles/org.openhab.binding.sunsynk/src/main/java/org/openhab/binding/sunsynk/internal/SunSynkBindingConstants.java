@@ -94,5 +94,9 @@ public class SunSynkBindingConstants {
     public static final String CONFIG_SECRET = "access_token";
     public static final String CONFIG_GATE_SERIAL = "gsn";
     public static final String CONFIG_SERIAL = "sn";
+    public static final String CONFIG_NAME = "alias";
+    public static final String PROPERTY_SECRET = "access_token";
+    public static final String PROPERTY_GATE_SERIAL = "gsn";
+    public static final String PROPERTY_SERIAL = "sn";
     public static final String PROPERTY_NAME = "alias";
 }

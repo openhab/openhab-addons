@@ -31,14 +31,12 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="sunsynkaccount"/>
 		</supported-bridge-type-refs>
+		<label>SunSynk Inverter</label>
+		<description>Inverter thing for SunSynk Binding.</description>
 		<!-- Comment this in for Things which need a Bridge to function.
 		-->
 
-		<label>SunSynk Inverter</label>
-		<description>Inverter thing for SunSynk Binding</description>
-
 		<channels>
-
 			<channel id="Interval-1-grid-charge" typeId="grid-charge"/>
 			<channel id="Interval-2-grid-charge" typeId="grid-charge"/>
 			<channel id="Interval-3-grid-charge" typeId="grid-charge"/>
@@ -82,8 +80,19 @@
 			<channel id="Inverter-solar-energy-today" typeId="electrical-energy"/>
 			<channel id="Inverter-solar-energy-total" typeId="electrical-energy"/>
 			<channel id="Inverter-solar-power-now" typeId="electric-current"/>
-
 		</channels>
+		<config-description>
+			<parameter name="sn" type="text" required="true">
+				<label>SunSynk Inverter Serial</label>
+				<description>Serial number of the inverter</description>
+			</parameter>
+			<parameter name="access_token" type="text" required="true">
+				<label>SunSynk Secret</label>
+				<description>Secret for accessing SunSynk web services</description>
+			</parameter>
+		</config-description>
+
+
 	</thing-type>
 
 	<!-- Plant Thing Type -->

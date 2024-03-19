@@ -50,6 +50,7 @@ public class SunSynkInverter {
     private String gsn;
     private String sn;
     private String alias;
+    private int refresh;
     private Settings batterySettings; // cotains common settings including the inverter charge discharge and battert use
     private Battery realTimeBattery; // contains the realtime stus of the battery
     private Grid grid; // realtime grid
@@ -57,10 +58,11 @@ public class SunSynkInverter {
     private RealTimeInData realTimeDataIn; // realtime data
 
     public SunSynkInverter(SunSynkInverterConfig config) {
-        this.gsn = config.getgsn();
+        // this.gsn = config.getgsn();
         this.access_token = config.getToken();
         this.sn = config.getsn();
-        this.alias = config.getalias();
+        this.refresh = config.getRefresh();
+        // this.alias = config.getAlias();
     }
 
     public void sendGetState() { // Entry method to class for updating internal state from the inverter
@@ -224,7 +226,7 @@ public class SunSynkInverter {
             wr.flush();
             wr.close();
             logger.debug("POST Response Code: {}", connection.getResponseCode());
-            logger.debug("POST Response Message: {}", connection.getResponseMessage());
+            // logger.debug("POST Response Message: {}", connection.getResponseMessage());
             InputStream is = connection.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
