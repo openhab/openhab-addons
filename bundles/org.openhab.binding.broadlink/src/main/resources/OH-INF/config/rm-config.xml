@@ -48,12 +48,6 @@
 			<required>true</required>
 		</parameter>
 
-		<parameter name="mapFilename" type="text">
-			<label>Map File</label>
-			<description>Enter name of file containing mapping of commands to IR codes</description>
-			<default>broadlink.map</default>
-			<required>true</required>
-		</parameter>
 		<parameter name="ignoreFailedUpdates" type="boolean">
 			<context>ignore-failed-updates</context>
 			<label>Ignore Failed Updates</label>
