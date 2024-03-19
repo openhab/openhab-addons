@@ -12,52 +12,37 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
 
-import static org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.THERMOSTATMODES;
+import static org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.NHCRINGING;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAccess;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcVideo;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NhcThermostat2} class represents the thermostat Niko Home Control II communication object. It contains all
- * fields representing a Niko Home Control thermostat and has methods to set the thermostat in Niko Home Control and
- * receive thermostat updates.
+ * The {@link NhcVideo2} class represents a Niko Home Control II video door station device. It is used in conjunction
+ * with NhcAccess2 to capture the bell signal on a video door station for access control.
  *
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NhcThermostat2 extends NhcThermostat {
-
-    private final Logger logger = LoggerFactory.getLogger(NhcThermostat2.class);
+public class NhcVideo2 extends NhcVideo {
+    private final Logger logger = LoggerFactory.getLogger(NhcVideo2.class);
 
     private final String deviceType;
     private final String deviceTechnology;
     private final String deviceModel;
 
-    protected NhcThermostat2(String id, String name, String deviceType, String deviceTechnology, String deviceModel,
-            @Nullable String location, NikoHomeControlCommunication nhcComm) {
-        super(id, name, location, nhcComm);
+    NhcVideo2(String id, String name, String deviceType, String deviceTechnology, String deviceModel,
+            @Nullable String macAddress, @Nullable String ipAddress, @Nullable String mjpegUri, @Nullable String tnUri,
+            NikoHomeControlCommunication nhcComm) {
+        super(id, name, macAddress, ipAddress, mjpegUri, tnUri, "robinsip".equals(deviceModel), nhcComm);
         this.deviceType = deviceType;
         this.deviceTechnology = deviceTechnology;
         this.deviceModel = deviceModel;
-    }
-
-    @Override
-    public void executeMode(int mode) {
-        logger.debug("execute thermostat mode {} for {}", mode, id);
-
-        String program = THERMOSTATMODES[mode];
-        nhcComm.executeThermostat(id, program);
-    }
-
-    @Override
-    public void executeOverrule(int overrule, int overruletime) {
-        logger.debug("execute thermostat overrule {} during {} min for {}", overrule, overruletime, id);
-
-        nhcComm.executeThermostat(id, overrule, overruletime);
     }
 
     /**
@@ -79,5 +64,15 @@ public class NhcThermostat2 extends NhcThermostat {
      */
     public String getDeviceModel() {
         return deviceModel;
+    }
+
+    @Override
+    public void updateState(int buttonIndex, @Nullable String status) {
+        callStatus.compute(buttonIndex, (k, v) -> status);
+        NhcAccess access = nhcAccessMap.get(buttonIndex);
+        if (access != null) {
+            logger.trace("updating bell state for button {} linked to access id {}", buttonIndex, access.getId());
+            access.updateBellState(NHCRINGING.equals(status) ? true : false);
+        }
     }
 }

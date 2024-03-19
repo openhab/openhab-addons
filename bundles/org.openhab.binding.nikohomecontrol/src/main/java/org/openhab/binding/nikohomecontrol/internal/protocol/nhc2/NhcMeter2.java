@@ -12,52 +12,35 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
 
-import static org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.THERMOSTATMODES;
+import java.time.LocalDateTime;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcMeter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.MeterType;
 
 /**
- * The {@link NhcThermostat2} class represents the thermostat Niko Home Control II communication object. It contains all
- * fields representing a Niko Home Control thermostat and has methods to set the thermostat in Niko Home Control and
- * receive thermostat updates.
+ * The {@link NhcMeter2} class represents the meter Niko Home Control communication object. It contains all fields
+ * representing a Niko Home Control meter and has methods to receive meter usage information.
  *
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NhcThermostat2 extends NhcThermostat {
-
-    private final Logger logger = LoggerFactory.getLogger(NhcThermostat2.class);
+public class NhcMeter2 extends NhcMeter {
 
     private final String deviceType;
     private final String deviceTechnology;
     private final String deviceModel;
 
-    protected NhcThermostat2(String id, String name, String deviceType, String deviceTechnology, String deviceModel,
-            @Nullable String location, NikoHomeControlCommunication nhcComm) {
-        super(id, name, location, nhcComm);
+    protected NhcMeter2(String id, String name, MeterType meterType, String deviceType, String deviceTechnology,
+            String deviceModel, @Nullable LocalDateTime referenceDate, @Nullable String location,
+            NikoHomeControlCommunication nhcComm, ScheduledExecutorService scheduler) {
+        super(id, name, meterType, referenceDate, location, nhcComm, scheduler);
         this.deviceType = deviceType;
         this.deviceTechnology = deviceTechnology;
         this.deviceModel = deviceModel;
-    }
-
-    @Override
-    public void executeMode(int mode) {
-        logger.debug("execute thermostat mode {} for {}", mode, id);
-
-        String program = THERMOSTATMODES[mode];
-        nhcComm.executeThermostat(id, program);
-    }
-
-    @Override
-    public void executeOverrule(int overrule, int overruletime) {
-        logger.debug("execute thermostat overrule {} during {} min for {}", overrule, overruletime, id);
-
-        nhcComm.executeThermostat(id, overrule, overruletime);
     }
 
     /**

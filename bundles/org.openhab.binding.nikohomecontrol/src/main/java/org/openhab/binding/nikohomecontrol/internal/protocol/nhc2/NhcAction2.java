@@ -35,9 +35,9 @@ public class NhcAction2 extends NhcAction {
     private final Logger logger = LoggerFactory.getLogger(NhcAction2.class);
 
     private volatile boolean booleanState;
-    private String deviceType;
-    private String deviceTechnology;
-    private String deviceModel;
+    private final String deviceType;
+    private final String deviceTechnology;
+    private final String deviceModel;
 
     NhcAction2(String id, String name, String deviceType, String deviceTechnology, String deviceModel,
             @Nullable String location, ActionType type, NikoHomeControlCommunication nhcComm) {

@@ -59,8 +59,8 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private volatile @Nullable CompletableFuture<Boolean> subscribedFuture;
     private volatile @Nullable CompletableFuture<Boolean> stoppedFuture;
 
-    private MqttMessageSubscriber messageSubscriber;
-    private MqttConnectionObserver connectionObserver;
+    private final MqttMessageSubscriber messageSubscriber;
+    private final MqttConnectionObserver connectionObserver;
 
     private TrustManager[] trustManagers;
     private String clientId;
