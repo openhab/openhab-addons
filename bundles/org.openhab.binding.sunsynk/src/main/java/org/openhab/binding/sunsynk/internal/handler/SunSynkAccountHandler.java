@@ -74,7 +74,6 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         APIdata.static_access_token = newToken;
 
         logger.debug("Account token: {}", APIdata.static_access_token);
-
         logger.debug("Account expires: {}", sunAccount.getExpiresIn());
 
         // Discover Connected plants and inverters.
@@ -106,7 +105,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             connection.setDoOutput(true);
 
             logger.debug("Details response code: {}", connection.getResponseCode());
-            logger.debug("Details response message: {}", connection.getResponseMessage());
+            // logger.debug("Details response message: {}", connection.getResponseMessage());
 
             InputStream is = connection.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -117,9 +116,9 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             Details details = gson.fromJson(response, Details.class);
             return details;
         } catch (IOException e) {
-            logger.debug("Error attempting to autheticate account", e);
+            logger.debug("Error attempting to find inverters registered to account", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error attempting to authenticate account");
+                    "Error attempting to find inverters registered to account");
 
             Details details = new Details();
             return details;
@@ -145,7 +144,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             outStream.close();
 
             logger.debug("Authentication response code: {}", connection.getResponseCode());
-            logger.debug("Authentication response message: {}", connection.getResponseMessage());
+            // logger.debug("Authentication response message: {}", connection.getResponseMessage());
 
             InputStream is = connection.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -157,9 +156,9 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             return API_Token;
 
         } catch (IOException e) {
-            logger.debug("Error attempting to find inverters registered to account", e);
+            logger.debug("Error attempting to autheticate account", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error attempting to find inverters registered to account");
+                    "Error attempting to authenticate account");
 
             Client API_Token = new Client();
             return API_Token;

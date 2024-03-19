@@ -53,7 +53,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     // private @Nullable InverterConfig config;
     // private /* @Nullable */ Inverter config;
     private SunSynkInverter inverter;
-    private int refreshTime;
+    private int refreshTime = 60;
     private ScheduledFuture<?> refreshTask;
 
     public SunSynkInverterHandler(Thing thing) {
@@ -204,17 +204,16 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         logger.debug("Will boot up the invert binding!");
         // SunSynkInverterConfig accountConfig = getConfigAs(SunSynkInverterConfig.class);
         SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
-        // Object s = getThing().getConfiguration().get("alias");
-        // InverterConfig configTest = getThing().getConfiguration().as(InverterConfig.class);
-        // logger.debug("Inverter ConfigTest: {}", accountConfig);
+
         logger.debug("Inverter Config: {}", config);
 
-        refreshTime = config.getRefresh();
-        if (refreshTime < 60) {
+        if (config.getRefresh() < refreshTime) {
             logger.warn(
                     "Refresh time [{}] is not valid. Refresh time must be at least 60 seconds.  Setting to minimum of 60 sec",
-                    refreshTime);
+                    config.getRefresh());
             config.setRefresh(60);
+        } else {
+            refreshTime = config.getRefresh();
         }
 
         inverter = new SunSynkInverter(config);

@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
  */
 // @NonNullByDefault
 @Component(configurationPid = "binding.sunsynk", service = ThingHandlerFactory.class)
-
 public class SunSynkHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SunSynkHandlerFactory.class);
