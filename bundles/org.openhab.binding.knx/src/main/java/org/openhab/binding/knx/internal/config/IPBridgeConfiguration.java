@@ -67,10 +67,10 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
     }
 
     public String getTunnelUserPassword() {
-        return tunnelUserPassword;
+        return decrypt(tunnelUserPassword);
     }
 
     public String getTunnelDeviceAuthentication() {
-        return tunnelDeviceAuthentication;
+        return decrypt(tunnelDeviceAuthentication);
     }
 }
