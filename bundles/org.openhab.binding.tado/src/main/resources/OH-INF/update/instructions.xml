@@ -9,7 +9,9 @@
 				<type>tado:heatingPower</type>
 			</update-channel>
 			<update-channel id="humidity">
-				<type>tado:humidity</type>
+				<type>system:atmospheric-humidity</type>
+				<label>Humidity</label>
+				<description>Current humidity in %</description>
 			</update-channel>
 		</instruction-set>
 	</thing-type>

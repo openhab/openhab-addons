@@ -37,7 +37,10 @@
 
 		<channels>
 			<channel typeId="currentTemperature" id="currentTemperature"/>
-			<channel typeId="humidity" id="humidity"/>
+			<channel typeId="system.atmospheric-humidity" id="humidity">
+				<label>Humidity</label>
+				<description>Current humidity in %</description>
+			</channel>
 			<channel typeId="heatingPower" id="heatingPower"/>
 			<channel typeId="acPower" id="acPower"/>
 			<channel typeId="fanspeed" id="fanspeed"/>
@@ -133,14 +136,6 @@
 		<description>Current temperature</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<description>Current humidity in %</description>
-		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="heatingPower">
@@ -250,7 +245,7 @@
 			<options>
 				<option value="AUTO">AUTO</option>
 				<option value="UP">UP</option>
-				<option value="MID_UP">UP</option>
+				<option value="MID_UP">MID-UP</option>
 				<option value="MID">MID</option>
 				<option value="MID_DOWN">MID-DOWN</option>
 				<option value="DOWN">DOWN</option>
