@@ -38,84 +38,90 @@ package org.openhab.binding.sunsynk.internal.classes;
 // 'batt2Factory': None}
 
 public class Battery {
-    private String time;
-    private double etodayChg;
-    private double etodayDischg;
-    private double emonthChg;
-    private double emonthDischg;
-    private double eyearChg;
-    private double eyearDischg;
-    private double etotalChg;
-    private double etotalDischg;
-    private int type;
-    private int power;
-    private double capacity;
-    private double correctCap;
-    private double bmsSoc;
-    private double bmsVolt;
-    private double bmsCurrent;
-    private double bmsTemp;
-    private double current;
-    private double voltage;
-    private double temp;
-    private double soc;
-    private double chargeVolt;
-    private double dischargeVolt;
-    private double chargeCurrentLimit;
-    private double dischargeCurrentLimit;
-    private double maxChargeCurrentLimit;
-    private double maxDischargeCurrentLimit;
-    private int bms1Version1;
-    private int bms1Version2;
-    private String current2;
-    private String voltage2;
-    private String temp2;
-    private String soc2;
-    private String chargeVolt2;
-    private String dischargeVolt2;
-    private String chargeCurrentLimit2;
-    private String dischargeCurrentLimit2;
-    private String maxChargeCurrentLimit2;
-    private String maxDischargeCurrentLimit2;
-    private String bms2Version1;
-    private String bms2Version2;
-    private int status;
-    private double batterySoc1;
-    private double batteryCurrent1;
-    private double batteryVolt1;
-    private double batteryPower1;
-    private double batteryTemp1;
-    private double batteryStatus2;
-    private String batterySoc2;
-    private String batteryCurrent2;
-    private String batteryVolt2;
-    private String batteryPower2;
-    private String batteryTemp2;
-    private String numberOfBatteries;
-    private String batt1Factory;
-    private String batt2Factory;
+    private int code;
+    private String msg;
+    private Data data;
+
+    class Data {
+        private String time;
+        private double etodayChg;
+        private double etodayDischg;
+        private double emonthChg;
+        private double emonthDischg;
+        private double eyearChg;
+        private double eyearDischg;
+        private double etotalChg;
+        private double etotalDischg;
+        private int type;
+        private int power;
+        private double capacity;
+        private double correctCap;
+        private double bmsSoc;
+        private double bmsVolt;
+        private double bmsCurrent;
+        private double bmsTemp;
+        private double current;
+        private double voltage;
+        private double temp;
+        private double soc;
+        private double chargeVolt;
+        private double dischargeVolt;
+        private double chargeCurrentLimit;
+        private double dischargeCurrentLimit;
+        private double maxChargeCurrentLimit;
+        private double maxDischargeCurrentLimit;
+        private int bms1Version1;
+        private int bms1Version2;
+        private String current2;
+        private String voltage2;
+        private String temp2;
+        private String soc2;
+        private String chargeVolt2;
+        private String dischargeVolt2;
+        private String chargeCurrentLimit2;
+        private String dischargeCurrentLimit2;
+        private String maxChargeCurrentLimit2;
+        private String maxDischargeCurrentLimit2;
+        private String bms2Version1;
+        private String bms2Version2;
+        private int status;
+        private double batterySoc1;
+        private double batteryCurrent1;
+        private double batteryVolt1;
+        private double batteryPower1;
+        private double batteryTemp1;
+        private double batteryStatus2;
+        private String batterySoc2;
+        private String batteryCurrent2;
+        private String batteryVolt2;
+        private String batteryPower2;
+        private String batteryTemp2;
+        private String numberOfBatteries;
+        private String batt1Factory;
+        private String batt2Factory;
+    }
 
     public double getBatteryVoltage() {
-        return this.voltage;
+        return this.data.voltage;
     }
 
     public double getBatteryCurrent() { // -ve if charging battery.
-        return this.current;
+        return this.data.current;
     }
 
     public double getBatteryPower() {
-        return this.power;
+        return this.data.power;
     }
 
     public double getBatteryCapacity() {
-        return this.capacity;
+        return this.data.capacity;
     }
 
     public double getBatterySOC() {
-        return this.soc;
+        return this.data.soc;
     }
 
     public double getBatteryTemperature() {
-        return this.temp;
+        return this.data.temp;
     }
 }
