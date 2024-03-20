@@ -17,22 +17,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.boschshc.internal.devices.AbstractBoschSHCHandlerTest;
@@ -44,9 +41,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 
 /**
  * Unit tests for UserStateHandlerTest
@@ -94,25 +89,41 @@ class UserStateHandlerTest extends AbstractBoschSHCHandlerTest<UserStateHandler>
     }
 
     @ParameterizedTest()
-    @MethodSource("provideExceptions")
-    void testHandleCommandSetStateUpdatesThingStatusOnException(Exception mockException)
+    @MethodSource("org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils#getExecutionExceptionAndInterruptedExceptionArguments()")
+    void testHandleCommandSetStateUpdatesThingStatusOnException(Exception exception)
             throws InterruptedException, TimeoutException, ExecutionException {
-        reset(getCallback());
-        lenient().when(getBridgeHandler().putState(anyString(), anyString(), any(UserStateServiceState.class)))
-                .thenThrow(mockException);
+        when(getBridgeHandler().putState(anyString(), anyString(), any(UserStateServiceState.class)))
+                .thenThrow(exception);
         var channel = new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_USER_DEFINED_STATE);
+
         getFixture().handleCommand(channel, OnOffType.ON);
 
-        verify(getCallback()).getBridge(any(ThingUID.class));
-
-        ThingStatusInfo expectedStatusInfo = new ThingStatusInfo(ThingStatus.OFFLINE,
-                ThingStatusDetail.COMMUNICATION_ERROR,
-                String.format("Error while putting user-defined state for %s", channel.getThingUID().getId()));
-        verify(getCallback()).statusUpdated(same(getThing()), eq(expectedStatusInfo));
+        verify(getCallback()).statusUpdated(same(getThing()),
+                argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
+                        && status.getStatusDetail().equals(ThingStatusDetail.COMMUNICATION_ERROR)));
     }
 
-    private static Stream<Arguments> provideExceptions() {
-        return Stream.of(Arguments.of(new TimeoutException("test exception")),
-                Arguments.of(new InterruptedException("test exception")));
+    @Test
+    void initializeWithoutId() {
+        when(getThing().getConfiguration()).thenReturn(new Configuration());
+
+        getFixture().initialize();
+
+        verify(getCallback()).statusUpdated(same(getThing()),
+                argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
+                        && status.getStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils#getBoschShcAndExecutionAndTimeoutAndInterruptedExceptionArguments()")
+    void initializeHandleExceptions(Exception e)
+            throws BoschSHCException, InterruptedException, TimeoutException, ExecutionException {
+        when(getBridgeHandler().getUserStateInfo(anyString())).thenThrow(e);
+
+        getFixture().initialize();
+
+        verify(getCallback()).statusUpdated(same(getThing()),
+                argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
+                        && status.getStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)));
     }
 }

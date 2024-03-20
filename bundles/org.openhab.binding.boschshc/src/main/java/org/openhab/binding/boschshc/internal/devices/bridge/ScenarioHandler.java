@@ -96,7 +96,7 @@ public class ScenarioHandler {
         }
     }
 
-    private String prettyLogScenarios(final Scenario[] scenarios) {
+    String prettyLogScenarios(final Scenario[] scenarios) {
         final StringBuilder builder = new StringBuilder();
         builder.append("[");
         for (Scenario scenario : scenarios) {

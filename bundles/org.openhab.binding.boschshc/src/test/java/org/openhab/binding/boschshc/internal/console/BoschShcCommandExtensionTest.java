@@ -17,7 +17,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,6 +40,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
@@ -87,6 +94,24 @@ class BoschShcCommandExtensionTest {
         verify(consoleMock, atLeastOnce()).print(any());
         fixture.execute(new String[] { BoschShcCommandExtension.GET_DEVICES }, consoleMock);
         verify(consoleMock, atLeastOnce()).print(any());
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils#getBoschShcAndExecutionAndTimeoutExceptionArguments()")
+    void executeHandleExceptions(Exception exception)
+            throws InterruptedException, BoschSHCException, ExecutionException, TimeoutException {
+        Console console = mock(Console.class);
+        Bridge bridge = mock(Bridge.class);
+        BridgeHandler bridgeHandler = mock(BridgeHandler.class);
+        when(bridgeHandler.getThing()).thenReturn(bridge);
+        when(bridgeHandler.getPublicInformation()).thenThrow(exception);
+        when(bridge.getHandler()).thenReturn(bridgeHandler);
+        List<Thing> things = List.of(bridge);
+        when(thingRegistry.getAll()).thenReturn(things);
+
+        fixture.execute(new String[] { BoschShcCommandExtension.GET_BRIDGEINFO }, console);
+
+        verify(console).print(anyString());
     }
 
     @Test

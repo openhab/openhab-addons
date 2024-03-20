@@ -56,6 +56,11 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     private final Logger logger = LoggerFactory.getLogger(ThingDiscoveryService.class);
 
+    /**
+     * Device model representing logical child devices of Light Control II
+     */
+    static final String DEVICE_MODEL_LIGHT_CONTROL_CHILD_DEVICE = "MICROMODULE_LIGHT_ATTACHED";
+
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(
             BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH, BoschSHCBindingConstants.THING_TYPE_TWINGUARD,
             BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT, BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2,
@@ -89,7 +94,11 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             new AbstractMap.SimpleEntry<>("TRV", BoschSHCBindingConstants.THING_TYPE_THERMOSTAT),
             new AbstractMap.SimpleEntry<>("WRC2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH),
             new AbstractMap.SimpleEntry<>("SWITCH2", BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2),
-            new AbstractMap.SimpleEntry<>("SMOKE_DETECTOR2", BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR_2)
+            new AbstractMap.SimpleEntry<>("SMOKE_DETECTOR2", BoschSHCBindingConstants.THING_TYPE_SMOKE_DETECTOR_2),
+            new AbstractMap.SimpleEntry<>("MICROMODULE_SHUTTER", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2),
+            new AbstractMap.SimpleEntry<>("MICROMODULE_AWNING", BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2),
+            new AbstractMap.SimpleEntry<>("MICROMODULE_LIGHT_CONTROL", BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2),
+            new AbstractMap.SimpleEntry<>("MICROMODULE_DIMMER", BoschSHCBindingConstants.THING_TYPE_DIMMER)
 // Future Extension: map deviceModel names to BoschSHC Thing Types when they are supported
 //            new AbstractMap.SimpleEntry<>("SMOKE_DETECTION_SYSTEM", BoschSHCBindingConstants.),
 //            new AbstractMap.SimpleEntry<>("PRESENCE_SIMULATION_SERVICE", BoschSHCBindingConstants.),
@@ -219,13 +228,15 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
         logger.trace("- got thingTypeID '{}' for deviceModel '{}'", thingTypeUID.getId(), device.deviceModel);
 
-        ThingUID thingUID = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(), device.id.replace(':', '_'));
+        ThingUID thingUID = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(),
+                buildCompliantThingID(device.id));
 
         logger.trace("- got thingUID '{}' for device: '{}'", thingUID, device);
 
         DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withProperty("id", device.id).withLabel(getNiceName(device.name, roomName));
         discoveryResult.withBridge(thingHandler.getThing().getUID());
+
         if (!roomName.isEmpty()) {
             discoveryResult.withProperty("Location", roomName);
         }
@@ -233,6 +244,18 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
         logger.debug("Discovered device '{}' with thingTypeUID={}, thingUID={}, id={}, deviceModel={}", device.name,
                 thingUID, thingTypeUID, device.id, device.deviceModel);
+    }
+
+    /**
+     * Translates a Bosch device ID to an openHAB-compliant thing ID.
+     * <p>
+     * Characters that are not allowed in thing IDs are replaced by underscores.
+     * 
+     * @param deviceId the Bosch device ID
+     * @return the translated openHAB-compliant thing ID
+     */
+    private String buildCompliantThingID(String deviceId) {
+        return deviceId.replace(':', '_').replace('#', '_');
     }
 
     private String getNiceName(String name, String roomName) {
@@ -268,6 +291,15 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
         if (thingTypeId != null) {
             return new ThingTypeUID(BoschSHCBindingConstants.BINDING_ID, thingTypeId.getId());
         }
+
+        if (DEVICE_MODEL_LIGHT_CONTROL_CHILD_DEVICE.equals(device.deviceModel)) {
+            // Light Control II exposes a parent device and two child devices.
+            // We only add one thing for the parent device and the child devices are logically included.
+            // Therefore we do not need to add separate things for the child devices and need to suppress the
+            // log entry about the unknown device model.
+            return null;
+        }
+
         logger.debug("Unknown deviceModel '{}'! Please create a support request issue for this unknown device model.",
                 device.deviceModel);
         return null;

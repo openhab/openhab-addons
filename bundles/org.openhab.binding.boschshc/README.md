@@ -1,6 +1,6 @@
 # Bosch Smart Home Binding
 
-Binding for the Bosch Smart Home.
+Binding for Bosch Smart Home devices.
 
 - [Bosch Smart Home Binding](#bosch-smart-home-binding)
   - [Supported Things](#supported-things)
@@ -10,8 +10,10 @@ Binding for the Bosch Smart Home.
     - [Twinguard Smoke Detector](#twinguard-smoke-detector)
     - [Door/Window Contact](#door-window-contact)
     - [Door/Window Contact II](#door-window-contact-ii)
+    - [Light Control II](#light-control-ii)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
+    - [Shutter Control II](#shutter-control-ii)
     - [Thermostat](#thermostat)
     - [Climate Control](#climate-control)
     - [Wall Thermostat](#wall-thermostat)
@@ -68,6 +70,19 @@ A compact smart plug with energy monitoring capabilities.
 | power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.     |
 | energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device. |
 
+### Dimmer
+
+Smart dimmer capable of controlling any dimmable lamp.
+
+**Thing Type ID**: `dimmer`
+
+| Channel Type ID    | Item Type     | Writable | Description                                                    |
+| ------------------ | ------------- | :------: | -------------------------------------------------------------- |
+| power-switch       | Switch        | &#9745;  | Current state of the switch.                                   |
+| brightness         | Dimmer        | &#9745;  | Regulates the brightness on a percentage scale from 0 to 100%. |
+| signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| child-protection   | Switch        | &#9745;  | Indicates whether the child protection is active.              |
+
 ### Twinguard Smoke Detector
 
 The Twinguard smoke detector warns you in case of fire and constantly monitors the air.
@@ -114,6 +129,22 @@ Detects open windows and doors and features an additional button.
 | bypass          | Switch    | &#9744;  | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined. |
 | signal-strength | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
 
+### Light Control II
+
+This thing type is used if Light/Shutter Control II devices are configured as light controls.
+
+**Thing Type ID**: `light-control-2`
+
+| Channel Type ID    | Item Type     | Writable | Description                                                   |
+| ------------------ | ------------- | :------: | ------------------------------------------------------------- |
+| signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.                  |
+| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device.              |
+| power-switch-1     | Switch        | &#9745;  | Switches the light on or off (circuit 1).                     |
+| child-protection-1 | Switch        | &#9745;  | Indicates whether the child protection is active (circuit 1). |
+| power-switch-2     | Switch        | &#9745;  | Switches the light on or off (circuit 2).                     |
+| child-protection-2 | Switch        | &#9745;  | Indicates whether the child protection is active (circuit 2). |
+
 ### Motion Detector
 
 Detects every movement through an intelligent combination of passive infra-red technology and an additional temperature sensor.
@@ -136,6 +167,20 @@ Control of your shutter to take any position you desire.
 | Channel Type ID | Item Type     | Writable | Description                              |
 | --------------- | ------------- | :------: | ---------------------------------------- |
 | level           | Rollershutter | &#9745;  | Current open ratio (0 to 100, Step 0.5). |
+
+### Shutter Control II
+
+This thing type is used if Light/Shutter Control II devices are configured as shutter controls.
+
+**Thing Type ID**: `shutter-control-2`
+
+| Channel Type ID    | Item Type     | Writable | Description                                       |
+| ------------------ | ------------- | :------: | ------------------------------------------------- |
+| level              | Rollershutter | &#9745;  | Current open ratio (0 to 100, Step 0.5).          |
+| signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| child-protection   | Switch        | &#9745;  | Indicates whether the child protection is active. |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.      |
+| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device.  |
 
 ### Thermostat
 
