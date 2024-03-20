@@ -18,7 +18,7 @@
     <bnd.importpackage>
       !javax.annotation.*;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*,!org.bouncycastle.*,!org.openjsse.*
     </bnd.importpackage>
-    <retrofit.version>2.9.0</retrofit.version>
+    <retrofit.version>2.10.0</retrofit.version>
     <influx2.version>7.0.0</influx2.version>
     <influx1.version>2.24</influx1.version>
     <io.reactivex.rxjava3>3.1.8</io.reactivex.rxjava3>
