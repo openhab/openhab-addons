@@ -22,6 +22,7 @@ import org.openhab.binding.broadlink.internal.BroadlinkMappingService;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -46,12 +47,15 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     public static final byte COMMAND_BYTE_CHECK_LEARNT_DATA = 0x04;
 
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private final StorageService storageService;
     protected @Nullable BroadlinkMappingService mappingService;
 
     public BroadlinkRemoteHandler(Thing thing,
-            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
+            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
+            StorageService storageService) {
         super(thing);
         this.commandDescriptionProvider = commandDescriptionProvider;
+        this.storageService = storageService;
     }
 
     @Override
@@ -61,7 +65,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         this.mappingService = new BroadlinkMappingService("broadlink_" + thing.getUID() + ".rf",
                 "broadlink_" + thing.getUID() + ".ir", commandDescriptionProvider,
                 new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL),
-                new ChannelUID(thing.getUID(), BroadlinkBindingConstants.RF_COMMAND_CHANNEL));
+                new ChannelUID(thing.getUID(), BroadlinkBindingConstants.RF_COMMAND_CHANNEL), this.storageService);
     }
 
     @Override

@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.CommandOption;
 import org.slf4j.Logger;
@@ -63,7 +64,7 @@ public class BroadlinkMappingService {
 
     public BroadlinkMappingService(String irMapFileName, String rfMapFileName,
             BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider, ChannelUID irTargetChannelUID,
-            ChannelUID rfTargetChannelUID) {
+            ChannelUID rfTargetChannelUID, StorageService storageService) {
         this.irMapFileName = irMapFileName;
         this.rfMapFileName = rfMapFileName;
         this.commandDescriptionProvider = commandDescriptionProvider;
