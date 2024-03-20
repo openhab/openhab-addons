@@ -202,9 +202,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         // config = getConfigAs(Inverter.class);
         updateStatus(ThingStatus.UNKNOWN);
         logger.debug("Will boot up the invert binding!");
-        // SunSynkInverterConfig accountConfig = getConfigAs(SunSynkInverterConfig.class);
         SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
-
         logger.debug("Inverter Config: {}", config);
 
         if (config.getRefresh() < refreshTime) {

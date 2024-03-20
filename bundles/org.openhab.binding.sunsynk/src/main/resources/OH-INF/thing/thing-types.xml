@@ -55,31 +55,31 @@
 			<channel id="Interval-4-grid-time" typeId="grid-tme"/>
 			<channel id="Interval-5-grid-time" typeId="grid-tme"/>
 			<channel id="Interval-6-grid-time" typeId="grid-tme"/>
-			<channel id="Interval-1-grid-capacity" typeId="battery-Level"/>
-			<channel id="Interval-2-grid-capacity" typeId="battery-Level"/>
-			<channel id="Interval-3-grid-capacity" typeId="battery-Level"/>
-			<channel id="Interval-4-grid-capacity" typeId="battery-Level"/>
-			<channel id="Interval-5-grid-capacity" typeId="battery-Level"/>
-			<channel id="Interval-6-grid-capacity" typeId="battery-Level"/>
-			<channel id="Interval-1-grid-power-limit" typeId="electric-power"/>
-			<channel id="Interval-2-grid-power-limit" typeId="electric-power"/>
-			<channel id="Interval-3-grid-power-limit" typeId="electric-power"/>
-			<channel id="Interval-4-grid-power-limit" typeId="electric-power"/>
-			<channel id="Interval-5-grid-power-limit" typeId="electric-power"/>
-			<channel id="Interval-6-grid-power-limit" typeId="electric-power"/>
-			<channel id="Interter-grid-power" typeId="electric-power"/>
-			<channel id="Interter-grid-voltage" typeId="electric-voltage"/>
-			<channel id="Interter-grid-current" typeId="electric-current"/>
-			<channel id="Inverter-ac-temperature" typeId="indoor-temperature"/>
-			<channel id="Inverter-dc-temperature" typeId="indoor-temperature"/>
-			<channel id="Battery-grid-voltage" typeId="electric-voltage"/>
-			<channel id="Battery-grid-current" typeId="electric-current"/>
-			<channel id="Battery-grid-power" typeId="electric-power"/>
-			<channel id="Battery-SOC" typeId="battery-Level"/>
-			<channel id="Battery-temperature" typeId="indoor-temperature"/>
-			<channel id="Inverter-solar-energy-today" typeId="electrical-energy"/>
-			<channel id="Inverter-solar-energy-total" typeId="electrical-energy"/>
-			<channel id="Inverter-solar-power-now" typeId="electric-current"/>
+			<channel id="Interval-1-grid-capacity" typeId="system.battery-level"/>
+			<channel id="Interval-2-grid-capacity" typeId="system.battery-level"/>
+			<channel id="Interval-3-grid-capacity" typeId="system.battery-level"/>
+			<channel id="Interval-4-grid-capacity" typeId="system.battery-level"/>
+			<channel id="Interval-5-grid-capacity" typeId="system.battery-level"/>
+			<channel id="Interval-6-grid-capacity" typeId="system.battery-level"/>
+			<channel id="Interval-1-grid-power-limit" typeId="system.electlic-power"/>
+			<channel id="Interval-2-grid-power-limit" typeId="system.electric-power"/>
+			<channel id="Interval-3-grid-power-limit" typeId="system.electric-power"/>
+			<channel id="Interval-4-grid-power-limit" typeId="system.electric-power"/>
+			<channel id="Interval-5-grid-power-limit" typeId="system.electric-power"/>
+			<channel id="Interval-6-grid-power-limit" typeId="system.electric-power"/>
+			<channel id="Interter-grid-power" typeId="system.electric-power"/>
+			<channel id="Interter-grid-voltage" typeId="system.electric-voltage"/>
+			<channel id="Interter-grid-current" typeId="system.electric-current"/>
+			<channel id="Inverter-ac-temperature" typeId="system.indoor-temperature"/>
+			<channel id="Inverter-dc-temperature" typeId="system.indoor-temperature"/>
+			<channel id="Battery-grid-voltage" typeId="system.electric-voltage"/>
+			<channel id="Battery-grid-current" typeId="system.electric-current"/>
+			<channel id="Battery-grid-power" typeId="system.electric-power"/>
+			<channel id="Battery-SOC" typeId="system.battery-Level"/>
+			<channel id="Battery-temperature" typeId="system.indoor-temperature"/>
+			<channel id="Inverter-solar-energy-today" typeId="system.electrical-energy"/>
+			<channel id="Inverter-solar-energy-total" typeId="system.electrical-energy"/>
+			<channel id="Inverter-solar-power-now" typeId="system.electric-current"/>
 		</channels>
 		<config-description>
 			<parameter name="sn" type="text" required="true">

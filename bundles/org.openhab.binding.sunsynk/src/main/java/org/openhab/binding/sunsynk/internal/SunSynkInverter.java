@@ -66,7 +66,7 @@ public class SunSynkInverter {
     }
 
     public void sendGetState() { // Entry method to class for updating internal state from the inverter
-        logger.debug("Will get STATE for Inverter {} serisl {}", this.alias, this.sn);
+        logger.debug("Will get STATE for Inverter {} serial {}", this.alias, this.sn);
         // Get inverter infos
         try {
             getCommonSettings(); // battery charge settings
@@ -77,6 +77,7 @@ public class SunSynkInverter {
 
         } catch (Exception e) {
             logger.debug("Failed to get Inverter API information: ", e);
+            // updateStatus(ThingStatus.OFFLINE);
             // Should Thing be put off line?
             // Need to Throw an exception <----- got here to stop following debug log
             return;
@@ -135,6 +136,7 @@ public class SunSynkInverter {
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.batterySettings = gson.fromJson(response, Settings.class);
+        this.batterySettings.buildLists();
     }
 
     // ------ Realtime Grid ------ //
@@ -155,7 +157,7 @@ public class SunSynkInverter {
     void getBatteryRealTime() {
         // Get URL Respnse
         String response = apiGetMethod(
-                makeURL("api/v1/inverter/battery/" + this.sn + "/realtime?sn=" + this.sn + "&lan") + this.sn,
+                makeURL("api/v1/inverter/battery/" + this.sn + "/realtime?sn=" + this.sn + "&lan"),
                 APIdata.static_access_token);
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
@@ -251,7 +253,7 @@ public class SunSynkInverter {
             connection.setRequestProperty("Authorization", "Bearer " + access_token);
             connection.setDoOutput(true);
             logger.debug("GET Response Code: {}.", connection.getResponseCode());
-            logger.debug("GET Response Message: {}.", connection.getResponseMessage());
+            // logger.debug("GET Response Message: {}.", connection.getResponseMessage());
             InputStream is = connection.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
