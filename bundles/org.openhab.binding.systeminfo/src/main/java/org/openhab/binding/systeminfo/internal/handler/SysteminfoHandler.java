@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -403,10 +402,8 @@ public class SysteminfoHandler extends BaseThingHandler {
         if (!ThingStatus.ONLINE.equals(thing.getStatus())) {
             return;
         }
-        Iterator<ChannelUID> iter = channels.iterator();
-        while (iter.hasNext()) {
-            ChannelUID channeUID = iter.next();
-            if (isLinked(channeUID.getId())) {
+        for (ChannelUID channeUID : channels) {
+            if (isLinked(channeUID)) {
                 publishDataForChannel(channeUID);
             }
         }
