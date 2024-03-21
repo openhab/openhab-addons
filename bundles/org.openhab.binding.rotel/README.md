@@ -22,7 +22,7 @@ You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](ht
 Recent devices provide a network interface (RJ45 connector).
 So you can use the device IP to connect to the device, keeping 9590 as default port.
 
-The binding has been tested with a RSP-1066, a RSP-1570 and a RX-1052.
+The binding has been tested with an RSP-1066, an RSP-1570 and an RX-1052.
 
 ## Supported Things
 
