@@ -102,7 +102,7 @@ public enum ModuleType {
                     GROUP_DOORBELL_LIVE),
             new ChannelGroup(EventCameraChannelHelper.class, GROUP_DOORBELL_LAST_EVENT, GROUP_DOORBELL_SUB_EVENT)),
 
-    WEATHER_STATION(FeatureArea.WEATHER, "NAMain", 1, "configurable", ACCOUNT,
+    WEATHER_STATION(FeatureArea.WEATHER, "NAMain", 1, "device", ACCOUNT,
             Set.of(DeviceCapability.class, WeatherCapability.class, MeasureCapability.class,
                     ChannelHelperCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.HUMIDITY, ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE,
@@ -127,7 +127,7 @@ public enum ModuleType {
             ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY, ChannelGroup.HUMIDITY,
             ChannelGroup.TEMP_INSIDE_EXT, ChannelGroup.AIR_QUALITY),
 
-    HOME_COACH(FeatureArea.AIR_CARE, "NHC", 1, "configurable", ACCOUNT,
+    HOME_COACH(FeatureArea.AIR_CARE, "NHC", 1, "device", ACCOUNT,
             Set.of(DeviceCapability.class, AirCareCapability.class, MeasureCapability.class,
                     ChannelHelperCapability.class),
             ChannelGroup.LOCATION, ChannelGroup.SIGNAL, ChannelGroup.NOISE, ChannelGroup.HUMIDITY,
