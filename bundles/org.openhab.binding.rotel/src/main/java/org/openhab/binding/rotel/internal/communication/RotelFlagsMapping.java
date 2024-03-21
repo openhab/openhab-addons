@@ -93,14 +93,11 @@ public class RotelFlagsMapping {
      * @param flags the table of flags
      * @param on true to set the information to ON or false to set it to OFF
      *
-     * @throws RotelException in case the information is undefined
+     * @return true if the information was updated, false if not
      */
-    public void setInfo(RotelFlagInfoType infoType, byte[] flags, boolean on) throws RotelException {
+    public boolean setInfo(RotelFlagInfoType infoType, byte[] flags, boolean on) {
         RotelFlagInfo info = infoMap.get(infoType);
-        if (info == null || info.flagNumber() > flags.length) {
-            throw new RotelException("Info " + infoType.name() + " not available in flags");
-        }
-        RotelFlagsMapping.setBitFlag(flags, info.flagNumber(), info.bitNumber(), on);
+        return info == null ? false : RotelFlagsMapping.setBitFlag(flags, info.flagNumber(), info.bitNumber(), on);
     }
 
     /**
@@ -154,19 +151,17 @@ public class RotelFlagsMapping {
      * @param bitNumber the bit number in the flag to consider
      * @param on true to set the bit value to 1 or false to set it to 0
      *
-     * @throws RotelException in case of out of bounds value for the flag number or the bit number
+     * @return true if the flag was updated, false if not
      */
-    private static void setBitFlag(byte[] flags, int flagNumber, int bitNumber, boolean on) throws RotelException {
-        if (flagNumber < 1 || flagNumber > flags.length) {
-            throw new RotelException("Flag number out of bounds");
-        }
-        if (bitNumber < 0 || bitNumber > 7) {
-            throw new RotelException("Bit number out of bounds");
+    private static boolean setBitFlag(byte[] flags, int flagNumber, int bitNumber, boolean on) {
+        if (flagNumber < 1 || flagNumber > flags.length || bitNumber < 0 || bitNumber > 7) {
+            return false;
         }
         if (on) {
             flags[flagNumber - 1] |= (1 << bitNumber);
         } else {
             flags[flagNumber - 1] &= ~(1 << bitNumber);
         }
+        return true;
     }
 }

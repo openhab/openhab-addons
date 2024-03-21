@@ -1221,46 +1221,25 @@ public class RotelSimuConnector extends RotelConnector {
             byte[] chars = Arrays.copyOf(text.getBytes(StandardCharsets.US_ASCII), model.getRespNbChars());
             byte[] flags = new byte[model.getRespNbFlags()];
             if (model.isInfoPresentInFlags(RotelFlagInfoType.MULTI_INPUT)) {
-                try {
-                    model.setInfoInFlags(RotelFlagInfoType.MULTI_INPUT, flags, multiinput);
-                } catch (RotelException e) {
-                }
+                model.setInfoInFlags(RotelFlagInfoType.MULTI_INPUT, flags, multiinput);
             }
             if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE2)) {
-                try {
-                    model.setInfoInFlags(RotelFlagInfoType.ZONE2, flags, powers[2]);
-                } catch (RotelException e) {
-                }
+                model.setInfoInFlags(RotelFlagInfoType.ZONE2, flags, powers[2]);
             }
             if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE3)) {
-                try {
-                    model.setInfoInFlags(RotelFlagInfoType.ZONE3, flags, powers[3]);
-                } catch (RotelException e) {
-                }
+                model.setInfoInFlags(RotelFlagInfoType.ZONE3, flags, powers[3]);
             }
             if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE4)) {
-                try {
-                    model.setInfoInFlags(RotelFlagInfoType.ZONE4, flags, powers[4]);
-                } catch (RotelException e) {
-                }
+                model.setInfoInFlags(RotelFlagInfoType.ZONE4, flags, powers[4]);
             }
             if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE)) {
-                try {
-                    model.setInfoInFlags(RotelFlagInfoType.ZONE, flags, powers[2] || powers[3] || powers[4]);
-                } catch (RotelException e) {
-                }
+                model.setInfoInFlags(RotelFlagInfoType.ZONE, flags, powers[2] || powers[3] || powers[4]);
             }
             if (model.isInfoPresentInFlags(RotelFlagInfoType.SPEAKER_A)) {
-                try {
-                    model.setInfoInFlags(RotelFlagInfoType.SPEAKER_A, flags, speakerA);
-                } catch (RotelException e) {
-                }
+                model.setInfoInFlags(RotelFlagInfoType.SPEAKER_A, flags, speakerA);
             }
             if (model.isInfoPresentInFlags(RotelFlagInfoType.SPEAKER_B)) {
-                try {
-                    model.setInfoInFlags(RotelFlagInfoType.SPEAKER_B, flags, speakerB);
-                } catch (RotelException e) {
-                }
+                model.setInfoInFlags(RotelFlagInfoType.SPEAKER_B, flags, speakerB);
             }
             int size = 6 + model.getRespNbChars() + model.getRespNbFlags();
             byte[] dataBuffer = new byte[size];

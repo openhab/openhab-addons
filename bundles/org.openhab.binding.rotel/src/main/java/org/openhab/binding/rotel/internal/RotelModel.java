@@ -791,10 +791,10 @@ public enum RotelModel {
      * @param flags the flag from the standard response message
      * @param on true for ON and false for OFF
      *
-     * @throws RotelException - If this information is not present in the flags for this model
+     * @return true if the information was updated in the flags, false if not
      */
-    public void setInfoInFlags(RotelFlagInfoType infoType, byte[] flags, boolean on) throws RotelException {
-        flagsMapping.setInfo(infoType, flags, on);
+    public boolean setInfoInFlags(RotelFlagInfoType infoType, byte[] flags, boolean on) {
+        return flagsMapping.setInfo(infoType, flags, on);
     }
 
     /**
