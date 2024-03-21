@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="exit-temperature-channel">
+		<item-type>Number</item-type>
+		<label>Exit temperature</label>
+		<description>B14 - Energiequelle Austrittstemperatur</description>
+	</channel-type>
+	<channel-type id="incoming-temperature-channel">
+		<item-type>Number</item-type>
+		<label>Incoming temperature</label>
+		<description>B15 - Energiequelle Eintrittstemperatur</description>
+	</channel-type>
+	<channel-type id="temperature-sensor-outside-channel">
+		<item-type>Number</item-type>
+		<label>Temperature Outside</label>
+		<description>BOT - Außentemperaturfühler</description>
+	</channel-type>
+</thing:thing-descriptions>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="cop-channel">
+		<item-type>Number</item-type>
+		<label>Current COP</label>
+		<description></description>
+	</channel-type>
+	<channel-type id="cop-heating-channel">
+		<item-type>Number</item-type>
+		<label>Current COP heating</label>
+		<description></description>
+	</channel-type>
+	<channel-type id="cop-drinkingwater-channel">
+		<item-type>Number</item-type>
+		<label>Current COP drinking water</label>
+		<description></description>
+	</channel-type>
+	<channel-type id="cop-cooling-channel">
+		<item-type>Number</item-type>
+		<label>Current COP cooling</label>
+		<description></description>
+	</channel-type>
+
+	<channel-type id="power-channel">
+		<item-type>Number</item-type>
+		<label>Current power</label>
+		<description></description>
+	</channel-type>
+	<channel-type id="power-heating-channel">
+		<item-type>Number</item-type>
+		<label>Current power heating</label>
+		<description></description>
+	</channel-type>
+	<channel-type id="power-drinkingwater-channel">
+		<item-type>Number</item-type>
+		<label>Current power drinking water</label>
+		<description></description>
+	</channel-type>
+	<channel-type id="power-cooling-channel">
+		<item-type>Number</item-type>
+		<label>Current power cooling</label>
+		<description></description>
+	</channel-type>
+
+	<channel-type id="electric-power-channel">
+		<item-type>Number</item-type>
+		<label>Current electric power</label>
+		<description></description>
+	</channel-type>
+	<channel-type id="electric-power-heating-channel">
+		<item-type>Number</item-type>
+		<label>Current electric power heating</label>
+		<description></description>
+	</channel-type>
+	<channel-type id="electric-power-drinkingwater-channel">
+		<item-type>Number</item-type>
+		<label>Current electric power drinking water</label>
+		<description></description>
+	</channel-type>
+	<channel-type id="electric-power-cooling-channel">
+		<item-type>Number</item-type>
+		<label>Current electric power cooling</label>
+		<description></description>
+	</channel-type>
+</thing:thing-descriptions>

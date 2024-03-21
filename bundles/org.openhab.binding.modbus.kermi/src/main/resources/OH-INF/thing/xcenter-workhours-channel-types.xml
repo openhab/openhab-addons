@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="workhours-fan-channel">
+		<item-type>Number</item-type>
+		<label>Fan workhours</label>
+		<description>Work hours of the fan</description>
+	</channel-type>
+	<channel-type id="workhours-storage-loading-pump-channel">
+		<item-type>Number</item-type>
+		<label>StorageLoadingPump workhours</label>
+		<description>Work hours of the storage loading pump</description>
+	</channel-type>
+	<channel-type id="workhours-compressor-channel">
+		<item-type>Number</item-type>
+		<label>Compressor workhours</label>
+		<description>Work hours of the compressor</description>
+	</channel-type>
+</thing:thing-descriptions>
