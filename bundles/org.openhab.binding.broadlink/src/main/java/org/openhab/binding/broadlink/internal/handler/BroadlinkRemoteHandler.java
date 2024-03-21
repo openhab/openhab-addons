@@ -32,6 +32,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.HexUtils;
+import org.openhab.core.util.UIDUtils;
 
 /**
  * Remote blaster handler superclass
@@ -62,8 +63,8 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     public void initialize() {
         super.initialize();
         // TODO: check if this also works for a Mini without RF
-        this.mappingService = new BroadlinkMappingService("broadlink_" + thing.getUID() + ".rf",
-                "broadlink_" + thing.getUID() + ".ir", commandDescriptionProvider,
+        this.mappingService = new BroadlinkMappingService("broadlink_rf_" + thing.getUID().encode(),
+                "broadlink_ir_" + thing.getUID().encode() , commandDescriptionProvider,
                 new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL),
                 new ChannelUID(thing.getUID(), BroadlinkBindingConstants.RF_COMMAND_CHANNEL), this.storageService);
     }
