@@ -46,16 +46,16 @@ public class RotelFlagsMapping {
                     new RotelFlagInfo(RotelFlagInfoType.SURROUND_LEFT, 5, 4), //
                     new RotelFlagInfo(RotelFlagInfoType.SURROUND_RIGHT, 5, 3)));
 
-    private Map<RotelFlagInfoType, RotelFlagInfo> infos;
+    private Map<RotelFlagInfoType, RotelFlagInfo> infoMap;
 
     public RotelFlagsMapping() {
-        this.infos = new HashMap<>();
+        this.infoMap = new HashMap<>();
     }
 
     public RotelFlagsMapping(List<RotelFlagInfo> infos) {
-        this.infos = new HashMap<>();
+        this.infoMap = new HashMap<>();
         for (RotelFlagInfo info : infos) {
-            this.infos.put(info.infoType(), info);
+            this.infoMap.put(info.infoType(), info);
         }
     }
 
@@ -65,7 +65,7 @@ public class RotelFlagsMapping {
      * @return true if the information is available
      */
     public boolean isInfoPresent(RotelFlagInfoType infoType) {
-        return infos.get(infoType) != null;
+        return infoMap.get(infoType) != null;
     }
 
     /**
@@ -79,7 +79,7 @@ public class RotelFlagsMapping {
      * @throws RotelException in case the information is undefined
      */
     public boolean isInfoOn(RotelFlagInfoType infoType, byte[] flags) throws RotelException {
-        RotelFlagInfo info = infos.get(infoType);
+        RotelFlagInfo info = infoMap.get(infoType);
         if (info == null || info.flagNumber() > flags.length) {
             throw new RotelException("Info " + infoType.name() + " not available in flags");
         }
@@ -96,7 +96,7 @@ public class RotelFlagsMapping {
      * @throws RotelException in case the information is undefined
      */
     public void setInfo(RotelFlagInfoType infoType, byte[] flags, boolean on) throws RotelException {
-        RotelFlagInfo info = infos.get(infoType);
+        RotelFlagInfo info = infoMap.get(infoType);
         if (info == null || info.flagNumber() > flags.length) {
             throw new RotelException("Info " + infoType.name() + " not available in flags");
         }
@@ -113,9 +113,9 @@ public class RotelFlagsMapping {
      * @throws RotelException in case the center or surround channel indicators are undefined
      */
     public boolean isMoreThan2Channels(byte[] flags) throws RotelException {
-        RotelFlagInfo center = infos.get(RotelFlagInfoType.CENTER);
-        RotelFlagInfo surroundLeft = infos.get(RotelFlagInfoType.SURROUND_LEFT);
-        RotelFlagInfo surroundRight = infos.get(RotelFlagInfoType.SURROUND_RIGHT);
+        RotelFlagInfo center = infoMap.get(RotelFlagInfoType.CENTER);
+        RotelFlagInfo surroundLeft = infoMap.get(RotelFlagInfoType.SURROUND_LEFT);
+        RotelFlagInfo surroundRight = infoMap.get(RotelFlagInfoType.SURROUND_RIGHT);
         return (center != null && center.flagNumber() <= flags.length
                 && RotelFlagsMapping.isBitFlagOn(flags, center.flagNumber(), center.bitNumber()))
                 || (surroundLeft != null && surroundLeft.flagNumber() <= flags.length
