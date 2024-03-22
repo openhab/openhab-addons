@@ -265,14 +265,12 @@ public class HueLightHandlerTest {
 
     @Test
     public void assertXYCommandForColorChannelWhite() {
-        // TODO change to correct XY values after https://github.com/openhab/openhab-core/pull/4124 gets merged
         String expectedReply = "{\"xy\" : [ 0.3227 , 0.32900003 ], \"bri\" : 254, \"transitiontime\" : 4}";
         assertSendCommandForColor(HSBType.WHITE, new HueLightState().colormode(ColorMode.XY), expectedReply);
     }
 
     @Test
     public void assertXYCommandForColorChannelColorful() {
-        // TODO change to correct XY values after https://github.com/openhab/openhab-core/pull/4124 gets merged
         String expectedReply = "{\"xy\" : [ 0.14649999 , 0.115600005 ], \"bri\" : 127, \"transitiontime\" : 4}";
         assertSendCommandForColor(new HSBType("220,90,50"), new HueLightState().colormode(ColorMode.XY), expectedReply);
     }
