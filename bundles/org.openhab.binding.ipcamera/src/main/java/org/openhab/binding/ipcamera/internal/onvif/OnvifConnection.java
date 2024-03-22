@@ -269,7 +269,7 @@ public class OnvifConnection {
                             + mediaProfileTokens.get(mediaProfileIndex)
                             + "</ProfileToken><Translation><Zoom x=\"-0.0240506344\" xmlns=\"http://www.onvif.org/ver10/schema\"/></Translation></RelativeMove>";
                 case Renew:
-                    return "<Renew xmlns=\"http://docs.oasis-open.org/wsn/b-2\"><TerminationTime>PT1M</TerminationTime></Renew>";
+                    return "<Renew xmlns=\"http://docs.oasis-open.org/wsn/b-2\"><TerminationTime>PT16S</TerminationTime></Renew>";
                 case GetConfigurations:
                     return "<GetConfigurations xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"></GetConfigurations>";
                 case GetConfigurationOptions:
@@ -568,7 +568,7 @@ public class OnvifConnection {
 
                 @Override
                 public void initChannel(SocketChannel socketChannel) throws Exception {
-                    socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(20, 20, 20));
+                    socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 0, 20));
                     socketChannel.pipeline().addLast("HttpClientCodec", new HttpClientCodec());
                     socketChannel.pipeline().addLast("OnvifCodec", new OnvifCodec(getHandle()));
                 }
