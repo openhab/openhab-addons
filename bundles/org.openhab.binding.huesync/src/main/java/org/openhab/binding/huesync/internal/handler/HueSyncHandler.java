@@ -172,9 +172,13 @@ public class HueSyncHandler extends BaseThingHandler {
                         this.updateStatus(ThingStatus.ONLINE);
 
                         this.registrationTask.cancel(false);
+
+                        this.logger.info("Device registration for {} complete - Id: {}", this.deviceInfo.name,
+                                registration.registrationId);
                     }
                 }
             } catch (Exception e) {
+                logger.error("");
                 // TODO: ...
             }
         }, HueSyncConstants.REGISTRATION_INITIAL_DELAY, HueSyncConstants.REGISTRATION_DELAY, TimeUnit.SECONDS);
