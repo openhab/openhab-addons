@@ -6,7 +6,8 @@ It is compatible with Jellyfin servers from version `10.8.1`, recommended is `10
 
 ## Discovery
 
-To discover clients, you must first configure a server (bridge). After that, device discovery will detect controllable clients.
+To discover clients, you must first configure a server (bridge).
+After that, device discovery will detect controllable clients.
 
 ## Thing Types
 
@@ -65,12 +66,15 @@ In order to assist you with this process the binding expose a simple login form 
 
 The terms search has a default behavior that can be modified by sending some predefined prefixes.
 
-The default behavior is to search for movies, series or episodes whose name starts with the given text. If it finds results the bind will proceed as said before.
-If the result is a series, the binding will try to resume some episode. If not it will look for the next episode to watch and finally will fall back to the first episode.
+The default behavior is to search for movies, series or episodes whose name starts with the given text.
+If it finds results the bind will proceed as said before.
+If the result is a series, the binding will try to resume some episode.
+If not, it will look for the next episode to watch and finally will fall back to the first episode.
 
 You can prefix your search with `<type:movie>`, `<type:episode>`, `<type:series>` to limit your search to a specific type.
 
-You can also search for a specific series episode by season and episode number by prefixing your search with `<season:1><episode:1>` with the desired values. So `<season:3><episode:10>Something` will try to play episode `10` of season `3` of the series called `Something`.
+You can also search for a specific series episode by season and episode number by prefixing your search with `<season:1><episode:1>` with the desired values.
+So `<season:3><episode:10>Something` will try to play episode `10` of season `3` of the series called `Something`.
 
 ## Known Limitations
 
