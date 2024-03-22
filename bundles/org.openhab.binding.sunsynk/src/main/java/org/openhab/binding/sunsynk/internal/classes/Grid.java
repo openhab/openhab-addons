@@ -28,9 +28,39 @@ import java.util.List;
 //
 // vip: 0: [{'volt': '242.5', 'current': '2.0', 'power': 16}] ...
 //
+//
+// "{"code":0,
+// "msg":"Success",
+// "data":{"vip":[{"volt":"241.1","current":"2.1","power":29}],
+// "pac":29,"qac":0,"fac":50.06,"pf":1.0,"status":1,"etodayFrom":"6.2","etodayTo":"0.0",
+// "etotalFrom":"1881.3","etotalTo":"256.7",
+// "limiterPowerArr":[29,0],
+// "limiterTotalPower":29},"success":true}"
 public class Grid {
 
-    private List<VIP> vip;
+    private int code;
+    private String msg;
+    private Data data;
+
+    private double power;
+    private double voltage;
+    private double current;
+
+    class Data {
+        private List<VIP> vip;
+        private int pac;
+        private int qac;
+        private double fac;
+        // private String fac;
+        private double pf;
+        private int status;
+        private double etodayFrom;
+        private double etodayTo;
+        private double etotalFrom;
+        private double etotalTo;
+        private List<Integer> limiterPowerArr;
+        private int limiterTotalPowerArr;
+    }
 
     class VIP { // needs checking
         private double volt;
@@ -38,27 +68,11 @@ public class Grid {
         private double power;
     }
 
-    private int pac;
-    private int qac;
-    private double fac;
-    // private String fac;
-    private double pf;
-    private String status;
-    private double etodayFrom;
-    private double etodayTo;
-    private double etotalFrom;
-    private double etotalTo;
-    private String limiterPowerArr;
-    private List<Integer> LimiterPowerArr;
-    private double power;
-    private double voltage;
-    private double current;
-
-    private void sumVIP() {
+    public void sumVIP() {
         double l_power = 0.0;
         double l_voltage = 0.0;
         double l_current = 0.0;
-        for (VIP x : this.vip) {
+        for (VIP x : this.data.vip) {
             l_power = l_power + x.power;
             l_voltage = l_voltage + x.volt;
             l_current = l_current + x.current;
@@ -69,17 +83,17 @@ public class Grid {
     }
 
     public double getGridPower() {
-        sumVIP();
+        // sumVIP();
         return this.power;
     }
 
     public double getGridVoltage() {
-        sumVIP();
+        // sumVIP();
         return this.voltage;
     }
 
     public double getGridCurrent() {
-        sumVIP();
+        // sumVIP();
         return this.current;
     }
 }
