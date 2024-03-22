@@ -71,6 +71,7 @@ public class SunSynkInverter {
         try {
             getCommonSettings(); // battery charge settings
             getGridRealTime(); // grid status
+
             getBatteryRealTime(); // battery status
             getInverterACDCTemperatures(); // get Inverter temperatures
             getRealTimeIn(); // may not need this one used for solar values
@@ -149,6 +150,7 @@ public class SunSynkInverter {
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.grid = gson.fromJson(response, Grid.class);
+        this.grid.sumVIP();
     }
 
     // ------ Realtime battery ------ //
@@ -176,6 +178,7 @@ public class SunSynkInverter {
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.inverter_day_temperatures = gson.fromJson(response, Daytemps.class);
+        this.inverter_day_temperatures.getLastValue();
     }
 
     // ------ Realtime Input ------ //
@@ -188,6 +191,7 @@ public class SunSynkInverter {
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.realTimeDataIn = gson.fromJson(response, RealTimeInData.class);
+        this.realTimeDataIn.sumPVIV();
     }
     // ------ COMMANDS ------ //
 

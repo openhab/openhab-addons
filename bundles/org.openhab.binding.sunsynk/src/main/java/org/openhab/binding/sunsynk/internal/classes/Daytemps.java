@@ -21,38 +21,61 @@ import java.util.List;
  * 
  * @author Lee Charlton - Initial contribution
  */
-
-// {'infos': ['records': {'value': '12.3', 'value': '12.4'...} ],['records':{'value': '12.3', 'value': '12.4'...}]}
-
+/*
+ * "{"code":0,"msg":"Success","data":{"infos":[
+ * {"unit":"℃","records":[{"time":"2024-03-22 00:00:40","value":"36.6","updateTime":null},
+ * {"time":"2024-03-22 00:01:46","value":"36.6","updateTime":null},
+ * {"time":"2024-03-22 00:02:53","value":"36.6","updateTime":null},
+ * ...
+ * {"time":"2024-03-22 15:24:24","value":"41.1","updateTime":null},
+ * {"time":"2024-03-22 15:25:31","value":"41.0","updateTime":null}],"id":76,"label":"DC TEMP"},
+ * 
+ * {"unit":"℃","records":[{"time":"2024-03-22 00:00:40","value":"29.1","updateTime":null},
+ * {"time":"2024-03-22 00:01:46","value":"29.1","updateTime":null},
+ * {"time":"2024-03-22 00:02:53","value":"29.1","updateTime":null},
+ * {"time":"2024-03-22 00:03:59","value":"29.1","updateTime":null},
+ * ...
+ * {"time":"2024-03-22 15:24:24","value":"33.3","updateTime":null},
+ * {"time":"2024-03-22 15:25:31","value":"33.2","updateTime":null}],"id":77,"label":"AC TEMP"}]},"success":true}"
+ */
 public class Daytemps {
-
-    private Infos infos;
-
-    class Infos {
-        List<Record> records;
-    }
-
-    class Record {
-        List<Double> value;
-    }
-
+    private int code;
+    private String msg;
+    private Data data;
     private String response_status = "okay";
     private double dc_temperature;
     private double ac_temperature;
 
-    private void getLastValue() {
+    class Data {
+        private List<Infos> infos;
+    }
+
+    class Infos {
+        private String unit;
+        List<Record> records;
+        private String id;
+        private String label;
+    }
+
+    class Record {
+        private String time;
+        private double value;
+        private String updateTime;
+    }
+
+    public void getLastValue() {
         try {
-            Record dc_record = this.infos.records.get(0);
-            Record ac_record = this.infos.records.get(1);
-            this.dc_temperature = dc_record.value.get(dc_record.value.size() - 1);
-            this.ac_temperature = dc_record.value.get(ac_record.value.size() - 1);
+            Infos dc_record = this.data.infos.get(0);
+            Infos ac_record = this.data.infos.get(1);
+            this.dc_temperature = dc_record.records.get(dc_record.records.size() - 1).value;
+            this.ac_temperature = ac_record.records.get(ac_record.records.size() - 1).value;
         } catch (Exception e) {
             this.response_status = "Failed to retrieve Inverter Temperature values";
         }
     }
 
     public Daytempsreturn InverterTemperatures() {
-        getLastValue();
+        // getLastValue();
         return new Daytempsreturn(this.response_status, this.dc_temperature, this.ac_temperature);
     }
 }

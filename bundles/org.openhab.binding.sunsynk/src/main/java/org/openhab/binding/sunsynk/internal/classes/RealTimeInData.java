@@ -31,31 +31,34 @@ import java.util.List;
 // mpptIV: []
 
 public class RealTimeInData {
+
     private int code;
     private String msg;
-    private RTID data;
+    private Data data;
+    private double solar_power;
 
-    private class RTID {
+    class Data {
+
         private int pac;
         private String grid_tip_power;
         private double etoday;
         private double etotal;
         private List<PVIV> pvIV;
         private List<MPPTIV> mpptIV;
+    }
 
-        private class PVIV {
-            private String id;
-            private int pvNo;
-            private double vpv;
-            private double ipv;
-            private double ppv; // sum for all power
-            private double todayPv;
-            private String sn;
-            private String time;
-        }
+    private class PVIV {
+        private String id;
+        private int pvNo;
+        private double vpv;
+        private double ipv;
+        private double ppv; // sum for all power
+        private double todayPv;
+        private String sn;
+        private String time;
+    }
 
-        class MPPTIV { // Empty; no solar panels
-        }
+    class MPPTIV { // Empty; no solar panels
     }
 
     public double getetoday() {
@@ -66,11 +69,14 @@ public class RealTimeInData {
         return this.data.etotal;
     }
 
-    public double getPVIV() {
+    public void sumPVIV() {
         double solar_power = 0.0;
-        for (RealTimeInData.RTID.PVIV x : this.data.pvIV) {
-            solar_power = solar_power + x.ppv;
+        for (PVIV x : this.data.pvIV) {
+            this.solar_power = solar_power + x.ppv;
         }
-        return solar_power;
+    }
+
+    public double getPVIV() {
+        return this.solar_power;
     }
 }

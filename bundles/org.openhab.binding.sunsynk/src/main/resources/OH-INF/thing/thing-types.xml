@@ -61,7 +61,7 @@
 			<channel id="Interval-4-grid-capacity" typeId="system.battery-level"/>
 			<channel id="Interval-5-grid-capacity" typeId="system.battery-level"/>
 			<channel id="Interval-6-grid-capacity" typeId="system.battery-level"/>
-			<channel id="Interval-1-grid-power-limit" typeId="system.electlic-power"/>
+			<channel id="Interval-1-grid-power-limit" typeId="system.electric-power"/>
 			<channel id="Interval-2-grid-power-limit" typeId="system.electric-power"/>
 			<channel id="Interval-3-grid-power-limit" typeId="system.electric-power"/>
 			<channel id="Interval-4-grid-power-limit" typeId="system.electric-power"/>
@@ -75,10 +75,10 @@
 			<channel id="Battery-grid-voltage" typeId="system.electric-voltage"/>
 			<channel id="Battery-grid-current" typeId="system.electric-current"/>
 			<channel id="Battery-grid-power" typeId="system.electric-power"/>
-			<channel id="Battery-SOC" typeId="system.battery-Level"/>
+			<channel id="Battery-SOC" typeId="system.battery-level"/>
 			<channel id="Battery-temperature" typeId="system.indoor-temperature"/>
-			<channel id="Inverter-solar-energy-today" typeId="system.electrical-energy"/>
-			<channel id="Inverter-solar-energy-total" typeId="system.electrical-energy"/>
+			<channel id="Inverter-solar-energy-today" typeId="system.electric-energy"/>
+			<channel id="Inverter-solar-energy-total" typeId="system.electric-energy"/>
 			<channel id="Inverter-solar-power-now" typeId="system.electric-current"/>
 		</channels>
 		<config-description>

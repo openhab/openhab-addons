@@ -23,7 +23,6 @@ public class Client {
     // {"code":0,"msg":"Success","data":{"access_token":"xxxxxxxxxxxxxxx","token_type":"bearer","refresh_token":"xxxxxxxxxxxxxxx","expires_in":258669,"scope":"all"},"success":true}
     private int code;
     private String msg;
-    private String success;
     private APIdata data;
 
     public Client() {
