@@ -128,7 +128,7 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.logger.error(e.getLogMessage());
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (Exception e) {
-                this.logger.error(e.getMessage());
+                this.logger.error("{}", e.getMessage());
                 this.updateStatus(ThingStatus.OFFLINE);
             }
         });
@@ -209,7 +209,7 @@ public class HueSyncHandler extends BaseThingHandler {
             }
 
         } catch (Exception e) {
-            this.logger.error(e.getMessage());
+            this.logger.error("{}", e.getMessage());
         } finally {
             this.deviceRegistrationTask = null;
             this.serviceRegistration = null;

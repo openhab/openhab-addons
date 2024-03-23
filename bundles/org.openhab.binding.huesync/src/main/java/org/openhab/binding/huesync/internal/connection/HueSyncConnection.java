@@ -89,7 +89,7 @@ public class HueSyncConnection {
             }
 
         } catch (InterruptedException | ExecutionException | TimeoutException | JsonProcessingException e) {
-            this.logger.error(e.getMessage());
+            this.logger.error("{}", e.getMessage());
         }
 
         return this.deviceInfo;
@@ -107,7 +107,7 @@ public class HueSyncConnection {
 
                 return response.getStatus() == HttpStatus.OK_200;
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                this.logger.error(e.getMessage());
+                this.logger.error("{}", e.getMessage());
             }
         }
         return false;
@@ -135,7 +135,7 @@ public class HueSyncConnection {
                 registration = this.deserialize(response.getContentAsString(), HueSyncRegistration.class);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonProcessingException e) {
-            this.logger.error(e.getMessage());
+            this.logger.error("{}", e.getMessage());
         }
 
         return registration;
