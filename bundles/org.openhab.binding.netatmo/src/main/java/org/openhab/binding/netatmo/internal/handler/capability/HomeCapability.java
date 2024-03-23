@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class HomeCapability extends RestCapability<HomeApi> {
+public class HomeCapability extends CacheCapability<HomeApi> {
 
     private final Logger logger = LoggerFactory.getLogger(HomeCapability.class);
     private final Set<FeatureArea> featureAreas = new HashSet<>();
@@ -50,7 +51,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
     private final Set<String> homeIds = new HashSet<>(3);
 
     public HomeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
-        super(handler, HomeApi.class);
+        super(handler, Duration.ofSeconds(2), HomeApi.class);
         this.descriptionProvider = descriptionProvider;
     }
 
@@ -105,7 +106,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
     }
 
     @Override
-    protected List<NAObject> updateReadings(HomeApi api) {
+    protected List<NAObject> getFreshData(HomeApi api) {
         List<NAObject> result = new ArrayList<>();
         homeIds.stream().filter(id -> !id.isEmpty()).forEach(id -> {
             try {
