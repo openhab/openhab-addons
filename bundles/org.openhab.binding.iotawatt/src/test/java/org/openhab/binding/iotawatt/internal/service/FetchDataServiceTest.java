@@ -76,10 +76,12 @@ class FetchDataServiceTest {
         final Float hertz = 50.1f;
         final Float phase0 = 0.1f;
         final Float wattsValue = 1.1f;
-        final float phase1 = 0.2f;
+        final Float phase1 = 0.2f;
+        final Float powerFactor = 0.3f;
         when(deviceHandlerCallback.getThingUID()).thenReturn(thingUID);
-        final List<StatusResponse.Input> inputs = List.of(new StatusResponse.Input(0, voltageRms, hertz, phase0, null),
-                new StatusResponse.Input(1, null, null, phase1, wattsValue));
+        final List<StatusResponse.Input> inputs = List.of(
+                new StatusResponse.Input(0, voltageRms, hertz, phase0, null, null),
+                new StatusResponse.Input(1, null, null, phase1, wattsValue, powerFactor));
         final StatusResponse statusResponse = new StatusResponse(inputs, List.of());
         when(ioTaWattClient.fetchStatus()).thenReturn(Optional.of(statusResponse));
 
@@ -92,8 +94,12 @@ class FetchDataServiceTest {
                 createState(voltageRms, Units.VOLT));
         verify(deviceHandlerCallback).updateState(createInputChannelUID("00", "frequency"),
                 createState(hertz, Units.HERTZ));
+        verify(deviceHandlerCallback).updateState(createInputChannelUID("00", "phase"), createState(phase0, Units.ONE));
         verify(deviceHandlerCallback).updateState(createInputChannelUID("01", "watts"),
                 createState(wattsValue, Units.WATT));
+        verify(deviceHandlerCallback).updateState(createInputChannelUID("01", "phase"), createState(phase1, Units.ONE));
+        verify(deviceHandlerCallback).updateState(createInputChannelUID("01", "power-factor"),
+                createState(powerFactor, Units.ONE));
     }
 
     @Test

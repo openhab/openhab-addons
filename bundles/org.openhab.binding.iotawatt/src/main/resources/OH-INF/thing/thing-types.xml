@@ -85,4 +85,10 @@
 		<state pattern="%.2f W" readOnly="true">
 		</state>
 	</channel-type>
+	<channel-type id="phase">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Phase</label>
+		<description>The current phase.</description>
+		<state pattern="%.2f" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>
