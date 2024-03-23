@@ -35,6 +35,7 @@ import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -49,8 +50,8 @@ public class HueSyncConnection {
      * cases subresource level /api/v1/<resource>/<subresource>.
      */
     private static final String REQUEST_FORMAT = "https://%s:%s/%s/%s";
-
     private static final String API = "api/v1";
+    private static final Integer TIMEOUT_MILLISECONDS = 500;
 
     private static class ENDPOINTS {
         public static final String DEVICE = "device";
@@ -65,68 +66,85 @@ public class HueSyncConnection {
     private HueSyncDeviceInfo deviceInfo;
     private HueSyncConfiguration config;
 
+    /**
+     * 
+     * @param httpClient
+     * @param config
+     */
     public HueSyncConnection(@NonNull HttpClient httpClient, @NonNull HueSyncConfiguration config) {
         this.httpClient = httpClient;
         this.config = config;
     }
 
     /**
-     * TODO: Add log, debug and trace information ...
      * 
      * @return
-     * 
-     * @throws InterruptedException
-     * @throws ExecutionException
-     * @throws TimeoutException
      */
-    @SuppressWarnings("null")
-    public @Nullable HueSyncDeviceInfo getDeviceInfo()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public @Nullable HueSyncDeviceInfo getDeviceInfo() {
+        try {
+            ContentResponse response = this.executeGetRequest(ENDPOINTS.DEVICE);
 
-        ContentResponse response = this.executeGetRequest(ENDPOINTS.DEVICE);
-
-        if (response.getStatus() == HttpStatus.OK_200) {
-            String payload = response.getContentAsString();
-
-            logger.trace("getDeviceInfo: {}", payload);
-
-            try {
-                this.deviceInfo = ObjectMapper.readValue(payload, HueSyncDeviceInfo.class);
-            } catch (JsonProcessingException e) {
-
+            if (response.getStatus() == HttpStatus.OK_200) {
+                this.deviceInfo = this.deserialize(response.getContentAsString(), HueSyncDeviceInfo.class);
             }
+
+        } catch (InterruptedException | ExecutionException | TimeoutException | JsonProcessingException e) {
+            this.logger.error(e.getMessage());
         }
 
         return this.deviceInfo;
     }
 
     /**
+     * 
+     * @return
+     */
+    public boolean unregisterDevice() {
+        if (!this.config.apiAccessToken.isBlank() && !this.config.registrationId.isBlank()) {
+            try {
+                String endpoint = ENDPOINTS.REGISTRATIONS + "/" + this.config.registrationId;
+                ContentResponse response = this.executeRequest(HttpMethod.DELETE, endpoint);
+
+                return response.getStatus() == HttpStatus.OK_200;
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                this.logger.error(e.getMessage());
+            }
+        }
+        return false;
+    }
+
+    /**
      * Try to register the application with the device.
      * 
      * @return null || HueSyncRegistration
-     * 
-     * @throws JsonProcessingException
-     * @throws InterruptedException
-     * @throws TimeoutException
-     * @throws ExecutionException
      */
-    public @Nullable HueSyncRegistration registerDevice()
-            throws JsonProcessingException, InterruptedException, TimeoutException, ExecutionException {
+    public @Nullable HueSyncRegistration registerDevice() {
+        HueSyncRegistration registration = null;
 
-        HueSyncRegistrationRequest dto = new HueSyncRegistrationRequest();
+        try {
+            HueSyncRegistrationRequest dto = new HueSyncRegistrationRequest();
 
-        dto.appName = HueSyncConstants.APPLICATION_NAME;
-        dto.instanceName = this.deviceInfo.uniqueId;
+            dto.appName = HueSyncConstants.APPLICATION_NAME;
+            dto.instanceName = this.deviceInfo.uniqueId;
 
-        String payload = ObjectMapper.writeValueAsString(dto);
-        ContentResponse response = this.executeJsonRequest(HttpMethod.POST, ENDPOINTS.REGISTRATIONS, payload, 500);
+            String json = ObjectMapper.writeValueAsString(dto);
 
-        // TODO: Check if "this.httpClient.setAuthenticationStore(null)" makes sense to
-        // be used in this context ...
+            ContentResponse response = this.executeRequest(HttpMethod.POST, ENDPOINTS.REGISTRATIONS, json);
 
-        return (response.getStatus() == HttpStatus.OK_200)
-                ? ObjectMapper.readValue(response.getContentAsString(), HueSyncRegistration.class)
-                : null;
+            if (response.getStatus() == HttpStatus.OK_200) {
+                registration = this.deserialize(response.getContentAsString(), HueSyncRegistration.class);
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException | JsonProcessingException e) {
+            this.logger.error(e.getMessage());
+        }
+
+        return registration;
+    }
+
+    // #region - private
+
+    private <T> T deserialize(String json, Class<T> type) throws JsonMappingException, JsonProcessingException {
+        return ObjectMapper.readValue(json, type);
     }
 
     private ContentResponse executeGetRequest(String endpoint)
@@ -136,8 +154,26 @@ public class HueSyncConnection {
         return httpClient.GET(uri);
     }
 
-    private ContentResponse executeJsonRequest(HttpMethod method, String endpoint, String payload,
-            Integer timeoutInMillisecons) throws InterruptedException, TimeoutException, ExecutionException {
+    private ContentResponse executeRequest(HttpMethod method, String endpoint)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        return this.executeRequest(method, endpoint, "");
+    }
+
+    /**
+     * Executes a REST API call, with an optional json payload.
+     * 
+     * @param method
+     * @param endpoint
+     * @param payload
+     * 
+     * @return
+     * 
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
+    private ContentResponse executeRequest(HttpMethod method, String endpoint, String payload)
+            throws InterruptedException, TimeoutException, ExecutionException {
 
         String uri = String.format(REQUEST_FORMAT, this.config.host, this.config.port, API, endpoint);
 
@@ -149,9 +185,12 @@ public class HueSyncConnection {
         }
 
         if (!this.config.apiAccessToken.isBlank()) {
+            // TODO: Check if httpClient.setAuthenticationStore makes sense ...
             request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.config.apiAccessToken);
         }
 
-        return request.timeout(timeoutInMillisecons, TimeUnit.MILLISECONDS).send();
+        return request.timeout(TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS).send();
     }
+
+    // #endregion
 }

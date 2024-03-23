@@ -66,7 +66,7 @@ public class HueSyncHandler extends BaseThingHandler {
     private HueSyncConfiguration config;
 
     private @Nullable BundleContext context;
-    private @Nullable ScheduledFuture<?> registrationTask;
+    private @Nullable ScheduledFuture<?> deviceRegistrationTask;
 
     private @Nullable HueSyncConnection connection;
     private @Nullable HueSyncDeviceInfo deviceInfo;
@@ -122,32 +122,28 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.checkRegistration();
 
                 if (this.thing.getStatus() == ThingStatus.OFFLINE) {
-                    this.startRegistrationJob();
+                    this.startDeviceRegistrationTask();
                 }
             } catch (HueSyncApiException e) {
-                this.logInitializationException(e);
+                this.logger.error(e.getLogMessage());
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (Exception e) {
-                this.logInitializationException(e);
+                this.logger.error(e.getMessage());
                 this.updateStatus(ThingStatus.OFFLINE);
             }
         });
     }
 
-    private void logInitializationException(Exception e) {
-        // TODO: Use EN local string to format log & exception message ...
-
-        // this.logger.error("@text/logger.initialization-problem",
-        // this.thing.getLabel(), this.thing.getUID(),
-        // HueSyncLocalizer.getResourceString(e.getMessage()));
-    }
-
     @SuppressWarnings("null")
-    private void startRegistrationJob() {
+    private void startDeviceRegistrationTask() {
+        if (this.deviceRegistrationTask != null) {
+            return;
+        }
+
         this.logger.info("Starting registration job for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
                 this.deviceInfo.uniqueId);
 
-        this.registrationTask = scheduler.scheduleWithFixedDelay(() -> {
+        this.deviceRegistrationTask = scheduler.scheduleWithFixedDelay(() -> {
             try {
                 if (this.thing.getStatus() == ThingStatus.OFFLINE) {
                     HueSyncRegistration registration = this.connection.registerDevice();
@@ -171,15 +167,14 @@ public class HueSyncHandler extends BaseThingHandler {
                         this.updateProperties(properties);
                         this.updateStatus(ThingStatus.ONLINE);
 
-                        this.registrationTask.cancel(false);
+                        this.deviceRegistrationTask.cancel(false);
 
                         this.logger.info("Device registration for {} complete - Id: {}", this.deviceInfo.name,
                                 registration.registrationId);
                     }
                 }
             } catch (Exception e) {
-                logger.error("");
-                // TODO: ...
+                this.logger.debug(e.getMessage());
             }
         }, HueSyncConstants.REGISTRATION_INITIAL_DELAY, HueSyncConstants.REGISTRATION_DELAY, TimeUnit.SECONDS);
     }
@@ -205,20 +200,32 @@ public class HueSyncHandler extends BaseThingHandler {
         super.dispose();
 
         try {
-            if (this.registrationTask != null && !this.registrationTask.isDone()) {
-                this.registrationTask.cancel(true);
-                this.registrationTask = null;
+            if (this.deviceRegistrationTask != null && !this.deviceRegistrationTask.isDone()) {
+                this.deviceRegistrationTask.cancel(true);
             }
 
             if (this.serviceRegistration != null) {
                 this.serviceRegistration.unregister();
-                this.serviceRegistration = null;
             }
+
         } catch (Exception e) {
-            // TODO: ...
-            // this.logger.error("Unable to properly dispose handler for {}({}): {}",
-            // this.thing.getLabel(),
-            // this.thing.getUID(), e);
+            this.logger.error(e.getMessage());
+        } finally {
+            this.deviceRegistrationTask = null;
+            this.serviceRegistration = null;
+
+            this.logger.info("Thing {} ({}) disposed.", this.thing.getLabel(), this.thing.getUID());
+        }
+    }
+
+    @Override
+    public void handleRemoval() {
+        super.handleRemoval();
+
+        if (this.connection != null && !this.connection.unregisterDevice()) {
+            this.logger.error(
+                    "It was not possible to unregister {} ({}). You may use id: {} Key: {} to manually re-configure the thing, or to manually remove the device via API.",
+                    this.thing.getLabel(), this.thing.getUID(), this.config.registrationId, this.config.apiAccessToken);
         }
     }
 }

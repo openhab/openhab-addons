@@ -24,9 +24,8 @@ If the LED is blinking blue, you need to setup the device using the official [Hu
 
 If the device is not discovered you can check if it is properly configured and discoverable in the network:
 
-:::: tabs
-
-::: tab Linux
+<details>
+  <summary>Linux (Ubuntu based distributions)</summary>
 
 ```bash
 $ avahi-browse --resolve _huesync._tcp 
@@ -38,9 +37,8 @@ $ avahi-browse --resolve _huesync._tcp
    txt = ["name=Sync Box" "devicetype=HSB1" "uniqueid=XXXXXXXXXXX" "path=/api"]
 ```
 
-:::
+</details>
 
-::::
 
 ## Thing Configuration
 
