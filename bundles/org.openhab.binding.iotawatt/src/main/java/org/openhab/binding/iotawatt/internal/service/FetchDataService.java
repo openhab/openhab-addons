@@ -106,6 +106,8 @@ public class FetchDataService {
             createAndUpdateInputChannel(channelNumber, input.watts(), IoTaWattChannelType.WATTS);
             createAndUpdateInputChannel(channelNumber, input.vrms(), IoTaWattChannelType.VOLTAGE);
             createAndUpdateInputChannel(channelNumber, input.hz(), IoTaWattChannelType.FREQUENCY);
+            createAndUpdateInputChannel(channelNumber, input.pf(), IoTaWattChannelType.POWER_FACTOR);
+            createAndUpdateInputChannel(channelNumber, input.phase(), IoTaWattChannelType.PHASE);
         }
     }
 

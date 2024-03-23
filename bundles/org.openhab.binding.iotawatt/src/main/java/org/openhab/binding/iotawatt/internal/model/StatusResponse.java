@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName;
 public record StatusResponse(@Nullable List<Input> inputs, @Nullable List<Output> outputs) {
     public record Input(int channel, @Nullable @SerializedName("Vrms") Float vrms,
             @Nullable @SerializedName("Hz") Float hz, @Nullable Float phase,
-            @Nullable @SerializedName("Watts") Float watts) {
+            @Nullable @SerializedName("Watts") Float watts, @Nullable @SerializedName("Pf") Float pf) {
     }
 
     public record Output(String name, String units, Float value) {

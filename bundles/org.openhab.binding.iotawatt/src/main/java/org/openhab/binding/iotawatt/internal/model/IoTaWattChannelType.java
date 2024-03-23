@@ -31,7 +31,8 @@ public enum IoTaWattChannelType {
     REACTIVE_POWER("reactive-power", "reactive-power", "Number:power", Units.VAR),
     REACTIVE_POWER_HOUR("reactive-power-hour", "reactive-power-hour", "Number:Energy", Units.VAR_HOUR),
     VOLTAGE("voltage", "voltage", "Number:ElectricPotential", Units.VOLT),
-    WATTS("watts", "watts", "Number:Power", Units.WATT);// ACTIVE_POWER
+    WATTS("watts", "watts", "Number:Power", Units.WATT), // ACTIVE_POWER
+    PHASE("phase", "phase", "Number:Dimensionless", Units.ONE);
 
     /**
      * Id of the channel in XML definition channel-type id.
