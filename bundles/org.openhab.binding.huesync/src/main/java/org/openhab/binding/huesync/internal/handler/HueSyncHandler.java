@@ -125,7 +125,7 @@ public class HueSyncHandler extends BaseThingHandler {
                     this.startDeviceRegistrationTask();
                 }
             } catch (HueSyncApiException e) {
-                this.logger.error(e.getLogMessage());
+                this.logger.error("{}", e.getLogMessage());
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (Exception e) {
                 this.logger.error("{}", e.getMessage());
@@ -174,7 +174,7 @@ public class HueSyncHandler extends BaseThingHandler {
                     }
                 }
             } catch (Exception e) {
-                this.logger.debug(e.getMessage());
+                this.logger.debug("{}", e.getMessage());
             }
         }, HueSyncConstants.REGISTRATION_INITIAL_DELAY, HueSyncConstants.REGISTRATION_DELAY, TimeUnit.SECONDS);
     }
