@@ -271,11 +271,11 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
     @SuppressWarnings({ "rawType", "unchecked" })
     private boolean applies(PersistEntry entry, FilterCriteria filter) {
         ZonedDateTime beginDate = filter.getBeginDate();
-        if (beginDate != null && entry.timestamp().isBefore(beginDate)) {
+        if (beginDate != null && beginDate.isAfter(entry.timestamp())) {
             return false;
         }
         ZonedDateTime endDate = filter.getEndDate();
-        if (endDate != null && entry.timestamp().isAfter(endDate)) {
+        if (endDate != null && endDate.isBefore(entry.timestamp())) {
             return false;
         }
 
