@@ -1,0 +1,15 @@
+syntax = "proto3";
+package proto;
+
+option java_package = "com.daimler.mbcarkit.proto";
+
+enum MemberStatus {
+    UNKNOWN_MEMBER_STATUS = 0;
+    STARTING = 1;
+    READY = 2;
+    STOPPING = 3;
+}
+message AppTwinMemberStatusValue {
+    MemberStatus status = 1;
+    uint32 apptwin_count = 2;
+}
