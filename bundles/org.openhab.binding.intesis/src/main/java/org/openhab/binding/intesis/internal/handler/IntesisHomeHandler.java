@@ -252,11 +252,14 @@ public class IntesisHomeHandler extends BaseThingHandler {
     }
 
     public @Nullable String logout() {
-        String contentString = "{\"command\":\"logout\",\"data\":{\"sessionID\":\"" + sessionId + "\"}}";
-        logger.trace("logout() - session ID: {}", sessionId);
-        sessionId = ""; // not really necessary as it is called after dispose(), so sessionID is not used anympre, but
-                        // it is a cleaner way
-        return api.postRequest(config.ipAddress, contentString);
+        if (!sessionId.isEmpty()) { // we have a running session
+            String contentString = "{\"command\":\"logout\",\"data\":{\"sessionID\":\"" + sessionId + "\"}}";
+            logger.trace("logout() - session ID: {}", sessionId);
+            sessionId = ""; // not really necessary as it is called after dispose(), so sessionID is not used anympre,
+                            // but it is a cleaner way
+            return api.postRequest(config.ipAddress, contentString);
+        }
+        return null;
     }
 
     public void populateProperties() {
