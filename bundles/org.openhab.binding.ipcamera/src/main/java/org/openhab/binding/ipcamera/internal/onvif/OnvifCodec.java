@@ -65,11 +65,11 @@ public class OnvifCodec extends ChannelDuplexHandler {
         }
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
-            logger.info("IdleStateEvent received: {}", e.state());
+            logger.debug("IdleStateEvent received: {}", e.state());
             onvifConnection.setIsConnected(false);
             ctx.close();
         } else {
-            logger.info("Other ONVIF netty channel event occurred: {}", evt);
+            logger.debug("Other ONVIF netty channel event occurred: {}", evt);
         }
     }
 
@@ -78,7 +78,7 @@ public class OnvifCodec extends ChannelDuplexHandler {
         if (ctx == null || cause == null) {
             return;
         }
-        logger.info("Exception on ONVIF connection: {}", cause.getMessage());
+        logger.debug("Exception on ONVIF connection: {}", cause.getMessage());
         ctx.close();
     }
 }
