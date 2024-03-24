@@ -61,7 +61,8 @@ import com.google.gson.GsonBuilder;
  * @author Martin Kühl - Port to 3.x
  */
 @NonNullByDefault
-@Component(service = { PersistenceService.class, QueryablePersistenceService.class }, property = Constants.SERVICE_PID + "=org.openhab.mapdb")
+@Component(service = { PersistenceService.class, QueryablePersistenceService.class }, property = Constants.SERVICE_PID
+        + "=org.openhab.mapdb")
 public class MapDbPersistenceService implements QueryablePersistenceService {
 
     private static final String SERVICE_ID = "mapdb";
