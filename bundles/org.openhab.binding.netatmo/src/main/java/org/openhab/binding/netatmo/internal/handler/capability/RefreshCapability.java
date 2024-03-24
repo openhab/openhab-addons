@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static java.time.temporal.ChronoUnit.*;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -22,6 +20,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
@@ -36,43 +36,38 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RefreshCapability extends Capability {
-    private static final Duration DEFAULT_DELAY = Duration.of(20, SECONDS);
-    private static final Duration PROBING_INTERVAL = Duration.of(120, SECONDS);
-    private static final Duration OFFLINE_INTERVAL = Duration.of(15, MINUTES);
+    private static final Duration NOW_DELAY = Duration.ofSeconds(2);
+    private static final Duration DEFAULT_DELAY = Duration.ofSeconds(20);
+    private static final Duration PROBING_INTERVAL = Duration.ofMinutes(2);
+    private static final Duration OFFLINE_INTERVAL = Duration.ofMinutes(15);
 
     private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
 
     private Duration dataValidity;
-    private Instant dataTimeStamp = Instant.now();
-    private Instant dataTimeStamp0 = Instant.MIN;
+    private Instant dataTimeStamp = Instant.MIN;
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-    private boolean refreshConfigured;
 
     public RefreshCapability(CommonInterface handler, int refreshInterval) {
         super(handler);
+        // refreshInterval set to -1 if not defined on the thing (default value)
         this.dataValidity = Duration.ofSeconds(Math.max(0, refreshInterval));
     }
 
     @Override
     public void initialize() {
-        this.refreshConfigured = !probing();
-        freeJobAndReschedule(2);
+        expireData();
     }
 
     @Override
     public void dispose() {
-        freeJobAndReschedule(0);
+        freeJobAndReschedule(null);
         super.dispose();
     }
 
     @Override
     public void expireData() {
-        dataTimeStamp = Instant.now().minus(dataValidity);
-        freeJobAndReschedule(1);
-    }
-
-    private Duration dataAge() {
-        return Duration.between(dataTimeStamp, Instant.now());
+        dataTimeStamp = Instant.MIN;
+        freeJobAndReschedule(NOW_DELAY);
     }
 
     private boolean probing() {
@@ -81,18 +76,20 @@ public class RefreshCapability extends Capability {
 
     private void proceedWithUpdate() {
         handler.proceedWithUpdate();
-        long delay;
+        Duration delay;
         if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
             logger.debug("{} is not ONLINE, special refresh interval is used", thingUID);
-            delay = OFFLINE_INTERVAL.toSeconds();
+            delay = OFFLINE_INTERVAL;
             if (probing()) {
-                dataTimeStamp0 = Instant.MIN;
+                dataTimeStamp = Instant.MIN;
             }
+        } else if (probing()) {
+            delay = PROBING_INTERVAL;
         } else {
-            delay = refreshConfigured ? dataValidity.getSeconds()
-                    : (probing() ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY)).toSeconds();
+            Duration dataAge = Duration.between(dataTimeStamp, Instant.now());
+            delay = dataValidity.minus(dataAge).plus(DEFAULT_DELAY);
+            delay = delay.compareTo(NOW_DELAY) < 0 ? PROBING_INTERVAL : delay;
         }
-        delay = delay < 2 ? PROBING_INTERVAL.toSeconds() : delay;
         logger.debug("{} refreshed, next one in {}s", thingUID, delay);
         freeJobAndReschedule(delay);
     }
@@ -100,26 +97,31 @@ public class RefreshCapability extends Capability {
     @Override
     protected void updateNAThing(NAThing newData) {
         super.updateNAThing(newData);
-        newData.getLastSeen().map(ZonedDateTime::toInstant).ifPresent(tsInstant -> {
+        newData.getLastSeen().map(ZonedDateTime::toInstant).ifPresent(lastSeen -> {
             if (probing()) {
-                if (Instant.MIN.equals(dataTimeStamp0)) {
-                    dataTimeStamp0 = tsInstant;
-                    logger.debug("First data timestamp of {} is {}", thingUID, dataTimeStamp0);
-                } else if (tsInstant.isAfter(dataTimeStamp0)) {
-                    dataValidity = Duration.between(dataTimeStamp0, tsInstant);
-                    refreshConfigured = true;
-                    logger.debug("Data validity period of {} identified to be {}", thingUID, dataValidity);
+                if (Instant.MIN.equals(dataTimeStamp)) {
+                    logger.debug("First data timestamp for {} is {}", thingUID, lastSeen);
+                } else if (lastSeen.isAfter(dataTimeStamp)) {
+                    dataValidity = Duration.between(dataTimeStamp, lastSeen);
+                    logger.debug("Data validity period for {} identified to be {}", thingUID, dataValidity);
                 } else {
-                    logger.debug("Data validity period of {} not yet found, data timestamp unchanged", thingUID);
+                    logger.debug("Data validity period for {} not yet found, reference timestamp unchanged", thingUID);
                 }
             }
-            dataTimeStamp = tsInstant;
+            dataTimeStamp = lastSeen;
         });
     }
 
-    private void freeJobAndReschedule(long delay) {
+    private void freeJobAndReschedule(@Nullable Duration delay) {
         refreshJob.ifPresent(job -> job.cancel(true));
-        refreshJob = Optional.ofNullable(delay == 0 ? null
-                : handler.getScheduler().schedule(() -> proceedWithUpdate(), delay, TimeUnit.SECONDS));
+        refreshJob = Optional.ofNullable(delay != null
+                ? handler.getScheduler().schedule(() -> proceedWithUpdate(), delay.toSeconds(), TimeUnit.SECONDS)
+                : null);
+    }
+
+    @Override
+    protected void afterNewData(@Nullable NAObject newData) {
+        properties.put("Data Validity", dataValidity.toString() + (probing() ? " (probing)" : ""));
+        super.afterNewData(newData);
     }
 }
