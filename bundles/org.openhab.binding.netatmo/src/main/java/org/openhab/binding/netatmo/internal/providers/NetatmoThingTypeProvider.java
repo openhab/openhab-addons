@@ -77,7 +77,7 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
                         .withExtensibleChannelTypeIds(moduleType.getExtensions())
                         .withChannelGroupDefinitions(getGroupDefinitions(moduleType))
                         .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, moduleType.thingTypeVersion))
-                        .withConfigDescriptionURI(moduleType.getConfigDescription());
+                        .withConfigDescriptionURI(moduleType.configDescription);
 
                 ThingTypeUID bridgeType = moduleType.getBridge().thingTypeUID;
                 if (!ModuleType.UNKNOWN.thingTypeUID.equals(bridgeType)) {

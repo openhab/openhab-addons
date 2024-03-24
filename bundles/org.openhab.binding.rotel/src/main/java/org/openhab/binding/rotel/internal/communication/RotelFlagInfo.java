@@ -10,11 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-@org.osgi.annotation.bundle.Header(name = org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE, value = "*")
-package org.openhab.automation.jythonscripting;
+package org.openhab.binding.rotel.internal.communication;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Additional information for the Jython Scripting package
+ * Record describing one information in response flags (HEX protocol)
  *
- * @author Wouter Born - Initial contribution
+ * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
+public record RotelFlagInfo(RotelFlagInfoType infoType, int flagNumber, int bitNumber) {
+}

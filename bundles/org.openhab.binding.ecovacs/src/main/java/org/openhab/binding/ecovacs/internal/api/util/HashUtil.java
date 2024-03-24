@@ -23,30 +23,36 @@ import org.slf4j.LoggerFactory;
  * @author Johannes Ptaszyk - Initial contribution
  */
 @NonNullByDefault
-public class MD5Util {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MD5Util.class);
+public class HashUtil {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HashUtil.class);
 
-    private MD5Util() {
+    private HashUtil() {
         // Prevent instantiation of util class
     }
 
     public static String getMD5Hash(String input) {
+        return calculateHash("MD5", input);
+    }
+
+    public static String getSHA256Hash(String input) {
+        return calculateHash("SHA-256", input);
+    }
+
+    private static String calculateHash(String algorithm, String input) {
         MessageDigest md;
         try {
-            md = MessageDigest.getInstance("MD5");
+            md = MessageDigest.getInstance(algorithm);
         } catch (NoSuchAlgorithmException e) {
-            LOGGER.error("Could not get MD5 MessageDigest instance", e);
+            LOGGER.error("Could not get {} MessageDigest instance", algorithm, e);
             return "";
         }
         md.update(input.getBytes());
-        byte[] hash = md.digest();
         StringBuilder hexString = new StringBuilder();
-        for (byte b : hash) {
-            if ((0xff & b) < 0x10) {
-                hexString.append("0").append(Integer.toHexString((0xFF & b)));
-            } else {
-                hexString.append(Integer.toHexString(0xFF & b));
+        for (byte b : md.digest()) {
+            if ((b & 0xff) < 0x10) {
+                hexString.append("0");
             }
+            hexString.append(Integer.toHexString(b & 0xff));
         }
         return hexString.toString();
     }
