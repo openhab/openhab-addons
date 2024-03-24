@@ -108,6 +108,13 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     }
 
     /**
+     * Returns true if openHAB Cloud connection is active
+     */
+    public boolean isConnected() {
+        return cloudClient.isConnected();
+    }
+
+    /**
      * This method sends notification message to mobile app through the openHAB Cloud service
      *
      * @param userId the {@link String} containing the openHAB Cloud user id to send message to
