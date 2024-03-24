@@ -583,27 +583,26 @@ public class OnvifConnection {
                     if (future == null) {
                         return;
                     }
-                    if (future.isSuccess()) {
+                    if (future.isDone() && future.isSuccess()) {
                         Channel ch = future.channel();
                         ch.writeAndFlush(request);
                     } else { // an error occurred
                         if (future.isDone() && !future.isCancelled()) {
                             Throwable cause = future.cause();
                             String msg = cause.getMessage();
-                            logger.debug("connect failed - cause {}", cause.getMessage());
+                            logger.debug("Connect failed - cause is: {}", cause.getMessage());
                             if (cause instanceof ConnectTimeoutException) {
                                 usingEvents = false;// Prevent Unsubscribe from being sent
                                 ipCameraHandler.cameraCommunicationError(
                                         "Camera timed out when trying to connect to the ONVIF port:" + port);
                             } else if ((cause instanceof ConnectException) && msg != null
-                                    && msg.contains("Connection refused")) {
+                                    && msg.contains("Connection refused ConnectException")) {
                                 usingEvents = false;// Prevent Unsubscribe from being sent
                                 ipCameraHandler.cameraCommunicationError(
                                         "Camera refused to connect when using ONVIF to port:" + port);
                             }
-                        }
-                        if (isConnected) {
-                            disconnect();
+                        } else {
+                            ipCameraHandler.cameraCommunicationError("Camera failed to connect due to being cancelled");
                         }
                     }
                 }
