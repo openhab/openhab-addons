@@ -564,6 +564,9 @@ public class ShellyManagerPage {
         if (name.isEmpty()) {
             name = getString(properties.get(PROPERTY_SERVICE_NAME));
         }
+        if (name.isEmpty()) {
+            name = getString(properties.get(PROPERTY_MAC_ADDRESS));
+        }
         return name;
     }
 
