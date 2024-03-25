@@ -36,8 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RefreshCapability extends Capability {
-    private static final Duration NOW_DELAY = Duration.ofSeconds(2);
-    private static final Duration DEFAULT_DELAY = Duration.ofSeconds(20);
+    private static final Duration DEFAULT_DELAY = Duration.ofSeconds(15);
     private static final Duration PROBING_INTERVAL = Duration.ofMinutes(2);
     private static final Duration OFFLINE_INTERVAL = Duration.ofMinutes(15);
 
@@ -50,7 +49,7 @@ public class RefreshCapability extends Capability {
     public RefreshCapability(CommonInterface handler, int refreshInterval) {
         super(handler);
         // refreshInterval set to -1 if not defined on the thing (default value)
-        this.dataValidity = Duration.ofSeconds(Math.max(0, refreshInterval));
+        dataValidity = Duration.ofSeconds(Math.max(0, refreshInterval));
     }
 
     @Override
@@ -67,7 +66,7 @@ public class RefreshCapability extends Capability {
     @Override
     public void expireData() {
         dataTimeStamp = Instant.MIN;
-        freeJobAndReschedule(NOW_DELAY);
+        freeJobAndReschedule(Duration.ofSeconds(2));
     }
 
     private boolean probing() {
@@ -88,9 +87,13 @@ public class RefreshCapability extends Capability {
         } else {
             Duration dataAge = Duration.between(dataTimeStamp, Instant.now());
             delay = dataValidity.minus(dataAge).plus(DEFAULT_DELAY);
-            delay = delay.compareTo(NOW_DELAY) < 0 ? PROBING_INTERVAL : delay;
+            if (delay.compareTo(DEFAULT_DELAY) < 0) {
+                logger.debug("Data too old, {} going back to probing (data age: {})", thingUID, dataAge);
+                dataValidity = Duration.ZERO;
+                delay = PROBING_INTERVAL;
+            }
         }
-        logger.debug("{} refreshed, next one in {}s", thingUID, delay);
+        logger.debug("{} refreshed, next one in {}", thingUID, delay);
         freeJobAndReschedule(delay);
     }
 
