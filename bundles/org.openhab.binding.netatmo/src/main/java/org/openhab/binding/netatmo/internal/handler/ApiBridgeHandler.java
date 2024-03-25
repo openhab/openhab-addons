@@ -350,15 +350,19 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 exception = new NetatmoException(deserializer.deserialize(ApiError.class, responseBody));
             } catch (NetatmoException e) {
-                exception = new NetatmoException("Error deserializing error: %s".formatted(statusCode.getMessage()));
+                if (statusCode == Code.TOO_MANY_REQUESTS) {
+                    exception = new NetatmoException(statusCode.getMessage());
+                } else {
+                    exception = new NetatmoException(
+                            "Error deserializing error: %s".formatted(statusCode.getMessage()));
+                }
             }
-            throw exception;
-        } catch (NetatmoException e) {
-            if (e.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
+            if (statusCode == Code.TOO_MANY_REQUESTS
+                    || exception.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
                 prepareReconnection(API_LIMIT_INTERVAL_S,
                         "@text/maximum-usage-reached [ \"%d\" ]".formatted(API_LIMIT_INTERVAL_S), null, null);
             }
-            throw e;
+            throw exception;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             if (retryCount > 0) {
                 logger.debug("Request error, retry counter: {}", retryCount);
