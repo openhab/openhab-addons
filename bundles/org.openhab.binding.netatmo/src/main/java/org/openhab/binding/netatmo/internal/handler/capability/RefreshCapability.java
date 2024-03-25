@@ -69,7 +69,7 @@ public class RefreshCapability extends Capability {
         handler.proceedWithUpdate();
         Duration delay = calcDelay();
         if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
-            logger.debug("{} is not ONLINE, special refresh interval is used", thingUID);
+            logger.debug("{} is not ONLINE, using special refresh interval", thingUID);
             delay = OFFLINE_DELAY;
         }
         logger.debug("{} refreshed, next one in {}", thingUID, delay);
