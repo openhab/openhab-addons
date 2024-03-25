@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link CacheCapability} give the ability to buffer restmanager related requests and reduce server requests
+ * {@link CacheCapability} give the ability to buffer RestManager related requests and reduce server requests
  *
  * @author Gaël L'hopital - Initial contribution
  *
