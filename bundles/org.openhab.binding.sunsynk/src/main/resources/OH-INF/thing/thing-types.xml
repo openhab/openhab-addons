@@ -86,6 +86,10 @@
 				<label>SunSynk Inverter Serial</label>
 				<description>Serial number of the inverter</description>
 			</parameter>
+			<parameter name="alias" type="text" required="true">
+				<label>SunSynk Inverter Name</label>
+				<description>Name of SunSynk inverter</description>
+			</parameter>
 			<parameter name="access_token" type="text" required="true">
 				<label>SunSynk Secret</label>
 				<description>Secret for accessing SunSynk web services</description>

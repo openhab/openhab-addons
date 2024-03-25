@@ -197,7 +197,7 @@ public class SunSynkInverter {
 
     public String sendCommandToSunSynk(String body, String access_token) {
         // GET URL
-        String path = "api/v1/common/setting/{inverter_sn}/set";
+        String path = "api/v1/common/setting/" + this.sn + "/set";
         // POST COMMAND
         String postResponse = apiPostMethod(makeURL(path), body, access_token);
         return postResponse;
@@ -223,11 +223,11 @@ public class SunSynkInverter {
             URL myUrl = new URL(httpsURL);
             HttpsURLConnection connection = (HttpsURLConnection) myUrl.openConnection();
             connection.setRequestMethod("POST");
-            OutputStream wr = connection.getOutputStream();
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Authorization", "Bearer " + access_token);
             connection.setDoOutput(true);
+            OutputStream wr = connection.getOutputStream();
             wr.write(body.getBytes("UTF-8"));
             wr.flush();
             wr.close();

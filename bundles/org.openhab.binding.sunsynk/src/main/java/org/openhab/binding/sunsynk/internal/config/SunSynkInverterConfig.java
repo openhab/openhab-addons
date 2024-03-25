@@ -24,7 +24,7 @@ public class SunSynkInverterConfig {
     private String access_token;
     // private String gsn;
     // private String modelId;
-    // private String alias;
+    private String alias;
     private String sn;
     private int refresh;
 
@@ -56,11 +56,10 @@ public class SunSynkInverterConfig {
         this.refresh = refresh;
     }
 
-    /*
-     * public void setgsn(String gsn) {
-     * this.gsn = gsn;
-     * }
-     */
+    public void setalias(String alias) {
+        this.alias = alias;
+    }
+
     public void setsn(String sn) {
         this.sn = sn;
     }
@@ -80,6 +79,6 @@ public class SunSynkInverterConfig {
      */
     @Override
     public String toString() {
-        return "InverterConfig [access token =" + access_token + ", serial=" + sn + ", refresh=" + refresh + "]";
+        return "InverterConfig [alias="  + alias + ", serial=" + sn  + ", refresh=" + refresh  + ", access token =" + access_token + "]";
     }
 }
