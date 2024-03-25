@@ -68,14 +68,10 @@ public class BroadlinkMappingService {
         this.storageService = storageService;
         this.irCmdLabel = new String();
         this.rfCmdLabel = new String();
-        irStorage = this.storageService.getStorage(irMapFileName);
-        rfStorage = this.storageService.getStorage(rfMapFileName);
+        irStorage = this.storageService.getStorage(irMapFileName, String.class.getClassLoader());
+        rfStorage = this.storageService.getStorage(rfMapFileName, String.class.getClassLoader());
         notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
         notifyAvailableCommands(irStorage.getKeys(), rfTargetChannelUID);
-        this.storeIR("IRtest", "test");
-        this.storeIR("IRtest1", "test");
-        this.storeRF("RFtest", "test");
-        this.storeRF("RFtest1", "test");
         logger.debug("BroadlinkMappingService constructed on behalf of {} and {}", this.irTargetChannelUID,
                 this.rfTargetChannelUID);
     }
