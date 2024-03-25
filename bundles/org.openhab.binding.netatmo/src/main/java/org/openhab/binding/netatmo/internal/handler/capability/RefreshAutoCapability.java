@@ -90,7 +90,7 @@ public class RefreshAutoCapability extends RefreshCapability {
 
     @Override
     protected void afterNewData(@Nullable NAObject newData) {
-        properties.put("probing", Boolean.valueOf(probing()).toString());
+        properties.put("dataValidity", "%s (probing: %s)".formatted(dataValidity, Boolean.valueOf(probing())));
         super.afterNewData(newData);
     }
 }

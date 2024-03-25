@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
@@ -83,14 +82,7 @@ public class RefreshCapability extends Capability {
 
     private void freeJobAndReschedule(@Nullable Duration delay) {
         refreshJob.ifPresent(job -> job.cancel(true));
-        refreshJob = Optional.ofNullable(delay != null
-                ? handler.getScheduler().schedule(() -> proceedWithUpdate(), delay.toSeconds(), TimeUnit.SECONDS)
-                : null);
-    }
-
-    @Override
-    protected void afterNewData(@Nullable NAObject newData) {
-        properties.put("dataValidity", dataValidity.toString());
-        super.afterNewData(newData);
+        refreshJob = Optional.ofNullable(delay == null ? null
+                : handler.getScheduler().schedule(() -> proceedWithUpdate(), delay.toSeconds(), TimeUnit.SECONDS));
     }
 }
