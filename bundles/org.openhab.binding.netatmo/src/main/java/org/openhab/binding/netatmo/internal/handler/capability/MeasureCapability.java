@@ -44,12 +44,12 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class MeasureCapability extends CacheWeatherCapability {
+public class MeasureCapability extends CacheCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(MeasureCapability.class);
     private final Map<String, State> measures = new HashMap<>();
 
     public MeasureCapability(CommonInterface handler, List<ChannelHelper> helpers) {
-        super(handler, Duration.ofMinutes(30));
+        super(handler, Duration.ofMinutes(30), WeatherApi.class);
         MeasuresChannelHelper measureChannelHelper = (MeasuresChannelHelper) helpers.stream()
                 .filter(c -> c instanceof MeasuresChannelHelper).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(

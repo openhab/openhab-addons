@@ -30,11 +30,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class WeatherCapability extends CacheWeatherCapability {
+public class WeatherCapability extends CacheCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(WeatherCapability.class);
 
     public WeatherCapability(CommonInterface handler) {
-        super(handler, Duration.ofSeconds(2));
+        super(handler, Duration.ofSeconds(2), WeatherApi.class);
     }
 
     @Override
