@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -87,6 +89,10 @@ public interface CommonInterface {
         Bridge bridge = getBridge();
         return bridge != null && bridge.getHandler() instanceof DeviceHandler ? (DeviceHandler) bridge.getHandler()
                 : null;
+    }
+
+    default Optional<ScheduledFuture<?>> schedule(Runnable arg0, Duration delay) {
+        return Optional.of(getScheduler().schedule(arg0, delay.getSeconds(), TimeUnit.SECONDS));
     }
 
     default @Nullable ApiBridgeHandler getAccountHandler() {

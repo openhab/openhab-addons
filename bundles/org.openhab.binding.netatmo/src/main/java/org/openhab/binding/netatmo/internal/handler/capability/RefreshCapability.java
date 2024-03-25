@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,7 +44,7 @@ public class RefreshCapability extends Capability {
         super(handler);
         this.dataValidity = dataValidity;
         if (dataValidity.isNegative()) {
-            throw new IllegalArgumentException("RefreshInterval must be positive or nul");
+            throw new IllegalArgumentException("refreshInterval must be positive or nul");
         }
     }
 
@@ -69,10 +68,10 @@ public class RefreshCapability extends Capability {
         handler.proceedWithUpdate();
         Duration delay = calcDelay();
         if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
-            logger.debug("{} is not ONLINE, using special refresh interval", thingUID);
+            logger.debug("Thing '{}' is not ONLINE, using special refresh interval", thingUID);
             delay = OFFLINE_DELAY;
         }
-        logger.debug("{} refreshed, next one in {}", thingUID, delay);
+        logger.debug("'{}' refreshed, next one in {}", thingUID, delay);
         freeJobAndReschedule(delay);
     }
 
@@ -82,7 +81,6 @@ public class RefreshCapability extends Capability {
 
     private void freeJobAndReschedule(@Nullable Duration delay) {
         refreshJob.ifPresent(job -> job.cancel(true));
-        refreshJob = Optional.ofNullable(delay == null ? null
-                : handler.getScheduler().schedule(() -> proceedWithUpdate(), delay.toSeconds(), TimeUnit.SECONDS));
+        refreshJob = delay == null ? Optional.empty() : handler.schedule(() -> proceedWithUpdate(), delay);
     }
 }

@@ -60,12 +60,11 @@ public class RefreshAutoCapability extends RefreshCapability {
         }
 
         Duration dataAge = Duration.between(dataTimeStamp, Instant.now());
-
         if (dataValidity.compareTo(dataAge) > 0) {
             return dataValidity.minus(dataAge).plus(DEFAULT_DELAY);
         }
 
-        logger.debug("Data too old, {} going back to probing (data age: {})", thingUID, dataAge);
+        logger.debug("Data too old, '{}' going back to probing (data age: {})", thingUID, dataAge);
         dataValidity = Duration.ZERO;
         return PROBING_INTERVAL;
     }
@@ -76,12 +75,13 @@ public class RefreshAutoCapability extends RefreshCapability {
         newData.getLastSeen().map(ZonedDateTime::toInstant).ifPresent(lastSeen -> {
             if (probing()) {
                 if (Instant.MIN.equals(dataTimeStamp)) {
-                    logger.debug("First data timestamp for {} is {}", thingUID, lastSeen);
+                    logger.debug("First data timestamp for '{}' is {}", thingUID, lastSeen);
                 } else if (lastSeen.isAfter(dataTimeStamp)) {
                     dataValidity = Duration.between(dataTimeStamp, lastSeen);
-                    logger.debug("Data validity period for {} identified to be {}", thingUID, dataValidity);
+                    logger.debug("Data validity period for '{}' identified to be {}", thingUID, dataValidity);
                 } else {
-                    logger.debug("Data validity period for {} not yet found, reference timestamp unchanged", thingUID);
+                    logger.debug("Data validity period for '{}' not yet found, reference timestamp unchanged",
+                            thingUID);
                 }
             }
             dataTimeStamp = lastSeen;
