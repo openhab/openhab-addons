@@ -42,7 +42,7 @@ public class WeatherCapability extends CacheWeatherCapability {
         try {
             return List.of(owned ? api.getOwnedStationData(handler.getId()) : api.getStationData(handler.getId()));
         } catch (NetatmoException e) {
-            logger.warn("Error retrieving weather data '{}' : {}", handler.getId(), e.getMessage());
+            logger.warn("Error retrieving weather data '{}': {}", handler.getId(), e.getMessage());
         }
         return List.of();
     }
