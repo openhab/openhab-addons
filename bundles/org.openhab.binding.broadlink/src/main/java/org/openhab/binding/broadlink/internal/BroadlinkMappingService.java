@@ -13,25 +13,17 @@
 package org.openhab.binding.broadlink.internal;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.CommandOption;
@@ -59,8 +51,11 @@ public class BroadlinkMappingService {
     private @Nullable WatchService watchService = null;
     private @Nullable WatchKey transformDirWatchKey = null;
     private @Nullable Thread watchThread = null;
-    private Properties irProperties = new Properties();
-    private Properties rfProperties = new Properties();
+    private final String irCmdLabel;
+    private final String rfCmdLabel;
+    private final StorageService storageService;
+    private final Storage<String> irStorage;
+    private final Storage<String> rfStorage;
 
     public BroadlinkMappingService(String irMapFileName, String rfMapFileName,
             BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider, ChannelUID irTargetChannelUID,
@@ -70,9 +65,17 @@ public class BroadlinkMappingService {
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.irTargetChannelUID = irTargetChannelUID;
         this.rfTargetChannelUID = rfTargetChannelUID;
-        reloadFromFile(irMapFileName, irProperties, irTargetChannelUID);
-        reloadFromFile(rfMapFileName, rfProperties, rfTargetChannelUID);
-        startWatching();
+        this.storageService = storageService;
+        this.irCmdLabel = new String();
+        this.rfCmdLabel = new String();
+        irStorage = this.storageService.getStorage(irMapFileName);
+        rfStorage = this.storageService.getStorage(rfMapFileName);
+        notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
+        notifyAvailableCommands(irStorage.getKeys(), rfTargetChannelUID);
+        this.storeIR("IRtest", "test");
+        this.storeIR("IRtest1", "test");
+        this.storeRF("RFtest", "test");
+        this.storeRF("RFtest1", "test");
         logger.debug("BroadlinkMappingService constructed on behalf of {} and {}", this.irTargetChannelUID,
                 this.rfTargetChannelUID);
     }
@@ -98,95 +101,89 @@ public class BroadlinkMappingService {
     }
 
     public @Nullable String lookupIR(String command) {
-        return (String) irProperties.get(command);
+        return (String) irStorage.get(command);
     }
 
-    public void storeIR(String command, String irCommand) {
-        storeCommand(command, irCommand, irProperties, irMapFileName, "IR");
+    public @Nullable String storeIR(String command, String irCommand) {
+        if (irStorage.get(command) == null) {
+            logger.debug("IR Command not found. Proceeding to store command and reload Command list");
+            irStorage.put(command, irCommand);
+            notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
+            return command;
+        } else {
+            logger.debug("IR Command found. This is not a replace operation. Skipping");
+            return null;
+        }
+    }
+
+    public @Nullable String replaceIR(String command, String irCommand) {
+        if (irStorage.get(command) != null) {
+            logger.debug("IR Command found. Proceeding to store command and reload Command list");
+            irStorage.put(command, irCommand);
+            notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
+            return command;
+        } else {
+            logger.debug("IR Command not found. This is not an add method, so skipping");
+            return null;
+        }
+    }
+
+    public @Nullable String deleteIR(String command) {
+        if (irStorage.get(command) != null) {
+            logger.debug("IR Command found. Proceeding to remove command and reload command list");
+            irStorage.remove(command);
+            notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
+            return command;
+        } else {
+            logger.debug("IR Command not found. Can't delete command that does not exist");
+            return null;
+        }
     }
 
     public @Nullable String lookupRF(String command) {
-        return (String) rfProperties.get(command);
+        return (String) rfStorage.get(command);
     }
 
-    public void storeRF(String command, String rfCommand) {
-        storeCommand(command, rfCommand, rfProperties, rfMapFileName, "RF");
-    }
-
-    private void storeCommand(String commandName, String commandValue, Properties prop, String fileName,
-            String nameOfCommandSet) {
-        prop.put(commandName, commandValue);
-        Path mapFilePath = Paths.get(TRANSFORM_DIR + fileName);
-        try {
-            logger.trace("Storing {} to {}", commandName, mapFilePath);
-            FileOutputStream fr = new FileOutputStream(mapFilePath.toFile());
-            prop.store(fr, "Broadlink " + nameOfCommandSet + " commands");
-            fr.close();
-        } catch (IOException ex) {
-            logger.warn("Cannot store {} command to file {}: {}", nameOfCommandSet, mapFilePath, ex.getMessage());
+    public @Nullable String storeRF(String command, String rfCommand) {
+        if (rfStorage.get(command) == null) {
+            logger.debug("RF Command not found. Proceeding to store command and reload Command list");
+            rfStorage.put(command, rfCommand);
+            notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
+            return command;
+        } else {
+            logger.debug("RF Command found. This is not a replace operation. Skipping");
+            return null;
         }
     }
 
-    @SuppressWarnings({ "null", "unchecked" })
-    private Runnable watchingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    WatchKey key = watchService.take(); // Blocks
-                    List<WatchEvent<?>> events = key.pollEvents();
-                    Stream<WatchEvent<?>> modificationEvents = events.stream()
-                            .filter(e -> e.kind() == StandardWatchEventKinds.ENTRY_MODIFY);
-                    Stream<WatchEvent<?>> modificationEvents2 = events.stream()
-                            .filter(e -> e.kind() == StandardWatchEventKinds.ENTRY_MODIFY);
-                    if (modificationEvents
-                            .anyMatch(e -> ((WatchEvent<Path>) e).context().toString().equals(irMapFileName))) {
-                        logger.debug("File {} has changed - reloading", irMapFileName);
-                        reloadFromFile(irMapFileName, irProperties, irTargetChannelUID);
-                    }
-                    if (modificationEvents2
-                            .anyMatch(e -> ((WatchEvent<Path>) e).context().toString().equals(rfMapFileName))) {
-                        logger.debug("File {} has changed - reloading", rfMapFileName);
-                        reloadFromFile(rfMapFileName, rfProperties, rfTargetChannelUID);
-                    }
-                    key.reset();
-                } catch (InterruptedException x) {
-                    return;
-                }
-            }
-        }
-    };
-
-    @SuppressWarnings("null")
-    private void startWatching() {
-        try {
-            this.watchService = FileSystems.getDefault().newWatchService();
-            this.transformDirWatchKey = Paths.get(TRANSFORM_DIR).register(watchService,
-                    StandardWatchEventKinds.ENTRY_MODIFY);
-            this.watchThread = new Thread(watchingRunnable, "BroadlinkMappingService-mapfile-watcher");
-            this.watchThread.setDaemon(true);
-            this.watchThread.start();
-        } catch (IOException ioe) {
-            logger.warn("Couldn't setup automatic watch: {}", ioe.getMessage());
+    public @Nullable String replaceRF(String command, String rfCommand) {
+        if (rfStorage.get(command) != null) {
+            logger.debug("RF Command found. Proceeding to store command and reload Command list");
+            rfStorage.put(command, rfCommand);
+            notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
+            return command;
+        } else {
+            logger.debug("RF Command not found. This is not an add method, so skipping");
+            return null;
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void reloadFromFile(String fileName, Properties prop, ChannelUID targetChannel) {
-        Path mapFilePath = Paths.get(TRANSFORM_DIR + fileName);
-        try (FileReader reader = new FileReader(mapFilePath.toFile())) {
-            prop.load(reader);
-            logger.debug("Read {} commands from {}", prop.size(), mapFilePath);
-            notifyAvailableCommands((Set<String>) (Set<?>) prop.keySet(), fileName, targetChannel);
-        } catch (IOException e) {
-            logger.warn("Couldn't read {}: {}", mapFilePath, e.getMessage());
+    public @Nullable String deleteRF(String command) {
+        if (rfStorage.get(command) != null) {
+            logger.debug("RF Command found. Proceeding to remove command and reload command list");
+            rfStorage.remove(command);
+            notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
+            return command;
+        } else {
+            logger.debug("RF Command not found. Can't delete command that does not exist");
+            return null;
         }
     }
 
-    private void notifyAvailableCommands(Set<String> commandNames, String fileName, ChannelUID targetChannelUID) {
+    private void notifyAvailableCommands(Collection<String> commandNames, ChannelUID targetChannelUID) {
         List<CommandOption> commandOptions = new ArrayList<>();
         commandNames.forEach((c) -> commandOptions.add(new CommandOption(c, null)));
-        logger.debug("notifying framework about {} commands from {}", commandOptions.size(), fileName);
+        logger.debug("notifying framework about {} commands", commandOptions.size());
         this.commandDescriptionProvider.setCommandOptions(targetChannelUID, commandOptions);
     }
 }
