@@ -36,9 +36,9 @@ public abstract class NetatmoServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final HttpService httpService;
+    private final String path;
 
     protected final ApiBridgeHandler handler;
-    protected final String path;
 
     public NetatmoServlet(ApiBridgeHandler handler, HttpService httpService, String localPath) {
         this.path = BASE_PATH + localPath + "/" + handler.getId();
@@ -59,5 +59,9 @@ public abstract class NetatmoServlet extends HttpServlet {
         logger.debug("Stopping Netatmo Servlet {}", path);
         httpService.unregister(path);
         this.destroy();
+    }
+
+    public String getPath() {
+        return path;
     }
 }
