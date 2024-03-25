@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Keyring Project="openhab6-minimal-sipif" CreatedBy="6.0.2" Created="2022-03-02T20:47:32" Signature="ITyO/PaDzSA2Lb6J2FyXgA==" xmlns="http://knx.org/xml/keyring/1">
+  <Backbone MulticastAddress="224.0.23.12" />
+  <Interface IndividualAddress="1.1.2" Type="Tunneling" Host="1.1.1" UserID="2" Password="7vI8IYOA6TG8aRDiBMb3KIfoHLPKxp4jG3+sO7uwuw4=" Authentication="AVQ2dMT+52vspyStmZ9+8g6Oskjt70o4wnqm0tsPkI0=" />
+  <Interface IndividualAddress="1.1.4" Type="Tunneling" Host="1.1.1" UserID="3" Password="LsurQzd7MV6bWI+KxlpFGf17gW3lagaeRGenm9riJG4=" Authentication="qk597AJwqZ/Qe0Erc2hCJCG/6mv1hGQKRINfN+7bZPU=" />
+  <Interface IndividualAddress="1.1.5" Type="Tunneling" Host="1.1.1" UserID="4" Password="DHdsQEFqRWlAu0lSCOyz9HoKr2hbsMCOk1VpE6jESsA=" Authentication="KEwPKUS/0fVnlPcJAA3aYzbRCKE/QcXVdeCnZJed+P0=" />
+  <Interface IndividualAddress="1.1.6" Type="Tunneling" Host="1.1.1" UserID="5" Password="NRQekIgTZDRXs9HNHCbaPyUeL9H02ET9oCzwYxe+HA0=" Authentication="mgSxsc6tGJfwtoSZifdghTcgqUI4XwV5QITjH0R7cNA=" />
+  <Interface IndividualAddress="1.1.7" Type="Tunneling" Host="1.1.1" UserID="6" Password="cvP1SzE4PWkUNv+evNCLdPUMZcZJnJxzp1bDwFT2emA=" Authentication="KyPx37deTYrh3ObQYRwmALdDXeBG4u9TT8VTEOBhTqE=" />
+  <Devices>
+    <Device IndividualAddress="1.1.1" ToolKey="MH9tidHty0OwjaWKIGH5Zg==" ManagementPassword="hqygOoW7gJyKzRwoWzZbVxKHa1TMRm5MPRmWdhMROtQ=" Authentication="2GBT98qKw96qNS573gXrExG5NIL3QMvba/h89thsaLI=" />
+    <Device IndividualAddress="1.1.3" ToolKey="RMumSDwjPH8quCkcp+EJxA==" />
+  </Devices>
+</Keyring>
