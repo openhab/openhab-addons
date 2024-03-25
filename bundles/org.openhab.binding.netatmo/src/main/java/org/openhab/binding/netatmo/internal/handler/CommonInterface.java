@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,7 @@ import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.RefreshAutoCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
 import org.openhab.core.thing.Bridge;
@@ -221,13 +223,15 @@ public interface CommonInterface {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
         } else if (!ThingStatus.ONLINE.equals(bridge.getStatus())) {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
-            getCapabilities().remove(RefreshCapability.class);
+            getCapabilities().remove(RefreshAutoCapability.class);
             getCapabilities().remove(ParentUpdateCapability.class);
         } else {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
             if (ModuleType.ACCOUNT.equals(getModuleType().getBridge())) {
-                NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
-                getCapabilities().put(new RefreshCapability(this, config.refreshInterval));
+                int interval = getThingConfigAs(NAThingConfiguration.class).refreshInterval;
+                getCapabilities().put(interval > 0 ? //
+                        new RefreshCapability(this, Duration.ofSeconds(interval)) : //
+                        new RefreshAutoCapability(this));
             }
             getCapabilities().put(new ParentUpdateCapability(this));
         }
