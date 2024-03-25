@@ -93,5 +93,4 @@ public class RefreshAutoCapability extends RefreshCapability {
         properties.put("probing", Boolean.valueOf(probing()).toString());
         super.afterNewData(newData);
     }
-
 }

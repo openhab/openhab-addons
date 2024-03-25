@@ -224,6 +224,7 @@ public interface CommonInterface {
         } else if (!ThingStatus.ONLINE.equals(bridge.getStatus())) {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
             getCapabilities().remove(RefreshAutoCapability.class);
+            getCapabilities().remove(RefreshCapability.class);
             getCapabilities().remove(ParentUpdateCapability.class);
         } else {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
