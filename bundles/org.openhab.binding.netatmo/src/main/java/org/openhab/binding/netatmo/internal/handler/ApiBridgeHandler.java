@@ -347,8 +347,14 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 exception = new NetatmoException(deserializer.deserialize(ApiError.class, responseBody));
             } catch (NetatmoException e) {
-                exception = new NetatmoException("Error deserializing error: %s".formatted(statusCode.getMessage()));
+                if (statusCode == Code.TOO_MANY_REQUESTS) {
+                    exception = new NetatmoException(statusCode.getMessage());
+                } else {
+                    exception = new NetatmoException(
+                            "Error deserializing error: %s".formatted(statusCode.getMessage()));
+                }
             }
+<<<<<<< Upstream, based on main
             throw exception;
         } catch (NetatmoException e) {
             if (e.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
@@ -358,11 +364,15 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             } else if (e.getStatusCode() == ServiceError.INVALID_TOKEN_MISSING) {
                 startAuthorizationFlow();
 =======
+=======
+            if (statusCode == Code.TOO_MANY_REQUESTS
+                    || exception.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
+>>>>>>> be652a1 Improve handling of interrupted request by alllowing retries Rebased Reintroducing TOO_MANY_REQUESTS
                 prepareReconnection(API_LIMIT_INTERVAL_S,
                         "@text/maximum-usage-reached [ \"%d\" ]".formatted(API_LIMIT_INTERVAL_S), null, null);
 >>>>>>> 41c5ca0 Enhance API limit reached handling
             }
-            throw e;
+            throw exception;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             if (retryCount > 0) {
                 logger.debug("Request error, retry counter: {}", retryCount);
