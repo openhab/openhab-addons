@@ -63,8 +63,8 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     public void initialize() {
         super.initialize();
         // TODO: check if this also works for a Mini without RF
-        this.mappingService = new BroadlinkMappingService("broadlink_rf_" + thing.getUID().encode(),
-                "broadlink_ir_" + thing.getUID().encode() , commandDescriptionProvider,
+        this.mappingService = new BroadlinkMappingService("broadlink_rf_" + UIDUtils.encode(thing.getUID().toString()),
+                "broadlink_ir_" + UIDUtils.encode(thing.getUID().toString()), commandDescriptionProvider,
                 new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL),
                 new ChannelUID(thing.getUID(), BroadlinkBindingConstants.RF_COMMAND_CHANNEL), this.storageService);
     }
