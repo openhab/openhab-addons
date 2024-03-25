@@ -35,9 +35,9 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | macAddress          | String  |               | The device's MAC Address                                                          |
 | pollingInterval     | Integer | 30            | The interval in seconds for polling the status of the device                      |
 | nameOfCommandToLearn| String  | DEVICE_ON     | The name of the IR or RF command to learn when using the learn command channel    |
-| mapFilename         | String  | broadlink.map | The map file that contains remote codes to send via IR                            |
-| rfmapFilename       | String  | broadlinkrf.map | The map file that contains remote codes to send via RF                          |
-| ignoreFailedUpdates | Boolean | false         | If enabled, failed status requests won't put the device `OFFLINE`                |
+| mapFilename         | String  | broadlink     | The map file containing IR codes (`$OPENHAB_USERDATA/jsondb/broadlink_ir.json`    |
+| rfmapFilename       | String  | broadlinkrf   | The map file containing RF codes (`$OPENHAB_USERDATA/jsondb/broadlink_rf.json`    |
+| ignoreFailedUpdates | Boolean | false         | If enabled, failed status requests won't put the device `OFFLINE`                 |
 
 > The `mapFilename` setting is applicable to the RM series of devices only. The 'rfmapFilename' is only available for RM Pro series of devices.
 
@@ -65,11 +65,12 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 
 The Broadlink RM family of devices can transmit IR codes. The pro models add RF codes.
 The map file contains a list of IR/RF command codes to send via the device.
-The file uses the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and is stored in the `<OPENHAB_CONF>/transform` folder.
-By default, the file name is `broadlink.map` for the IR codes, but can be changed using the `mapFile` setting. In similar fashion, the RM pro models
+
+In previous versions of this binding, the file uses the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and was stored in the `<OPENHAB_CONF>/transform` folder.
+By default, the file name was `broadlink.map` for the IR codes, but can be changed using the `mapFile` setting. In similar fashion, the RM pro models
 store the RF codes in the `broadlinkrf.map` file. 
 
-Here is a map file example:
+Here is a map file example of the previous file format:
 
 ```
 TV_POWER=26008c0092961039103a1039101510151014101510151039103a10391015101411141015101510141139101510141114101510151014103a10141139103911391037123a10391000060092961039103911391014111410151015101411391039103a101411141015101510141015103911141015101510141015101510391015103911391039103a1039103911000d05000000000000000000000000
@@ -80,6 +81,46 @@ heatpump_off=2600760069380D0C0D0C0D290D0C0D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D2
 The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu heat pump.
 To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
 For RF, the `rfcommand` channel is used. 
+
+In this version of the binding, storage of codes is handled by OpenHab. The map files are stored in the $OPENHAB_USERDATA/jsondb directory. As an advatage, the files are now backed up by openhab, which provides better integrity. having the storage of the codes handled by openHAB also provides uniformity in where the files are stored.
+
+with the change of the storage mechanism, the files are also changing format, and codes are now stored in json. As an example, a file with the repviously shown codes would look like this:
+
+```
+{
+  "TV_POWER": {
+    "value": "26008c0092961039103a1039101510151014101510151039103a10391015101411141015101510141139101510141114101510151014103a10141139103911391037123a10391000060092961039103911391014111410151015101411391039103a101411141015101510141015103911141015101510141015101510391015103911391039103a1039103911000d05000000000000000000000000"
+  },
+  "heatpump_off": {
+    "value": "2600760069380D0C0D0C0D290D0C0D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D290D290D290D290D290D290E0002900000"
+  }
+}
+```
+The script below shows a script that can be used to convert from the old format to the new one:
+
+```
+import csv
+import json
+import sys
+import argparse
+
+parser=argparse.ArgumentParser(description= "Broadlink converter argument parser")
+parser.add_argument('-i','--input_filename', help='Input File Name', required=True)
+parser.add_argument('-o','--output_filename', help='Output File Name')
+args=parser.parse_args()
+
+result={}
+with open(args.input_filename,'r') as f:
+    red=csv.reader(f, delimiter='=')
+    for d in red:
+        result[d[0]] = {"value":d[1]}
+if args.output_filename:
+    with open(args.output_filename, 'w', encoding='utf-8') as f:
+        json.dump(result, f, ensure_ascii=False, indent=2)
+else:
+    print(json.dumps(result,indent=2))
+```
+
 
 ## Learning new remote codes
 
