@@ -96,6 +96,7 @@ with the change of the storage mechanism, the files are also changing format, an
   }
 }
 ```
+
 The script below shows a script that can be used to convert from the old format to the new one:
 
 ```
@@ -113,7 +114,7 @@ result={}
 with open(args.input_filename,'r') as f:
     red=csv.reader(f, delimiter='=')
     for d in red:
-        result[d[0]] = {"value":d[1]}
+        result[d[0]] = { "class": "java.lang.String" , "value":d[1]}
 if args.output_filename:
     with open(args.output_filename, 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
