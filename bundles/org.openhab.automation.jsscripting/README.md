@@ -313,6 +313,7 @@ See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for fu
 
 - items : `object`
   - .NAME ⇒ `Item`
+  - .existsItem(name) ⇒ `boolean`
   - .getItem(name, nullIfMissing) ⇒ `Item`
   - .getItems() ⇒ `Array[Item]`
   - .getItemsByTag(...tagNames) ⇒ `Array[Item]`
@@ -456,7 +457,8 @@ Calling `Item.history` returns an `ItemHistory` object with the following functi
   - .maximumSince(timestamp,serviceId) ⇒ `HistoricItem | null`
   - .minimumSince(begin, end, serviceId) ⇒ `HistoricItem | null`
   - .minimumSince(timestamp, serviceId) ⇒ `HistoricItem | null`
-  - .persist(serviceId)
+  - .persist(serviceId): Tells the persistence service to store the current Item state, which is then done asynchronously.
+    **Warning:** This has the side effect, that if the Item state changes shortly after `.persist` has been called, the new Item state will be persisted. See [JSDoc](https://openhab.github.io/openhab-js/items.ItemHistory.html#persist) for a possible work-around.
   - .previousState(skipEqual, serviceId) ⇒ `HistoricItem | null`
   - .sumBetween(begin, end, serviceId) ⇒ `number | null`
   - .sumSince(timestamp, serviceId) ⇒ `number | null`
@@ -531,7 +533,10 @@ thing.setEnabled(false);
 The actions namespace allows interactions with openHAB actions.
 The following are a list of standard actions.
 
-Note that most of the actions currently do **not** provide type definitions and therefore auto-completion does not work.
+**Warning:** Please be aware, that (unless not explicitly noted) there is **no** type conversion from Java to JavaScript types for the return values of actions.
+Read the JavaDoc linked from the JSDoc to learn about the returned Java types.
+
+Please note that most of the actions currently do **not** provide type definitions and therefore auto-completion does not work.
 
 See [openhab-js : actions](https://openhab.github.io/openhab-js/actions.html) for full API documentation and additional actions.
 
@@ -539,9 +544,16 @@ See [openhab-js : actions](https://openhab.github.io/openhab-js/actions.html) fo
 
 See [openhab-js : actions.Audio](https://openhab.github.io/openhab-js/actions.html#.Audio) for complete documentation.
 
-#### BusEvent
+#### BusEvent Actions
 
 See [openhab-js : actions.BusEvent](https://openhab.github.io/openhab-js/actions.html#.BusEvent) for complete documentation.
+
+#### CoreUtil Actions
+
+See [openhab-js : actions.CoreUtil](https://openhab.github.io/openhab-js/actions.html#.CoreUtil) for complete documentation.
+
+The `CoreUtil` actions provide access to parts of the utilities included in openHAB core, see [org.openhab.core.util](https://www.openhab.org/javadoc/latest/org/openhab/core/util/package-summary).
+These include several methods to convert between color types like HSB, RGB, sRGB, RGBW and XY.
 
 #### Ephemeris Actions
 
@@ -754,6 +766,24 @@ actions.Exec.executeCommandLine(time.Duration.ofSeconds(20), 'echo', 'Hello Worl
 ```
 
 See [JS-Joda](https://js-joda.github.io/js-joda/) for more examples and complete API usage.
+
+#### Parsing and Formatting
+
+Occasionally, one will need to parse a non-supported date time string or generate one from a ZonedDateTime.
+To do this you will use [JS-Joda DateTimeFormatter and potentially your Locale](https://js-joda.github.io/js-joda/manual/formatting.html).
+However, shipping all the locales with the openhab-js library would lead to an unacceptable large size.
+Therefore if you attempt to use the `DateTimeFormatter` and receive an error saying it cannot find your locale, you will need to manually install your locale and import it into your rule.
+
+[JS-Joda Locales](https://github.com/js-joda/js-joda/tree/master/packages/locale#use-prebuilt-locale-packages) includes a list of all the supported locales.
+Each loacle consists of a two letter language indicator followed by a "-" and a two letter dialect indicator: e.g. "EN-US".
+Installing a locale can be done through the command `npm install @js-joda/locale_de-de` from the *$OPENHAB_CONF/automation/js* folder.
+
+To import and use a local into your rule you need to require it and create a `DateTimeFormatter` that uses it:
+
+```javascript
+var Locale = require('@js-joda/locale_de-de').Locale.GERMAN;
+var formatter = time.DateTimeFormatter.ofPattern('dd.MM.yyyy HH:mm').withLocale(Locale);
+```
 
 #### `time.toZDT()`
 
@@ -1000,7 +1030,7 @@ See [openhab-js : rules](https://openhab.github.io/openhab-js/rules.html) for fu
 
 ### JSRule
 
-JSRules provides a simple, declarative syntax for defining rules that will be executed based on a trigger condition
+`JSRule` provides a simple, declarative syntax for defining rules that will be executed based on a trigger condition:
 
 ```javascript
 var email = "juliet@capulet.org"
@@ -1064,6 +1094,9 @@ triggers.DateTimeTrigger('MyDateTimeItem');
 
 You can use `null` for a trigger parameter to skip its configuration.
 
+You may use `SwitchableJSRule` to create a rule that can be enabled and disabled with a Switch Item.
+As an extension to `JSRule`, its syntax is the same, however you can specify an Item name (using the `switchItemName` rule config property) if you don't like the automatically created Item's name.
+
 See [openhab-js : triggers](https://openhab.github.io/openhab-js/triggers.html) in the API documentation for a full list of all triggers.
 
 ### Rule Builder
@@ -1094,7 +1127,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-  console.log(event);
+    console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
