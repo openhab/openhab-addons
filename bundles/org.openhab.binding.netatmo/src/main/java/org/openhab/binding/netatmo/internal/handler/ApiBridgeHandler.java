@@ -363,10 +363,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 >>>>>>> 41c5ca0 Enhance API limit reached handling
             }
             throw e;
-            // } catch (InterruptedException e) {
-            // Thread.currentThread().interrupt();
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            // throw new NetatmoException("Request interrupted");
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             if (retryCount > 0) {
                 logger.debug("Request error, retry counter: {}", retryCount);
