@@ -83,7 +83,7 @@ public class RefreshCapability extends Capability {
         handler.proceedWithUpdate();
         long delay;
         if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
-            logger.debug("Module is not ONLINE; special refresh interval is used");
+            logger.debug("{} is not ONLINE, special refresh interval is used", thingUID);
             delay = OFFLINE_INTERVAL.toSeconds();
             if (probing()) {
                 dataTimeStamp0 = Instant.MIN;
@@ -93,7 +93,7 @@ public class RefreshCapability extends Capability {
                     : (probing() ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY)).toSeconds();
         }
         delay = delay < 2 ? PROBING_INTERVAL.toSeconds() : delay;
-        logger.debug("Module refreshed, next one in {}s", delay);
+        logger.debug("{} refreshed, next one in {}s", thingUID, delay);
         freeJobAndReschedule(delay);
     }
 
@@ -104,13 +104,13 @@ public class RefreshCapability extends Capability {
             if (probing()) {
                 if (Instant.MIN.equals(dataTimeStamp0)) {
                     dataTimeStamp0 = tsInstant;
-                    logger.debug("First data timestamp is {}", dataTimeStamp0);
+                    logger.debug("First data timestamp of {} is {}", thingUID, dataTimeStamp0);
                 } else if (tsInstant.isAfter(dataTimeStamp0)) {
                     dataValidity = Duration.between(dataTimeStamp0, tsInstant);
                     refreshConfigured = true;
-                    logger.debug("Data validity period identified to be {}", dataValidity);
+                    logger.debug("Data validity period of {} identified to be {}", thingUID, dataValidity);
                 } else {
-                    logger.debug("Data validity period not yet found, data timestamp unchanged");
+                    logger.debug("Data validity period of {} not yet found, data timestamp unchanged", thingUID);
                 }
             }
             dataTimeStamp = tsInstant;

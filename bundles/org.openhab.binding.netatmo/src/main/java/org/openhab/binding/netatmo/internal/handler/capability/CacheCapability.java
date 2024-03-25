@@ -17,33 +17,33 @@ import java.time.Instant;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.WeatherApi;
+import org.openhab.binding.netatmo.internal.api.RestManager;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link CacheWeatherCapability} give the ability to buffer weather related requests and reduce server requests
+ * {@link CacheCapability} give the ability to buffer RestManager related requests and reduce server requests
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public abstract class CacheWeatherCapability extends RestCapability<WeatherApi> {
-    private final Logger logger = LoggerFactory.getLogger(CacheWeatherCapability.class);
+public abstract class CacheCapability<T extends RestManager> extends RestCapability<T> {
+    private final Logger logger = LoggerFactory.getLogger(CacheCapability.class);
     private final Duration validity;
 
     private List<NAObject> lastResult = List.of();
     private Instant requestTS = Instant.MIN;
 
-    public CacheWeatherCapability(CommonInterface handler, Duration validity) {
-        super(handler, WeatherApi.class);
+    public CacheCapability(CommonInterface handler, Duration validity, Class<T> restManagerClazz) {
+        super(handler, restManagerClazz);
         this.validity = validity;
     }
 
     @Override
-    protected synchronized List<NAObject> updateReadings(WeatherApi api) {
+    protected synchronized List<NAObject> updateReadings(T api) {
         Instant now = Instant.now();
 
         if (requestTS.plus(validity).isBefore(now)) {
@@ -58,5 +58,5 @@ public abstract class CacheWeatherCapability extends RestCapability<WeatherApi> 
         return lastResult;
     }
 
-    protected abstract List<NAObject> getFreshData(WeatherApi api);
+    protected abstract List<NAObject> getFreshData(T api);
 }
