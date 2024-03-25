@@ -43,13 +43,16 @@ public abstract class CacheWeatherCapability extends RestCapability<WeatherApi> 
     }
 
     @Override
-    protected List<NAObject> updateReadings(WeatherApi api) {
+    protected synchronized List<NAObject> updateReadings(WeatherApi api) {
         Instant now = Instant.now();
 
         if (requestTS.plus(validity).isBefore(now)) {
-            logger.debug("Requesting fresh data");
-            lastResult = getFreshData(api);
-            requestTS = now;
+            logger.debug("{} requesting fresh data for {}", getClass().getSimpleName(), thingUID);
+            List<NAObject> result = getFreshData(api);
+            if (!result.isEmpty()) {
+                lastResult = result;
+                requestTS = now;
+            }
         }
 
         return lastResult;

@@ -41,7 +41,7 @@ public class AirCareCapability extends RestCapability<AircareApi> {
         try {
             return List.of(api.getHomeCoach(handler.getId()));
         } catch (NetatmoException e) {
-            logger.warn("Error retrieving home-coach data '{}' : {}", handler.getId(), e.getMessage());
+            logger.warn("Error retrieving home-coach data '{}': {}", handler.getId(), e.getMessage());
         }
         return List.of();
     }
