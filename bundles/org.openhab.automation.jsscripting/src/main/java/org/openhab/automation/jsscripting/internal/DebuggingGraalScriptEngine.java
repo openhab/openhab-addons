@@ -71,7 +71,7 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
         String stackTrace = Arrays.stream(stackTraceElements).limit(STACK_TRACE_LENGTH)
                 .map(t -> "        at " + t.toString()).collect(Collectors.joining(System.lineSeparator()))
                 + System.lineSeparator() + "        ... " + stackTraceElements.length + " more";
-        return (message != null) ? message + System.lineSeparator() + stackTrace : stackTrace;
+        return (message != null) ? message + stackTrace : stackTrace;
     }
 
     /**
