@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.systeminfo</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Systeminfo Binding</name>
+  <name>openHAB Add-ons :: Bundles :: SystemInfo Binding</name>
 
   <dependencies>
     <dependency>
