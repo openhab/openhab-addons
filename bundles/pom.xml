@@ -59,6 +59,7 @@
     <module>org.openhab.binding.androidtv</module>
     <module>org.openhab.binding.anel</module>
     <module>org.openhab.binding.anthem</module>
+    <module>org.openhab.binding.argoclima</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.asuswrt</module>
     <module>org.openhab.binding.atlona</module>
