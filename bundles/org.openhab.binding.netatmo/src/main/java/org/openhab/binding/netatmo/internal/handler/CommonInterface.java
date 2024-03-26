@@ -31,9 +31,6 @@ import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.RefreshAutoCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -229,18 +226,14 @@ public interface CommonInterface {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
         } else if (!ThingStatus.ONLINE.equals(bridge.getStatus())) {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
-            getCapabilities().remove(RefreshAutoCapability.class);
-            getCapabilities().remove(RefreshCapability.class);
-            getCapabilities().remove(ParentUpdateCapability.class);
+            getCapabilities().getParentUpdate().ifPresent(Capability::dispose);
+            getCapabilities().getRefresh().ifPresent(Capability::dispose);
         } else {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
-            if (ModuleType.ACCOUNT.equals(getModuleType().getBridge())) {
+            getCapabilities().getParentUpdate().ifPresentOrElse(Capability::initialize, () -> {
                 int interval = getThingConfigAs(NAThingConfiguration.class).refreshInterval;
-                getCapabilities().put(interval > 0 ? //
-                        new RefreshCapability(this, Duration.ofSeconds(interval)) : //
-                        new RefreshAutoCapability(this));
-            }
-            getCapabilities().put(new ParentUpdateCapability(this));
+                getCapabilities().getRefresh().ifPresent(cap -> cap.setInterval(Duration.ofSeconds(interval)));
+            });
         }
     }
 

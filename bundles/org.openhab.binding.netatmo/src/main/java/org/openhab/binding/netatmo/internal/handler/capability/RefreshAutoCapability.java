@@ -33,14 +33,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RefreshAutoCapability extends RefreshCapability {
     private static final Duration DEFAULT_DELAY = Duration.ofSeconds(15);
-    private static final Duration PROBING_INTERVAL = Duration.ofMinutes(2);
 
-    private final Logger logger = LoggerFactory.getLogger(RefreshAutoCapability.class);
+    private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
 
     private Instant dataTimeStamp = Instant.MIN;
 
     public RefreshAutoCapability(CommonInterface handler) {
-        super(handler, Duration.ZERO);
+        super(handler);
     }
 
     @Override
@@ -49,48 +48,34 @@ public class RefreshAutoCapability extends RefreshCapability {
         super.expireData();
     }
 
-    private boolean probing() {
-        return dataValidity.getSeconds() <= 0;
-    }
-
     @Override
     protected Duration calcDelay() {
-        if (probing()) {
+        if (dataTimeStamp == Instant.MIN) {
             return PROBING_INTERVAL;
         }
 
         Duration dataAge = Duration.between(dataTimeStamp, Instant.now());
-        if (dataValidity.compareTo(dataAge) > 0) {
-            return dataValidity.minus(dataAge).plus(DEFAULT_DELAY);
+
+        Duration delay = dataValidity.minus(dataAge);
+        if (delay.isNegative() || delay.isZero()) {
+            logger.info("{} did not update data in expected time, return to probing");
+            dataTimeStamp = Instant.MIN;
+            return PROBING_INTERVAL;
         }
 
-        logger.debug("Data too old, '{}' going back to probing (data age: {})", thingUID, dataAge);
-        dataValidity = Duration.ZERO;
-        return PROBING_INTERVAL;
+        return delay.plus(DEFAULT_DELAY);
     }
 
     @Override
     protected void updateNAThing(NAThing newData) {
         super.updateNAThing(newData);
-        newData.getLastSeen().map(ZonedDateTime::toInstant).ifPresent(lastSeen -> {
-            if (probing()) {
-                if (Instant.MIN.equals(dataTimeStamp)) {
-                    logger.debug("First data timestamp for '{}' is {}", thingUID, lastSeen);
-                } else if (lastSeen.isAfter(dataTimeStamp)) {
-                    dataValidity = Duration.between(dataTimeStamp, lastSeen);
-                    logger.debug("Data validity period for '{}' identified to be {}", thingUID, dataValidity);
-                } else {
-                    logger.debug("Data validity period for '{}' not yet found, reference timestamp unchanged",
-                            thingUID);
-                }
-            }
-            dataTimeStamp = lastSeen;
-        });
+        newData.getLastSeen().map(ZonedDateTime::toInstant).ifPresent(lastSeen -> dataTimeStamp = lastSeen);
     }
 
     @Override
     protected void afterNewData(@Nullable NAObject newData) {
-        properties.put("dataValidity", "%s (probing: %s)".formatted(dataValidity, Boolean.valueOf(probing())));
+        properties.put("dataValidity",
+                "%s (probing: %s)".formatted(dataValidity, Boolean.valueOf(dataTimeStamp == Instant.MIN)));
         super.afterNewData(newData);
     }
 }

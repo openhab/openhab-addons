@@ -83,12 +83,12 @@ Once authentication process has been done, current refreshToken is stored in `/O
 | presence        | Thing  | NOC            | The Netatmo Smart Outdoor Camera (Presence) camera with or without siren.                             | id, ipAddress                                                             |
 | siren           | Thing  | NIS            | The Netatmo Smart Indoor Siren.                                                                       | id                                                                        |
 | doorbell        | Thing  | NDB            | The Netatmo Smart Video Doorbell device.                                                              | id, ipAddress                                                             |
-| weather-station | Bridge | NAMain         | Main indoor module reporting temperature, humidity, pressure, air quality and sound level.            | id                                                                        |
+| weather-station | Bridge | NAMain         | Main indoor module reporting temperature, humidity, pressure, air quality and sound level.            | id, refreshInterval                                                       |
 | outdoor         | Thing  | NAModule1      | Outdoor module reporting temperature and humidity.                                                    | id                                                                        |
 | wind            | Thing  | NAModule2      | Wind sensor reporting wind angle and strength.                                                        | id                                                                        |
 | rain            | Thing  | NAModule3      | Rain Gauge measuring precipitation.                                                                   | id                                                                        |
 | indoor          | Thing  | NAModule4      | Additional indoor module reporting temperature, humidity and CO2 level.                               | id                                                                        |
-| home-coach      | Thing  | NHC            | Healthy home coach reporting health-index, temperature, humidity, pressure, air quality, sound level. | id                                                                        |
+| home-coach      | Thing  | NHC            | Healthy home coach reporting health-index, temperature, humidity, pressure, air quality, sound level. | id, refreshInterval                                                       |
 | plug            | Thing  | NAPlug         | The relay connected to the boiler controlling a Thermostat and zero or more valves.                   | id                                                                        |
 | thermostat      | Thing  | NATherm1       | The Thermostat device placed in a given room.                                                         | id                                                                        |
 | room            | Thing  | NARoom         | A room in your house.                                                                                 | id                                                                        |
@@ -161,8 +161,8 @@ If you did not manually create things in the *.things file, the Netatmo Binding 
 
 ### Weather Station Main Indoor Device
 
-Weather station does not need any refreshInterval setting.
-Based on a standard update period of 10mn by Netatmo systems - it will auto adapt to stick closest as possible to last data availability.
+Weather station uses a default refreshInterval of 10 minutes (can be adjusted), based on a standard update period of 10mn by Netatmo systems.
+It will auto adapt to stick closest as possible to last data availability.
 
 **Supported channels for the main indoor module:**
 
@@ -329,6 +329,9 @@ All these channels are read only.
 All these channels are read only.
 
 ### Healthy Home Coach Device
+
+Home coach uses a default refreshInterval of 10 minutes (can be adjusted), based on a standard update period of 10mn by Netatmo systems.
+It will auto adapt to stick closest as possible to last data availability.
 
 **Supported channels for the healthy home coach device:**
 
