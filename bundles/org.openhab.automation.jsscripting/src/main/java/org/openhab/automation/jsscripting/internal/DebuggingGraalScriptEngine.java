@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * Wraps ScriptEngines provided by Graal to provide error messages and stack traces for scripts.
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
 class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable>
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T> {
@@ -49,11 +50,13 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
     @Override
     public Exception afterThrowsInvocation(Exception e) {
         Throwable cause = e.getCause();
+        // OPS4J Pax Logging holds a reference to the exception, which causes the OpenhabGraalJSScriptEngine to not be
+        // removed from heap by garbage collection and causing a memory leak.
+        // Therefore, don't pass the exceptions itself to the logger, but only their message!
         if (cause instanceof IllegalArgumentException) {
-            logger.error("Failed to execute script:", e);
-        }
-        if (cause instanceof PolyglotException) {
-            logger.error("Failed to execute script:", cause);
+            logger.error("Failed to execute script: {}", e.getMessage());
+        } else if (cause instanceof PolyglotException) {
+            logger.error("Failed to execute script: {}", cause.getMessage());
         }
         return e;
     }
