@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link RefreshCapability} is the base class used to define refreshing policies
- * It implementats of a fixed refresh rate strategy.
+ * It implements of a fixed refresh rate strategy.
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 public class RefreshCapability extends Capability {
     private static final Duration ASAP = Duration.ofSeconds(2);
     private static final Duration OFFLINE_DELAY = Duration.ofMinutes(15);
+
     protected static final Duration PROBING_INTERVAL = Duration.ofMinutes(2);
 
     private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
@@ -46,7 +47,7 @@ public class RefreshCapability extends Capability {
 
     public void setInterval(Duration dataValidity) {
         if (dataValidity.isNegative() || dataValidity.isZero()) {
-            throw new IllegalArgumentException("refreshInterval must be positive or nul");
+            throw new IllegalArgumentException("refreshInterval must be positive");
         }
         this.dataValidity = dataValidity;
         expireData();
