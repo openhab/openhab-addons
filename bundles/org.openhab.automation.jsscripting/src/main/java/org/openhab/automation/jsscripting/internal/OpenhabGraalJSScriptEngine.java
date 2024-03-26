@@ -135,7 +135,7 @@ public class OpenhabGraalJSScriptEngine
 
     // these fields start as null because they are populated on first use
     private @Nullable Consumer<String> scriptDependencyListener;
-    private String engineIdentifier;
+    private String engineIdentifier; // this field is very helpful for debugging, please do not remove it
 
     private boolean initialized = false;
     private final boolean injectionEnabled;
