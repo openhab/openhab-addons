@@ -89,5 +89,4 @@ public class RefreshCapability extends Capability {
         refreshJob.ifPresent(job -> job.cancel(true));
         refreshJob = Optional.empty();
     }
-
 }

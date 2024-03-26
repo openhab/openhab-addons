@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class RefreshAutoCapability extends RefreshCapability {
     private static final Duration DEFAULT_DELAY = Duration.ofSeconds(15);
 
-    private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
+    private final Logger logger = LoggerFactory.getLogger(RefreshAutoCapability.class);
 
     private Instant dataTimeStamp = Instant.MIN;
 
@@ -69,13 +69,12 @@ public class RefreshAutoCapability extends RefreshCapability {
     @Override
     protected void updateNAThing(NAThing newData) {
         super.updateNAThing(newData);
-        newData.getLastSeen().map(ZonedDateTime::toInstant).ifPresent(lastSeen -> dataTimeStamp = lastSeen);
+        dataTimeStamp = newData.getLastSeen().map(ZonedDateTime::toInstant).orElse(Instant.MIN);
     }
 
     @Override
     protected void afterNewData(@Nullable NAObject newData) {
-        properties.put("dataValidity",
-                "%s (probing: %s)".formatted(dataValidity, Boolean.valueOf(dataTimeStamp == Instant.MIN)));
+        properties.put("probing", Boolean.valueOf(dataTimeStamp == Instant.MIN).toString());
         super.afterNewData(newData);
     }
 }

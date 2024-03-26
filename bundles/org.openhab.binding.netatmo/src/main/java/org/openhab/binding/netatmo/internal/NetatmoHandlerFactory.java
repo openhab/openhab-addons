@@ -165,11 +165,6 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             }
         });
 
-        if (handler.getCapabilities().getRefresh().isEmpty() && handler.getCapabilities().getParentUpdate().isEmpty()) {
-            throw new IllegalArgumentException(
-                    "{} must have either a Refresh either a ParentUpdate capability please file a bug report.");
-        }
-
         return (BaseThingHandler) handler;
     }
 }
