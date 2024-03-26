@@ -50,7 +50,7 @@ public class RefreshAutoCapability extends RefreshCapability {
 
     @Override
     protected Duration calcDelay() {
-        if (dataTimeStamp == Instant.MIN) {
+        if (Instant.MIN.equals(dataTimeStamp)) {
             return PROBING_INTERVAL;
         }
 
@@ -74,7 +74,7 @@ public class RefreshAutoCapability extends RefreshCapability {
 
     @Override
     protected void afterNewData(@Nullable NAObject newData) {
-        properties.put("probing", Boolean.valueOf(dataTimeStamp == Instant.MIN).toString());
+        properties.put("probing", Boolean.valueOf(Instant.MIN.equals(dataTimeStamp)).toString());
         super.afterNewData(newData);
     }
 }
