@@ -138,6 +138,14 @@
 		<getAction name="GetInfo" argument="NewEnable"/>
 		<setAction name="SetEnable" argument="NewEnable"/>
 	</channel>
+	<channel name="wifiGuestEnableTriband" label="WiFi Guest Triband"
+		description="Enable/Disable the guest WiFi on triband devices.">
+		<item type="Switch"/>
+		<service deviceType="urn:dslforum-org:device:LANDevice:1"
+			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration4"/>
+		<getAction name="GetInfo" argument="NewEnable"/>
+		<setAction name="SetEnable" argument="NewEnable"/>
+	</channel>
 	<channel name="macOnline" label="MAC Online" description="Online status of the device with the given MAC"
 		advanced="true">
 		<item type="Switch"/>
