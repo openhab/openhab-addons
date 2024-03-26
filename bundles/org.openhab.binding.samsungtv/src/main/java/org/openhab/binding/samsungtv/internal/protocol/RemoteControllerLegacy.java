@@ -285,7 +285,7 @@ public class RemoteControllerLegacy extends RemoteController {
 
     @Override
     public boolean isConnected() {
-        return socket != null && !socket.isClosed() && socket != null && socket.isConnected();
+        return socket != null && !socket.isClosed() && socket.isConnected();
     }
 
     private String createRegistrationPayload(String ip) throws IOException {
