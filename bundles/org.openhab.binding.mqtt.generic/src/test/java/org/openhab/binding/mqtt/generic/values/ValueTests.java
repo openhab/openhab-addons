@@ -306,8 +306,10 @@ public class ValueTests {
         assertThat(v.parseCommand(new DecimalType(10.0)), is(PercentType.ZERO));
         assertThat(v.getMQTTpublishValue(PercentType.ZERO, null), is("10"));
 
-        assertThat(v.parseCommand(OnOffType.ON), is(PercentType.HUNDRED));
-        assertThat(v.parseCommand(OnOffType.OFF), is(PercentType.ZERO));
+        assertThat(v.parseCommand(OnOffType.ON), is(OnOffType.ON));
+        assertThat(v.getMQTTpublishValue(OnOffType.ON, null), is("110"));
+        assertThat(v.parseCommand(OnOffType.OFF), is(OnOffType.OFF));
+        assertThat(v.getMQTTpublishValue(OnOffType.OFF, null), is("10"));
     }
 
     @Test
@@ -328,8 +330,10 @@ public class ValueTests {
     public void percentCustomOnOff() {
         PercentageValue v = new PercentageValue(new BigDecimal("0.0"), new BigDecimal("100.0"), new BigDecimal("1.0"),
                 "on", "off");
-        assertThat(v.parseCommand(new StringType("on")), is(PercentType.HUNDRED));
-        assertThat(v.parseCommand(new StringType("off")), is(PercentType.ZERO));
+        assertThat(v.parseCommand(new StringType("on")), is(OnOffType.ON));
+        assertThat(v.getMQTTpublishValue(OnOffType.ON, "%s"), is("on"));
+        assertThat(v.parseCommand(new StringType("off")), is(OnOffType.OFF));
+        assertThat(v.getMQTTpublishValue(OnOffType.OFF, "%s"), is("off"));
     }
 
     @Test
