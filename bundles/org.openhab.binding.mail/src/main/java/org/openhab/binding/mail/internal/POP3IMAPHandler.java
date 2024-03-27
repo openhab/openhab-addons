@@ -52,6 +52,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.mail.imap.IMAPInputStream;
+
 /**
  * The {@link POP3IMAPHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -183,6 +185,14 @@ public class POP3IMAPHandler extends BaseThingHandler {
                                     try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
                                         mimeMultipart.writeTo(os);
                                         contentAsString = os.toString();
+                                    }
+                                } else if (rawContent instanceof IMAPInputStream imapInputStream) {
+                                    logger.trace("Detected IMAPInputStream message");
+                                    try {
+                                        contentAsString = new String(imapInputStream.readAllBytes());
+                                    } catch (IOException e) {
+                                        logger.warn("Could not read from stream: {}", e.getMessage(), e);
+                                        continue;
                                     }
                                 } else {
                                     logger.warn(
