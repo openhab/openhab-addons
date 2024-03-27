@@ -135,6 +135,7 @@ public class OpenhabGraalJSScriptEngine
 
     // these fields start as null because they are populated on first use
     private @Nullable Consumer<String> scriptDependencyListener;
+    private String engineIdentifier; // this field is very helpful for debugging, please do not remove it
 
     private boolean initialized = false;
     private final boolean injectionEnabled;
@@ -242,6 +243,7 @@ public class OpenhabGraalJSScriptEngine
         if (localEngineIdentifier == null) {
             throw new IllegalStateException("Failed to retrieve engine identifier from engine bindings");
         }
+        this.engineIdentifier = localEngineIdentifier;
 
         ScriptExtensionAccessor scriptExtensionAccessor = (ScriptExtensionAccessor) ctx
                 .getAttribute(CONTEXT_KEY_EXTENSION_ACCESSOR);
@@ -250,7 +252,7 @@ public class OpenhabGraalJSScriptEngine
         }
 
         Consumer<String> localScriptDependencyListener = (Consumer<String>) ctx
-                .getAttribute("oh.dependency-listener"/* CONTEXT_KEY_DEPENDENCY_LISTENER */);
+                .getAttribute(CONTEXT_KEY_DEPENDENCY_LISTENER);
         if (localScriptDependencyListener == null) {
             LOGGER.warn(
                     "Failed to retrieve script script dependency listener from engine bindings. Script dependency tracking will be disabled.");
