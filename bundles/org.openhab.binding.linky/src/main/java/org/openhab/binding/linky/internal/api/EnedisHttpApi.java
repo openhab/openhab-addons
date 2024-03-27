@@ -87,7 +87,6 @@ public class EnedisHttpApi {
             addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
             logger.debug("Step 1 : getting authentification");
             String data = getData(URL_ENEDIS_AUTHENTICATE);
-            // "https://alex.microapplications.enedis.fr/authenticate?target=https://mon-compte-client.enedis.fr");
 
             logger.debug("Reception request SAML");
             Document htmlDocument = Jsoup.parse(data);

@@ -18,6 +18,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
+      <scope>provided</scope>
       <version>1.15.3</version>
     </dependency>
   </dependencies>
