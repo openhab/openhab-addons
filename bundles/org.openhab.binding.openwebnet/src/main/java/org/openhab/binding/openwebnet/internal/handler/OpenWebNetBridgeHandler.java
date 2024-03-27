@@ -16,6 +16,7 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +66,7 @@ import org.openwebnet4j.message.Scenario;
 import org.openwebnet4j.message.Thermoregulation;
 import org.openwebnet4j.message.What;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereLightAutom;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
@@ -80,9 +82,135 @@ import org.slf4j.LoggerFactory;
  * @author Giovanni Fabiani - Aux
  */
 @NonNullByDefault
+
 public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implements GatewayListener {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetBridgeHandler.class);
+
+    /**
+     * A map to store handlers for lights and automations. The map is organised by
+     * AREA.
+     *
+     */
+    public class LightAutomHandlersMap {
+
+        private Map<Integer, Map<String, OpenWebNetThingHandler>> hndlrsMap;
+        private @Nullable OpenWebNetThingHandler oneHandler = null;
+
+        protected LightAutomHandlersMap() {
+            hndlrsMap = new ConcurrentHashMap<>();
+        }
+
+        protected void add(int area, OpenWebNetThingHandler h) {
+            if (!hndlrsMap.containsKey(area)) {
+                hndlrsMap.put(area, new ConcurrentHashMap<>());
+            }
+            Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(Integer.valueOf(area));
+            final String oId = h.ownId;
+            if (areaHndlrs != null && oId != null) {
+                areaHndlrs.put(oId, h);
+                if (oneHandler == null) {
+                    oneHandler = h;
+                }
+                logger.debug("/////////////////////// +++++++++++++++ Added handler {} to Area {}", oId, area);
+                logger.debug("/////////////////////// Map: {}", this.toString());
+            }
+        }
+
+        protected void remove(int area, OpenWebNetThingHandler h) {
+            if (hndlrsMap.containsKey(area)) {
+                Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(Integer.valueOf(area));
+                if (areaHndlrs != null) {
+                    boolean removed = areaHndlrs.remove(h.ownId, h);
+                    OpenWebNetThingHandler oh = oneHandler;
+                    // if the removed handler was linked by oneHandler, find another one
+                    if (removed && oh != null && oh.equals(h)) {
+                        oneHandler = getFirst();
+                    }
+                    logger.debug("/////////////////////// ---------------- Removed handler {} from Area {}", h.ownId,
+                            area);
+                    logger.debug("/////////////////////// Map: {}", this.toString());
+                }
+            }
+        }
+
+        protected @Nullable List<OpenWebNetThingHandler> getAreaHandlers(int area) {
+            Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(area);
+            if (areaHndlrs != null) {
+                List<OpenWebNetThingHandler> list = new ArrayList<OpenWebNetThingHandler>(areaHndlrs.values());
+                return list;
+            } else {
+                return null;
+            }
+        }
+
+        protected @Nullable List<OpenWebNetThingHandler> getAllHandlers() {
+            List<OpenWebNetThingHandler> list = new ArrayList<OpenWebNetThingHandler>();
+            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
+                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
+                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
+                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
+                    if (hndlr != null) {
+                        list.add(hndlr);
+                    }
+                }
+            }
+            return list;
+        }
+
+        protected boolean isEmpty() {
+            return oneHandler == null;
+        }
+
+        protected @Nullable OpenWebNetThingHandler getOne() {
+            if (oneHandler == null) {
+                oneHandler = getFirst();
+            }
+            return oneHandler;
+        }
+
+        private @Nullable OpenWebNetThingHandler getFirst() {
+            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
+                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
+                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
+                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
+                    if (hndlr != null) {
+                        WhereLightAutom wl = (WhereLightAutom) hndlr.deviceWhere;
+                        if (wl != null && wl.isAPL()) {
+                            return hndlr;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            String log = "\n/////////////////////// ^^^^^^^^^^^^ ---- LightAutomHandlersMap ----";
+            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
+                log += "\n- Area: " + entry.getKey() + "\n   -";
+                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
+                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
+                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
+                    if (hndlr != null) {
+                        log += " " + hndlr.ownId;
+                    }
+                }
+            }
+            log += "\n# getAllHandlers: ";
+            List<OpenWebNetThingHandler> allHandlers = getAllHandlers();
+            if (allHandlers != null) {
+                for (OpenWebNetThingHandler e : allHandlers) {
+                    log += " " + e.ownId;
+                }
+            }
+            OpenWebNetThingHandler one = this.getOne();
+            log += "\n# getOne() = " + (one == null ? "null" : one.ownId);
+            log += "\n/////////////////////// vvvvvvvvvvvvvvvvvv";
+            return log;
+        }
+    }
 
     private static final int GATEWAY_ONLINE_TIMEOUT_SEC = 20; // Time to wait for the gateway to become connected
 
@@ -106,6 +234,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     // WHO.WHERE
     private Map<String, @Nullable OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
     private Map<String, Long> discoveringDevices = new ConcurrentHashMap<>();
+
+    protected @Nullable LightAutomHandlersMap lightsMap; // a LightAutomHandlersMap storing lights handlers organised by
+                                                         // the AREA they belong to
 
     protected @Nullable OpenGateway gateway;
     private boolean isBusGateway = false;
@@ -422,8 +553,59 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @param ownId the device OpenWebNet id
      * @return the registered device Thing handler or null if the id cannot be found
      */
-    public @Nullable OpenWebNetThingHandler getRegisteredDevice(String ownId) {
+    public @Nullable OpenWebNetThingHandler getRegisteredDevice(@Nullable String ownId) {
         return registeredDevices.get(ownId);
+    }
+
+    /**
+     * Adds a light handler to the light map for this bridge, grouped by Area
+     *
+     * @param area the light area
+     * @param lightHandler the light handler to be added
+     */
+    protected void addLight(int area, OpenWebNetThingHandler lightHandler) {
+        if (lightsMap == null) {
+            lightsMap = new LightAutomHandlersMap();
+        }
+        LightAutomHandlersMap lm = lightsMap;
+        if (lm != null) {
+            lm.add(area, lightHandler);
+            logger.debug("/////////////////////// ^^^^^^^^^^^^ added APL {} to lightsMap", lightHandler.ownId);
+        }
+    }
+
+    /**
+     * Remove a light handler to the light map for this bridge
+     *
+     * @param area the light area
+     * @param lightHandler the light handler to be removed
+     */
+    protected void removeLight(int area, OpenWebNetThingHandler lightHandler) {
+        LightAutomHandlersMap lm = lightsMap;
+        if (lm != null) {
+            lm.remove(area, lightHandler);
+            logger.debug("/////////////////////// ^^^^^^^^^^^^ removed APL {} from lightsMap", lightHandler.ownId);
+        }
+    }
+
+    @Nullable
+    protected List<OpenWebNetThingHandler> getAllLights() {
+        LightAutomHandlersMap lm = lightsMap;
+        if (lm != null) {
+            return lm.getAllHandlers();
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    public LightAutomHandlersMap getLightsMap() {
+        LightAutomHandlersMap lm = lightsMap;
+        if (lm != null) {
+            return lm;
+        } else {
+            return null;
+        }
     }
 
     private void refreshAllBridgeDevices() {
@@ -449,8 +631,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 }
             } else if (System.currentTimeMillis() - lastRegisteredDeviceTS < REFRESH_ALL_DEVICES_DELAY_MSEC) {
                 // a device has been registered with the bridge just now, let's wait for other
-                // devices: re-schedule
-                // refreshAllDevices
+                // devices: re-schedule refreshAllDevices
                 logger.debug("--- REGISTER device just called... re-scheduling refreshAllBridgeDevices()");
                 refreshAllSchedule = scheduler.schedule(this::refreshAllBridgeDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
                         TimeUnit.MILLISECONDS);
@@ -515,7 +696,23 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return;
         }
 
+        // LIGHTING multiple messages for BUS
+        if (msg instanceof Lighting lmsg && isBusGateway) {
+            WhereLightAutom w = (WhereLightAutom) lmsg.getWhere();
+            if (w.isGeneral() || w.isArea()) {
+                LightAutomHandlersMap lm = lightsMap;
+                if (lm != null && !lm.isEmpty()) {
+                    OpenWebNetLightingHandler lh = (OpenWebNetLightingHandler) lm.getOne();
+                    if (lh != null) {
+                        lh.handleMultipleMessage(lmsg);
+                    }
+                }
+                return;
+            }
+        }
+
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
+
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement
                 || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Auxiliary
@@ -687,7 +884,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @return the ownId String
      */
     protected String ownIdFromDeviceWhere(Where where, OpenWebNetThingHandler handler) {
-        return handler.ownIdPrefix() + "." + normalizeWhere(where);
+        Who w = handler.getManagedWho();
+        return w.value().toString() + "." + normalizeWhere(w, where);
     }
 
     /**
@@ -698,7 +896,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @return the ownId String
      */
     public String ownIdFromWhoWhere(Who who, Where where) {
-        return who.value() + "." + normalizeWhere(where);
+        return who.value() + "." + normalizeWhere(who, where);
     }
 
     /**
@@ -711,7 +909,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         @Nullable
         Where w = baseMsg.getWhere();
         if (w != null) {
-            return baseMsg.getWho().value() + "." + normalizeWhere(w);
+            return baseMsg.getWho().value() + "." + normalizeWhere(baseMsg.getWho(), w);
         } else if (baseMsg instanceof Alarm) { // null and Alarm
             return baseMsg.getWho().value() + "." + "0"; // Alarm System --> where=0
         } else {
@@ -721,32 +919,39 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Transform a Where address into a Thing id string
+     * Given a Who and a Where address, return a Thing id string
      *
+     * @param who the Who
      * @param where the Where address
      * @return the thing Id string
      */
-    public String thingIdFromWhere(Where where) {
-        return normalizeWhere(where); // '#' cannot be used in ThingUID;
+    public String thingIdFromWhoWhere(Who who, Where where) {
+        return normalizeWhere(who, where); // '#' cannot be used in ThingUID;
     }
 
     /**
-     * Normalize a Where address to generate ownId and Thing id
+     * Normalize, based on Who, a Where address. Used to generate ownId and Thing id
      *
+     * @param who the Who
      * @param where the Where address
      * @return the normalized address as String
      */
-    public String normalizeWhere(Where where) {
+    public String normalizeWhere(Who who, Where where) {
         String str = where.value();
         if (where instanceof WhereZigBee whereZigBee) {
             str = whereZigBee.valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
         } else {
             if (str.indexOf("#4#") == -1) { // skip APL#4#bus case
-                if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z,
-                                             // Alarm Zone (#Z) --> Z
-                    str = str.substring(1);
-                } else if (str.indexOf('#') > 0 && str.charAt(0) != '0') { // Thermo zone Z and actuator N (Z#N,
-                                                                           // Z=[1-99], N=[1-9]) --> Z
+                if (str.indexOf('#') == 0) {
+                    if (who.equals(Who.THERMOREGULATION) || who.equals(Who.THERMOREGULATION_DIAGNOSTIC)
+                            || who.equals(Who.BURGLAR_ALARM)) {
+                        // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z
+                        // or Alarm zone #Z --> Z
+                        str = str.substring(1);
+                    } // else leave the initial hash (for example for LightAutomWhere GROUPs #GR -->
+                      // hGR)
+                } else if (str.indexOf('#') > 0 && str.charAt(0) != '0') {
+                    // Thermo zone Z and actuator N (Z#N, Z=[1-99], N=[1-9]) --> Z)
                     str = str.substring(0, str.indexOf('#'));
                 }
             }
