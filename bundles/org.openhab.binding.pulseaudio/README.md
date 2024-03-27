@@ -76,7 +76,7 @@ This requires the module **module-simple-protocol-tcp** to be present on the tar
 ```java
 Bridge pulseaudio:bridge:<bridgname> "<Bridge Label>" @ "<Room>" [ host="<ipAddress>", port=4712 ] {
   Things:
-    Thing sink          multiroom       "Snapcast"           @ "Room"       [name="alsa_card.pci-0000_00_1f.3", activateSimpleProtocolSink=true, simpleProtocolSinkPort=4711, additionalFilters="analog-stereo###internal"]
+    Thing sink          multiroom       "Snapcast"           @ "Room"       [name="alsa_card.pci-0000_00_1f.3", activateSimpleProtocolSink=true, additionalFilters="analog-stereo###internal"]
     Thing source        microphone      "microphone"         @ "Room"       [name="alsa_input.pci-0000_00_14.2.analog-stereo"]
     Thing sink-input    openhabTTS      "OH-Voice"           @ "Room"       [name="alsa_output.pci-0000_00_1f.3.hdmi-stereo-extra1"]
     Thing source-output remotePulseSink "Other Room Speaker" @ "Other Room" [name="alsa_input.pci-0000_00_14.2.analog-stereo"]

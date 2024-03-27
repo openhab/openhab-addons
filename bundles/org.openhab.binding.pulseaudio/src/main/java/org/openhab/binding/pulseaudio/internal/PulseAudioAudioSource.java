@@ -13,7 +13,6 @@
 package org.openhab.binding.pulseaudio.internal;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -22,6 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioHandler;
+import org.openhab.binding.pulseaudio.internal.items.SimpleProtocolTCPModule;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioSource;
@@ -52,7 +52,7 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         streamFormat = pulseaudioHandler.getSourceAudioFormat();
         executor = ThreadPoolManager
                 .getScheduledPool("OH-binding-" + pulseaudioHandler.getThing().getUID() + "-source");
-        streamGroup = PipedAudioStream.newGroup(streamFormat);
+        streamGroup = PipedAudioStream.newGroup(streamFormat, 1024 * 10);
     }
 
     @Override
@@ -64,33 +64,22 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
     public AudioStream getInputStream(AudioFormat audioFormat) throws AudioException {
         try {
             for (int countAttempt = 1; countAttempt <= 2; countAttempt++) { // two attempts allowed
+                @Nullable
+                PipedAudioStream audioStream = null;
                 try {
-                    connectIfNeeded();
-                    final Socket clientSocketLocal = clientSocket;
-                    if (clientSocketLocal == null) {
-                        break;
-                    }
                     if (!audioFormat.isCompatible(streamFormat)) {
                         throw new AudioException("Incompatible audio format requested");
                     }
-                    var audioStream = streamGroup.getAudioStreamInGroup();
+                    audioStream = streamGroup.getAudioStreamInGroup();
                     audioStream.onClose(() -> {
-                        minusClientCount();
                         stopPipeWriteTask();
                     });
-                    addClientCount();
                     startPipeWrite();
                     // get raw audio from the pulse audio socket
                     return audioStream;
                 } catch (IOException e) {
-                    disconnect(); // disconnect to force clear connection in case of socket not cleanly shutdown
                     if (countAttempt == 2) { // we won't retry : log and quit
-                        final Socket clientSocketLocal = clientSocket;
-                        String port = clientSocketLocal != null ? Integer.toString(clientSocketLocal.getPort())
-                                : "unknown";
-                        logger.warn(
-                                "Error while trying to get audio from pulseaudio audio source. Cannot connect to {}:{}, error: {}",
-                                pulseaudioHandler.getHost(), port, e.getMessage());
+                        logger.warn("Error while trying to get audio from pulseaudio audio source: {}", e.getMessage());
                         throw e;
                     }
                 } catch (InterruptedException ie) {
@@ -110,41 +99,57 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
      * this wrapper method make the test before effectively
      * locking the object (which is a costly operation)
      */
-    private void startPipeWrite() {
-        if (this.pipeWriteTask == null) {
+    private void startPipeWrite() throws IOException, InterruptedException {
+        if (this.pipeWriteTask == null && !streamGroup.isEmpty()) {
             startPipeWriteSynchronized();
         }
     }
 
-    private synchronized void startPipeWriteSynchronized() {
+    private synchronized void startPipeWriteSynchronized() throws IOException, InterruptedException {
         if (this.pipeWriteTask == null) {
+            AcquireModuleResult acquireModuleResult = acquireSimpleProtocolModule(streamFormat);
+            if (acquireModuleResult.module().isEmpty()) {
+                throw new IOException("Unable to create simple protocol module instance on pulseaudio server.");
+            }
+            SimpleProtocolTCPModule spModule = acquireModuleResult.module().get();
+            Runnable releaseModuleOp = acquireModuleResult.releaseModule();
             this.pipeWriteTask = executor.submit(() -> {
                 int lengthRead;
-                byte[] buffer = new byte[1200];
-                int readRetries = 3;
+                byte[] buffer = new byte[1024];
+                int readRetries = 4;
                 while (!streamGroup.isEmpty()) {
-                    var stream = getSourceInputStream();
-                    if (stream != null) {
-                        try {
-                            lengthRead = stream.read(buffer);
-                            readRetries = 3;
-                            streamGroup.write(buffer, 0, lengthRead);
-                            streamGroup.flush();
-                        } catch (IOException e) {
-                            logger.warn("IOException while reading from pulse source: {}", getExceptionMessage(e));
-                            if (readRetries == 0) {
-                                // force reconnection on persistent IOException
-                                super.disconnect();
-                            } else {
-                                readRetries--;
-                            }
-                        } catch (RuntimeException e) {
-                            logger.warn("RuntimeException while reading from pulse source: {}", getExceptionMessage(e));
+                    Socket spSocket = null;
+                    try {
+                        spSocket = connectIfNeeded(spModule);
+                        var stream = spSocket.getInputStream();
+                        lengthRead = stream.read(buffer);
+                        if (lengthRead == -1) {
+                            logger.warn("Unable to read audio data.");
+                            throw new IOException("Stream closed");
                         }
-                    } else {
-                        logger.warn("Unable to get source input stream");
+                        readRetries = 4;
+                        streamGroup.write(buffer, 0, lengthRead);
+                        streamGroup.flush();
+                    } catch (IOException e) {
+                        logger.warn("IOException while reading from pulse source: {}", getExceptionMessage(e));
+                        readRetries--;
+                        if (readRetries == 1) {
+                            // disconnect the socket in case it recovers
+                            if (spSocket != null) {
+                                disconnect(spSocket);
+                            }
+                        } else if (readRetries == 0) {
+                            // unload the source so dialogs connected to it get stopped,
+                            // the source will be reloaded on next state update
+                            pulseaudioHandler.audioSourceUnsetup();
+                            this.pipeWriteTask = null;
+                            return;
+                        }
+                    } catch (RuntimeException e) {
+                        logger.warn("RuntimeException while reading from pulse source: {}", getExceptionMessage(e));
                     }
                 }
+                releaseModuleOp.run();
                 this.pipeWriteTask = null;
             });
         }
@@ -167,22 +172,10 @@ public class PulseAudioAudioSource extends PulseaudioSimpleProtocolStream implem
         return message;
     }
 
-    private @Nullable InputStream getSourceInputStream() {
-        try {
-            connectIfNeeded();
-        } catch (IOException | InterruptedException ignored) {
-        }
-        try {
-            var clientSocketFinal = clientSocket;
-            return (clientSocketFinal != null) ? clientSocketFinal.getInputStream() : null;
-        } catch (IOException ignored) {
-            return null;
-        }
-    }
-
     @Override
-    public void disconnect() {
+    public void close() {
+        streamGroup.close();
         stopPipeWriteTask();
-        super.disconnect();
+        super.close();
     }
 }
