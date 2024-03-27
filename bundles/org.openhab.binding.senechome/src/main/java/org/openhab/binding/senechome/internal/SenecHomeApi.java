@@ -72,6 +72,25 @@ public class SenecHomeApi {
      */
     public SenecHomeResponse getStatistics()
             throws TimeoutException, ExecutionException, IOException, InterruptedException, JsonSyntaxException {
+
+        String dataToSend = gson.toJson(new SenecHomeResponse());
+        ContentResponse response = postRequest(dataToSend);
+        String responseString = response.getContentAsString();
+        return Objects.requireNonNull(gson.fromJson(responseString, SenecHomeResponse.class));
+    }
+
+    public boolean setValue(String section, String id, String value) {
+        String dataToSend = "{\"" + section + "\":{\"" + id + "\":\"" + value + "\"}}";
+        try {
+            postRequest(dataToSend);
+            return true;
+        } catch (TimeoutException | ExecutionException | IOException | InterruptedException e) {
+            return false;
+        }
+    }
+
+    private ContentResponse postRequest(String dataToSend)
+            throws TimeoutException, ExecutionException, IOException, InterruptedException {
         String location = hostname + "/lala.cgi";
         logger.trace("sending request to: {}", location);
 
@@ -80,13 +99,11 @@ public class SenecHomeApi {
         request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString());
         ContentResponse response = null;
         try {
-            String dataToSend = gson.toJson(new SenecHomeResponse());
             logger.trace("data to send: {}", dataToSend);
             response = request.method(HttpMethod.POST).content(new StringContentProvider(dataToSend))
                     .timeout(15, TimeUnit.SECONDS).send();
             if (response.getStatus() == HttpStatus.OK_200) {
-                String responseString = response.getContentAsString();
-                return Objects.requireNonNull(gson.fromJson(responseString, SenecHomeResponse.class));
+                return response;
             } else {
                 logger.trace("Got unexpected response code {}", response.getStatus());
                 throw new IOException("Got unexpected response code " + response.getStatus());

@@ -49,6 +49,8 @@ public class SenecHomeBindingConstants {
     public static final String CHANNEL_SENEC_BATTERY_FUEL_CHARGE = "batteryFuelCharge";
     public static final String CHANNEL_SENEC_BATTERY_VOLTAGE = "batteryVoltage";
     public static final String CHANNEL_SENEC_BATTERY_CURRENT = "batteryCurrent";
+    public static final String CHANNEL_SENEC_SAFE_CHARGE_MODE = "safeChargeMode";
+    public static final String CHANNEL_SENEC_LI_STORAGE_MODE = "liStorageMode";
 
     // SenecHomeGrid
     public static final String CHANNEL_SENEC_GRID_POWER = "gridPower";
