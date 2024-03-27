@@ -42,6 +42,7 @@ import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -65,7 +66,8 @@ import com.mongodb.client.result.DeleteResult;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class, QueryablePersistenceService.class,
-        ModifiablePersistenceService.class }, configurationPid = "org.openhab.mongodb", configurationPolicy = ConfigurationPolicy.REQUIRE)
+        ModifiablePersistenceService.class }, configurationPid = "org.openhab.mongodb", configurationPolicy = ConfigurationPolicy.REQUIRE, property = Constants.SERVICE_PID
+                + "=org.openhab.mongodb")
 public class MongoDBPersistenceService implements ModifiablePersistenceService {
 
     private final Logger logger = LoggerFactory.getLogger(MongoDBPersistenceService.class);
