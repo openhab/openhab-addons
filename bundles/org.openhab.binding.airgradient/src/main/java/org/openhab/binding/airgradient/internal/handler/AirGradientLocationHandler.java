@@ -149,7 +149,6 @@ public class AirGradientLocationHandler extends BaseThingHandler {
     private void updateStateNullSafe(String channelName, @Nullable Double measure,
             Function<Double, QuantityType<?>> valueFunc) {
         if (measure == null) {
-            logger.debug("Channel name {} is {}", channelName, measure);
             updateState(channelName, UnDefType.NULL);
         } else {
             ChannelUID channelUid = new ChannelUID(thing.getUID(), channelName);
