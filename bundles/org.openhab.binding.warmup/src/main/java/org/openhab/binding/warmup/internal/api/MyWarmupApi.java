@@ -87,8 +87,8 @@ public class MyWarmupApi {
 
         AuthResponseDTO ar = GSON.fromJson(response.getContentAsString(), AuthResponseDTO.class);
 
-        if (ar != null && ar.getStatus() != null && "success".equals(ar.getStatus().getResult())) {
-            authToken = ar.getResponse().getToken();
+        if (ar != null && ar.status() != null && "success".equals(ar.status().result())) {
+            authToken = ar.response().token();
         } else {
             throw new MyWarmupApiException("Authentication Failed");
         }
@@ -103,9 +103,37 @@ public class MyWarmupApi {
     public synchronized QueryResponseDTO getStatus() throws MyWarmupApiException {
         return callWarmupGraphQL("""
                 query QUERY { user { locations{ id name \
-                 rooms { id roomName runMode overrideDur targetTemp currentTemp \
-                 thermostat4ies{ deviceSN lastPoll }}}}}\
+                 rooms { id roomName energy runMode overrideDur targetTemp currentTemp fixedTemp \
+                 thermostat4ies{ deviceSN lastPoll airTemp floor1Temp floor2Temp }}}}}\
                 """);
+    }
+
+    /**
+     * Call the API to set the room mode to program
+     *
+     * @param locationId Id of the location
+     * @param roomId Id of the room
+     * @param mode RoomMode defined in enum
+     * @throws MyWarmupApiException API callout error
+     */
+    public void setRoomMode(String locationId, String roomId, WarmupBindingConstants.RoomMode mode)
+            throws MyWarmupApiException {
+        if (WarmupBindingConstants.RoomMode.SCHEDULE.equals(mode)) {
+            callWarmupGraphQL("mutation{deviceProgram(lid:%s,rid:%s)}".formatted(locationId, roomId));
+        }
+    }
+
+    /**
+     * Call the API to set the room mode to fixed with a specific temperature
+     *
+     * @param locationId Id of the location
+     * @param roomId Id of the room
+     * @param temperature Temperature to set * 10
+     * @throws MyWarmupApiException API callout error
+     */
+    public void setFixed(String locationId, String roomId, int temperature) throws MyWarmupApiException {
+        callWarmupGraphQL(
+                "mutation{deviceFixed(lid:%s,rid:%s,temperature:%d)}".formatted(locationId, roomId, temperature));
     }
 
     /**
@@ -119,7 +147,7 @@ public class MyWarmupApi {
      */
     public void setOverride(String locationId, String roomId, int temperature, Integer duration)
             throws MyWarmupApiException {
-        callWarmupGraphQL(String.format("mutation{deviceOverride(lid:%s,rid:%s,temperature:%d,minutes:%d)}", locationId,
+        callWarmupGraphQL("mutation{deviceOverride(lid:%s,rid:%s,temperature:%d,minutes:%d)}".formatted(locationId,
                 roomId, temperature, duration));
     }
 
@@ -133,7 +161,7 @@ public class MyWarmupApi {
      */
     public void toggleFrostProtectionMode(String locationId, String roomId, OnOffType command)
             throws MyWarmupApiException {
-        callWarmupGraphQL(String.format("mutation{turn%s(lid:%s,rid:%s){id}}", command == OnOffType.ON ? "Off" : "On",
+        callWarmupGraphQL("mutation{turn%s(lid:%s,rid:%s){id}}".formatted(command == OnOffType.ON ? "Off" : "On",
                 locationId, roomId));
     }
 
@@ -144,7 +172,7 @@ public class MyWarmupApi {
 
         QueryResponseDTO qr = GSON.fromJson(response.getContentAsString(), QueryResponseDTO.class);
 
-        if (qr != null && "success".equals(qr.getStatus())) {
+        if (qr != null && "success".equals(qr.status())) {
             return qr;
         } else {
             throw new MyWarmupApiException("Unexpected reponse from API");
