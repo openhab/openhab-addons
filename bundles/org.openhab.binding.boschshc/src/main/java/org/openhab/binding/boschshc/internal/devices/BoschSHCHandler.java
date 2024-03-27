@@ -49,6 +49,7 @@ import com.google.gson.JsonElement;
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - refactorings of e.g. server registration
  * @author David Pace - Handler abstraction
+ * @author David Pace - Support for child device updates
  */
 @NonNullByDefault
 public abstract class BoschSHCHandler extends BaseThingHandler {
@@ -154,7 +155,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @param stateData Current state of device service. Serialized as JSON.
      */
     public void processUpdate(String serviceName, @Nullable JsonElement stateData) {
-        // Check services of device to correctly
+        // Find service(s) with the specified name and propagate new state to them
         for (DeviceService<? extends BoschSHCServiceState> deviceService : this.services) {
             BoschSHCService<? extends BoschSHCServiceState> service = deviceService.service;
             if (serviceName.equals(service.getServiceName())) {
@@ -164,10 +165,22 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     }
 
     /**
+     * Processes an update for a logical child device.
+     * 
+     * @param childDeviceId the ID of the logical child device
+     * @param serviceName the name of the service this update is targeted at
+     * @param stateData the new service state serialized as JSON
+     */
+    public void processChildUpdate(String childDeviceId, String serviceName, @Nullable JsonElement stateData) {
+        // default implementation is empty, subclasses may override
+    }
+
+    /**
      * Use this method to register all services of the device with
      * {@link #registerService(BoschSHCService, Consumer, Collection, boolean)}.
      */
     protected void initializeServices() throws BoschSHCException {
+        // default implementation is empty, subclasses may override
     }
 
     /**
