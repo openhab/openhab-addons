@@ -10,23 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.linky.internal;
+package org.openhab.binding.linky.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.jaas.spi.UserInfo;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link LinkyConfiguration} is the class used to match the
- * thing configuration.
+ * The {@link UserInfo} holds informations about energy delivery point
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
-@NonNullByDefault
-public class LinkyConfiguration {
-    public String token = "";
-    public String prmId = "";
 
-    public boolean seemsValid() {
-        return !prmId.isBlank();
-    }
+public class Customer {
+    @SerializedName("customer_id")
+    public String customerId;
+
+    @SerializedName("usage_points")
+    public UsagePoint[] usagePoints;
 }

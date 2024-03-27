@@ -12,13 +12,18 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import java.util.HashMap;
+
+import org.eclipse.jetty.jaas.spi.UserInfo;
+
 /**
- * The {@link AuthResult} holds informations about the ongoing authentication process
+ * The {@link UserInfo} holds informations about energy delivery point
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class AuthResult {
-    public String successUrl;
-    public String tokenId;
+public class TempoResponse extends HashMap<String, String> {
+    @java.io.Serial
+    private static final long serialVersionUID = 362498820763181264L;
 }

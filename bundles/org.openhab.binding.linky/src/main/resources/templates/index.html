@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+${pageRefresh}
+<title>Authorize openHAB Linky binding for Enedis</title>
+<link rel="icon" href="img/favicon.ico" type="image/vnd.microsoft.icon">
+<link>
+<style>
+html {
+	font-family: "Roboto", Helvetica, Arial, sans-serif;
+}
+
+
+.block {
+	border: 1px solid #bbb;
+	background-color: white;
+	margin: 10px 0;
+	padding: 8px 10px;
+}
+
+.error {
+	background: #FFC0C0;
+	border: 1px solid darkred;
+	color: darkred
+}
+
+.authorized {
+	border: 1px solid #90EE90;
+	background-color: #E0FFE0;
+}
+
+.button {
+    margin-left:30px;
+	margin-bottom: 10px;
+	float:left;
+}
+
+.olList {
+    margin-top:20px;
+}
+
+.olList li {
+    margin:20px;
+}
+
+
+
+
+.box {
+   float:left;
+   transform: translate(0%, -30%);
+}
+
+.box select {
+  background-color: #0563af;
+  color: white;
+  padding: 12px;
+  width: 350px;
+  border: none;
+  font-size: 20px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  -webkit-appearance: button;
+  appearance: button;
+  outline: none;
+}
+
+/* Style the arrow inside the select element: */
+.box::before {
+  content: "\f13a";
+  font-family: FontAwesome;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50px;
+  height: 100%;
+  text-align: center;
+  font-size: 28px;
+  line-height: 45px;
+  color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+
+.logo {
+    display: inline;
+}
+
+.logoEnedis {
+    display: inline;
+}
+
+.logoTransfer {
+    display: inline;
+    margin-left:300px;
+    top: -30px;    
+}
+
+.button a {
+	background: #1ED760;
+	border-radius: 500px;
+	color: white;
+	padding: 10px 20px 10px;
+	font-size: 16px;
+	font-weight: 700;
+	border-width: 0;
+	text-decoration: none;
+}
+</style>
+<script language="javascript">
+function retrieveToken()
+{
+    var prmId = document.getElementById('prmId').value;
+    document.location= "${retrieveToken.uri}" + "&code=" + prmId; 
+}
+</script>
+</head>
+
+<body>
+    <div class="logo">  
+	    <div class="logoEnedis">
+		    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="317px" height="109px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+		        <g><path style="opacity:1" fill="#fefefe" d="M -0.5,-0.5 C 105.167,-0.5 210.833,-0.5 316.5,-0.5C 316.5,52.5 316.5,105.5 316.5,158.5C 210.833,158.5 105.167,158.5 -0.5,158.5C -0.5,105.5 -0.5,52.5 -0.5,-0.5 Z"/></g>
+		        <g><path style="opacity:1" fill="#1822dc" d="M 65.5,59.5 C 74.5,59.5 83.5,59.5 92.5,59.5C 92.7564,61.7925 92.4231,63.9592 91.5,66C 83.8333,66.3333 76.1667,66.6667 68.5,67C 67.5495,70.0567 67.2161,73.2234 67.5,76.5C 72.1667,76.5 76.8333,76.5 81.5,76.5C 81.7564,78.7925 81.4231,80.9592 80.5,83C 76.1794,83.499 71.8461,83.6657 67.5,83.5C 67.2317,86.1194 67.565,88.6194 68.5,91C 76.1667,91.3333 83.8333,91.6667 91.5,92C 92.4231,94.0408 92.7564,96.2075 92.5,98.5C 83.4938,98.6664 74.4938,98.4998 65.5,98C 63.714,97.2155 62.214,96.0488 61,94.5C 59.4133,84.9084 59.0799,75.2417 60,65.5C 61.3597,62.9774 63.193,60.9774 65.5,59.5 Z"/></g>
+		        <g><path style="opacity:1" fill="#131fdb" d="M 97.5,59.5 C 104.841,59.3337 112.174,59.5003 119.5,60C 124.206,61.1045 127.373,63.9378 129,68.5C 129.5,78.4944 129.666,88.4944 129.5,98.5C 127.167,98.5 124.833,98.5 122.5,98.5C 122.948,88.7274 122.448,79.0607 121,69.5C 120.167,68.6667 119.333,67.8333 118.5,67C 113.845,66.5008 109.179,66.3342 104.5,66.5C 104.5,77.1667 104.5,87.8333 104.5,98.5C 102.167,98.5 99.8333,98.5 97.5,98.5C 97.5,85.5 97.5,72.5 97.5,59.5 Z"/></g>
+		        <g><path style="opacity:1" fill="#96cd31" d="M 140.5,59.5 C 147.841,59.3337 155.174,59.5003 162.5,60C 167.105,62.208 169.105,65.8747 168.5,71C 169.147,76.4248 167.147,80.4248 162.5,83C 155.842,83.4996 149.175,83.6663 142.5,83.5C 142.269,86.7845 143.603,89.2845 146.5,91C 155.16,91.4998 163.827,91.6664 172.5,91.5C 172.5,93.8333 172.5,96.1667 172.5,98.5C 163.161,98.6665 153.827,98.4998 144.5,98C 137.824,95.4831 134.49,90.6497 134.5,83.5C 133.167,83.5 131.833,83.5 130.5,83.5C 130.5,81.1667 130.5,78.8333 130.5,76.5C 139.839,76.6665 149.173,76.4998 158.5,76C 160.703,73.24 161.036,70.24 159.5,67C 154.5,66.3333 149.5,66.3333 144.5,67C 142.771,68.7889 142.104,70.9556 142.5,73.5C 135.327,75.1611 132.827,72.4945 135,65.5C 136.36,62.9774 138.193,60.9774 140.5,59.5 Z"/></g>
+		        <g><path style="opacity:1" fill="#1c23dc" d="M 173.5,59.5 C 198.925,53.4396 209.758,63.1062 206,88.5C 204.275,93.6148 200.775,96.7815 195.5,98C 188.174,98.4997 180.841,98.6663 173.5,98.5C 173.5,96.1667 173.5,93.8333 173.5,91.5C 180.508,91.6663 187.508,91.4996 194.5,91C 195.931,90.5348 197.097,89.7014 198,88.5C 198.915,82.0559 198.581,75.7226 197,69.5C 196.167,68.6667 195.333,67.8333 194.5,67C 189.845,66.5008 185.179,66.3342 180.5,66.5C 180.5,72.8333 180.5,79.1667 180.5,85.5C 178.167,85.5 175.833,85.5 173.5,85.5C 173.5,76.8333 173.5,68.1667 173.5,59.5 Z"/></g>
+		        <g><path style="opacity:1" fill="#1c23dc" d="M 210.5,59.5 C 213.167,59.5 215.833,59.5 218.5,59.5C 218.5,61.8333 218.5,64.1667 218.5,66.5C 212.073,68.2382 209.406,65.9049 210.5,59.5 Z"/></g>
+		        <g><path style="opacity:1" fill="#1620db" d="M 229.5,59.5 C 237.167,59.5 244.833,59.5 252.5,59.5C 252.5,61.8333 252.5,64.1667 252.5,66.5C 245.825,66.3337 239.158,66.5004 232.5,67C 230.909,70.2751 231.242,73.2751 233.5,76C 239.942,76.0827 246.275,76.7493 252.5,78C 256.776,82.8919 257.61,88.3919 255,94.5C 253.786,96.0488 252.286,97.2155 250.5,98C 241.506,98.4998 232.506,98.6664 223.5,98.5C 223.5,96.1667 223.5,93.8333 223.5,91.5C 231.752,91.8158 239.919,91.4825 248,90.5C 248.758,88.2305 248.591,86.0639 247.5,84C 241.5,83.6667 235.5,83.3333 229.5,83C 227.714,82.2155 226.214,81.0488 225,79.5C 223.445,74.6178 223.112,69.6178 224,64.5C 225.73,62.5981 227.563,60.9314 229.5,59.5 Z"/></g>
+		        <g><path style="opacity:1" fill="#1e25dc" d="M 211.5,69.5 C 213.833,69.5 216.167,69.5 218.5,69.5C 218.5,79.1667 218.5,88.8333 218.5,98.5C 215.833,98.5 213.167,98.5 210.5,98.5C 210.194,88.7504 210.527,79.0838 211.5,69.5 Z"/></g>
+		    </svg>
+	    </div>
+        <div class="logoTransfer">
+			<svg class="logo" xmlns="http://www.w3.org/2000/svg" height="60px" version="1.1" viewBox="0 0 530 180">  
+		      <path style="stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1;" d="m 195,90 l 15,10 c 0,0 -5,-5 0,-20 z m 10,3 l 120,0 l 0,-6 l -120,0 z m 130,-3 l -15,-10 c 0,0 5,5 0,20 z" />
+		  
+		  
+		      <g transform="matrix(0.8,0,0,0.8,+350,+3.638968)">
+		      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="225px" height="225px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+				<g><path style="opacity:1" fill="#fdfefb" d="M -0.5,-0.5 C 11.5,-0.5 23.5,-0.5 35.5,-0.5C 16.4691,2.86542 4.46913,13.8654 -0.5,32.5C -0.5,21.5 -0.5,10.5 -0.5,-0.5 Z"/></g>
+				<g><path style="opacity:1" fill="#93c90f" d="M 35.5,-0.5 C 86.5,-0.5 137.5,-0.5 188.5,-0.5C 207.563,2.89939 219.563,13.8994 224.5,32.5C 224.5,76.8333 224.5,121.167 224.5,165.5C 182.165,165.667 139.832,165.5 97.5,165C 84.4772,161.742 76.8105,153.575 74.5,140.5C 74.5,137.5 74.5,134.5 74.5,131.5C 99.339,131.831 124.006,131.498 148.5,130.5C 166.806,127.692 178.306,117.358 183,99.5C 183.667,86.1667 183.667,72.8333 183,59.5C 178.86,43.3599 168.693,33.1932 152.5,29C 125.874,27.3783 99.2076,27.045 72.5,28C 45.8297,37.4849 35.3297,56.3183 41,84.5C 41.8333,85.3333 42.6667,86.1667 43.5,87C 52.5,87.6667 61.5,87.6667 70.5,87C 72,86.1667 73.1667,85 74,83.5C 74.3333,78.1667 74.6667,72.8333 75,67.5C 76.1049,64.0629 78.2716,61.5629 81.5,60C 100.768,58.3709 120.102,58.0376 139.5,59C 144.245,60.1148 147.412,62.9481 149,67.5C 149.667,75.5 149.667,83.5 149,91.5C 147.833,95.3333 145.333,97.8333 141.5,99C 94.2265,100.485 46.8932,100.985 -0.5,100.5C -0.5,77.8333 -0.5,55.1667 -0.5,32.5C 4.46913,13.8654 16.4691,2.86542 35.5,-0.5 Z"/></g>
+				<g><path style="opacity:1" fill="#fdfdfa" d="M 188.5,-0.5 C 200.5,-0.5 212.5,-0.5 224.5,-0.5C 224.5,10.5 224.5,21.5 224.5,32.5C 219.563,13.8994 207.563,2.89939 188.5,-0.5 Z"/></g>
+				<g><path style="opacity:1" fill="#fefefd" d="M 148.5,130.5 C 123.5,130.5 98.5,130.5 73.5,130.5C 73.1872,134.042 73.5206,137.375 74.5,140.5C 76.8105,153.575 84.4772,161.742 97.5,165C 139.832,165.5 182.165,165.667 224.5,165.5C 224.5,185.167 224.5,204.833 224.5,224.5C 213.167,224.5 201.833,224.5 190.5,224.5C 200.532,222.342 209.032,217.342 216,209.5C 218.112,206.273 219.945,202.94 221.5,199.5C 222.404,198.791 222.737,197.791 222.5,196.5C 182.5,196.5 142.5,196.5 102.5,196.5C 73.9388,194.76 54.1055,180.76 43,154.5C 41.0225,146.961 40.1892,139.294 40.5,131.5C 26.8333,131.5 13.1667,131.5 -0.5,131.5C -0.5,121.167 -0.5,110.833 -0.5,100.5C 46.8932,100.985 94.2265,100.485 141.5,99C 145.333,97.8333 147.833,95.3333 149,91.5C 149.667,83.5 149.667,75.5 149,67.5C 147.412,62.9481 144.245,60.1148 139.5,59C 120.102,58.0376 100.768,58.3709 81.5,60C 78.2716,61.5629 76.1049,64.0629 75,67.5C 74.6667,72.8333 74.3333,78.1667 74,83.5C 73.1667,85 72,86.1667 70.5,87C 61.5,87.6667 52.5,87.6667 43.5,87C 42.6667,86.1667 41.8333,85.3333 41,84.5C 35.3297,56.3183 45.8297,37.4849 72.5,28C 99.2076,27.045 125.874,27.3783 152.5,29C 168.693,33.1932 178.86,43.3599 183,59.5C 183.667,72.8333 183.667,86.1667 183,99.5C 178.306,117.358 166.806,127.692 148.5,130.5 Z"/></g>
+				<g><path style="opacity:1" fill="#eaf4d3" d="M 148.5,130.5 C 124.006,131.498 99.339,131.831 74.5,131.5C 74.5,134.5 74.5,137.5 74.5,140.5C 73.5206,137.375 73.1872,134.042 73.5,130.5C 98.5,130.5 123.5,130.5 148.5,130.5 Z"/></g>
+				<g><path style="opacity:1" fill="#93c90e" d="M -0.5,131.5 C 13.1667,131.5 26.8333,131.5 40.5,131.5C 40.1892,139.294 41.0225,146.961 43,154.5C 54.1055,180.76 73.9388,194.76 102.5,196.5C 142.344,196.835 182.011,197.835 221.5,199.5C 219.945,202.94 218.112,206.273 216,209.5C 209.032,217.342 200.532,222.342 190.5,224.5C 126.833,224.5 63.1667,224.5 -0.5,224.5C -0.5,193.5 -0.5,162.5 -0.5,131.5 Z"/></g>
+				<g><path style="opacity:1" fill="#b0d661" d="M 102.5,196.5 C 142.5,196.5 182.5,196.5 222.5,196.5C 222.737,197.791 222.404,198.791 221.5,199.5C 182.011,197.835 142.344,196.835 102.5,196.5 Z"/></g>
+		  	  </svg>
+		      </g>
+		      <g transform="matrix(1.0671711,0,0,1.0802403,-242.07004,-3.638968)">
+		        <path d="m 235.55996,122.32139 65.99684,-65.245439 9.61127,-9.494429 9.61126,9.494429 48.71786,48.127399 -0.0713,0.24287 -0.96104,2.79606 -1.09061,2.7291 -1.22617,2.66469 -1.34976,2.59982 -1.22704,2.10395 -52.40328,-51.76861 c -22.86589,22.605906 -45.73092,45.21138 -68.59595,67.81602 -2.64028,-3.84168 -5.09265,-7.79865 -7.01216,-12.06586 z" style="clip-rule:evenodd;fill:#e64a19;fill-rule:evenodd;stroke-width:0.87332809" />
+		        <path d="m 311.16893,3.3686968 c 46.45255,0 84.33469,37.4250352 84.33469,83.3154142 0,45.887409 -37.88214,83.314139 -84.33469,83.314139 -25.37318,0 -48.18501,-11.17665 -63.66633,-28.79057 l 2.98008,-2.95501 2.16319,-2.13785 2.16749,-2.14377 2.16835,-2.14209 0.0884,-0.0865 c 13.00665,15.21415 32.43854,24.9082 54.09884,24.9082 39.00964,0 70.82522,-31.42855 70.82522,-69.966579 0,-38.540154 -31.81558,-69.969554 -70.82522,-69.969554 -39.01137,0 -70.82694,31.4294 -70.82694,69.969554 0,5.189918 0.58434,10.24717 1.67968,15.121749 l -4.69923,4.65206 -6.27207,6.2012 c -2.73168,-8.18222 -4.217,-16.909931 -4.217,-25.97501 0,-45.89038 37.88214,-83.3154145 84.33556,-83.3154145 z" style="clip-rule:evenodd;fill:#474747;fill-rule:evenodd;stroke-width:0.87332809" />
+		      </g>
+		    </svg>
+        </div>
+      </div>
+
+    <br/><br/><br/>
+    
+	<h3>Authorize openHAB Linky binding for Enedis</h3>
+	<p>On this page you can authorize the openHAB Linky binding to access your Enedis account.</p>
+	<p>
+		The redirect URI to use with Enedis for this openHAB installation is
+		<a href="${redirectUri}">${redirectUri}</a>
+	</p>
+	${error} ${authorizedUser}
+	
+	<br/>
+	<p><b>This process need to be done for each electrical meter you have (each prmId).<br/>
+	This is a two step process:</b>
+	<ol class="olList">
+	   <li>First you will need to do a consent on the enedis Site.<br/>
+	   For this, click on the Authorize button.<br/>
+	   You will be redirect to the enedis site. Login as usual with your userName / Password.<br/>
+	   You will then be redirect to a consentment page. <br/>
+	   You will have to select which prmId you would like to give the consent, click the checkbox, and then click on the validate button.<br/>
+	   After this, you will be redirect to myelectricaldata information page.<br/>
+	   </li>
+	   
+	   <li>Second, come back to the /connectlinky page.<br/>
+	   If you have multiple prm, select the PrmId in the combobox you want to authorize.v
+	   Then click the Retrieve token button.<br/>
+	   It will fill you linky thing configuration with the token.<br/> 
+	</ol>
+	
+	
+	</p>
+	
+	<br/><br/><br/>
+	<div class="block${bridge.authorized}">
+	   <h1>Connect to Enedis:</h1>
+        <br/>
+        <br/>  
+        <div>
+            <div class="box">
+                <b>Please select your prmId :</b>
+		        <select id="prmId">
+		           ${prmId.Option}
+		        </select>
+	        </div>
+            <div class="button">
+                <a href=${authorize.uri}>Authorize Bridge
+                </a>
+            </div>
+            <div class="button">
+                <a href="javascript:retrieveToken()">Retrieve token
+                </a>
+            </div>
+        </div>
+    </div>
+	
+</body>
+</html>
