@@ -372,29 +372,31 @@ Further DPTs and subtypes may be added later once implemented and released in th
 |||
 | 19.001          | DateTimeType (datetime) (DateTime)                 | Date and Time, year can be 1900..2155 |
 |||
-| 20.xxx          |                                                    | Incomplete, only subtypes given below are supported; override with DPT5.010 if you need enum as DecimalType |
+| 20.xxx          |                                                    | Override with DPT5.010 if you need enum as DecimalType |
 | 20.001-20.009   | StringType (string)                                |                                   |
 | 20.011-20.014   | StringType (string)                                |                                   |
 | 20.017          | StringType (string)                                |                                   |
-| 20.020-20.021   | StringType (string)                                |                                   |
-| 20.100-20.114   | StringType (string)                                |                                   |
+| 20.020-20.022   | StringType (string)                                |                                   |
+| 20.100-20.115   | StringType (string)                                |                                   |
 | 20.120-20.122   | StringType (string)                                |                                   |
-| 20.600-20.610   | StringType (string)                                |                                   |
+| 20.600-20.613   | StringType (string)                                |                                   |
 | 20.801-20.804   | StringType (string)                                |                                   |
 | 20.1000-20.1005 | StringType (string)                                |                                   |
 | 20.1200         | StringType (string)                                |                                   |
-| 20.1202         | StringType (string)                                |                                   |
+| 20.1202-20.1209 | StringType (string)                                |                                   |
 |||
-| 21.xxx          |                                                    | Incomplete, only subtypes given below are supported; override with DPT5.010 if you need bitset as DecimalType |
+| 21.xxx          |                                                    | Override with DPT5.010 if you need bitset as DecimalType |
 | 21.001-20.002   | StringType (string)                                |                                   |
 | 21.100-20.106   | StringType (string)                                |                                   |
 | 21.601          | StringType (string)                                |                                   |
 | 21.1000-21.1002 | StringType (string)                                |                                   |
 | 21.1010         | StringType (string)                                |                                   |
+| 21.1200-21.1201 | StringType (string)                                |                                   |
 |||
-| 22.xxx          |                                                    | Incomplete, only subtypes given below are supported; override with DPT7.010 if you need bitset as DecimalType |
-| 22.101          | StringType (string)                                |                                   |
+| 22.xxx          |                                                    | Override with DPT7.010 if you need bitset as DecimalType |
+| 22.100-22.101   | StringType (string)                                |                                   |
 | 22.1000         | StringType (string)                                |                                   |
+| 22.1010         | StringType (string)                                |                                   |
 |||
 | 28.001          | StringType (string)                                | KNX representation is Null-terminated, do not include null characters |
 |||
