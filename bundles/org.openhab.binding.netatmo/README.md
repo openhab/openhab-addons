@@ -161,7 +161,7 @@ If you did not manually create things in the *.things file, the Netatmo Binding 
 
 ### Weather Station Main Indoor Device
 
-Weather station uses a default refreshInterval of 10 minutes (can be adjusted), based on a standard update period of Netatmo systems.
+Weather station uses a default `refreshInterval` of 10 minutes (can be adjusted), based on a standard update period of Netatmo systems.
 It will auto adapt to stick closest as possible to last data availability.
 
 **Supported channels for the main indoor module:**
@@ -330,8 +330,8 @@ All these channels are read only.
 
 ### Healthy Home Coach Device
 
-Home coach uses a default refreshInterval of 10 minutes (can be adjusted), based on a standard update period of Netatmo systems.
-It will auto adapt to stick closest as possible to last data availability.
+Home Coach uses a default `refreshInterval` of 10 minutes (can be adjusted), based on a standard update period of Netatmo systems.
+It will auto-adapt to stick as closely as possible to the last data availability.
 
 **Supported channels for the healthy home coach device:**
 

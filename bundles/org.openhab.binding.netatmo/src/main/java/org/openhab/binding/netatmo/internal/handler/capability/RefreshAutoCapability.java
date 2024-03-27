@@ -58,7 +58,7 @@ public class RefreshAutoCapability extends RefreshCapability {
 
         Duration delay = dataValidity.minus(dataAge);
         if (delay.isNegative() || delay.isZero()) {
-            logger.info("{} did not update data in expected time, return to probing", thingUID);
+            logger.debug("{} did not update data in expected time, return to probing", thingUID);
             dataTimeStamp = Instant.MIN;
             return PROBING_INTERVAL;
         }
