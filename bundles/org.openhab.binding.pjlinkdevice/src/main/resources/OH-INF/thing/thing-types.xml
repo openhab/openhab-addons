@@ -13,6 +13,7 @@
 			<channel id="input" typeId="input"/>
 			<channel id="audioMute" typeId="audioMute"/>
 			<channel id="videoMute" typeId="videoMute"/>
+			<channel id="audioAndVideoMute" typeId="audioAndVideoMute"/>
 			<channel id="lamp1Hours" typeId="lampHours"/>
 			<channel id="lamp1Active" typeId="lampActive"/>
 		</channels>
@@ -101,6 +102,12 @@
 		<item-type>Switch</item-type>
 		<label>Video Mute</label>
 		<description>Select the video mute status</description>
+	</channel-type>
+
+	<channel-type id="audioAndVideoMute">
+		<item-type>Switch</item-type>
+		<label>Audio and Video Mute</label>
+		<description>Select the audio and video mute status</description>
 	</channel-type>
 
 	<channel-type id="lampHours">

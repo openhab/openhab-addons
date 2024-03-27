@@ -29,21 +29,24 @@ import org.openhab.binding.pjlinkdevice.internal.device.command.ResponseExceptio
 public class MuteQueryResponse extends PrefixedResponse<MuteQueryResponse.MuteQueryResponseValue> {
 
     public enum MuteQueryResponseValue {
-        OFF("Mute off", "30", false, false),
-        VIDEO_MUTE_ON("Video muted", "11", false, true),
-        AUDIO_MUTE_ON("Audio muted", "21", true, false),
-        AUDIO_AND_VIDEO_MUTE_ON("Audio and video muted", "31", true, true);
+        OFF("Mute off", "30", false, false, false),
+        VIDEO_MUTE_ON("Video muted", "11", false, true, false),
+        AUDIO_MUTE_ON("Audio muted", "21", true, false, false),
+        AUDIO_AND_VIDEO_MUTE_ON("Audio and video muted", "31", true, true, true);
 
         private String text;
         private String code;
         private boolean audioMuted;
         private boolean videoMuted;
+        private boolean audioAndVideoMuted;
 
-        private MuteQueryResponseValue(String text, String code, boolean audioMuted, boolean videoMuted) {
+        private MuteQueryResponseValue(String text, String code, boolean audioMuted, boolean videoMuted,
+                boolean audioAndVideoMuted) {
             this.text = text;
             this.code = code;
             this.audioMuted = audioMuted;
             this.videoMuted = videoMuted;
+            this.audioAndVideoMuted = audioAndVideoMuted;
         }
 
         public String getText() {
@@ -66,6 +69,10 @@ public class MuteQueryResponse extends PrefixedResponse<MuteQueryResponse.MuteQu
 
         public boolean isVideoMuted() {
             return this.videoMuted;
+        }
+
+        public boolean isAudioAndVideoMuted() {
+            return this.audioAndVideoMuted;
         }
     }
 
