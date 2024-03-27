@@ -58,12 +58,8 @@ public abstract class CacheCapability<T extends RestManager> extends RestCapabil
         return lastResult;
     }
 
-    public boolean stillValid(Instant ts) {
+    protected boolean stillValid(Instant ts) {
         return requestTS.plus(validity).isAfter(ts);
-    }
-
-    public List<NAObject> getCachedResult() {
-        return lastResult;
     }
 
     protected abstract List<NAObject> getFreshData(T api);
