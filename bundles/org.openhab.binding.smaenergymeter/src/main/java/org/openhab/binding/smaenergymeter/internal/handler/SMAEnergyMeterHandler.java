@@ -15,10 +15,13 @@ package org.openhab.binding.smaenergymeter.internal.handler;
 import static org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants.*;
 
 import java.io.IOException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smaenergymeter.internal.configuration.EnergyMeterConfig;
+import org.openhab.binding.smaenergymeter.internal.packet.PacketListener;
+import org.openhab.binding.smaenergymeter.internal.packet.PacketListenerRegistry;
+import org.openhab.binding.smaenergymeter.internal.packet.PayloadHandler;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -35,21 +38,25 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osman Basha - Initial contribution
  */
-public class SMAEnergyMeterHandler extends BaseThingHandler {
+public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SMAEnergyMeterHandler.class);
-    private EnergyMeter energyMeter;
-    private ScheduledFuture<?> pollingJob;
+    private final PacketListenerRegistry listenerRegistry;
+    private @Nullable PacketListener listener;
+    private @Nullable String serialNumber;
 
-    public SMAEnergyMeterHandler(Thing thing) {
+    public SMAEnergyMeterHandler(Thing thing, PacketListenerRegistry listenerRegistry) {
         super(thing);
+        this.listenerRegistry = listenerRegistry;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
             logger.debug("Refreshing {}", channelUID);
-            updateData();
+            if (listener != null) {
+                listener.request();
+            }
         } else {
             logger.warn("This binding is a read-only binding and cannot handle commands");
         }
@@ -61,68 +68,81 @@ public class SMAEnergyMeterHandler extends BaseThingHandler {
 
         EnergyMeterConfig config = getConfigAs(EnergyMeterConfig.class);
 
-        int port = (config.getPort() == null) ? EnergyMeter.DEFAULT_MCAST_PORT : config.getPort();
-        energyMeter = new EnergyMeter(config.getMcastGroup(), port);
-        try {
-            energyMeter.update();
+        int port = (config.getPort() == null) ? PacketListener.DEFAULT_MCAST_PORT : config.getPort();
 
-            updateProperty(Thing.PROPERTY_VENDOR, "SMA");
-            updateProperty(Thing.PROPERTY_SERIAL_NUMBER, energyMeter.getSerialNumber());
-            logger.debug("Found a SMA Energy Meter with S/N '{}'", energyMeter.getSerialNumber());
+        try {
+            listener = listenerRegistry.getListener(config.getMcastGroup(), port);
+            serialNumber = config.getSerialNumber();
+            if (serialNumber == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "Meter serial number missing");
+                return;
+            }
+
+            logger.debug("Activated handler for SMA Energy Meter with S/N '{}'", serialNumber);
+
+            int pollingPeriod = (config.getPollingPeriod() == null) ? 30 : config.getPollingPeriod();
+            listener.addPayloadHandler(this);
+            listener.open(pollingPeriod);
+            logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
+            // we do not set online status here, it will be set only when data is received
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
-            return;
         }
-
-        int pollingPeriod = (config.getPollingPeriod() == null) ? 30 : config.getPollingPeriod();
-        pollingJob = scheduler.scheduleWithFixedDelay(this::updateData, 0, pollingPeriod, TimeUnit.SECONDS);
-        logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
-
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing SMAEnergyMeter handler '{}'", getThing().getUID());
 
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-            pollingJob = null;
+        if (listener != null) {
+            listener.removePayloadHandler(this);
         }
-        energyMeter = null;
     }
 
-    private synchronized void updateData() {
-        logger.debug("Update SMAEnergyMeter data '{}'", getThing().getUID());
+    @Override
+    public void handle(EnergyMeter energyMeter) {
+        if (serialNumber == null || !serialNumber.equals(energyMeter.getSerialNumber())) {
+            return;
+        }
+        logger.debug("Update SMAEnergyMeter {} data '{}'", serialNumber, getThing().getUID());
 
+        updateState(CHANNEL_POWER_IN, energyMeter.getPowerIn());
+        updateState(CHANNEL_POWER_OUT, energyMeter.getPowerOut());
+        updateState(CHANNEL_ENERGY_IN, energyMeter.getEnergyIn());
+        updateState(CHANNEL_ENERGY_OUT, energyMeter.getEnergyOut());
+
+        updateState(CHANNEL_POWER_IN_L1, energyMeter.getPowerInL1());
+        updateState(CHANNEL_POWER_OUT_L1, energyMeter.getPowerOutL1());
+        updateState(CHANNEL_ENERGY_IN_L1, energyMeter.getEnergyInL1());
+        updateState(CHANNEL_ENERGY_OUT_L1, energyMeter.getEnergyOutL1());
+
+        updateState(CHANNEL_POWER_IN_L2, energyMeter.getPowerInL2());
+        updateState(CHANNEL_POWER_OUT_L2, energyMeter.getPowerOutL2());
+        updateState(CHANNEL_ENERGY_IN_L2, energyMeter.getEnergyInL2());
+        updateState(CHANNEL_ENERGY_OUT_L2, energyMeter.getEnergyOutL2());
+
+        updateState(CHANNEL_POWER_IN_L3, energyMeter.getPowerInL3());
+        updateState(CHANNEL_POWER_OUT_L3, energyMeter.getPowerOutL3());
+        updateState(CHANNEL_ENERGY_IN_L3, energyMeter.getEnergyInL3());
+        updateState(CHANNEL_ENERGY_OUT_L3, energyMeter.getEnergyOutL3());
+
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Nullable
+    private static String retrieveSerialNumber(Map<String, String> properties) {
+        String property = properties.get(Thing.PROPERTY_SERIAL_NUMBER);
+        if (property == null) {
+            return null;
+        }
         try {
-            energyMeter.update();
-
-            updateState(CHANNEL_POWER_IN, energyMeter.getPowerIn());
-            updateState(CHANNEL_POWER_OUT, energyMeter.getPowerOut());
-            updateState(CHANNEL_ENERGY_IN, energyMeter.getEnergyIn());
-            updateState(CHANNEL_ENERGY_OUT, energyMeter.getEnergyOut());
-
-            updateState(CHANNEL_POWER_IN_L1, energyMeter.getPowerInL1());
-            updateState(CHANNEL_POWER_OUT_L1, energyMeter.getPowerOutL1());
-            updateState(CHANNEL_ENERGY_IN_L1, energyMeter.getEnergyInL1());
-            updateState(CHANNEL_ENERGY_OUT_L1, energyMeter.getEnergyOutL1());
-
-            updateState(CHANNEL_POWER_IN_L2, energyMeter.getPowerInL2());
-            updateState(CHANNEL_POWER_OUT_L2, energyMeter.getPowerOutL2());
-            updateState(CHANNEL_ENERGY_IN_L2, energyMeter.getEnergyInL2());
-            updateState(CHANNEL_ENERGY_OUT_L2, energyMeter.getEnergyOutL2());
-
-            updateState(CHANNEL_POWER_IN_L3, energyMeter.getPowerInL3());
-            updateState(CHANNEL_POWER_OUT_L3, energyMeter.getPowerOutL3());
-            updateState(CHANNEL_ENERGY_IN_L3, energyMeter.getEnergyInL3());
-            updateState(CHANNEL_ENERGY_OUT_L3, energyMeter.getEnergyOutL3());
-
-            if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            // old format in decimal form
+            int identifier = Integer.parseInt(property);
+            return Integer.toHexString(identifier);
+        } catch (NumberFormatException e) {
+            // hex form for newly discovered meters
+            return property;
         }
     }
 }
