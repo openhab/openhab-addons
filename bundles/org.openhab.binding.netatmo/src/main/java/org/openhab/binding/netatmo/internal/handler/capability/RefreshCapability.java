@@ -91,6 +91,8 @@ public class RefreshCapability extends Capability {
         } else {
             delay = refreshConfigured ? dataValidity.getSeconds()
                     : (probing() ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY)).toSeconds();
+            delay = delay < 2 ? PROBING_INTERVAL.toSeconds() : delay;
+            logger.debug("Module refreshed, next one in {}s", delay);
         }
         delay = delay < 2 ? PROBING_INTERVAL.toSeconds() : delay;
         logger.debug("{} refreshed, next one in {}s", thingUID, delay);
