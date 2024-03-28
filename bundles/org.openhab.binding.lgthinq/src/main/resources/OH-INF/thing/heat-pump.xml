@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lgthinq"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- LG Device Type relative to Air Conditioners -->
+	<thing-type id="401HP">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>LG ThinQ Heat Pump</label>
+		<description>LG ThinQ Heat Pump</description>
+
+		<channels>
+			<channel id="target_temperature" typeId="target-temperature"/>
+			<channel id="current_temperature" typeId="current-temperature"/>
+			<channel id="op_mode" typeId="operation-mode"/>
+			<channel id="power" typeId="system.power"/>
+		</channels>
+
+	</thing-type>
+
+</thing:thing-descriptions>
