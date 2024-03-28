@@ -55,7 +55,7 @@ import com.google.gson.JsonSyntaxException;
 public class EnedisHttpApi {
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private static final String ENEDIS_DOMAIN = ".enedis.fr";
-    private static final String URL_APPS_LINCS = "https://apps.lincs" + ENEDIS_DOMAIN;
+    private static final String URL_APPS_LINCS = "https://alex.microapplications" + ENEDIS_DOMAIN;
     private static final String URL_MON_COMPTE = "https://mon-compte" + ENEDIS_DOMAIN;
     private static final String URL_COMPTE_PART = URL_MON_COMPTE.replace("compte", "compte-particulier");
     private static final String URL_ENEDIS_AUTHENTICATE = URL_APPS_LINCS + "/authenticate?target=" + URL_COMPTE_PART;
