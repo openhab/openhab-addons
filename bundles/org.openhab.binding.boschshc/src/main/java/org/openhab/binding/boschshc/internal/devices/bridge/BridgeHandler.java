@@ -34,6 +34,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.boschshc.internal.devices.BoschDeviceIdUtils;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
@@ -476,7 +477,7 @@ public class BridgeHandler extends BaseBridgeHandler {
      *
      * @param result Results from Long Polling
      */
-    private void handleLongPollResult(LongPollResult result) {
+    void handleLongPollResult(LongPollResult result) {
         for (BoschSHCServiceState serviceState : result.result) {
             if (serviceState instanceof DeviceServiceData deviceServiceData) {
                 handleDeviceServiceData(deviceServiceData);
@@ -562,12 +563,7 @@ public class BridgeHandler extends BaseBridgeHandler {
      */
     private void forwardStateToHandlers(BoschSHCServiceState serviceData, JsonElement state, String updateDeviceId) {
         boolean handled = false;
-        final String serviceId;
-        if (serviceData instanceof UserDefinedState userState) {
-            serviceId = userState.getId();
-        } else {
-            serviceId = ((DeviceServiceData) serviceData).id;
-        }
+        final String serviceId = getServiceId(serviceData);
 
         Bridge bridge = this.getThing();
         for (Thing childThing : bridge.getThings()) {
@@ -578,13 +574,17 @@ public class BridgeHandler extends BaseBridgeHandler {
                 @Nullable
                 String deviceId = handler.getBoschID();
 
-                handled = true;
-                logger.debug("Registered device: {} - looking for {}", deviceId, updateDeviceId);
-
-                if (deviceId != null && updateDeviceId.equals(deviceId)) {
-                    logger.debug("Found child: {} - calling processUpdate (id: {}) with {}", handler, serviceId, state);
-                    handler.processUpdate(serviceId, state);
+                if (deviceId == null) {
+                    continue;
                 }
+
+                logger.trace("Checking device {}, looking for {}", deviceId, updateDeviceId);
+
+                // handled is a boolean latch that stays true once it becomes true
+                // note that no short-circuiting operators are used, meaning that the method
+                // calls will always be evaluated, even if the latch is already true
+                handled |= notifyHandler(handler, deviceId, updateDeviceId, serviceId, state);
+                handled |= notifyParentHandler(handler, deviceId, updateDeviceId, serviceId, state);
             } else {
                 logger.warn("longPoll: child handler for {} does not implement Bosch SHC handler", baseHandler);
             }
@@ -593,6 +593,61 @@ public class BridgeHandler extends BaseBridgeHandler {
         if (!handled) {
             logger.debug("Could not find a thing for device ID: {}", updateDeviceId);
         }
+    }
+
+    /**
+     * Notifies the given handler if its device ID exactly matches the device ID for which the update was received.
+     * 
+     * @param handler the handler to be notified if applicable
+     * @param deviceId the device ID associated with the handler
+     * @param updateDeviceId the device ID for which the update was received
+     * @param serviceId the ID of the service for which the update was received
+     * @param state the received state object as JSON element
+     * 
+     * @return <code>true</code> if the handler matched and was notified, <code>false</code> otherwise
+     */
+    private boolean notifyHandler(BoschSHCHandler handler, String deviceId, String updateDeviceId, String serviceId,
+            JsonElement state) {
+        if (updateDeviceId.equals(deviceId)) {
+            logger.debug("Found handler {}, calling processUpdate() for service {} with state {}", handler, serviceId,
+                    state);
+            handler.processUpdate(serviceId, state);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * If an update is received for a logical child device and the given handler is the parent device handler, the
+     * parent handler is notified.
+     * 
+     * @param handler the handler to be notified if applicable
+     * @param deviceId the device ID associated with the handler
+     * @param updateDeviceId the device ID for which the update was received
+     * @param serviceId the ID of the service for which the update was received
+     * @param state the received state object as JSON element
+     * @return <code>true</code> if the given handler was the corresponding parent handler and was notified,
+     *         <code>false</code> otherwise
+     */
+    private boolean notifyParentHandler(BoschSHCHandler handler, String deviceId, String updateDeviceId,
+            String serviceId, JsonElement state) {
+        if (BoschDeviceIdUtils.isChildDeviceId(updateDeviceId)) {
+            String parentDeviceId = BoschDeviceIdUtils.getParentDeviceId(updateDeviceId);
+            if (parentDeviceId.equals(deviceId)) {
+                logger.debug("Notifying parent handler {} about update for child device for service {} with state {}",
+                        handler, serviceId, state);
+                handler.processChildUpdate(updateDeviceId, serviceId, state);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getServiceId(BoschSHCServiceState serviceData) {
+        if (serviceData instanceof UserDefinedState userState) {
+            return userState.getId();
+        }
+        return ((DeviceServiceData) serviceData).id;
     }
 
     /**

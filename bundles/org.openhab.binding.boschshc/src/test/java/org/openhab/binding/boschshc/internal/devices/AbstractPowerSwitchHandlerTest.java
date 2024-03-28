@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-
-import javax.measure.quantity.Energy;
-import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,12 +29,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
-import org.openhab.binding.boschshc.internal.services.powermeter.dto.PowerMeterServiceState;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchState;
 import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitchServiceState;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.RefreshType;
 
 import com.google.gson.JsonElement;
@@ -52,10 +50,6 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<PowerSwitchServiceState> serviceStateCaptor;
 
-    private @Captor @NonNullByDefault({}) ArgumentCaptor<QuantityType<Power>> powerCaptor;
-
-    private @Captor @NonNullByDefault({}) ArgumentCaptor<QuantityType<Energy>> energyCaptor;
-
     @BeforeEach
     @Override
     public void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
@@ -65,12 +59,6 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
         powerSwitchServiceState.switchState = PowerSwitchState.ON;
         lenient().when(bridgeHandler.getState(anyString(), eq("PowerSwitch"), same(PowerSwitchServiceState.class)))
                 .thenReturn(powerSwitchServiceState);
-
-        PowerMeterServiceState powerMeterServiceState = new PowerMeterServiceState();
-        powerMeterServiceState.powerConsumption = 12.34d;
-        powerMeterServiceState.energyConsumption = 56.78d;
-        lenient().when(bridgeHandler.getState(anyString(), eq("PowerMeter"), same(PowerMeterServiceState.class)))
-                .thenReturn(powerMeterServiceState);
     }
 
     @Test
@@ -102,46 +90,8 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
     }
 
     @Test
-    public void testUpdateChannelPowerMeterServiceState() {
-        JsonElement jsonObject = JsonParser.parseString("""
-                {
-                  "@type": "powerMeterState",
-                  "powerConsumption": "23",
-                  "energyConsumption": 42
-                }\
-                """);
-        getFixture().processUpdate("PowerMeter", jsonObject);
-
-        verify(getCallback()).stateUpdated(eq(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION)),
-                powerCaptor.capture());
-        QuantityType<Power> powerValue = powerCaptor.getValue();
-        assertEquals(23, powerValue.intValue());
-
-        verify(getCallback()).stateUpdated(eq(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION)),
-                energyCaptor.capture());
-        QuantityType<Energy> energyValue = energyCaptor.getValue();
-        assertEquals(42, energyValue.intValue());
-    }
-
-    @Test
     public void testHandleCommandRefreshPowerSwitchChannel() {
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), RefreshType.REFRESH);
         verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.ON);
-    }
-
-    @Test
-    public void testHandleCommandRefreshPowerConsumptionChannel() {
-        getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION),
-                RefreshType.REFRESH);
-        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION),
-                new QuantityType<>(12.34d, Units.WATT));
-    }
-
-    @Test
-    public void testHandleCommandRefreshEnergyConsumptionChannel() {
-        getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION),
-                RefreshType.REFRESH);
-        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION),
-                new QuantityType<>(56.78d, Units.WATT_HOUR));
     }
 }

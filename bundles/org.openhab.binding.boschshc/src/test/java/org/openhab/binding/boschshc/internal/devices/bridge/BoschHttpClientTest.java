@@ -102,6 +102,13 @@ class BoschHttpClientTest {
     }
 
     @Test
+    void getServiceStateUrlForChildDevice() {
+        assertEquals(
+                "https://127.0.0.1:8444/smarthome/devices/hdm:ZigBee:70ac08fffe5294ea%233/services/PowerSwitch/state",
+                httpClient.getServiceStateUrl("PowerSwitch", "hdm:ZigBee:70ac08fffe5294ea#3"));
+    }
+
+    @Test
     void isAccessPossible() throws InterruptedException {
         assertFalse(httpClient.isAccessPossible());
     }
