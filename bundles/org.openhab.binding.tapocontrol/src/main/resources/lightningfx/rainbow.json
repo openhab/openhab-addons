@@ -1,0 +1,71 @@
+ {
+  "id": "TapoStrip_7CC5y4lsL8pETYvmz7UOpQ",
+  "name": "Rainbow",
+  "brightness": 100,
+  "display_colors": [
+    [
+      0,
+      100,
+      100
+    ],
+    [
+      100,
+      100,
+      100
+    ],
+    [
+      200,
+      100,
+      100
+    ],
+    [
+      300,
+      100,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [],
+  "backgrounds": [],
+  "custom": 0,
+  "direction": 1,
+  "duration": 0,
+  "expansion_strategy": 1,
+  "fadeoff": null,
+  "hue_range": null,
+  "init_states": [],
+  "random_seed": null,
+  "repeat_times": 0,
+  "saturation_range": null,
+  "segment_length": null,
+  "segments": [
+    0
+  ],
+  "sequence": [
+    [
+      0,
+      100,
+      100
+    ],
+    [
+      100,
+      100,
+      100
+    ],
+    [
+      200,
+      100,
+      100
+    ],
+    [
+      300,
+      100,
+      100
+    ]
+  ],
+  "spread": 12,
+  "transition": 1500,
+  "transition_range": null,
+  "type": "sequence"
+}
