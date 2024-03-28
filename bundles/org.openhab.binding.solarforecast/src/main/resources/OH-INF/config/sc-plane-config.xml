@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:solarforecast:sc-plane">
+		<parameter name="resourceId" type="text" required="true">
+			<label>Rooftop Resource Id</label>
+			<description>Resource Id of Solcast rooftop site</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
+			<label>Forecast Refresh Interval</label>
+			<description>Data refresh rate of forecast data in minutes</description>
+			<default>120</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
