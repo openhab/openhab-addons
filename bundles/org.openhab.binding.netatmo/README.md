@@ -461,7 +461,7 @@ The Home thing has the following configuration elements:
 | id (1)          | String  | No       | If you have a single type of equipment, this id is to be used for the home          |
 | energyId        | String  | No       | Id of a home holding energy control devices                                         |
 | securityId      | String  | No       | Id of a home holding security monitoring devices                                    |
-| refreshInterval | Integer | No       | Refresh interval for refreshing the data in seconds. Default 300.                   |
+| refreshInterval | Integer | No       | Refresh interval for refreshing the data in seconds. Default 180.                   |
 
 At least one of these parameter must be filled - at most two : 
 
