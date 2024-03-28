@@ -40,19 +40,18 @@ import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.dptxlator.DPT;
-import tuwien.auto.calimero.dptxlator.DPTXlator;
-import tuwien.auto.calimero.dptxlator.DPTXlator1BitControlled;
-import tuwien.auto.calimero.dptxlator.DPTXlator2ByteFloat;
-import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
-import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
-import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
-import tuwien.auto.calimero.dptxlator.DPTXlatorDate;
-import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
-import tuwien.auto.calimero.dptxlator.DPTXlatorTime;
-import tuwien.auto.calimero.dptxlator.TranslatorTypes;
+import io.calimero.KNXException;
+import io.calimero.dptxlator.DPT;
+import io.calimero.dptxlator.DPTXlator;
+import io.calimero.dptxlator.DPTXlator1BitControlled;
+import io.calimero.dptxlator.DPTXlator2ByteFloat;
+import io.calimero.dptxlator.DPTXlator3BitControlled;
+import io.calimero.dptxlator.DPTXlator4ByteFloat;
+import io.calimero.dptxlator.DPTXlatorBoolean;
+import io.calimero.dptxlator.DPTXlatorDate;
+import io.calimero.dptxlator.DPTXlatorDateTime;
+import io.calimero.dptxlator.DPTXlatorTime;
+import io.calimero.dptxlator.TranslatorTypes;
 
 /**
  * This class encodes openHAB data types to strings for sending via Calimero
@@ -259,14 +258,6 @@ public class ValueEncoder {
                     default:
                         return "1 " + valueDPT.getUpperValue();
                 }
-            case "7":
-                if (DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getID().equals(dptId)
-                        || DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getID().equals(dptId)) {
-                    return bigDecimal.divide(BigDecimal.valueOf(1000)).stripTrailingZeros().toPlainString().replace('.',
-                            ((DecimalFormat) DecimalFormat.getInstance()).getDecimalFormatSymbols()
-                                    .getDecimalSeparator());
-                }
-                return bigDecimal.stripTrailingZeros().toPlainString();
             case "18":
                 int intVal = bigDecimal.intValue();
                 if (intVal > 63) {

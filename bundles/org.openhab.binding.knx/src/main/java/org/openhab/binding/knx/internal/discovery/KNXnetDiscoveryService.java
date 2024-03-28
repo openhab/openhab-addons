@@ -30,11 +30,11 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.knxnetip.Discoverer;
-import tuwien.auto.calimero.knxnetip.Discoverer.Result;
-import tuwien.auto.calimero.knxnetip.servicetype.SearchResponse;
-import tuwien.auto.calimero.knxnetip.util.ServiceFamiliesDIB;
-import tuwien.auto.calimero.knxnetip.util.ServiceFamiliesDIB.ServiceFamily;
+import io.calimero.knxnetip.Discoverer;
+import io.calimero.knxnetip.Discoverer.Result;
+import io.calimero.knxnetip.servicetype.SearchResponse;
+import io.calimero.knxnetip.util.ServiceFamiliesDIB;
+import io.calimero.knxnetip.util.ServiceFamiliesDIB.ServiceFamily;
 
 /**
  * Discovers KNXnet/IP interfaces or routers and adds the results to the inbox.
@@ -94,7 +94,7 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
 
             for (Result<SearchResponse> r : responses) {
                 @Nullable
-                SearchResponse response = r.getResponse();
+                SearchResponse response = r.response();
                 Map<ServiceFamily, Integer> services = response.getServiceFamilies().families();
 
                 if (services.containsKey(ServiceFamiliesDIB.ServiceFamily.Tunneling)
@@ -113,8 +113,8 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
                                 .withLabel(response.getDevice().getName()).withProperty("serialNumber", serial)
                                 .withProperty("type", "TUNNEL")
                                 .withProperty("ipAddress",
-                                        "" + response.getControlEndpoint().getAddress().getHostAddress())
-                                .withProperty("port", "" + response.getControlEndpoint().getPort())
+                                        "" + response.getControlEndpoint().endpoint().getAddress().getHostAddress())
+                                .withProperty("port", "" + response.getControlEndpoint().endpoint().getPort())
                                 .withRepresentationProperty("serialNumber").build());
                     }
                     if (services.containsKey(ServiceFamiliesDIB.ServiceFamily.Routing)) {
@@ -122,7 +122,7 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
                                 .withLabel(response.getDevice().getName() + " (router mode)")
                                 .withProperty("serialNumber", serial + "-r").withProperty("type", "ROUTER")
                                 .withProperty("ipAddress", "224.0.23.12")
-                                .withProperty("port", "" + response.getControlEndpoint().getPort())
+                                .withProperty("port", "" + response.getControlEndpoint().endpoint().getPort())
                                 .withRepresentationProperty("serialNumber").build());
                     }
                 } else {

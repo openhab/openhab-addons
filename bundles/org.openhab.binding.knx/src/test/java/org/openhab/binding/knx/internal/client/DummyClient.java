@@ -18,8 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler.CommandExtensionData;
 import org.openhab.core.thing.ThingUID;
 
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.link.KNXNetworkLink;
+import io.calimero.KNXException;
+import io.calimero.link.KNXNetworkLink;
 
 /**
  * {@link AbstractKNXClient} implementation for test, using {@link DummyKNXNetworkLink}.

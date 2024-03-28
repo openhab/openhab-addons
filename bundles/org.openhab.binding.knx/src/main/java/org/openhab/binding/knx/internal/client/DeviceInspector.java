@@ -17,6 +17,7 @@ import static org.openhab.binding.knx.internal.handler.DeviceConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,14 +26,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.DataUnitBuilder;
-import tuwien.auto.calimero.DeviceDescriptor;
-import tuwien.auto.calimero.DeviceDescriptor.DD0;
-import tuwien.auto.calimero.DeviceDescriptor.DD2;
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.KNXIllegalArgumentException;
-import tuwien.auto.calimero.mgmt.PropertyAccess.PID;
+import io.calimero.DeviceDescriptor;
+import io.calimero.DeviceDescriptor.DD0;
+import io.calimero.DeviceDescriptor.DD2;
+import io.calimero.GroupAddress;
+import io.calimero.IndividualAddress;
+import io.calimero.KNXIllegalArgumentException;
+import io.calimero.mgmt.PropertyAccess.PID;
 
 /**
  * Client dedicated to read device specific information using the {@link DeviceInfoClient}.
@@ -279,7 +279,7 @@ public class DeviceInspector {
     }
 
     private @Nullable String toHex(byte @Nullable [] input, String separator) {
-        return input == null ? null : DataUnitBuilder.toHex(input, separator);
+        return input == null ? null : HexFormat.ofDelimiter(separator).formatHex(input);
     }
 
     /**

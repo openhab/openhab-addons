@@ -23,17 +23,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 
-import tuwien.auto.calimero.dptxlator.DPT;
-import tuwien.auto.calimero.dptxlator.DPTXlator;
-import tuwien.auto.calimero.dptxlator.DPTXlator2ByteFloat;
-import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
-import tuwien.auto.calimero.dptxlator.DPTXlator4ByteSigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator4ByteUnsigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator64BitSigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator8BitSigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
-import tuwien.auto.calimero.dptxlator.DptXlator2ByteSigned;
+import io.calimero.dptxlator.DPT;
+import io.calimero.dptxlator.DPTXlator;
+import io.calimero.dptxlator.DPTXlator2ByteFloat;
+import io.calimero.dptxlator.DPTXlator2ByteUnsigned;
+import io.calimero.dptxlator.DPTXlator4ByteFloat;
+import io.calimero.dptxlator.DPTXlator4ByteSigned;
+import io.calimero.dptxlator.DPTXlator4ByteUnsigned;
+import io.calimero.dptxlator.DPTXlator64BitSigned;
+import io.calimero.dptxlator.DPTXlator8BitSigned;
+import io.calimero.dptxlator.DPTXlator8BitUnsigned;
+import io.calimero.dptxlator.DptXlator2ByteSigned;
 
 /**
  * This class provides the units for values depending on the DPT (if available)
@@ -112,8 +112,6 @@ public class DPTUnits {
 
         // two byte unsigned (DPT 7)
         DPT_UNIT_MAP.remove(DPTXlator2ByteUnsigned.DPT_VALUE_2_UCOUNT.getID()); // counts have no unit
-        DPT_UNIT_MAP.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getID(), "ms"); // according to spec, it is ms
-        DPT_UNIT_MAP.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getID(), "ms"); // according to spec, it is ms
 
         // two byte signed (DPT 8)
         DPT_UNIT_MAP.remove(DptXlator2ByteSigned.DptValueCount.getID()); // pulses have no unit

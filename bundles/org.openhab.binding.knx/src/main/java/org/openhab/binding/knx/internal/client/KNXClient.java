@@ -16,9 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.handler.GroupAddressListener;
 
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.datapoint.Datapoint;
+import io.calimero.IndividualAddress;
+import io.calimero.KNXException;
+import io.calimero.datapoint.Datapoint;
 
 /**
  * Client for communicating with the KNX bus.

@@ -39,13 +39,13 @@ import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
-import tuwien.auto.calimero.dptxlator.DPTXlator4ByteSigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator4ByteUnsigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator64BitSigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator8BitSigned;
-import tuwien.auto.calimero.dptxlator.DptXlator2ByteSigned;
+import io.calimero.dptxlator.DPTXlator2ByteUnsigned;
+import io.calimero.dptxlator.DPTXlator4ByteFloat;
+import io.calimero.dptxlator.DPTXlator4ByteSigned;
+import io.calimero.dptxlator.DPTXlator4ByteUnsigned;
+import io.calimero.dptxlator.DPTXlator64BitSigned;
+import io.calimero.dptxlator.DPTXlator8BitSigned;
+import io.calimero.dptxlator.DptXlator2ByteSigned;
 
 /**
  *
@@ -117,9 +117,8 @@ class DPTTest {
     @Test
     void testToDPT7ValueFromQuantityType() {
         assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.002"));
-        // according to spec this should be 1000 for 7.003 and 7.004 - 1 is a workaround for Calimero 2.5.1
-        assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.003"));
-        assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.004"));
+        assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.003"));
+        assertEquals("1000", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.004"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("1000 ms"), "7.005"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 s"), "7.006"));
         assertEquals("1", ValueEncoder.encode(new QuantityType<>("60 min"), "7.007"));
@@ -499,8 +498,6 @@ class DPTTest {
 
         // two byte unsigned (DPT 7)
         assertNotEquals("", DPTXlator2ByteUnsigned.DPT_VALUE_2_UCOUNT.getUnit()); // counts have no unit
-        assertNotEquals(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getUnit(), "ms"); // according to spec, it is ms
-        assertNotEquals(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getUnit(), "ms"); // according to spec, it is ms
 
         // two byte signed (DPT 8, DPTXlator is missing in calimero 2.5-M1)
         assertNotEquals("", DptXlator2ByteSigned.DptValueCount.getUnit()); // pulses have no unit

@@ -35,7 +35,7 @@ import org.openhab.core.types.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.GroupAddress;
+import io.calimero.GroupAddress;
 
 /**
  * Meta-data abstraction for the KNX channel configurations.

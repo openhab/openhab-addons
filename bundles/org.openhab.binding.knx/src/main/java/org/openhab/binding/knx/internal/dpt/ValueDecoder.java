@@ -43,19 +43,19 @@ import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.KNXFormatException;
-import tuwien.auto.calimero.KNXIllegalArgumentException;
-import tuwien.auto.calimero.dptxlator.DPTXlator;
-import tuwien.auto.calimero.dptxlator.DPTXlator1BitControlled;
-import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
-import tuwien.auto.calimero.dptxlator.DPTXlator64BitSigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator8BitUnsigned;
-import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
-import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
-import tuwien.auto.calimero.dptxlator.DPTXlatorSceneControl;
-import tuwien.auto.calimero.dptxlator.TranslatorTypes;
+import io.calimero.KNXException;
+import io.calimero.KNXFormatException;
+import io.calimero.KNXIllegalArgumentException;
+import io.calimero.dptxlator.DPTXlator;
+import io.calimero.dptxlator.DPTXlator1BitControlled;
+import io.calimero.dptxlator.DPTXlator2ByteUnsigned;
+import io.calimero.dptxlator.DPTXlator3BitControlled;
+import io.calimero.dptxlator.DPTXlator64BitSigned;
+import io.calimero.dptxlator.DPTXlator8BitUnsigned;
+import io.calimero.dptxlator.DPTXlatorBoolean;
+import io.calimero.dptxlator.DPTXlatorDateTime;
+import io.calimero.dptxlator.DPTXlatorSceneControl;
+import io.calimero.dptxlator.TranslatorTypes;
 
 /**
  * This class decodes raw data received from the KNX bus to an openHAB datatype
@@ -80,7 +80,7 @@ public class ValueDecoder {
     // omitted
     public static final Pattern XYY_PATTERN = Pattern
             .compile("(?:\\((?<x>\\d+(?:[,.]\\d+)?) (?<y>\\d+(?:[,.]\\d+)?)\\))?\\s*(?:(?<Y>\\d+(?:[,.]\\d+)?)\\s%)?");
-    public static final Pattern TSD_SEPARATOR = Pattern.compile("^[0-9](?<sep>[,\\.])[0-9][0-9][0-9].*");
+    public static final Pattern TSD_SEPARATOR = Pattern.compile("^[0-9]+(?<sep>[,\\.])[0-9][0-9][0-9].*");
 
     private static boolean check235001(byte[] data) throws KNXException {
         if (data.length != 6) {
@@ -214,10 +214,11 @@ public class ValueDecoder {
                     int sep = java.lang.Math.max(value.indexOf(" % "), value.indexOf(" K "));
                     String time = value.substring(sep + 3);
                     Matcher mt = TSD_SEPARATOR.matcher(time);
-                    if (mt.matches()) {
+                    for (; mt.matches(); mt = TSD_SEPARATOR.matcher(time)) {
                         int dp = time.indexOf(mt.group("sep"));
-                        value = value.substring(0, sep + dp + 3) + time.substring(dp + 1);
+                        time = time.substring(0, dp) + time.substring(dp + 1);
                     }
+                    value = value.substring(0, sep + 3) + time;
                     return StringType.valueOf(value.replace(',', '.').replace(". ", ", "));
                 case "232":
                     return handleDpt232(value, subType);

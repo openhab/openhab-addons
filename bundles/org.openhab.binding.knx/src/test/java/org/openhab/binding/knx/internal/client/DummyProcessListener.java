@@ -17,9 +17,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.DetachEvent;
-import tuwien.auto.calimero.process.ProcessEvent;
-import tuwien.auto.calimero.process.ProcessListener;
+import io.calimero.DetachEvent;
+import io.calimero.process.ProcessEvent;
+import io.calimero.process.ProcessListener;
 
 /**
  * This implementation of {@link ProcessListener} caches a received frames.
