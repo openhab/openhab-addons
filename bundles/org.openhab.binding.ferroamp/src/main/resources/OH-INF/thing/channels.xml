@@ -1,0 +1,978 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ferroamp"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="ehub-wloadconsq-l1">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WLoadConsq L1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wloadconsq-l2">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WLoadConsq L2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wloadconsq-l3">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WLoadConsq L3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iloadd-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, ILoadd L1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iloadd-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, ILoadd L2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iloadd-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, ILoadd L3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-winvconsq_3p">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, WInvConsq_3p</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wextconsq-l1">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WExtConsq L1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wextconsq-l2">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WExtConsq L2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wextconsq-l3">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WExtConsq L3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-winvprodq_3p">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, WInvProdq_3p</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-winvconsq-l1">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WInvConsq L1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-winvconsq-l2">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WInvConsq L2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-winvconsq-l3">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WInvConsq L3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iext-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, External/Grid RMS Current L1</label>
+		<description>External/Grid rms current l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iext-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, External/Grid RMS Current L2</label>
+		<description>External/Grid rms current l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iext-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, External/Grid RMS Current L3</label>
+		<description>External/Grid rms current l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iloadq-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, ILoadq L1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iloadq-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, ILoadq L2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iloadq-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, ILoadq L3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wloadprodq_3p">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, WLoadProdq_3p</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iace-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, ACE Equalization L1</label>
+		<description>ACE equalization l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iace-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, ACE Equalization L2</label>
+		<description>ACE equalization l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iace-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, ACE Equalization L3</label>
+		<description>ACE equalization l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pload-l1">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, PLoad L1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pload-l2">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, PLoad L2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pload-l3">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, PLoad L3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pinvreactive-l1">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, Inverter Power, Reactive L1</label>
+		<description>Inverter power, reactive l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pinvreactive-l2">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, Inverter Power, Reactive L2</label>
+		<description>Inverter power, reactive l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pinvreactive-l3">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, Inverter Power, Reactive L3</label>
+		<description>Inverter power, reactive l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ts">
+		<item-type>String</item-type>
+		<label>EHUB, Time Stamp</label>
+		<description>Time stamp when message was published</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ehub-ploadreactive-l1">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, PLoadReactive L1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ploadreactive-l2">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, PLoadReactive L2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ploadreactive-l3">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, PLoadReactive L3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-state">
+		<item-type>String</item-type>
+		<label>EHUB, State Of The System</label>
+		<description>State of the system</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ehub-wloadprodq-l1">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WLoadProdq L1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wloadprodq-l2">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WLoadProdq L2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wloadprodq-l3">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WLoadProdq L3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ppv">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, Power PV</label>
+		<description>Only sent when system has pv</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pinv-l1">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, Inverter Power, Active L1</label>
+		<description>Inverter power, active l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pinv-l2">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, Inverter Power, Active L2</label>
+		<description>Inverter power, active l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pinv-l3">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, Inverter Power, Active L3</label>
+		<description>Inverter power, active l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iextq-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, External/Grid Active Current L1</label>
+		<description>External/Grid active current l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iextq-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, External/Grid Active Current L2</label>
+		<description>External/Grid active current l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iextq-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, External/Grid Active Current L3</label>
+		<description>External/Grid active current l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pext-l1">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, External/Grid Power, Active L1</label>
+		<description>External/Grid power, active l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pext-l2">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, External/Grid Power, Active L2</label>
+		<description>External/Grid power, active l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pext-l3">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, External/Grid Power, Active L3</label>
+		<description>External/Grid power, active l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wextprodq-l1">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WExtProdq L1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wextprodq-l2">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WExtProdq L2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wextprodq-l3">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WExtProdq L3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wpv">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, PV Power</label>
+		<description>Only sent when system has pv</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pextreactive-l1">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, External/Grid Power, Reactive L1</label>
+		<description>External/Grid power, reactive l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pextreactive-l2">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, External/Grid Power, Reactive L2</label>
+		<description>External/Grid power, reactive l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pextreactive-l3">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, External/Grid Power, Reactive L3</label>
+		<description>External/Grid power, reactive l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-udcpos">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>EHUB, Positiv DC Link Voltage</label>
+		<description>Positiv dc link voltage</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-udcneg">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>EHUB, Negativ DC Link Voltage</label>
+		<description>Negativ dc link voltage</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-sext">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, Apparent Power</label>
+		<description>Apparent power</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iextd-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, External/Grid Reactive Current L1</label>
+		<description>External/Grid reactive current l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iextd-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, External/Grid Reactive Current L2</label>
+		<description>External/Grid reactive current l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-iextd-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, External/Grid Reactive Current L3</label>
+		<description>External/Grid reactive current l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wextconsq_3p">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, WExtConsq_3p</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ild-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, Inverter Reactive Current L1</label>
+		<description>Inverter reactive current l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ild-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, Inverter Reactive Current L2</label>
+		<description>Inverter reactive current l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ild-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, Inverter Reactive Current L3</label>
+		<description>Inverter reactive current l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-gridfreq">
+		<item-type>Number:Frequency</item-type>
+		<label>EHUB, Estimated Grid Frequency</label>
+		<description>Estimated grid frequency</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wloadconsq_3p">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, WLoadConsq_3p</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ul-l1">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>EHUB, External Voltage L1</label>
+		<description>External voltage l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ul-l2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>EHUB, External Voltage L2 </label>
+		<description>External voltage l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ul-l3">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>EHUB, External Voltage L3</label>
+		<description>External voltage l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wextprodq_3p">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, WExtProdq_3p</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ilq-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, Inverter Active Current L1</label>
+		<description>Inverter active current l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ilq-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, Inverter Active Current L2</label>
+		<description>Inverter active current l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ilq-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, Inverter Active Current L3</label>
+		<description>Inverter active current l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-winvprodq-l1">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WInvProdq L1</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-winvprodq-l2">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WInvProdq L2</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-winvprodq-l3">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, WInvProdq L3</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-il-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, Inverter RMS Current L1</label>
+		<description>Inverter rms current l1</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-il-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, Inverter RMS Current L2</label>
+		<description>Inverter rms current l2</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-il-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EHUB, Inverter RMS Current L3</label>
+		<description>Inverter rms current l3</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wbatprod">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, Produced Power Batteries</label>
+		<description>Only sent when system has batteries</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-wpbatcons">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, Consumed Power Batteries</label>
+		<description>Only sent when system has batteries</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>EHUB, Soc</label>
+		<description>State of charge for the EHUB</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-soh">
+		<item-type>Number:Dimensionless</item-type>
+		<label>EHUB, Soh</label>
+		<description>State of health for the EHUB</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-pbat">
+		<item-type>Number:Power</item-type>
+		<label>EHUB, Power Batteries</label>
+		<description>Only sent when system has batteries</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ehub-ratedcap">
+		<item-type>Number:Energy</item-type>
+		<label>EHUB, Total Rated Capacity Batteries</label>
+		<description>Total rated capacity of all batteries in the system</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos0-relaystatus">
+		<item-type>String</item-type>
+		<label>SSO, String-0, Relay Status</label>
+		<description>0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos0-temp">
+		<item-type>Number:Temperature</item-type>
+		<label>SSO, String-0, Temperature</label>
+		<description>Temperature measured on pcb of SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos0-wpv">
+		<item-type>Number:Energy</item-type>
+		<label>SSO, String-0, Total Energy Produced</label>
+		<description>Total energy produced by SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos0-ts">
+		<item-type>String</item-type>
+		<label>SSO, String-0, Time Stamp</label>
+		<description>Time stamp when message was published</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos0-udc">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>SSO, String-0, DC Link Voltage</label>
+		<description>Dc link voltage as measured by SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos0-faultcode">
+		<item-type>String</item-type>
+		<label>SSO, String-0, Fault Code</label>
+		<description>0x00 = OK, For all other values please contact Ferroamp support</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos0-ipv">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>SSO, String-0, Current On PV String Side</label>
+		<description>Measured on pv string side</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos0-upv">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>SSO, String-0, Voltage On PV String Side</label>
+		<description>Measured on pv string side</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos0-id">
+		<item-type>String</item-type>
+		<label>SSO, String-0, Unique Identifier</label>
+		<description>Unique identifier of SSO</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos1-relaystatus">
+		<item-type>String</item-type>
+		<label>SSO, String-1, Relay Status</label>
+		<description>0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos1-temp">
+		<item-type>Number:Temperature</item-type>
+		<label>SSO, String-1, Temperature</label>
+		<description>Temperature measured on pcb of SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos1-wpv">
+		<item-type>Number:Energy</item-type>
+		<label>SSO, String-1, Total Energy Produced</label>
+		<description>Total energy produced by SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos1-ts">
+		<item-type>String</item-type>
+		<label>SSO, String-1, Time Stamp</label>
+		<description>Time stamp when message was published</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos1-udc">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>SSO, String-1, DC Link Voltage</label>
+		<description>Dc link voltage as measured by SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos1-faultcode">
+		<item-type>String</item-type>
+		<label>SSO, String-1, Fault Code</label>
+		<description>0x00 = OK, For all other values please contact Ferroamp support</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos1-ipv">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>SSO, String-1, Current On PV String Side</label>
+		<description>Measured on pv string side</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos1-upv">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>SSO, String-1, Voltage On PV String Side</label>
+		<description>Measured on pv string side</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos1-id">
+		<item-type>String</item-type>
+		<label>SSO, String-1, Unique Identifier</label>
+		<description>Unique identifier of SSO</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos2-relaystatus">
+		<item-type>String</item-type>
+		<label>SSO, String-2, Relay Status</label>
+		<description>0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos2-temp">
+		<item-type>Number:Temperature</item-type>
+		<label>SSO, String-2, Temperature</label>
+		<description>Temperature measured on pcb of SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos2-wpv">
+		<item-type>Number:Energy</item-type>
+		<label>SSO, String-2, Total Energy Produced</label>
+		<description>Total energy produced by SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos2-ts">
+		<item-type>String</item-type>
+		<label>SSO, String-2, Time Stamp</label>
+		<description>Time stamp when message was published</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos2-udc">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>SSO, String-2, DC Link Voltage</label>
+		<description>Dc link voltage as measured by SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos2-faultcode">
+		<item-type>String</item-type>
+		<label>SSO, String-2, Fault Code</label>
+		<description>0x00 = OK, For all other values please contact Ferroamp support</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos2-ipv">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>SSO, String-2, Current On PV String Side</label>
+		<description>Measured on pv string side</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos2-upv">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>SSO, String-2, Voltage On PV String Side</label>
+		<description>Measured on pv string side</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos2-id">
+		<item-type>String</item-type>
+		<label>SSO, String-2, Unique Identifier</label>
+		<description>Unique identifier of SSO</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos3-relaystatus">
+		<item-type>String</item-type>
+		<label>SSO, String-3, Relay Status</label>
+		<description>0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos3-temp">
+		<item-type>Number:Temperature</item-type>
+		<label>SSO, String-3, Temperature</label>
+		<description>Temperature measured on pcb of SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos3-wpv">
+		<item-type>Number:Energy</item-type>
+		<label>SSO, String-3, Total Energy Produced</label>
+		<description>Total energy produced by SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos3-ts">
+		<item-type>String</item-type>
+		<label>SSO, String-3, Time Stamp</label>
+		<description>Time stamp when message was published</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos3-udc">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>SSO, String-3, DC Link Voltage</label>
+		<description>Dc link voltage as measured by SSO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos3-faultcode">
+		<item-type>String</item-type>
+		<label>SSO, String-3, Fault Code</label>
+		<description>0x00 = OK, For all other values please contact Ferroamp support</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ssos3-ipv">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>SSO, String-3, Current On PV String Side</label>
+		<description>Measured on pv string side</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos3-upv">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>SSO, String-3, Voltage On PV String Side</label>
+		<description>Measured on pv string side</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="ssos3-id">
+		<item-type>String</item-type>
+		<label>SSO, String-3, Unique Identifier</label>
+		<description>Unique identifier of SSO</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="eso-faultcode">
+		<item-type>String</item-type>
+		<label>ESO, Fault Code</label>
+		<description>See section 4.1.3.1 below for further explanation of fault codes</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="eso-id">
+		<item-type>String</item-type>
+		<label>ESO, Unique Identifier</label>
+		<description>Unique identifier</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="eso-ibat">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>ESO, Current On Battery Side</label>
+		<description>Measured on battery side</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="eso-ubat">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>ESO, Voltage On Battery Side</label>
+		<description>Measured on battery side</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="eso-relaystatus">
+		<item-type>String</item-type>
+		<label>ESO, Relay Status</label>
+		<description>0 = relay closed, 1 = relay open</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="eso-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>ESO, Soc</label>
+		<description>State of charge for ESO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="eso-temp">
+		<item-type>Number:Temperature</item-type>
+		<label>ESO, Temperature</label>
+		<description>Temperature measured inside ESO</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="eso-wpbatcons">
+		<item-type>Number:Energy</item-type>
+		<label>ESO, Total Energy Consumed</label>
+		<description>Total energy consumed by ESO, i.e total energy charged</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="eso-wbatprod">
+		<item-type>Number:Energy</item-type>
+		<label>ESO, Total Energy Produced</label>
+		<description>Total energy produced by ESO, i.e total energy discharged</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="eso-udc">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>ESO, DC Link Voltage</label>
+		<description>Dc link voltage as measured by ESO</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="eso-ts">
+		<item-type>String</item-type>
+		<label>ESO, Time stamp</label>
+		<description>Time stamp when message was published</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="esm-soh">
+		<item-type>Number:Dimensionless</item-type>
+		<label>ESM, Soh</label>
+		<description>State of health for the ESM</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="esm-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>ESM, Soc</label>
+		<description>State of charge for the ESM</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="esm-rated-capacity">
+		<item-type>Number:Energy</item-type>
+		<label>ESM, Rated Capacity Of Battery</label>
+		<description>Rated capacity of battery</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="esm-id">
+		<item-type>String</item-type>
+		<label>ESM, Unique Identifier Of Battery.</label>
+		<description>Unique identifier of battery. If available, this will be the unique id that the battery reports.</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="esm-rated-power">
+		<item-type>Number:Power</item-type>
+		<label>ESM, Rated Power Of Battery</label>
+		<description>Rated power of battery</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="esm-status">
+		<item-type>String</item-type>
+		<label>ESM, Battery Status</label>
+		<description>Dependent on battery manufacturer</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="esm-ts">
+		<item-type>String</item-type>
+		<label>ESM, Time Stamp</label>
+		<description>Time stamp when message was published</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="request-charge">
+		<item-type>String</item-type>
+		<label>Configure Charge Power</label>
+		<description>Charge power in watt</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="request-discharge">
+		<item-type>String</item-type>
+		<label>Configure Discharge Power</label>
+		<description>Discharge power in watt</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="request-auto">
+		<item-type>String</item-type>
+		<label>Configure Auto Power</label>
+		<description>Set auto power</description>
+		<category>Energy</category>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="request-extapiversion">
+		<item-type>String</item-type>
+		<label>Extapi Version</label>
+		<description>Returns Extapi-version</description>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
