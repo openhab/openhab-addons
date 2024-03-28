@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,8 +31,6 @@ import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -85,6 +86,10 @@ public interface CommonInterface {
         Bridge bridge = getBridge();
         return bridge != null && bridge.getHandler() instanceof DeviceHandler ? (DeviceHandler) bridge.getHandler()
                 : null;
+    }
+
+    default Optional<ScheduledFuture<?>> schedule(Runnable arg0, Duration delay) {
+        return Optional.of(getScheduler().schedule(arg0, delay.getSeconds(), TimeUnit.SECONDS));
     }
 
     default @Nullable ApiBridgeHandler getAccountHandler() {
@@ -221,15 +226,14 @@ public interface CommonInterface {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
         } else if (!ThingStatus.ONLINE.equals(bridge.getStatus())) {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
-            getCapabilities().remove(RefreshCapability.class);
-            getCapabilities().remove(ParentUpdateCapability.class);
+            getCapabilities().getParentUpdate().ifPresent(Capability::dispose);
+            getCapabilities().getRefresh().ifPresent(Capability::dispose);
         } else {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
-            if (ModuleType.ACCOUNT.equals(getModuleType().getBridge())) {
-                NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
-                getCapabilities().put(new RefreshCapability(this, config.refreshInterval));
-            }
-            getCapabilities().put(new ParentUpdateCapability(this));
+            getCapabilities().getParentUpdate().ifPresentOrElse(Capability::initialize, () -> {
+                int interval = getThingConfigAs(NAThingConfiguration.class).getRefreshInterval();
+                getCapabilities().getRefresh().ifPresent(cap -> cap.setInterval(Duration.ofSeconds(interval)));
+            });
         }
     }
 

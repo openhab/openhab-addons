@@ -46,7 +46,7 @@ public abstract class CacheCapability<T extends RestManager> extends RestCapabil
     protected synchronized List<NAObject> updateReadings(T api) {
         Instant now = Instant.now();
 
-        if (requestTS.plus(validity).isBefore(now)) {
+        if (!stillValid(now)) {
             logger.debug("{} requesting fresh data for {}", getClass().getSimpleName(), thingUID);
             List<NAObject> result = getFreshData(api);
             if (!result.isEmpty()) {
@@ -56,6 +56,10 @@ public abstract class CacheCapability<T extends RestManager> extends RestCapabil
         }
 
         return lastResult;
+    }
+
+    protected boolean stillValid(Instant ts) {
+        return requestTS.plus(validity).isAfter(ts);
     }
 
     protected abstract List<NAObject> getFreshData(T api);

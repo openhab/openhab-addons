@@ -153,7 +153,7 @@ public class Capability {
 
     public void expireData() {
         CommonInterface bridgeHandler = handler.getBridgeHandler();
-        if (bridgeHandler != null && !handler.getCapabilities().containsKey(RefreshCapability.class)) {
+        if (bridgeHandler != null && handler.getCapabilities().getRefresh().isEmpty()) {
             bridgeHandler.expireData();
         }
     }
