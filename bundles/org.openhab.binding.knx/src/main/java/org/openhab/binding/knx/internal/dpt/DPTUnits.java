@@ -112,8 +112,6 @@ public class DPTUnits {
 
         // two byte unsigned (DPT 7)
         DPT_UNIT_MAP.remove(DPTXlator2ByteUnsigned.DPT_VALUE_2_UCOUNT.getID()); // counts have no unit
-        DPT_UNIT_MAP.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getID(), "ms"); // according to spec, it is ms
-        DPT_UNIT_MAP.put(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getID(), "ms"); // according to spec, it is ms
 
         // two byte signed (DPT 8)
         DPT_UNIT_MAP.remove(DptXlator2ByteSigned.DptValueCount.getID()); // pulses have no unit
