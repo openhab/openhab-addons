@@ -456,11 +456,12 @@ Depending on the way it is configured the behaviour will be adapted and availabl
 
 The Home thing has the following configuration elements:
 
-| Parameter  | Type   | Required | Description                                                                         |
-| ---------- | ------ | -------- | ----------------------------------------------------------------------------------- |
-| id (1)     | String | No       | If you have a single type of equipment, this id is to be used for the home          |
-| energyId   | String | No       | Id of a home holding energy control devices                                         |
-| securityId | String | No       | Id of a home holding security monitoring devices                                    |
+| Parameter       | Type    | Required | Description                                                                         |
+| --------------- | ------- | -------- | ----------------------------------------------------------------------------------- |
+| id (1)          | String  | No       | If you have a single type of equipment, this id is to be used for the home          |
+| energyId        | String  | No       | Id of a home holding energy control devices                                         |
+| securityId      | String  | No       | Id of a home holding security monitoring devices                                    |
+| refreshInterval | Integer | No       | Refresh interval for refreshing the data in seconds. Default 300.                   |
 
 At least one of these parameter must be filled - at most two : 
 
@@ -468,7 +469,7 @@ At least one of these parameter must be filled - at most two :
 * id or energyId
 * securityId and energyId
 
-(1) this parameter is only kept for backward compatibility.
+(1) this parameter is kept for backward compatibility.
 
 All channels are read only.
 

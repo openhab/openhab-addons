@@ -231,7 +231,7 @@ public interface CommonInterface {
         } else {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
             getCapabilities().getParentUpdate().ifPresentOrElse(Capability::initialize, () -> {
-                int interval = getThingConfigAs(NAThingConfiguration.class).refreshInterval;
+                int interval = getThingConfigAs(NAThingConfiguration.class).getRefreshInterval();
                 getCapabilities().getRefresh().ifPresent(cap -> cap.setInterval(Duration.ofSeconds(interval)));
             });
         }
