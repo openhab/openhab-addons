@@ -43,6 +43,7 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -60,7 +61,8 @@ import com.google.gson.GsonBuilder;
  * @author Martin Kühl - Port to 3.x
  */
 @NonNullByDefault
-@Component(service = { PersistenceService.class, QueryablePersistenceService.class })
+@Component(service = { PersistenceService.class, QueryablePersistenceService.class }, property = Constants.SERVICE_PID
+        + "=org.openhab.mapdb")
 public class MapDbPersistenceService implements QueryablePersistenceService {
 
     private static final String SERVICE_ID = "mapdb";
