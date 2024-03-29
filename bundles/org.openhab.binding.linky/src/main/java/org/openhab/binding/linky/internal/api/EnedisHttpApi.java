@@ -149,7 +149,7 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData(String.format("%s/%s/cache", CONTRACT_URL, config.prmId));
+        String data = getData("%s/%s/cache".formatted(CONTRACT_URL, config.prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", CONTRACT_URL);
         }
@@ -169,7 +169,7 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData(String.format("%s/%s/cache", ADDRESS_URL, config.prmId));
+        String data = getData("%s/%s/cache".formatted(ADDRESS_URL, config.prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", ADDRESS_URL);
         }
@@ -189,7 +189,7 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData(String.format("%s/%s/cache", IDENTITY_URL, config.prmId));
+        String data = getData("%s/%s/cache".formatted(IDENTITY_URL, config.prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", IDENTITY_URL);
         }
@@ -209,7 +209,8 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData(String.format("%s/%s/cache", CONTACT_URL, config.prmId));
+        String data = getData("%s/%s/cache".formatted(CONTACT_URL, config.prmId));
+
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", CONTACT_URL);
         }

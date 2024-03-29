@@ -19,8 +19,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
+ * @author Laurent Arnal - Initial contribution
  */
 
 public class Contracts {
