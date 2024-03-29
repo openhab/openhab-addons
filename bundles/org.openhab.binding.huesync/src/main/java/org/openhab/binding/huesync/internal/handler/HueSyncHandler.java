@@ -51,13 +51,11 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public class HueSyncHandler extends BaseThingHandler {
-    /** the device registration id */
+
     static final String REGISTRATION_ID = "registrationId";
     static final String API_TOKEN = "apiAccessToken";
 
-    /** the key for the api version property */
     static final String PROPERTY_API_VERSION = "apiVersion";
-    /** the ky for the network state property */
     static final String PROPERTY_NETWORK_STATE = "networkState";
 
     @SuppressWarnings("null")
@@ -91,49 +89,7 @@ public class HueSyncHandler extends BaseThingHandler {
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO: Implementation ...
-    }
-
-    @SuppressWarnings("null")
-    @Override
-    public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-
-        scheduler.execute(() -> {
-            try {
-                this.connection = new HueSyncConnection(this.httpClient, this.config);
-
-                this.deviceInfo = this.connection.getDeviceInfo();
-
-                Map<String, String> properties = this.editProperties();
-
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, this.deviceInfo.uniqueId);
-                properties.put(Thing.PROPERTY_MODEL_ID, this.deviceInfo.deviceType);
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, this.deviceInfo.firmwareVersion);
-
-                properties.put(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", this.deviceInfo.apiLevel));
-                properties.put(HueSyncHandler.PROPERTY_NETWORK_STATE, this.deviceInfo.wifiState);
-
-                this.updateProperties(properties);
-
-                this.checkCompatibility();
-                this.checkRegistration();
-
-                if (this.thing.getStatus() == ThingStatus.OFFLINE) {
-                    this.startDeviceRegistrationTask();
-                }
-            } catch (HueSyncApiException e) {
-                this.logger.error("{}", e.getLogMessage());
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (Exception e) {
-                this.logger.error("{}", e.getMessage());
-                this.updateStatus(ThingStatus.OFFLINE);
-            }
-        });
-    }
-
+    // #region private
     @SuppressWarnings("null")
     private void startDeviceRegistrationTask() {
         if (this.deviceRegistrationTask != null) {
@@ -194,6 +150,52 @@ public class HueSyncHandler extends BaseThingHandler {
         }
     }
 
+    // #endregion
+
+    // #region Override
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // TODO: Implementation ...
+    }
+
+    @SuppressWarnings("null")
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
+
+        scheduler.execute(() -> {
+            try {
+                this.connection = new HueSyncConnection(this.httpClient, this.config);
+
+                this.deviceInfo = this.connection.getDeviceInfo();
+
+                Map<String, String> properties = this.editProperties();
+
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, this.deviceInfo.uniqueId);
+                properties.put(Thing.PROPERTY_MODEL_ID, this.deviceInfo.deviceType);
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, this.deviceInfo.firmwareVersion);
+
+                properties.put(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", this.deviceInfo.apiLevel));
+                properties.put(HueSyncHandler.PROPERTY_NETWORK_STATE, this.deviceInfo.wifiState);
+
+                this.updateProperties(properties);
+
+                this.checkCompatibility();
+                this.checkRegistration();
+
+                if (this.thing.getStatus() == ThingStatus.OFFLINE) {
+                    this.startDeviceRegistrationTask();
+                }
+            } catch (HueSyncApiException e) {
+                this.logger.error("{}", e.getLogMessage());
+                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (Exception e) {
+                this.logger.error("{}", e.getMessage());
+                this.updateStatus(ThingStatus.OFFLINE);
+            }
+        });
+    }
+
     @SuppressWarnings("null")
     @Override
     public void dispose() {
@@ -207,7 +209,6 @@ public class HueSyncHandler extends BaseThingHandler {
             if (this.serviceRegistration != null) {
                 this.serviceRegistration.unregister();
             }
-
         } catch (Exception e) {
             this.logger.error("{}", e.getMessage());
         } finally {
@@ -228,4 +229,5 @@ public class HueSyncHandler extends BaseThingHandler {
                     this.thing.getLabel(), this.thing.getUID(), this.config.registrationId, this.config.apiAccessToken);
         }
     }
+    // #endregion
 }
