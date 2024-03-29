@@ -23,9 +23,11 @@ import java.util.concurrent.TimeUnit;
 import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteoalerte.internal.config.BridgeConfiguration;
 import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService;
 import org.openhab.binding.meteoalerte.internal.discovery.MeteoAlerteDiscoveryService;
+import org.openhab.binding.meteoalerte.internal.dto.TextBlocItem;
 import org.openhab.binding.meteoalerte.internal.dto.VigilanceEnCours;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -51,13 +53,11 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
-    private static final int TIMEOUT_MS = 30000;
     private static final String PORTAIL_API_BASE_URL = "https://public-api.meteofrance.fr/public/DPVigilance/v1";
     private static final String TEXTE_VIGILANCE_URL = PORTAIL_API_BASE_URL + "/textesvigilance/encours";
     private static final String CARTE_VIGILANCE_URL = PORTAIL_API_BASE_URL + "/cartevigilance/encours";
     private static final String VIGNETTE_URL = PORTAIL_API_BASE_URL + "/vignettenationale-J/encours";
 
-    private static final int RECONNECT_DELAY_MIN = 5;
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteBridgeHandler.class);
@@ -66,6 +66,7 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
     private final DepartmentDbService dbService;
     private final Gson gson;
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private @Nullable VigilanceEnCours vigilanceEnCours;
 
     public MeteoAlerteBridgeHandler(Bridge bridge, Gson gson, LocationProvider locationProvider,
             DepartmentDbService dbService) {
@@ -88,8 +89,8 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
         header.put("accept", "*/*");
         updateStatus(ThingStatus.UNKNOWN);
 
-        refreshJob = Optional
-                .of(scheduler.scheduleWithFixedDelay(this::getVigilanceEnCours, 0, config.refresh, TimeUnit.MINUTES));
+        refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getVigilanceEnCours, config.refresh,
+                config.refresh, TimeUnit.MINUTES));
     }
 
     @Override
@@ -104,7 +105,7 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
         if (command instanceof RefreshType) {
             getVigilanceEnCours();
         } else {
-            logger.debug("The OpenUV bridge only handles Refresh command and not '{}'", command);
+            logger.debug("The bridge only handles Refresh command and not '{}'", command);
         }
     }
 
@@ -114,10 +115,11 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
         String url = TEXTE_VIGILANCE_URL;
         try {
             String answer = HttpUtil.executeUrl(HttpMethod.GET, url, header, null, null, REQUEST_TIMEOUT_MS);
-            VigilanceEnCours result = gson.fromJson(answer, VigilanceEnCours.class);
-            logger.debug("{}", result);
+            vigilanceEnCours = gson.fromJson(answer, VigilanceEnCours.class);
+            logger.debug("{}\n", answer);
+            updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
-            logger.warn("Synop request timedout : {}", e.getMessage());
+            logger.warn("Request timedout : {}", e.getMessage());
         }
     }
 
@@ -132,5 +134,13 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
 
     public DepartmentDbService getDbService() {
         return dbService;
+    }
+
+    public @Nullable TextBlocItem requestData(String department) {
+        if (vigilanceEnCours == null) {
+            getVigilanceEnCours();
+        }
+        return vigilanceEnCours.product.textBlocItems.stream().filter(bloc -> bloc.domain.name().equals(department))
+                .findFirst().orElse(null);
     }
 }

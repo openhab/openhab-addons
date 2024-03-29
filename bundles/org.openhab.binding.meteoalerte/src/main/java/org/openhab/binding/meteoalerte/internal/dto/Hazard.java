@@ -22,23 +22,29 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public enum Hazard {
     @SerializedName("1")
-    VENT,
+    VENT("vent"),
     @SerializedName("2")
-    PLUIE,
+    PLUIE("pluie-inondation"),
     @SerializedName("3")
-    ORAGES,
+    ORAGES("orage"),
     @SerializedName("4")
-    CRUES,
+    CRUES("inondation"),
     @SerializedName("5")
-    NEIGE_VERGLAS,
+    NEIGE_VERGLAS("neige"),
     @SerializedName("6")
-    CANICULE,
+    CANICULE("canicule"),
     @SerializedName("7")
-    GRAND_FROID,
+    GRAND_FROID("grand-froid"),
     @SerializedName("8")
-    AVALANCHES,
+    AVALANCHES("avalanches"),
     @SerializedName("9")
-    VAGUES_SUBMERSION,
-    ALL,
-    UNKNOWN;
+    VAGUES_SUBMERSION("vague-submersion"),
+    ALL(""),
+    UNKNOWN("");
+
+    public final String channelName;
+
+    Hazard(String channelName) {
+        this.channelName = channelName;
+    }
 }

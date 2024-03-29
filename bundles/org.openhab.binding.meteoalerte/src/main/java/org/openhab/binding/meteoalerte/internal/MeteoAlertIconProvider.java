@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteoalerte.internal.db.Department;
 import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService;
-import org.openhab.binding.meteoalerte.internal.json.ResponseFieldDTO.AlertLevel;
+import org.openhab.binding.meteoalerte.internal.dto.Risk;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.ui.icon.IconProvider;
 import org.openhab.core.ui.icon.IconSet;
@@ -115,9 +115,8 @@ public class MeteoAlertIconProvider implements IconProvider {
         if (state != null) {
             try {
                 Integer ordinal = Integer.valueOf(state);
-                AlertLevel alertLevel = ordinal < AlertLevel.values().length ? AlertLevel.values()[ordinal]
-                        : AlertLevel.UNKNOWN;
-                icon = icon.replaceAll(AlertLevel.UNKNOWN.color, alertLevel.color);
+                Risk alertLevel = ordinal < Risk.values().length ? Risk.values()[ordinal] : Risk.UNKNOWN;
+                icon = icon.replaceAll("#3d3c3c", alertLevel.rgbColor);
             } catch (NumberFormatException e) {
                 logger.debug("{} is not a valid DecimalType", state);
             }

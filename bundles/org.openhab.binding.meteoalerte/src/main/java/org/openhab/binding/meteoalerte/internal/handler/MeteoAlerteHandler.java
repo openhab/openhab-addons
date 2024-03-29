@@ -12,28 +12,32 @@
  */
 package org.openhab.binding.meteoalerte.internal.handler;
 
-import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.meteoalerte.internal.MeteoAlertIconProvider;
 import org.openhab.binding.meteoalerte.internal.config.MeteoAlerteConfiguration;
-import org.openhab.binding.meteoalerte.internal.json.ApiResponse;
-import org.openhab.binding.meteoalerte.internal.json.ResponseFieldDTO.AlertLevel;
+import org.openhab.binding.meteoalerte.internal.dto.BlocItem;
+import org.openhab.binding.meteoalerte.internal.dto.BlocType;
+import org.openhab.binding.meteoalerte.internal.dto.Hazard;
+import org.openhab.binding.meteoalerte.internal.dto.Risk;
+import org.openhab.binding.meteoalerte.internal.dto.TermItem;
+import org.openhab.binding.meteoalerte.internal.dto.TextBlocItem;
+import org.openhab.binding.meteoalerte.internal.dto.TextItem;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.RawType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -50,13 +54,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class MeteoAlerteHandler extends BaseThingHandler {
-    private static final int TIMEOUT_MS = 30000;
-    private static final String URL = """
-            https://public.opendatasoft.com/api/records/1.0/search/?dataset=risques-meteorologiques-copy&\
-            facet=etat_vent&facet=etat_pluie_inondation&facet=etat_orage&facet=etat_inondation&facet=etat_neige&facet=etat_canicule&\
-            facet=etat_grand_froid&facet=etat_avalanches&refine.nom_dept=%s\
-            """;
-
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
     private final MeteoAlertIconProvider iconProvider;
 
@@ -72,13 +69,11 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         logger.debug("Initializing Météo Alerte handler.");
 
         MeteoAlerteConfiguration config = getConfigAs(MeteoAlerteConfiguration.class);
-        logger.debug("config department = {}", config.department);
-        // logger.debug("config refresh = {}", config.refresh);
+        logger.debug("config department= {}", config.department);
 
         updateStatus(ThingStatus.UNKNOWN);
-        // queryUrl = URL.formatted(config.department);
-        // refreshJob = Optional
-        // .of(scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.MINUTES));
+        refreshJob = Optional.of(
+                scheduler.scheduleWithFixedDelay(() -> updateAndPublish(config.department), 0, 10, TimeUnit.MINUTES));
     }
 
     @Override
@@ -92,53 +87,53 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateAndPublish();
+            // updateAndPublish();
         }
     }
 
-    private void updateAndPublish() {
-        try {
-            // if (queryUrl.isEmpty()) {
-            // throw new MalformedURLException("queryUrl not initialized");
-            // }
-            String response = null; // HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
-            if (response == null) {
-                throw new IOException("Empty response");
+    private void updateAndPublish(String department) {
+        MeteoAlerteBridgeHandler bridgeHandler = (MeteoAlerteBridgeHandler) getBridge().getHandler();
+        TextBlocItem bloc = bridgeHandler.requestData(department);
+        Map<Hazard, Risk> channels = new HashMap<>();
+
+        for (Hazard hazard : Hazard.values()) {
+            if (hazard != Hazard.UNKNOWN && hazard != Hazard.ALL) {
+                channels.put(hazard, Risk.VERT);
             }
-            updateStatus(ThingStatus.ONLINE);
-            // updateChannels(Objects.requireNonNull(gson.fromJson(response, ApiResponse.class)));
-        } catch (MalformedURLException e) {
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-            // "Querying '%s' error : %s".formatted(queryUrl, e.getMessage()));
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+
+        updateStatus(ThingStatus.ONLINE);
+
+        if (bloc.domain.name().equals(department)) {
+            List<BlocItem> blocItems = bloc.blocItems;
+            if (!blocItems.isEmpty()) {
+                for (BlocItem blocItem : blocItems) {
+                    if (blocItem.type == BlocType.QUALIFICATION) {
+                        for (TextItem textItem : blocItem.textItems) {
+                            Hazard hazard = textItem.getHazard();
+                            if (hazard != Hazard.ALL && hazard != Hazard.UNKNOWN) {
+                                for (TermItem termItem : textItem.termItems) {
+                                    channels.put(hazard, termItem.risk);
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+        channels.forEach((k, v) -> {
+            updateAlert(k.channelName, v);
+        });
+        // updateState(COMMENT, StringType.valueOf(fields.getVigilanceComment()));
+        // fields.getDateInsert().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
+        // fields.getDatePrevue().ifPresent(date -> updateDate(END_TIME, date));
+
     }
 
-    /**
-     * Update the channel from the last Meteo Alerte data retrieved
-     *
-     * @param channelId the id identifying the channel to be updated
-     */
-    private void updateChannels(ApiResponse apiResponse) {
-        apiResponse.getRecords().findFirst().ifPresent(record -> record.getResponseFieldDTO().ifPresent(fields -> {
-            updateAlert(WIND, fields.getVent());
-            updateAlert(RAIN, fields.getPluieInondation());
-            updateAlert(STORM, fields.getOrage());
-            updateAlert(FLOOD, fields.getInondation());
-            updateAlert(SNOW, fields.getNeige());
-            updateAlert(HEAT, fields.getCanicule());
-            updateAlert(FREEZE, fields.getGrandFroid());
-            updateAlert(AVALANCHE, fields.getAvalanches());
-            updateAlert(WAVE, fields.getVagueSubmersion());
-            updateState(COMMENT, StringType.valueOf(fields.getVigilanceComment()));
-            fields.getDateInsert().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
-            fields.getDatePrevue().ifPresent(date -> updateDate(END_TIME, date));
-        }));
-    }
-
-    private void updateAlert(String channelId, AlertLevel value) {
-        State state = value != AlertLevel.UNKNOWN ? new DecimalType(value.ordinal()) : UnDefType.NULL;
+    private void updateAlert(String channelId, Risk value) {
+        State state = value != Risk.UNKNOWN ? new DecimalType(value.riskLevel) : UnDefType.NULL;
         if (isLinked(channelId)) {
             updateState(channelId, state);
         }
@@ -151,8 +146,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
                     State result = new RawType(icon.readAllBytes(), "image/svg+xml");
                     updateState(channelIcon, result);
                 } catch (IOException e) {
-                    logger.warn("Error getting icon for channel {} and value {} : {}", channelId, value,
-                            e.getMessage());
+                    logger.warn("Error getting icon for channel {} and value {}: {}", channelId, value, e.getMessage());
                 }
             } else {
                 logger.warn("Null icon returned for channel {} and state {}", channelIcon, state);
