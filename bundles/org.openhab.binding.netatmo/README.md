@@ -161,8 +161,8 @@ If you did not manually create things in the *.things file, the Netatmo Binding 
 
 ### Weather Station Main Indoor Device
 
-Weather station does not need any refreshInterval setting.
-Based on a standard update period of 10mn by Netatmo systems - it will auto adapt to stick closest as possible to last data availability.
+Weather station uses a default `refreshInterval` of 10 minutes (can be adjusted), based on a standard update period of Netatmo systems.
+It will auto-adapt to stick as closely as possible to the last data availability.
 
 **Supported channels for the main indoor module:**
 
@@ -330,6 +330,9 @@ All these channels are read only.
 
 ### Healthy Home Coach Device
 
+Home Coach uses a default `refreshInterval` of 10 minutes (can be adjusted), based on a standard update period of Netatmo systems.
+It will auto-adapt to stick as closely as possible to the last data availability.
+
 **Supported channels for the healthy home coach device:**
 
 | Channel Group | Channel Id          | Item Type            | Description                                      |
@@ -453,11 +456,12 @@ Depending on the way it is configured the behaviour will be adapted and availabl
 
 The Home thing has the following configuration elements:
 
-| Parameter  | Type   | Required | Description                                                                         |
-| ---------- | ------ | -------- | ----------------------------------------------------------------------------------- |
-| id (1)     | String | No       | If you have a single type of equipment, this id is to be used for the home          |
-| energyId   | String | No       | Id of a home holding energy control devices                                         |
-| securityId | String | No       | Id of a home holding security monitoring devices                                    |
+| Parameter       | Type    | Required | Description                                                                         |
+| --------------- | ------- | -------- | ----------------------------------------------------------------------------------- |
+| id (1)          | String  | No       | If you have a single type of equipment, this id is to be used for the home          |
+| energyId        | String  | No       | Id of a home holding energy control devices                                         |
+| securityId      | String  | No       | Id of a home holding security monitoring devices                                    |
+| refreshInterval | Integer | No       | Refresh interval for refreshing the data in seconds. Default 180.                   |
 
 At least one of these parameter must be filled - at most two : 
 
@@ -465,7 +469,7 @@ At least one of these parameter must be filled - at most two :
 * id or energyId
 * securityId and energyId
 
-(1) this parameter is only kept for backward compatibility.
+(1) this parameter is kept for backward compatibility.
 
 All channels are read only.
 

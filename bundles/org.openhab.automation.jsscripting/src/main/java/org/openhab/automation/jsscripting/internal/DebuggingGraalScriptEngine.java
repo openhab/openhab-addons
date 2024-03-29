@@ -12,6 +12,9 @@
  */
 package org.openhab.automation.jsscripting.internal;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -26,11 +29,13 @@ import org.slf4j.LoggerFactory;
  * Wraps ScriptEngines provided by Graal to provide error messages and stack traces for scripts.
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
 class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable>
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T> {
 
     private static final String SCRIPT_TRANSFORMATION_ENGINE_IDENTIFIER = "openhab-transformation-script-";
+    private static final int STACK_TRACE_LENGTH = 5;
 
     private @Nullable Logger logger;
 
@@ -49,13 +54,24 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
     @Override
     public Exception afterThrowsInvocation(Exception e) {
         Throwable cause = e.getCause();
+        // OPS4J Pax Logging holds a reference to the exception, which causes the OpenhabGraalJSScriptEngine to not be
+        // removed from heap by garbage collection and causing a memory leak.
+        // Therefore, don't pass the exceptions itself to the logger, but only their message!
         if (cause instanceof IllegalArgumentException) {
-            logger.error("Failed to execute script:", e);
-        }
-        if (cause instanceof PolyglotException) {
-            logger.error("Failed to execute script:", cause);
+            logger.error("Failed to execute script: {}", stringifyThrowable(cause));
+        } else if (cause instanceof PolyglotException) {
+            logger.error("Failed to execute script: {}", stringifyThrowable(cause));
         }
         return e;
+    }
+
+    private String stringifyThrowable(Throwable throwable) {
+        String message = throwable.getMessage();
+        StackTraceElement[] stackTraceElements = throwable.getStackTrace();
+        String stackTrace = Arrays.stream(stackTraceElements).limit(STACK_TRACE_LENGTH)
+                .map(t -> "        at " + t.toString()).collect(Collectors.joining(System.lineSeparator()))
+                + System.lineSeparator() + "        ... " + stackTraceElements.length + " more";
+        return (message != null) ? message + System.lineSeparator() + stackTrace : stackTrace;
     }
 
     /**
