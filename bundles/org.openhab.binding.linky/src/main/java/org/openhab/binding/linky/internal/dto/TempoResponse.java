@@ -14,8 +14,6 @@ package org.openhab.binding.linky.internal.dto;
 
 import java.util.HashMap;
 
-import org.eclipse.jetty.jaas.spi.UserInfo;
-
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *

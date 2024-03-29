@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.linky.internal;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author Gaël L'hopital - Initial contribution *
+ * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
@@ -43,5 +45,5 @@ public interface LinkyAccountHandler {
      */
     String formatAuthorizationUrl(String redirectUri);
 
-    String[] getAllPrmId();
+    List<String> getAllPrmId();
 }

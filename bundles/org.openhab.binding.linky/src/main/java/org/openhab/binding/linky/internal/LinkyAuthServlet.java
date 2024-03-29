@@ -15,6 +15,7 @@ package org.openhab.binding.linky.internal;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * The xxx manages the authorization with the Linky Web API. The servlet implements the
  * Authorization Code flow and saves the resulting refreshToken with the bridge.
  *
- * @author Gaël L'hopital - Initial contribution *
+ * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
@@ -74,13 +75,10 @@ public class LinkyAuthServlet extends HttpServlet {
         logger.debug("Linky auth callback servlet received GET request {}.", req.getRequestURI());
         final Map<String, String> replaceMap = new HashMap<>();
 
-        String servletBaseURL = "";
-        StringBuffer requestURL = req.getRequestURL();
-        if (requestURL != null) {
-            servletBaseURL = requestURL.toString();
-        }
+        StringBuffer requestUrl = req.getRequestURL();
+        String servletBaseUrl = requestUrl != null ? requestUrl.toString() : "";
 
-        String servletBaseURLSecure = servletBaseURL;
+        String servletBaseURLSecure = servletBaseUrl;
 
         try {
             handleLinkyRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
@@ -92,7 +90,7 @@ public class LinkyAuthServlet extends HttpServlet {
             StringBuffer optionBuffer = new StringBuffer();
 
             if (accountHandler != null) {
-                String[] prmIds = accountHandler.getAllPrmId();
+                List<String> prmIds = accountHandler.getAllPrmId();
                 for (String prmId : prmIds) {
                     optionBuffer.append("<option value=\"" + prmId + "\">" + prmId + "</option>");
                 }
