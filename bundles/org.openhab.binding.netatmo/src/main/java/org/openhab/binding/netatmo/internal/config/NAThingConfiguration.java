@@ -25,7 +25,12 @@ public class NAThingConfiguration {
     public static final String ID = "id";
 
     protected String id = "";
-    public int refreshInterval = -1;
+    protected int refreshInterval = -1;
+
+    public int getRefreshInterval() {
+        int local = refreshInterval;
+        return local == -1 ? 600 : local;
+    }
 
     public String getId() {
         return id;

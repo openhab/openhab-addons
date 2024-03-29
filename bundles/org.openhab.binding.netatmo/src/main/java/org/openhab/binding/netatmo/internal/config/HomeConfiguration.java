@@ -31,6 +31,12 @@ public class HomeConfiguration extends NAThingConfiguration {
         return getIdForArea(energyId.isBlank() ? FeatureArea.SECURITY : FeatureArea.ENERGY);
     }
 
+    @Override
+    public int getRefreshInterval() {
+        int local = refreshInterval;
+        return local == -1 ? 180 : local;
+    }
+
     public String getIdForArea(FeatureArea feature) {
         return FeatureArea.ENERGY.equals(feature) ? energyId.isBlank() ? id : energyId
                 : FeatureArea.SECURITY.equals(feature) ? securityId.isBlank() ? id : securityId : id;

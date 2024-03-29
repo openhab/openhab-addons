@@ -34,7 +34,7 @@ public class WeatherCapability extends CacheCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(WeatherCapability.class);
 
     public WeatherCapability(CommonInterface handler) {
-        super(handler, Duration.ofSeconds(2), WeatherApi.class);
+        super(handler, Duration.ofSeconds(10), WeatherApi.class);
     }
 
     @Override
