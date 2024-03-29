@@ -16,8 +16,6 @@ import java.time.LocalDateTime;
 
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *
@@ -26,9 +24,7 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class IntervalReading {
-    @SerializedName("value")
     public double value;
 
-    @SerializedName("date")
     public LocalDateTime date;
 }

@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Gaël L'hopital - Initial contribution *
+ * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @Component(service = LinkyAuthService.class, configurationPid = "binding.internal.authService")

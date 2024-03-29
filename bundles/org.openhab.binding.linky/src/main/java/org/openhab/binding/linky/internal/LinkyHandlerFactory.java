@@ -54,6 +54,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -95,8 +96,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
                                     .atStartOfDay();
                         }
                     })
-
-            .create();
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
     private final LocaleProvider localeProvider;
     private final HttpClient httpClient;
@@ -127,9 +127,9 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
         httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
         this.authService = authService;
 
-        this.oAuthService = oAuthFactory.createOAuthClientService("Linky", LinkyBindingConstants.LINKY_API_TOKEN_URL,
-                LinkyBindingConstants.LINKY_AUTHORIZE_URL, clientId, clientSecret, LinkyBindingConstants.LINKY_SCOPES,
-                true);
+        this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID,
+                LinkyBindingConstants.LINKY_API_TOKEN_URL, LinkyBindingConstants.LINKY_AUTHORIZE_URL, clientId,
+                clientSecret, LinkyBindingConstants.LINKY_SCOPES, true);
         this.authService.setLinkyAccountHandler(this);
     }
 
@@ -274,7 +274,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
     }
 
     @Override
-    public String[] getAllPrmId() {
+    public List<String> getAllPrmId() {
         Collection<Thing> col = this.thingRegistry.getAll();
         List<String> result = new ArrayList<String>();
         for (Thing thing : col) {
@@ -286,6 +286,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory implements Link
             }
         }
 
-        return result.toArray(new String[0]);
+        return result;
     }
 }
