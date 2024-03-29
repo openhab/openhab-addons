@@ -30,6 +30,10 @@ public class ModuleTypeTest {
             // This did not exist prior to PR #16492
             return URI.create(BINDING_ID + ":camera");
         }
+        if (mt == ModuleType.WEATHER_STATION || mt == ModuleType.HOME_COACH) {
+            // This did not exist prior to PR #16492
+            return URI.create(BINDING_ID + ":weather");
+        }
         // This was previous method for calculating configuration URI
         return URI.create(BINDING_ID + ":"
                 + (mt == ModuleType.ACCOUNT ? "api_bridge"
