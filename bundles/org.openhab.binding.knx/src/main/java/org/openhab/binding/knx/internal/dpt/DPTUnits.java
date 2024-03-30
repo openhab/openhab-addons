@@ -128,10 +128,8 @@ public class DPTUnits {
         DPT_UNIT_MAP.remove(DPTXlator4ByteSigned.DPT_COUNT.getID()); // counts have no unit
 
         // four byte float (DPT 14)
-        DPT_UNIT_MAP.put(DPTXlator4ByteFloat.DPT_CONDUCTANCE.getID(), Units.SIEMENS.toString());
         DPT_UNIT_MAP.put(DPTXlator4ByteFloat.DPT_ANGULAR_MOMENTUM.getID(),
                 Units.JOULE.multiply(Units.SECOND).toString());
-        DPT_UNIT_MAP.put(DPTXlator4ByteFloat.DPT_ACTIVITY.getID(), Units.BECQUEREL.toString());
         DPT_UNIT_MAP.put(DPTXlator4ByteFloat.DPT_ELECTRICAL_CONDUCTIVITY.getID(),
                 Units.SIEMENS.divide(SIUnits.METRE).toString());
         DPT_UNIT_MAP.put(DPTXlator4ByteFloat.DPT_TORQUE.getID(), Units.NEWTON.multiply(SIUnits.METRE).toString());
