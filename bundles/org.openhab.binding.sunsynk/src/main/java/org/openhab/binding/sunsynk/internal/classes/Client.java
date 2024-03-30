@@ -36,9 +36,14 @@ public class Client {
         APIdata.static_access_token = token;
     }
 
-    public String getExpiresIn() {
+    public Long getExpiresIn() {
 
         return data.getExpiresIn();
+    }
+
+    public String getRefreshTokenString() {
+
+        return data.getRefreshToken();
     }
 
     public APIdata getData() {

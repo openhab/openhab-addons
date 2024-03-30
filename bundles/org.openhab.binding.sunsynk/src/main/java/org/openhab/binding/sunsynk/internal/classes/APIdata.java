@@ -19,16 +19,17 @@ package org.openhab.binding.sunsynk.internal.classes;
  * @author Lee Charlton - Initial contribution
  */
 
+// "data":{"access_token":"xxxxxxx","token_type":"bearer","refresh_token":"xxxxxxxx","expires_in":258669,"scope":"all"},"success":true}
 public class APIdata {
 
     public static String static_access_token;
     private String access_token;
     private String refresh_token;
     private String token_type;
-    private String expires_in;
+    private Long expires_in;
     private String scope;
 
-    public String getExpiresIn() {
+    public Long getExpiresIn() {
         return this.expires_in;
     }
 

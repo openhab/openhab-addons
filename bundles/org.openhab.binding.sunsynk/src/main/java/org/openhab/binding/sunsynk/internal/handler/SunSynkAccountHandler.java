@@ -17,6 +17,7 @@ package org.openhab.binding.sunsynk.internal.handler;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -26,6 +27,7 @@ import org.openhab.binding.sunsynk.internal.classes.Client;
 import org.openhab.binding.sunsynk.internal.classes.Details;
 import org.openhab.binding.sunsynk.internal.classes.Inverter;
 import org.openhab.binding.sunsynk.internal.config.SunSynkAccountConfig;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -59,30 +61,19 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
-        logger.debug("SunSynk Handler Intialised");
+        logger.debug("SunSynk Handler Intialised attempting to retrieve configuration");
+        // Map<String, String> props = getThing().getProperties();
+        // Map<String, String> editProps = editProperties();
+        // logger.debug("Account properties: " + props);
+        configAccount();
     }
 
     public /* @NonNull */ List<Inverter> getInvertersFromSunSynk() {
         logger.debug("Attempting to find inverters tied to account");
-        SunSynkAccountConfig accountConfig = getConfigAs(SunSynkAccountConfig.class);
-        Client sunAccount = authenticate(accountConfig.getEmail(), accountConfig.getPassword());
-        // accessToken =
-        // //{"code":0,"msg":"Success","data":{"access_token":"xxxxxxx","token_type":"bearer","refresh_token":"xxxxxxxx","expires_in":258669,"scope":"all"},"success":true}
-
-        APIdata apiData = sunAccount.getData();
-        String newToken = apiData.getAccessToken();
-        APIdata.static_access_token = newToken;
-
-        logger.debug("Account token: {}", APIdata.static_access_token);
-        logger.debug("Account expires: {}", sunAccount.getExpiresIn());
-
         // Discover Connected plants and inverters.
         Details sunAccountDetails = getDetails(APIdata.static_access_token);
         ArrayList<Inverter> inverters = sunAccountDetails.getInverters(APIdata.static_access_token);
-
         // List<Inverterdata.InverterInfo> inverters = sunAccountDetails.getInverters();
-        // got here could convert to array list or just return HashMap
-
         if (!inverters.isEmpty() | inverters != null) {
             return inverters;
         }
@@ -101,11 +92,9 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Authorization", "Bearer " + access_token);
-
             connection.setDoOutput(true);
 
             logger.debug("Details response code: {}", connection.getResponseCode());
-            // logger.debug("Details response message: {}", connection.getResponseMessage());
 
             InputStream is = connection.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -123,6 +112,23 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             Details details = new Details();
             return details;
         }
+    }
+
+    public void configAccount() {
+        SunSynkAccountConfig accountConfig = getConfigAs(SunSynkAccountConfig.class);
+        Client sunAccount = authenticate(accountConfig.getEmail(), accountConfig.getPassword());
+        APIdata apiData = sunAccount.getData();
+        String newToken = apiData.getAccessToken();
+        APIdata.static_access_token = newToken;
+        Configuration configuration = editConfiguration();
+        configuration.put("access_token", newToken);
+        configuration.put("refresh_token", sunAccount.getRefreshTokenString());
+        long baseTime = new Date().getTime(); // Time Now
+        baseTime = baseTime + (sunAccount.getExpiresIn() * 1000L);
+        java.util.Date time = new java.util.Date((long) baseTime);
+        configuration.put("expires_in", time.toString());
+        updateConfiguration(configuration);
+        logger.debug("Account configuration updated : {}", configuration);
     }
 
     private Client authenticate(String username, String password) {
@@ -144,7 +150,6 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             outStream.close();
 
             logger.debug("Authentication response code: {}", connection.getResponseCode());
-            // logger.debug("Authentication response message: {}", connection.getResponseMessage());
 
             InputStream is = connection.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -159,7 +164,6 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             logger.debug("Error attempting to autheticate account", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate account");
-
             Client API_Token = new Client();
             return API_Token;
         }
@@ -170,8 +174,6 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     private static String makeLoginBody(String username, String password) {
-        // String body = "{\"username\": \"jo.blogs@gmail.com\", \"password\": \"pssword\", \"grant_type\":
-        // \"password\", \"client_id\": \"csp-web\"}";
         String body = "{\"username\": \"" + username + "\", \"password\": \"" + password
                 + "\", \"grant_type\": \"password\", \"client_id\": \"csp-web\"}";
         return body;
