@@ -34,6 +34,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -157,10 +158,25 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                         inverterChargeSettings.setIntervalGenTimerOn(false, 6);
                     }
                     break;
+                // Interval Time
                 case CHANNEL_BATTERY_INTERVAL_1_TIME:
                     inverterChargeSettings.setIntervalTime(command.toString(), 1);
                     break;
-
+                case CHANNEL_BATTERY_INTERVAL_2_TIME:
+                    inverterChargeSettings.setIntervalTime(command.toString(), 2);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_3_TIME:
+                    inverterChargeSettings.setIntervalTime(command.toString(), 3);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_4_TIME:
+                    inverterChargeSettings.setIntervalTime(command.toString(), 4);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_5_TIME:
+                    inverterChargeSettings.setIntervalTime(command.toString(), 5);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_6_TIME:
+                    inverterChargeSettings.setIntervalTime(command.toString(), 6);
+                    break;
             }
             // may need to detect something has changes rather than just always doing this?
             sendAPICommandToInverter(inverterChargeSettings);
@@ -264,7 +280,11 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     public void refreshStateAndUpdate() {
         if (inverter != null) {
             try {
-                inverter.sendGetState();
+                boolean autheticated = inverter.sendGetState();
+                if (!autheticated) {
+                    BridgeHandler bridge = getBridge().getHandler();
+                    bridge.initialize();
+                }
                 updateStatus(ThingStatus.ONLINE);
                 publishChannels();
             } catch (Exception e) {

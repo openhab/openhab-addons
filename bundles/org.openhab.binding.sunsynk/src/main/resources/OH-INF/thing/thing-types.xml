@@ -10,7 +10,9 @@
 	<bridge-type id="sunsynkaccount">
 		<label>Sunsynk Account</label>
 		<description>Access to SunSynk Account. Used to discover sites and inverters tied to account.</description>
-
+		<properties>
+			<property name="vendor">SunSynk</property>
+		</properties>
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>E-mail Address</label>
@@ -22,7 +24,20 @@
 				<description>Password for your SunSynk Cloud account.</description>
 				<context>password</context>
 			</parameter>
+			<parameter name="access_token" type="text" required="false">
+				<label>SunSynk Secret</label>
+				<description>Secret for accessing SunSynk web services</description>
+			</parameter>
+			<parameter name="refresh_token" type="text" required="false">
+				<label>SunSynk Refresh Secret</label>
+				<description>SunSynk web services refresh secret</description>
+			</parameter>
+			<parameter name="expires_in" type="text" required="false">
+				<label>SunSynk Secret expiry</label>
+				<description>SunSynk web services secret expiry</description>
+			</parameter>
 		</config-description>
+
 	</bridge-type>
 
 
@@ -90,9 +105,10 @@
 				<label>SunSynk Inverter Name</label>
 				<description>Name of SunSynk inverter</description>
 			</parameter>
-			<parameter name="access_token" type="text" required="true">
-				<label>SunSynk Secret</label>
-				<description>Secret for accessing SunSynk web services</description>
+			<parameter name="refresh" type="integer" required="true">
+				<label>Refresh time</label>
+				<description>Time in seconds to retrieve status from SunSynk web services. Greater than 60 seconds</description>
+				<default> 60 </default>
 			</parameter>
 		</config-description>
 
@@ -148,7 +164,7 @@
 		<item-type>DateTime</item-type>
 		<label>Grid charge interval start time</label>
 		<description>"24hr time for the start of the interval. 00:00 to 23:55 are valid in 5 min increments with leading zero
-			on the hour and minute. Times must ascending order. ".</description>
+			on the hour and minute. Times must be in ascending order. ".</description>
 		<state readOnly="false" pattern="%HH:%MM"/>
 	</channel-type>
 

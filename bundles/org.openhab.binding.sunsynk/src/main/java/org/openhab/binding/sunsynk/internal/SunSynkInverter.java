@@ -59,31 +59,41 @@ public class SunSynkInverter {
 
     public SunSynkInverter(SunSynkInverterConfig config) {
         // this.gsn = config.getgsn();
-        this.access_token = config.getToken();
+        // this.access_token = config.getToken();
         this.sn = config.getsn();
         this.refresh = config.getRefresh();
-        // this.alias = config.getAlias();
+        this.alias = config.getAlias();
     }
 
-    public void sendGetState() { // Entry method to class for updating internal state from the inverter
+    public boolean sendGetState() { // Entry method to class for updating internal state from the inverter
         logger.debug("Will get STATE for Inverter {} serial {}", this.alias, this.sn);
         // Get inverter infos
         try {
-            getCommonSettings(); // battery charge settings
-            getGridRealTime(); // grid status
-
-            getBatteryRealTime(); // battery status
-            getInverterACDCTemperatures(); // get Inverter temperatures
-            getRealTimeIn(); // may not need this one used for solar values
+            boolean autheticated = getCommonSettings(); // battery charge settings
+            if (!autheticated)
+                return false;
+            autheticated = getGridRealTime(); // grid status
+            if (!autheticated)
+                return false;
+            autheticated = getBatteryRealTime(); // battery status
+            if (!autheticated)
+                return false;
+            autheticated = getInverterACDCTemperatures(); // get Inverter temperatures
+            if (!autheticated)
+                return false;
+            autheticated = getRealTimeIn(); // may not need this one used for solar values
+            if (!autheticated)
+                return false;
 
         } catch (Exception e) {
             logger.debug("Failed to get Inverter API information: ", e);
             // updateStatus(ThingStatus.OFFLINE);
             // Should Thing be put off line?
             // Need to Throw an exception <----- got here to stop following debug log
-            return;
+            return false;
         }
         logger.debug("Successfully got and parsed new data for Inverter {} serial {}", this.alias, this.sn);
+        return true;
     }
     /*
      * /
@@ -130,68 +140,88 @@ public class SunSynkInverter {
     // ------ Battery charge settings ------ //
     // https://api.sunsynk.net/api/v1/common/setting/2211229948/read
     @SuppressWarnings("null")
-    void getCommonSettings() {// need to get this to run in the class, Ben suggested using a Builder
+    boolean getCommonSettings() {// need to get this to run in the class, Ben suggested using a Builder
         // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/common/setting/" + this.sn + "/read"),
                 APIdata.static_access_token);
+        if (response == "Authentication Fail") {
+            return false;
+        }
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.batterySettings = gson.fromJson(response, Settings.class);
         this.batterySettings.buildLists();
+        return true;
     }
 
     // ------ Realtime Grid ------ //
     // https://api.sunsynk.net/api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
     @SuppressWarnings("null")
-    void getGridRealTime() {// need to get this to run in the class, Ben suggested using a Builder
+    boolean getGridRealTime() {// need to get this to run in the class, Ben suggested using a Builder
         // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/grid/" + this.sn + "/realtime?sn=") + this.sn,
                 APIdata.static_access_token);
+        if (response == "Authentication Fail") {
+            return false;
+        }
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.grid = gson.fromJson(response, Grid.class);
         this.grid.sumVIP();
+        return true;
     }
 
     // ------ Realtime battery ------ //
     // https://api.sunsynk.net/api/v1/inverter/battery/{inverter_sn}/realtime?sn={inverter_sn}&lan
     @SuppressWarnings("null")
-    void getBatteryRealTime() {
+    boolean getBatteryRealTime() {
         // Get URL Respnse
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/battery/" + this.sn + "/realtime?sn=" + this.sn + "&lan"),
                 APIdata.static_access_token);
+        if (response == "Authentication Fail") {
+            return false;
+        }
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.realTimeBattery = gson.fromJson(response, Battery.class);
+        return true;
     }
 
     // ------ Realtime acdc temperatures ------ //
     // https://api.sunsynk.net/api/v1/inverter/{inverter_sn}/output/day?lan=en&date={date}&column=dc_temp,igbt_temp
     @SuppressWarnings("null")
-    void getInverterACDCTemperatures() {
+    boolean getInverterACDCTemperatures() {
         String date = getAPIFormatDate();
         // Get URL Respnse
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/" + this.sn + "/output/day?lan=en&date=" + date + "&column=dc_temp,igbt_temp"),
                 APIdata.static_access_token);
+        if (response == "Authentication Fail") {
+            return false;
+        }
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.inverter_day_temperatures = gson.fromJson(response, Daytemps.class);
         this.inverter_day_temperatures.getLastValue();
+        return true;
     }
 
     // ------ Realtime Input ------ //
     // https://api.sunsynk.net//api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
     @SuppressWarnings("null")
-    void getRealTimeIn() {// need to get this to run in the class, Ben suggested using a Builder
+    boolean getRealTimeIn() {// need to get this to run in the class, Ben suggested using a Builder
         // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/" + this.sn + "/realtime/input"),
                 APIdata.static_access_token);
+        if (response == "Authentication Fail") {
+            return false;
+        }
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.realTimeDataIn = gson.fromJson(response, RealTimeInData.class);
         this.realTimeDataIn.sumPVIV();
+        return true;
     }
     // ------ COMMANDS ------ //
 
@@ -257,6 +287,10 @@ public class SunSynkInverter {
             connection.setRequestProperty("Authorization", "Bearer " + access_token);
             connection.setDoOutput(true);
             logger.debug("GET Response Code: {}.", connection.getResponseCode());
+            if (connection.getResponseCode() == 401) {
+                logger.debug("Authentication failure");
+                return "Authentication Fail";
+            }
             // logger.debug("GET Response Message: {}.", connection.getResponseMessage());
             InputStream is = connection.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);

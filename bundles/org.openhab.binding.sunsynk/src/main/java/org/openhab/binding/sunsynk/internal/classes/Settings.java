@@ -426,8 +426,21 @@ public class Settings {
     }
 
     public void setIntervalTime(String state, int interval) {
-        this.timerTime.set(interval - 1, state);
+
+        this.timerTime.set(interval - 1, asAPITime(state));
         return;
+    }
+
+    private String asAPITime(String state) {
+        String workerString = state.split("T")[1].substring(0, 5);
+        int minsLS = Integer.valueOf(workerString.substring(4, 5));
+        if ((minsLS < 5) & (minsLS > 0)) {
+            minsLS = 0;
+        } else if ((minsLS > 5)) {
+            minsLS = 5;
+        }
+        workerString = workerString.substring(0, 4) + minsLS;
+        return workerString;
     }
 
     public void setIntervalGenTimerOn(Boolean state, int interval) {
