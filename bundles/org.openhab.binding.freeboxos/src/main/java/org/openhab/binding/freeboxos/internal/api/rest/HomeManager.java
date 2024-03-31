@@ -17,6 +17,7 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.B
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
@@ -167,7 +168,8 @@ public class HomeManager extends RestManager {
     }
 
     public <T> boolean putCommand(int nodeId, int stateSignalId, T value) throws FreeboxException {
-        put(new EndpointValue<>(value), ENDPOINTS_PATH, String.valueOf(nodeId), String.valueOf(stateSignalId));
+        put(new EndpointValue<@NonNull T>(value), ENDPOINTS_PATH, String.valueOf(nodeId),
+                String.valueOf(stateSignalId));
         return true;
     }
 }
