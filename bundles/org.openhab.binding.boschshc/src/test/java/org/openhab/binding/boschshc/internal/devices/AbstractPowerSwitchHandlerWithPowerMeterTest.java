@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.ExecutionException;
@@ -56,13 +57,13 @@ public abstract class AbstractPowerSwitchHandlerWithPowerMeterTest<T extends Abs
 
     @BeforeEach
     public void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        super.beforeEach();
-
         PowerMeterServiceState powerMeterServiceState = new PowerMeterServiceState();
         powerMeterServiceState.powerConsumption = 12.34d;
         powerMeterServiceState.energyConsumption = 56.78d;
-        lenient().when(bridgeHandler.getState(anyString(), eq("PowerMeter"), same(PowerMeterServiceState.class)))
+        lenient().when(getBridgeHandler().getState(anyString(), eq("PowerMeter"), same(PowerMeterServiceState.class)))
                 .thenReturn(powerMeterServiceState);
+
+        super.beforeEach();
     }
 
     @Test
@@ -76,13 +77,15 @@ public abstract class AbstractPowerSwitchHandlerWithPowerMeterTest<T extends Abs
                 """);
         getFixture().processUpdate("PowerMeter", jsonObject);
 
-        verify(getCallback()).stateUpdated(eq(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION)),
-                powerCaptor.capture());
+        // state is updated twice: via short poll in initialize() and via long poll result in this test
+        verify(getCallback(), times(2)).stateUpdated(
+                eq(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION)), powerCaptor.capture());
         QuantityType<Power> powerValue = powerCaptor.getValue();
         assertEquals(23, powerValue.intValue());
 
-        verify(getCallback()).stateUpdated(eq(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION)),
-                energyCaptor.capture());
+        // state is updated twice: via short poll in initialize() and via long poll result in this test
+        verify(getCallback(), times(2)).stateUpdated(
+                eq(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION)), energyCaptor.capture());
         QuantityType<Energy> energyValue = energyCaptor.getValue();
         assertEquals(42, energyValue.intValue());
     }
@@ -91,7 +94,9 @@ public abstract class AbstractPowerSwitchHandlerWithPowerMeterTest<T extends Abs
     public void testHandleCommandRefreshPowerConsumptionChannel() {
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION),
                 RefreshType.REFRESH);
-        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION),
+
+        // state is updated twice: via short poll in initialize() and via refresh command in this test
+        verify(getCallback(), times(2)).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION),
                 new QuantityType<>(12.34d, Units.WATT));
     }
 
@@ -99,7 +104,9 @@ public abstract class AbstractPowerSwitchHandlerWithPowerMeterTest<T extends Abs
     public void testHandleCommandRefreshEnergyConsumptionChannel() {
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION),
                 RefreshType.REFRESH);
-        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION),
+
+        // state is updated twice: via short poll in initialize() and via refresh command in this test
+        verify(getCallback(), times(2)).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION),
                 new QuantityType<>(56.78d, Units.WATT_HOUR));
     }
 }
