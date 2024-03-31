@@ -43,7 +43,7 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
     @Test
     public void canReadFromAMapFile() {
         BroadlinkMappingService bms = new BroadlinkMappingService(TEST_MAP_FILE, TEST_MAP_FILE_RF, mockProvider,
-                TEST_CHANNEL_UID, TEST_CHANNEL_UID2);
+                TEST_CHANNEL_UID, TEST_CHANNEL_UID2, storageService);
 
         assertEquals("00112233", bms.lookupIR("TEST_COMMAND_ON"));
         assertEquals("33221100", bms.lookupIR("TEST_COMMAND_OFF"));
@@ -51,7 +51,8 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
 
     @Test
     public void notifiesTheFrameworkOfTheAvailableCommands() {
-        new BroadlinkMappingService(TEST_MAP_FILE, TEST_MAP_FILE_RF, mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2);
+        new BroadlinkMappingService(TEST_MAP_FILE, TEST_MAP_FILE_RF, mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
+                storageService);
 
         List<CommandOption> expected = new ArrayList<>();
         expected.add(new CommandOption("TEST_COMMAND_ON", null));

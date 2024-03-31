@@ -26,6 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
+import org.openhab.core.test.storage.VolatileStorageService;
 
 /**
  * Tests the Remote Model 3 handler.
@@ -52,9 +53,11 @@ public class BroadlinkRemoteModel3HandlerTest extends AbstractBroadlinkThingHand
 
     @Test
     public void sendsExpectedBytesWhenEnteringLearnMode() throws IOException {
+        VolatileStorageService storageService = new VolatileStorageService();
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model3 = new BroadlinkRemoteModel3Handler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model3 = new BroadlinkRemoteModel3Handler(thing, commandDescriptionProvider,
+                storageService);
         setMocksForTesting(model3);
 
         reset(trafficObserver);

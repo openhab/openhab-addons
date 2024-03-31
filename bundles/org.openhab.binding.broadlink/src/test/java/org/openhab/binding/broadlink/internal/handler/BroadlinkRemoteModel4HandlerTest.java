@@ -31,6 +31,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
@@ -63,10 +64,11 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
 
     @Test
     public void sendsExpectedBytesWhenGettingDeviceStatus() {
+        VolatileStorageService storageService = new VolatileStorageService();
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
-
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider,
+                storageService);
         setMocksForTesting(model4);
         reset(trafficObserver);
         model4.getStatusFromDevice();
@@ -86,9 +88,11 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
 
     @Test
     public void sendsExpectedBytesWhenSendingCode() throws IOException {
+        VolatileStorageService storageService = new VolatileStorageService();
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider,
+                storageService);
         setMocksForTesting(model4);
         // Note the length is 10 so as to not require padding (6 byte preamble)
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
@@ -126,9 +130,11 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
 
     @Test
     public void sendsExpectedBytesWhenSendingCodeIncludingPadding() throws IOException {
+        VolatileStorageService storageService = new VolatileStorageService();
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider,
+                storageService);
         setMocksForTesting(model4);
         // Note the length is such that padding up to the next multiple of 16 will be needed
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b };
@@ -166,7 +172,9 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
 
     @Test
     public void setsTheTemperatureAndHumidityChannelsAfterGettingStatus() {
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
+        VolatileStorageService storageService = new VolatileStorageService();
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider,
+                storageService);
         setMocksForTesting(model4);
         reset(mockCallback);
 
@@ -196,9 +204,11 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
 
     @Test
     public void sendsExpectedBytesWhenEnteringLearnMode() throws IOException {
+        VolatileStorageService storageService = new VolatileStorageService();
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model4 = new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider,
+                storageService);
         setMocksForTesting(model4);
 
         reset(trafficObserver);
