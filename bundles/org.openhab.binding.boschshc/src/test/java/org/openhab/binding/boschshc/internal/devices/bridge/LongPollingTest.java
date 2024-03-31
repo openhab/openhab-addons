@@ -12,9 +12,21 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +55,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -53,6 +67,7 @@ import org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.LongPollingFailedException;
+import org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -332,18 +347,21 @@ class LongPollingTest {
         assertTrue(longPollResultItem.isState());
     }
 
-    @Test
-    void startSubscriptionFailure()
+    @ParameterizedTest
+    @MethodSource("org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils#getBoschShcAndExecutionAndTimeoutAndInterruptedExceptionArguments()")
+    void startSubscriptionFailureHandleExceptions(Exception exception)
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        when(httpClient.sendRequest(any(), same(SubscribeResult.class), any(), any()))
-                .thenThrow(new ExecutionException("Subscription failed.", null));
+        when(httpClient.sendRequest(any(), same(SubscribeResult.class), any(), any())).thenThrow(exception);
 
         LongPollingFailedException e = assertThrows(LongPollingFailedException.class, () -> fixture.start(httpClient));
-        assertTrue(e.getMessage().contains("Subscription failed."));
+        assertThat(e.getCause(), instanceOf(exception.getClass()));
+        assertThat(e.getMessage(), containsString(CommonTestUtils.TEST_EXCEPTION_MESSAGE));
     }
 
-    @Test
-    void startLongPollFailure() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    @ParameterizedTest
+    @MethodSource("org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils#getExceutionExceptionAndRuntimeExceptionArguments()")
+    void startLongPollFailure(Exception exception)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         when(httpClient.getBoschShcUrl(anyString())).thenCallRealMethod();
 
         Request request = mock(Request.class);
@@ -364,7 +382,6 @@ class LongPollingTest {
         BufferingResponseListener bufferingResponseListener = (BufferingResponseListener) completeListener.getValue();
 
         Result result = mock(Result.class);
-        ExecutionException exception = new ExecutionException("test exception", null);
         when(result.getFailure()).thenReturn(exception);
         bufferingResponseListener.onComplete(result);
 

@@ -22,7 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.ConnectException;
@@ -48,6 +50,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.PublicInformation;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingUID;
 
 /**
@@ -128,6 +131,7 @@ class BridgeDiscoveryParticipantTest {
     @Test
     void testCreateResult() throws Exception {
         DiscoveryResult result = fixture.createResult(shcBridge);
+
         assertNotNull(result);
         assertThat(result.getBindingId(), is(BoschSHCBindingConstants.BINDING_ID));
         assertThat(result.getThingUID().getId(), is("192-168-0-123"));
@@ -138,19 +142,23 @@ class BridgeDiscoveryParticipantTest {
     @Test
     void testCreateResultOtherDevice() throws Exception {
         DiscoveryResult result = fixture.createResult(otherDevice);
+
         assertNull(result);
     }
 
     @Test
     void testCreateResultNoIPAddress() throws Exception {
         when(shcBridge.getHostAddresses()).thenReturn(new String[] { "" });
+
         DiscoveryResult result = fixture.createResult(shcBridge);
+
         assertNull(result);
     }
 
     @Test
     void testGetThingUID() throws Exception {
         ThingUID thingUID = fixture.getThingUID(shcBridge);
+
         assertNotNull(thingUID);
         assertThat(thingUID.getBindingId(), is(BoschSHCBindingConstants.BINDING_ID));
         assertThat(thingUID.getId(), is("192-168-0-123"));
@@ -165,6 +173,7 @@ class BridgeDiscoveryParticipantTest {
     void testGetBridgeAddress() throws Exception {
         @Nullable
         PublicInformation bridgeInformation = fixture.discoverBridge("192.168.0.123");
+
         assertThat(bridgeInformation, not(nullValue()));
         assertThat(bridgeInformation.shcIpAddress, is("192.168.0.123"));
     }
@@ -178,6 +187,7 @@ class BridgeDiscoveryParticipantTest {
     void testGetPublicInformationFromPossibleBridgeAddress() throws Exception {
         @Nullable
         PublicInformation bridgeInformation = fixture.getPublicInformationFromPossibleBridgeAddress("192.168.0.123");
+
         assertThat(bridgeInformation, not(nullValue()));
         assertThat(bridgeInformation.shcIpAddress, is("192.168.0.123"));
     }
@@ -187,6 +197,7 @@ class BridgeDiscoveryParticipantTest {
         when(contentResponse.getContentAsString()).thenReturn("{\"nothing\":\"useful\"}");
 
         fixture = new BridgeDiscoveryParticipant(mockHttpClient);
+
         assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("192.168.0.123"), is(nullValue()));
     }
 
@@ -195,6 +206,7 @@ class BridgeDiscoveryParticipantTest {
         when(contentResponse.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
 
         fixture = new BridgeDiscoveryParticipant(mockHttpClient);
+
         assertThat(fixture.getPublicInformationFromPossibleBridgeAddress("192.168.0.123"), is(nullValue()));
     }
 
@@ -206,5 +218,14 @@ class BridgeDiscoveryParticipantTest {
         @Nullable
         PublicInformation result2 = fixture.getOrComputePublicInformation("192.168.0.123");
         assertSame(result, result2);
+    }
+
+    @Test
+    void testPublicConstructor() {
+        HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
+
+        fixture = new BridgeDiscoveryParticipant(httpClientFactory);
+
+        verify(httpClientFactory).createHttpClient(eq(BoschSHCBindingConstants.BINDING_ID), any());
     }
 }

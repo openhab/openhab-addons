@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -78,8 +79,33 @@ class ThingDiscoveryServiceTest {
     }
 
     @Test
+    void initialize() {
+        fixture.initialize();
+        verify(bridgeHandler).registerDiscoveryListener(fixture);
+    }
+
+    @Test
     void testStartScan() throws InterruptedException {
         mockBridgeCalls();
+
+        Device device = new Device();
+        device.name = "My Smart Plug";
+        device.deviceModel = "PSM";
+        device.id = "hdm:HomeMaticIP:3014F711A00004953859F31B";
+        device.deviceServiceIds = List.of("PowerMeter", "PowerSwitch", "PowerSwitchProgram", "Routing");
+
+        List<Device> devices = new ArrayList<>();
+        devices.add(device);
+        when(bridgeHandler.getDevices()).thenReturn(devices);
+
+        UserDefinedState userDefinedState = new UserDefinedState();
+        userDefinedState.setName("My State");
+        userDefinedState.setId("23d34fa6-382a-444d-8aae-89c706e22158");
+        userDefinedState.setState(true);
+
+        List<UserDefinedState> userDefinedStates = new ArrayList<>();
+        userDefinedStates.add(userDefinedState);
+        when(bridgeHandler.getUserStates()).thenReturn(userDefinedStates);
 
         fixture.activate();
         fixture.startScan();
@@ -266,6 +292,15 @@ class ThingDiscoveryServiceTest {
 
         // two calls for the two devices expected
         verify(discoveryListener, times(2)).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void dispose() {
+        Bridge thing = mock(Bridge.class);
+        when(thing.getUID()).thenReturn(new ThingUID(BoschSHCBindingConstants.THING_TYPE_SHC, "shc123456"));
+        when(bridgeHandler.getThing()).thenReturn(thing);
+        fixture.dispose();
+        verify(bridgeHandler).unregisterDiscoveryListener();
     }
 
     @Test
