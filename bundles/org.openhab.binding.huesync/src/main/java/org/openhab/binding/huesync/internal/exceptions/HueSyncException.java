@@ -30,7 +30,7 @@ public abstract class HueSyncException extends Exception {
             key = message;
         }
 
-        logger.error(this.getLogMessage());
+        logger.error("{}", this.getLogMessage());
     }
 
     private String getLogMessage() {
