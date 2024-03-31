@@ -13,10 +13,16 @@
 package org.openhab.binding.boschshc.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -41,7 +47,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
 
 /**
- * ThingDiscoveryService Tester.
+ * Unit tests for {@link ThingDiscoveryService}.
  *
  * @author Gerd Zanker - Initial contribution
  */
@@ -260,5 +266,13 @@ class ThingDiscoveryServiceTest {
 
         // two calls for the two devices expected
         verify(discoveryListener, times(2)).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void getThingTypeUIDLightControl2ChildDevice() {
+        Device device = new Device();
+        device.deviceModel = ThingDiscoveryService.DEVICE_MODEL_LIGHT_CONTROL_CHILD_DEVICE;
+
+        assertThat(fixture.getThingTypeUID(device), is(nullValue()));
     }
 }

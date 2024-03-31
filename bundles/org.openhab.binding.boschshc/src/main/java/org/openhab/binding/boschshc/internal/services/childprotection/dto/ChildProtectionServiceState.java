@@ -10,21 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.plug;
+package org.openhab.binding.boschshc.internal.services.childprotection.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.AbstractPowerSwitchHandlerWithPowerMeter;
-import org.openhab.core.thing.Thing;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
- * A handler for compact smart plugs.
- *
+ * State of the child protection service.
+ * 
  * @author David Pace - Initial contribution
+ *
  */
 @NonNullByDefault
-public class PlugHandler extends AbstractPowerSwitchHandlerWithPowerMeter {
+public class ChildProtectionServiceState extends BoschSHCServiceState {
 
-    public PlugHandler(Thing thing) {
-        super(thing);
+    public ChildProtectionServiceState() {
+        super("ChildProtectionState");
     }
+
+    public boolean childLockActive;
 }

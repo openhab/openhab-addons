@@ -163,6 +163,48 @@
 
 	</thing-type>
 
+	<thing-type id="shutter-control-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Shutter Control II</label>
+		<description>Second generation shutter control.</description>
+
+		<channels>
+			<channel id="level" typeId="level"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="child-protection" typeId="child-protection"/>
+			<channel id="power-consumption" typeId="power-consumption"/>
+			<channel id="energy-consumption" typeId="energy-consumption"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="light-control-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Light Control II</label>
+		<description>Advanced light control with two switch circuits.</description>
+
+		<channels>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="power-consumption" typeId="power-consumption"/>
+			<channel id="energy-consumption" typeId="energy-consumption"/>
+			<channel id="power-switch-1" typeId="system.power"/>
+			<channel id="child-protection-1" typeId="child-protection"/>
+			<channel id="power-switch-2" typeId="system.power"/>
+			<channel id="child-protection-2" typeId="child-protection"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
 	<thing-type id="thermostat">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>
@@ -701,6 +743,12 @@
 		<label>Key Event Timestamp</label>
 		<description>Timestamp indicating when the key was pressed.</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="child-protection">
+		<item-type>Switch</item-type>
+		<label>Child Protection</label>
+		<description>Enables or disables the child protection on the device.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

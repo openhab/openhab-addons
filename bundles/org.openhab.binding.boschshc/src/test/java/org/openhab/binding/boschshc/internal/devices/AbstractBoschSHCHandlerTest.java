@@ -12,8 +12,13 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -25,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
@@ -58,6 +64,8 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
 
+    private @NonNullByDefault({}) Device device;
+
     protected AbstractBoschSHCHandlerTest() {
         this.fixture = createFixture();
     }
@@ -71,6 +79,10 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
         fixture.setCallback(callback);
         when(bridge.getHandler()).thenReturn(bridgeHandler);
         lenient().when(thing.getConfiguration()).thenReturn(getConfiguration());
+
+        device = new Device();
+        configureDevice(device);
+        lenient().when(bridgeHandler.getDeviceInfo(anyString())).thenReturn(device);
 
         fixture.initialize();
     }
@@ -105,6 +117,14 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
 
     protected ThingHandlerCallback getCallback() {
         return callback;
+    }
+
+    protected Device getDevice() {
+        return device;
+    }
+
+    protected void configureDevice(Device device) {
+        // abstract implementation is empty, subclasses may override
     }
 
     @Test
