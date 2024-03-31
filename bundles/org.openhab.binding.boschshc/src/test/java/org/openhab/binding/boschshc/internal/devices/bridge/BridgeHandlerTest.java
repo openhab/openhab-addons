@@ -12,14 +12,27 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,10 +51,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceTest;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Faults;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedStateTest;
@@ -62,6 +77,9 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 /**
  * Unit tests for the {@link BridgeHandler}.
  *
@@ -76,6 +94,11 @@ class BridgeHandlerTest {
     private @NonNullByDefault({}) BoschHttpClient httpClient;
 
     private @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
+
+    /**
+     * A mocked bridge instance
+     */
+    private @NonNullByDefault({}) Bridge thing;
 
     @BeforeAll
     static void beforeAll() throws IOException {
@@ -102,7 +125,7 @@ class BridgeHandlerTest {
         properties.put("password", "test");
         bridgeConfiguration.setProperties(properties);
 
-        Thing thing = mock(Bridge.class);
+        thing = mock(Bridge.class);
         when(thing.getConfiguration()).thenReturn(bridgeConfiguration);
         // this calls initialize() as well
         fixture.thingUpdated(thing);
@@ -501,5 +524,130 @@ class BridgeHandlerTest {
     @AfterEach
     void afterEach() throws Exception {
         fixture.dispose();
+    }
+
+    @Test
+    void handleLongPollResultNoDeviceId() {
+        List<Thing> things = new ArrayList<Thing>();
+        when(thing.getThings()).thenReturn(things);
+
+        Thing thing = mock(Thing.class);
+        things.add(thing);
+
+        BoschSHCHandler thingHandler = mock(BoschSHCHandler.class);
+        when(thing.getHandler()).thenReturn(thingHandler);
+
+        String json = """
+                {
+                  "result": [{
+                    "path": "/devices/hdm:HomeMaticIP:3014F711A0001916D859A8A9/services/PowerSwitch",
+                    "@type": "DeviceServiceData",
+                    "id": "PowerSwitch",
+                    "state": {
+                       "@type": "powerSwitchState",
+                       "switchState": "ON"
+                    },
+                    "deviceId": "hdm:HomeMaticIP:3014F711A0001916D859A8A9"
+                  }],
+                  "jsonrpc": "2.0"
+                }
+                """;
+        LongPollResult longPollResult = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(json, LongPollResult.class);
+        assertNotNull(longPollResult);
+
+        fixture.handleLongPollResult(longPollResult);
+
+        verify(thingHandler).getBoschID();
+        verifyNoMoreInteractions(thingHandler);
+    }
+
+    @Test
+    void handleLongPollResult() {
+        List<Thing> things = new ArrayList<Thing>();
+        when(thing.getThings()).thenReturn(things);
+
+        Thing thing = mock(Thing.class);
+        things.add(thing);
+
+        BoschSHCHandler thingHandler = mock(BoschSHCHandler.class);
+        when(thing.getHandler()).thenReturn(thingHandler);
+
+        when(thingHandler.getBoschID()).thenReturn("hdm:HomeMaticIP:3014F711A0001916D859A8A9");
+
+        String json = """
+                {
+                  "result": [{
+                    "path": "/devices/hdm:HomeMaticIP:3014F711A0001916D859A8A9/services/PowerSwitch",
+                    "@type": "DeviceServiceData",
+                    "id": "PowerSwitch",
+                    "state": {
+                       "@type": "powerSwitchState",
+                       "switchState": "ON"
+                    },
+                    "deviceId": "hdm:HomeMaticIP:3014F711A0001916D859A8A9"
+                  }],
+                  "jsonrpc": "2.0"
+                }
+                """;
+        LongPollResult longPollResult = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(json, LongPollResult.class);
+        assertNotNull(longPollResult);
+
+        fixture.handleLongPollResult(longPollResult);
+
+        verify(thingHandler).getBoschID();
+
+        JsonElement expectedState = JsonParser.parseString("""
+                {
+                    "@type": "powerSwitchState",
+                    "switchState": "ON"
+                }
+                """);
+
+        verify(thingHandler).processUpdate("PowerSwitch", expectedState);
+    }
+
+    @Test
+    void handleLongPollResultHandleChildUpdate() {
+        List<Thing> things = new ArrayList<Thing>();
+        when(thing.getThings()).thenReturn(things);
+
+        Thing thing = mock(Thing.class);
+        things.add(thing);
+
+        BoschSHCHandler thingHandler = mock(BoschSHCHandler.class);
+        when(thing.getHandler()).thenReturn(thingHandler);
+
+        when(thingHandler.getBoschID()).thenReturn("hdm:ZigBee:70ac08fffefead2d");
+
+        String json = """
+                {
+                  "result": [{
+                    "path": "/devices/hdm:ZigBee:70ac08fffefead2d#3/services/PowerSwitch",
+                    "@type": "DeviceServiceData",
+                    "id": "PowerSwitch",
+                    "state": {
+                       "@type": "powerSwitchState",
+                       "switchState": "ON"
+                    },
+                    "deviceId": "hdm:ZigBee:70ac08fffefead2d#3"
+                  }],
+                  "jsonrpc": "2.0"
+                }
+                """;
+        LongPollResult longPollResult = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(json, LongPollResult.class);
+        assertNotNull(longPollResult);
+
+        fixture.handleLongPollResult(longPollResult);
+
+        verify(thingHandler).getBoschID();
+
+        JsonElement expectedState = JsonParser.parseString("""
+                {
+                    "@type": "powerSwitchState",
+                    "switchState": "ON"
+                }
+                """);
+
+        verify(thingHandler).processChildUpdate("hdm:ZigBee:70ac08fffefead2d#3", "PowerSwitch", expectedState);
     }
 }
