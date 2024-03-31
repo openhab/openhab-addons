@@ -101,7 +101,7 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
                             .withProperties(properties).build();
                     return result;
                 } catch (Exception e) {
-                    // TODO ...
+                    // TODO Handle exception
                     // logger.error("Unable to query device information for {}: {}",
                     // service.getQualifiedName(), e);
                 }

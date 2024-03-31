@@ -12,24 +12,14 @@
  */
 package org.openhab.binding.huesync.internal.exceptions;
 
-import org.openhab.binding.huesync.internal.i18n.HueSyncLocalizer;
+import org.slf4j.Logger;
 
 /**
  *
  * @author Patrik Gfeller - Initial contribution
  */
-public class HueSyncApiException extends Exception {
-    private String key;
-
-    public HueSyncApiException(String message) {
-        super(message);
-
-        if (message.startsWith("@text")) {
-            key = message;
-        }
-    }
-
-    public String getLogMessage() {
-        return this.key == null ? this.getMessage() : HueSyncLocalizer.getResourceString(key);
+public class HueSyncApiException extends HueSyncException {
+    public HueSyncApiException(String message, Logger logger) {
+        super(message, logger);
     }
 }
