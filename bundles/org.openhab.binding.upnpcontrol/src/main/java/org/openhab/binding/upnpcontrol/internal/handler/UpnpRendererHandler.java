@@ -1651,7 +1651,12 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")) {
                 updateState(ALBUM_ART, UnDefType.UNDEF);
             } else {
-                State albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
+                State albumArt = null;
+                try {
+                    albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
+                } catch (IllegalArgumentException e) {
+                    logger.debug("Invalid album art URI: {}", media.getAlbumArtUri(), e);
+                }
                 if (albumArt == null) {
                     logger.debug("Failed to download the content of album art from URL {}", media.getAlbumArtUri());
                     if (!isCurrent) {
