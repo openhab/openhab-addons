@@ -54,6 +54,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_UNIVERSAL_SWITCH_2 = new ThingTypeUID(BINDING_ID, "universal-switch-2");
     public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR_2 = new ThingTypeUID(BINDING_ID, "smoke-detector-2");
     public static final ThingTypeUID THING_TYPE_LIGHT_CONTROL_2 = new ThingTypeUID(BINDING_ID, "light-control-2");
+    public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
 
     public static final ThingTypeUID THING_TYPE_USER_DEFINED_STATE = new ThingTypeUID(BINDING_ID, "user-defined-state");
 
