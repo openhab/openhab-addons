@@ -14,11 +14,12 @@ package org.openhab.binding.meteoalerte.internal;
 
 import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
 
-import java.time.ZonedDateTime;
+import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService;
+import org.openhab.binding.meteoalerte.internal.deserialization.MeteoAlerteDeserializer;
 import org.openhab.binding.meteoalerte.internal.handler.MeteoAlerteBridgeHandler;
 import org.openhab.binding.meteoalerte.internal.handler.MeteoAlerteHandler;
 import org.openhab.core.i18n.LocationProvider;
@@ -33,11 +34,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
-
 /**
  * The {@link MeteoAlerteHandlerFactory} is responsible for creating things and thing handlers.
  *
@@ -46,24 +42,22 @@ import com.google.gson.JsonDeserializer;
 @Component(service = ThingHandlerFactory.class)
 @NonNullByDefault
 public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
-    private final Gson gson;
     private final MeteoAlertIconProvider iconProvider;
     private final LocationProvider locationProvider;
     private final DepartmentDbService dbService;
+    private final MeteoAlerteDeserializer deserializer;
+    private final ZoneId zoneId;
 
     @Activate
-    public MeteoAlerteHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
-            @Reference LocationProvider locationProvider, @Reference DepartmentDbService dbService,
-            @Reference MeteoAlertIconProvider iconProvider) {
+    public MeteoAlerteHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider,
+            final @Reference LocationProvider locationProvider, final @Reference DepartmentDbService dbService,
+            final @Reference MeteoAlertIconProvider iconProvider,
+            final @Reference MeteoAlerteDeserializer deserializer) {
         this.iconProvider = iconProvider;
         this.locationProvider = locationProvider;
+        this.deserializer = deserializer;
         this.dbService = dbService;
-        this.gson = new GsonBuilder()
-                .registerTypeAdapter(ZonedDateTime.class,
-                        (JsonDeserializer<ZonedDateTime>) (json, type, context) -> ZonedDateTime
-                                .parse(json.getAsJsonPrimitive().getAsString())
-                                .withZoneSameInstant(timeZoneProvider.getTimeZone()))
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+        this.zoneId = timeZoneProvider.getTimeZone();
     }
 
     @Override
@@ -76,7 +70,8 @@ public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         return BRIDGE_TYPE_API.equals(thingTypeUID)
-                ? new MeteoAlerteBridgeHandler((Bridge) thing, gson, locationProvider, dbService)
-                : THING_TYPE_DEPARTEMENT.equals(thingTypeUID) ? new MeteoAlerteHandler(thing, iconProvider) : null;
+                ? new MeteoAlerteBridgeHandler((Bridge) thing, deserializer, locationProvider, dbService)
+                : THING_TYPE_DEPARTEMENT.equals(thingTypeUID) ? new MeteoAlerteHandler(thing, zoneId, iconProvider)
+                        : null;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,19 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.meteoalerte.internal.dto;
+package org.openhab.binding.meteoalerte.internal.deserialization;
 
-import java.time.ZonedDateTime;
+import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.Period;
+import org.openhab.binding.meteoalerte.internal.dto.Term;
 
 /**
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Meta {
-    public @Nullable String snapshotId;
-    public @Nullable ZonedDateTime productDatetime; // date/heure de diffusion du produit
-    public @Nullable ZonedDateTime generationTimestamp; // date/heure de début de validité du produit
+public class Periods extends HashMap<Term, @Nullable Period> {
+    private static final long serialVersionUID = -4448877461442293135L;
 }

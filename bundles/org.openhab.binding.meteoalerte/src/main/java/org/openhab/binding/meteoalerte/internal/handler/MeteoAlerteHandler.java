@@ -12,33 +12,42 @@
  */
 package org.openhab.binding.meteoalerte.internal.handler;
 
+import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.meteoalerte.internal.MeteoAlertIconProvider;
 import org.openhab.binding.meteoalerte.internal.config.MeteoAlerteConfiguration;
-import org.openhab.binding.meteoalerte.internal.dto.BlocItem;
 import org.openhab.binding.meteoalerte.internal.dto.BlocType;
+import org.openhab.binding.meteoalerte.internal.dto.Domain;
 import org.openhab.binding.meteoalerte.internal.dto.Hazard;
+import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.DomainId;
+import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.Period;
+import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.TextBlocItem;
+import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.TimelapsItem;
 import org.openhab.binding.meteoalerte.internal.dto.Risk;
-import org.openhab.binding.meteoalerte.internal.dto.TermItem;
-import org.openhab.binding.meteoalerte.internal.dto.TextBlocItem;
-import org.openhab.binding.meteoalerte.internal.dto.TextItem;
+import org.openhab.binding.meteoalerte.internal.dto.Term;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -56,12 +65,15 @@ import org.slf4j.LoggerFactory;
 public class MeteoAlerteHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
     private final MeteoAlertIconProvider iconProvider;
+    private final ZoneId zoneId;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private @NonNullByDefault({}) Domain domain;
 
-    public MeteoAlerteHandler(Thing thing, MeteoAlertIconProvider iconProvider) {
+    public MeteoAlerteHandler(Thing thing, ZoneId zoneId, MeteoAlertIconProvider iconProvider) {
         super(thing);
         this.iconProvider = iconProvider;
+        this.zoneId = zoneId;
     }
 
     @Override
@@ -70,10 +82,10 @@ public class MeteoAlerteHandler extends BaseThingHandler {
 
         MeteoAlerteConfiguration config = getConfigAs(MeteoAlerteConfiguration.class);
         logger.debug("config department= {}", config.department);
+        domain = Domain.valueOf(config.department);
 
         updateStatus(ThingStatus.UNKNOWN);
-        refreshJob = Optional.of(
-                scheduler.scheduleWithFixedDelay(() -> updateAndPublish(config.department), 0, 10, TimeUnit.MINUTES));
+        refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(() -> updateAndPublish(), 0, 10, TimeUnit.MINUTES));
     }
 
     @Override
@@ -87,49 +99,66 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            // updateAndPublish();
+            updateAndPublish();
         }
     }
 
-    private void updateAndPublish(String department) {
-        MeteoAlerteBridgeHandler bridgeHandler = (MeteoAlerteBridgeHandler) getBridge().getHandler();
-        TextBlocItem bloc = bridgeHandler.requestData(department);
-        Map<Hazard, Risk> channels = new HashMap<>();
-
-        for (Hazard hazard : Hazard.values()) {
-            if (hazard != Hazard.UNKNOWN && hazard != Hazard.ALL) {
-                channels.put(hazard, Risk.VERT);
+    private Optional<MeteoAlerteBridgeHandler> getBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            BridgeHandler handler = bridge.getHandler();
+            if (handler instanceof MeteoAlerteBridgeHandler maHandler) {
+                return Optional.of(maHandler);
             }
         }
+        return Optional.empty();
+    }
 
-        updateStatus(ThingStatus.ONLINE);
+    private void updateAndPublish() {
+        getBridgeHandler().ifPresentOrElse(handler -> {
+            Period period = handler.requestPeriod(Term.TODAY);
+            if (period != null) {
+                updateDate(OBSERVATION_TIME, period.beginValidityTime());
+                updateDate(END_TIME, period.endValidityTime());
 
-        if (bloc.domain.name().equals(department)) {
-            List<BlocItem> blocItems = bloc.blocItems;
-            if (!blocItems.isEmpty()) {
-                for (BlocItem blocItem : blocItems) {
-                    if (blocItem.type == BlocType.QUALIFICATION) {
-                        for (TextItem textItem : blocItem.textItems) {
-                            Hazard hazard = textItem.getHazard();
-                            if (hazard != Hazard.ALL && hazard != Hazard.UNKNOWN) {
-                                for (TermItem termItem : textItem.termItems) {
-                                    channels.put(hazard, termItem.risk);
-                                }
+                DomainId domainId = handler.requestMapData(domain, Term.TODAY);
+                ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(zoneId);
+                if (domainId != null) {
+                    Map<Hazard, Risk> channels = new HashMap<>(Hazard.values().length);
+                    Hazard.AS_SET.stream().filter(hazard -> !hazard.channelName.isBlank())
+                            .forEach(hazard -> channels.put(hazard, Risk.VERT));
+
+                    domainId.phenomenonItems().forEach(phenomenon -> {
+                        Risk risk = phenomenon.phenomenonMaxColorId();
+                        for (TimelapsItem item : phenomenon.timelapsItems()) {
+                            if (item.contains(now)) {
+                                risk = item.colorId();
                             }
                         }
+                        channels.put(phenomenon.phenomenonId(), risk);
+                    });
+                    channels.forEach((k, v) -> {
+                        updateAlert(k.channelName, v);
+                    });
 
+                    TextBlocItem bloc = handler.requestTextData(domain);
+                    if (bloc != null) {
+                        String comment = bloc.blocItems().stream().filter(bi -> bi.type().equals(BlocType.SITUATION))
+                                .flatMap(bi -> bi.textItems().stream()).flatMap(ti -> ti.termItems().stream())
+                                .map(term -> term.getText(now)).collect(Collectors.joining("."));
+                        updateState(COMMENT, comment.isEmpty() ? UnDefType.NULL : StringType.valueOf(comment));
+                        updateStatus(ThingStatus.ONLINE);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                                "No data available for the department");
                     }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No data available for the department");
                 }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No data available ");
             }
-        }
-
-        channels.forEach((k, v) -> {
-            updateAlert(k.channelName, v);
-        });
-        // updateState(COMMENT, StringType.valueOf(fields.getVigilanceComment()));
-        // fields.getDateInsert().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
-        // fields.getDatePrevue().ifPresent(date -> updateDate(END_TIME, date));
-
+        }, () -> logger.warn("No viable bridge"));
     }
 
     private void updateAlert(String channelId, Risk value) {

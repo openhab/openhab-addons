@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.meteoalerte.internal.dto;
+
+import java.util.EnumSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -41,6 +43,8 @@ public enum Hazard {
     VAGUES_SUBMERSION("vague-submersion"),
     ALL(""),
     UNKNOWN("");
+
+    public static final EnumSet<Hazard> AS_SET = EnumSet.allOf(Hazard.class);
 
     public final String channelName;
 

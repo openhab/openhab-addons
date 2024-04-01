@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,16 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.meteoalerte.internal.dto;
+package org.openhab.binding.meteoalerte.internal.deserialization;
+
+import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.meteoalerte.internal.dto.Domain;
+import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.DomainId;
 
 /**
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class VigilanceEnCours {
-    public @Nullable Product product;
-    public @Nullable Meta meta;
+public class Timelaps extends HashMap<Domain, @Nullable DomainId> {
+
+    private static final long serialVersionUID = -441522278695388073L;
 }

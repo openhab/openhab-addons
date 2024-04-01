@@ -49,7 +49,7 @@ public class MeteoAlertIconProvider implements IconProvider {
     private static final String DEFAULT_LABEL = "Météo Alerte Icons";
     private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather events provided by Météo Alerte";
     private static final Set<String> ICONS = Set.of(WAVE, AVALANCHE, HEAT, FREEZE, FLOOD, SNOW, STORM, RAIN, WIND,
-            "meteo_france", "dept");
+            "meteo_france", "dept_");
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlertIconProvider.class);
     private final BundleContext context;
