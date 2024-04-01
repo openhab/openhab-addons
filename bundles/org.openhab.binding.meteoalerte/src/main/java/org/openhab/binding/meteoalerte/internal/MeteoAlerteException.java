@@ -31,8 +31,4 @@ public class MeteoAlerteException extends Exception {
     public MeteoAlerteException(Exception e, String format, Object... args) {
         super(format.formatted(args), e);
     }
-
-    public MeteoAlerteException(String message) {
-        super(message);
-    }
 }

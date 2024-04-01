@@ -19,15 +19,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum BlocType {
-    SITUATION("Situation Actuelle"),
-    INCERTITUDE("Prévisibilité et incertitudes"),
-    QUALIFICATION("Qualification"),
-    EVOLUTION("Évolution prévue"),
-    UNKNOWN("Inconnue");
-
-    public final String description;
-
-    BlocType(String description) {
-        this.description = description;
-    }
+    SITUATION, // Situation Actuelle
+    INCERTITUDE, // Prévisibilité et incertitudes
+    QUALIFICATION, // Qualification
+    EVOLUTION, // Évolution prévue
+    UNKNOWN; // Inconnue
 }

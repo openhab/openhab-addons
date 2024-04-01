@@ -86,7 +86,7 @@ public class MeteoAlerteDiscoveryService extends AbstractDiscoveryService implem
         }
     }
 
-    public void createResults(PointType serverLocation, DepartmentDbService db, ThingUID bridgeUID) {
+    private void createResults(PointType serverLocation, DepartmentDbService db, ThingUID bridgeUID) {
         List<Department> candidates = db.getBounding(serverLocation);
 
         if (!candidates.isEmpty()) {

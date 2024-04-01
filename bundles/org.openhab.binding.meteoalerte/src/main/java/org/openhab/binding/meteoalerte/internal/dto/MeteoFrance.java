@@ -81,7 +81,7 @@ public class MeteoFrance {
             String blocId, // indique le type de bloc
             List<BlocItem> blocItems) { // rubriques du bulletin : SITUATION,QUALIFICATION, INCERTITUDE,EVOLUTION
 
-        boolean validFor(Domain searched) {
+        private boolean validFor(Domain searched) {
             return searched.equals(domain);
         }
     }
@@ -94,20 +94,11 @@ public class MeteoFrance {
             Timelaps timelaps, //
             List<PhenomenonCount> maxCountItems, //
             List<PerPhenomenonItem> perPhenomenonItems) {//
-
-        public boolean contains(ZonedDateTime moment) {
-            return beginValidityTime.isBefore(moment) && endValidityTime.isAfter(moment);
-        }
     }
 
-    public record TextItems( //
+    private record TextItems( //
             String title, //
             List<String> text) {//
-
-        public String getText() {
-            return text.stream().filter(Predicate.not(String::isEmpty))
-                    .collect(Collectors.joining(System.lineSeparator()));
-        }
     }
 
     public record DomainId( //
@@ -132,14 +123,14 @@ public class MeteoFrance {
         }
     }
 
-    public record PhenomenonCount(// )
+    private record PhenomenonCount(// )
             int colorId, //
             String colorName, //
             int count, //
             String textCount) { //
     }
 
-    public record PerPhenomenonItem( //
+    private record PerPhenomenonItem( //
             String phenomenonId, //
             int anyColorCount, //
             List<PhenomenonCount> phenomenonCounts) { //
