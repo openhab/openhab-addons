@@ -12,20 +12,21 @@
  */
 package org.openhab.binding.meteoalerte.internal;
 
-import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
+import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.BINDING_ID;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.meteoalerte.internal.db.Department;
-import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService;
+import org.openhab.binding.meteoalerte.internal.dto.Hazard;
 import org.openhab.binding.meteoalerte.internal.dto.Risk;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.ui.icon.IconProvider;
@@ -46,22 +47,19 @@ import org.slf4j.LoggerFactory;
 @Component(service = { IconProvider.class, MeteoAlertIconProvider.class })
 @NonNullByDefault
 public class MeteoAlertIconProvider implements IconProvider {
-    private static final String DEFAULT_LABEL = "Météo Alerte Icons";
-    private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather events provided by Météo Alerte";
-    private static final Set<String> ICONS = Set.of(WAVE, AVALANCHE, HEAT, FREEZE, FLOOD, SNOW, STORM, RAIN, WIND,
-            "meteo_france", "dept_");
+    private static final String DEFAULT_LABEL = "Vigilance Météo Icons";
+    private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather alerts provided by Météo France";
+    private static final List<String> ICONS = Stream.concat(Stream.of("meteo_france"),
+            Hazard.AS_SET.stream().filter(h -> !h.channelName.isEmpty()).map(h -> h.channelName)).toList();
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlertIconProvider.class);
     private final BundleContext context;
     private final TranslationProvider i18nProvider;
-    private final DepartmentDbService dbService;
 
     @Activate
-    public MeteoAlertIconProvider(final BundleContext context, final @Reference TranslationProvider i18nProvider,
-            @Reference DepartmentDbService dbService) {
+    public MeteoAlertIconProvider(final BundleContext context, final @Reference TranslationProvider i18nProvider) {
         this.context = context;
         this.i18nProvider = i18nProvider;
-        this.dbService = dbService;
     }
 
     @Override
@@ -97,17 +95,7 @@ public class MeteoAlertIconProvider implements IconProvider {
 
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
-        String icon = null;
-        if (category.startsWith("dept_")) {
-            icon = getResource(category);
-            String deptId = category.split("_")[1];
-            Department department = dbService.getDept(deptId);
-            if (department != null) {
-                icon = icon.replaceAll("%shape%", department.shape);
-            }
-        } else {
-            icon = getResource(category);
-        }
+        String icon = getResource(category);
         if (icon.isEmpty()) {
             return null;
         }

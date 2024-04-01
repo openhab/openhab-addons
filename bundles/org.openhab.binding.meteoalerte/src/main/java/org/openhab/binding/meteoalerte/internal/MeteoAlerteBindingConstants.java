@@ -34,15 +34,6 @@ public class MeteoAlerteBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEPARTEMENT = new ThingTypeUID(BINDING_ID, "department");
 
     // List of all Channel IDs
-    public static final String WIND = "vent";
-    public static final String RAIN = "pluie-inondation";
-    public static final String STORM = "orage";
-    public static final String FLOOD = "inondation";
-    public static final String HEAT = "canicule";
-    public static final String FREEZE = "grand-froid";
-    public static final String AVALANCHE = "avalanches";
-    public static final String WAVE = "vague-submersion";
-    public static final String SNOW = "neige";
 
     public static final String OBSERVATION_TIME = "observation-time";
     public static final String END_TIME = "end-time";
