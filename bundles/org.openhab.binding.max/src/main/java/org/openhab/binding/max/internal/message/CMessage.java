@@ -109,11 +109,7 @@ public final class CMessage extends Message {
 
     private String getSerialNumber(byte[] bytes) {
         byte[] sn = new byte[10];
-
-        for (int i = 0; i < 10; i++) {
-            sn[i] = bytes[i + 8];
-        }
-
+        System.arraycopy(bytes, 8, sn, 0, sn.length);
         return new String(sn, StandardCharsets.UTF_8);
     }
 
@@ -124,10 +120,8 @@ public final class CMessage extends Message {
         try {
             int dataStart = 18;
             byte[] sn = new byte[bytes.length - dataStart];
+            System.arraycopy(bytes, dataStart, sn, 0, sn.length);
 
-            for (int i = 0; i < sn.length; i++) {
-                sn[i] = bytes[i + dataStart];
-            }
             logger.trace("DataBytes: {}", Utils.getHex(sn));
             return new String(sn, StandardCharsets.UTF_8);
         } catch (Exception e) {
