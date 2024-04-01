@@ -18,13 +18,9 @@ import static org.openhab.binding.airgradient.internal.AirGradientBindingConstan
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.DEFAULT_POLL_INTERVAL_LOCAL;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.THING_TYPE_API;
 
-import java.net.InetAddress;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import javax.jmdns.ServiceInfo;
 
@@ -101,22 +97,6 @@ public class AirGradientMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
                 .withLabel(si.getName()).withRepresentationProperty(CONFIG_API_HOST_NAME).build();
 
         return discoveryResult;
-    }
-
-    private static <T> Iterable<T> getIterableFromIterator(Iterator<T> iterator) {
-        return () -> iterator;
-    }
-
-    private String toString(Enumeration<String> strs) {
-        return String.join(", ", getIterableFromIterator(strs.asIterator()));
-    }
-
-    private String toString(String strs[]) {
-        return String.join(", ", strs);
-    }
-
-    private String toString(InetAddress strs[]) {
-        return String.join(", ", Stream.of(strs).map((a) -> a.toString()).toList());
     }
 
     @Override

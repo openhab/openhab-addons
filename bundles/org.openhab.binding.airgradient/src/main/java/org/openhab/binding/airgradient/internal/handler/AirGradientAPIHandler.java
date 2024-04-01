@@ -189,7 +189,6 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
                 } else if (CONTENTTYPE_OPENMETRICS.equals(contentType)) {
                     return parsePrometheus(stringResponse);
                 }
-
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.getContentAsString());
             }

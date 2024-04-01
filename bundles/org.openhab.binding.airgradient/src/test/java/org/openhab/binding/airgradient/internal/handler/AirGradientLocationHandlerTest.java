@@ -37,7 +37,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class AirGradientLocationHandlerTest {
 
-    private static final Measure measure = new Measure() {
+    private static final Measure TEST_MEASURE = new Measure() {
         {
             locationId = "12345";
             locationName = "Location name";
@@ -82,7 +82,7 @@ public class AirGradientLocationHandlerTest {
     @Test
     public void testSetMeasure() {
         sut.setCallback(callbackMock);
-        sut.setMeasurment("test123", measure);
+        sut.setMeasurment("test123", TEST_MEASURE);
 
         verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_WIFI),
                 new QuantityType<>("-59 dBm"));

@@ -43,7 +43,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 @NonNullByDefault
 public class AirGradientAPIHandlerTest {
 
-    private static final AirGradientAPIConfiguration config = new AirGradientAPIConfiguration() {
+    private static final AirGradientAPIConfiguration TEST_CONFIG = new AirGradientAPIConfiguration() {
         {
             hostname = "abc123";
             token = "def456";
@@ -154,7 +154,7 @@ public class AirGradientAPIHandlerTest {
         Configuration configuration = Mockito.mock(Configuration.class);
 
         Mockito.when(bridge.getConfiguration()).thenReturn(requireNonNull(configuration));
-        Mockito.when(configuration.as(AirGradientAPIConfiguration.class)).thenReturn(config);
+        Mockito.when(configuration.as(AirGradientAPIConfiguration.class)).thenReturn(TEST_CONFIG);
 
         sut = new AirGradientAPIHandler(requireNonNull(bridge), requireNonNull(httpClientMock));
     }
