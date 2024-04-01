@@ -192,12 +192,12 @@
 		<description>Niveau d'alerte aux évènements orageux</description>
 		<category>oh:meteoalerte:orage</category>
 		<state readOnly="true">
-            <options>
-                <option value="0">Pas de vigilance particulière</option>
-                <option value="1">Soyez attentif</option>
-                <option value="2">Soyez très vigilant</option>
-                <option value="3">Vigilance absolue</option>
-            </options>
+			<options>
+				<option value="0">Pas de vigilance particulière</option>
+				<option value="1">Soyez attentif</option>
+				<option value="2">Soyez très vigilant</option>
+				<option value="3">Vigilance absolue</option>
+			</options>
 		</state>
 	</channel-type>
 
@@ -207,12 +207,12 @@
 		<description>Niveau d'alerte aux inondations</description>
 		<category>oh:meteoalerte:inondation</category>
 		<state readOnly="true">
-            <options>
-                <option value="0">Pas de vigilance particulière</option>
-                <option value="1">Soyez attentif</option>
-                <option value="2">Soyez très vigilant</option>
-                <option value="3">Vigilance absolue</option>
-            </options>
+			<options>
+				<option value="0">Pas de vigilance particulière</option>
+				<option value="1">Soyez attentif</option>
+				<option value="2">Soyez très vigilant</option>
+				<option value="3">Vigilance absolue</option>
+			</options>
 		</state>
 	</channel-type>
 
@@ -222,12 +222,12 @@
 		<description>Niveau d'alerte aux évènements neigeux</description>
 		<category>oh:meteoalerte:neige</category>
 		<state readOnly="true">
-            <options>
-                <option value="0">Pas de vigilance particulière</option>
-                <option value="1">Soyez attentif</option>
-                <option value="2">Soyez très vigilant</option>
-                <option value="3">Vigilance absolue</option>
-            </options>
+			<options>
+				<option value="0">Pas de vigilance particulière</option>
+				<option value="1">Soyez attentif</option>
+				<option value="2">Soyez très vigilant</option>
+				<option value="3">Vigilance absolue</option>
+			</options>
 		</state>
 	</channel-type>
 
@@ -237,12 +237,12 @@
 		<description>Niveau d'alerte aux fortes températures</description>
 		<category>oh:meteoalerte:canicule</category>
 		<state readOnly="true">
-            <options>
-                <option value="0">Pas de vigilance particulière</option>
-                <option value="1">Soyez attentif</option>
-                <option value="2">Soyez très vigilant</option>
-                <option value="3">Vigilance absolue</option>
-            </options>
+			<options>
+				<option value="0">Pas de vigilance particulière</option>
+				<option value="1">Soyez attentif</option>
+				<option value="2">Soyez très vigilant</option>
+				<option value="3">Vigilance absolue</option>
+			</options>
 		</state>
 	</channel-type>
 
@@ -252,12 +252,12 @@
 		<description>Niveau d'alerte aux températures négatives</description>
 		<category>oh:meteoalerte:grand-froid</category>
 		<state readOnly="true">
-            <options>
-                <option value="0">Pas de vigilance particulière</option>
-                <option value="1">Soyez attentif</option>
-                <option value="2">Soyez très vigilant</option>
-                <option value="3">Vigilance absolue</option>
-            </options>
+			<options>
+				<option value="0">Pas de vigilance particulière</option>
+				<option value="1">Soyez attentif</option>
+				<option value="2">Soyez très vigilant</option>
+				<option value="3">Vigilance absolue</option>
+			</options>
 		</state>
 	</channel-type>
 
@@ -267,12 +267,12 @@
 		<description>Niveau d'alerte aux avalanches</description>
 		<category>oh:meteoalerte:avalanches</category>
 		<state readOnly="true">
-            <options>
-                <option value="0">Pas de vigilance particulière</option>
-                <option value="1">Soyez attentif</option>
-                <option value="2">Soyez très vigilant</option>
-                <option value="3">Vigilance absolue</option>
-            </options>
+			<options>
+				<option value="0">Pas de vigilance particulière</option>
+				<option value="1">Soyez attentif</option>
+				<option value="2">Soyez très vigilant</option>
+				<option value="3">Vigilance absolue</option>
+			</options>
 		</state>
 	</channel-type>
 
@@ -282,12 +282,12 @@
 		<description>Niveau d'alerte aux vagues submersion</description>
 		<category>oh:meteoalerte:vague-submersion</category>
 		<state readOnly="true">
-            <options>
-                <option value="0">Pas de vigilance particulière</option>
-                <option value="1">Soyez attentif</option>
-                <option value="2">Soyez très vigilant</option>
-                <option value="3">Vigilance absolue</option>
-            </options>
+			<options>
+				<option value="0">Pas de vigilance particulière</option>
+				<option value="1">Soyez attentif</option>
+				<option value="2">Soyez très vigilant</option>
+				<option value="3">Vigilance absolue</option>
+			</options>
 		</state>
 	</channel-type>
 
@@ -297,12 +297,12 @@
 		<description>Niveau d'alerte aux inondations causées par les précipitations</description>
 		<category>oh:meteoalerte:pluie-inondation</category>
 		<state readOnly="true">
-            <options>
-                <option value="0">Pas de vigilance particulière</option>
-                <option value="1">Soyez attentif</option>
-                <option value="2">Soyez très vigilant</option>
-                <option value="3">Vigilance absolue</option>
-            </options>
+			<options>
+				<option value="0">Pas de vigilance particulière</option>
+				<option value="1">Soyez attentif</option>
+				<option value="2">Soyez très vigilant</option>
+				<option value="3">Vigilance absolue</option>
+			</options>
 		</state>
 	</channel-type>
 
