@@ -2,9 +2,9 @@
 
 ![AirGradient logo](doc/logo.png)
 
-AirGradient provide open source and open hardware air quality monitors.
+AirGradient provides open source and open hardware air quality monitors.
 
-This binding reads air quality data from the the AirGradient (https://www.airgradient.com/) API.
+This binding reads air quality data from the AirGradient (https://www.airgradient.com/) API.
 
 This API is documented at https://api.airgradient.com/public/docs/api/v1/
 
@@ -12,28 +12,31 @@ This API is documented at https://api.airgradient.com/public/docs/api/v1/
 
 ![AirGradient sensors](doc/airgradient_sensors.png)
 
-This binding supports all the different AirGradient sensors, with most of the data. If you are missing something; please let the author know.
+This binding supports all the different AirGradient sensors, providing most of the sensor data.
+If you are missing something, please let the author know.
 
 - `bridge`: Connection to the API
 - `location`: Location in the API to read values for
 
 ## Discovery
 
-Auto-discovery of locations is implemented. Start by adding an AirGradient API thing. When that is added and online, run a scan for new things in the AirGradient binding.
+Auto-discovery of locations is implemented.
+Start by adding an AirGradient API thing.
+When that is added and online, run a scan for new things in the AirGradient binding.
 
 ## Thing Configuration
 
 This binding supports reading data both directly from AirGradient sensors and from the AirGradient API.
-If you don't specify any path on the server, the binding will behave as if the hostname is the hostname of the AifGradient API server, and append paths and tokens for it.
+If you don't specify any path on the server, the binding will behave as if the hostname is the hostname of the AirGradient API server, and append paths and tokens for it.
 
 The binding will adapt to the content type of the returned content to support different formats for getting data both from local and cloud installations.
 
 | Name              | Hostname                                                       | Content-Type                 | Parser |
 |-------------------|----------------------------------------------------------------|------------------------------|--------|
-| API               | Hostnames without any path (e.g. https://api.airgradient.com/) | application/json             | JSON parser for the AirGradient API, correct paths will be appended to the calls |
-| Local OpenMetrics | Hostnames with path (e.g. http://192.168.x.x/metrics)          | application/openmetrics-text | OpenMetrics parser |
-| Local Web         | Hostnames with path (e.g. http://192.168.x.x/measures/current) | application/json             | JSON parser for the AirGradient API, as if you returned value of sendToServer() payload |
-| Local Prometheus  | Hostnames with path (e.g. http://192.168.x.x/measures)         | text/plain                   | Prometheus parser for [Prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/) |
+| API               | Hostnames without any path (e.g., https://api.airgradient.com/) | application/json             | JSON parser for the AirGradient API, correct paths will be appended to the calls |
+| Local OpenMetrics | Hostnames with path (e.g., http://192.168.x.x/metrics)          | application/openmetrics-text | OpenMetrics parser |
+| Local Web         | Hostnames with path (e.g., http://192.168.x.x/measures/current) | application/json             | JSON parser for the AirGradient API, as if you returned the value of sendToServer() payload |
+| Local Prometheus  | Hostnames with path (e.g., http://192.168.x.x/measures)         | text/plain                   | Prometheus parser for [Prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/) |
 
 ### AirGradient API
 
