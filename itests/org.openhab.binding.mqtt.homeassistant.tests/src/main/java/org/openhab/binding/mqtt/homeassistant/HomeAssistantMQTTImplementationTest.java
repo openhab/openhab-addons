@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -152,17 +151,14 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
-                scheduler, channelStateUpdateListener, availabilityTracker, gson, transformationServiceProvider));
+                scheduler, channelStateUpdateListener, availabilityTracker, gson, transformationServiceProvider, true));
 
         // The DiscoverComponents object calls ComponentDiscovered callbacks.
         // In the following implementation we add the found component to the `haComponents` map
         // and add the types to the channelTypeProvider, like in the real Thing handler.
         final CountDownLatch latch = new CountDownLatch(1);
         ComponentDiscovered cd = (haID, c) -> {
-            haComponents.put(c.getGroupUID().getId(), c);
-            c.addChannelTypes(channelTypeProvider);
-            channelTypeProvider.putChannelGroupType(Objects.requireNonNull(c.getGroupTypeUID()),
-                    Objects.requireNonNull(c.getType()));
+            haComponents.put(c.getGroupId(), c);
             latch.countDown();
         };
 
@@ -180,11 +176,6 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         // No failure expected and one discovered result
         assertNull(failure);
         assertThat(haComponents.size(), is(1));
-
-        // For the switch component we should have one channel group type and one channel type
-        // putChannelGroupType is called once above
-        verify(channelTypeProvider, times(2)).putChannelGroupType(any(), any());
-        verify(channelTypeProvider, times(1)).putChannelType(any(), any());
 
         String channelGroupId = UIDUtils
                 .encode("node_" + ThingChannelConstants.TEST_HOME_ASSISTANT_THING.getId() + "_switch");
