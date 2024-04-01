@@ -161,7 +161,8 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         ComponentDiscovered cd = (haID, c) -> {
             haComponents.put(c.getGroupUID().getId(), c);
             c.addChannelTypes(channelTypeProvider);
-            channelTypeProvider.putChannelGroupType(Objects.requireNonNull(c.getGroupTypeUID()), Objects.requireNonNull(c.getType()));
+            channelTypeProvider.putChannelGroupType(Objects.requireNonNull(c.getGroupTypeUID()),
+                    Objects.requireNonNull(c.getType()));
             latch.countDown();
         };
 
