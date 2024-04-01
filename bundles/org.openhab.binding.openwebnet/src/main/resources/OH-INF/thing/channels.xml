@@ -238,6 +238,8 @@
 				<option value="MANUAL">Manual</option>
 				<option value="PROTECTION">Antifreeze / Heat Protection</option>
 				<option value="OFF">Off</option>
+				<option value="HOLIDAY">Holiday</option>
+				<option value="VACATION">Vacation</option>
 			</options>
 		</state>
 	</channel-type>
