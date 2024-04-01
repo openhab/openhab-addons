@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -360,7 +360,7 @@ public class TelegramHandler extends BaseThingHandler {
                 } else if (message.photo() != null) {
                     PhotoSize[] photoSizes = message.photo();
                     logger.trace("Received photos {}", Arrays.asList(photoSizes));
-                    Arrays.sort(photoSizes, Comparator.comparingInt(PhotoSize::fileSize).reversed());
+                    Arrays.sort(photoSizes, Comparator.comparingLong(PhotoSize::fileSize).reversed());
                     lastMessageURL = getFullDownloadUrl(photoSizes[0].fileId());
                 } else if (message.text() != null) {
                     lastMessageText = message.text();

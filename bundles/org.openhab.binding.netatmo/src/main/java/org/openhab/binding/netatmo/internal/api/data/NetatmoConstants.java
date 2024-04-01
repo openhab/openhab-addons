@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,7 +105,7 @@ public class NetatmoConstants {
 
                 channels.put(String.join("-", apiDescriptor, "measurement"),
                         new MeasureChannelDetails(confFragment, String.join(":", NUMBER, dimension),
-                                String.format("%%.%df %s", measureDefinition.scale, UnitUtils.UNIT_PLACEHOLDER)));
+                                "%%.%df %s".formatted(measureDefinition.scale, UnitUtils.UNIT_PLACEHOLDER)));
                 if (canScale) {
                     channels.put(String.join("-", apiDescriptor, GROUP_TIMESTAMP), new MeasureChannelDetails(
                             GROUP_TIMESTAMP, DATETIME, "@text/extensible-channel-type.timestamp.pattern"));

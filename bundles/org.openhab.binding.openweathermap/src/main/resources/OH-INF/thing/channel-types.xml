@@ -90,24 +90,6 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="uvindex">
-		<label>Current UV Index</label>
-		<description>This is the current UV Index.</description>
-		<channels>
-			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
-			<channel id="uvindex" typeId="uvindex"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="uvindexForecast">
-		<label>Forecasted UV Index</label>
-		<description>This is the forecasted UV Index.</description>
-		<channels>
-			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
-			<channel id="uvindex" typeId="forecasted-uvindex"/>
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="airPollution">
 		<label>Current Air Pollution</label>
 		<description>This is the current air pollution.</description>
@@ -241,6 +223,9 @@
 		<channels>
 			<channel id="sunrise" typeId="sunrise"/>
 			<channel id="sunset" typeId="sunset"/>
+			<channel id="moonrise" typeId="moonrise"/>
+			<channel id="moonset" typeId="moonset"/>
+			<channel id="moon-phase" typeId="moon-phase"/>
 			<channel id="condition" typeId="condition"/>
 			<channel id="condition-id" typeId="condition-id"/>
 			<channel id="icon" typeId="condition-icon"/>
@@ -276,6 +261,9 @@
 			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
 			<channel id="sunrise" typeId="sunrise"/>
 			<channel id="sunset" typeId="sunset"/>
+			<channel id="moonrise" typeId="moonrise"/>
+			<channel id="moonset" typeId="moonset"/>
+			<channel id="moon-phase" typeId="moon-phase"/>
 			<channel id="condition" typeId="condition"/>
 			<channel id="condition-id" typeId="condition-id"/>
 			<channel id="icon" typeId="condition-icon"/>
@@ -405,6 +393,32 @@
 		<description>Time of sunset for the given day.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="moonrise">
+		<item-type>DateTime</item-type>
+		<label>Moonrise Time</label>
+		<description>Time of moonrise for the given day.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="moonset">
+		<item-type>DateTime</item-type>
+		<label>Moonset Time</label>
+		<description>Time of moonset for the given day.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="moon-phase">
+		<item-type>Number</item-type>
+		<label>Moon Phase</label>
+		<description>Moon phase for the given day. 0 and 1 are 'new moon', 0.25 is 'first quarter moon', 0.5 is 'full moon'
+			and 0.75 is 'last quarter moon'. The periods in between are called 'waxing crescent', 'waxing gibous', 'waning
+			gibous', and 'waning crescent', respectively.</description>
+		<category>Moon</category>
+		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 
 	<channel-type id="hourly-forecast-time-stamp">

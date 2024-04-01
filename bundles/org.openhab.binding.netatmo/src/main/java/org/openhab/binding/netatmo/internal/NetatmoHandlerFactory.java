@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,11 @@ import org.openhab.binding.netatmo.internal.handler.capability.DeviceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.DoorbellCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.RefreshAutoCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
@@ -148,6 +151,12 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
                 newCap = new MeasureCapability(handler, helpers);
             } else if (capability == ChannelHelperCapability.class) {
                 newCap = new ChannelHelperCapability(handler, helpers);
+            } else if (capability == RefreshAutoCapability.class) {
+                newCap = new RefreshAutoCapability(handler);
+            } else if (capability == RefreshCapability.class) {
+                newCap = new RefreshCapability(handler);
+            } else if (capability == ParentUpdateCapability.class) {
+                newCap = new ParentUpdateCapability(handler);
             }
             if (newCap != null) {
                 handler.getCapabilities().put(newCap);

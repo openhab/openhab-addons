@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -230,9 +230,14 @@ public class SysteminfoThingTypeProvider extends AbstractStorageBasedTypeProvide
         ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelTypeUID)
                 .withConfiguration(baseChannel.getConfiguration());
         builder.withLabel(channelType.getLabel() + " " + index);
+        builder.withDefaultTags(channelType.getTags());
         String description = channelType.getDescription();
         if (description != null) {
             builder.withDescription(description);
+        }
+        String itemType = channelType.getItemType();
+        if (itemType != null) {
+            builder.withAcceptedItemType(itemType);
         }
         return builder.build();
     }

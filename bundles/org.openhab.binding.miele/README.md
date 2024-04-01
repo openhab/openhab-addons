@@ -45,18 +45,18 @@ discovery.miele:removalGracePeriod=30
 
 ### Thing Configuration for Miele XGW3000
 
-| Configuration Parameter | Description   |
-|-------------------------|---------------|
-| ipAddress               | Network address of the Miele@home gateway |
+| Configuration Parameter | Description                                                                                                                      |
+|-------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| ipAddress               | Network address of the Miele@home gateway                                                                                        |
 | interface               | Network address of openHAB host interface where the binding will listen for multicast events coming from the Miele@home gateway. |
-| userName                | Name of a registered Miele@home user. |
-| password                | Password for the registered Miele@home user. |
-| language                | Language for state, program and phase texts. Leave blank for system language. |
+| userName                | Name of a registered Miele@home user.                                                                                            |
+| password                | Password for the registered Miele@home user.                                                                                     |
+| language                | Language for state, program and phase texts. Leave blank for system language.                                                    |
 
 ### Thing Configuration for appliance
 
-| Configuration Parameter | Description   |
-|-------------------------|---------------|
+| Configuration Parameter | Description                                              |
+|-------------------------|----------------------------------------------------------|
 | uid                     | Unique identifier for specific appliance on the gateway. |
 
 Each appliance needs the device UID as a configuration parameter.
@@ -112,6 +112,8 @@ Channels available for each appliance type are listed below.
 | phase               | String               | Read       | Current phase of the program running on the appliance               |
 | rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
+| info                | Switch               | Read       | Signals information, check appliance for details                    |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                        |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 
 #### Dishwasher
@@ -130,6 +132,8 @@ Channels available for each appliance type are listed below.
 | elapsed             | Number:Time          | Read       | Time elapsed in the program running on the appliance                 |
 | finish              | Number:Time          | Read       | Time to finish the program running on the appliance                  |
 | door                | Contact              | Read       | Current state of the door of the appliance                           |
+| info                | Switch               | Read       | Signals information, check appliance for details                     |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                         |
 | switch              | Switch               | Write      | Switch the appliance on or off                                       |
 | energyConsumption   | Number:Energy        | Read       | Energy consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance  |
@@ -172,6 +176,8 @@ Channels available for each appliance type are listed below.
 | current             | Number:Temperature   | Read       | Current temperature in the fridge                                   |
 | target              | Number:Temperature   | Read       | Target temperature to be reached by the fridge                      |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
+| info                | Switch               | Read       | Signals information, check appliance for details                    |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                        |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 
 #### Fridge/Freezer combination
@@ -189,6 +195,8 @@ Channels available for each appliance type are listed below.
 | fridgecurrent       | Number:Temperature   | Read       | Current temperature in the fridge compartment                       |
 | fridgetarget        | Number:Temperature   | Read       | Target temperature to be reached by the fridge compartment          |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
+| info                | Switch               | Read       | Signals information, check appliance for details                    |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                        |
 | start               | Switch               | Write      | Switch the appliance on or off                                      |
 
 #### Hob
@@ -247,6 +255,8 @@ Channels available for each appliance type are listed below.
 | temp1               | Number:Temperature   | Read       | Program temperature in the oven 1                                   |
 | temp2               | Number:Temperature   | Read       | Program temperature in the oven 2                                   |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
+| info                | Switch               | Read       | Signals information, check appliance for details                    |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                        |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 | stop                | Switch               | Write      | Stop the appliance                                                  |
 
@@ -286,6 +296,8 @@ See oven.
 | elapsed             | Number:Time          | Read       | Time elapsed in the program running on the appliance                |
 | finish              | Number:Time          | Read       | Time to finish the program running on the appliance                 |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
+| info                | Switch               | Read       | Signals information, check appliance for details                    |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                        |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 | step                | Number               | Read       | Current step in the program running on the appliance                |
 
@@ -351,11 +363,14 @@ See oven.
 | elapsed             | Number:Time          | Read       | Time elapsed in the program running on the appliance                 |
 | finish              | Number:Time          | Read       | Time to finish the program running on the appliance                  |
 | door                | Contact              | Read       | Current state of the door of the appliance                           |
+| info                | Switch               | Read       | Signals information, check appliance for details                     |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                         |
 | switch              | Switch               | Write      | Switch the appliance on or off                                       |
 | target              | Number:Temperature   | Read       | Temperature of the selected program (10 °C = cold)                   |
 | spinningspeed       | String               | Read       | Spinning speed in the program running on the appliance               |
 | energyConsumption   | Number:Energy        | Read       | Energy consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance  |
+| laundryWeight       | Number:Mass          | Read       | Weight of the laundry inside the appliance                           |
 
 ##### Programs
 

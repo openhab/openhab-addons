@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,17 +20,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tapocontrol.internal.device.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.structures.TapoBridgeConfiguration;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,10 +43,10 @@ import com.google.gson.JsonObject;
  *
  * @author Christian Wild - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = TapoDiscoveryService.class)
 @NonNullByDefault
-public class TapoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class TapoDiscoveryService extends AbstractThingHandlerDiscoveryService<TapoBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(TapoDiscoveryService.class);
-    protected @NonNullByDefault({}) TapoBridgeHandler bridge;
 
     /***********************************
      *
@@ -58,39 +58,15 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
      * INIT CLASS
      */
     public TapoDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_S, false);
-    }
-
-    /**
-     * activate
-     */
-    @Override
-    public void activate() {
-        TapoBridgeConfiguration config = bridge.getBridgeConfig();
-        if (config.cloudDiscovery) {
-            startBackgroundDiscovery();
-        }
-    }
-
-    /**
-     * deactivate
-     */
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(TapoBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, TAPO_DISCOVERY_TIMEOUT_S, false);
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TapoBridgeHandler tapoBridge) {
-            tapoBridge.setDiscoveryService(this);
-            this.bridge = tapoBridge;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return this.bridge;
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        TapoBridgeConfiguration config = thingHandler.getBridgeConfig();
+        modified(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, config.cloudDiscovery));
+        super.initialize();
     }
 
     /***********************************
@@ -105,10 +81,8 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
     @Override
     public void startScan() {
         removeOlderResults(getTimestampOfLastScan());
-        if (bridge != null) {
-            JsonArray jsonArray = bridge.getDeviceList();
-            handleCloudDevices(jsonArray);
-        }
+        JsonArray jsonArray = thingHandler.getDeviceList();
+        handleCloudDevices(jsonArray);
     }
 
     /***********************************
@@ -125,7 +99,6 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
      * @return DiscoveryResult-Object
      */
     public DiscoveryResult createResult(JsonObject device) {
-        TapoBridgeHandler tapoBridge = this.bridge;
         String deviceModel = getDeviceModel(device);
         String label = getDeviceLabel(device);
         String deviceMAC = device.get(CLOUD_JSON_KEY_MAC).getAsString();
@@ -141,17 +114,11 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.get(CLOUD_JSON_KEY_ID).getAsString());
 
         logger.debug("device {} discovered", deviceModel);
-        if (tapoBridge != null) {
-            ThingUID bridgeUID = tapoBridge.getUID();
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, deviceMAC);
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(DEVICE_REPRESENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
-                    .build();
-        } else {
-            ThingUID thingUID = new ThingUID(BINDING_ID, deviceMAC);
-            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withRepresentationProperty(DEVICE_REPRESENTATION_PROPERTY).withLabel(label).build();
-        }
+        ThingUID bridgeUID = thingHandler.getUID();
+        ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, deviceMAC);
+        return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                .withRepresentationProperty(DEVICE_REPRESENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
+                .build();
     }
 
     /**

@@ -16,6 +16,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.jupnp</groupId>
+      <artifactId>org.jupnp</artifactId>
+      <version>3.0.0</version>
+      <classifier>tests</classifier>
+    </dependency>
+    <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.wemo</artifactId>
       <version>${project.version}</version>

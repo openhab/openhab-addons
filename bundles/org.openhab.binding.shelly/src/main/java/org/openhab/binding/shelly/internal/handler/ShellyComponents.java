@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -264,6 +264,25 @@ public class ShellyComponents {
                         m++;
                     }
                 } else {
+                    if (status.neutralCurrent != null) {
+                        if (!thingHandler.areChannelsCreated()) {
+                            thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createEMNCurrentChannels(
+                                    thingHandler.getThing(), profile.settings.neutralCurrent, status.neutralCurrent));
+                        }
+                        if (getBool(status.neutralCurrent.isValid)) {
+                            String ngroup = CHANNEL_GROUP_NMETER;
+                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_CURRENT, toQuantityType(
+                                    getDouble(status.neutralCurrent.current), DIGITS_AMPERE, Units.AMPERE));
+                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_IXSUM, toQuantityType(
+                                    getDouble(status.neutralCurrent.ixsum), DIGITS_AMPERE, Units.AMPERE));
+                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_MTRESHHOLD,
+                                    toQuantityType(getDouble(profile.settings.neutralCurrent.mismatchThreshold),
+                                            DIGITS_AMPERE, Units.AMPERE));
+                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_MISMATCH,
+                                    getOnOff(status.neutralCurrent.mismatch));
+                        }
+                    }
+
                     for (ShellySettingsEMeter emeter : status.emeters) {
                         if (getBool(emeter.isValid)) {
                             String groupName = profile.getMeterGroup(m);
@@ -534,7 +553,7 @@ public class ShellyComponents {
             updated |= thingHandler.updateInputs(status);
 
             if (updated) {
-                thingHandler.updateChannel(profile.getControlGroup(0), CHANNEL_LAST_UPDATE, getTimestamp());
+                thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
             }
         }
         return updated;

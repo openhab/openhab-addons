@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class WemoInsightHandler extends WemoHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoInsightHandler.class);
-    private final Map<String, String> stateMap = new ConcurrentHashMap<String, String>();
+    private final Map<String, String> stateMap = new ConcurrentHashMap<>();
 
     private WemoPowerBank wemoPowerBank = new WemoPowerBank();
     private int currentPowerSlidingSeconds;

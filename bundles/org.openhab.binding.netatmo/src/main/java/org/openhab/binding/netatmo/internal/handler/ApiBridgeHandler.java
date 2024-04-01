@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -232,7 +232,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         servlet.startListening();
         grantServlet = Optional.of(servlet);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                ConfigurationLevel.REFRESH_TOKEN_NEEDED.message);
+                ConfigurationLevel.REFRESH_TOKEN_NEEDED.message.formatted(servlet.getPath()));
     }
 
     public ApiHandlerConfiguration getConfiguration() {
@@ -340,6 +340,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             logger.trace(" -returned: code {} body {}", statusCode, responseBody);
 
             if (statusCode == Code.OK) {
+                updateStatus(ThingStatus.ONLINE);
                 return deserializer.deserialize(clazz, responseBody);
             }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Resource {
 
-    public static final double PERCENT_DELTA = 30f;
     public static final MathContext PERCENT_MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_UP);
 
     /**

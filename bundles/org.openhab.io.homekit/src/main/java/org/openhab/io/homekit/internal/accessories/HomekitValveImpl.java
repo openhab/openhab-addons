@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     public static final String CONFIG_DEFAULT_DURATION = "homekitDefaultDuration";
     private static final String CONFIG_TIMER = "homekitTimer";
 
-    private static final Map<String, ValveTypeEnum> CONFIG_VALVE_TYPE_MAPPING = new HashMap<String, ValveTypeEnum>() {
+    private static final Map<String, ValveTypeEnum> CONFIG_VALVE_TYPE_MAPPING = new HashMap<>() {
         {
             put("GENERIC", ValveTypeEnum.GENERIC);
             put("IRRIGATION", ValveTypeEnum.IRRIGATION);

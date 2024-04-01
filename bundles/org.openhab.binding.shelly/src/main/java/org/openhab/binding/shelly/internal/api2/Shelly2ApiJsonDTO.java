@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
+    public static final String SHELLYRPC_METHOD_WIFILISTAPCLIENTS = "WiFi.ListAPClients";
     public static final String SHELLYRPC_METHOD_ETHGETCONG = "Eth.GetConfig";
     public static final String SHELLYRPC_METHOD_ETHSETCONG = "Eth.SetConfig";
     public static final String SHELLYRPC_METHOD_BLEGETCONG = "BLE.GetConfig";
@@ -520,12 +521,42 @@ public class Shelly2ApiJsonDTO {
         public Shelly2GetConfigResult result;
     }
 
+    public static class Shelly2APClientList {
+        public static class Shelly2APClient {
+            public String mac;
+            public String ip;
+            @SerializedName("ip_static")
+            public Boolean staticIP;
+            public Integer mport;
+            public Long since;
+        }
+
+        public Long ts;
+        @SerializedName("ap_clients")
+        public ArrayList<Shelly2APClient> apClients;
+    }
+
     public static class Shelly2DeviceStatus {
+        public class Shelly2InputCounts {
+            public Integer total;
+            @SerializedName("by_minute")
+            public Double[] byMinute;
+            public Double xtotal;
+            @SerializedName("xby_minute")
+            public Double[] xbyMinute;
+            @SerializedName("minute_ts")
+            public Integer minuteTS;
+        }
+
         public class Shelly2InputStatus {
             public Integer id;
             public Boolean state;
             public Double percent; // analog input only
             public ArrayList<String> errors;// shown only if at least one error is present.
+            public Double xpercent;
+            public Shelly2InputCounts counts;
+            public Double freq;
+            public Double xfreq;
         }
 
         public static class Shelly2DeviceStatusLight {
@@ -1089,6 +1120,8 @@ public class Shelly2ApiJsonDTO {
         public Integer motionState;
         @SerializedName("Temperature")
         public Double temperature;
+        @SerializedName("Humidity")
+        public Double humidity;
 
         public Integer rssi;
         public Integer tx_power;

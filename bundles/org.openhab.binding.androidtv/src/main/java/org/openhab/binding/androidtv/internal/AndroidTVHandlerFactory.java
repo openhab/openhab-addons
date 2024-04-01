@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.discovery.DiscoveryServiceRegistry;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
@@ -39,18 +40,24 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.androidtv", service = ThingHandlerFactory.class)
 public class AndroidTVHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GOOGLETV,
-            THING_TYPE_SHIELDTV);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GOOGLETV, THING_TYPE_SHIELDTV,
+            THING_TYPE_PHILIPSTV);
 
     private final AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider;
     private final AndroidTVTranslationProvider translationProvider;
+    private final DiscoveryServiceRegistry discoveryServiceRegistry;
+    private final AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
     public AndroidTVHandlerFactory(
             final @Reference AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
-            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
+            final @Reference DiscoveryServiceRegistry discoveryServiceRegistry,
+            final @Reference AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider) {
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.translationProvider = new AndroidTVTranslationProvider(i18nProvider, localeProvider);
+        this.discoveryServiceRegistry = discoveryServiceRegistry;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -61,6 +68,7 @@ public class AndroidTVHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        return new AndroidTVHandler(thing, commandDescriptionProvider, translationProvider, thingTypeUID);
+        return new AndroidTVHandler(thing, commandDescriptionProvider, translationProvider, discoveryServiceRegistry,
+                stateDescriptionProvider, thingTypeUID);
     }
 }

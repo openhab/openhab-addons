@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ParentUpdateCapability extends Capability {
-    private static final int DEFAULT_DELAY_S = 2;
+    private static final Duration DEFAULT_DELAY = Duration.ofSeconds(2);
 
     private final Logger logger = LoggerFactory.getLogger(ParentUpdateCapability.class);
     private Optional<ScheduledFuture<?>> job = Optional.empty();
@@ -40,13 +40,13 @@ public class ParentUpdateCapability extends Capability {
 
     @Override
     public void initialize() {
-        job = Optional.of(handler.getScheduler().schedule(() -> {
-            logger.debug("Requesting parents data update for Thing {}", handler.getId());
+        job = handler.schedule(() -> {
+            logger.debug("Requesting parents data update for Thing '{}'", thingUID);
             CommonInterface bridgeHandler = handler.getBridgeHandler();
             if (bridgeHandler != null) {
                 bridgeHandler.expireData();
             }
-        }, DEFAULT_DELAY_S, TimeUnit.SECONDS));
+        }, DEFAULT_DELAY);
     }
 
     @Override

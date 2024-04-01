@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,6 +121,24 @@ class FineOffsetDataParserTest {
                         new Tuple("sensor-co2-pm25-24-hour-average", "3 µg/m³"),
                         new Tuple("sensor-co2-co2", "1050 ppm"),
                         new Tuple("sensor-co2-co2-24-hour-average", "891 ppm"));
+    }
+
+    @Test
+    void testLiveDataWithHeapFreeMeasurand() {
+        byte[] bytes = HexUtils.hexToBytes(
+                "FFFF27002F01010B062A0826C10926C1020011074D0A004C0B000C0C000D15000226C816006317011900136C0001FED864");
+        DebugDetails debugDetails = new DebugDetails(bytes, Command.CMD_GW1000_LIVEDATA, Protocol.DEFAULT);
+        List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(bytes,
+                new ConversionContext(ZoneOffset.UTC), debugDetails);
+        Assertions.assertThat(data)
+                .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
+                .containsExactly(new Tuple("temperature-indoor", "26.7 °C"), new Tuple("humidity-indoor", "42 %"),
+                        new Tuple("pressure-absolute", "992.1 hPa"), new Tuple("pressure-relative", "992.1 hPa"),
+                        new Tuple("temperature-outdoor", "1.7 °C"), new Tuple("humidity-outdoor", "77 %"),
+                        new Tuple("direction-wind", "76 °"), new Tuple("speed-wind", "1.2 m/s"),
+                        new Tuple("speed-gust", "1.3 m/s"), new Tuple("illumination", "14100 lx"),
+                        new Tuple("irradiation-uv", "9.9 mW/m²"), new Tuple("uv-index", "1"),
+                        new Tuple("wind-max-day", "1.9 m/s"), new Tuple("free-heap-size", "130776 B"));
     }
 
     @Test

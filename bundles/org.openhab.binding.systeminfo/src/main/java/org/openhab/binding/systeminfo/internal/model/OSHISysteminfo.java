@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
@@ -62,6 +63,7 @@ import oshi.util.EdidUtil;
  * @author Wouter Born - Update to OSHI 4.0.0 and add null annotations
  * @author Mark Herwege - Add dynamic creation of extra channels
  * @author Mark Herwege - Use units of measure
+ * @author Mark Herwege - Processor frequency channels
  *
  * @see <a href="https://github.com/oshi/oshi">OSHI GitHub repository</a>
  */
@@ -195,6 +197,18 @@ public class OSHISysteminfo implements SysteminfoInterface {
     public DecimalType getCpuPhysicalCores() {
         int physicalProcessorCount = cpu.getPhysicalProcessorCount();
         return new DecimalType(physicalProcessorCount);
+    }
+
+    @Override
+    public @Nullable QuantityType<Frequency> getCpuMaxFreq() {
+        long maxFreq = cpu.getMaxFreq();
+        return maxFreq >= 0 ? new QuantityType<>(maxFreq, Units.HERTZ) : null;
+    }
+
+    @Override
+    public @Nullable QuantityType<Frequency> getCpuFreq(int logicalProcessorIndex) {
+        long freq = cpu.getCurrentFreq()[logicalProcessorIndex];
+        return freq >= 0 ? new QuantityType<>(freq, Units.HERTZ) : null;
     }
 
     @Override

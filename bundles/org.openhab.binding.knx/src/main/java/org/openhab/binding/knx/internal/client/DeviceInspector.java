@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.knx.internal.handler.DeviceConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.DataUnitBuilder;
 import tuwien.auto.calimero.DeviceDescriptor;
 import tuwien.auto.calimero.DeviceDescriptor.DD0;
 import tuwien.auto.calimero.DeviceDescriptor.DD2;
@@ -279,7 +279,7 @@ public class DeviceInspector {
     }
 
     private @Nullable String toHex(byte @Nullable [] input, String separator) {
-        return input == null ? null : DataUnitBuilder.toHex(input, separator);
+        return input == null ? null : HexFormat.ofDelimiter(separator).formatHex(input);
     }
 
     /**

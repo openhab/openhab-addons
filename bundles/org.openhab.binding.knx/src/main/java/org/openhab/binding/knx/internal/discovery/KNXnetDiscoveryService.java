@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,10 +94,7 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
 
             for (Result<SearchResponse> r : responses) {
                 @Nullable
-                SearchResponse response = r.getResponse();
-                if (response == null) {
-                    continue;
-                }
+                SearchResponse response = r.response();
                 Map<ServiceFamily, Integer> services = response.getServiceFamilies().families();
 
                 if (services.containsKey(ServiceFamiliesDIB.ServiceFamily.Tunneling)
@@ -116,8 +113,8 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
                                 .withLabel(response.getDevice().getName()).withProperty("serialNumber", serial)
                                 .withProperty("type", "TUNNEL")
                                 .withProperty("ipAddress",
-                                        "" + response.getControlEndpoint().getAddress().getHostAddress())
-                                .withProperty("port", "" + response.getControlEndpoint().getPort())
+                                        "" + response.getControlEndpoint().endpoint().getAddress().getHostAddress())
+                                .withProperty("port", "" + response.getControlEndpoint().endpoint().getPort())
                                 .withRepresentationProperty("serialNumber").build());
                     }
                     if (services.containsKey(ServiceFamiliesDIB.ServiceFamily.Routing)) {
@@ -125,7 +122,7 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
                                 .withLabel(response.getDevice().getName() + " (router mode)")
                                 .withProperty("serialNumber", serial + "-r").withProperty("type", "ROUTER")
                                 .withProperty("ipAddress", "224.0.23.12")
-                                .withProperty("port", "" + response.getControlEndpoint().getPort())
+                                .withProperty("port", "" + response.getControlEndpoint().endpoint().getPort())
                                 .withRepresentationProperty("serialNumber").build());
                     }
                 } else {

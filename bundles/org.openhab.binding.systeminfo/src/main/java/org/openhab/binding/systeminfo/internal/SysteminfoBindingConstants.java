@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Svilen Valkanov - Initial contribution
  * @author Mark Herwege - Add dynamic creation of extra channels
+ * @author Mark Herwege - Processor frequency channels
  */
 @NonNullByDefault
 public class SysteminfoBindingConstants {
@@ -277,6 +278,16 @@ public class SysteminfoBindingConstants {
      * Detailed description about the CPU
      */
     public static final String CHANNEL_CPU_DESCRIPTION = "cpu#description";
+
+    /**
+     * Maximum frequency of the CPU
+     */
+    public static final String CHANNEL_CPU_MAXFREQ = "cpu#maxfreq";
+
+    /**
+     * Frequency of the CPU
+     */
+    public static final String CHANNEL_CPU_FREQ = "cpu#freq";
 
     /**
      * Average recent CPU load

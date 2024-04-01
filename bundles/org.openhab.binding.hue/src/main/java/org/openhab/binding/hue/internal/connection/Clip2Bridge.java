@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -122,7 +122,7 @@ public class Clip2Bridge implements Closeable {
      * <li>onHeaders() HTTP unauthorized codes</li>
      */
     private abstract class BaseStreamListenerAdapter<T> extends Stream.Listener.Adapter {
-        protected final CompletableFuture<T> completable = new CompletableFuture<T>();
+        protected final CompletableFuture<T> completable = new CompletableFuture<>();
         private String contentType = "UNDEFINED";
         private int status;
 
@@ -396,7 +396,7 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onGoAway(@Nullable Session session, @Nullable GoAwayFrame frame) {
             Objects.requireNonNull(session);
-            if (http2Session == session) {
+            if (session.equals(http2Session)) {
                 Thread recreateThread = new Thread(() -> recreateSession());
                 Clip2Bridge.this.recreateThread = recreateThread;
                 recreateThread.start();
@@ -412,7 +412,7 @@ public class Clip2Bridge implements Closeable {
         public void onPing(@Nullable Session session, @Nullable PingFrame frame) {
             Objects.requireNonNull(session);
             Objects.requireNonNull(frame);
-            if (http2Session == session) {
+            if (session.equals(http2Session)) {
                 checkAliveOk();
                 if (!frame.isReply()) {
                     session.ping(new PingFrame(true), Callback.NOOP);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.openhab.binding.openweathermap.internal.dto.base.Weather;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Generated Plain Old Java Objects class for {@link List} from JSON.
+ * Holds the data from the <code>list</code> object of the JSON response of the Daily Forecast 16 Days API.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
@@ -44,119 +44,59 @@ public class List {
         return dt;
     }
 
-    public void setDt(Integer dt) {
-        this.dt = dt;
-    }
-
     public @Nullable Integer getSunrise() {
         return sunrise;
-    }
-
-    public void setSunrise(Integer sunrise) {
-        this.sunrise = sunrise;
     }
 
     public @Nullable Integer getSunset() {
         return sunset;
     }
 
-    public void setSunset(Integer sunset) {
-        this.sunset = sunset;
-    }
-
     public Temp getTemp() {
         return temp;
-    }
-
-    public void setTemp(Temp temp) {
-        this.temp = temp;
     }
 
     public @Nullable FeelsLikeTemp getFeelsLike() {
         return feelsLikeTemp;
     }
 
-    public void setFeelsLike(FeelsLikeTemp feelsLikeTemp) {
-        this.feelsLikeTemp = feelsLikeTemp;
-    }
-
     public Double getPressure() {
         return pressure;
-    }
-
-    public void setPressure(Double pressure) {
-        this.pressure = pressure;
     }
 
     public Integer getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(Integer humidity) {
-        this.humidity = humidity;
-    }
-
     public java.util.List<Weather> getWeather() {
         return weather;
-    }
-
-    public void setWeather(java.util.List<Weather> weather) {
-        this.weather = weather;
     }
 
     public Double getSpeed() {
         return speed;
     }
 
-    public void setSpeed(Double speed) {
-        this.speed = speed;
-    }
-
     public Double getDeg() {
         return deg;
-    }
-
-    public void setDeg(Double deg) {
-        this.deg = deg;
     }
 
     public @Nullable Double getGust() {
         return gust;
     }
 
-    public void setGust(Double gust) {
-        this.gust = speed;
-    }
-
     public Integer getClouds() {
         return clouds;
-    }
-
-    public void setClouds(Integer clouds) {
-        this.clouds = clouds;
     }
 
     public @Nullable Double getRain() {
         return rain;
     }
 
-    public void setRain(Double rain) {
-        this.rain = rain;
-    }
-
     public @Nullable Double getSnow() {
         return snow;
     }
 
-    public void setSnow(Double snow) {
-        this.snow = snow;
-    }
-
     public @Nullable Double getPop() {
         return pop;
-    }
-
-    public void setPop(Double pop) {
-        this.pop = pop;
     }
 }

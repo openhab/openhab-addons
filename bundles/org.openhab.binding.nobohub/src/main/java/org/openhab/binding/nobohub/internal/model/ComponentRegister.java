@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public final class ComponentRegister {
 
-    private final @NotNull Map<SerialNumber, Component> register = new HashMap<SerialNumber, Component>();
+    private final @NotNull Map<SerialNumber, Component> register = new HashMap<>();
 
     /**
      * Stores a new Component in the register. If a component exists with the same id, that value is overwritten.

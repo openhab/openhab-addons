@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class Ism8BindingConstants {
     // Binding ID
-    private static final String BINDING_ID = "ism8";
+    public static final String BINDING_ID = "ism8";
 
     // List of all Thing Type UIDs
 
@@ -41,4 +41,8 @@ public class Ism8BindingConstants {
      *
      */
     public static final String PORT_NUMBER = "portNumber";
+
+    // Channel Configuration parameters
+    public static final String CHANNEL_CONFIG_ID = "id";
+    public static final String CHANNEL_CONFIG_TYPE = "type";
 }

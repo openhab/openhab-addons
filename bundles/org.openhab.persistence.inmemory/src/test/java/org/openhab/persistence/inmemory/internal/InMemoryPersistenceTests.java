@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,15 +13,14 @@
 package org.openhab.persistence.inmemory.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.closeTo;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -145,6 +144,38 @@ public class InMemoryPersistenceTests {
     }
 
     @Test
+    public void querySupportsAscendingOrdering() {
+        ZonedDateTime start = ZonedDateTime.of(2020, 12, 1, 12, 0, 0, 0, ZoneId.systemDefault());
+        service.store(item, start, new DecimalType(1));
+        service.store(item, start.plusHours(1), new DecimalType(2));
+        service.store(item, start.plusHours(2), new DecimalType(3));
+
+        filterCriteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
+        filterCriteria.setBeginDate(start);
+
+        List<Integer> resultSet = new ArrayList<>();
+        service.query(filterCriteria).forEach(h -> resultSet.add(((DecimalType) h.getState()).intValue()));
+
+        assertThat(resultSet, contains(1, 2, 3));
+    }
+
+    @Test
+    public void querySupportsDescendingOrdering() {
+        ZonedDateTime start = ZonedDateTime.of(2020, 12, 1, 12, 0, 0, 0, ZoneId.systemDefault());
+        service.store(item, start, new DecimalType(1));
+        service.store(item, start.plusHours(1), new DecimalType(2));
+        service.store(item, start.plusHours(2), new DecimalType(3));
+
+        filterCriteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
+        filterCriteria.setBeginDate(start);
+
+        List<Integer> resultSet = new ArrayList<>();
+        service.query(filterCriteria).forEach(h -> resultSet.add(((DecimalType) h.getState()).intValue()));
+
+        assertThat(resultSet, contains(3, 2, 1));
+    }
+
+    @Test
     public void removeBetweenTimes() {
         State historicState1 = new StringType("value1");
         State historicState2 = new StringType("value2");
@@ -179,5 +210,69 @@ public class InMemoryPersistenceTests {
         assertThat(storedStates.last().getName(), is(ITEM_NAME));
         assertThat(storedStates.last().getState(), is(historicState3));
         assertThat(storedStates.last().getTimestamp(), is(expectedTime.plusHours(4)));
+    }
+
+    @Test
+    public void endDateProperlyObserved() {
+        TreeSet<HistoricItem> storedStates = new TreeSet<>(Comparator.comparing(HistoricItem::getTimestamp));
+
+        State historicState1 = new StringType("value1");
+        State historicState2 = new StringType("value2");
+
+        ZonedDateTime historicTime1 = ZonedDateTime.of(2022, 05, 31, 10, 0, 0, 0, ZoneId.systemDefault());
+        ZonedDateTime historicTime2 = historicTime1.plusHours(2);
+        service.store(item, historicTime1, historicState1);
+        service.store(item, historicTime2, historicState2);
+
+        // end date is between first and second date, only return one dataset
+        filterCriteria = new FilterCriteria();
+        filterCriteria.setItemName(ITEM_NAME);
+        filterCriteria.setEndDate(historicTime1.plusHours(1));
+
+        service.query(filterCriteria).forEach(storedStates::add);
+        assertThat(storedStates.size(), is(1));
+
+        // end date is exactly second date, return both dataset
+        storedStates.clear();
+        filterCriteria = new FilterCriteria();
+        filterCriteria.setItemName(ITEM_NAME);
+        filterCriteria.setEndDate(historicTime2);
+
+        service.query(filterCriteria).forEach(storedStates::add);
+        assertThat(storedStates.size(), is(2));
+
+        // end date is after second date is already covered by case #1
+    }
+
+    @Test
+    public void beginDateProperlyObserved() {
+        TreeSet<HistoricItem> storedStates = new TreeSet<>(Comparator.comparing(HistoricItem::getTimestamp));
+
+        State historicState1 = new StringType("value1");
+        State historicState2 = new StringType("value2");
+
+        ZonedDateTime historicTime1 = ZonedDateTime.of(2022, 05, 31, 10, 0, 0, 0, ZoneId.systemDefault());
+        ZonedDateTime historicTime2 = historicTime1.plusHours(2);
+        service.store(item, historicTime1, historicState1);
+        service.store(item, historicTime2, historicState2);
+
+        // begin date is between first and second date, only return one dataset
+        filterCriteria = new FilterCriteria();
+        filterCriteria.setItemName(ITEM_NAME);
+        filterCriteria.setEndDate(historicTime2.minusHours(1));
+
+        service.query(filterCriteria).forEach(storedStates::add);
+        assertThat(storedStates.size(), is(1));
+
+        // begin date is exactly first date, return both dataset
+        storedStates.clear();
+        filterCriteria = new FilterCriteria();
+        filterCriteria.setItemName(ITEM_NAME);
+        filterCriteria.setBeginDate(historicTime1);
+
+        service.query(filterCriteria).forEach(storedStates::add);
+        assertThat(storedStates.size(), is(2));
+
+        // begin date is before first date is already covered by case #1
     }
 }

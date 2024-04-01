@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortSta
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2ConfigParms;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DeviceConfigSta;
@@ -148,7 +149,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void startScan() {
         try {
-            installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway);
+            if (getProfile().isBlu) {
+                installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway);
+            }
         } catch (ShellyApiException e) {
         }
     }
@@ -222,6 +225,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.settings.wifiSta1 = new ShellySettingsWiFiNetwork();
         fillWiFiSta(dc.wifi.sta, profile.settings.wifiSta);
         fillWiFiSta(dc.wifi.sta1, profile.settings.wifiSta1);
+        if (dc.wifi.ap != null && dc.wifi.ap.rangeExtender != null) {
+            profile.settings.rangeExtender = getBool(dc.wifi.ap.rangeExtender.enable);
+        }
 
         profile.numMeters = 0;
         if (profile.hasRelays) {
@@ -672,7 +678,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         getThing().requestUpdates(1, true); // refresh config
                         break;
                     case SHELLY2_EVENT_SLEEP:
-                        logger.debug("{}: Device went to sleep mode", thingName);
+                        logger.debug("{}: Connection terminated, e.g. device in sleep mode", thingName);
                         break;
                     case SHELLY2_EVENT_WIFICONNFAILED:
                         logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName,
@@ -700,10 +706,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onClose(int statusCode, String reason) {
+    public void onClose(int statusCode, String description) {
         try {
-            logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, getString(reason));
-            if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) { // e.g. device rebooted
+            String reason = getString(description);
+            logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, reason);
+            if ("Bye".equalsIgnoreCase(reason)) {
+                logger.debug("{}: Device went to sleep mode", thingName);
+            } else if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) {
+                // e.g. device rebooted
                 thingOffline("WebSocket connection closed abnormal");
             }
         } catch (ShellyApiException e) {
@@ -714,7 +724,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onError(Throwable cause) {
-        logger.debug("{}: WebSocket error", thingName);
+        logger.debug("{}: WebSocket error: {}", thingName, cause.getMessage());
         if (thing != null && thing.getProfile().alwaysOn) {
             thingOffline("WebSocket error");
         }
@@ -793,6 +803,19 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         fillDeviceStatus(status, ds, false);
+        if (getBool(profile.settings.rangeExtender)) {
+            try {
+                // Get List of AP clients
+                profile.status.rangeExtender = apiRequest(SHELLYRPC_METHOD_WIFILISTAPCLIENTS, null,
+                        Shelly2APClientList.class);
+                logger.debug("{}: Range extender is enabled, {} clients connected", thingName,
+                        profile.status.rangeExtender.apClients.size());
+            } catch (ShellyApiException e) {
+                logger.debug("{}: Range extender is enabled, but unable to read AP client list", thingName, e);
+                profile.settings.rangeExtender = false;
+            }
+        }
+
         return status;
     }
 

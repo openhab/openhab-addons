@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,8 +93,8 @@ public class TestICloud {
         File jsonStorageFile = new File(System.getProperty("user.home"), "openhab.json");
         logger.info(jsonStorageFile.toString());
 
-        JsonStorage<String> stateStorage = new JsonStorage<String>(jsonStorageFile, TestICloud.class.getClassLoader(),
-                0, 1000, 1000, List.of());
+        JsonStorage<String> stateStorage = new JsonStorage<>(jsonStorageFile, TestICloud.class.getClassLoader(), 0,
+                1000, 1000, List.of());
 
         ICloudService service = new ICloudService(iCloudTestEmail, iCloudTestPassword, stateStorage);
         service.authenticate(false);
@@ -502,7 +502,7 @@ public class TestICloud {
             @Override
             public List<ChannelBuilder> createChannelBuilders(ChannelGroupUID channelGroupUID,
                     ChannelGroupTypeUID channelGroupTypeUID) {
-                return new ArrayList<ChannelBuilder>(); // dummy implementation, probably won't work.
+                return new ArrayList<>(); // dummy implementation, probably won't work.
             }
 
             @Override

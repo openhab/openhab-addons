@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,5 +48,14 @@ public class CapabilityMap extends ConcurrentHashMap<Class<?>, Capability> {
         if (cap != null) {
             cap.dispose();
         }
+    }
+
+    public Optional<RefreshCapability> getRefresh() {
+        return values().stream().filter(RefreshCapability.class::isInstance).map(RefreshCapability.class::cast)
+                .findFirst();
+    }
+
+    public Optional<Capability> getParentUpdate() {
+        return values().stream().filter(ParentUpdateCapability.class::isInstance).findFirst();
     }
 }

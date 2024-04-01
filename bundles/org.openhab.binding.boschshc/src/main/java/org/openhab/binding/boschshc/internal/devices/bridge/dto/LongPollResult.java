@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,25 +18,30 @@ import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * Response of the Controller for a Long Poll API call.
+ * <p>
+ * Example JSON:
+ * 
+ * <pre>
+ * {
+ *   "result": [{
+ *     "path": "/devices/hdm:HomeMaticIP:3014F711A0001916D859A8A9/services/PowerSwitch",
+ *     "@type": "DeviceServiceData",
+ *     "id": "PowerSwitch",
+ *     "state": {
+ *        "@type": "powerSwitchState",
+ *        "switchState": "ON"
+ *     },
+ *     "deviceId": "hdm:HomeMaticIP:3014F711A0001916D859A8A9"
+ *   }],
+ *   "jsonrpc": "2.0"
+ * }
+ * </pre>
  *
  * @author Stefan Kästle - Initial contribution
  */
 public class LongPollResult {
 
-    /**
-     * {"result":[
-     * ..{
-     * ...."path":"/devices/hdm:HomeMaticIP:3014F711A0001916D859A8A9/services/PowerSwitch",
-     * ...."@type":"DeviceServiceData",
-     * ...."id":"PowerSwitch",
-     * ...."state":{
-     * ......"@type":"powerSwitchState",
-     * ......"switchState":"ON"
-     * ....},
-     * ...."deviceId":"hdm:HomeMaticIP:3014F711A0001916D859A8A9"}
-     * ],"jsonrpc":"2.0"}
-     */
-
     public ArrayList<BoschSHCServiceState> result;
+
     public String jsonrpc;
 }

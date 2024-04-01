@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,14 +32,13 @@ import org.openhab.binding.windcentrale.internal.exception.InvalidAccessTokenExc
 import org.openhab.binding.windcentrale.internal.handler.WindcentraleAccountHandler;
 import org.openhab.binding.windcentrale.internal.handler.WindcentraleWindmillHandler;
 import org.openhab.binding.windcentrale.internal.listener.ThingStatusListener;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
-import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,39 +48,28 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = WindcentraleDiscoveryService.class)
 @NonNullByDefault
-public class WindcentraleDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService, ThingStatusListener {
-
+public class WindcentraleDiscoveryService extends AbstractThingHandlerDiscoveryService<WindcentraleAccountHandler>
+        implements ThingStatusListener {
     private final Logger logger = LoggerFactory.getLogger(WindcentraleDiscoveryService.class);
-    private @NonNullByDefault({}) WindcentraleAccountHandler accountHandler;
     private @Nullable Future<?> discoveryJob;
 
     public WindcentraleDiscoveryService() {
-        super(Set.of(THING_TYPE_WINDMILL), 10, false);
-    }
-
-    protected void activate(ComponentContext context) {
+        super(WindcentraleAccountHandler.class, Set.of(THING_TYPE_WINDMILL), 10, false);
     }
 
     @Override
-    public void deactivate() {
+    public void dispose() {
+        super.dispose();
         cancelDiscoveryJob();
-        super.deactivate();
-        accountHandler.removeThingStatusListener(this);
+        thingHandler.removeThingStatusListener(this);
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return accountHandler;
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof WindcentraleAccountHandler accountHandler) {
-            accountHandler.addThingStatusListener(this);
-            this.accountHandler = accountHandler;
-        }
+    public void initialize() {
+        thingHandler.addThingStatusListener(this);
+        super.initialize();
     }
 
     @Override
@@ -113,8 +101,8 @@ public class WindcentraleDiscoveryService extends AbstractDiscoveryService
     }
 
     private void discoverWindmills() {
-        ThingUID bridgeUID = accountHandler.getThing().getUID();
-        WindcentraleAPI api = accountHandler.getAPI();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        WindcentraleAPI api = thingHandler.getAPI();
 
         if (api == null) {
             logger.debug("Cannot discover windmills because API is null for {}", bridgeUID);
