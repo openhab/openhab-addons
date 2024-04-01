@@ -17,6 +17,7 @@ import java.lang.reflect.Type;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.DomainId;
+import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.Timelaps;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;

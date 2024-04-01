@@ -13,6 +13,7 @@
 package org.openhab.binding.meteoalerte.internal.dto;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,8 +22,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.meteoalerte.internal.deserialization.Periods;
-import org.openhab.binding.meteoalerte.internal.deserialization.Timelaps;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -68,6 +67,14 @@ public class MeteoFrance {
         }
     }
 
+    public static class Periods extends HashMap<Term, @Nullable Period> {
+        private static final long serialVersionUID = -4448877461442293135L;
+    }
+
+    public static class Timelaps extends HashMap<Domain, @Nullable DomainId> {
+        private static final long serialVersionUID = -441522278695388073L;
+    }
+
     public record TextBlocItem( //
             @SerializedName("domain_id") Domain domain, // code du domaine sur lequel s'applique le bloc textuel
             String blocTitle, //
@@ -98,7 +105,8 @@ public class MeteoFrance {
             List<String> text) {//
 
         public String getText() {
-            return String.join(",", text);
+            return text.stream().filter(Predicate.not(String::isEmpty))
+                    .collect(Collectors.joining(System.lineSeparator()));
         }
     }
 
@@ -141,10 +149,6 @@ public class MeteoFrance {
             String id, // identifiant de la rubrique texte
             @SerializedName("type_group") BlocType type, // code du groupe de la rubrique
             List<TextItem> textItems) { // textes à associer à la carte comme les commentaires
-
-        public boolean isQualification() {
-            return BlocType.QUALIFICATION.equals(type);
-        }
     }
 
     public record TextItem( //
@@ -159,13 +163,12 @@ public class MeteoFrance {
 
     public record TermItem(//
             @SerializedName("term_names") Term term, // code de l'échéance
+            @SerializedName("risk_code") Risk risk, // code du risque
             ZonedDateTime startTime, // date/heure début d'échéance
             ZonedDateTime endTime, // date/heure fin d'échéance
-            @SerializedName("risk_code") Risk risk, // code du risque
             List<SubdivisionText> subdivisionText) {// sous_textes de même type d'éléments de suivi
 
         public String getText(ZonedDateTime moment) {
-
             return startTime.isBefore(moment) && endTime.isAfter(moment) ? subdivisionText.stream()
                     .map(SubdivisionText::getText).collect(Collectors.joining(System.lineSeparator())) : "";
         }

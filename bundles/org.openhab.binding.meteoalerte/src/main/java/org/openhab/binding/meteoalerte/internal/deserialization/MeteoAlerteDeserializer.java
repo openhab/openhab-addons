@@ -17,6 +17,8 @@ import java.time.ZonedDateTime;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteoalerte.internal.MeteoAlerteException;
+import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.Periods;
+import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.Timelaps;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;

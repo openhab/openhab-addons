@@ -51,4 +51,8 @@ public enum Hazard {
     Hazard(String channelName) {
         this.channelName = channelName;
     }
+
+    public boolean isChannel() {
+        return !channelName.isEmpty();
+    }
 }

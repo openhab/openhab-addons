@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +48,10 @@ public class DepartmentDbService {
     private final Logger logger = LoggerFactory.getLogger(DepartmentDbService.class);
     private final Map<String, Department> departments = new HashMap<>();
 
+    public record Department(String id, String name, double northestLat, double southestLat, double eastestLon,
+            double westestLon, String shape) {
+    }
+
     @Activate
     public DepartmentDbService() {
         try (InputStream is = Thread.currentThread().getContextClassLoader()
@@ -64,12 +67,10 @@ public class DepartmentDbService {
     }
 
     public List<Department> getBounding(PointType location) {
-        List<Department> result = new ArrayList<>();
         double latitude = location.getLatitude().doubleValue();
         double longitude = location.getLongitude().doubleValue();
-        departments.values().stream().filter(dep -> dep.northestLat >= latitude && dep.southestLat <= latitude
-                && dep.westestLon <= longitude && dep.eastestLon >= longitude).forEach(dep -> result.add(dep));
-        return result;
+        return departments.values().stream().filter(dep -> dep.northestLat >= latitude && dep.southestLat <= latitude
+                && dep.westestLon <= longitude && dep.eastestLon >= longitude).toList();
     }
 
     public @Nullable Department getDept(String deptId) {

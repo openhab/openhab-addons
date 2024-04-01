@@ -90,14 +90,12 @@ public class MeteoAlerteDiscoveryService extends AbstractDiscoveryService implem
         List<Department> candidates = db.getBounding(serverLocation);
 
         if (!candidates.isEmpty()) {
-            candidates.forEach(dep -> {
-                thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_DEPARTEMENT, dep.id()))
-                        .withBridge(bridgeUID) //
-                        .withLabel("Vigilance Météo: %s".formatted(dep.name())) //
-                        .withProperty(MeteoAlerteConfiguration.DEPARTEMENT, dep.id()) //
-                        .withRepresentationProperty(MeteoAlerteConfiguration.DEPARTEMENT) //
-                        .build());
-            });
+            candidates.forEach(
+                    dep -> thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_DEPARTEMENT, dep.id()))//
+                            .withLabel("Vigilance Météo: %s".formatted(dep.name())) //
+                            .withProperty(MeteoAlerteConfiguration.DEPARTEMENT, dep.id()) //
+                            .withRepresentationProperty(MeteoAlerteConfiguration.DEPARTEMENT) //
+                            .withBridge(bridgeUID).build()));
         } else {
             logger.info("No department could be discovered matching server location");
         }
