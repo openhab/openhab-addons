@@ -27,6 +27,8 @@
 			<channel id="mode" typeId="modeCentralUnit"/>
 			<channel id="weeklyProgram" typeId="weeklyProgramCentralUnit"/>
 			<channel id="scenarioProgram" typeId="scenarioProgramCentralUnit"/>
+			<channel id="vacationDays" typeId="vacationDays"/>
+
 		</channels>
 
 		<properties>
