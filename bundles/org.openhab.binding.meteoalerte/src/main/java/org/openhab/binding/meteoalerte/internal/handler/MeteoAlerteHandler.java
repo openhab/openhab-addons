@@ -125,8 +125,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
                 ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(zoneId);
                 if (domainId != null) {
                     Map<Hazard, Risk> channels = new HashMap<>(Hazard.values().length);
-                    Hazard.AS_SET.stream().filter(hazard -> !hazard.channelName.isBlank())
-                            .forEach(hazard -> channels.put(hazard, Risk.VERT));
+                    Hazard.AS_SET.stream().filter(Hazard::isChannel).forEach(hazard -> channels.put(hazard, Risk.VERT));
 
                     domainId.phenomenonItems().forEach(phenomenon -> {
                         Risk risk = phenomenon.phenomenonMaxColorId();

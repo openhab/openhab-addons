@@ -20,8 +20,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteoalerte.internal.config.MeteoAlerteConfiguration;
-import org.openhab.binding.meteoalerte.internal.db.Department;
 import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService;
+import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService.Department;
 import org.openhab.binding.meteoalerte.internal.handler.MeteoAlerteBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -91,10 +91,10 @@ public class MeteoAlerteDiscoveryService extends AbstractDiscoveryService implem
 
         if (!candidates.isEmpty()) {
             candidates.forEach(dep -> {
-                thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_DEPARTEMENT, dep.id))
+                thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_DEPARTEMENT, dep.id()))
                         .withBridge(bridgeUID) //
-                        .withLabel(String.format("Vigilance Météo : %s", dep.name)) //
-                        .withProperty(MeteoAlerteConfiguration.DEPARTEMENT, dep.id) //
+                        .withLabel("Vigilance Météo: %s".formatted(dep.name())) //
+                        .withProperty(MeteoAlerteConfiguration.DEPARTEMENT, dep.id()) //
                         .withRepresentationProperty(MeteoAlerteConfiguration.DEPARTEMENT) //
                         .build());
             });

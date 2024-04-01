@@ -49,8 +49,9 @@ import org.slf4j.LoggerFactory;
 public class MeteoAlertIconProvider implements IconProvider {
     private static final String DEFAULT_LABEL = "Vigilance Météo Icons";
     private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather alerts provided by Météo France";
-    private static final List<String> ICONS = Stream.concat(Stream.of("meteo_france"),
-            Hazard.AS_SET.stream().filter(h -> !h.channelName.isEmpty()).map(h -> h.channelName)).toList();
+    private static final List<String> ICONS = Stream
+            .concat(Stream.of("meteo_france"), Hazard.AS_SET.stream().filter(Hazard::isChannel).map(h -> h.channelName))
+            .toList();
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlertIconProvider.class);
     private final BundleContext context;
