@@ -206,7 +206,10 @@ public class SalusApi {
 
     public ApiResponse<SortedSet<DeviceProperty<?>>> findDeviceProperties(String dsn)
             throws ExecutionException, InterruptedException, TimeoutException {
-        refreshAccessToken();
+        var loginResponse = refreshAccessToken();
+        if (loginResponse != null && loginResponse.statusCode() != 200) {
+            return error(new Error(loginResponse.statusCode(), loginResponse.body()));
+        }
         var response = get(url("/apiv1/dsns/" + dsn + "/properties.json"), authHeader(), 1);
         if (response.statusCode() != 200) {
             // there was an error when querying endpoint
@@ -219,7 +222,10 @@ public class SalusApi {
 
     public ApiResponse<Object> setValueForProperty(String dsn, String propertyName, Object value)
             throws ExecutionException, InterruptedException, TimeoutException {
-        refreshAccessToken();
+        var loginResponse = refreshAccessToken();
+        if (loginResponse != null && loginResponse.statusCode() != 200) {
+            return error(new Error(loginResponse.statusCode(), loginResponse.body()));
+        }
         var finalUrl = url("/apiv1/dsns/" + dsn + "/properties/" + propertyName + "/datapoints.json");
         var json = mapper.datapointParam(value);
         var response = post(finalUrl, new RestClient.Content(json), authHeader(), 1);
