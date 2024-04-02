@@ -71,7 +71,7 @@ public class SalusApi {
         refreshAccessToken();
         var response = restClient.get(url, authHeader());
         if (response.statusCode() == 401) {
-            logger.info("Refreshing access token");
+            logger.debug("Refreshing access token");
             if (times <= MAX_TIMES) {
                 forceRefreshAccessToken();
                 return get(url, header, times + 1);
