@@ -153,7 +153,7 @@ public class SalusApi {
         if (this.authToken == null || isExpiredToken()) {
             var response = login(username, password);
             if (response.statusCode() != 200) {
-                logger.warn("Cannot login with username '{}', response={}", username, response);
+                logger.warn("Accesstoken could not be acquired, for user '{}', response={}", username, response);
                 this.authToken = null;
                 this.authTokenExpireTime = null;
             }
