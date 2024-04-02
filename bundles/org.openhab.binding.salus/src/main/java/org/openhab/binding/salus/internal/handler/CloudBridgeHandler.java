@@ -118,10 +118,10 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                     error = new Error(500, "Unknown error");
                 }
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, error.code() + ": " + error.message());
+            } else {
+                // there is a connection with the cloud
+                updateStatus(ONLINE);
             }
-
-            // there is a connection with the cloud
-            updateStatus(ONLINE);
         } catch (Exception ex) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR,
                     "@text/cloud-bridge-handler.initialize.cannot-connect-to-cloud [\"" + ex.getMessage() + "\"]");
