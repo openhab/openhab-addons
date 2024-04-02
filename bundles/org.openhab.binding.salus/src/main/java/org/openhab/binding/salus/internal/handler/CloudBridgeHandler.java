@@ -104,8 +104,8 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         this.scheduledFuture = scheduledPool.scheduleWithFixedDelay(this::refreshCloudDevices,
                 config.getRefreshInterval() * 2, config.getRefreshInterval(), SECONDS);
 
-        // done
-        updateStatus(ONLINE);
+        // Do NOT set state to online to prevent it to flip from online to offline
+        // check *tryConnectToCloud(SalusApi)*
     }
 
     private void tryConnectToCloud(SalusApi localSalusApi) {
@@ -119,6 +119,9 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                 }
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, error.code() + ": " + error.message());
             }
+
+            // there is a connection with the cloud
+            updateStatus(ONLINE);
         } catch (Exception ex) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR,
                     "@text/cloud-bridge-handler.initialize.cannot-connect-to-cloud [\"" + ex.getMessage() + "\"]");
