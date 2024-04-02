@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SalusApi {
-    private static final int MAX_TIMES = 3;
+    private static final int MAX_RETRIES = 3;
     private final Logger logger;
     private final String username;
     private final char[] password;
@@ -66,32 +66,32 @@ public class SalusApi {
         this(username, password, baseUrl, restClient, mapper, Clock.systemDefaultZone());
     }
 
-    private RestClient.Response<@Nullable String> get(String url, RestClient.Header header, int times)
+    private RestClient.Response<@Nullable String> get(String url, RestClient.Header header, int retryAttempt)
             throws ExecutionException, InterruptedException, TimeoutException {
         refreshAccessToken();
         var response = restClient.get(url, authHeader());
         if (response.statusCode() == 401) {
             logger.debug("Refreshing access token");
-            if (times <= MAX_TIMES) {
+            if (retryAttempt <= MAX_RETRIES) {
                 forceRefreshAccessToken();
-                return get(url, header, times + 1);
+                return get(url, header, retryAttempt + 1);
             }
-            logger.debug("Could not refresh access token after {} retries", MAX_TIMES);
+            logger.debug("Could not refresh access token after {} retries", MAX_RETRIES);
             return response;
         }
         return response;
     }
 
     private RestClient.Response<@Nullable String> post(String url, RestClient.Content content, RestClient.Header header,
-            int times) throws ExecutionException, InterruptedException, TimeoutException {
+            int retryAttempt) throws ExecutionException, InterruptedException, TimeoutException {
         refreshAccessToken();
         var response = restClient.post(url, content, header);
         if (response.statusCode() == 401) {
-            if (times <= MAX_TIMES) {
+            if (retryAttempt <= MAX_RETRIES) {
                 forceRefreshAccessToken();
-                return post(url, content, header, times + 1);
+                return post(url, content, header, retryAttempt + 1);
             }
-            logger.debug("Could not refresh access token after {} retries", MAX_TIMES);
+            logger.debug("Could not refresh access token after {} retries", MAX_RETRIES);
             return response;
         }
         return response;
@@ -109,9 +109,9 @@ public class SalusApi {
         return login(username, password, 1);
     }
 
-    private RestClient.Response<@Nullable String> login(String username, char[] password, int times)
+    private RestClient.Response<@Nullable String> login(String username, char[] password, int retryAttempt)
             throws ExecutionException, InterruptedException, TimeoutException {
-        logger.debug("Login with username '{}', times={}", username, times);
+        logger.debug("Login with username '{}', retryAttempt={}", username, retryAttempt);
         authToken = null;
         authTokenExpireTime = null;
         var finalUrl = url("/users/sign_in.json");
@@ -119,14 +119,14 @@ public class SalusApi {
         var response = restClient.post(finalUrl, new RestClient.Content(inputBody, "application/json"),
                 new RestClient.Header("Accept", "application/json"));
         if (response.statusCode() == 401) {
-            if (times < MAX_TIMES) {
-                return login(username, password, times + 1);
+            if (retryAttempt < MAX_RETRIES) {
+                return login(username, password, retryAttempt + 1);
             }
             return response;
         }
         if (response.statusCode() == 403) {
-            if (times < MAX_TIMES) {
-                return login(username, password, times + 1);
+            if (retryAttempt < MAX_RETRIES) {
+                return login(username, password, retryAttempt + 1);
             }
             return response;
         }
