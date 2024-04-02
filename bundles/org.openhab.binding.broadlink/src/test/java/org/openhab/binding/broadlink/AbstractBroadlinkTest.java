@@ -38,16 +38,16 @@ public abstract class AbstractBroadlinkTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        for (String s : this.irStorage.getKeys()) {
-            this.irStorage.remove(s);
+        for (String s : irStorage.getKeys()) {
+            irStorage.remove(s);
         }
-        for (String s : this.rfStorage.getKeys()) {
-            this.rfStorage.remove(s);
+        for (String s : rfStorage.getKeys()) {
+            rfStorage.remove(s);
         }
-        this.irStorage.put("IR_TEST_COMMAND_ON", "00112233");
-        this.irStorage.put("IR_TEST_COMMAND_OFF", "33221100");
-        this.rfStorage.put("RF_TEST_COMMAND_ON", "00112233");
-        this.rfStorage.put("RF_TEST_COMMAND_OFF", "33221100");
+        irStorage.put("IR_TEST_COMMAND_ON", "00112233");
+        irStorage.put("IR_TEST_COMMAND_OFF", "33221100");
+        rfStorage.put("RF_TEST_COMMAND_ON", "00112233");
+        rfStorage.put("RF_TEST_COMMAND_OFF", "33221100");
     }
 
     @BeforeAll
