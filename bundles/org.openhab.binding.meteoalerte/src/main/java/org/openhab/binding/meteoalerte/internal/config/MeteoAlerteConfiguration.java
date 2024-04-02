@@ -25,5 +25,4 @@ public class MeteoAlerteConfiguration {
     public static final String DEPARTEMENT = "departement";
     public String department = "";
     public int refresh = 60;
-
 }
