@@ -150,7 +150,7 @@ public class SalusApi {
 
     private RestClient.@Nullable Response<@Nullable String> refreshAccessToken()
             throws ExecutionException, InterruptedException, TimeoutException {
-        if (this.authToken == null || expiredToken()) {
+        if (this.authToken == null || isExpiredToken()) {
             var response = login(username, password);
             if (response.statusCode() != 200) {
                 logger.warn("Cannot login with username '{}', response={}", username, response);
@@ -167,7 +167,7 @@ public class SalusApi {
         return null;
     }
 
-    private boolean expiredToken() {
+    private boolean isExpiredToken() {
         var token = authTokenExpireTime;
         return token == null || LocalDateTime.now(clock).isAfter(token);
     }
