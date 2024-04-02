@@ -90,7 +90,7 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
         this.dbMeta = dbMeta;
         // Initialize sqlTypes, depending on DB version for example
         if (dbMeta.isDbVersionGreater(5, 5)) {
-            sqlTypes.put("DATETIMEITEM", "TIMESTAMP(3)");
+            sqlTypes.put("DATETIMEITEM", "DATETIME(3)");
             sqlTypes.put("tablePrimaryKey", "TIMESTAMP(3)");
             sqlTypes.put("tablePrimaryValue", "NOW(3)");
         }
