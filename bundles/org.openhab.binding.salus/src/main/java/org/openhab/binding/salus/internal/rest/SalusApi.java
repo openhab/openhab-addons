@@ -166,8 +166,8 @@ public class SalusApi {
     }
 
     private boolean isExpiredToken() {
-        var token = authTokenExpireTime;
-        return token == null || LocalDateTime.now(clock).isAfter(token);
+        var expireTime = authTokenExpireTime;
+        return expireTime == null || LocalDateTime.now(clock).isAfter(expireTime);
     }
 
     private String url(String url) {
