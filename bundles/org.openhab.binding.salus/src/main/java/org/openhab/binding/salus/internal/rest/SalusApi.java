@@ -189,7 +189,6 @@ public class SalusApi {
 
     public ApiResponse<SortedSet<Device>> findDevices()
             throws ExecutionException, InterruptedException, TimeoutException {
-        logger.debug("findDevices()");
         var loginResponse = refreshAccessToken();
         if (loginResponse != null && loginResponse.statusCode() != 200) {
             return error(new Error(loginResponse.statusCode(), loginResponse.body()));
