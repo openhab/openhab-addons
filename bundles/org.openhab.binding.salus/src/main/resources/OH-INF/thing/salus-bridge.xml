@@ -49,6 +49,12 @@
 				<advanced>true</advanced>
 				<default>5</default>
 			</parameter>
+			<parameter name="maxHttpRetries" type="integer" required="false">
+				<label>Max HTTP retries</label>
+				<description>How many times HTTP requests can be retried</description>
+				<advanced>true</advanced>
+				<default>3</default>
+			</parameter>
 		</config-description>
 
 	</bridge-type>
