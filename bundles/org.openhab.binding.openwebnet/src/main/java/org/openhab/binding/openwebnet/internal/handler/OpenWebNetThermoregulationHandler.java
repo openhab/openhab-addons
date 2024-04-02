@@ -73,7 +73,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private Thermoregulation.@Nullable OperationMode currentMode = OperationMode.PROTECTION;
     private int currentWeeklyPrgNum = 1;
     private int currentScenarioPrgNum = 1;
-    private int currentVacationDays = 0;
+    private int currentVacationDays = 1;
 
     private boolean isStandAlone = true; // true if zone is not associated to a CU
     private boolean isCentralUnit = false;
@@ -504,10 +504,12 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             return;
         }
 
-        // update Function
+        // update Function if it's not GENERIC
         Thermoregulation.Function function = what.getFunction();
-        updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
-        currentFunction = function;
+        if (function != Function.GENERIC) {
+            updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
+            currentFunction = function;
+        }
 
         // then update Mode
         Thermoregulation.OperationMode operationMode = null;
@@ -518,7 +520,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
         // set ProgramNumber/vacationDays channels when necessary
         if (operationMode != null) {
-            String newMode = operationMode.name();
             switch (operationMode) {
                 case VACATION:
                     updateVacationDays(tmsg);
@@ -530,12 +531,18 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 default:
                     break;
             }
-            updateState(CHANNEL_MODE, new StringType(newMode));
+            if (!isCentralUnit && !(operationMode == OperationMode.AUTO || operationMode == OperationMode.OFF
+                    || operationMode == OperationMode.PROTECTION || operationMode == OperationMode.MANUAL)) {
+                logger.warn("updateModeAndFunction() Unsupported mode for zone {} from message: {}",
+                        getThing().getUID(), tmsg.getFrameValue());
+                return;
+            } else {
+                updateState(CHANNEL_MODE, new StringType(operationMode.name()));
+                currentMode = operationMode;
+            }
+        } else {
+            logger.debug("updateModeAndFunction() Unrecognized mode from message: {}", tmsg.getFrameValue());
         }
-        // in case of Central Unit store also current operation mode
-        // if (isCentralUnit) {
-        currentMode = operationMode;
-        // }
     }
 
     private void updateVacationDays(Thermoregulation tmsg) {
@@ -580,14 +587,14 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         try {
             double newTemp = -1;
             if (isCentralUnit) {
-                if (tmsg.getWhat() == null) {
-                    logger.warn("updateSetpoint() Could not parse function from {} (what is null)",
-                            tmsg.getFrameValue());
+                WhatThermo tw = (WhatThermo) tmsg.getWhat();
+                if (tw == null) {
+                    logger.warn("updateSetpoint() Could not parse what from {} (what is null)", tmsg.getFrameValue());
                     return;
                 }
                 String[] parameters = tmsg.getWhatParams();
-                if (parameters.length > 0) {
-                    // it should be like *4*WHAT#TTTT*#0##
+                if (parameters.length > 0 && tw.getType() == WhatThermoType.MANUAL) {
+                    // it should be like *4*110#TTTT*#0##
                     newTemp = Thermoregulation.decodeTemperature(parameters[0]);
                     logger.debug("updateSetpoint() parsed temperature from {}: {} ---> {}", tmsg.toStringVerbose(),
                             parameters[0], newTemp);
