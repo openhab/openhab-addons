@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = { IconProvider.class, MeteoAlertIconProvider.class })
 @NonNullByDefault
 public class MeteoAlertIconProvider implements IconProvider {
+    private static final String NEUTRAL_COLOR = "#3d3c3c";
     private static final String DEFAULT_LABEL = "Vigilance Météo Icons";
     private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather alerts provided by Météo France";
     private static final List<String> ICONS = Stream
@@ -103,9 +104,9 @@ public class MeteoAlertIconProvider implements IconProvider {
 
         if (state != null) {
             try {
-                Integer ordinal = Integer.valueOf(state);
+                int ordinal = Integer.valueOf(state);
                 Risk alertLevel = ordinal < Risk.values().length ? Risk.values()[ordinal] : Risk.UNKNOWN;
-                icon = icon.replaceAll("#3d3c3c", alertLevel.rgbColor);
+                icon = icon.replaceAll(NEUTRAL_COLOR, alertLevel.rgbColor);
             } catch (NumberFormatException e) {
                 logger.debug("{} is not a valid DecimalType", state);
             }
@@ -121,7 +122,7 @@ public class MeteoAlertIconProvider implements IconProvider {
         try (InputStream stream = iconResource.openStream()) {
             result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            logger.warn("Unable to load ressource '{}' : {}", iconResource.getPath(), e.getMessage());
+            logger.warn("Unable to load ressource '{}': {}", iconResource.getPath(), e.getMessage());
         }
         return result;
     }

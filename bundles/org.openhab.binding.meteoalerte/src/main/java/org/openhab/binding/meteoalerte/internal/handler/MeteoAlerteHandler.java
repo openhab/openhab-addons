@@ -68,6 +68,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     private final ZoneId zoneId;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+
     private @NonNullByDefault({}) Domain domain;
 
     public MeteoAlerteHandler(Thing thing, ZoneId zoneId, MeteoAlertIconProvider iconProvider) {
@@ -79,21 +80,31 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Météo Alerte handler.");
+        disposeJob();
 
         MeteoAlerteConfiguration config = getConfigAs(MeteoAlerteConfiguration.class);
-        logger.debug("config department= {}", config.department);
-        domain = Domain.valueOf(config.department);
+        try {
+            domain = Domain.valueOf(config.department);
+            logger.debug("config department= {}", config.department);
 
-        updateStatus(ThingStatus.UNKNOWN);
-        refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(() -> updateAndPublish(), 0, 10, TimeUnit.MINUTES));
+            updateStatus(ThingStatus.UNKNOWN);
+            refreshJob = Optional
+                    .of(scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.MINUTES));
+        } catch (IllegalArgumentException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Erroneous deptartment: %s".formatted((config.department)));
+        }
+    }
+
+    private void disposeJob() {
+        refreshJob.ifPresent(job -> job.cancel(true));
+        refreshJob = Optional.empty();
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing the Météo Alerte handler.");
-
-        refreshJob.ifPresent(job -> job.cancel(true));
-        refreshJob = Optional.empty();
+        disposeJob();
     }
 
     @Override

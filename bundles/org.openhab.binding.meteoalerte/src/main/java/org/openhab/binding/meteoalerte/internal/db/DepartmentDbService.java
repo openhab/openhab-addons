@@ -49,7 +49,7 @@ public class DepartmentDbService {
     private final Map<String, Department> departments = new HashMap<>();
 
     public record Department(String id, String name, double northestLat, double southestLat, double eastestLon,
-            double westestLon, String shape) {
+            double westestLon) {
     }
 
     @Activate

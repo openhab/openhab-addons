@@ -13,6 +13,9 @@ Of course, you can add multiple things, e.g. for getting alerts for different lo
 
 The binding has no configuration options, all configuration is done at Thing level.
 
+Create an account on https://portail-api.meteofrance.fr/web/fr/
+Create an application on "Bulletin Vigilance" and generate an API Key ( set duration to 0)
+
 ## Thing Configuration
 
 The thing has a few configuration parameters:

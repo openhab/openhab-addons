@@ -168,6 +168,11 @@
 				</options>
 				<limitToOptions>true</limitToOptions>
 			</parameter>
+            <parameter name="refresh" type="integer" min="1" required="true" unit="min">
+                <label>Fréquence de rafraichissement</label>
+                <description>Période d'actualisation des données en minutes.</description>
+                <default>60</default>
+            </parameter>
 		</config-description>
 	</thing-type>
 

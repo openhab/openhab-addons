@@ -22,5 +22,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BridgeConfiguration {
     public String apikey = "";
-    public int refresh = 60;
 }
