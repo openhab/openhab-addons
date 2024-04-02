@@ -5,9 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="api">
-		<label>Meteo-France Portail API</label>
+		<label>Météo-France Portail API</label>
 		<description>
-			Bridge to the Meteo-France Portail API. In order to receive the data, you must register an account on
+			Bridge to the Météo-France Portail API. In order to receive the data, you must register an account on
 			https://portail-api.meteofrance.fr/devportal/apis and get your API token.
 		</description>
 		<config-description>

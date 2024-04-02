@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.meteoalerte.internal.MeteoAlertIconProvider;
-import org.openhab.binding.meteoalerte.internal.config.MeteoAlerteConfiguration;
+import org.openhab.binding.meteoalerte.internal.config.DepartmentConfiguration;
 import org.openhab.binding.meteoalerte.internal.dto.BlocType;
 import org.openhab.binding.meteoalerte.internal.dto.Domain;
 import org.openhab.binding.meteoalerte.internal.dto.Hazard;
@@ -82,7 +82,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         logger.debug("Initializing Météo Alerte handler.");
         disposeJob();
 
-        MeteoAlerteConfiguration config = getConfigAs(MeteoAlerteConfiguration.class);
+        DepartmentConfiguration config = getConfigAs(DepartmentConfiguration.class);
         try {
             domain = Domain.valueOf(config.department);
             logger.debug("config department= {}", config.department);

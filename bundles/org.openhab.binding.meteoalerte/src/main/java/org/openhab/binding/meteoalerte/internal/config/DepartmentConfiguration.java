@@ -15,14 +15,14 @@ package org.openhab.binding.meteoalerte.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MeteoAlerteConfiguration} is the class used to match the
+ * The {@link DepartmentConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class MeteoAlerteConfiguration {
-    public static final String DEPARTEMENT = "departement";
+public class DepartmentConfiguration {
+    public static final String DEPARTMENT = "departement";
     public String department = "";
     public int refresh = 60;
 }

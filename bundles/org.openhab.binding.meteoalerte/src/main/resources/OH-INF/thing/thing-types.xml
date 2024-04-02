@@ -9,8 +9,8 @@
 			<bridge-type-ref id="api"/>
 		</supported-bridge-type-refs>
 
-		<label>Alertes Département</label>
-		<description>Fournit les niveaux d'alerte météo pour un département.</description>
+		<label>Vigilance Département</label>
+		<description>Fournit les niveaux de vigilance météo pour un département.</description>
 
 		<channels>
 			<channel id="vague-submersion" typeId="vague-submersion"/>

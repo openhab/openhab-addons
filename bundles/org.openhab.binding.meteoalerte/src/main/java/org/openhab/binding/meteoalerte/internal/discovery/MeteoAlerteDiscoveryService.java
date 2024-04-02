@@ -19,7 +19,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.meteoalerte.internal.config.MeteoAlerteConfiguration;
+import org.openhab.binding.meteoalerte.internal.config.DepartmentConfiguration;
 import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService;
 import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService.Department;
 import org.openhab.binding.meteoalerte.internal.handler.MeteoAlerteBridgeHandler;
@@ -90,11 +90,11 @@ public class MeteoAlerteDiscoveryService extends AbstractDiscoveryService implem
         List<Department> candidates = db.getBounding(serverLocation);
 
         if (!candidates.isEmpty()) {
-            candidates.forEach(
-                    dep -> thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_DEPARTEMENT, dep.id()))//
+            candidates.forEach(dep -> thingDiscovered(
+                    DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_DEPARTEMENT, bridgeUID, dep.id()))//
                             .withLabel("Vigilance Météo: %s".formatted(dep.name())) //
-                            .withProperty(MeteoAlerteConfiguration.DEPARTEMENT, dep.id()) //
-                            .withRepresentationProperty(MeteoAlerteConfiguration.DEPARTEMENT) //
+                            .withProperty(DepartmentConfiguration.DEPARTMENT, dep.id()) //
+                            .withRepresentationProperty(DepartmentConfiguration.DEPARTMENT) //
                             .withBridge(bridgeUID).build()));
         } else {
             logger.info("No department could be discovered matching server location");
