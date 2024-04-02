@@ -91,7 +91,7 @@ public class SalusApi {
                 forceRefreshAccessToken();
                 return post(url, content, header, times + 1);
             }
-            logger.debug("Could not refresh access token after {} times", MAX_TIMES);
+            logger.debug("Could not refresh access token after {} retries", MAX_TIMES);
             return response;
         }
         return response;
