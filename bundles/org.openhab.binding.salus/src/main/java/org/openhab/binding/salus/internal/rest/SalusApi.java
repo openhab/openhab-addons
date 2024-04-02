@@ -136,7 +136,7 @@ public class SalusApi {
         }
         var token = authToken = mapper.authToken(requireNonNull(response.body()));
         authTokenExpireTime = LocalDateTime.now(clock).plusSeconds(token.expiresIn());
-        logger.info("Correctly logged in for user {}, role={}, expires at {} ({} secs)", username, token.role(),
+        logger.debug("Correctly logged in for user {}, role={}, expires at {} ({} secs)", username, token.role(),
                 authTokenExpireTime, token.expiresIn());
         return response;
     }
