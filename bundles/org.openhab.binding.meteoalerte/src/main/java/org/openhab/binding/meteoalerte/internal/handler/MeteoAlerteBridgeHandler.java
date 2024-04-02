@@ -13,6 +13,7 @@
 package org.openhab.binding.meteoalerte.internal.handler;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
@@ -96,6 +97,7 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
         header.put("apikey", config.apikey);
         header.put("accept", "*/*");
         updateStatus(ThingStatus.UNKNOWN);
+        scheduler.execute(() -> vigilanceText.getValue());
     }
 
     @Override
@@ -120,6 +122,8 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
                 return vigilance;
             }
+        } catch (ConnectException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (MeteoAlerteException e) {
             logger.warn("Exception deserializing API answer: {}", e.getMessage());
         } catch (IOException e) {

@@ -27,5 +27,5 @@ public enum Term {
     TOMORROW,
     @SerializedName("J+J1")
     TODAY_AND_TOMORROW,
-    UNKNOWN;
+    UNKNOWN
 }

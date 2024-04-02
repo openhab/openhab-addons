@@ -147,9 +147,8 @@ public class MeteoAlerteHandler extends BaseThingHandler {
                         }
                         channels.put(phenomenon.phenomenonId(), risk);
                     });
-                    channels.forEach((k, v) -> {
-                        updateAlert(k.channelName, v);
-                    });
+
+                    channels.forEach((k, v) -> updateAlert(k.channelName, v));
 
                     TextBlocItem bloc = handler.requestTextData(domain);
                     if (bloc != null) {

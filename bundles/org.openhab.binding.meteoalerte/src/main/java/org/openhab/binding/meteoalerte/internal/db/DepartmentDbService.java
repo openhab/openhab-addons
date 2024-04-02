@@ -17,10 +17,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,7 +45,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class DepartmentDbService {
     private final Logger logger = LoggerFactory.getLogger(DepartmentDbService.class);
-    private final Map<String, Department> departments = new HashMap<>();
+    private final List<Department> departments = new ArrayList<>();
 
     public record Department(String id, String name, double northestLat, double southestLat, double eastestLon,
             double westestLon) {
@@ -56,24 +55,23 @@ public class DepartmentDbService {
     public DepartmentDbService() {
         try (InputStream is = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("/db/departments.json");
-                Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);) {
+                Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
             Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-            Arrays.asList(gson.fromJson(reader, Department[].class)).stream()
-                    .forEach(dep -> departments.put(dep.id, dep));
+            departments.addAll(Arrays.asList(gson.fromJson(reader, Department[].class)));
             logger.debug("Successfully loaded {} departments", departments.size());
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
-            logger.warn("Unable to load departments list : {}", e.getMessage());
+            logger.warn("Unable to load departments list: {}", e.getMessage());
         }
     }
 
     public List<Department> getBounding(PointType location) {
         double latitude = location.getLatitude().doubleValue();
         double longitude = location.getLongitude().doubleValue();
-        return departments.values().stream().filter(dep -> dep.northestLat >= latitude && dep.southestLat <= latitude
+        return departments.stream().filter(dep -> dep.northestLat >= latitude && dep.southestLat <= latitude
                 && dep.westestLon <= longitude && dep.eastestLon >= longitude).toList();
     }
 
     public @Nullable Department getDept(String deptId) {
-        return departments.get(deptId);
+        return departments.stream().filter(dep -> dep.id.equalsIgnoreCase(deptId)).findFirst().orElse(null);
     }
 }

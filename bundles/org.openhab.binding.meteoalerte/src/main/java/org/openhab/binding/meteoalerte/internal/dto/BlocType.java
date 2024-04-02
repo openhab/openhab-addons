@@ -23,5 +23,5 @@ public enum BlocType {
     INCERTITUDE, // Prévisibilité et incertitudes
     QUALIFICATION, // Qualification
     EVOLUTION, // Évolution prévue
-    UNKNOWN; // Inconnue
+    UNKNOWN // Inconnue
 }
