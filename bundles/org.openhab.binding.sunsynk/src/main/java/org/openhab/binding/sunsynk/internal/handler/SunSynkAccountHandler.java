@@ -117,6 +117,8 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     public void configAccount() {
         SunSynkAccountConfig accountConfig = getConfigAs(SunSynkAccountConfig.class);
         Client sunAccount = authenticate(accountConfig.getEmail(), accountConfig.getPassword());
+        // Add here a check on APIdata or handle API Null
+
         APIdata apiData = sunAccount.getData();
         String newToken = apiData.getAccessToken();
         APIdata.static_access_token = newToken;

@@ -27,14 +27,17 @@
 			<parameter name="access_token" type="text" required="false">
 				<label>SunSynk Secret</label>
 				<description>Secret for accessing SunSynk web services</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refresh_token" type="text" required="false">
 				<label>SunSynk Refresh Secret</label>
 				<description>SunSynk web services refresh secret</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="expires_in" type="text" required="false">
 				<label>SunSynk Secret expiry</label>
 				<description>SunSynk web services secret expiry</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
@@ -53,45 +56,45 @@
 
 		<channels>
 			<channel id="Interval-1-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-1-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-1-grid-capacity" typeId="battery-target"/>
+			<channel id="Interval-1-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-2-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-2-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-2-grid-capacity" typeId="battery-target"/>
+			<channel id="Interval-2-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-3-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-3-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-3-grid-capacity" typeId="battery-target"/>
+			<channel id="Interval-3-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-4-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-4-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-4-grid-capacity" typeId="battery-target"/>
+			<channel id="Interval-4-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-5-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-5-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-5-grid-capacity" typeId="battery-target"/>
+			<channel id="Interval-5-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-6-grid-charge" typeId="grid-charge"/>
+			<channel id="Interval-6-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-6-grid-capacity" typeId="battery-target"/>
+			<channel id="Interval-6-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-1-gen-charge" typeId="gen-charge"/>
 			<channel id="Interval-2-gen-charge" typeId="gen-charge"/>
 			<channel id="Interval-3-gen-charge" typeId="gen-charge"/>
 			<channel id="Interval-4-gen-charge" typeId="gen-charge"/>
 			<channel id="Interval-5-gen-charge" typeId="gen-charge"/>
 			<channel id="Interval-6-gen-charge" typeId="gen-charge"/>
-			<channel id="Interval-1-grid-time" typeId="grid-tme"/>
-			<channel id="Interval-2-grid-time" typeId="grid-tme"/>
-			<channel id="Interval-3-grid-time" typeId="grid-tme"/>
-			<channel id="Interval-4-grid-time" typeId="grid-tme"/>
-			<channel id="Interval-5-grid-time" typeId="grid-tme"/>
-			<channel id="Interval-6-grid-time" typeId="grid-tme"/>
-			<channel id="Interval-1-grid-capacity" typeId="system.battery-level"/>
-			<channel id="Interval-2-grid-capacity" typeId="system.battery-level"/>
-			<channel id="Interval-3-grid-capacity" typeId="system.battery-level"/>
-			<channel id="Interval-4-grid-capacity" typeId="system.battery-level"/>
-			<channel id="Interval-5-grid-capacity" typeId="system.battery-level"/>
-			<channel id="Interval-6-grid-capacity" typeId="system.battery-level"/>
-			<channel id="Interval-1-grid-power-limit" typeId="system.electric-power"/>
-			<channel id="Interval-2-grid-power-limit" typeId="system.electric-power"/>
-			<channel id="Interval-3-grid-power-limit" typeId="system.electric-power"/>
-			<channel id="Interval-4-grid-power-limit" typeId="system.electric-power"/>
-			<channel id="Interval-5-grid-power-limit" typeId="system.electric-power"/>
-			<channel id="Interval-6-grid-power-limit" typeId="system.electric-power"/>
-			<channel id="Interter-grid-power" typeId="system.electric-power"/>
-			<channel id="Interter-grid-voltage" typeId="system.electric-voltage"/>
-			<channel id="Interter-grid-current" typeId="system.electric-current"/>
-			<channel id="Inverter-ac-temperature" typeId="system.indoor-temperature"/>
-			<channel id="Inverter-dc-temperature" typeId="system.indoor-temperature"/>
+			<channel id="Battery-SOC" typeId="system.battery-level"/>
 			<channel id="Battery-grid-voltage" typeId="system.electric-voltage"/>
 			<channel id="Battery-grid-current" typeId="system.electric-current"/>
 			<channel id="Battery-grid-power" typeId="system.electric-power"/>
-			<channel id="Battery-SOC" typeId="system.battery-level"/>
 			<channel id="Battery-temperature" typeId="system.indoor-temperature"/>
+			<channel id="Inverter-ac-temperature" typeId="system.indoor-temperature"/>
+			<channel id="Inverter-dc-temperature" typeId="system.indoor-temperature"/>
+			<channel id="Interter-grid-power" typeId="system.electric-power"/>
+			<channel id="Interter-grid-voltage" typeId="system.electric-voltage"/>
+			<channel id="Interter-grid-current" typeId="system.electric-current"/>
 			<channel id="Inverter-solar-energy-today" typeId="system.electric-energy"/>
 			<channel id="Inverter-solar-energy-total" typeId="system.electric-energy"/>
 			<channel id="Inverter-solar-power-now" typeId="system.electric-current"/>
@@ -109,6 +112,7 @@
 				<label>Refresh time</label>
 				<description>Time in seconds to retrieve status from SunSynk web services. Greater than 60 seconds</description>
 				<default> 60 </default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
@@ -160,26 +164,40 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="grid-tme">
+	<channel-type id="grid-tme" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Grid charge interval start time</label>
 		<description>"24hr time for the start of the interval. 00:00 to 23:55 are valid in 5 min increments with leading zero
 			on the hour and minute. Times must be in ascending order. ".</description>
-		<state readOnly="false" pattern="%HH:%MM"/>
+		<state readOnly="false" pattern="%1$tH:%1$tM"/>
 	</channel-type>
 
-	<channel-type id="grid-charge">
+	<channel-type id="grid-charge" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Grid charge this interval</label>
 		<description>charge the inverter battery from the grid.</description>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 
-	<channel-type id="gen-charge">
+	<channel-type id="gen-charge" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Generator (auxilary) charge this interval</label>
 		<description>charge the inverter battery from the generator auxilary.</description>
 		<state readOnly="false" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="battery-target" advanced="true">
+		<item-type>Number</item-type>
+		<label>Target Charge Level</label>
+		<category>Battery</category>
+		<state min="0" max="100" step="1" pattern="%d" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="power-charge-limit" advanced="true">
+		<item-type>Number</item-type>
+		<label>Maximum charge rate</label>
+		<category>Inverter</category>
+		<state min="0" max="100" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 
