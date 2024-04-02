@@ -159,25 +159,12 @@ public class SalusApi {
             }
             return response;
         }
-        if (shouldRefreshTokenBeforeExpire()) {
-            refreshBeforeExpire();
-        } else {
-            logger.debug("Refreshing token is not required");
-        }
         return null;
     }
 
     private boolean isExpiredToken() {
         var token = authTokenExpireTime;
         return token == null || LocalDateTime.now(clock).isAfter(token);
-    }
-
-    private boolean shouldRefreshTokenBeforeExpire() {
-        return false;
-    }
-
-    private void refreshBeforeExpire() {
-        logger.warn("Refreshing token before expire is not supported!");
     }
 
     private String url(String url) {
