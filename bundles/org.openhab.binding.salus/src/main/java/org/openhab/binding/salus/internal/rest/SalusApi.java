@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SalusApi {
     private static final int MAX_RETRIES = 3;
+    private static final long TOKEN_EXPIRE_TIME_ADJUSTMENT_SECONDS = 3;
     private final Logger logger;
     private final String username;
     private final char[] password;
@@ -134,7 +135,10 @@ public class SalusApi {
             return new RestClient.Response<@Nullable String>(response.statusCode(), response.body());
         }
         var token = authToken = mapper.authToken(requireNonNull(response.body()));
-        authTokenExpireTime = LocalDateTime.now(clock).plusSeconds(token.expiresIn());
+        authTokenExpireTime = LocalDateTime.now(clock).plusSeconds(token.expiresIn())
+                // this is to account that there is a delay between server setting `expires_in`
+                // and client (OpenHAB) receiving it
+                .minusSeconds(TOKEN_EXPIRE_TIME_ADJUSTMENT_SECONDS);
         logger.debug("Correctly logged in for user {}, role={}, expires at {} ({} secs)", username, token.role(),
                 authTokenExpireTime, token.expiresIn());
         return response;
