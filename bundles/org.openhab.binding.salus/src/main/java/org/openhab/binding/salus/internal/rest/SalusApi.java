@@ -115,7 +115,6 @@ public class SalusApi {
         authToken = null;
         authTokenExpireTime = null;
         var finalUrl = url("/users/sign_in.json");
-        var method = "POST";
         var inputBody = mapper.loginParam(username, password);
         var response = restClient.post(finalUrl, new RestClient.Content(inputBody, "application/json"),
                 new RestClient.Header("Accept", "application/json"));
