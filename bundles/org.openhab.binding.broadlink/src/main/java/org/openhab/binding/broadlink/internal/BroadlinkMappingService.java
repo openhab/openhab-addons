@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.broadlink.internal;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
@@ -22,7 +21,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.ChannelUID;
@@ -39,20 +37,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BroadlinkMappingService {
-    private static final String TRANSFORM_DIR = OpenHAB.getConfigFolder() + File.separator + "transform"
-            + File.separator;
     private final Logger logger = LoggerFactory.getLogger(BroadlinkMappingService.class);
-    private final String irMapFileName;
-    private final String rfMapFileName;
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
     private final ChannelUID irTargetChannelUID;
     private final ChannelUID rfTargetChannelUID;
-
     private @Nullable WatchService watchService = null;
     private @Nullable WatchKey transformDirWatchKey = null;
     private @Nullable Thread watchThread = null;
-    private final String irCmdLabel;
-    private final String rfCmdLabel;
     private final StorageService storageService;
     private final Storage<String> irStorage;
     private final Storage<String> rfStorage;
@@ -60,14 +51,10 @@ public class BroadlinkMappingService {
     public BroadlinkMappingService(String irMapFileName, String rfMapFileName,
             BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider, ChannelUID irTargetChannelUID,
             ChannelUID rfTargetChannelUID, StorageService storageService) {
-        this.irMapFileName = irMapFileName;
-        this.rfMapFileName = rfMapFileName;
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.irTargetChannelUID = irTargetChannelUID;
         this.rfTargetChannelUID = rfTargetChannelUID;
         this.storageService = storageService;
-        this.irCmdLabel = new String();
-        this.rfCmdLabel = new String();
         irStorage = this.storageService.getStorage(irMapFileName, String.class.getClassLoader());
         rfStorage = this.storageService.getStorage(rfMapFileName, String.class.getClassLoader());
         notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
@@ -97,81 +84,101 @@ public class BroadlinkMappingService {
     }
 
     public @Nullable String lookupIR(String command) {
-        return (String) irStorage.get(command);
+        String irValue = irStorage.get(command);
+        if (irValue != null) {
+            logger.debug("IR Command label found. Key value pair is {},{}", command, irValue);
+        } else {
+            logger.debug("IR Command not label found.");
+        }
+        return (String) irValue;
     }
 
     public @Nullable String storeIR(String command, String irCommand) {
         if (irStorage.get(command) == null) {
-            logger.debug("IR Command not found. Proceeding to store command and reload Command list");
+            logger.debug("IR Command label not found. Proceeding to store key value pair {},{} and reload Command list",
+                    command, irCommand);
             irStorage.put(command, irCommand);
             notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
             return command;
         } else {
-            logger.debug("IR Command found. This is not a replace operation. Skipping");
+            logger.debug("IR Command label {} found. This is not a replace operation. Skipping", command);
             return null;
         }
     }
 
     public @Nullable String replaceIR(String command, String irCommand) {
         if (irStorage.get(command) != null) {
-            logger.debug("IR Command found. Proceeding to store command and reload Command list");
+            logger.debug("IR Command label found. Proceeding to store key value pair {},{} and reload Command list",
+                    command, irCommand);
             irStorage.put(command, irCommand);
             notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
             return command;
         } else {
-            logger.debug("IR Command not found. This is not an add method, so skipping");
+            logger.debug("IR Command label {} not found. This is not an add method. Skipping", command);
             return null;
         }
     }
 
     public @Nullable String deleteIR(String command) {
-        if (irStorage.get(command) != null) {
-            logger.debug("IR Command found. Proceeding to remove command and reload command list");
+        String irValue = irStorage.get(command);
+        if (irValue != null) {
+            logger.debug("IR Command label found. Proceeding to remove key pair {},{} and reload command list", command,
+                    irValue);
             irStorage.remove(command);
             notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
             return command;
         } else {
-            logger.debug("IR Command not found. Can't delete command that does not exist");
+            logger.debug("IR Command label {} not found. Can't delete a command that does not exist", command);
             return null;
         }
     }
 
     public @Nullable String lookupRF(String command) {
-        return (String) rfStorage.get(command);
+        String rfValue = rfStorage.get(command);
+        if (rfValue != null) {
+            logger.debug("RF Command label found. Key value pair is {},{}", command, rfValue);
+        } else {
+            logger.debug("RF Command not label found.");
+        }
+        return (String) rfValue;
     }
 
     public @Nullable String storeRF(String command, String rfCommand) {
         if (rfStorage.get(command) == null) {
-            logger.debug("RF Command not found. Proceeding to store command and reload Command list");
+            logger.debug("RF Command label not found. Proceeding to store key value pair {},{} and reload Command list",
+                    command, rfCommand);
             rfStorage.put(command, rfCommand);
             notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
             return command;
         } else {
-            logger.debug("RF Command found. This is not a replace operation. Skipping");
+            logger.debug("RF Command label {} found. This is not a replace operation. Skipping", command);
             return null;
         }
     }
 
     public @Nullable String replaceRF(String command, String rfCommand) {
         if (rfStorage.get(command) != null) {
-            logger.debug("RF Command found. Proceeding to store command and reload Command list");
+            logger.debug("RF Command label found. Proceeding to store key value pair {},{} and reload Command list",
+                    command, rfCommand);
             rfStorage.put(command, rfCommand);
             notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
             return command;
         } else {
-            logger.debug("RF Command not found. This is not an add method, so skipping");
+            logger.debug("RF Command label {} not found. This is not an add method. Skipping", command);
             return null;
         }
     }
 
     public @Nullable String deleteRF(String command) {
-        if (rfStorage.get(command) != null) {
-            logger.debug("RF Command found. Proceeding to remove command and reload command list");
+        String rfValue = rfStorage.get(command);
+        if (rfValue != null) {
+            logger.debug("RF Command label found. Proceeding to remove key pair {},{} and reload command list", command,
+                    rfValue);
             rfStorage.remove(command);
             notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
             return command;
         } else {
-            logger.debug("RF Command not found. Can't delete command that does not exist");
+            logger.debug("RF Command label {} not found. Can't delete a command that does not exist", command);
             return null;
         }
     }
