@@ -87,7 +87,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         domain = Domain.getByApiId(config.department);
         if (Domain.UNKNOWN.equals(domain)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Erroneous deptartment: %s".formatted((config.department)));
+                    "Wrong department: %s".formatted((config.department)));
             return;
         }
         logger.debug("config department= {}", config.department);

@@ -3,31 +3,37 @@
 The Meteo Alerte binding gives alert level regarding major weather related risk factors.
 This binding provides its own icon set and provides appropriate static and dynamic SVG icons (see items examples below).
 
-## Supported Things
+## Discovery
 
-There is exactly one supported thing type, which represents the weather alerts for a given department.
-It has the `department` id.
-Of course, you can add multiple things, e.g. for getting alerts for different locations.
+Once a bridge with the api Key has been created, appropriate departments can be auto discovered based on system location.
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at Thing level.
+The binding has no configuration options, all configuration is done at Bridge and Thing level.
 
-Create an account on https://portail-api.meteofrance.fr/web/fr/
-Create an application on "Bulletin Vigilance" and generate an API Key ( set duration to 0)
+## Bridge Configuration
+
+The `api` bridge has only one configuration parameter :
+
+| Parameter | Description                                           |
+|-----------|-------------------------------------------------------|
+| apikey    | Data-platform token to access the service. Mandatory. |
+
+To obtain an API key, you must create an account on https://portail-api.meteofrance.fr/web/fr/
+Inside the Portail API, create an application on "Bulletin Vigilance" and generate they API Key ( set duration to 0)
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The `department` thing has these configuration parameters:
 
-| Parameter     | Description                                                                            |
-|---------------|----------------------------------------------------------------------------------------|
-| `department` | Name of the department.                                                               |
-| refresh       | Refresh interval in minutes. Optional, the default value is 1440 minutes (once a day). |
+| Parameter  | Description                                                             |
+|------------|-------------------------------------------------------------------------|
+| department | Code of the department (two digits).                                    |
+| refresh    | Refresh interval in minutes. Optional, the default value is 60 minutes. |
 
 ## Channels
 
-The Météo Alerte information that are retrieved is available as these channels:
+The information that are retrieved is available as these channels:
 
 | Channel ID            | Item Type | Description                                   |
 |-----------------------|-----------|-----------------------------------------------|
@@ -53,7 +59,7 @@ The Météo Alerte information that are retrieved is available as these channels
 | avalanches-icon       | Image     | Pictogram of Avalanche alert level            |
 | vague-submersion-icon | Image     | Pictogram of Wave Submersion alert level      |
 
-(*) Each alert level is described by a color :
+(*) Each alert level has an associated color and description:
 
 | Code | Color  | Description                               |
 |------|--------|-------------------------------------------|
@@ -85,7 +91,7 @@ This binding has its own IconProvider and makes available the following list of 
 meteoalert.things:
 
 ```java
-Thing meteoalerte:department:yvelines @ "MyCity" [department="YVELINES", refresh=12]
+Thing meteoalerte:department:yvelines @ "MyCity" [department="78", refresh=12]
 ```
 
 meteoalert.items:
