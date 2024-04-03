@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class DepartmentConfiguration {
-    public static final String DEPARTMENT = "departement";
+    public static final String DEPARTMENT = "department";
     public String department = "";
     public int refresh = 60;
 }

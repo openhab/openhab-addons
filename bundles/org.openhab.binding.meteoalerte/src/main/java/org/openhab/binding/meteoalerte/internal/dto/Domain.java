@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.meteoalerte.internal.dto;
 
+import java.lang.reflect.Field;
+import java.util.EnumSet;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -237,8 +241,26 @@ public enum Domain {
     UNKNOWN("Unknown");
 
     public final String description;
+    public final @Nullable String apiId;
 
     Domain(String description) {
         this.description = description;
+        this.apiId = getSerializedName();
+    }
+
+    @Nullable
+    String getSerializedName() {
+        try {
+            Field f = getClass().getField(this.name());
+            SerializedName a = f.getAnnotation(SerializedName.class);
+            return a == null ? null : a.value();
+        } catch (NoSuchFieldException ignored) {
+            return null;
+        }
+    }
+
+    public static Domain getByApiId(String searched) {
+        return EnumSet.allOf(Domain.class).stream().filter(dom -> searched.equals(dom.apiId)).findFirst()
+                .orElse(UNKNOWN);
     }
 }

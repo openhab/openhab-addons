@@ -15,7 +15,7 @@ package org.openhab.binding.meteoalerte.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * An exception that occurred while communicating with Meteo Alerte API server or related processes.
+ * An exception that occurred while communicating with Meteo France API server or related processes.
  *
  * @author Gaël L'hopital - Initial contribution
  */

@@ -83,17 +83,18 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         disposeJob();
 
         DepartmentConfiguration config = getConfigAs(DepartmentConfiguration.class);
-        try {
-            domain = Domain.valueOf(config.department);
-            logger.debug("config department= {}", config.department);
 
-            updateStatus(ThingStatus.UNKNOWN);
-            refreshJob = Optional
-                    .of(scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.MINUTES));
-        } catch (IllegalArgumentException e) {
+        domain = Domain.getByApiId(config.department);
+        if (Domain.UNKNOWN.equals(domain)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Erroneous deptartment: %s".formatted((config.department)));
+            return;
         }
+        logger.debug("config department= {}", config.department);
+
+        updateStatus(ThingStatus.UNKNOWN);
+        refreshJob = Optional
+                .of(scheduler.scheduleWithFixedDelay(this::updateAndPublish, 5, config.refresh * 60, TimeUnit.SECONDS));
     }
 
     private void disposeJob() {
