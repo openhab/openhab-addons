@@ -159,14 +159,24 @@ public class UidUtils {
         String shortDesc = dpt.getShortDescEn();
         String result = normalizeDescriptor(shortDesc);
 
-        if ("DateTime".equals(type)) {
+        if (SiemensHvacBindingConstants.DPT_TYPE_DATE_TIME.equals(type)) {
             result = "datetime";
-        } else if ("String".equals(type)) {
+        } else if (SiemensHvacBindingConstants.DPT_TYPE_STRING.equals(type)) {
             result = "string";
-        } else if ("TimeOfDay".equals(type)) {
+        } else if (SiemensHvacBindingConstants.DPT_TYPE_TEXT.equals(type)) {
+            result = "string";
+        } else if (SiemensHvacBindingConstants.DPT_TYPE_TIMEOFDAY.equals(type)) {
+            result = "number";
+        } else if (SiemensHvacBindingConstants.DPT_TYPE_SCHEDULER.equals(type)) {
             result = "datetime";
-        } else if ("Scheduler".equals(type)) {
+        } else if (SiemensHvacBindingConstants.DPT_TYPE_CALENDAR.equals(type)) {
             result = "datetime";
+        } else if (SiemensHvacBindingConstants.DPT_TYPE_ENUM.equals(type)) {
+            result = "number";
+        } else if (SiemensHvacBindingConstants.DPT_TYPE_NUMERIC.equals(type)) {
+            result = "number";
+        } else if (SiemensHvacBindingConstants.DPT_TYPE_RADIO.equals(type)) {
+            result = "contact";
         }
 
         return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, result);

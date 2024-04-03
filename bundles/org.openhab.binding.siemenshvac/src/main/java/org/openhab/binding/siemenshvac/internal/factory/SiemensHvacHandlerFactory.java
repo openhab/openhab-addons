@@ -15,6 +15,7 @@ package org.openhab.binding.siemenshvac.internal.factory;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
+import org.openhab.binding.siemenshvac.internal.converter.ConverterFactory;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacHandlerImpl;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacOZW672BridgeThingHandler;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
@@ -48,7 +49,6 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
     private final SiemensHvacMetadataRegistry metaDataRegistry;
     private final ChannelTypeRegistry channelTypeRegistry;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public SiemensHvacHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
@@ -60,7 +60,8 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
         this.metaDataRegistry = metaDataRegistry;
         this.networkAddressService = networkAddressService;
         this.channelTypeRegistry = channelTypeRegistry;
-        this.timeZoneProvider = timeZoneProvider;
+
+        ConverterFactory.registerConverter(timeZoneProvider);
     }
 
     @Override
@@ -88,8 +89,7 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
                     metaDataRegistry);
         } else if (SiemensHvacBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
             SiemensHvacHandlerImpl handler = new SiemensHvacHandlerImpl(thing,
-                    metaDataRegistry.getSiemensHvacConnector(), metaDataRegistry, channelTypeRegistry,
-                    timeZoneProvider);
+                    metaDataRegistry.getSiemensHvacConnector(), metaDataRegistry, channelTypeRegistry);
             return handler;
         }
         return null;

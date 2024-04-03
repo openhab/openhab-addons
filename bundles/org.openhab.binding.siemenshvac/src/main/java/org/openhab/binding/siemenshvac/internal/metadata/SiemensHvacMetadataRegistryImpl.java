@@ -604,8 +604,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             return SiemensHvacBindingConstants.ITEM_TYPE_ENUMERATION;
         } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_DATE_TIME)) {
             return SiemensHvacBindingConstants.ITEM_TYPE_DATETIME;
-        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_TIME)) {
-            return SiemensHvacBindingConstants.ITEM_TYPE_DATETIME;
+        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_TIMEOFDAY)) {
+            return SiemensHvacBindingConstants.ITEM_TYPE_NUMBER;
         } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_RADIO)) {
             return SiemensHvacBindingConstants.ITEM_TYPE_CONTACT;
         } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_SCHEDULER)) {
@@ -633,7 +633,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_PROPS_TEMP;
         } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_DATE_TIME)) {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_PROPS_TIME;
-        } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_TIME)) {
+        } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_TIMEOFDAY)) {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_PROPS_TIME;
         } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_ENUM)) {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_WIDGETS_SWITCH;

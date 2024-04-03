@@ -13,9 +13,6 @@
 package org.openhab.binding.siemenshvac.internal.handler;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -23,13 +20,15 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
+import org.openhab.binding.siemenshvac.internal.converter.ConverterFactory;
+import org.openhab.binding.siemenshvac.internal.converter.ConverterTypeException;
+import org.openhab.binding.siemenshvac.internal.converter.TypeConverter;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacCallback;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacRequestListener.ErrorSource;
-import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
@@ -52,7 +51,6 @@ import org.openhab.core.types.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -73,19 +71,16 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
     private final @Nullable SiemensHvacConnector hvacConnector;
     private final @Nullable SiemensHvacMetadataRegistry metaDataRegistry;
     private final ChannelTypeRegistry channelTypeRegistry;
-    private final TimeZoneProvider timeZoneProvider;
 
     private long lastWrite = 0;
 
     public SiemensHvacHandlerImpl(Thing thing, @Nullable SiemensHvacConnector hvacConnector,
-            @Nullable SiemensHvacMetadataRegistry metaDataRegistry, ChannelTypeRegistry channelTypeRegistry,
-            final TimeZoneProvider timeZoneProvider) {
+            @Nullable SiemensHvacMetadataRegistry metaDataRegistry, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
 
         this.hvacConnector = hvacConnector;
         this.metaDataRegistry = metaDataRegistry;
         this.channelTypeRegistry = channelTypeRegistry;
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -232,6 +227,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             logger.debug("pollingCode: type is null {} ", channel);
             return;
         }
+
         readDp(id, uid, type, true);
     }
 
@@ -241,54 +237,27 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             JsonObject subResult = (JsonObject) response.get("Data");
 
             String updateKey = "" + uid;
-            String typer = "";
-            JsonElement value = null;
-            JsonElement enumValue = null;
+
+            String typer = null;
 
             if (subResult.has("Type")) {
                 typer = subResult.get("Type").getAsString().trim();
             }
-            if (subResult.has("Value")) {
-                value = subResult.get("Value");
-            }
-            if (subResult.has("EnumValue")) {
-                enumValue = subResult.get("EnumValue");
-            }
 
-            if (value == null) {
-                return;
-            }
-
-            if (type == null) {
-                logger.debug("siemensHvac:ReadDP:null type {}", dp);
-            }
-
-            if (("Numeric").equals(typer)) {
-                if ("----".equals(value.getAsString())) {
-                    updateState(updateKey, new DecimalType(0));
+            try {
+                TypeConverter<?> converter = ConverterFactory.getConverter(typer);
+                State state = converter.convertFromBinding(subResult);
+                if (state != null) {
+                    updateState(updateKey, state);
                 } else {
-                    updateState(updateKey, new DecimalType(value.getAsDouble()));
+                    logger.debug("Failed to get converted state from datapoint '{}'", dp);
                 }
-            } else if ("Enumeration".equals(typer)) {
-                if (enumValue != null) {
-                    updateState(updateKey, new DecimalType(enumValue.getAsInt()));
-                }
-            } else if ("Text".equals(typer)) {
-                updateState(updateKey, new StringType(value.getAsString()));
-            } else if ("RadioButton".equals(typer)) {
-                updateState(updateKey, new StringType(value.getAsString()));
-            } else if ("DayOfTime".equals(typer) || "DateTime".equals(typer)) {
-                try {
-                    SimpleDateFormat dtf = new SimpleDateFormat("EEEE, d. MMMM yyyy hh:mm"); // first example
-                    ZonedDateTime zdt = dtf.parse(value.getAsString()).toInstant()
-                            .atZone(this.timeZoneProvider.getTimeZone());
-                    updateState(updateKey, new DateTimeType(zdt));
-                } catch (ParseException ex) {
-                    logger.debug("Error decoding date: {}", value.getAsString());
-                }
-            } else {
-                updateState(updateKey, new StringType(value.getAsString()));
+            } catch (ConverterTypeException ex) {
+                logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
+            } catch (ConverterException ex) {
+                logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
             }
+
         }
     }
 
