@@ -35,8 +35,8 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | macAddress          | String  |               | The device's MAC Address                                                          |
 | pollingInterval     | Integer | 30            | The interval in seconds for polling the status of the device                      |
 | nameOfCommandToLearn| String  | DEVICE_ON     | The name of the IR or RF command to learn when using the learn command channel    |
-| mapFilename         | String  | broadlink     | The map file containing IR codes (`$OPENHAB_USERDATA/jsondb/broadlink_ir.json`    |
-| rfmapFilename       | String  | broadlinkrf   | The map file containing RF codes (`$OPENHAB_USERDATA/jsondb/broadlink_rf.json`    |
+| mapFilename         | String  | broadlink_ir  | The map file containing IR codes (`$OPENHAB_USERDATA/jsondb/broadlink_ir.json`    |
+| rfmapFilename       | String  | broadlink_rf  | The map file containing RF codes (`$OPENHAB_USERDATA/jsondb/broadlink_rf.json`    |
 | ignoreFailedUpdates | Boolean | false         | If enabled, failed status requests won't put the device `OFFLINE`                 |
 
 > The `mapFilename` setting is applicable to the RM series of devices only. The 'rfmapFilename' is only available for RM Pro series of devices.
@@ -66,9 +66,9 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 The Broadlink RM family of devices can transmit IR codes. The pro models add RF codes.
 The map file contains a list of IR/RF command codes to send via the device.
 
-In previous versions of this binding, the file uses the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and was stored in the `<OPENHAB_CONF>/transform` folder.
-By default, the file name was `broadlink.map` for the IR codes, but can be changed using the `mapFile` setting. In similar fashion, the RM pro models
-store the RF codes in the `broadlinkrf.map` file. 
+In previous versions of this binding, the file used the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and was stored in the `<OPENHAB_CONF>/transform` folder.
+By default, the file name was `broadlink.map` for the IR codes, but could be changed using the `mapFile` setting. In similar fashion, the RM pro models
+stored the RF codes in the `broadlinkrf.map` file. 
 
 Here is a map file example of the previous file format:
 
@@ -82,9 +82,9 @@ The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu hea
 To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
 For RF, the `rfcommand` channel is used. 
 
-In this version of the binding, storage of codes is handled by OpenHab. The map files are stored in the $OPENHAB_USERDATA/jsondb directory. As an advatage, the files are now backed up by openhab, which provides better integrity. having the storage of the codes handled by openHAB also provides uniformity in where the files are stored.
+In this version of the binding, storage of codes is handled by OpenHAB. The map files are stored in the $OPENHAB_USERDATA/jsondb directory. As an advatage, the files are now backed up by OpenHAB, which s more practical for migrations, data robustness, etc. having the storage of the codes handled by OpenHAB also provides uniformity in where the files are stored.
 
-with the change of the storage mechanism, the files are also changing format, and codes are now stored in json. As an example, a file with the repviously shown codes would look like this:
+With the change of the storage mechanism, the files are also changing format, and codes are now stored in json. As an example, a file with the commands shown in the previous example would look like this:
 
 ```
 {
@@ -97,7 +97,7 @@ with the change of the storage mechanism, the files are also changing format, an
 }
 ```
 
-The script below shows a script that can be used to convert from the old format to the new one:
+The code shown below is a Python script that can be used to convert from the old format to the new one:
 
 ```
 import csv
@@ -131,7 +131,7 @@ To obtain the command codes, you can get this binding to put your Broadlink RMx 
 0. In the openHAB web UI, navigate to your RMx Thing
 1. Set the *Name of IR/RF command to learn* property to the name of the command you want the device to learn
 2. Click on its *Channels* tab
-3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead.
+3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead.(Only needed the first time)
 4. Click the item, and click the rectangular area that is marked NULL
 5. In the pop-up menu that appears, select *Learn IR command* for IR or *Learn RF command* for RF
 6. *The LED on your RM device will illuminate solidly*
@@ -144,6 +144,21 @@ To obtain the command codes, you can get this binding to put your Broadlink RMx 
 12. If succesfull, the channel will change name to the command saved
 13. If no succes, the channel be named "NULL", restart from step 3.
 
+
+The binding is also capable of modifying a previously stored code, and to delete a previously stored code.
+
+To modify a previously stored code, the procedure is the same as the one shown above, except that in step 4, the option to choose is *Modify IR command* or *Modify RF Command*
+
+*Please note that the "Learn command" will not modify a previously existent code, and the "Modify" command will not create a new command. This is done to avoid accidentally oeverwriting commands*
+
+In order to delete a previously stored code, the procedure is as follows:
+
+0. In the openHAB web UI, navigate to your RMx Thing
+1. Set the *Name of IR/RF command to learn* property to the name of the command you want the device to learn
+2. Click on its *Channels* tab
+3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead (Only needed the first time).
+4. Click the item, and click the rectangular area that is marked NULL
+5. In the pop-up menu that appears, select *Delete IR command* for IR or *Delete RF command* for RF
 
 ## Full Example
 
