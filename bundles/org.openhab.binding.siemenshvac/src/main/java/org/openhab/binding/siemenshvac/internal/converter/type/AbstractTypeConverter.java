@@ -113,5 +113,4 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
      * Converts the datapoint value to an openHAB type.
      */
     protected abstract T fromBinding(JsonElement value, String type) throws ConverterException;
-
 }

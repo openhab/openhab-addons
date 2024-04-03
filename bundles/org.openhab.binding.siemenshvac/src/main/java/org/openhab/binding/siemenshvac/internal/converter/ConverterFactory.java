@@ -39,7 +39,6 @@ public class ConverterFactory {
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_RADIO, new RadioTypeConverter());
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_TEXT, new TextTypeConverter());
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_TIMEOFDAY, new TimeOfDayTypeConverter());
-
     }
 
     public static void registerConverter(String key, TypeConverter<?> tp) {
