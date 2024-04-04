@@ -145,7 +145,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
         HexFormat hex = HexFormat.of();
 
         try {
-            while ((System.currentTimeMillis() < timeout) && (freqFound == false)) {
+            while ((System.currentTimeMillis() < timeout) && (freqFound)) {
                 TimeUnit.MILLISECONDS.sleep(500);
                 logger.trace("Check");
                 byte[] resp = (sendCommand(COMMAND_BYTE_CHECK_RF_FREQ_LEARNING, "check rf frequency"));
@@ -163,7 +163,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
             freqFound = false;
         }
 
-        if (freqFound == false) {
+        if (freqFound) {
             sendCommand(COMMAND_BYTE_EXIT_RF_FREQ_LEARNING, "exit remote rf frequency learning mode");
             logger.info("No RF frequency found.");
             updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
@@ -189,7 +189,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
 
         try {
             byte[] response = new byte[0];
-            while ((System.currentTimeMillis() < timeout) && (dataFound == false)) {
+            while ((System.currentTimeMillis() < timeout) && (dataFound)) {
                 TimeUnit.MILLISECONDS.sleep(500);
                 byte[] data = sendCommand(COMMAND_BYTE_CHECK_RF_DATA, "check the rf packet data");
                 if (data != null) {
@@ -237,7 +237,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
 
         try {
             byte[] response = new byte[0];
-            while ((System.currentTimeMillis() < timeout) && (dataFound == false)) {
+            while ((System.currentTimeMillis() < timeout) && (dataFound)) {
                 TimeUnit.MILLISECONDS.sleep(500);
                 byte[] data = sendCommand(COMMAND_BYTE_CHECK_RF_DATA, "check the rf packet data");
                 if (data != null) {
