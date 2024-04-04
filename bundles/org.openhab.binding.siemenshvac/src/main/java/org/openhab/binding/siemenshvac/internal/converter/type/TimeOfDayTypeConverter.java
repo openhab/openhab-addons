@@ -12,27 +12,33 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter.type;
 
+import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * Converts between a SiemensHvac datapoint value and an openHAB DecimalType.
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class TimeOfDayTypeConverter extends AbstractTypeConverter<DecimalType> {
+public class TimeOfDayTypeConverter extends AbstractTypeConverter {
     @Override
-    protected boolean toBindingValidation(JsonObject dp, Class<? extends Type> typeClass) {
+    protected boolean toBindingValidation(Type type) {
         return true;
     }
 
     @Override
-    protected Object toBinding(DecimalType type, JsonObject dp) throws ConverterException {
-        return null;
+    protected Object toBinding(Type type) throws ConverterException {
+        Object valUpdate = null;
+
+        if (type instanceof DecimalType decimalValue) {
+            valUpdate = decimalValue.toString();
+        }
+
+        return valUpdate;
     }
 
     @Override
@@ -47,5 +53,20 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter<DecimalType> {
         } else {
             return new DecimalType(value.getAsInt());
         }
+    }
+
+    @Override
+    public String getChannelType(boolean writeAccess) {
+        return "number";
+    }
+
+    @Override
+    public String getItemType(boolean writeAccess) {
+        return SiemensHvacBindingConstants.ITEM_TYPE_NUMBER;
+    }
+
+    @Override
+    public boolean hasVariant() {
+        return false;
     }
 }

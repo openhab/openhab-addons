@@ -16,6 +16,9 @@ import java.text.Normalizer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
+import org.openhab.binding.siemenshvac.internal.converter.ConverterFactory;
+import org.openhab.binding.siemenshvac.internal.converter.ConverterTypeException;
+import org.openhab.binding.siemenshvac.internal.converter.TypeConverter;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDevice;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataMenu;
@@ -154,29 +157,37 @@ public class UidUtils {
     /**
      * Generates the ChannelTypeUID for the given datapoint with deviceType, channelNumber and datapointName.
      */
-    public static ChannelTypeUID generateChannelTypeUID(SiemensHvacMetadataDataPoint dpt) {
+    public static ChannelTypeUID generateChannelTypeUID(SiemensHvacMetadataDataPoint dpt) throws Exception {
+
         String type = dpt.getDptType();
         String shortDesc = dpt.getShortDescEn();
         String result = normalizeDescriptor(shortDesc);
 
-        if (SiemensHvacBindingConstants.DPT_TYPE_DATE_TIME.equals(type)) {
+        try {
+            TypeConverter tp = ConverterFactory.getConverter(type);
+            if (!tp.hasVariant()) {
+                result = tp.getChannelType(dpt.getWriteAccess());
+            }
+        } catch (ConverterTypeException ex) {
+            throw new SiemensHvacException(String.format("Can't find convertor for type: %s", type), ex);
+        }
+
+        return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, result);
+    }
+
+    public static ChannelTypeUID generateChannelTypeUID2(SiemensHvacMetadataDataPoint dpt) throws Exception {
+        String type = dpt.getDptType();
+        String shortDesc = dpt.getShortDescEn();
+        String result = normalizeDescriptor(shortDesc);
+
+        if ("DateTime".equals(type)) {
             result = "datetime";
-        } else if (SiemensHvacBindingConstants.DPT_TYPE_STRING.equals(type)) {
+        } else if ("String".equals(type)) {
             result = "string";
-        } else if (SiemensHvacBindingConstants.DPT_TYPE_TEXT.equals(type)) {
-            result = "string";
-        } else if (SiemensHvacBindingConstants.DPT_TYPE_TIMEOFDAY.equals(type)) {
-            result = "number";
-        } else if (SiemensHvacBindingConstants.DPT_TYPE_SCHEDULER.equals(type)) {
+        } else if ("TimeOfDay".equals(type)) {
             result = "datetime";
-        } else if (SiemensHvacBindingConstants.DPT_TYPE_CALENDAR.equals(type)) {
+        } else if ("Scheduler".equals(type)) {
             result = "datetime";
-        } else if (SiemensHvacBindingConstants.DPT_TYPE_ENUM.equals(type)) {
-            result = "number";
-        } else if (SiemensHvacBindingConstants.DPT_TYPE_NUMERIC.equals(type)) {
-            result = "number";
-        } else if (SiemensHvacBindingConstants.DPT_TYPE_RADIO.equals(type)) {
-            result = "contact";
         }
 
         return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, result);

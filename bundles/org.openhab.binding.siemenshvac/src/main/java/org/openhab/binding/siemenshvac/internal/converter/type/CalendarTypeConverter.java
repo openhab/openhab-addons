@@ -14,6 +14,7 @@ package org.openhab.binding.siemenshvac.internal.converter.type;
 
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.Type;
 
@@ -24,7 +25,7 @@ import com.google.gson.JsonElement;
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class EnumTypeConverter extends AbstractTypeConverter {
+public class CalendarTypeConverter extends AbstractTypeConverter {
     @Override
     protected boolean toBindingValidation(Type type) {
         return true;
@@ -34,8 +35,8 @@ public class EnumTypeConverter extends AbstractTypeConverter {
     protected Object toBinding(Type type) throws ConverterException {
         Object valUpdate = null;
 
-        if (type instanceof DecimalType decimalValue) {
-            valUpdate = decimalValue.toString();
+        if (type instanceof DateTimeType dateTime) {
+            valUpdate = dateTime.toString();
         }
 
         return valUpdate;
@@ -48,21 +49,21 @@ public class EnumTypeConverter extends AbstractTypeConverter {
 
     @Override
     protected DecimalType fromBinding(JsonElement value, String type) throws ConverterException {
-        return new DecimalType(value.getAsInt());
+        throw new ConverterException("NIY");
     }
 
     @Override
     public String getChannelType(boolean writeAccess) {
-        return "number";
+        return "datetime";
     }
 
     @Override
     public String getItemType(boolean writeAccess) {
-        return SiemensHvacBindingConstants.ITEM_TYPE_ENUMERATION;
+        return SiemensHvacBindingConstants.ITEM_TYPE_DATETIME;
     }
 
     @Override
     public boolean hasVariant() {
-        return true;
+        return false;
     }
 }

@@ -16,11 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
+import org.openhab.binding.siemenshvac.internal.converter.type.CalendarTypeConverter;
+import org.openhab.binding.siemenshvac.internal.converter.type.CheckboxTypeConverter;
 import org.openhab.binding.siemenshvac.internal.converter.type.DateTimeTypeConverter;
 import org.openhab.binding.siemenshvac.internal.converter.type.EnumTypeConverter;
 import org.openhab.binding.siemenshvac.internal.converter.type.NumericTypeConverter;
 import org.openhab.binding.siemenshvac.internal.converter.type.RadioTypeConverter;
-import org.openhab.binding.siemenshvac.internal.converter.type.TextTypeConverter;
+import org.openhab.binding.siemenshvac.internal.converter.type.SchedulerTypeConverter;
+import org.openhab.binding.siemenshvac.internal.converter.type.StringTypeConverter;
 import org.openhab.binding.siemenshvac.internal.converter.type.TimeOfDayTypeConverter;
 import org.openhab.core.i18n.TimeZoneProvider;
 
@@ -30,29 +33,33 @@ import org.openhab.core.i18n.TimeZoneProvider;
  * @author Laurent Arnal - Initial contribution
  */
 public class ConverterFactory {
-    private static Map<String, TypeConverter<?>> converterCache = new HashMap<>();
+    private static Map<String, TypeConverter> converterCache = new HashMap<>();
 
     public static void registerConverter(TimeZoneProvider timeZoneProvider) {
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_DATE_TIME, new DateTimeTypeConverter(timeZoneProvider));
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_ENUM, new EnumTypeConverter());
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC, new NumericTypeConverter());
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_RADIO, new RadioTypeConverter());
-        registerConverter(SiemensHvacBindingConstants.DPT_TYPE_TEXT, new TextTypeConverter());
+        registerConverter(SiemensHvacBindingConstants.DPT_TYPE_STRING, new StringTypeConverter());
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_TIMEOFDAY, new TimeOfDayTypeConverter());
+
+        registerConverter(SiemensHvacBindingConstants.DPT_TYPE_CHECKBOX, new CheckboxTypeConverter());
+        registerConverter(SiemensHvacBindingConstants.DPT_TYPE_SCHEDULER, new SchedulerTypeConverter());
+        registerConverter(SiemensHvacBindingConstants.DPT_TYPE_CALENDAR, new CalendarTypeConverter());
     }
 
-    public static void registerConverter(String key, TypeConverter<?> tp) {
+    public static void registerConverter(String key, TypeConverter tp) {
         converterCache.put(key, tp);
     }
 
     /**
      * Returns the converter for an itemType.
      */
-    public static TypeConverter<?> getConverter(String itemType) throws ConverterException {
+    public static TypeConverter getConverter(String itemType) throws ConverterTypeException {
 
-        TypeConverter<?> converter = converterCache.get(itemType);
+        TypeConverter converter = converterCache.get(itemType);
         if (converter == null) {
-            throw new ConverterException("Can't find a converter for type '" + itemType + "'");
+            throw new ConverterTypeException("Can't find a converter for type '" + itemType + "'");
         }
 
         return converter;

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter;
 
-import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonObject;
@@ -22,15 +21,33 @@ import com.google.gson.JsonObject;
  *
  * @author Laurent Arnal - Initial contribution
  */
-public interface TypeConverter<T extends State> {
+public interface TypeConverter {
 
     /**
      * Converts an openHAB type to a SiemensHVac value.
      */
-    Object convertToBinding(Type type, JsonObject dp) throws ConverterException;
+    Object convertToBinding(Type type) throws ConverterException;
 
     /**
      * Converts a siemensHvac value to an openHAB type.
      */
-    T convertFromBinding(JsonObject dp) throws ConverterException;
+    Type convertFromBinding(JsonObject dp) throws ConverterException;
+
+    /**
+     * get underlying channel type to construct channel type UID
+     *
+     */
+    String getChannelType(boolean writeAccess);
+
+    /**
+     * get underlying item type on openhab side for this SiemensHvac type
+     *
+     */
+    String getItemType(boolean writeAccess);
+
+    /**
+     * tell if this type have different subvariant or not
+     *
+     */
+    boolean hasVariant();
 }

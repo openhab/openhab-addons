@@ -30,8 +30,6 @@ import org.openhab.binding.siemenshvac.internal.network.SiemensHvacCallback;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacRequestListener.ErrorSource;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -245,8 +243,8 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             }
 
             try {
-                TypeConverter<?> converter = ConverterFactory.getConverter(typer);
-                State state = converter.convertFromBinding(subResult);
+                TypeConverter converter = ConverterFactory.getConverter(typer);
+                State state = (State) converter.convertFromBinding(subResult);
                 if (state != null) {
                     updateState(updateKey, state);
                 } else {
@@ -327,34 +325,47 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             logger.trace("Start write: {}", dp);
             lastWrite = System.currentTimeMillis();
 
-            String valUpdate = "0";
-            String valUpdateEnum = "";
+            Object valUpdate = "0";
 
-            if (dpVal instanceof PercentType percentValue) {
-                valUpdate = percentValue.toString();
-            } else if (dpVal instanceof DecimalType decimalValue) {
-                valUpdate = decimalValue.toString();
-            } else if (dpVal instanceof StringType stringValue) {
-                valUpdate = stringValue.toString();
+            try {
+                TypeConverter converter = ConverterFactory.getConverter(type);
 
-                if ("Enumeration".equals(type)) {
-                    String[] valuesUpdateDp = valUpdate.split(":");
-                    valUpdateEnum = valuesUpdateDp[0];
+                valUpdate = converter.convertToBinding(dpVal);
+                if (valUpdate != null) {
+                    String request = String.format("api/menutree/write_datapoint.json?Id=%s&Value=%s&Type=%s", dp,
+                            valUpdate, type);
 
-                    // For enumeration, we always update using the raw value
-                    valUpdate = valUpdateEnum;
+                    if (lcHvacConnector != null) {
+                        logger.trace("Write request for: {} ", valUpdate);
+                        JsonObject response = lcHvacConnector.doRequest(request);
+
+                        logger.trace("Write request response: {} ", response);
+                    }
+
+                } else {
+                    logger.debug("Failed to get converted state from datapoint '{}'", dp);
                 }
+            } catch (ConverterTypeException ex) {
+                logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
+            } catch (ConverterException ex) {
+                logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
             }
 
-            String request = String.format("api/menutree/write_datapoint.json?Id=%s&Value=%s&Type=%s", dp, valUpdate,
-                    type);
+            /*
+             * if (dpVal instanceof PercentType percentValue) {
+             * valUpdate = percentValue.toString();
+             * } else if (dpVal instanceof DecimalType decimalValue) {
+             * valUpdate = decimalValue.toString();
+             * } else if (dpVal instanceof StringType stringValue) {
+             * valUpdate = stringValue.toString();
+             *
+             * if ("Enumeration".equals(type)) {
+             * String[] valuesUpdateDp = valUpdate.split(":");
+             * valUpdate = valuesUpdateDp[0];
+             * }
+             * }
+             */
 
-            if (lcHvacConnector != null) {
-                logger.trace("Write request for: {} ", valUpdate);
-                JsonObject response = lcHvacConnector.doRequest(request);
-
-                logger.trace("Write request response: {} ", response);
-            }
         } catch (Exception e) {
             logger.debug("siemensHvac:ReadDp:Error during dp reading: {}: {}", dp, e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
@@ -380,11 +391,14 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 if (step != null) {
                     doMods = true;
                     int divider = 1;
-                    if (step.floatValue() == 0.5) {
+
+                    if (step.doubleValue() == 0.5) {
                         divider = 2;
-                    } else if (step.floatValue() == 0.1) {
+                    } else if (step.doubleValue() == 0.1) {
                         divider = 10;
-                    } else if (step.floatValue() == 0.01) {
+                    } else if (step.doubleValue() == 0.02) {
+                        divider = 50;
+                    } else if (step.doubleValue() == 0.01) {
                         divider = 100;
                     }
                     v1 = v1 * divider;
@@ -407,6 +421,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             }
         }
         return result;
+
     }
 
     @Override

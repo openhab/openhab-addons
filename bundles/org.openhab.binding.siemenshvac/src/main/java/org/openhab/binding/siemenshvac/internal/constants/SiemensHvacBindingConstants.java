@@ -43,25 +43,24 @@ public class SiemensHvacBindingConstants {
     public static final String PROPERTY_VENDOR_NAME = "Siemens";
 
     public static final String ITEM_TYPE_SWITCH = "Switch";
-    public static final String ITEM_TYPE_ROLLERSHUTTER = "Rollershutter";
     public static final String ITEM_TYPE_CONTACT = "Contact";
     public static final String ITEM_TYPE_STRING = "String";
     public static final String ITEM_TYPE_NUMBER = "Number";
     public static final String ITEM_TYPE_ENUMERATION = "Number";
-    public static final String ITEM_TYPE_DIMMER = "Dimmer";
     public static final String ITEM_TYPE_DATETIME = "DateTime";
 
     public static final String CONFIG_DESCRIPTION_URI_THING_PREFIX = "thing-type";
 
-    public static final String DPT_TYPE_STRING = "String";
     public static final String DPT_TYPE_ENUM = "Enumeration";
     public static final String DPT_TYPE_NUMERIC = "Numeric";
     public static final String DPT_TYPE_RADIO = "RadioButton";
     public static final String DPT_TYPE_DATE_TIME = "DateTime";
     public static final String DPT_TYPE_TIMEOFDAY = "TimeOfDay";
+    public static final String DPT_TYPE_STRING = "String";
+
+    public static final String DPT_TYPE_CHECKBOX = "CheckBox";
     public static final String DPT_TYPE_SCHEDULER = "Scheduler";
     public static final String DPT_TYPE_CALENDAR = "Calendar";
-    public static final String DPT_TYPE_TEXT = "Text";
 
     public static final String CATEGORY_THING_HVAC = "HVAC";
 

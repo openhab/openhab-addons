@@ -16,20 +16,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 
+import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * Converts between a SiemensHvac datapoint value and an openHAB DecimalType.
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class DateTimeTypeConverter extends AbstractTypeConverter<DateTimeType> {
+public class DateTimeTypeConverter extends AbstractTypeConverter {
 
     private final TimeZoneProvider timeZoneProvider;
 
@@ -38,13 +38,19 @@ public class DateTimeTypeConverter extends AbstractTypeConverter<DateTimeType> {
     }
 
     @Override
-    protected boolean toBindingValidation(JsonObject dp, Class<? extends Type> typeClass) {
+    protected boolean toBindingValidation(Type type) {
         return true;
     }
 
     @Override
-    protected Object toBinding(DateTimeType type, JsonObject dp) throws ConverterException {
-        return null;
+    protected Object toBinding(Type type) throws ConverterException {
+        Object valUpdate = null;
+
+        if (type instanceof DateTimeType dateTime) {
+            valUpdate = dateTime.toString();
+        }
+
+        return valUpdate;
     }
 
     @Override
@@ -78,4 +84,20 @@ public class DateTimeTypeConverter extends AbstractTypeConverter<DateTimeType> {
 
         return new DateTimeType();
     }
+
+    @Override
+    public String getChannelType(boolean writeAccess) {
+        return "datetime";
+    }
+
+    @Override
+    public String getItemType(boolean writeAccess) {
+        return SiemensHvacBindingConstants.ITEM_TYPE_DATETIME;
+    }
+
+    @Override
+    public boolean hasVariant() {
+        return false;
+    }
+
 }

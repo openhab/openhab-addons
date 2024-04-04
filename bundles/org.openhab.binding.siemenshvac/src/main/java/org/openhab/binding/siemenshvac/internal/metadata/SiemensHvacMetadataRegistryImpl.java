@@ -32,6 +32,9 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
+import org.openhab.binding.siemenshvac.internal.converter.ConverterFactory;
+import org.openhab.binding.siemenshvac.internal.converter.ConverterTypeException;
+import org.openhab.binding.siemenshvac.internal.converter.TypeConverter;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeConfig;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacCallback;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
@@ -473,7 +476,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    private ChannelType createChannelType(SiemensHvacMetadataDataPoint dpt, ChannelTypeUID channelTypeUID) {
+    private ChannelType createChannelType(SiemensHvacMetadataDataPoint dpt, ChannelTypeUID channelTypeUID)
+            throws Exception {
         ChannelType channelType;
 
         String itemType = getItemType(dpt);
@@ -595,29 +599,13 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
     }
 
-    public String getItemType(SiemensHvacMetadataDataPoint dpt) {
-        if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_STRING)) {
-            return SiemensHvacBindingConstants.ITEM_TYPE_STRING;
-        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
-            return SiemensHvacBindingConstants.ITEM_TYPE_NUMBER;
-        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_ENUM)) {
-            return SiemensHvacBindingConstants.ITEM_TYPE_ENUMERATION;
-        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_DATE_TIME)) {
-            return SiemensHvacBindingConstants.ITEM_TYPE_DATETIME;
-        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_TIMEOFDAY)) {
-            return SiemensHvacBindingConstants.ITEM_TYPE_NUMBER;
-        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_RADIO)) {
-            return SiemensHvacBindingConstants.ITEM_TYPE_CONTACT;
-        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_SCHEDULER)) {
-            return SiemensHvacBindingConstants.ITEM_TYPE_DATETIME;
-        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_CALENDAR)) {
-            return SiemensHvacBindingConstants.ITEM_TYPE_DATETIME;
-        } else {
-            logger.debug("unknow type in getItemType()");
-
+    public String getItemType(SiemensHvacMetadataDataPoint dpt) throws Exception {
+        try {
+            TypeConverter tp = ConverterFactory.getConverter(dpt.getDptType());
+            return tp.getItemType(dpt.getWriteAccess());
+        } catch (ConverterTypeException ex) {
+            throw new SiemensHvacException(String.format("Can't find convertor for type: %s", dpt.getDptType()), ex);
         }
-
-        return "";
     }
 
     /**

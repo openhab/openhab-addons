@@ -12,27 +12,27 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter.type;
 
+import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * Converts between a SiemensHvac datapoint value and an openHAB DecimalType.
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class TextTypeConverter extends AbstractTypeConverter<StringType> {
+public class CheckboxTypeConverter extends AbstractTypeConverter {
     @Override
-    protected boolean toBindingValidation(JsonObject dp, Class<? extends Type> typeClass) {
+    protected boolean toBindingValidation(Type type) {
         return true;
     }
 
     @Override
-    protected Object toBinding(StringType type, JsonObject dp) throws ConverterException {
-        return null;
+    protected Object toBinding(Type type) throws ConverterException {
+        throw new ConverterException("NIY");
     }
 
     @Override
@@ -41,7 +41,22 @@ public class TextTypeConverter extends AbstractTypeConverter<StringType> {
     }
 
     @Override
-    protected StringType fromBinding(JsonElement value, String type) throws ConverterException {
-        return new StringType(value.getAsString());
+    protected DecimalType fromBinding(JsonElement value, String type) throws ConverterException {
+        throw new ConverterException("NIY");
+    }
+
+    @Override
+    public String getChannelType(boolean writeAccess) {
+        return "contact";
+    }
+
+    @Override
+    public String getItemType(boolean writeAccess) {
+        return SiemensHvacBindingConstants.ITEM_TYPE_CONTACT;
+    }
+
+    @Override
+    public boolean hasVariant() {
+        return false;
     }
 }

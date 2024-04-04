@@ -15,6 +15,8 @@ package org.openhab.binding.siemenshvac.internal.converter.type;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonElement;
@@ -24,7 +26,7 @@ import com.google.gson.JsonElement;
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class EnumTypeConverter extends AbstractTypeConverter {
+public class StringTypeConverter extends AbstractTypeConverter {
     @Override
     protected boolean toBindingValidation(Type type) {
         return true;
@@ -34,8 +36,12 @@ public class EnumTypeConverter extends AbstractTypeConverter {
     protected Object toBinding(Type type) throws ConverterException {
         Object valUpdate = null;
 
-        if (type instanceof DecimalType decimalValue) {
+        if (type instanceof PercentType percentValue) {
+            valUpdate = percentValue.toString();
+        } else if (type instanceof DecimalType decimalValue) {
             valUpdate = decimalValue.toString();
+        } else if (type instanceof StringType stringValue) {
+            valUpdate = stringValue.toString();
         }
 
         return valUpdate;
@@ -47,22 +53,22 @@ public class EnumTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected DecimalType fromBinding(JsonElement value, String type) throws ConverterException {
-        return new DecimalType(value.getAsInt());
+    protected StringType fromBinding(JsonElement value, String type) throws ConverterException {
+        return new StringType(value.getAsString());
     }
 
     @Override
     public String getChannelType(boolean writeAccess) {
-        return "number";
+        return "string";
     }
 
     @Override
     public String getItemType(boolean writeAccess) {
-        return SiemensHvacBindingConstants.ITEM_TYPE_ENUMERATION;
+        return SiemensHvacBindingConstants.ITEM_TYPE_STRING;
     }
 
     @Override
     public boolean hasVariant() {
-        return true;
+        return false;
     }
 }
