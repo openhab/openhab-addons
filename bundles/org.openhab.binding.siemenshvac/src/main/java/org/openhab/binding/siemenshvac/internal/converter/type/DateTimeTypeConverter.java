@@ -99,5 +99,4 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
     public boolean hasVariant() {
         return false;
     }
-
 }
