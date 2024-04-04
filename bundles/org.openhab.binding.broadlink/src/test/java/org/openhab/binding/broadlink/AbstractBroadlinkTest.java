@@ -30,10 +30,10 @@ import org.openhab.core.test.storage.VolatileStorageService;
 public abstract class AbstractBroadlinkTest {
     protected static final String TEST_MAP_FILE_IR = "broadlinkir_test";
     protected static final String TEST_MAP_FILE_RF = "broadlinkrf_test";
-    protected static final VolatileStorageService storageService = new VolatileStorageService();
-    protected static final Storage<String> irStorage = storageService.getStorage(TEST_MAP_FILE_IR,
+    protected static VolatileStorageService storageService = new VolatileStorageService();
+    protected static Storage<String> irStorage = storageService.getStorage(TEST_MAP_FILE_IR,
             String.class.getClassLoader());
-    protected static final Storage<String> rfStorage = storageService.getStorage(TEST_MAP_FILE_RF,
+    protected static Storage<String> rfStorage = storageService.getStorage(TEST_MAP_FILE_RF,
             String.class.getClassLoader());
 
     @BeforeEach
