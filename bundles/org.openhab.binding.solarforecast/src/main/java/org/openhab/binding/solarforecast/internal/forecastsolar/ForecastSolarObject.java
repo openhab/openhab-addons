@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ForecastSolarObject implements SolarForecast {
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarObject.class);
-    private final TreeMap<ZonedDateTime, Double> wattHourMap = new TreeMap<ZonedDateTime, Double>();
-    private final TreeMap<ZonedDateTime, Double> wattMap = new TreeMap<ZonedDateTime, Double>();
+    private final TreeMap<ZonedDateTime, Double> wattHourMap = new TreeMap<>();
+    private final TreeMap<ZonedDateTime, Double> wattMap = new TreeMap<>();
     private final DateTimeFormatter dateInputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private ZoneId zone = ZoneId.systemDefault();

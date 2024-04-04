@@ -116,24 +116,24 @@ public class SolcastObject implements SolarForecast {
         for (int i = 0; i < resultJsonArray.length(); i++) {
             JSONObject jo = resultJsonArray.getJSONObject(i);
             String periodEnd = jo.getString("period_end");
-            ZonedDateTime periadEndZdt = getZdtFromUTC(periodEnd);
-            if (periadEndZdt == null) {
+            ZonedDateTime periodEndZdt = getZdtFromUTC(periodEnd);
+            if (periodEndZdt == null) {
                 return;
             }
-            estimationDataMap.put(periadEndZdt, jo.getDouble("pv_estimate"));
+            estimationDataMap.put(periodEndZdt, jo.getDouble("pv_estimate"));
 
             // fill pessimistic values
             if (jo.has("pv_estimate10")) {
-                pessimisticDataMap.put(periadEndZdt, jo.getDouble("pv_estimate10"));
+                pessimisticDataMap.put(periodEndZdt, jo.getDouble("pv_estimate10"));
             } else {
-                pessimisticDataMap.put(periadEndZdt, jo.getDouble("pv_estimate"));
+                pessimisticDataMap.put(periodEndZdt, jo.getDouble("pv_estimate"));
             }
 
             // fill optimistic values
             if (jo.has("pv_estimate90")) {
-                optimisticDataMap.put(periadEndZdt, jo.getDouble("pv_estimate90"));
+                optimisticDataMap.put(periodEndZdt, jo.getDouble("pv_estimate90"));
             } else {
-                optimisticDataMap.put(periadEndZdt, jo.getDouble("pv_estimate"));
+                optimisticDataMap.put(periodEndZdt, jo.getDouble("pv_estimate"));
             }
             if (jo.has("period")) {
                 period = Duration.parse(jo.getString("period")).toMinutes();

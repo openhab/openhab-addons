@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider, TimeZoneProvider {
     private final Logger logger = LoggerFactory.getLogger(SolcastBridgeHandler.class);
 
-    private List<SolcastPlaneHandler> planes = new ArrayList<SolcastPlaneHandler>();
+    private List<SolcastPlaneHandler> planes = new ArrayList<>();
     private Optional<SolcastBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private ZoneId timeZone;
@@ -242,7 +242,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
     @Override
     public synchronized List<SolarForecast> getSolarForecasts() {
-        List<SolarForecast> l = new ArrayList<SolarForecast>();
+        List<SolarForecast> l = new ArrayList<>();
         planes.forEach(entry -> {
             l.addAll(entry.getSolarForecasts());
         });

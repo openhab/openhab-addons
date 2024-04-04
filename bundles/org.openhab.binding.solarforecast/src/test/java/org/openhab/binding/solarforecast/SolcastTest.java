@@ -455,7 +455,7 @@ class SolcastTest {
         sco.join(content);
 
         TimeSeries powerSeries = sco.getPowerTimeSeries(QueryMode.Average);
-        List<QuantityType<Power>> estimateL = new ArrayList<QuantityType<Power>>();
+        List<QuantityType<Power>> estimateL = new ArrayList<>();
         assertEquals(672, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
@@ -465,7 +465,7 @@ class SolcastTest {
         });
 
         TimeSeries powerSeries10 = sco.getPowerTimeSeries(QueryMode.Pessimistic);
-        List<QuantityType<Power>> estimate10 = new ArrayList<QuantityType<Power>>();
+        List<QuantityType<Power>> estimate10 = new ArrayList<>();
         assertEquals(672, powerSeries10.size());
         powerSeries10.getStates().forEachOrdered(entry -> {
             State s = entry.state();
@@ -475,7 +475,7 @@ class SolcastTest {
         });
 
         TimeSeries powerSeries90 = sco.getPowerTimeSeries(QueryMode.Optimistic);
-        List<QuantityType<Power>> estimate90 = new ArrayList<QuantityType<Power>>();
+        List<QuantityType<Power>> estimate90 = new ArrayList<>();
         assertEquals(672, powerSeries90.size());
         powerSeries90.getStates().forEachOrdered(entry -> {
             State s = entry.state();
@@ -501,7 +501,7 @@ class SolcastTest {
         sco.join(content);
 
         TimeSeries energySeries = sco.getEnergyTimeSeries(QueryMode.Average);
-        List<QuantityType<Power>> estimateL = new ArrayList<QuantityType<Power>>();
+        List<QuantityType<Power>> estimateL = new ArrayList<>();
         assertEquals(672, energySeries.size()); // 18 values each day for 2 days
         energySeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
@@ -511,7 +511,7 @@ class SolcastTest {
         });
 
         TimeSeries energySeries10 = sco.getEnergyTimeSeries(QueryMode.Pessimistic);
-        List<QuantityType<Power>> estimate10 = new ArrayList<QuantityType<Power>>();
+        List<QuantityType<Power>> estimate10 = new ArrayList<>();
         assertEquals(672, energySeries10.size()); // 18 values each day for 2 days
         energySeries10.getStates().forEachOrdered(entry -> {
             State s = entry.state();
@@ -521,7 +521,7 @@ class SolcastTest {
         });
 
         TimeSeries energySeries90 = sco.getEnergyTimeSeries(QueryMode.Optimistic);
-        List<QuantityType<Power>> estimate90 = new ArrayList<QuantityType<Power>>();
+        List<QuantityType<Power>> estimate90 = new ArrayList<>();
         assertEquals(672, energySeries90.size()); // 18 values each day for 2 days
         energySeries90.getStates().forEachOrdered(entry -> {
             State s = entry.state();

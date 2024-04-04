@@ -41,20 +41,6 @@ The `resourceId` for each PV plane is provided afterwards.
 In order to receive proper timestamps double check your time zone in *openHAB - Settings - Regional Settings*.
 Correct time zone is necessary to show correct forecast times in UI. 
 
-### Solcast Tuning
-
-You have the opportunity to [send your own measurements back to Solcast API](https://legacy-docs.solcast.com.au/#measurements-rooftop-site).
-This data is used internally to improve the forecast for your specific site.
-Configuration and channels can be set after checking the *Show advanced* checkbox.
-You need an item which reports the electric power for the specific rooftop. 
-If item isn't set, no measures will be sent.
-As described in [Solcast Rooftop Measurement](https://legacy-docs.solcast.com.au/#measurements-rooftop-site) check in beforehand if your measures are *sane*.
-
-- item is delivering correct values and they are stored in persistence
-- time zone setting in openHAB is correct to deliver correct timestamp
-
-After measurement is sent the `raw-tuning` channel is reporting the result.
-
 ### Solcast Bridge Configuration
 
 | Name                   | Type    | Description                           | Default     | Required | Advanced |
@@ -79,8 +65,6 @@ See [DateTime](#date-time) section for more information.
 `refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
 If you have 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 calls per day.
 
-Note: `channelRefreshInterval` from [Bridge Configuration](#solcast-bridge-configuration) will calculate intermediate values without requesting new forecast data.
-
 ## Solcast Channels
 
 Each `sc-plane` reports its own values including a `raw` channel holding JSON content.
@@ -88,12 +72,11 @@ The `sc-site` bridge sums up all attached `sc-plane` values and provides total f
 
 Channels are covering today's actual data with current, remaining and today's total prediction.
 Forecasts are delivered up to 6 days in advance.
-Scenarios are clustered in groups 
+Scenarios are clustered in groups: 
 
 - `average` scenario
 - `pessimistic` scenario: 10th percentile 
 - `optimistic` scenario: 90th percentile
-
 
 | Channel                 | Type          | Unit | Description                                     | Advanced |
 |-------------------------|---------------|------|-------------------------------------------------|----------|
@@ -120,7 +103,7 @@ You can try it without any registration or other preconditions.
 `location` defines latitude, longitude values of your PV system.
 In case of empty the location configured in openHAB is obtained.
 
-`apiKey` can be given in case you subscribed to a paid plan
+`apiKey` can be given in case you subscribed to a paid plan.
 
 ### ForecastSolar Plane Configuration
 
@@ -196,25 +179,25 @@ Returns `Instant` of the latest possible forecast data available.
 
 ### `getPower`
 
-| Parameter | Type          | Description                                                                                                  |
-|-----------|---------------|--------------------------------------------------------------------------------------------------------------|
-| timestamp | Instant       | Timestamp of power query                                                                                     |
-| mode      | String        | Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario. Only Solcast. |
+| Parameter | Type          | Description                                                                                |
+|-----------|---------------|--------------------------------------------------------------------------------------------|
+| timestamp | Instant       | Timestamp of power query                                                                   |
+| mode      | String        | Choose `average`, `optimistic` or `pessimistic` to select forecast scenario. Only Solcast. |
 
 Returns `QuantityType<Power>` at the given `Instant` timestamp.
 Respect `getForecastBegin` and `getForecastEnd` to get a valid value.
-Check for `UndefType.UNDEF` in case of errors.
+Check for negative value in case of errors.
 
 ### `getDay`
 
-| Parameter | Type          | Description                                                                                                  |
-|-----------|---------------|--------------------------------------------------------------------------------------------------------------|
-| date      | LocalDate     | Date of the day                                                                                              |
-| mode      | String        | Choose `optimistic` or `pessimistic` to get values for a positive or negative future scenario. Only Solcast. |
+| Parameter | Type          | Description                                                                                |
+|-----------|---------------|--------------------------------------------------------------------------------------------|
+| date      | LocalDate     | Date of the day                                                                            |
+| mode      | String        | Choose `average`, `optimistic` or `pessimistic` to select forecast scenario. Only Solcast. |
 
 Returns `QuantityType<Energy>` at the given `localDate`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambiguous values.
-Check for `UndefType.UNDEF` in case of errors.
+Check for negative value in case of errors.
 
 ### `getEnergy`
 
@@ -226,7 +209,7 @@ Check for `UndefType.UNDEF` in case of errors.
 
 Returns `QuantityType<Energy>` between the timestamps `startTimestamp` and `endTimestamp`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambiguous values.
-Check for `UndefType.UNDEF` in case of errors.
+Check for negative value in case of errors.
 
 ## Date Time
 

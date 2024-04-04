@@ -62,17 +62,17 @@ public class SolarForecastActions implements ThingActions {
                         measure = measure.add((QuantityType<Energy>) quantityState);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.trace("Ambiguous measure {} found for {} - return UNDEF", s, localDate);
+                        logger.debug("Ambiguous measure {} found for {}", s, localDate);
                         return Utils.getEnergyState(-1);
                     }
                 }
                 return measure;
             } else {
-                logger.trace("No forecasts found for {} - return UNDEF", localDate);
+                logger.debug("No forecasts found for {}", localDate);
                 return Utils.getEnergyState(-1);
             }
         } else {
-            logger.trace("Handler missing - return UNDEF");
+            logger.trace("Handler missing");
             return Utils.getEnergyState(-1);
         }
     }
@@ -92,17 +92,17 @@ public class SolarForecastActions implements ThingActions {
                         measure = measure.add((QuantityType<Power>) quantityState);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.trace("Ambiguous measure {} found for {} - return UNDEF", s, timestamp);
+                        logger.debug("Ambiguous measure {} found for {}", s, timestamp);
                         return Utils.getPowerState(-1);
                     }
                 }
                 return measure;
             } else {
-                logger.trace("No forecasts found for {} - return UNDEF", timestamp);
+                logger.debug("No forecasts found for {}", timestamp);
                 return Utils.getPowerState(-1);
             }
         } else {
-            logger.trace("Handler missing - return UNDEF");
+            logger.trace("Handler missing");
             return Utils.getPowerState(-1);
         }
     }
@@ -123,17 +123,17 @@ public class SolarForecastActions implements ThingActions {
                         measure = measure.add((QuantityType<Energy>) quantityState);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.trace("Ambiguous measure {} found between {} and {} - return UNDEF", s, start, end);
+                        logger.debug("Ambiguous measure {} found between {} and {}", s, start, end);
                         return Utils.getEnergyState(-1);
                     }
                 }
                 return measure;
             } else {
-                logger.trace("No forecasts found for between {} and {} - return UNDEF", start, end);
+                logger.debug("No forecasts found for between {} and {}", start, end);
                 return Utils.getEnergyState(-1);
             }
         } else {
-            logger.trace("Handler missing - return UNDEF");
+            logger.trace("Handler missing");
             return Utils.getEnergyState(-1);
         }
     }

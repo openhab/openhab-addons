@@ -151,7 +151,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     protected synchronized SolcastObject fetchData() {
         forecast.ifPresent(forecastObject -> {
             if (forecastObject.isExpired() || !forecastObject.isValid()) {
-                logger.info("Get new forecast {}", forecastObject.toString());
+                logger.trace("Get new forecast {}", forecastObject.toString());
                 String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
                 String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);
                 try {
@@ -244,7 +244,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     }
 
     protected synchronized void setForecast(SolcastObject f) {
-        logger.info("New forecast {}", f.toString());
         forecast = Optional.of(f);
         sendTimeSeries(GROUP_AVERAGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ESTIMATE,
                 f.getPowerTimeSeries(QueryMode.Average));
