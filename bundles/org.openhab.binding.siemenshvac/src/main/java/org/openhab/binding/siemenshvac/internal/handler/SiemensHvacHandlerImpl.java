@@ -421,7 +421,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             }
         }
         return result;
-
     }
 
     @Override
