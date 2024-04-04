@@ -47,11 +47,10 @@
 			<default>DEVICE_ON</default>
 			<required>true</required>
 		</parameter>
-
 		<parameter name="mapFilename" type="text">
 			<label>Map File</label>
 			<description>Enter name of file containing mapping of commands to IR codes</description>
-			<default>broadlink.map</default>
+			<default>broadlink_ir</default>
 			<required>true</required>
 		</parameter>
 		<parameter name="ignoreFailedUpdates" type="boolean">

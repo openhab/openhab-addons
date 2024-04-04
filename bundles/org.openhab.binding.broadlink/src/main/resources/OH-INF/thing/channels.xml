@@ -18,6 +18,8 @@
 			<options>
 				<option value="LEARN">Learn IR command</option>
 				<option value="CHECK">Check and save IR command</option>
+				<option value="MODIFY">Modify a previously created IR command</option>
+				<option value="DELETE">Delete IR command</option>
 			</options>
 		</state>
 	</channel-type>
@@ -35,6 +37,8 @@
 			<options>
 				<option value="LEARN">Learn RF command</option>
 				<option value="CHECK">Check and save RF command</option>
+				<option value="MODIFY">Modify a previously created RF command</option>
+				<option value="DELETE">Delete RF command</option>
 			</options>
 		</state>
 	</channel-type>

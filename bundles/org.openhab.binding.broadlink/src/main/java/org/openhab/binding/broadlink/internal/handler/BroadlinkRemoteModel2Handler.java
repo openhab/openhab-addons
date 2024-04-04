@@ -14,6 +14,7 @@ package org.openhab.binding.broadlink.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -25,8 +26,9 @@ import org.openhab.core.thing.Thing;
 public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
 
     public BroadlinkRemoteModel2Handler(Thing thing,
-            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
-        super(thing, commandDescriptionProvider);
+            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
+            StorageService storageService) {
+        super(thing, commandDescriptionProvider, storageService);
     }
 
     @Override

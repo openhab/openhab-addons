@@ -25,6 +25,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
+import org.openhab.core.test.storage.VolatileStorageService;
 
 /**
  * Tests the Remote Model 2 handler.
@@ -51,9 +52,11 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
 
     @Test
     public void sendsExpectedBytesWhenGettingDeviceStatus() {
+        VolatileStorageService storageService = new VolatileStorageService();
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteArrayCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider,
+                storageService);
         setMocksForTesting(model2);
         reset(trafficObserver);
         model2.getStatusFromDevice();
@@ -70,9 +73,11 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
 
     @Test
     public void sendsExpectedBytesWhenSendingCode() throws IOException {
+        VolatileStorageService storageService = new VolatileStorageService();
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider,
+                storageService);
         setMocksForTesting(model2);
         // Note the length is 12 so as to not require padding
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
@@ -104,9 +109,11 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
 
     @Test
     public void sendsExpectedBytesWhenSendingCodeIncludingPadding() throws IOException {
+        VolatileStorageService storageService = new VolatileStorageService();
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider);
+        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider,
+                storageService);
         setMocksForTesting(model2);
         // Note the length is such that padding up to the next multiple of 16 will be needed
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,

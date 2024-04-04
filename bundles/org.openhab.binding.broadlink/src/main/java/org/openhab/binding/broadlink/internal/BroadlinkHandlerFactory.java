@@ -26,6 +26,7 @@ import org.openhab.binding.broadlink.internal.handler.BroadlinkSocketModel3Handl
 import org.openhab.binding.broadlink.internal.handler.BroadlinkSocketModel3SHandler;
 import org.openhab.binding.broadlink.internal.handler.BroadlinkStripModel11K3S2UHandler;
 import org.openhab.binding.broadlink.internal.handler.BroadlinkStripModel1Handler;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -49,11 +50,14 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(BroadlinkHandlerFactory.class);
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private final StorageService storageService;
 
     @Activate
     public BroadlinkHandlerFactory(
-            final @Reference BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
+            final @Reference BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
+            @Reference StorageService storageService) {
         this.commandDescriptionProvider = commandDescriptionProvider;
+        this.storageService = storageService;
     }
 
     @Override
@@ -68,19 +72,19 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("Creating Thing handler for '{}'", thingTypeUID.getAsString());
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM2)) {
-            return new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider);
+            return new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider, storageService);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM3)) {
-            return new BroadlinkRemoteModel3Handler(thing, commandDescriptionProvider);
+            return new BroadlinkRemoteModel3Handler(thing, commandDescriptionProvider, storageService);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM3Q)) {
-            return new BroadlinkRemoteModel3V44057Handler(thing, commandDescriptionProvider);
+            return new BroadlinkRemoteModel3V44057Handler(thing, commandDescriptionProvider, storageService);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM4_MINI)) {
-            return new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider);
+            return new BroadlinkRemoteModel4MiniHandler(thing, commandDescriptionProvider, storageService);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM4_PRO)) {
-            return new BroadlinkRemoteModel4ProHandler(thing, commandDescriptionProvider);
+            return new BroadlinkRemoteModel4ProHandler(thing, commandDescriptionProvider, storageService);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_A1)) {
             return new BroadlinkA1Handler(thing);

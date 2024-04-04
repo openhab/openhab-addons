@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.broadlink;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.openhab.core.OpenHAB;
+import org.junit.jupiter.api.BeforeEach;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.test.storage.VolatileStorageService;
 
 /**
  * Abstract superclass for all Broadlink unit tests;
@@ -29,15 +28,33 @@ import org.openhab.core.OpenHAB;
  */
 @NonNullByDefault
 public abstract class AbstractBroadlinkTest {
-    protected static final Path TEST_CONF_DIRECTORY = Paths.get("src", "test", "resources", "conf");
+    protected static final String TEST_MAP_FILE_IR = "broadlinkir_test";
+    protected static final String TEST_MAP_FILE_RF = "broadlinkrf_test";
+    protected static VolatileStorageService storageService = new VolatileStorageService();
+    protected static Storage<String> irStorage = storageService.getStorage(TEST_MAP_FILE_IR,
+            String.class.getClassLoader());
+    protected static Storage<String> rfStorage = storageService.getStorage(TEST_MAP_FILE_RF,
+            String.class.getClassLoader());
+
+    @BeforeEach
+    public void setUp() throws Exception {
+        for (String s : irStorage.getKeys()) {
+            irStorage.remove(s);
+        }
+        for (String s : rfStorage.getKeys()) {
+            rfStorage.remove(s);
+        }
+        irStorage.put("IR_TEST_COMMAND_ON", "00112233");
+        irStorage.put("IR_TEST_COMMAND_OFF", "33221100");
+        rfStorage.put("RF_TEST_COMMAND_ON", "00112233");
+        rfStorage.put("RF_TEST_COMMAND_OFF", "33221100");
+    }
 
     @BeforeAll
     public static void beforeClass() {
-        System.setProperty(OpenHAB.CONFIG_DIR_PROG_ARGUMENT, TEST_CONF_DIRECTORY.toFile().getAbsolutePath());
     }
 
     @AfterAll
     public static void afterClass() {
-        System.clearProperty(OpenHAB.CONFIG_DIR_PROG_ARGUMENT);
     }
 }

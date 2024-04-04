@@ -22,6 +22,7 @@ import org.openhab.binding.broadlink.internal.BroadlinkMappingService;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -46,21 +47,23 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     public static final byte COMMAND_BYTE_CHECK_LEARNT_DATA = 0x04;
 
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
+    private final StorageService storageService;
     protected @Nullable BroadlinkMappingService mappingService;
 
     public BroadlinkRemoteHandler(Thing thing,
-            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
+            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
+            StorageService storageService) {
         super(thing);
         this.commandDescriptionProvider = commandDescriptionProvider;
+        this.storageService = storageService;
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        // TODO: check if this also works for a Mini without RF
         this.mappingService = new BroadlinkMappingService(thingConfig.getMapFilename(), thingConfig.getRfmapFilename(),
                 commandDescriptionProvider, new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL),
-                new ChannelUID(thing.getUID(), BroadlinkBindingConstants.RF_COMMAND_CHANNEL));
+                new ChannelUID(thing.getUID(), BroadlinkBindingConstants.RF_COMMAND_CHANNEL), this.storageService);
     }
 
     @Override
@@ -111,6 +114,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         return Utils.slice(decryptedResponse, 4, decryptedResponse.length);
     }
 
+    @SuppressWarnings("null")
     private void sendCheckDataCommandAndLog(String irCommand) {
         try {
             updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
@@ -121,12 +125,18 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
             } else {
                 String hexString = Utils.toHexString(extractResponsePayload(response));
-                mappingService.storeIR(irCommand, hexString);
-                logger.info("BEGIN LAST LEARNT CODE");
-                logger.info("{}", hexString);
-                logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
-                updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
-                        new StringType("IR command " + irCommand + " saved"));
+                String cmdLabel = mappingService.storeIR(irCommand, hexString);
+                if (cmdLabel == null) {
+                    logger.info("BEGIN LAST LEARNT CODE");
+                    logger.info("{}", hexString);
+                    logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+                    updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                            new StringType("IR command " + irCommand + " saved"));
+                } else {
+                    logger.info("Command label previously stored. Skipping");
+                    updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                            new StringType("IR command " + irCommand + " already  exists"));
+                }
             }
         } catch (IOException e) {
             logger.warn("Exception while attempting to check learnt code: {}", e.getMessage());
@@ -134,20 +144,73 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
     }
 
+    @SuppressWarnings("null")
+    private void sendModifyDataCommandAndLog(String irCommand) {
+        try {
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_MODIFY));
+            byte[] response = sendCommand(COMMAND_BYTE_CHECK_LEARNT_DATA, "send learnt code check command");
+            if (response == null) {
+                logger.warn("Got nothing back while getting learnt code");
+                updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
+            } else {
+                String hexString = Utils.toHexString(extractResponsePayload(response));
+                String cmdLabel = mappingService.replaceIR(irCommand, hexString);
+                if (cmdLabel != null) {
+                    logger.info("BEGIN LAST LEARNT CODE");
+                    logger.info("{}", hexString);
+                    logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+                    updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                            new StringType("IR command " + irCommand + " modified"));
+                } else {
+                    logger.info("Command label not previously stored. Skipping");
+                    updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                            new StringType("IR command " + irCommand + " does not exist"));
+                }
+            }
+        } catch (IOException e) {
+            logger.warn("Exception while attempting to modify code: {}", e.getMessage());
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
+        }
+    }
+
+    @SuppressWarnings("null")
+    private void sendDeleteDataCommandAndLog(String irCommand) {
+        updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE));
+        mappingService.deleteIR(irCommand);
+        updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                new StringType("IR command " + irCommand + " deleted"));
+    }
+
     void handleLearningCommand(String learningCommand) {
         logger.trace("Sending learning-channel command {}", learningCommand);
         switch (learningCommand) {
-            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN:
-                logger.trace("Learning IR command {}", thingConfig.getNameOfCommandToLearn());
+            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN: {
+                logger.debug("Learning IR command {}", thingConfig.getNameOfCommandToLearn());
                 updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                         new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN));
                 sendCommand(COMMAND_BYTE_ENTER_LEARNING, "enter remote code learning mode");
                 break;
-            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK:
+            }
+            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK: {
+                logger.debug("IR check and save command received");
                 sendCheckDataCommandAndLog(thingConfig.getNameOfCommandToLearn());
                 break;
-            default:
+            }
+            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_MODIFY: {
+                logger.debug("IR Modify command received");
+                sendModifyDataCommandAndLog(thingConfig.getNameOfCommandToLearn());
+                break;
+            }
+            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE: {
+                logger.debug("IR delete command received");
+                sendDeleteDataCommandAndLog(thingConfig.getNameOfCommandToLearn());
+                break;
+            }
+            default: {
                 logger.warn("Unrecognised learning channel command: {}", learningCommand);
+            }
         }
     }
 

@@ -40,8 +40,8 @@ public class BroadlinkDeviceConfiguration {
         macAddressBytes = new byte[0];
         pollingInterval = 30;
         nameOfCommandToLearn = "DEVICE_ON";
-        mapFilename = "broadlink.map";
-        rfmapFilename = "broadlinkrf.map";
+        mapFilename = "broadlink_ir";
+        rfmapFilename = "broadlink_rf";
         ignoreFailedUpdates = false;
     }
 

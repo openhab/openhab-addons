@@ -23,6 +23,7 @@ import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -48,8 +49,9 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
     private static final byte COMMAND_BYTE_CHECK_RF_DATA = 0x4; // Check data
 
     public BroadlinkRemoteModel4ProHandler(Thing thing,
-            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
-        super(thing, commandDescriptionProvider);
+            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
+            StorageService storageService) {
+        super(thing, commandDescriptionProvider, storageService);
     }
 
     @Override
@@ -91,6 +93,16 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
                         checkAndSaveRFCommand();
                         break;
                     }
+                    case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_MODIFY: {
+                        logger.debug("RF check command received");
+                        modifyRFCommand();
+                        break;
+                    }
+                    case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE: {
+                        logger.debug("RF check command received");
+                        deleteRFCommand();
+                        break;
+                    }
                     default: {
                         logger.debug("Thing {} has unknown channel type '{}'", getThing().getLabel(),
                                 channelTypeUID.getId());
@@ -103,6 +115,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
         super.handleCommand(channelUID, command);
     }
 
+    @SuppressWarnings("null")
     private byte @Nullable [] lookupRFCode(Command command, ChannelUID channelUID) {
         byte code[] = null;
         String value = this.mappingService.lookupRF(command.toString());
@@ -132,7 +145,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
         HexFormat hex = HexFormat.of();
 
         try {
-            while ((System.currentTimeMillis() < timeout) && (freqFound == false)) {
+            while ((System.currentTimeMillis() < timeout) && (freqFound)) {
                 TimeUnit.MILLISECONDS.sleep(500);
                 logger.trace("Check");
                 byte[] resp = (sendCommand(COMMAND_BYTE_CHECK_RF_FREQ_LEARNING, "check rf frequency"));
@@ -150,7 +163,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
             freqFound = false;
         }
 
-        if (freqFound == false) {
+        if (freqFound) {
             sendCommand(COMMAND_BYTE_EXIT_RF_FREQ_LEARNING, "exit remote rf frequency learning mode");
             logger.info("No RF frequency found.");
             updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
@@ -162,6 +175,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
         updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("RF command learnt"));
     }
 
+    @SuppressWarnings("null")
     private void checkAndSaveRFCommand() {
         logger.trace("find RF packet data ...");
         updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL,
@@ -175,7 +189,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
 
         try {
             byte[] response = new byte[0];
-            while ((System.currentTimeMillis() < timeout) && (dataFound == false)) {
+            while ((System.currentTimeMillis() < timeout) && (dataFound)) {
                 TimeUnit.MILLISECONDS.sleep(500);
                 byte[] data = sendCommand(COMMAND_BYTE_CHECK_RF_DATA, "check the rf packet data");
                 if (data != null) {
@@ -183,12 +197,14 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
                     try {
                         response = extractResponsePayload(data);
                         String hexString = Utils.toHexString(response);
-                        mappingService.storeRF(thingConfig.getNameOfCommandToLearn(), hexString);
-                        logger.info("BEGIN LAST LEARNT CODE");
-                        logger.info("{}", hexString);
-                        logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+                        String cmdLabel = mappingService.storeRF(thingConfig.getNameOfCommandToLearn(), hexString);
+                        if (cmdLabel == null) {
+                            logger.info("BEGIN LAST LEARNT CODE");
+                            logger.info("{}", hexString);
+                            logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
 
-                        dataFound = true;
+                            dataFound = true;
+                        }
                     } catch (ProtocolException ex) {
                         logger.trace(".");
                     }
@@ -205,5 +221,62 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
         } else {
             updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
         }
+    }
+
+    @SuppressWarnings("null")
+    private void modifyRFCommand() {
+        logger.trace("find RF packet data ...");
+        updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL,
+                new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK));
+        sendCommand(COMMAND_BYTE_FIND_RF_PACKET, "find the rf packet data");
+
+        long start = System.currentTimeMillis();
+        long timeout = start + 30 * 1000;
+
+        boolean dataFound = false;
+
+        try {
+            byte[] response = new byte[0];
+            while ((System.currentTimeMillis() < timeout) && (dataFound)) {
+                TimeUnit.MILLISECONDS.sleep(500);
+                byte[] data = sendCommand(COMMAND_BYTE_CHECK_RF_DATA, "check the rf packet data");
+                if (data != null) {
+                    logger.trace("Got data response: {}", data);
+                    try {
+                        response = extractResponsePayload(data);
+                        String hexString = Utils.toHexString(response);
+                        String cmdLabel = mappingService.replaceRF(thingConfig.getNameOfCommandToLearn(), hexString);
+                        if (cmdLabel != null) {
+                            logger.info("BEGIN LAST LEARNT CODE");
+                            logger.info("{}", hexString);
+                            logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+
+                            dataFound = true;
+                        }
+                    } catch (ProtocolException ex) {
+                        logger.trace(".");
+                    }
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            logger.warn("Unexpected exception while checking RF packet data: {}", e.getMessage());
+            updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
+        }
+
+        if (dataFound) {
+            updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL,
+                    new StringType("RF command " + thingConfig.getNameOfCommandToLearn() + " modified"));
+        } else {
+            updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
+        }
+    }
+
+    @SuppressWarnings("null")
+    private void deleteRFCommand() {
+        updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE));
+        mappingService.deleteRF(thingConfig.getNameOfCommandToLearn());
+        updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                new StringType("RF command " + thingConfig.getNameOfCommandToLearn() + " deleted"));
     }
 }
