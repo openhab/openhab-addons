@@ -115,6 +115,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
         super.handleCommand(channelUID, command);
     }
 
+    @SuppressWarnings("null")
     private byte @Nullable [] lookupRFCode(Command command, ChannelUID channelUID) {
         byte code[] = null;
         String value = this.mappingService.lookupRF(command.toString());
@@ -174,6 +175,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
         updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("RF command learnt"));
     }
 
+    @SuppressWarnings("null")
     private void checkAndSaveRFCommand() {
         logger.trace("find RF packet data ...");
         updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL,
@@ -195,12 +197,14 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
                     try {
                         response = extractResponsePayload(data);
                         String hexString = Utils.toHexString(response);
-                        mappingService.storeRF(thingConfig.getNameOfCommandToLearn(), hexString);
-                        logger.info("BEGIN LAST LEARNT CODE");
-                        logger.info("{}", hexString);
-                        logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+                        String cmdLabel = mappingService.storeRF(thingConfig.getNameOfCommandToLearn(), hexString);
+                        if (cmdLabel == null) {
+                            logger.info("BEGIN LAST LEARNT CODE");
+                            logger.info("{}", hexString);
+                            logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
 
-                        dataFound = true;
+                            dataFound = true;
+                        }
                     } catch (ProtocolException ex) {
                         logger.trace(".");
                     }
@@ -219,6 +223,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
         }
     }
 
+    @SuppressWarnings("null")
     private void modifyRFCommand() {
         logger.trace("find RF packet data ...");
         updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL,
@@ -240,12 +245,14 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
                     try {
                         response = extractResponsePayload(data);
                         String hexString = Utils.toHexString(response);
-                        mappingService.replaceRF(thingConfig.getNameOfCommandToLearn(), hexString);
-                        logger.info("BEGIN LAST LEARNT CODE");
-                        logger.info("{}", hexString);
-                        logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+                        String cmdLabel = mappingService.replaceRF(thingConfig.getNameOfCommandToLearn(), hexString);
+                        if (cmdLabel != null) {
+                            logger.info("BEGIN LAST LEARNT CODE");
+                            logger.info("{}", hexString);
+                            logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
 
-                        dataFound = true;
+                            dataFound = true;
+                        }
                     } catch (ProtocolException ex) {
                         logger.trace(".");
                     }
@@ -264,6 +271,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
         }
     }
 
+    @SuppressWarnings("null")
     private void deleteRFCommand() {
         updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                 new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE));
