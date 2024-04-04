@@ -55,7 +55,7 @@ import org.openhab.core.types.TimeSeries.Policy;
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
     private final PointType homeLocation;
 
-    private List<ForecastSolarPlaneHandler> planes = new ArrayList<ForecastSolarPlaneHandler>();
+    private List<ForecastSolarPlaneHandler> planes = new ArrayList<>();
     private Optional<ForecastSolarBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
@@ -72,7 +72,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     @Override
     public void initialize() {
         ForecastSolarBridgeConfiguration config = getConfigAs(ForecastSolarBridgeConfiguration.class);
-        if (config.location.isEmpty()) {
+        if (config.location.isBlank()) {
             Configuration editConfig = editConfiguration();
             editConfig.put("location", homeLocation.toString());
             updateConfiguration(editConfig);
@@ -131,9 +131,9 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         if (planes.isEmpty()) {
             return;
         }
-        TreeMap<Instant, QuantityType<?>> combinedPowerForecast = new TreeMap<Instant, QuantityType<?>>();
-        TreeMap<Instant, QuantityType<?>> combinedEnergyForecast = new TreeMap<Instant, QuantityType<?>>();
-        List<SolarForecast> forecastObjects = new ArrayList<SolarForecast>();
+        TreeMap<Instant, QuantityType<?>> combinedPowerForecast = new TreeMap<>();
+        TreeMap<Instant, QuantityType<?>> combinedEnergyForecast = new TreeMap<>();
+        List<SolarForecast> forecastObjects = new ArrayList<>();
         for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
             ForecastSolarPlaneHandler sfph = iterator.next();
             forecastObjects.addAll(sfph.getSolarForecasts());
@@ -172,7 +172,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         // update passive PV plane with necessary data
         if (configuration.isPresent()) {
             sfph.setLocation(new PointType(configuration.get().location));
-            if (!EMPTY.equals(configuration.get().apiKey)) {
+            if (!configuration.get().apiKey.isBlank()) {
                 sfph.setApiKey(configuration.get().apiKey);
             }
         }

@@ -135,22 +135,10 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     protected ForecastSolarObject fetchData() {
         if (location.isPresent()) {
             if (forecast.isExpired() || !forecast.isValid()) {
-                String url;
-                if (apiKey.isEmpty()) {
-                    // use public API
-                    // https://api.forecast.solar/estimate/:lat/:lon/:dec/:az/:kwp
-                    url = BASE_URL + "estimate/" + location.get().getLatitude() + SLASH + location.get().getLongitude()
-                            + SLASH + configuration.get().declination + SLASH + configuration.get().azimuth + SLASH
-                            + configuration.get().kwp + "?damping=" + configuration.get().dampAM + ","
-                            + configuration.get().dampPM;
-                } else {
-                    // use paid API
-                    // https://api.forecast.solar/:apikey/estimate/:lat/:lon/:dec/:az/:kwp
-                    url = BASE_URL + apiKey.get() + "/estimate/" + location.get().getLatitude() + SLASH
-                            + location.get().getLongitude() + SLASH + configuration.get().declination + SLASH
-                            + configuration.get().azimuth + SLASH + configuration.get().kwp + "?damping="
-                            + configuration.get().dampAM + "," + configuration.get().dampPM;
-                }
+                String url = getBaseUrl() + "estimate/" + location.get().getLatitude() + SLASH
+                        + location.get().getLongitude() + SLASH + configuration.get().declination + SLASH
+                        + configuration.get().azimuth + SLASH + configuration.get().kwp + "?damping="
+                        + configuration.get().dampAM + "," + configuration.get().dampPM;
                 if (!SolarForecastBindingConstants.EMPTY.equals(configuration.get().horizon)) {
                     url += "&horizon=" + configuration.get().horizon;
                 }
@@ -208,6 +196,14 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     void setApiKey(String key) {
         apiKey = Optional.of(key);
+    }
+
+    String getBaseUrl() {
+        String url = BASE_URL;
+        if (apiKey.isPresent()) {
+            url += apiKey.get() + SLASH;
+        }
+        return url;
     }
 
     protected synchronized void setForecast(ForecastSolarObject f) {

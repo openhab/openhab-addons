@@ -50,7 +50,7 @@ public interface SolarForecast {
      * @param args possible arguments from this interface
      * @return QuantityType<Energy> in kW/h
      */
-    public QuantityType<Energy> getDay(LocalDate date, String... args) throws IllegalArgumentException;
+    QuantityType<Energy> getDay(LocalDate date, String... args);
 
     /**
      * Returns electric energy between two timestamps
@@ -60,7 +60,7 @@ public interface SolarForecast {
      * @param args possible arguments from this interface
      * @return QuantityType<Energy> in kW/h
      */
-    public QuantityType<Energy> getEnergy(Instant start, Instant end, String... args) throws IllegalArgumentException;
+    QuantityType<Energy> getEnergy(Instant start, Instant end, String... args);
 
     /**
      * Returns electric power at one specific point of time
@@ -69,21 +69,21 @@ public interface SolarForecast {
      * @param args possible arguments from this interface
      * @return QuantityType<Power> in kW
      */
-    public QuantityType<Power> getPower(Instant timestamp, String... args) throws IllegalArgumentException;
+    QuantityType<Power> getPower(Instant timestamp, String... args);
 
     /**
      * Get the first date and time of forecast data
      *
      * @return date time
      */
-    public Instant getForecastBegin();
+    Instant getForecastBegin();
 
     /**
      * Get the last date and time of forecast data
      *
      * @return date time
      */
-    public Instant getForecastEnd();
+    Instant getForecastEnd();
 
     /**
      * Get TimeSeries for Power forecast
@@ -91,7 +91,7 @@ public interface SolarForecast {
      * @param mode QueryMode for optimistic, pessimistic or average estimation
      * @return TimeSeries containing QuantityType<Power>
      */
-    public TimeSeries getPowerTimeSeries(QueryMode mode);
+    TimeSeries getPowerTimeSeries(QueryMode mode);
 
     /**
      * Get TimeSeries for Energy forecast
@@ -99,5 +99,5 @@ public interface SolarForecast {
      * @param mode QueryMode for optimistic, pessimistic or average estimation
      * @return TimeSeries containing QuantityType<Energy>
      */
-    public TimeSeries getEnergyTimeSeries(QueryMode mode);
+    TimeSeries getEnergyTimeSeries(QueryMode mode);
 }

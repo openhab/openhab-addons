@@ -20,8 +20,7 @@ import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 
 /**
- * The {@link SolcastConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link SolcastConstants} class defines common constants for Solcast Service
  *
  * @author Bernd Weymann - Initial contribution
  */

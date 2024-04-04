@@ -23,15 +23,10 @@ import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 @NonNullByDefault
 public class ForecastSolarPlaneConfiguration {
     public int declination = -1;
-    public int azimuth = 360;
+    public int azimuth = -1;
     public double kwp = 0;
     public long refreshInterval = 30;
     public double dampAM = 0.25;
     public double dampPM = 0.25;
     public String horizon = SolarForecastBindingConstants.EMPTY;
-
-    @Override
-    public String toString() {
-        return "Dec " + declination + " Azi " + azimuth + " KWP " + kwp + " Ref " + refreshInterval;
-    }
 }

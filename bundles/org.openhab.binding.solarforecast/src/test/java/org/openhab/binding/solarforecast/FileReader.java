@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.solarforecast;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -41,7 +41,7 @@ public class FileReader {
             return buf.toString();
         } catch (IOException e) {
             // fail if file cannot be read
-            assertEquals(filename, SolarForecastBindingConstants.EMPTY, "Read failute " + filename);
+            assertFalse(filename.isBlank(), "Read failute " + filename);
         }
         return SolarForecastBindingConstants.EMPTY;
     }

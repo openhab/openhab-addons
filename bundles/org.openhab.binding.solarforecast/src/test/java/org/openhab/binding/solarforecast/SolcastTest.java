@@ -540,7 +540,7 @@ class SolcastTest {
 
     @Test
     void testCombinedPowerTimeSeries() {
-        BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITGE, "bridge");
+        BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "bridge");
         SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
         bi.setHandler(scbh);
         CallbackMock cm = new CallbackMock();
@@ -577,7 +577,7 @@ class SolcastTest {
 
     @Test
     void testCombinedEnergyTimeSeries() {
-        BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITGE, "bridge");
+        BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "bridge");
         SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
         bi.setHandler(scbh);
         CallbackMock cm = new CallbackMock();
@@ -614,7 +614,7 @@ class SolcastTest {
 
     @Test
     void testSingleEnergyTimeSeries() {
-        BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITGE, "bridge");
+        BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "bridge");
         SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
         bi.setHandler(scbh);
         CallbackMock cm = new CallbackMock();

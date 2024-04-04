@@ -114,7 +114,7 @@ You can try it without any registration or other preconditions.
 
 | Name                   | Type    | Description                           | Default      | Required |
 |------------------------|---------|---------------------------------------|--------------|----------|
-| location               | text    | Location of Photovoltaic system       | empty        | yes      |
+| location               | text    | Location of Photovoltaic system.      | empty        | no       |
 | apiKey                 | text    | API Key                               | N/A          | no       |
 
 `location` defines latitude, longitude values of your PV system.

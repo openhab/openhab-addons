@@ -8,7 +8,7 @@
 		<parameter name="location" type="text">
 			<context>location</context>
 			<label>PV Location</label>
-			<description>Location of photovoltaic system</description>
+			<description>Location of photovoltaic system. Location of openHAB settings used in case of empty value.</description>
 		</parameter>
 		<parameter name="apiKey" type="text">
 			<label>API Key</label>

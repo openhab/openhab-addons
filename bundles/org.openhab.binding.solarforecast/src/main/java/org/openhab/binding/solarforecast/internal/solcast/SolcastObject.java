@@ -46,12 +46,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolcastObject implements SolarForecast {
-    private static final TreeMap<ZonedDateTime, Double> EMPTY_MAP = new TreeMap<ZonedDateTime, Double>();
+    private static final TreeMap<ZonedDateTime, Double> EMPTY_MAP = new TreeMap<>();
 
     private final Logger logger = LoggerFactory.getLogger(SolcastObject.class);
-    private final TreeMap<ZonedDateTime, Double> estimationDataMap = new TreeMap<ZonedDateTime, Double>();
-    private final TreeMap<ZonedDateTime, Double> optimisticDataMap = new TreeMap<ZonedDateTime, Double>();
-    private final TreeMap<ZonedDateTime, Double> pessimisticDataMap = new TreeMap<ZonedDateTime, Double>();
+    private final TreeMap<ZonedDateTime, Double> estimationDataMap = new TreeMap<>();
+    private final TreeMap<ZonedDateTime, Double> optimisticDataMap = new TreeMap<>();
+    private final TreeMap<ZonedDateTime, Double> pessimisticDataMap = new TreeMap<>();
     private final TimeZoneProvider timeZoneProvider;
 
     private Optional<JSONObject> rawData = Optional.of(new JSONObject());
@@ -272,10 +272,10 @@ public class SolcastObject implements SolarForecast {
         if (nextEntry == null) {
             return -1;
         }
-        ZonedDateTime endDateTime = query.atTime(23, 59, 59).atZone(timeZoneProvider.getTimeZone());
+        ZonedDateTime endDateTime = iterationDateTime.plusDays(1);
         double forecastValue = 0;
         double previousEstimate = 0;
-        while (nextEntry.getKey().isBefore(endDateTime) || nextEntry.getKey().isEqual(endDateTime)) {
+        while (nextEntry.getKey().isBefore(endDateTime)) {
             // value are reported in PT30M = 30 minutes interval with kw value
             // for kw/h it's half the value
             Double endValue = nextEntry.getValue();
@@ -298,7 +298,7 @@ public class SolcastObject implements SolarForecast {
 
     @Override
     public String toString() {
-        return "Expiration: " + expirationDateTime + ", Valid: " + isValid() + ", Data:" + estimationDataMap;
+        return "Expiration: " + expirationDateTime + ", Valid: " + isValid() + ", Data: " + estimationDataMap;
     }
 
     public String getRaw() {

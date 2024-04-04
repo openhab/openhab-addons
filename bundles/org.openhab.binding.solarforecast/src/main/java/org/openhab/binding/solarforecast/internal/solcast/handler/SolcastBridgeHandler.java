@@ -78,8 +78,8 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     public void initialize() {
         SolcastBridgeConfiguration config = getConfigAs(SolcastBridgeConfiguration.class);
         configuration = Optional.of(config);
-        if (!EMPTY.equals(config.apiKey)) {
-            if (!configuration.get().timeZone.isEmpty()) {
+        if (config.apiKey.isBlank()) {
+            if (!configuration.get().timeZone.isBlank()) {
                 try {
                     timeZone = ZoneId.of(configuration.get().timeZone);
                 } catch (DateTimeException e) {
@@ -154,10 +154,14 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                 powerSum += fo.getActualPowerValue(now, mode);
                 daySum += fo.getDayTotal(now.toLocalDate(), mode);
             }
-            updateState(group + "#" + CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energySum));
-            updateState(group + "#" + CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(daySum - energySum));
-            updateState(group + "#" + CHANNEL_ENERGY_TODAY, Utils.getEnergyState(daySum));
-            updateState(group + "#" + CHANNEL_POWER_ACTUAL, Utils.getPowerState(powerSum));
+            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ACTUAL,
+                    Utils.getEnergyState(energySum));
+            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_REMAIN,
+                    Utils.getEnergyState(daySum - energySum));
+            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_TODAY,
+                    Utils.getEnergyState(daySum));
+            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ACTUAL,
+                    Utils.getPowerState(powerSum));
         });
     }
 
@@ -166,7 +170,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             return;
         }
         // get all available forecasts
-        List<SolarForecast> forecastObjects = new ArrayList<SolarForecast>();
+        List<SolarForecast> forecastObjects = new ArrayList<>();
         for (Iterator<SolcastPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
             SolcastPlaneHandler sfph = iterator.next();
             forecastObjects.addAll(sfph.getSolarForecasts());
@@ -174,8 +178,8 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         // sort in Tree according to times for each scenario
         List<QueryMode> modes = List.of(QueryMode.Average, QueryMode.Pessimistic, QueryMode.Optimistic);
         modes.forEach(mode -> {
-            TreeMap<Instant, QuantityType<?>> combinedPowerForecast = new TreeMap<Instant, QuantityType<?>>();
-            TreeMap<Instant, QuantityType<?>> combinedEnergyForecast = new TreeMap<Instant, QuantityType<?>>();
+            TreeMap<Instant, QuantityType<?>> combinedPowerForecast = new TreeMap<>();
+            TreeMap<Instant, QuantityType<?>> combinedEnergyForecast = new TreeMap<>();
             forecastObjects.forEach(fc -> {
                 TimeSeries powerTS = fc.getPowerTimeSeries(mode);
                 powerTS.getStates().forEach(entry -> {
@@ -198,16 +202,22 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             });
             switch (mode) {
                 case Average:
-                    sendTimeSeries(GROUP_AVERAGE + "#" + CHANNEL_ENERGY_ESTIMATE, energySeries);
-                    sendTimeSeries(GROUP_AVERAGE + "#" + CHANNEL_POWER_ESTIMATE, powerSeries);
+                    sendTimeSeries(GROUP_AVERAGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ESTIMATE,
+                            energySeries);
+                    sendTimeSeries(GROUP_AVERAGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ESTIMATE,
+                            powerSeries);
                     break;
                 case Optimistic:
-                    sendTimeSeries(GROUP_OPTIMISTIC + "#" + CHANNEL_ENERGY_ESTIMATE, energySeries);
-                    sendTimeSeries(GROUP_OPTIMISTIC + "#" + CHANNEL_POWER_ESTIMATE, powerSeries);
+                    sendTimeSeries(GROUP_OPTIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ESTIMATE,
+                            energySeries);
+                    sendTimeSeries(GROUP_OPTIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ESTIMATE,
+                            powerSeries);
                     break;
                 case Pessimistic:
-                    sendTimeSeries(GROUP_PESSIMISTIC + "#" + CHANNEL_ENERGY_ESTIMATE, energySeries);
-                    sendTimeSeries(GROUP_PESSIMISTIC + "#" + CHANNEL_POWER_ESTIMATE, powerSeries);
+                    sendTimeSeries(GROUP_PESSIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ESTIMATE,
+                            energySeries);
+                    sendTimeSeries(GROUP_PESSIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ESTIMATE,
+                            powerSeries);
                     break;
                 default:
                     break;
