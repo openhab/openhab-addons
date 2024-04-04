@@ -75,7 +75,6 @@ Here is a map file example of the previous file format:
 ```
 TV_POWER=26008c0092961039103a1039101510151014101510151039103a10391015101411141015101510141139101510141114101510151014103a10141139103911391037123a10391000060092961039103911391014111410151015101411391039103a101411141015101510141015103911141015101510141015101510391015103911391039103a1039103911000d05000000000000000000000000
 heatpump_off=2600760069380D0C0D0C0D290D0C0D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D290D290D290D290D290D290E0002900000
-
 ```
 
 The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu heat pump.
@@ -122,7 +121,6 @@ else:
     print(json.dumps(result,indent=2))
 ```
 
-
 ## Learning new remote codes
 
 To obtain the command codes, you can get this binding to put your Broadlink RMx device into 
@@ -159,6 +157,8 @@ In order to delete a previously stored code, the procedure is as follows:
 3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead (Only needed the first time).
 4. Click the item, and click the rectangular area that is marked NULL
 5. In the pop-up menu that appears, select *Delete IR command* for IR or *Delete RF command* for RF
+
+*VERY IMPORTANT NOTE: Unlike the previous binding, writing the codes into the files is handled by OpenHAB. While it is possible to create a file externally, copy it in the proper location and use it as a remote codes database (As it is done in the case of Remote codes file migration) IT IS STRONGLY DISCOURAGED to modify the file while the binding is acive. Please make sure the binding is stopped before you modify a remote codes file manually*
 
 ## Full Example
 
