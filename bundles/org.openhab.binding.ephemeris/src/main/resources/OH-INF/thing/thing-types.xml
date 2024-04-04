@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ephemeris"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="file">
+		<label>Ephemeris File</label>
+		<description>A file containing Jollyday events</description>
+
+		<channels>
+			<channel id="currentTitle" typeId="event_current_title"/>
+			<channel id="nextTitle" typeId="event_next_title"/>
+			<channel id="nextStart" typeId="event_next_start"/>
+			<channel id="remainingDays" typeId="remaining_days"/>
+		</channels>
+
+		<config-description>
+			<parameter name="fileName" type="text" required="true">
+				<label>File Name</label>
+				<description>Name of a Jollyday XML file in the binding folder.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+
+	<channel-type id="event_current_title">
+		<item-type>String</item-type>
+		<label>Current Event Title</label>
+		<description>Title of the currently present event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event_next_title">
+		<item-type>String</item-type>
+		<label>Next Event Title</label>
+		<description>Title of the next starting event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="event_next_start">
+		<item-type>DateTime</item-type>
+		<label>Next Event Start</label>
+		<description>Start of the next event</description>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
+	</channel-type>
+
+	<channel-type id="remaining_days">
+		<item-type>Number:Time</item-type>
+		<label>Remaining Days</label>
+		<description>Days until next event</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
