@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.broadlink.internal;
 
-import java.io.IOException;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,9 +38,6 @@ public class BroadlinkMappingService {
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
     private final ChannelUID irTargetChannelUID;
     private final ChannelUID rfTargetChannelUID;
-    private @Nullable WatchService watchService = null;
-    private @Nullable WatchKey transformDirWatchKey = null;
-    private @Nullable Thread watchThread = null;
     private final StorageService storageService;
     private final Storage<String> irStorage;
     private final Storage<String> rfStorage;
@@ -63,24 +57,7 @@ public class BroadlinkMappingService {
                 this.rfTargetChannelUID);
     }
 
-    @SuppressWarnings("null")
     public void dispose() {
-        try {
-            if (watchThread != null && !watchThread.isInterrupted()) {
-                watchThread.interrupt();
-                watchThread = null;
-            }
-            if (this.transformDirWatchKey != null) {
-                this.transformDirWatchKey.cancel();
-                this.transformDirWatchKey = null;
-            }
-            if (this.watchService != null) {
-                this.watchService.close();
-                this.watchService = null;
-            }
-        } catch (IOException ioe) {
-            logger.warn("Cannot deactivate watcher: {}", ioe.getMessage());
-        }
     }
 
     public @Nullable String lookupIR(String command) {
@@ -90,7 +67,7 @@ public class BroadlinkMappingService {
         } else {
             logger.debug("IR Command not label found.");
         }
-        return (String) irValue;
+        return irValue;
     }
 
     public @Nullable String storeIR(String command, String irCommand) {
@@ -140,7 +117,7 @@ public class BroadlinkMappingService {
         } else {
             logger.debug("RF Command not label found.");
         }
-        return (String) rfValue;
+        return rfValue;
     }
 
     public @Nullable String storeRF(String command, String rfCommand) {
@@ -169,6 +146,7 @@ public class BroadlinkMappingService {
         }
     }
 
+    @SuppressWarnings("null")
     public @Nullable String deleteRF(String command) {
         String rfValue = rfStorage.get(command);
         if (rfValue != null) {
