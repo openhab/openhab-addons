@@ -92,9 +92,9 @@
 			<channel id="Battery-temperature" typeId="system.indoor-temperature"/>
 			<channel id="Inverter-ac-temperature" typeId="system.indoor-temperature"/>
 			<channel id="Inverter-dc-temperature" typeId="system.indoor-temperature"/>
-			<channel id="Interter-grid-power" typeId="system.electric-power"/>
-			<channel id="Interter-grid-voltage" typeId="system.electric-voltage"/>
-			<channel id="Interter-grid-current" typeId="system.electric-current"/>
+			<channel id="Inverter-grid-power" typeId="system.electric-power"/>
+			<channel id="Inverter-grid-voltage" typeId="system.electric-voltage"/>
+			<channel id="Inverter-grid-current" typeId="system.electric-current"/>
 			<channel id="Inverter-solar-energy-today" typeId="system.electric-energy"/>
 			<channel id="Inverter-solar-energy-total" typeId="system.electric-energy"/>
 			<channel id="Inverter-solar-power-now" typeId="system.electric-current"/>

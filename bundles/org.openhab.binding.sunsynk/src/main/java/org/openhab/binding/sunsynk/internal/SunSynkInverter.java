@@ -69,24 +69,29 @@ public class SunSynkInverter {
         logger.debug("Will get STATE for Inverter {} serial {}", this.alias, this.sn);
         // Get inverter infos
         try {
-            boolean autheticated = getCommonSettings(); // battery charge settings
-            if (!autheticated)
+            logger.debug("Trying Common Settings");
+            boolean authenticated = getCommonSettings(); // battery charge settings
+            if (!authenticated)
                 return false;
-            autheticated = getGridRealTime(); // grid status
-            if (!autheticated)
+            logger.debug("Trying Grid Real Time Settings");
+            authenticated = getGridRealTime(); // grid status
+            if (!authenticated)
                 return false;
-            autheticated = getBatteryRealTime(); // battery status
-            if (!autheticated)
+            logger.debug("Trying Battery Real Time Settings");
+            authenticated = getBatteryRealTime(); // battery status
+            if (!authenticated)
                 return false;
-            autheticated = getInverterACDCTemperatures(); // get Inverter temperatures
-            if (!autheticated)
+            logger.debug("Trying Temperature History");
+            authenticated = getInverterACDCTemperatures(); // get Inverter temperatures
+            if (!authenticated)
                 return false;
-            autheticated = getRealTimeIn(); // may not need this one used for solar values
-            if (!autheticated)
+            logger.debug("Trying Real Time Solar");
+            authenticated = getRealTimeIn(); // may not need this one used for solar values
+            if (!authenticated)
                 return false;
 
         } catch (Exception e) {
-            logger.debug("Failed to get Inverter API information: ", e);
+            logger.debug("Failed to get Inverter API information: ", e.getCause());
             // updateStatus(ThingStatus.OFFLINE);
             // Should Thing be put off line?
             // Need to Throw an exception <----- got here to stop following debug log
@@ -145,6 +150,9 @@ public class SunSynkInverter {
         String response = apiGetMethod(makeURL("api/v1/common/setting/" + this.sn + "/read"),
                 APIdata.static_access_token);
         if (response == "Authentication Fail") {
+            return false;
+        }
+        if (response == "empty") {
             return false;
         }
         // JSON response -> realTime data Structure
@@ -262,16 +270,17 @@ public class SunSynkInverter {
             wr.flush();
             wr.close();
             logger.debug("POST Response Code: {}", connection.getResponseCode());
-            // logger.debug("POST Response Message: {}", connection.getResponseMessage());
+
             InputStream is = connection.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
             response = br.readLine();
             br.close();
+            connection.disconnect();
         } catch (IOException e) {
-            response = "Empty";
             logger.debug("apiPostMethod faied to get a response from {}} with token {} Eception.", httpsURL,
                     access_token, e);
+            return "Empty";
         }
         return response;
     }
@@ -288,19 +297,19 @@ public class SunSynkInverter {
             connection.setDoOutput(true);
             logger.debug("GET Response Code: {}.", connection.getResponseCode());
             if (connection.getResponseCode() == 401) {
-                logger.debug("Authentication failure");
+                logger.debug("Authentication failure: likely token expire getting new token.");
                 return "Authentication Fail";
             }
-            // logger.debug("GET Response Message: {}.", connection.getResponseMessage());
             InputStream is = connection.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
             response = br.readLine();
             br.close();
+            connection.disconnect();
         } catch (IOException e) {
-            response = "Empty";
             logger.debug("apiGetMethod faied to get a response from {}} with token {} Eception ", httpsURL,
-                    access_token, e);
+                    access_token, e.getCause());
+            return "Empty";
         }
         return response;
     }

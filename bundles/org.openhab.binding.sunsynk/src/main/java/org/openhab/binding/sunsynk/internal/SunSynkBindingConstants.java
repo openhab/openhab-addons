@@ -71,9 +71,9 @@ public class SunSynkBindingConstants {
     public static final String CHANNEL_BATTERY_INTERVAL_5_POWER_LIMIT = "Interval-5-grid-power-limit";
     public static final String CHANNEL_BATTERY_INTERVAL_6_POWER_LIMIT = "Interval-6-grid-power-limit";
 
-    public static final String CHANNEL_INVERTER_GRID_POWER = "Interter-grid-power";
-    public static final String CHANNEL_INVERTER_GRID_VOLTAGE = "Interter-grid-voltage";
-    public static final String CHANNEL_INVERTER_GRID_CURRENT = "Interter-grid-current";
+    public static final String CHANNEL_INVERTER_GRID_POWER = "Inverter-grid-power";
+    public static final String CHANNEL_INVERTER_GRID_VOLTAGE = "Inverter-grid-voltage";
+    public static final String CHANNEL_INVERTER_GRID_CURRENT = "Inverter-grid-current";
 
     public static final String CHANNEL_INVERTER_AC_TEMPERATURE = "Inverter-ac-temperature";
     public static final String CHANNEL_INVERTER_DC_TEMPERATURE = "Inverter-dc-temperature";
