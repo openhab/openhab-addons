@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.broadlink;
 
+import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,9 +33,11 @@ public abstract class AbstractBroadlinkTest {
     protected static final String TEST_MAP_FILE_IR = "broadlinkir_test";
     protected static final String TEST_MAP_FILE_RF = "broadlinkrf_test";
     protected static VolatileStorageService storageService = new VolatileStorageService();
-    protected static Storage<String> irStorage = storageService.getStorage(TEST_MAP_FILE_IR,
+    protected static Storage<String> irStorage = storageService.getStorage(
+            org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.IR_MAP_NAME,
             String.class.getClassLoader());
-    protected static Storage<String> rfStorage = storageService.getStorage(TEST_MAP_FILE_RF,
+    protected static Storage<String> rfStorage = storageService.getStorage(
+            org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.RF_MAP_NAME,
             String.class.getClassLoader());
 
     @BeforeEach
