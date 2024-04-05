@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.sunsynk.internal.classes;
 
+import java.util.Optional;
+
 /**
  * The {@link Client} is the internal class for Client information from the sunsynk Account.
  *
@@ -46,7 +48,15 @@ public class Client {
         return data.getRefreshToken();
     }
 
-    public APIdata getData() {
+    public Optional<APIdata> safeAPIData() {
+        if (this.data == null) {
+            return Optional.empty();
+        }
+        return Optional.of(this.data);
+    }
+
+    public APIdata getData() { // Not used
+
         return data;
     }
 }

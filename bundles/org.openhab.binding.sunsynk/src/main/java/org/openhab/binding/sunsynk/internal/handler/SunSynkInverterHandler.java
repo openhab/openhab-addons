@@ -14,6 +14,7 @@ package org.openhab.binding.sunsynk.internal.handler;
 
 import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.*;
 
+import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,12 +30,13 @@ import org.openhab.binding.sunsynk.internal.config.SunSynkInverterConfig;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -53,6 +55,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     // private @Nullable InverterConfig config;
     // private /* @Nullable */ Inverter config;
+    ZonedDateTime lockoutTimer = null;
     private SunSynkInverter inverter;
     private int refreshTime = 60;
     private ScheduledFuture<?> refreshTask;
@@ -223,7 +226,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
         if (config.getRefresh() < refreshTime) {
             logger.warn(
-                    "Refresh time [{}] is not valid. Refresh time must be at least 60 seconds.  Setting to minimum of 60 sec",
+                    "Refresh time [{}] is not valid. Refresh time must be at least 60 seconds. Setting to minimum of 60 sec",
                     config.getRefresh());
             config.setRefresh(60);
         } else {
@@ -278,13 +281,32 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     }
 
     public void refreshStateAndUpdate() {
+
+        if (this.lockoutTimer != null && this.lockoutTimer.isAfter(ZonedDateTime.now())) { // lockout calls that come //
+                                                                                           // too fast
+            logger.debug("API call too frequent, ignored {} ", this.lockoutTimer);
+            return;
+        }
+        this.lockoutTimer = ZonedDateTime.now().plusMinutes(1); // lockout time 1 min
+
         if (inverter != null) {
             try {
-                boolean autheticated = inverter.sendGetState();
-                if (!autheticated) {
-                    BridgeHandler bridge = getBridge().getHandler();
-                    bridge.initialize();
+                Bridge bridge = getBridge();
+                if (bridge == null) {
+                    return;
                 }
+                ThingHandler handler = bridge.getHandler();
+                SunSynkAccountHandler bridgehandler = null;
+                if (handler instanceof SunSynkAccountHandler) {
+                    bridgehandler = (SunSynkAccountHandler) handler;
+                } else
+                    return;
+                boolean authenticated = inverter.sendGetState();
+                if (!authenticated) {
+                    bridgehandler.initialize();
+                    return;
+                }
+                bridgehandler.setBridgeOnline();
                 updateStatus(ThingStatus.ONLINE);
                 publishChannels();
             } catch (Exception e) {
@@ -296,7 +318,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     private void startAutomaticRefresh() {
         Runnable refresher = () -> refreshStateAndUpdate();
-
         this.refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, refreshTime, TimeUnit.SECONDS);
         logger.debug("Start automatic refresh at {} seconds", refreshTime);
     }

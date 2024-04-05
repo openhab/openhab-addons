@@ -15,12 +15,12 @@ package org.openhab.binding.sunsynk.internal.handler;
 //import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.*;
 
 import java.io.*;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import javax.net.ssl.HttpsURLConnection;
+import java.util.Optional;
+import java.util.Properties;
 
 import org.openhab.binding.sunsynk.internal.classes.APIdata;
 import org.openhab.binding.sunsynk.internal.classes.Client;
@@ -28,6 +28,7 @@ import org.openhab.binding.sunsynk.internal.classes.Details;
 import org.openhab.binding.sunsynk.internal.classes.Inverter;
 import org.openhab.binding.sunsynk.internal.config.SunSynkAccountConfig;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -68,6 +69,10 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         configAccount();
     }
 
+    public void setBridgeOnline() {
+        updateStatus(ThingStatus.ONLINE);
+    }
+
     public /* @NonNull */ List<Inverter> getInvertersFromSunSynk() {
         logger.debug("Attempting to find inverters tied to account");
         // Discover Connected plants and inverters.
@@ -82,33 +87,21 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
 
     private Details getDetails(String access_token) {
 
-        String response = "";
-        String httpsURL = makeLoginURL(
-                "api/v1/inverters?page=1&limit=10&total=0&status=-1&sn=&plantId=&type=-2&softVer=&hmiVer=&agentCompanyId=-1&gsn=");
         try {
-            URL myUrl = new URL(httpsURL);
-            HttpsURLConnection connection = (HttpsURLConnection) myUrl.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Authorization", "Bearer " + access_token);
-            connection.setDoOutput(true);
-
-            logger.debug("Details response code: {}", connection.getResponseCode());
-
-            InputStream is = connection.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            response = br.readLine();
-            br.close();
             Gson gson = new Gson();
+            Properties headers = new Properties();
+            String response = "";
+            String httpsURL = makeLoginURL(
+                    "api/v1/inverters?page=1&limit=10&total=0&status=-1&sn=&plantId=&type=-2&softVer=&hmiVer=&agentCompanyId=-1&gsn=");
+            headers.setProperty("Accept", "application/json");
+            headers.setProperty("Authorization", "Bearer " + access_token);
+            response = HttpUtil.executeUrl("GET", httpsURL, headers, null, "application/json", 2000);
             Details details = gson.fromJson(response, Details.class);
             return details;
         } catch (IOException e) {
             logger.debug("Error attempting to find inverters registered to account", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to find inverters registered to account");
-
             Details details = new Details();
             return details;
         }
@@ -117,9 +110,13 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     public void configAccount() {
         SunSynkAccountConfig accountConfig = getConfigAs(SunSynkAccountConfig.class);
         Client sunAccount = authenticate(accountConfig.getEmail(), accountConfig.getPassword());
-        // Add here a check on APIdata or handle API Null
-
-        APIdata apiData = sunAccount.getData();
+        Optional<APIdata> checkAPI = sunAccount.safeAPIData();
+        if (!checkAPI.isPresent()) { // API Data failed
+            logger.debug("Account fialed to Authenticate, likely a certificate path or maybe a password problem.");
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
+        APIdata apiData = checkAPI.get();
         String newToken = apiData.getAccessToken();
         APIdata.static_access_token = newToken;
         Configuration configuration = editConfiguration();
@@ -134,36 +131,20 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     private Client authenticate(String username, String password) {
-        String response = "";
-        String httpsURL = makeLoginURL("oauth/token");
         try {
-            URL myUrl = new URL(httpsURL);
-            String payload = makeLoginBody(username, password);
-            HttpsURLConnection connection = (HttpsURLConnection) myUrl.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setDoOutput(true);
-            OutputStream outStream = connection.getOutputStream();
-            OutputStreamWriter outStreamWriter = new OutputStreamWriter(outStream, "UTF-8");
-            outStreamWriter.write(payload);
-            outStreamWriter.flush();
-            outStreamWriter.close();
-            outStream.close();
-
-            logger.debug("Authentication response code: {}", connection.getResponseCode());
-
-            InputStream is = connection.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            response = br.readLine();
-            br.close();
             Gson gson = new Gson();
+            String response = "";
+            String httpsURL = makeLoginURL("oauth/token");
+            String payload = makeLoginBody(username, password);
+            Properties headers = new Properties();
+            headers.setProperty("Accept", "application/json");
+            headers.setProperty("Content-Type", "application/json"); // may not need this.
+            InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
+            response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
             Client API_Token = gson.fromJson(response, Client.class);
             return API_Token;
-
         } catch (IOException e) {
-            logger.debug("Error attempting to autheticate account", e);
+            logger.debug("Error attempting to autheticate account", e.getCause());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate account");
             Client API_Token = new Client();
