@@ -24,6 +24,53 @@
 
 	</thing-type>
 
+	<thing-type id="default">
+		<label>Ephemeris</label>
+		<description>Events based on system default Ephemeris configuration</description>
+
+		<channels>
+			<channel id="currentTitle" typeId="event_current_title"/>
+			<channel id="nextTitle" typeId="event_next_title"/>
+			<channel id="nextStart" typeId="event_next_start"/>
+			<channel id="remainingDays" typeId="remaining_days"/>
+		</channels>
+	</thing-type>
+
+	<thing-type id="dayset">
+		<label>Dayset</label>
+		<description>Events based on system a on dayset</description>
+
+		<channels>
+			<channel id="today" typeId="in-dayset"/>
+			<channel id="tomorrow" typeId="in-dayset"/>
+		</channels>
+
+		<config-description>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>Name of the dayset.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="weekend">
+		<label>Weekend</label>
+		<description>Events based on system a the week-end default dayset</description>
+
+		<channels>
+			<channel id="today" typeId="in-dayset"/>
+			<channel id="tomorrow" typeId="in-dayset"/>
+		</channels>
+	</thing-type>
+
+	<channel-type id="in-dayset">
+		<item-type>Switch</item-type>
+		<label>In Dayset</label>
+		<description>Set to ON if the day is in the dayset, OFF in the other case</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 
 	<channel-type id="event_current_title">
 		<item-type>String</item-type>
