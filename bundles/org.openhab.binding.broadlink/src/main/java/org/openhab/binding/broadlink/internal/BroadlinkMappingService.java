@@ -61,103 +61,116 @@ public class BroadlinkMappingService {
     public void dispose() {
     }
 
-    public @Nullable String lookupIR(String command) {
-        String irValue = irStorage.get(command);
-        if (irValue != null) {
-            logger.debug("IR Command label found. Key value pair is {},{}", command, irValue);
-        } else {
-            logger.debug("IR Command not label found.");
+    public @Nullable String lookupCode(String command, String codeType) {
+        String response;
+        switch (codeType) {
+            case "IR":
+                response = lookupKey(command, irStorage, codeType);
+                break;
+            case "RF":
+                response = lookupKey(command, rfStorage, codeType);
+                break;
+            default:
+                response = null;
         }
-        return irValue;
+        return response;
     }
 
-    public @Nullable String storeIR(String command, String irCommand) {
-        if (irStorage.get(command) == null) {
-            logger.debug("IR Command label not found. Proceeding to store key value pair {},{} and reload Command list",
-                    command, irCommand);
-            irStorage.put(command, irCommand);
-            notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
+    public @Nullable String storeCode(String command, String code, String codeType) {
+        String response;
+        switch (codeType) {
+            case "IR":
+                response = storeKey(command, code, irStorage, codeType, irTargetChannelUID);
+                break;
+            case "RF":
+                response = storeKey(command, code, rfStorage, codeType, rfTargetChannelUID);
+                break;
+            default:
+                response = null;
+        }
+        return response;
+    }
+
+    public @Nullable String replaceCode(String command, String code, String codeType) {
+        String response;
+        switch (codeType) {
+            case "IR":
+                response = replaceKey(command, code, irStorage, codeType, irTargetChannelUID);
+                break;
+            case "RF":
+                response = replaceKey(command, code, rfStorage, codeType, rfTargetChannelUID);
+                break;
+            default:
+                response = null;
+        }
+        return response;
+    }
+
+    public @Nullable String deleteCode(String command, String codeType) {
+        String response;
+        switch (codeType) {
+            case "IR":
+                response = deleteKey(command, irStorage, codeType, irTargetChannelUID);
+                break;
+            case "RF":
+                response = deleteKey(command, rfStorage, codeType, rfTargetChannelUID);
+                break;
+            default:
+                return null;
+        }
+        return response;
+    }
+
+    public @Nullable String lookupKey(String command, Storage<String> storage, String codeType) {
+        String value = storage.get(command);
+        if (value != null) {
+            logger.debug("{} Command label found. Key value pair is {},{}", codeType, command, value);
+        } else {
+            logger.debug("{} Command not label found.", codeType);
+        }
+        return value;
+    }
+
+    public @Nullable String storeKey(String command, String code, Storage<String> storage, String codeType,
+            ChannelUID targetChannelUID) {
+        if (storage.get(command) == null) {
+            logger.debug("{} Command label not found. Proceeding to store key value pair {},{} and reload Command list",
+                    codeType, command, code);
+            storage.put(command, code);
+            notifyAvailableCommands(storage.getKeys(), targetChannelUID);
             return command;
         } else {
-            logger.debug("IR Command label {} found. This is not a replace operation. Skipping", command);
+            logger.debug("{} Command label {} found. This is not a replace operation. Skipping", codeType, command);
             return null;
         }
     }
 
-    public @Nullable String replaceIR(String command, String irCommand) {
-        if (irStorage.get(command) != null) {
-            logger.debug("IR Command label found. Proceeding to store key value pair {},{} and reload Command list",
-                    command, irCommand);
-            irStorage.put(command, irCommand);
-            notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
+    public @Nullable String replaceKey(String command, String code, Storage<String> storage, String codeType,
+            ChannelUID targetChannelUID) {
+        if (storage.get(command) != null) {
+            logger.debug("{} Command label found. Proceeding to store key value pair {},{} and reload Command list",
+                    codeType, command, code);
+            storage.put(command, code);
+            notifyAvailableCommands(storage.getKeys(), targetChannelUID);
             return command;
         } else {
-            logger.debug("IR Command label {} not found. This is not an add method. Skipping", command);
+            logger.debug("{} Command label {} not found. This is not an add method. Skipping", codeType, command);
             return null;
         }
     }
 
-    public @Nullable String deleteIR(String command) {
-        String irValue = irStorage.get(command);
-        if (irValue != null) {
-            logger.debug("IR Command label found. Proceeding to remove key pair {},{} and reload command list", command,
-                    irValue);
-            irStorage.remove(command);
-            notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
+    public @Nullable String deleteKey(String command, Storage<String> storage, String codeType,
+            ChannelUID targetChannelUID) {
+        String value = storage.get(command);
+        if (value != null) {
+            logger.debug("{} Command label found. Proceeding to remove key pair {},{} and reload command list",
+                    codeType, command, value);
+            storage.remove(command);
+            notifyAvailableCommands(irStorage.getKeys(), targetChannelUID);
             return command;
         } else {
-            logger.debug("IR Command label {} not found. Can't delete a command that does not exist", command);
-            return null;
-        }
-    }
-
-    public @Nullable String lookupRF(String command) {
-        String rfValue = rfStorage.get(command);
-        if (rfValue != null) {
-            logger.debug("RF Command label found. Key value pair is {},{}", command, rfValue);
-        } else {
-            logger.debug("RF Command not label found.");
-        }
-        return rfValue;
-    }
-
-    public @Nullable String storeRF(String command, String rfCommand) {
-        if (rfStorage.get(command) == null) {
-            logger.debug("RF Command label not found. Proceeding to store key value pair {},{} and reload Command list",
-                    command, rfCommand);
-            rfStorage.put(command, rfCommand);
-            notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
-            return command;
-        } else {
-            logger.debug("RF Command label {} found. This is not a replace operation. Skipping", command);
-            return null;
-        }
-    }
-
-    public @Nullable String replaceRF(String command, String rfCommand) {
-        if (rfStorage.get(command) != null) {
-            logger.debug("RF Command label found. Proceeding to store key value pair {},{} and reload Command list",
-                    command, rfCommand);
-            rfStorage.put(command, rfCommand);
-            notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
-            return command;
-        } else {
-            logger.debug("RF Command label {} not found. This is not an add method. Skipping", command);
-            return null;
-        }
-    }
-
-    @SuppressWarnings("null")
-    public @Nullable String deleteRF(String command) {
-        String rfValue = rfStorage.get(command);
-        if (rfValue != null) {
-            logger.debug("RF Command label found. Proceeding to remove key pair {},{} and reload command list", command,
-                    rfValue);
-            rfStorage.remove(command);
-            notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
-            return command;
-        } else {
-            logger.debug("RF Command label {} not found. Can't delete a command that does not exist", command);
+            logger.debug("{} Command label {} not found. Can't delete a command that does not exist", codeType,
+                    command);
             return null;
         }
     }

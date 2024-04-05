@@ -118,7 +118,7 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
     @SuppressWarnings("null")
     private byte @Nullable [] lookupRFCode(Command command, ChannelUID channelUID) {
         byte code[] = null;
-        String value = this.mappingService.lookupRF(command.toString());
+        String value = this.mappingService.lookupCode(command.toString(), "RF");
 
         if (value == null || value.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -196,8 +196,9 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
                     try {
                         response = extractResponsePayload(data);
                         String hexString = Utils.toHexString(response);
-                        String cmdLabel = mappingService.storeRF(thingConfig.getNameOfCommandToLearn(), hexString);
-                        if (cmdLabel == null) {
+                        String cmdLabel = mappingService.storeCode(thingConfig.getNameOfCommandToLearn(), hexString,
+                                "RF");
+                        if (cmdLabel != null) {
                             logger.info("BEGIN LAST LEARNT CODE");
                             logger.info("{}", hexString);
                             logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
@@ -244,7 +245,8 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
                     try {
                         response = extractResponsePayload(data);
                         String hexString = Utils.toHexString(response);
-                        String cmdLabel = mappingService.replaceRF(thingConfig.getNameOfCommandToLearn(), hexString);
+                        String cmdLabel = mappingService.replaceCode(thingConfig.getNameOfCommandToLearn(), hexString,
+                                "RF");
                         if (cmdLabel != null) {
                             logger.info("BEGIN LAST LEARNT CODE");
                             logger.info("{}", hexString);
@@ -274,8 +276,14 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
     private void deleteRFCommand() {
         updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                 new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE));
-        mappingService.deleteRF(thingConfig.getNameOfCommandToLearn());
-        updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
-                new StringType("RF command " + thingConfig.getNameOfCommandToLearn() + " deleted"));
+        String cmdLabel = mappingService.deleteCode(thingConfig.getNameOfCommandToLearn(), "RF");
+        if (cmdLabel != null) {
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType("RF command " + thingConfig.getNameOfCommandToLearn() + " deleted"));
+        } else {
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType("RF command " + thingConfig.getNameOfCommandToLearn() + " not found"));
+
+        }
     }
 }

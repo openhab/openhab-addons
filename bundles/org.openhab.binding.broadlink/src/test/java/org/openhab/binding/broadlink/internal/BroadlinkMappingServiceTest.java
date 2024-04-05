@@ -43,12 +43,12 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
         BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
                 storageService);
 
-        assertEquals("00112233", bms.lookupIR("IR_TEST_COMMAND_ON"));
-        assertEquals("33221100", bms.lookupIR("IR_TEST_COMMAND_OFF"));
-        assertEquals(null, bms.lookupIR("IR_TEST_COMMAND_DUMMY"));
-        assertEquals("00112233", bms.lookupRF("RF_TEST_COMMAND_ON"));
-        assertEquals("33221100", bms.lookupRF("RF_TEST_COMMAND_OFF"));
-        assertEquals(null, bms.lookupRF("RF_TEST_COMMAND_DUMMY"));
+        assertEquals("00112233", bms.lookupCode("IR_TEST_COMMAND_ON", "IR"));
+        assertEquals("33221100", bms.lookupCode("IR_TEST_COMMAND_OFF", "IR"));
+        assertEquals(null, bms.lookupCode("IR_TEST_COMMAND_DUMMY", "IR"));
+        assertEquals("00112233", bms.lookupCode("RF_TEST_COMMAND_ON", "RF"));
+        assertEquals("33221100", bms.lookupCode("RF_TEST_COMMAND_OFF", "RF"));
+        assertEquals(null, bms.lookupCode("RF_TEST_COMMAND_DUMMY", "RF"));
     }
 
     @Test
@@ -56,11 +56,11 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
         BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
                 storageService);
 
-        assertEquals("IR_TEST_COMMAND_UP", bms.storeIR("IR_TEST_COMMAND_UP", "44556677"));
-        assertEquals(null, bms.storeIR("IR_TEST_COMMAND_ON", "77665544"));
+        assertEquals("IR_TEST_COMMAND_UP", bms.storeCode("IR_TEST_COMMAND_UP", "44556677", "IR"));
+        assertEquals(null, bms.storeCode("IR_TEST_COMMAND_ON", "77665544", "IR"));
         assertEquals("44556677", irStorage.get("IR_TEST_COMMAND_UP"));
-        assertEquals("RF_TEST_COMMAND_UP", bms.storeRF("RF_TEST_COMMAND_UP", "44556677"));
-        assertEquals(null, bms.storeRF("RF_TEST_COMMAND_ON", "77665544"));
+        assertEquals("RF_TEST_COMMAND_UP", bms.storeCode("RF_TEST_COMMAND_UP", "44556677", "RF"));
+        assertEquals(null, bms.storeCode("RF_TEST_COMMAND_ON", "77665544", "RF"));
         assertEquals("44556677", rfStorage.get("RF_TEST_COMMAND_UP"));
     }
 
@@ -69,11 +69,11 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
         BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
                 storageService);
 
-        assertEquals(null, bms.replaceIR("IR_TEST_COMMAND_UP", "55667788"));
-        assertEquals("IR_TEST_COMMAND_ON", bms.replaceIR("IR_TEST_COMMAND_ON", "55667788"));
+        assertEquals(null, bms.replaceCode("IR_TEST_COMMAND_UP", "55667788", "IR"));
+        assertEquals("IR_TEST_COMMAND_ON", bms.replaceCode("IR_TEST_COMMAND_ON", "55667788", "IR"));
         assertEquals("55667788", irStorage.get("IR_TEST_COMMAND_ON"));
-        assertEquals(null, bms.replaceRF("RF_TEST_COMMAND_UP", "55667788"));
-        assertEquals("RF_TEST_COMMAND_ON", bms.replaceRF("RF_TEST_COMMAND_ON", "55667788"));
+        assertEquals(null, bms.replaceCode("RF_TEST_COMMAND_UP", "55667788", "RF"));
+        assertEquals("RF_TEST_COMMAND_ON", bms.replaceCode("RF_TEST_COMMAND_ON", "55667788", "RF"));
         assertEquals("55667788", rfStorage.get("RF_TEST_COMMAND_ON"));
     }
 
@@ -82,12 +82,12 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
         BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
                 storageService);
 
-        assertEquals("IR_TEST_COMMAND_ON", bms.deleteIR("IR_TEST_COMMAND_ON"));
+        assertEquals("IR_TEST_COMMAND_ON", bms.deleteCode("IR_TEST_COMMAND_ON", "IR"));
         assertEquals(null, irStorage.get("IR_TEST_COMMAND_ON"));
-        assertEquals(null, bms.deleteIR("IR_TEST_COMMAND_DUMMY"));
-        assertEquals("RF_TEST_COMMAND_ON", bms.deleteRF("RF_TEST_COMMAND_ON"));
+        assertEquals(null, bms.deleteCode("IR_TEST_COMMAND_DUMMY", "IR"));
+        assertEquals("RF_TEST_COMMAND_ON", bms.deleteCode("RF_TEST_COMMAND_ON", "RF"));
         assertEquals(null, rfStorage.get("RF_TEST_COMMAND_ON"));
-        assertEquals(null, bms.deleteRF("RF_TEST_COMMAND_DUMMY"));
+        assertEquals(null, bms.deleteCode("RF_TEST_COMMAND_DUMMY", "RF"));
     }
 
     @Test

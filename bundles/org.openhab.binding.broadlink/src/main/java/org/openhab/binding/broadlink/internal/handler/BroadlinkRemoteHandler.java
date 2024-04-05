@@ -125,8 +125,8 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
             } else {
                 String hexString = Utils.toHexString(extractResponsePayload(response));
-                String cmdLabel = mappingService.storeIR(irCommand, hexString);
-                if (cmdLabel == null) {
+                String cmdLabel = mappingService.storeCode(irCommand, hexString, "IR");
+                if (cmdLabel != null) {
                     logger.info("BEGIN LAST LEARNT CODE");
                     logger.info("{}", hexString);
                     logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
@@ -155,7 +155,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
             } else {
                 String hexString = Utils.toHexString(extractResponsePayload(response));
-                String cmdLabel = mappingService.replaceIR(irCommand, hexString);
+                String cmdLabel = mappingService.replaceCode(irCommand, hexString, "IR");
                 if (cmdLabel != null) {
                     logger.info("BEGIN LAST LEARNT CODE");
                     logger.info("{}", hexString);
@@ -178,9 +178,14 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     private void sendDeleteDataCommandAndLog(String irCommand) {
         updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                 new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE));
-        mappingService.deleteIR(irCommand);
-        updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
-                new StringType("IR command " + irCommand + " deleted"));
+        String cmdLabel = mappingService.deleteCode(irCommand, "IR");
+        if (cmdLabel != null) {
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType("IR command " + irCommand + " deleted"));
+        } else {
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType("IR command " + irCommand + " not found"));
+        }
     }
 
     void handleLearningCommand(String learningCommand) {
@@ -268,7 +273,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     @SuppressWarnings("null")
     private byte @Nullable [] lookupIRCode(Command command, ChannelUID channelUID) {
         byte code[] = null;
-        String value = this.mappingService.lookupIR(command.toString());
+        String value = this.mappingService.lookupCode(command.toString(), "IR");
 
         if (value == null || value.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
