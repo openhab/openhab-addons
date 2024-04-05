@@ -83,6 +83,8 @@ public class EcobeeApi {
     private static final int ECOBEE_TOKEN_EXPIRED = 14;
     private static final int ECOBEE_DEAUTHORIZED_TOKEN = 16;
     private static final int TOKEN_EXPIRES_IN_BUFFER_SECONDS = 120;
+    private static final boolean FORCE_TOKEN_REFRESH = true;
+    private static final boolean DONT_FORCE_TOKEN_REFRESH = false;
 
     public static final Properties HTTP_HEADERS;
     static {
@@ -147,14 +149,15 @@ public class EcobeeApi {
      * response, then assume that the Ecobee authorization process is complete. Otherwise,
      * start the Ecobee authorization process.
      */
-    private boolean isAuthorized() {
+    private boolean isAuthorized(boolean forceTokenRefresh) {
         boolean isAuthorized = false;
         try {
             AccessTokenResponse localAccessTokenResponse = oAuthClientService.getAccessTokenResponse();
             if (localAccessTokenResponse != null) {
                 logger.trace("API: Got AccessTokenResponse from OAuth service: {}", localAccessTokenResponse);
-                if (localAccessTokenResponse.isExpired(Instant.now(), TOKEN_EXPIRES_IN_BUFFER_SECONDS)) {
-                    logger.debug("API: Token is expiring soon. Refresh it now");
+                if (forceTokenRefresh
+                        || localAccessTokenResponse.isExpired(Instant.now(), TOKEN_EXPIRES_IN_BUFFER_SECONDS)) {
+                    logger.debug("API: Refreshing access token");
                     localAccessTokenResponse = oAuthClientService.refreshToken();
                 }
                 ecobeeAuth.setState(EcobeeAuthState.COMPLETE);
@@ -185,6 +188,10 @@ public class EcobeeApi {
             handleOAuthException(e);
         }
         return isAuthorized;
+    }
+
+    private boolean isAuthorized() {
+        return isAuthorized(DONT_FORCE_TOKEN_REFRESH);
     }
 
     private void handleOAuthException(OAuthResponseException e) {
@@ -346,15 +353,13 @@ public class EcobeeApi {
                     logger.debug("API: AccessTokenResponse created on: {}", localAccessTokenResponse.getCreatedOn());
                     logger.debug("API: AccessTokenResponse expires in: {}", localAccessTokenResponse.getExpiresIn());
                 }
-                // Recreating the OAuthClientService seems to be the only way to handle this error
-                closeOAuthClientService();
-                createOAuthClientService();
-                if (isAuthorized()) {
+                logger.debug("API: Ecobee API attempting to force an access token refresh");
+                if (isAuthorized(FORCE_TOKEN_REFRESH)) {
                     return true;
                 } else {
-                    logger.warn("API: isAuthorized was NOT successful on second try");
+                    logger.warn("API: isAuthorized was NOT successful forcing the access token refresh");
                     bridgeHandler.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Unable to refresh access token");
+                            "Unable to force refresh the access token");
                 }
             }
         } else {
