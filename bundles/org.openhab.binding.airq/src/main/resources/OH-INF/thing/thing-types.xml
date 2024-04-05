@@ -295,7 +295,7 @@
 	</channel-type>
 
 	<channel-type id="sound" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Noise</label>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
