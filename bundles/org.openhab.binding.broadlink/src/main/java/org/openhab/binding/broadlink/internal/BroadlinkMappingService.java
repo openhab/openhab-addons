@@ -42,15 +42,16 @@ public class BroadlinkMappingService {
     private final Storage<String> irStorage;
     private final Storage<String> rfStorage;
 
-    public BroadlinkMappingService(String irMapFileName, String rfMapFileName,
-            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider, ChannelUID irTargetChannelUID,
-            ChannelUID rfTargetChannelUID, StorageService storageService) {
+    public BroadlinkMappingService(BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
+            ChannelUID irTargetChannelUID, ChannelUID rfTargetChannelUID, StorageService storageService) {
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.irTargetChannelUID = irTargetChannelUID;
         this.rfTargetChannelUID = rfTargetChannelUID;
         this.storageService = storageService;
-        irStorage = this.storageService.getStorage(irMapFileName, String.class.getClassLoader());
-        rfStorage = this.storageService.getStorage(rfMapFileName, String.class.getClassLoader());
+        irStorage = this.storageService.getStorage(BroadlinkBindingConstants.IR_MAP_NAME,
+                String.class.getClassLoader());
+        rfStorage = this.storageService.getStorage(BroadlinkBindingConstants.RF_MAP_NAME,
+                String.class.getClassLoader());
         notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
         notifyAvailableCommands(irStorage.getKeys(), rfTargetChannelUID);
         logger.debug("BroadlinkMappingService constructed on behalf of {} and {}", this.irTargetChannelUID,
@@ -164,7 +165,7 @@ public class BroadlinkMappingService {
     private void notifyAvailableCommands(Collection<String> commandNames, ChannelUID targetChannelUID) {
         List<CommandOption> commandOptions = new ArrayList<>();
         commandNames.forEach((c) -> commandOptions.add(new CommandOption(c, null)));
-        logger.debug("notifying framework about {} commands", commandOptions.size());
+        logger.debug("notifying framework about {} commands: {}", commandOptions.size(), commandNames.toString());
         this.commandDescriptionProvider.setCommandOptions(targetChannelUID, commandOptions);
     }
 }

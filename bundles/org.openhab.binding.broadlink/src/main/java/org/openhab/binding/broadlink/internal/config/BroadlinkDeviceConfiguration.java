@@ -28,8 +28,6 @@ public class BroadlinkDeviceConfiguration {
     private byte[] macAddressBytes;
     private int pollingInterval;
     private String nameOfCommandToLearn;
-    private String mapFilename;
-    private String rfmapFilename;
     private boolean ignoreFailedUpdates;
     private int deviceType;
 
@@ -40,8 +38,6 @@ public class BroadlinkDeviceConfiguration {
         macAddressBytes = new byte[0];
         pollingInterval = 30;
         nameOfCommandToLearn = "DEVICE_ON";
-        mapFilename = "broadlink_ir";
-        rfmapFilename = "broadlink_rf";
         ignoreFailedUpdates = false;
     }
 
@@ -98,14 +94,6 @@ public class BroadlinkDeviceConfiguration {
         this.pollingInterval = pollingInterval;
     }
 
-    public String getMapFilename() {
-        return mapFilename;
-    }
-
-    public void setMapFilename(String mapFilename) {
-        this.mapFilename = mapFilename;
-    }
-
     public int getDeviceType() {
         return deviceType;
     }
@@ -130,20 +118,11 @@ public class BroadlinkDeviceConfiguration {
         this.nameOfCommandToLearn = nameOfCommandToLearn;
     }
 
-    public String getRfmapFilename() {
-        return rfmapFilename;
-    }
-
-    public void setRfmapFilename(String rfmapFilename) {
-        this.rfmapFilename = rfmapFilename;
-    }
-
     @Override
     public String toString() {
         return (new StringBuilder("BroadlinkDeviceConfiguration [ipAddress=")).append(ipAddress).append(" (static: ")
                 .append(staticIp).append("), port=").append(port).append(", macAddress=").append(macAddress)
-                .append(", pollingInterval=").append(pollingInterval).append(", mapFilename=").append(mapFilename)
-                .append(", rfmapFilename=").append(rfmapFilename).append(", nameOfCommandToLearn=")
+                .append(", pollingInterval=").append(pollingInterval).append(", nameOfCommandToLearn=")
                 .append(nameOfCommandToLearn).append("]").toString();
     }
 }

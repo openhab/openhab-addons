@@ -87,6 +87,9 @@ public class BroadlinkBindingConstants {
     public static final String COMMAND_POWER_ON = "powerOn";
     public static final String COMMAND_NIGHTLIGHT = "nightLight";
 
+    public static final String IR_MAP_NAME = "broadlink_ir";
+    public static final String RF_MAP_NAME = "broadlink_rf";
+
     public static final Unit<Temperature> BROADLINK_TEMPERATURE_UNIT = SIUnits.CELSIUS;
     public static final Unit<Dimensionless> BROADLINK_HUMIDITY_UNIT = Units.PERCENT;
     public static final Unit<Power> BROADLINK_POWER_CONSUMPTION_UNIT = Units.WATT;

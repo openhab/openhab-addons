@@ -40,8 +40,8 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
 
     @Test
     public void canReadFromAMapFile() {
-        BroadlinkMappingService bms = new BroadlinkMappingService(TEST_MAP_FILE_IR, TEST_MAP_FILE_RF, mockProvider,
-                TEST_CHANNEL_UID, TEST_CHANNEL_UID2, storageService);
+        BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
+                storageService);
 
         assertEquals("00112233", bms.lookupIR("IR_TEST_COMMAND_ON"));
         assertEquals("33221100", bms.lookupIR("IR_TEST_COMMAND_OFF"));
@@ -53,8 +53,8 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
 
     @Test
     public void canStoreOnAMapFile() {
-        BroadlinkMappingService bms = new BroadlinkMappingService(TEST_MAP_FILE_IR, TEST_MAP_FILE_RF, mockProvider,
-                TEST_CHANNEL_UID, TEST_CHANNEL_UID2, storageService);
+        BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
+                storageService);
 
         assertEquals("IR_TEST_COMMAND_UP", bms.storeIR("IR_TEST_COMMAND_UP", "44556677"));
         assertEquals(null, bms.storeIR("IR_TEST_COMMAND_ON", "77665544"));
@@ -66,8 +66,8 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
 
     @Test
     public void canReplaceOnAMapFile() {
-        BroadlinkMappingService bms = new BroadlinkMappingService(TEST_MAP_FILE_IR, TEST_MAP_FILE_RF, mockProvider,
-                TEST_CHANNEL_UID, TEST_CHANNEL_UID2, storageService);
+        BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
+                storageService);
 
         assertEquals(null, bms.replaceIR("IR_TEST_COMMAND_UP", "55667788"));
         assertEquals("IR_TEST_COMMAND_ON", bms.replaceIR("IR_TEST_COMMAND_ON", "55667788"));
@@ -79,8 +79,8 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
 
     @Test
     public void canDeleteFromAMapFile() {
-        BroadlinkMappingService bms = new BroadlinkMappingService(TEST_MAP_FILE_IR, TEST_MAP_FILE_RF, mockProvider,
-                TEST_CHANNEL_UID, TEST_CHANNEL_UID2, storageService);
+        BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
+                storageService);
 
         assertEquals("IR_TEST_COMMAND_ON", bms.deleteIR("IR_TEST_COMMAND_ON"));
         assertEquals(null, irStorage.get("IR_TEST_COMMAND_ON"));
@@ -92,8 +92,7 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
 
     @Test
     public void notifiesTheFrameworkOfTheAvailableCommands() {
-        new BroadlinkMappingService(TEST_MAP_FILE_IR, TEST_MAP_FILE_RF, mockProvider, TEST_CHANNEL_UID,
-                TEST_CHANNEL_UID2, storageService);
+        new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2, storageService);
 
         List<CommandOption> expected = new ArrayList<>();
         List<CommandOption> expected2 = new ArrayList<>();
