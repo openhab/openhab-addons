@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +22,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.HomeApi;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class HomeCapability extends RestCapability<HomeApi> {
+public class HomeCapability extends CacheCapability<HomeApi> {
 
     private final Logger logger = LoggerFactory.getLogger(HomeCapability.class);
     private final Set<FeatureArea> featureAreas = new HashSet<>();
@@ -51,7 +51,7 @@ public class HomeCapability extends RestCapability<HomeApi> {
     private final Set<String> homeIds = new HashSet<>(3);
 
     public HomeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
-        super(handler, HomeApi.class);
+        super(handler, Duration.ofSeconds(2), HomeApi.class);
         this.descriptionProvider = descriptionProvider;
     }
 
@@ -66,12 +66,6 @@ public class HomeCapability extends RestCapability<HomeApi> {
         if (!config.securityId.isBlank()) {
             homeIds.add(config.securityId);
         }
-        if (hasArea(FeatureArea.SECURITY) && !handler.getCapabilities().containsKey(SecurityCapability.class)) {
-            handler.getCapabilities().put(new SecurityCapability(handler));
-        }
-        if (hasArea(FeatureArea.ENERGY) && !handler.getCapabilities().containsKey(EnergyCapability.class)) {
-            handler.getCapabilities().put(new EnergyCapability(handler, descriptionProvider));
-        }
     }
 
     @Override
@@ -83,27 +77,22 @@ public class HomeCapability extends RestCapability<HomeApi> {
     @Override
     protected void updateHomeData(HomeData home) {
         if (firstLaunch) {
+            if (featureAreas.contains(FeatureArea.SECURITY)) {
+                handler.getCapabilities().put(new SecurityCapability(handler));
+            } else {
+                handler.removeChannels(thing.getChannelsOfGroup(GROUP_SECURITY));
+            }
+            if (featureAreas.contains(FeatureArea.ENERGY)) {
+                handler.getCapabilities().put(new EnergyCapability(handler, descriptionProvider));
+            } else {
+                handler.removeChannels(thing.getChannelsOfGroup(GROUP_ENERGY));
+            }
             home.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
             home.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
             properties.put(GROUP_LOCATION, ((Location) home).getLocation().toString());
             properties.put(PROPERTY_FEATURE,
                     featureAreas.stream().map(FeatureArea::name).collect(Collectors.joining(",")));
         }
-    }
-
-    @Override
-    protected void afterNewData(@Nullable NAObject newData) {
-        if (firstLaunch && !hasArea(FeatureArea.SECURITY)) {
-            handler.removeChannels(thing.getChannelsOfGroup(GROUP_SECURITY));
-        }
-        if (firstLaunch && !hasArea(FeatureArea.ENERGY)) {
-            handler.removeChannels(thing.getChannelsOfGroup(GROUP_ENERGY));
-        }
-        super.afterNewData(newData);
-    }
-
-    private boolean hasArea(FeatureArea searched) {
-        return featureAreas.contains(searched);
     }
 
     /**
@@ -117,14 +106,16 @@ public class HomeCapability extends RestCapability<HomeApi> {
     }
 
     @Override
-    protected List<NAObject> updateReadings(HomeApi api) {
+    protected List<NAObject> getFreshData(HomeApi api) {
         List<NAObject> result = new ArrayList<>();
         homeIds.stream().filter(id -> !id.isEmpty()).forEach(id -> {
             try {
-                HomeData homeData = api.getHomeData(id);
-                if (homeData != null) {
-                    result.add(homeData);
-                    featureAreas.addAll(homeData.getFeatures());
+                if (firstLaunch) {
+                    HomeData homeData = api.getHomeData(id);
+                    if (homeData != null) {
+                        result.add(homeData);
+                        featureAreas.addAll(homeData.getFeatures());
+                    }
                 }
 
                 api.getHomeStatus(id).ifPresent(body -> {

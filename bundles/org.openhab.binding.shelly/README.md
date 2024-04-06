@@ -215,6 +215,27 @@ In this case the binding could directly access the device to retrieve the requir
 Otherwise a Thing of type shellyprotected is created in the Inbox and you could set the credentials while adding the Thing.
 In this case the credentials are persisted as part of the Thing configuration.
 
+### Range Extender Mode
+
+The Plus/Pro devices support the so-called Range Extender Mode (not available for Gen1). 
+This allows connect Shellys, which are normally no reachable, because of a lack of WiFi signal.
+Once enabled the Shelly acts as a hub to the linked devices, like a WiFi repeater.
+The hub device enables the access point, which can be seen by the linked device.
+The binding could then get access to the secondary device using &lt;ub shelly ip&gt;:&lt;special port&gt;.
+A special port on the hub device will be created for every linked device so one hub device could supported multiple linked devices.
+
+
+The binding communicates with the Shelly hub device, which then forwards the request to the secondary device.
+Once the thing for the primary Shelly goes online the binding detects the enabled range extender mode and adds all connected secondary devices to the Inbox.
+This means: The primary Shelly has to complete initialization before linked secondary devices are discovered.
+
+- Discover primary/hub Shelly
+- Add thing and wait until it goes ONLINE
+- Check Inbox to find the secondary/linked devices
+- Add secondary device as usual
+
+If you are adding another secondary device to the same hub device you need to suspend and resume the primary thing, this will run a new initialization and adds the new secondary device to the Inbox.
+
 ### Dynamic creation of channels
 
 The Shelly series of devices has many combinations of relays, meters (different versions), sensors etc.

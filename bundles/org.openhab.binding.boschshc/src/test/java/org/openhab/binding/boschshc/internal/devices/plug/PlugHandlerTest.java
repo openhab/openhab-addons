@@ -13,7 +13,7 @@
 package org.openhab.binding.boschshc.internal.devices.plug;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.AbstractPowerSwitchHandlerTest;
+import org.openhab.binding.boschshc.internal.devices.AbstractPowerSwitchHandlerWithPowerMeterTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  */
 @NonNullByDefault
-public class PlugHandlerTest extends AbstractPowerSwitchHandlerTest<PlugHandler> {
+class PlugHandlerTest extends AbstractPowerSwitchHandlerWithPowerMeterTest<PlugHandler> {
 
     @Override
     protected PlugHandler createFixture() {

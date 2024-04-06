@@ -360,7 +360,7 @@ public class TelegramHandler extends BaseThingHandler {
                 } else if (message.photo() != null) {
                     PhotoSize[] photoSizes = message.photo();
                     logger.trace("Received photos {}", Arrays.asList(photoSizes));
-                    Arrays.sort(photoSizes, Comparator.comparingInt(PhotoSize::fileSize).reversed());
+                    Arrays.sort(photoSizes, Comparator.comparingLong(PhotoSize::fileSize).reversed());
                     lastMessageURL = getFullDownloadUrl(photoSizes[0].fileId());
                 } else if (message.text() != null) {
                     lastMessageText = message.text();
