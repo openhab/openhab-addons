@@ -112,9 +112,6 @@ public class IntesisHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not set");
             return;
         } else {
-            logger.trace("trying to log in - current session ID: {}", sessionId);
-            login();
-
             // start background initialization:
             scheduler.submit(() -> {
                 logger.trace("initialize() - trying to log in");
