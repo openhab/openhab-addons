@@ -66,7 +66,7 @@ public class BroadlinkMappingService implements EventSubscriber {
         rfStorage = this.storageService.getStorage(BroadlinkBindingConstants.RF_MAP_NAME,
                 String.class.getClassLoader());
         notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
-        notifyAvailableCommands(rfStorage.getKeys(), irTargetChannelUID);
+        notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
         logger.debug("BroadlinkMappingService constructed on behalf of {} and {}", this.irTargetChannelUID,
                 this.rfTargetChannelUID);
     }
