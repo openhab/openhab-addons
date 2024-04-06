@@ -15,13 +15,20 @@ package org.openhab.binding.broadlink.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.events.Event;
+import org.openhab.core.events.EventFilter;
+import org.openhab.core.events.EventSubscriber;
+import org.openhab.core.events.TopicEventFilter;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.events.ChannelDescriptionChangedEvent;
 import org.openhab.core.types.CommandOption;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +39,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author John Marshall - Initial contribution
  */
+
+@Component(service = { BroadlinkMappingService.class, EventSubscriber.class }, property = {
+        "service.pid=org.openhab.binding.broadlink.internal.BroadlinkMappingService" })
+
 @NonNullByDefault
-public class BroadlinkMappingService {
+public class BroadlinkMappingService implements EventSubscriber {
     private final Logger logger = LoggerFactory.getLogger(BroadlinkMappingService.class);
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
     private final ChannelUID irTargetChannelUID;
@@ -41,6 +52,8 @@ public class BroadlinkMappingService {
     private final StorageService storageService;
     private final Storage<String> irStorage;
     private final Storage<String> rfStorage;
+    private final Set<String> subscribedEventTypes = Set.of(ChannelDescriptionChangedEvent.TYPE);
+    private final EventFilter eventFilter = new TopicEventFilter("openhab/channels/command/.*");
 
     public BroadlinkMappingService(BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
             ChannelUID irTargetChannelUID, ChannelUID rfTargetChannelUID, StorageService storageService) {
@@ -53,12 +66,31 @@ public class BroadlinkMappingService {
         rfStorage = this.storageService.getStorage(BroadlinkBindingConstants.RF_MAP_NAME,
                 String.class.getClassLoader());
         notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
-        notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
+        notifyAvailableCommands(rfStorage.getKeys(), irTargetChannelUID);
         logger.debug("BroadlinkMappingService constructed on behalf of {} and {}", this.irTargetChannelUID,
                 this.rfTargetChannelUID);
     }
 
     public void dispose() {
+    }
+
+    @Override
+    public Set<String> getSubscribedEventTypes() {
+        return subscribedEventTypes;
+    }
+
+    @Override
+    public @Nullable EventFilter getEventFilter() {
+        return eventFilter;
+    }
+
+    @Override
+    public void receive(Event event) {
+        String topic = event.getTopic();
+        String type = event.getType();
+        String payload = event.getPayload();
+        String source = event.getSource();
+        logger.debug("Event Received with type {}, topic {}. source {} and payload {}", type, topic, source, payload);
     }
 
     public @Nullable String lookupCode(String command, String codeType) {
