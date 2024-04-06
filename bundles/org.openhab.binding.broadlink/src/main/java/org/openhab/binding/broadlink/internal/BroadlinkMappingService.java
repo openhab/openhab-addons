@@ -53,7 +53,7 @@ public class BroadlinkMappingService {
         rfStorage = this.storageService.getStorage(BroadlinkBindingConstants.RF_MAP_NAME,
                 String.class.getClassLoader());
         notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
-        notifyAvailableCommands(irStorage.getKeys(), rfTargetChannelUID);
+        notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
         logger.debug("BroadlinkMappingService constructed on behalf of {} and {}", this.irTargetChannelUID,
                 this.rfTargetChannelUID);
     }
