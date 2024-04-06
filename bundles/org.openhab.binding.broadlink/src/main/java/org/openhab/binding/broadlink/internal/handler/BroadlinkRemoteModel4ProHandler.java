@@ -283,7 +283,6 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
         } else {
             updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                     new StringType("RF command " + thingConfig.getNameOfCommandToLearn() + " not found"));
-
         }
     }
 }
