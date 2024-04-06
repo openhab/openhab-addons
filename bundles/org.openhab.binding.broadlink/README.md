@@ -161,7 +161,11 @@ In order to delete a previously stored code, the procedure is as follows:
 4. Click the item, and click the rectangular area that is marked NULL
 5. In the pop-up menu that appears, select *Delete IR command* for IR or *Delete RF command* for RF
 
-*VERY IMPORTANT NOTE: Unlike the previous binding, writing the codes into the files is handled by OpenHAB. While it is possible to create a file externally, copy it in the proper location and use it as a remote codes database (As it is done in the case of Remote codes file migration) IT IS STRONGLY DISCOURAGED to modify the file while the binding is acive. Please make sure the binding is stopped before you modify a remote codes file manually*
+*VERY IMPORTANT NOTE: Unlike the previous binding, writing the codes into the files is handled by OpenHAB. While it is possible to create a file externally, copy it in the proper location and use it as a remote codes database (As it is done in the case of Remote codes file migration) IT IS STRONGLY DISCOURAGED to modify the file while the binding is acive. Please make sure the binding is stopped before you modify a remote codes file manually. Also, have the following things in mind:*
+
+*-OpenHAB does not interpret a missing code file as empty. It will assume the file is corrupt and try to read from one of the backups, which can lead to confusion. if you want to empty your code file, create an empty file with a set of culry brackets, one per line*
+
+*-Remember if you manipulate the code file manually, remember to provide the proper location, and the proper ownership and permissions (Location is `$OPENHAB_USERDATA`, and permissions are `-rw-r--r-- 1 openhab openhab*
 
 ## Full Example
 
