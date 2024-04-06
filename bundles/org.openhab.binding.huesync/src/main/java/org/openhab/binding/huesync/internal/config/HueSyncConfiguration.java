@@ -25,4 +25,5 @@ public class HueSyncConfiguration {
     public String apiAccessToken = "";
     public String host = "";
     public Integer port = 443;
+    public Integer statusUpdateInterval = 10;
 }

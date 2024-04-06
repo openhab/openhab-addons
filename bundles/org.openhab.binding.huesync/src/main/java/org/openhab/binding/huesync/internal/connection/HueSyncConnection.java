@@ -30,7 +30,8 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
-import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfo;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDeviceInfo;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequest;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
@@ -78,11 +79,13 @@ public class HueSyncConnection {
     private ServiceRegistration<?> tlsProviderService;
 
     @NonNullByDefault
-    public HueSyncConnection(String host, Integer port, HttpClient httpClient)
-            throws CertificateException, IOException {
+    public HueSyncConnection(HttpClient httpClient, String host, Integer port, String apiAccessToken,
+            String registrationId) throws CertificateException, IOException {
 
         this.host = host;
         this.port = port;
+        this.apiAccessToken = apiAccessToken;
+        this.registrationId = registrationId;
 
         HueSyncTrustManagerProvider trustManagerProvider = new HueSyncTrustManagerProvider(this.host, this.port);
         BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
@@ -100,6 +103,25 @@ public class HueSyncConnection {
 
             if (response.getStatus() == HttpStatus.OK_200) {
                 deviceInfo = this.deserialize(response.getContentAsString(), HueSyncDeviceInfo.class);
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException | JsonProcessingException e) {
+            this.logger.error("{}", e.getMessage());
+        }
+
+        return deviceInfo;
+    }
+
+    public @Nullable HueSyncDetailedDeviceInfo getDetailedDeviceInfo() {
+        if (!this.isRegistered())
+            return null;
+
+        HueSyncDetailedDeviceInfo deviceInfo = null;
+
+        try {
+            ContentResponse response = this.executeGetRequest(ENDPOINTS.DEVICE);
+
+            if (response.getStatus() == HttpStatus.OK_200) {
+                deviceInfo = this.deserialize(response.getContentAsString(), HueSyncDetailedDeviceInfo.class);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException | JsonProcessingException e) {
             this.logger.error("{}", e.getMessage());
@@ -152,12 +174,13 @@ public class HueSyncConnection {
         this.tlsProviderService.unregister();
     }
 
-    // #region - private
-
-    private boolean isRegistered() {
-        return this.apiAccessToken != null && this.apiAccessToken.isBlank() != false && this.registrationId != null
-                && this.registrationId.isBlank() != false;
+    @SuppressWarnings("null")
+    public boolean isRegistered() {
+        return this.apiAccessToken != null && this.registrationId != null && !this.apiAccessToken.isBlank()
+                && !this.registrationId.isBlank();
     }
+
+    // #region - private
 
     private <T> T deserialize(String json, Class<T> type) throws JsonMappingException, JsonProcessingException {
         return ObjectMapper.readValue(json, type);

@@ -13,48 +13,45 @@
 package org.openhab.binding.huesync.internal.handler.tasks;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDeviceInfo;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
-import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.connection.HueSyncConnection;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
-import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
 
 /**
- * Task to handle device registration.
+ * Task to handle device information update.
  * 
  * @author Patrik Gfeller - Initial contribution
  */
-public class HueSyncRegistrationTask implements Runnable {
-    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncRegistrationTask.class);
+public class HueSyncUpdateTask implements Runnable {
+
+    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncUpdateTask.class);
 
     private HueSyncConnection connection;
     private HueSyncDeviceInfo deviceInfo;
 
-    private Consumer<HueSyncRegistration> action;
-    private Supplier<ThingStatus> status;
+    private Consumer<HueSyncDetailedDeviceInfo> action;
 
-    public HueSyncRegistrationTask(HueSyncConnection connection, HueSyncDeviceInfo deviceInfo,
-            Supplier<ThingStatus> status, Consumer<HueSyncRegistration> action) {
+    public HueSyncUpdateTask(HueSyncConnection connection, HueSyncDeviceInfo deviceInfo,
+            Consumer<HueSyncDetailedDeviceInfo> action) {
 
         this.connection = connection;
         this.deviceInfo = deviceInfo;
-        this.status = status;
+
         this.action = action;
     }
 
     @Override
     public void run() {
         try {
-            if (this.status.get() == ThingStatus.OFFLINE) {
-                HueSyncRegistration registration = this.connection.registerDevice(deviceInfo.uniqueId);
+            this.logger.trace("Status update query for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
+                    this.deviceInfo.uniqueId);
 
-                if (registration != null) {
-                    this.action.accept(registration);
-                }
-            }
+            HueSyncDetailedDeviceInfo deviceStatus = this.connection.getDetailedDeviceInfo();
+
+            this.action.accept(deviceStatus);
         } catch (Exception e) {
             this.logger.debug("{}", e.getMessage());
         }

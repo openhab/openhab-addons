@@ -23,12 +23,14 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
-import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfo;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDeviceInfo;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncConnection;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncApiException;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncRegistrationTask;
+import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTask;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -52,7 +54,9 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncHandler.class);
 
-    private @Nullable ScheduledFuture<?> deviceRegistrationTask;
+    private @Nullable ScheduledFuture<HueSyncRegistrationTask> deviceRegistrationTask;
+    private @Nullable ScheduledFuture<HueSyncUpdateTask> deviceUpdateTask;
+
     private @Nullable HueSyncDeviceInfo deviceInfo;
 
     private @NonNull HueSyncConnection connection;
@@ -65,11 +69,11 @@ public class HueSyncHandler extends BaseThingHandler {
     public HueSyncHandler(Thing thing, HttpClientFactory httpClientFactory) throws CertificateException, IOException {
         super(thing);
 
-        this.config = getConfigAs(HueSyncConfiguration.class);
-
         HttpClient httpClient = httpClientFactory.getCommonHttpClient();
 
-        this.connection = new HueSyncConnection(this.config.host, this.config.port, httpClient);
+        this.config = getConfigAs(HueSyncConfiguration.class);
+        this.connection = new HueSyncConnection(httpClient, this.config.host, this.config.port,
+                this.config.apiAccessToken, this.config.registrationId);
     }
 
     // #region private
@@ -89,34 +93,59 @@ public class HueSyncHandler extends BaseThingHandler {
         return scheduler.scheduleWithFixedDelay(task, initialDelay, interval, TimeUnit.SECONDS);
     }
 
-    @SuppressWarnings("null")
-    private void registerDevice() {
+    @SuppressWarnings({ "unchecked", "null" })
+    private void startBackgroundTasks() {
+        Runnable statusUpdateTask = new HueSyncUpdateTask(this.connection, this.deviceInfo,
+                (deviceState) -> this.updateDeviceState(deviceState));
 
-        this.logger.info("Starting device registration for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
-                this.deviceInfo.uniqueId);
+        if (this.connection.isRegistered()) {
+            this.logger.debug("Device {} {}:{} is already registered", this.deviceInfo.name, this.deviceInfo.deviceType,
+                    this.deviceInfo.uniqueId);
 
-        if (this.config.apiAccessToken.isEmpty() || this.config.apiAccessToken.isBlank()) {
+            this.startUpdateTask(statusUpdateTask);
+        } else {
+            this.logger.info("Starting device registration for {} {}:{}", this.deviceInfo.name,
+                    this.deviceInfo.deviceType, this.deviceInfo.uniqueId);
+
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "@text/thing.config.huesync.box.registration");
 
             Runnable task = new HueSyncRegistrationTask(connection, deviceInfo, () -> thing.getStatus(),
-                    (registration) -> setRegistration(registration));
+                    (registration) -> {
+                        this.setRegistration(registration);
+                        this.startUpdateTask(statusUpdateTask);
+                    });
 
-            this.deviceRegistrationTask = this.executeTask(task, HueSyncConstants.REGISTRATION_INITIAL_DELAY,
-                    HueSyncConstants.REGISTRATION_INTERVAL);
-        } else if (this.deviceInfo == null) {
-            this.updateStatus(ThingStatus.OFFLINE);
-        } else {
-            this.updateStatus(ThingStatus.ONLINE);
+            this.deviceRegistrationTask = (ScheduledFuture<HueSyncRegistrationTask>) this.executeTask(task,
+                    HueSyncConstants.REGISTRATION_INITIAL_DELAY, HueSyncConstants.REGISTRATION_INTERVAL);
         }
     }
 
-    @SuppressWarnings("null")
+    @SuppressWarnings("unchecked")
+    private void startUpdateTask(Runnable updateTask) {
+        this.deviceUpdateTask = (ScheduledFuture<HueSyncUpdateTask>) this.executeTask(updateTask, 0,
+                this.config.statusUpdateInterval);
+    }
+
+    private void updateDeviceState(HueSyncDetailedDeviceInfo deviceState) {
+        ThingStatus currentStatus = this.thing.getStatus();
+        logger.trace("Current status: {}", currentStatus);
+
+        if (deviceState != null) {
+            if (currentStatus != ThingStatus.OFFLINE) {
+                this.updateStatus(ThingStatus.ONLINE);
+            }
+        } else {
+            if (currentStatus != ThingStatus.OFFLINE) {
+                this.updateStatus(ThingStatus.OFFLINE);
+            }
+        }
+    }
+
     private void setRegistration(HueSyncRegistration registration) {
         this.stopTask(deviceRegistrationTask);
 
         addProperty(HueSyncConstants.REGISTRATION_ID, registration.registrationId);
-        addProperty(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", deviceInfo.apiLevel));
 
         this.config.registrationId = registration.registrationId;
         this.config.apiAccessToken = registration.accessToken;
@@ -146,7 +175,6 @@ public class HueSyncHandler extends BaseThingHandler {
             properties.put(key, value);
 
             this.updateProperties(properties);
-
         }
     }
 
@@ -171,7 +199,7 @@ public class HueSyncHandler extends BaseThingHandler {
                 });
 
                 this.checkCompatibility();
-                this.registerDevice();
+                this.startBackgroundTasks();
             } catch (HueSyncApiException e) {
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (Exception e) {
@@ -194,6 +222,7 @@ public class HueSyncHandler extends BaseThingHandler {
             this.connection.stop();
 
             this.stopTask(deviceRegistrationTask);
+            this.stopTask(deviceUpdateTask);
         } catch (Exception e) {
             this.logger.error("{}", e.getMessage());
         } finally {

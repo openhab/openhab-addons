@@ -10,7 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.huesync.internal.api.dto;
+package org.openhab.binding.huesync.internal.api.dto.device;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfoCapabilities;
 
 /**
  * HDMI Sync Box Device Information DTO
@@ -31,7 +34,7 @@ public class HueSyncDeviceInfo {
      * delimiters. Used as unique id on label, certificate common name, hostname
      * etc.
      */
-    public String uniqueId;
+    public @NonNull String uniqueId = "";
     /**
      * Increased between firmware versions when api changes. Only apiLevel >= 7 is
      * supported.

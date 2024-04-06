@@ -15,7 +15,6 @@ package org.openhab.binding.huesync.internal.api.dto.device;
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfo;
 
 /**
  * HDMI Sync Box Device Information DTO - Extended information (only available
