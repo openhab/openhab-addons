@@ -26,7 +26,7 @@ The following table lists the thing types of the supported LIFX devices:
 | LIFX PAR38                   | colorlight    |
 | LIFX Round Spot              | colorlight    |
 | LIFX Round Path              | colorlight    |
-| LIFX Square Patyh            | colorlight    |
+| LIFX Square Path             | colorlight    |
 |                              |               |
 | LIFX Clean                   | colorhevlight |
 |                              |               |
