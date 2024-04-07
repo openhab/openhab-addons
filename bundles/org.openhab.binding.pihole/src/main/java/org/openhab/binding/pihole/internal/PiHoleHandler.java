@@ -51,6 +51,7 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -111,7 +112,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             URI hostname;
             try {
                 hostname = new URI(config.hostname);
-            } catch (Exception e) {
+            } catch (URISyntaxException e) {
                 updateStatus(OFFLINE, CONFIGURATION_ERROR,
                         "@token/handler.init.invalidHostname[\"" + config.hostname + "\"]");
                 return;
