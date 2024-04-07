@@ -1,14 +1,16 @@
 package org.openhab.binding.pihole.internal.rest.model;
 
-import org.eclipse.jdt.annotation.Nullable;
-
 import java.util.Objects;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 public class Relative {
     @Nullable
- private Integer days;
-    @Nullable  private Integer hours;
-    @Nullable   private Integer minutes;
+    private Integer days;
+    @Nullable
+    private Integer hours;
+    @Nullable
+    private Integer minutes;
 
     public Relative() {
     }
@@ -45,13 +47,17 @@ public class Relative {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         Relative relative = (Relative) o;
 
-        if (!Objects.equals(days, relative.days)) return false;
-        if (!Objects.equals(hours, relative.hours)) return false;
+        if (!Objects.equals(days, relative.days))
+            return false;
+        if (!Objects.equals(hours, relative.hours))
+            return false;
         return Objects.equals(minutes, relative.minutes);
     }
 

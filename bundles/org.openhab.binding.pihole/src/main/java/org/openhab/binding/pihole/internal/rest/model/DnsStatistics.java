@@ -1,71 +1,107 @@
 package org.openhab.binding.pihole.internal.rest.model;
-import com.google.gson.annotations.SerializedName;
-import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.Objects;
+
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 public class DnsStatistics {
 
     @SerializedName("domains_being_blocked")
-    @Nullable private Integer domainsBeingBlocked;
+    @Nullable
+    private Integer domainsBeingBlocked;
     @SerializedName("dns_queries_today")
-    @Nullable  private Integer dnsQueriesToday;
+    @Nullable
+    private Integer dnsQueriesToday;
     @SerializedName("ads_blocked_today")
-    @Nullable  private Integer adsBlockedToday;
+    @Nullable
+    private Integer adsBlockedToday;
     @SerializedName("ads_percentage_today")
-    @Nullable   private Double adsPercentageToday;
+    @Nullable
+    private Double adsPercentageToday;
     @SerializedName("unique_domains")
-    @Nullable   private Integer uniqueDomains;
+    @Nullable
+    private Integer uniqueDomains;
     @SerializedName("queries_forwarded")
-    @Nullable   private Integer queriesForwarded;
+    @Nullable
+    private Integer queriesForwarded;
     @SerializedName("queries_cached")
-    @Nullable    private Integer queriesCached;
+    @Nullable
+    private Integer queriesCached;
     @SerializedName("clients_ever_seen")
-    @Nullable     private Integer clientsEverSeen;
+    @Nullable
+    private Integer clientsEverSeen;
     @SerializedName("unique_clients")
-    @Nullable   private Integer uniqueClients;
+    @Nullable
+    private Integer uniqueClients;
     @SerializedName("dns_queries_all_types")
-    @Nullable   private Integer dnsQueriesAllTypes;
+    @Nullable
+    private Integer dnsQueriesAllTypes;
     @SerializedName("reply_UNKNOWN")
-    @Nullable  private Integer replyUnknown;
+    @Nullable
+    private Integer replyUnknown;
     @SerializedName("reply_NODATA")
-    @Nullable   private Integer replyNoData;
+    @Nullable
+    private Integer replyNoData;
     @SerializedName("reply_NXDOMAIN")
-    @Nullable   private Integer replyNXDomain;
+    @Nullable
+    private Integer replyNXDomain;
     @SerializedName("reply_CNAME")
-    @Nullable   private Integer replyCName;
+    @Nullable
+    private Integer replyCName;
     @SerializedName("reply_IP")
-    @Nullable   private Integer replyIP;
+    @Nullable
+    private Integer replyIP;
     @SerializedName("reply_DOMAIN")
-    @Nullable   private Integer replyDomain;
+    @Nullable
+    private Integer replyDomain;
     @SerializedName("reply_RRNAME")
-    @Nullable   private Integer replyRRName;
+    @Nullable
+    private Integer replyRRName;
     @SerializedName("reply_SERVFAIL")
-    @Nullable    private Integer replyServFail;
+    @Nullable
+    private Integer replyServFail;
     @SerializedName("reply_REFUSED")
-    @Nullable    private Integer replyRefused;
+    @Nullable
+    private Integer replyRefused;
     @SerializedName("reply_NOTIMP")
-    @Nullable   private Integer replyNotImp;
+    @Nullable
+    private Integer replyNotImp;
     @SerializedName("reply_OTHER")
-    @Nullable    private Integer replyOther;
+    @Nullable
+    private Integer replyOther;
     @SerializedName("reply_DNSSEC")
-    @Nullable    private Integer replyDNSSEC;
+    @Nullable
+    private Integer replyDNSSEC;
     @SerializedName("reply_NONE")
-    @Nullable   private Integer replyNone;
+    @Nullable
+    private Integer replyNone;
     @SerializedName("reply_BLOB")
-    @Nullable    private Integer replyBlob;
+    @Nullable
+    private Integer replyBlob;
     @SerializedName("dns_queries_all_replies")
-    @Nullable    private Integer dnsQueriesAllReplies;
+    @Nullable
+    private Integer dnsQueriesAllReplies;
     @SerializedName("privacy_level")
-    @Nullable    private Integer privacyLevel;
-    @Nullable    private String status;
+    @Nullable
+    private Integer privacyLevel;
+    @Nullable
+    private String status;
     @SerializedName("gravity_last_updated")
-    @Nullable    private GravityLastUpdated gravityLastUpdated;
+    @Nullable
+    private GravityLastUpdated gravityLastUpdated;
 
     public DnsStatistics() {
     }
 
-    public DnsStatistics(Integer domainsBeingBlocked, Integer dnsQueriesToday, Integer adsBlockedToday, Double adsPercentageToday, Integer uniqueDomains, Integer queriesForwarded, Integer queriesCached, Integer clientsEverSeen, Integer uniqueClients, Integer dnsQueriesAllTypes, Integer replyUnknown, Integer replyNoData, Integer replyNXDomain, Integer replyCName, Integer replyIP, Integer replyDomain, Integer replyRRName, Integer replyServFail, Integer replyRefused, Integer replyNotImp, Integer replyOther, Integer replyDNSSEC, Integer replyNone, Integer replyBlob, Integer dnsQueriesAllReplies, Integer privacyLevel, String status, GravityLastUpdated gravityLastUpdated) {
+    public DnsStatistics(Integer domainsBeingBlocked, Integer dnsQueriesToday, Integer adsBlockedToday,
+            Double adsPercentageToday, Integer uniqueDomains, Integer queriesForwarded, Integer queriesCached,
+            Integer clientsEverSeen, Integer uniqueClients, Integer dnsQueriesAllTypes, Integer replyUnknown,
+            Integer replyNoData, Integer replyNXDomain, Integer replyCName, Integer replyIP, Integer replyDomain,
+            Integer replyRRName, Integer replyServFail, Integer replyRefused, Integer replyNotImp, Integer replyOther,
+            Integer replyDNSSEC, Integer replyNone, Integer replyBlob, Integer dnsQueriesAllReplies,
+            Integer privacyLevel, String status, GravityLastUpdated gravityLastUpdated) {
         this.domainsBeingBlocked = domainsBeingBlocked;
         this.dnsQueriesToday = dnsQueriesToday;
         this.adsBlockedToday = adsBlockedToday;
@@ -326,8 +362,10 @@ public class DnsStatistics {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         DnsStatistics that = (DnsStatistics) o;
 
@@ -351,26 +389,40 @@ public class DnsStatistics {
             return false;
         if (!Objects.equals(dnsQueriesAllTypes, that.dnsQueriesAllTypes))
             return false;
-        if (!Objects.equals(replyUnknown, that.replyUnknown)) return false;
-        if (!Objects.equals(replyNoData, that.replyNoData)) return false;
+        if (!Objects.equals(replyUnknown, that.replyUnknown))
+            return false;
+        if (!Objects.equals(replyNoData, that.replyNoData))
+            return false;
         if (!Objects.equals(replyNXDomain, that.replyNXDomain))
             return false;
-        if (!Objects.equals(replyCName, that.replyCName)) return false;
-        if (!Objects.equals(replyIP, that.replyIP)) return false;
-        if (!Objects.equals(replyDomain, that.replyDomain)) return false;
-        if (!Objects.equals(replyRRName, that.replyRRName)) return false;
+        if (!Objects.equals(replyCName, that.replyCName))
+            return false;
+        if (!Objects.equals(replyIP, that.replyIP))
+            return false;
+        if (!Objects.equals(replyDomain, that.replyDomain))
+            return false;
+        if (!Objects.equals(replyRRName, that.replyRRName))
+            return false;
         if (!Objects.equals(replyServFail, that.replyServFail))
             return false;
-        if (!Objects.equals(replyRefused, that.replyRefused)) return false;
-        if (!Objects.equals(replyNotImp, that.replyNotImp)) return false;
-        if (!Objects.equals(replyOther, that.replyOther)) return false;
-        if (!Objects.equals(replyDNSSEC, that.replyDNSSEC)) return false;
-        if (!Objects.equals(replyNone, that.replyNone)) return false;
-        if (!Objects.equals(replyBlob, that.replyBlob)) return false;
+        if (!Objects.equals(replyRefused, that.replyRefused))
+            return false;
+        if (!Objects.equals(replyNotImp, that.replyNotImp))
+            return false;
+        if (!Objects.equals(replyOther, that.replyOther))
+            return false;
+        if (!Objects.equals(replyDNSSEC, that.replyDNSSEC))
+            return false;
+        if (!Objects.equals(replyNone, that.replyNone))
+            return false;
+        if (!Objects.equals(replyBlob, that.replyBlob))
+            return false;
         if (!Objects.equals(dnsQueriesAllReplies, that.dnsQueriesAllReplies))
             return false;
-        if (!Objects.equals(privacyLevel, that.privacyLevel)) return false;
-        if (!Objects.equals(status, that.status)) return false;
+        if (!Objects.equals(privacyLevel, that.privacyLevel))
+            return false;
+        if (!Objects.equals(status, that.status))
+            return false;
         return Objects.equals(gravityLastUpdated, that.gravityLastUpdated);
     }
 

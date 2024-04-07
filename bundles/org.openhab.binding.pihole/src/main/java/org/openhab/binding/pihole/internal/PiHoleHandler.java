@@ -1,45 +1,16 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.pihole.internal;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DisableEnable;
-import org.openhab.binding.pihole.internal.rest.AdminService;
-import org.openhab.binding.pihole.internal.rest.JettyAdminService;
-import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.math.BigDecimal;
-import java.net.URI;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -78,6 +49,35 @@ import static org.openhab.core.thing.ThingStatus.UNKNOWN;
 import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
+import java.math.BigDecimal;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeoutException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DisableEnable;
+import org.openhab.binding.pihole.internal.rest.AdminService;
+import org.openhab.binding.pihole.internal.rest.JettyAdminService;
+import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The {@link PiHoleHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -113,7 +113,8 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
                 hostname = new URI(config.hostname);
             } catch (Exception e) {
                 logger.error("Invalid hostname: {}", config.hostname);
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.init.invalidHostname[\"" + config.hostname+"\"]");
+                updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                        "@token/handler.init.invalidHostname[\"" + config.hostname + "\"]");
                 return;
             }
             if (config.token.isEmpty()) {
@@ -127,10 +128,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/handler.init.wrongInterval");
             return;
         }
-        scheduledFuture = scheduler.scheduleWithFixedDelay(
-                this::update, 0,
-                config.refreshIntervalSeconds,
-                SECONDS);
+        scheduledFuture = scheduler.scheduleWithFixedDelay(this::update, 0, config.refreshIntervalSeconds, SECONDS);
 
         // do not set status here, the background task will do it.
     }
@@ -171,7 +169,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
                         case ENABLE -> enableBlocking();
                     }
                 } catch (ExecutionException | InterruptedException | TimeoutException ex) {
-                    logger.debug("Cannot invoke " + value + " on channel " + channelUID, ex);
+                    logger.debug("Cannot invoke {} on channel {}", value, channelUID, ex);
                     updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
                 }
             }
@@ -215,7 +213,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             updateState(ADS_PERCENTAGE_TODAY_CHANNEL, new PercentType(new BigDecimal(adsPercentageToday.toString())));
         }
         updateState(ENABLED_CHANNEL, OnOffType.from(localDnsStatistics.getEnabled()));
-        if(localDnsStatistics.getEnabled()) {
+        if (localDnsStatistics.getEnabled()) {
             updateState(DISABLE_ENABLE_CHANNEL, new StringType(ENABLE.toString()));
         }
     }

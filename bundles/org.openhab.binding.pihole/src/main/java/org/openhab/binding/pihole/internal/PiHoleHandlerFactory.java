@@ -41,7 +41,7 @@ public class PiHoleHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(PI_HOLE_TYPE);
     private final HttpClientFactory httpClientFactory;
 
-@Activate
+    @Activate
     public PiHoleHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         this.httpClientFactory = httpClientFactory;
     }

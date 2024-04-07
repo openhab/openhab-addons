@@ -140,13 +140,13 @@
 	<channel-type id="number-channel">
 		<item-type>Number</item-type>
 		<label>Number channel</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="enabled-channel">
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<description>The current status of blocking</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="disable-enable-channel">
 		<item-type>String</item-type>
