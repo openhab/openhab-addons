@@ -316,6 +316,7 @@
     <module>org.openhab.binding.pegelonline</module>
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
+    <module>org.openhab.binding.pihole</module>
     <module>org.openhab.binding.pilight</module>
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.pixometer</module>
