@@ -59,10 +59,12 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     private SunSynkInverter inverter;
     private int refreshTime = 60;
     private ScheduledFuture<?> refreshTask;
+    private Boolean batterySettingsUpdated = true;
 
     public SunSynkInverterHandler(Thing thing) {
         super(thing);
     }
+
 
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
@@ -180,6 +182,45 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                 case CHANNEL_BATTERY_INTERVAL_6_TIME:
                     inverterChargeSettings.setIntervalTime(command.toString(), 6);
                     break;
+                // Charge target
+                case CHANNEL_BATTERY_INTERVAL_1_CAPACITY:
+                    inverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 1);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_2_CAPACITY:
+                    inverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 2);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_3_CAPACITY:
+                    inverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 3);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_4_CAPACITY:
+                    inverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 4);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_5_CAPACITY:
+                    inverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 5);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_6_CAPACITY:
+                    inverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 6);
+                    break;
+                // Battery charing power limit
+                case CHANNEL_BATTERY_INTERVAL_1_POWER_LIMIT:
+                    inverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()), 1);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_2_POWER_LIMIT:
+                    inverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()), 2);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_3_POWER_LIMIT:
+                    inverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()), 3);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_4_POWER_LIMIT:
+                    inverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()), 4);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_5_POWER_LIMIT:
+                    inverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()), 5);
+                    break;
+                case CHANNEL_BATTERY_INTERVAL_6_POWER_LIMIT:
+                    inverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()), 6);
+                    break;
+
             }
             // may need to detect something has changes rather than just always doing this?
             sendAPICommandToInverter(inverterChargeSettings);
@@ -188,23 +229,25 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     private void sendAPICommandToInverter(Settings inverterChargeSettings) {
         logger.debug("Ok - will handle command for CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE");
-        try {
 
-            // Settings inverterChargeSettings = inverter.getBatteryChargeSettings();
-            String body = inverterChargeSettings.buildBody();
-            String token = inverterChargeSettings.getToken();
-            String response = inverter.sendCommandToSunSynk(body, token);
-            logger.debug("Sent command to Sun Account : {}", response);
+        SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
+        // Settings inverterChargeSettings = inverter.getBatteryChargeSettings();
+        String body = inverterChargeSettings.buildBody();
+        String token = inverterChargeSettings.getToken();
+        String response = inverter.sendCommandToSunSynk(body, token);
 
-        } catch (Exception e) {
-
-            // TO DO
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-
+        if (response == "Authentication Fail") { // try refreshing log in
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not send Command to Inverter " + config.getAlias() + " likely to be token issue.");
+            return;
         }
+        if (response == "Failed") { // unknown cause
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not send Command to Inverter " + config.getAlias());
+            return;
+        }
+        this.batterySettingsUpdated = true;
+        logger.debug("Sent command: {} to inverter {}", response, config.getAlias());
     }
 
     @Override
@@ -232,39 +275,10 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         } else {
             refreshTime = config.getRefresh();
         }
-
+        this.batterySettingsUpdated = true;
         inverter = new SunSynkInverter(config);
         startAutomaticRefresh();
-
-        // Initialize the handler.
-        // The framework requires you to return from this method quickly, i.e. any network access must be done in
-        // the background initialization below.
-        // Also, before leaving this method a thing status from one of ONLINE, OFFLINE or UNKNOWN must be set. This
-        // might already be the real thing status in case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
-
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
-
-        // LC below is default code do I need it?
-        /*
-         * ------ LC
-         * // Example for background initialization:
-         * scheduler.execute(() -> {
-         * boolean thingReachable = true; // <background task with long running initialization here>
-         * // when done do:
-         * if (thingReachable) {
-         * updateStatus(ThingStatus.ONLINE);
-         * } else {
-         * updateStatus(ThingStatus.OFFLINE);
-         * }
-         * });
-         * LC ------
-         */
-
+  
         // These logging types should be primarily used by bindings
         // logger.trace("Example trace message");
         // logger.debug("Example debug message");
@@ -290,29 +304,35 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         this.lockoutTimer = ZonedDateTime.now().plusMinutes(1); // lockout time 1 min
 
         if (inverter != null) {
-            try {
-                Bridge bridge = getBridge();
-                if (bridge == null) {
-                    return;
-                }
-                ThingHandler handler = bridge.getHandler();
-                SunSynkAccountHandler bridgehandler = null;
-                if (handler instanceof SunSynkAccountHandler) {
-                    bridgehandler = (SunSynkAccountHandler) handler;
-                } else
-                    return;
-                boolean authenticated = inverter.sendGetState();
-                if (!authenticated) {
-                    bridgehandler.initialize();
-                    return;
-                }
-                bridgehandler.setBridgeOnline();
-                updateStatus(ThingStatus.ONLINE);
-                publishChannels();
-            } catch (Exception e) {
-                logger.debug("Error when refreshing state.", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            // try {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                return;
             }
+            ThingHandler handler = bridge.getHandler();
+            SunSynkAccountHandler bridgehandler = null;
+            if (handler instanceof SunSynkAccountHandler) {
+                bridgehandler = (SunSynkAccountHandler) handler;
+            } else
+                return;
+            String response = inverter.sendGetState(this.batterySettingsUpdated);
+            if (response == "Authentication Fail") { // try refreshing log in
+                bridgehandler.initialize();
+                return;
+            }
+            if (response == "Failed") { // unknown cause
+                return;
+            }
+            this.batterySettingsUpdated = false;
+            bridgehandler.setBridgeOnline();
+            updateStatus(ThingStatus.ONLINE);
+            publishChannels();
+            /*
+             * } catch (Exception e) {
+             * logger.debug("Error when refreshing state.", e);
+             * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+             * }
+             */
         }
     }
 

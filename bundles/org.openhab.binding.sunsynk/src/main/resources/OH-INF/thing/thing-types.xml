@@ -169,7 +169,7 @@
 		<label>Grid charge interval start time</label>
 		<description>"24hr time for the start of the interval. 00:00 to 23:55 are valid in 5 min increments with leading zero
 			on the hour and minute. Times must be in ascending order. ".</description>
-		<state readOnly="false" pattern="%1$tH:%1$tM"/>
+		<state readOnly="false"/> <!--- pattern="%1$tH:%1$tM"/> -->
 	</channel-type>
 
 	<channel-type id="grid-charge" advanced="true">

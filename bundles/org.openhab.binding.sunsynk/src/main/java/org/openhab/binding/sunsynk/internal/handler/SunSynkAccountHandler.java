@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.sunsynk.internal.classes.APIdata;
 import org.openhab.binding.sunsynk.internal.classes.Client;
 import org.openhab.binding.sunsynk.internal.classes.Details;
@@ -55,8 +56,8 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         super(bridge);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+   @Override
+    public void handleCommand(@NonNull  ChannelUID channelUID, @NonNull Command command) {
     }
 
     @Override
@@ -131,12 +132,13 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     private Client authenticate(String username, String password) {
+        Gson gson = new Gson();
+        String response = "";
+        String httpsURL = makeLoginURL("oauth/token");
+        String payload = makeLoginBody(username, password);
+        Properties headers = new Properties();
         try {
-            Gson gson = new Gson();
-            String response = "";
-            String httpsURL = makeLoginURL("oauth/token");
-            String payload = makeLoginBody(username, password);
-            Properties headers = new Properties();
+
             headers.setProperty("Accept", "application/json");
             headers.setProperty("Content-Type", "application/json"); // may not need this.
             InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
