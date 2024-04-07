@@ -15,12 +15,14 @@ package org.openhab.binding.pihole.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DisableEnable;
 import org.openhab.binding.pihole.internal.rest.AdminService;
 import org.openhab.binding.pihole.internal.rest.JettyAdminService;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -39,14 +41,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeoutException;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.ADS_BLOCKED_TODAY_CHANNEL;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.ADS_PERCENTAGE_TODAY_CHANNEL;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.CLIENTS_EVER_SEEN_CHANNEL;
+import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DISABLE_ENABLE_CHANNEL;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DNS_QUERIES_ALL_REPLIES_CHANNEL;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DNS_QUERIES_ALL_TYPES_CHANNEL;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DNS_QUERIES_TODAY_CHANNEL;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DOMAINS_BEING_BLOCKED_CHANNEL;
+import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DisableEnable.ENABLE;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.ENABLED_CHANNEL;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.PRIVACY_LEVEL_CHANNEL;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.QUERIES_CACHED_CHANNEL;
@@ -85,7 +90,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
     private final Logger logger = LoggerFactory.getLogger(PiHoleHandler.class);
     private final HttpClient httpClient;
 
-    private @Nullable JettyAdminService adminService;
+    private @Nullable AdminService adminService;
     private @Nullable DnsStatistics dnsStatistics;
     private @Nullable ScheduledFuture<?> scheduledFuture;
 
@@ -154,6 +159,25 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             refresh();
+            return;
+        }
+
+        if (DISABLE_ENABLE_CHANNEL.equals(channelUID.getId())) {
+            if (command instanceof StringType stringType) {
+                var value = DisableEnable.valueOf(stringType.toString());
+                try {
+                    switch (value) {
+                        case DISABLE -> disableBlocking(0);
+                        case FOR_10_SEC -> disableBlocking(10);
+                        case FOR_30_SEC -> disableBlocking(30);
+                        case FOR_5_MIN -> disableBlocking(MINUTES.toSeconds(5));
+                        case ENABLE -> enableBlocking();
+                    }
+                } catch (ExecutionException | InterruptedException | TimeoutException ex) {
+                    logger.debug("Cannot invoke " + value + " on channel " + channelUID, ex);
+                    updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
+                }
+            }
         }
     }
 
@@ -194,6 +218,9 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             updateState(ADS_PERCENTAGE_TODAY_CHANNEL, new PercentType(new BigDecimal(adsPercentageToday.toString())));
         }
         updateState(ENABLED_CHANNEL, OnOffType.from(localDnsStatistics.getEnabled()));
+        if(localDnsStatistics.getEnabled()) {
+            updateState(DISABLE_ENABLE_CHANNEL, new StringType(ENABLE.toString()));
+        }
     }
 
     private void updateDecimalState(String channelID, @Nullable Integer value) {

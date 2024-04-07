@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.Optional;
@@ -14,6 +16,7 @@ import static java.lang.String.format;
 
 @NonNullByDefault
 public class JettyAdminService implements AdminService {
+    private static final Logger logger = LoggerFactory.getLogger(JettyAdminService.class);
     private final String token;
     private final URI baseUrl;
     private final HttpClient client;
@@ -30,6 +33,7 @@ public class JettyAdminService implements AdminService {
 
   @Override
   public Optional<DnsStatistics> summary() throws ExecutionException, InterruptedException, TimeoutException {
+        logger.debug("Getting summary");
         var url = baseUrl.resolve("/admin/api.php?summaryRaw&auth=" + token);
         var request = client.newRequest(url);
         var response = request.send();
@@ -39,6 +43,7 @@ public class JettyAdminService implements AdminService {
 
     @Override
     public void disableBlocking(long seconds) throws ExecutionException, InterruptedException, TimeoutException {
+        logger.debug("Disabling blocking for {} seconds", seconds);
         var url = baseUrl.resolve(format("/admin/api.php?disable=%s&auth=%s",seconds, token));
         var request = client.newRequest(url);
         request.send();
@@ -46,6 +51,7 @@ public class JettyAdminService implements AdminService {
 
     @Override
     public void enableBlocking() throws ExecutionException, InterruptedException, TimeoutException {
+        logger.debug("Enabling blocking");
         var url = baseUrl.resolve(format("/admin/api.php?disable&auth=%s", token));
         var request = client.newRequest(url);
         request.send();

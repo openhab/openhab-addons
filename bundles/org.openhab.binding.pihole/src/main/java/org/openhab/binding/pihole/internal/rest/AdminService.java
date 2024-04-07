@@ -1,11 +1,13 @@
 package org.openhab.binding.pihole.internal.rest;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+@NonNullByDefault
 public interface AdminService {
     /**
      * Retrieves a summary of DNS statistics.

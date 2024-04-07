@@ -36,7 +36,7 @@ public class PiHoleActions implements ThingActions {
     public void disableBlocking(
             @ActionInput(name = "time", label = "@text/action.disable.timeLabel", description = "@text/action.disable.timeDescription") long time,
             @ActionInput(name = "timeUnit", label = "@text/action.disable.timeUnitLabel", description = "@text/action.disable.timeUnitDescription") @Nullable TimeUnit timeUnit) throws ExecutionException, InterruptedException, TimeoutException {
-        if (time <= 0) {
+        if (time < 0) {
             return;
         }
 

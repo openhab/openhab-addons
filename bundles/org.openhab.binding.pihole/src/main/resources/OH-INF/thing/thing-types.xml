@@ -114,6 +114,7 @@
 				<description>The privacy level setting.</description>
 			</channel>
 			<channel id="enabled" typeId="enabled-channel"/>
+			<channel id="disable-enable" typeId="disable-enable-channel"/>
 		</channels>
 
 		<config-description>
@@ -146,5 +147,18 @@
 		<label>Status</label>
 		<description>The current status of blocking</description>
 		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="disable-enable-channel">
+		<item-type>String</item-type>
+		<label>Disable Blocking</label>
+		<command>
+			<options>
+				<option value="DISABLE">Disable Blocking Indefinitely</option>
+				<option value="FOR_10_SEC">Disable Blocking for 10 seconds</option>
+				<option value="FOR_30_SEC">Disable Blocking for 30 seconds</option>
+				<option value="FOR_5_MIN">Disable Blocking for 5 minutes</option>
+				<option value="ENABLE">Enable Blocking</option>
+			</options>
+		</command>
 	</channel-type>
 </thing:thing-descriptions>

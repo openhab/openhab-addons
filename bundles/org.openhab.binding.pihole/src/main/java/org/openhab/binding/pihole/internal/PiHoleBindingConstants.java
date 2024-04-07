@@ -57,5 +57,13 @@ public class PiHoleBindingConstants {
         public static final String DNS_QUERIES_ALL_REPLIES_CHANNEL = "dns_queries_all_replies";
         public static final String PRIVACY_LEVEL_CHANNEL = "privacy_level";
         public static final String ENABLED_CHANNEL = "enabled";
+        public static final String DISABLE_ENABLE_CHANNEL = "disable-enable";
+        public static enum DisableEnable {
+            DISABLE,
+            FOR_10_SEC,
+                    FOR_30_SEC,
+            FOR_5_MIN,
+                    ENABLE
+        }
     }
 }
