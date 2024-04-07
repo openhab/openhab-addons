@@ -185,7 +185,7 @@ public class MailBuilder {
                 htmlMail.setTextMsg(text);
                 htmlMail.setHtmlMsg(html);
             } else {
-                htmlMail.setMsg(html);
+                htmlMail.setHtmlMsg(html);
             }
             for (File file : attachmentFiles) {
                 htmlMail.attach(new FileDataSource(file), "", "");
