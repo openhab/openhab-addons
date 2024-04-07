@@ -113,21 +113,18 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
                 hostname = new URI(config.hostname);
             } catch (Exception e) {
                 logger.error("Invalid hostname: {}", config.hostname);
-                // todo i18n
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, "Invalid hostname: " + config.hostname);
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.init.invalidHostname[\"" + config.hostname+"\"]");
                 return;
             }
             if (config.token.isEmpty()) {
-                // todo i18n
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, "Please pass token");
+                updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.init.noToken");
                 return;
             }
             adminService = new JettyAdminService(config.token, hostname, httpClient);
         }
 
         if (config.refreshIntervalSeconds <= 0) {
-            // todo i18n
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "Refresh interval needs to be greater than 0!");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/handler.init.wrongInterval");
             return;
         }
         scheduledFuture = scheduler.scheduleWithFixedDelay(
