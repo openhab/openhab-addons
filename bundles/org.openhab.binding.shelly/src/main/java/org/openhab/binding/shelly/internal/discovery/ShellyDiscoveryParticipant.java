@@ -24,6 +24,7 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -99,7 +100,6 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
         try {
             String address = "";
-            name = service.getName().toLowerCase();
             Inet4Address[] hostAddresses = service.getInet4Addresses();
             if ((hostAddresses != null) && (hostAddresses.length > 0)) {
                 address = substringAfter(hostAddresses[0].toString(), "/");
@@ -125,7 +125,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             config.password = bindingConfig.defaultPassword;
 
             String gen = getString(service.getPropertyString("gen"));
-            boolean gen2 = "2".equals(gen) || "3".equals(gen);
+            boolean gen2 = "2".equals(gen) || "3".equals(gen) || ShellyDeviceProfile.isGeneration2(name);
             return ShellyBasicDiscoveryService.createResult(gen2, name, address, bindingConfig, httpClient, messages);
         } catch (IOException | NullPointerException e) {
             // maybe some format description was buggy

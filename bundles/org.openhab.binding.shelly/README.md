@@ -91,6 +91,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X                   |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
+| shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                   |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
@@ -1255,7 +1256,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 
 Channels lastEvent and eventCount are only available if input type is set to momentary button
 
-### Shelly Plus HT (thing-type: shellyplusht)
+### Shelly Plus HT (thing-type: shellyplusht), Plus HT Gen 3 (thing-type: shellyhtg3)
 
 | Group   | Channel      | Type     | read-only | Description                                             |
 | ------- | ------------ | -------- | --------- | ------------------------------------------------------- |
