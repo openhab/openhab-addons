@@ -112,7 +112,6 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             try {
                 hostname = new URI(config.hostname);
             } catch (Exception e) {
-                logger.error("Invalid hostname: {}", config.hostname);
                 updateStatus(OFFLINE, CONFIGURATION_ERROR,
                         "@token/handler.init.invalidHostname[\"" + config.hostname + "\"]");
                 return;
