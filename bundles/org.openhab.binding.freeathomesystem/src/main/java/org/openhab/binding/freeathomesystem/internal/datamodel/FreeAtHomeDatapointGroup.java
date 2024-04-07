@@ -190,7 +190,7 @@ public class FreeAtHomeDatapointGroup {
                 break;
             default:
                 pattern = "";
-                logger.debug("Type pattern not forund for PairingID {} - using default",
+                logger.debug("Type pattern not found for PairingID {} - using default",
                         String.format("0x%04X", pairingId));
                 break;
         }
@@ -218,7 +218,7 @@ public class FreeAtHomeDatapointGroup {
                 break;
             default:
                 valueStateConverter = new DecimalValueStateConverter();
-                logger.debug("Value converter not forund for PairingID {} - using default",
+                logger.debug("Value converter not found for PairingID {} - using default",
                         String.format("0x%04X", pairingId));
                 break;
         }

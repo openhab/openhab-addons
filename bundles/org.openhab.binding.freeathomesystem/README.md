@@ -73,13 +73,14 @@ Once it is added as a Thing with correct credentials, the scan of free@home devi
 
 The ABB/Busch free@home system is calling its smart home components as free@home devices.
 The free@home system devices can have one or multiple channels depending the device's features.
-During the scanning process the openHAB binding will detect only the devices IDs, the device features will be detected at the point in time, when a openHAB Thing is created.
+During the scanning process the openHAB binding will detect only the devices IDs.
+The device features will be detected at the point in time, when a openHAB Thing is created.
 At the of the creation the free@home binding will automatically create the relevant channels without any further configuration.
 If a free@home system device has multiple smart-home channels (e.g. 4x DIN/rail Actuator), the newly created Thing will get all relevant channels to operate all actuators existing inside the free@home device.
 
 ## Sensors and Actuators of free@home Devices as Things in openHAB
 
-The free@home system is supporting sensors and actuators.
+The free@home system supports sensors and actuators.
 The connection of sensors and actuators are done on the free@home system dashboard.
 If a Thing channel is a free@home device sensor channel, this channel is read only.
 
@@ -95,7 +96,7 @@ There are several settings for a bridge:
 
 ## Examples for .things
 
-Things are all discovered automatically and visible on the openHAB dashboard after pushing the scan button
+Things are all discovered automatically and visible on the openHAB UI after pushing the scan button
 
 In order to manually configure a Thing:
 
