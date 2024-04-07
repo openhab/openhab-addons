@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.pihole.internal.rest.AdminService;
+import org.openhab.binding.pihole.internal.rest.JettyAdminService;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -23,6 +24,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -30,7 +32,12 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.ADS_BLOCKED_TODAY_CHANNEL;
@@ -73,12 +80,12 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public class PiHoleHandler extends BaseThingHandler {
+public class PiHoleHandler extends BaseThingHandler implements AdminService {
 
     private final Logger logger = LoggerFactory.getLogger(PiHoleHandler.class);
     private final HttpClient httpClient;
 
-    private @Nullable AdminService adminService;
+    private @Nullable JettyAdminService adminService;
     private @Nullable DnsStatistics dnsStatistics;
     private @Nullable ScheduledFuture<?> scheduledFuture;
 
@@ -110,7 +117,7 @@ public class PiHoleHandler extends BaseThingHandler {
                 updateStatus(OFFLINE, CONFIGURATION_ERROR, "Please pass token");
                 return;
             }
-            adminService = new AdminService(config.token, hostname, httpClient);
+            adminService = new JettyAdminService(config.token, hostname, httpClient);
         }
 
         if (config.refreshIntervalSeconds <= 0) {
@@ -197,6 +204,11 @@ public class PiHoleHandler extends BaseThingHandler {
     }
 
     @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(PiHoleActions.class);
+    }
+
+    @Override
     public void dispose() {
         adminService = null;
         dnsStatistics = null;
@@ -211,5 +223,32 @@ public class PiHoleHandler extends BaseThingHandler {
             }
         }
         super.dispose();
+    }
+
+    @Override
+    public Optional<DnsStatistics> summary() throws ExecutionException, InterruptedException, TimeoutException {
+        var local = adminService;
+        if (local == null) {
+            throw new IllegalStateException("AdminService not initialized");
+        }
+        return local.summary();
+    }
+
+    @Override
+    public void disableBlocking(long seconds) throws ExecutionException, InterruptedException, TimeoutException {
+        var local = adminService;
+        if (local == null) {
+            throw new IllegalStateException("AdminService not initialized");
+        }
+        local.disableBlocking(seconds);
+    }
+
+    @Override
+    public void enableBlocking() throws ExecutionException, InterruptedException, TimeoutException {
+        var local = adminService;
+        if (local == null) {
+            throw new IllegalStateException("AdminService not initialized");
+        }
+        local.enableBlocking();
     }
 }

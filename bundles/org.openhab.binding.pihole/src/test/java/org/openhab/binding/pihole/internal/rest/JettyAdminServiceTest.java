@@ -23,7 +23,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class AdminServiceTest {
+public class JettyAdminServiceTest {
 String content = """
         {
           "domains_being_blocked": 131355,
@@ -72,7 +72,7 @@ String content = """
         var token = "validToken";
         var baseUrl = URI.create("https://example.com");
         var client = mock(HttpClient.class);
-        var adminService = new AdminService(token, baseUrl, client);
+        var adminService = new JettyAdminService(token, baseUrl, client);
         var dnsStatistics = new DnsStatistics(
                 131355,// domains_being_blocked
                 27459,// dns_queries_today
@@ -125,7 +125,7 @@ String content = """
         var token = "validToken";
         var baseUrl = URI.create("https://example.com");
         var client = mock(HttpClient.class);
-        var adminService = new AdminService(token, baseUrl, client);
+        var adminService = new JettyAdminService(token, baseUrl, client);
         var dnsStatistics = new DnsStatistics();
         var response = mock(ContentResponse.class);
         var request = mock(Request.class);

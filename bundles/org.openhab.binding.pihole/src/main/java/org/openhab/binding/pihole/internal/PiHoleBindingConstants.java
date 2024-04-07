@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class PiHoleBindingConstants {
 
-    private static final String BINDING_ID = "pihole";
+    public static final String BINDING_ID = "pihole";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID PI_HOLE_TYPE = new ThingTypeUID(BINDING_ID, "server");
