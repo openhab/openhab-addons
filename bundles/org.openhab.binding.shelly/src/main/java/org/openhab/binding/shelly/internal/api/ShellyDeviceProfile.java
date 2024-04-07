@@ -196,9 +196,6 @@ public class ShellyDeviceProfile {
         if (thingType.isEmpty()) {
             return;
         }
-        if (thingType.contains("g3")) {
-            int i = 2;
-        }
 
         isBlu = isBluSeries(thingType); // e.g. SBBT for BLU Button
         isGen2 = isGeneration2(thingType) || isBlu;

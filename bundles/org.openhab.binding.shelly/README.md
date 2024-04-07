@@ -49,7 +49,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellydimmer      | Shelly Dimmer                                          | SHDM-1    |
 | shellydimmer2     | Shelly Dimmer2                                         | SHDM-2    |
 | shellyix3         | Shelly ix3                                             | SHIX3-1   |
-| shellyuni         | Shelly UNI                                             | SHUNI-1   |
+| shellyuni         | Shelly UNI, Shelly Plus UNI                            | SHUNI-1, SNSN-0043X |
 | shellyplug        | Shelly Plug                                            | SHPLG2-1  |
 | shellyplugs       | Shelly Plug-S                                          | SHPLG-S   |
 | shellyem          | Shelly EM with integrated Power Meters                 | SHEM      |
@@ -747,7 +747,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 
 Channels lastEvent and eventCount are only available if input type is set to momentary button
 
-### Shelly UNI (thing-type: shellyuni)
+### Shelly UNI, Shelly Plus UNI (thing-type: shellyuni)
 
 | Group   | Channel      | Type    | read-only | Description                                                              |
 | ------- | ------------ | ------- | --------- | ------------------------------------------------------------------------ |

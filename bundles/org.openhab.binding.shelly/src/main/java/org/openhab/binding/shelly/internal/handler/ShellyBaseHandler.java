@@ -1359,7 +1359,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         properties.put(PROPERTY_SERVICE_NAME, config.serviceName);
         String deviceName = getString(profile.settings.name);
         properties.put(PROPERTY_SERVICE_NAME, config.serviceName);
-        // properties.put(PROPERTY_DEV_GEN, !profile.isGen2 ? "1" : "2");
         properties.put(PROPERTY_DEV_AUTH, getBool(profile.device.auth) ? "yes" : "no");
         if (!deviceName.isEmpty()) {
             properties.put(PROPERTY_DEV_NAME, deviceName);
