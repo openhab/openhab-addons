@@ -28,6 +28,9 @@ import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 @ThingActionsScope(name = BINDING_ID)
 @NonNullByDefault
 public class PiHoleActions implements ThingActions {

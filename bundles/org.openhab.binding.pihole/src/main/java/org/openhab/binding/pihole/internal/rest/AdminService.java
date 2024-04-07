@@ -19,6 +19,9 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 @NonNullByDefault
 public interface AdminService {
     /**

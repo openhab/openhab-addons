@@ -16,6 +16,9 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public class Relative {
     @Nullable
     private Integer days;

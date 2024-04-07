@@ -17,7 +17,11 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.pihole.internal.PiHoleHandlerFactory;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public class DnsStatistics {
 
     @SerializedName("domains_being_blocked")

@@ -18,6 +18,9 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 public class GravityLastUpdated {
     @SerializedName("file_exists")
     @Nullable

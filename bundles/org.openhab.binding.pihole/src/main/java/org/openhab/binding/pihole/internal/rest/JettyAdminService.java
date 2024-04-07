@@ -27,6 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
 @NonNullByDefault
 public class JettyAdminService implements AdminService {
     private static final Logger logger = LoggerFactory.getLogger(JettyAdminService.class);
