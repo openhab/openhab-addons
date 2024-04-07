@@ -223,7 +223,7 @@
 	</channel-type>
 
 	<channel-type id="humidity" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<state readOnly="true" pattern="%.2f %%"></state>
 	</channel-type>
@@ -295,7 +295,7 @@
 	</channel-type>
 
 	<channel-type id="sound" advanced="false">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Noise</label>
 		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
@@ -380,13 +380,13 @@
 	</channel-type>
 
 	<channel-type id="humidity_maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Humidity</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="humidity_abs_maxerr" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Abs. Humidity</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>

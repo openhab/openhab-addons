@@ -115,7 +115,7 @@
 	</channel-type>
 
 	<channel-type id="acunit-humidity" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Indoor Humidity</label>
 		<description>The indoor humidity as measured by the A/C unit</description>
 		<category>Humidity</category>

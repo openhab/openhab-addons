@@ -318,7 +318,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="humidity-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<category>Humidity</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
