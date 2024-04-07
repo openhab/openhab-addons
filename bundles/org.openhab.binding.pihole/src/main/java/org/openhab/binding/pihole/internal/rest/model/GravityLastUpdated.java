@@ -14,6 +14,7 @@ package org.openhab.binding.pihole.internal.rest.model;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
@@ -21,6 +22,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
+@NonNullByDefault
 public class GravityLastUpdated {
     @SerializedName("file_exists")
     @Nullable
@@ -39,6 +41,7 @@ public class GravityLastUpdated {
         this.relative = relative;
     }
 
+    @Nullable
     public Boolean getFileExists() {
         return fileExists;
     }
@@ -47,6 +50,7 @@ public class GravityLastUpdated {
         this.fileExists = fileExists;
     }
 
+    @Nullable
     public Long getAbsolute() {
         return absolute;
     }
@@ -55,6 +59,7 @@ public class GravityLastUpdated {
         this.absolute = absolute;
     }
 
+    @Nullable
     public Relative getRelative() {
         return relative;
     }
@@ -64,7 +69,7 @@ public class GravityLastUpdated {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())

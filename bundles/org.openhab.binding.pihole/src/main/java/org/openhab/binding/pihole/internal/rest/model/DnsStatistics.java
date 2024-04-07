@@ -14,14 +14,15 @@ package org.openhab.binding.pihole.internal.rest.model;
 
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
-import org.openhab.binding.pihole.internal.PiHoleHandlerFactory;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
+@NonNullByDefault
 public class DnsStatistics {
 
     @SerializedName("domains_being_blocked")
@@ -148,6 +149,7 @@ public class DnsStatistics {
         this.gravityLastUpdated = gravityLastUpdated;
     }
 
+    @Nullable
     public Integer getDomainsBeingBlocked() {
         return domainsBeingBlocked;
     }
@@ -156,6 +158,7 @@ public class DnsStatistics {
         this.domainsBeingBlocked = domainsBeingBlocked;
     }
 
+    @Nullable
     public Integer getDnsQueriesToday() {
         return dnsQueriesToday;
     }
@@ -164,6 +167,7 @@ public class DnsStatistics {
         this.dnsQueriesToday = dnsQueriesToday;
     }
 
+    @Nullable
     public Integer getAdsBlockedToday() {
         return adsBlockedToday;
     }
@@ -172,6 +176,7 @@ public class DnsStatistics {
         this.adsBlockedToday = adsBlockedToday;
     }
 
+    @Nullable
     public Double getAdsPercentageToday() {
         return adsPercentageToday;
     }
@@ -180,6 +185,7 @@ public class DnsStatistics {
         this.adsPercentageToday = adsPercentageToday;
     }
 
+    @Nullable
     public Integer getUniqueDomains() {
         return uniqueDomains;
     }
@@ -188,6 +194,7 @@ public class DnsStatistics {
         this.uniqueDomains = uniqueDomains;
     }
 
+    @Nullable
     public Integer getQueriesForwarded() {
         return queriesForwarded;
     }
@@ -196,6 +203,7 @@ public class DnsStatistics {
         this.queriesForwarded = queriesForwarded;
     }
 
+    @Nullable
     public Integer getQueriesCached() {
         return queriesCached;
     }
@@ -204,6 +212,7 @@ public class DnsStatistics {
         this.queriesCached = queriesCached;
     }
 
+    @Nullable
     public Integer getClientsEverSeen() {
         return clientsEverSeen;
     }
@@ -212,6 +221,7 @@ public class DnsStatistics {
         this.clientsEverSeen = clientsEverSeen;
     }
 
+    @Nullable
     public Integer getUniqueClients() {
         return uniqueClients;
     }
@@ -220,6 +230,7 @@ public class DnsStatistics {
         this.uniqueClients = uniqueClients;
     }
 
+    @Nullable
     public Integer getDnsQueriesAllTypes() {
         return dnsQueriesAllTypes;
     }
@@ -228,6 +239,7 @@ public class DnsStatistics {
         this.dnsQueriesAllTypes = dnsQueriesAllTypes;
     }
 
+    @Nullable
     public Integer getReplyUnknown() {
         return replyUnknown;
     }
@@ -236,6 +248,7 @@ public class DnsStatistics {
         this.replyUnknown = replyUnknown;
     }
 
+    @Nullable
     public Integer getReplyNoData() {
         return replyNoData;
     }
@@ -244,6 +257,7 @@ public class DnsStatistics {
         this.replyNoData = replyNoData;
     }
 
+    @Nullable
     public Integer getReplyNXDomain() {
         return replyNXDomain;
     }
@@ -252,6 +266,7 @@ public class DnsStatistics {
         this.replyNXDomain = replyNXDomain;
     }
 
+    @Nullable
     public Integer getReplyCName() {
         return replyCName;
     }
@@ -260,6 +275,7 @@ public class DnsStatistics {
         this.replyCName = replyCName;
     }
 
+    @Nullable
     public Integer getReplyIP() {
         return replyIP;
     }
@@ -268,6 +284,7 @@ public class DnsStatistics {
         this.replyIP = replyIP;
     }
 
+    @Nullable
     public Integer getReplyDomain() {
         return replyDomain;
     }
@@ -276,6 +293,7 @@ public class DnsStatistics {
         this.replyDomain = replyDomain;
     }
 
+    @Nullable
     public Integer getReplyRRName() {
         return replyRRName;
     }
@@ -284,6 +302,7 @@ public class DnsStatistics {
         this.replyRRName = replyRRName;
     }
 
+    @Nullable
     public Integer getReplyServFail() {
         return replyServFail;
     }
@@ -292,6 +311,7 @@ public class DnsStatistics {
         this.replyServFail = replyServFail;
     }
 
+    @Nullable
     public Integer getReplyRefused() {
         return replyRefused;
     }
@@ -300,6 +320,7 @@ public class DnsStatistics {
         this.replyRefused = replyRefused;
     }
 
+    @Nullable
     public Integer getReplyNotImp() {
         return replyNotImp;
     }
@@ -308,6 +329,7 @@ public class DnsStatistics {
         this.replyNotImp = replyNotImp;
     }
 
+    @Nullable
     public Integer getReplyOther() {
         return replyOther;
     }
@@ -316,6 +338,7 @@ public class DnsStatistics {
         this.replyOther = replyOther;
     }
 
+    @Nullable
     public Integer getReplyDNSSEC() {
         return replyDNSSEC;
     }
@@ -324,6 +347,7 @@ public class DnsStatistics {
         this.replyDNSSEC = replyDNSSEC;
     }
 
+    @Nullable
     public Integer getReplyNone() {
         return replyNone;
     }
@@ -332,6 +356,7 @@ public class DnsStatistics {
         this.replyNone = replyNone;
     }
 
+    @Nullable
     public Integer getReplyBlob() {
         return replyBlob;
     }
@@ -340,6 +365,7 @@ public class DnsStatistics {
         this.replyBlob = replyBlob;
     }
 
+    @Nullable
     public Integer getDnsQueriesAllReplies() {
         return dnsQueriesAllReplies;
     }
@@ -348,6 +374,7 @@ public class DnsStatistics {
         this.dnsQueriesAllReplies = dnsQueriesAllReplies;
     }
 
+    @Nullable
     public Integer getPrivacyLevel() {
         return privacyLevel;
     }
@@ -356,6 +383,7 @@ public class DnsStatistics {
         this.privacyLevel = privacyLevel;
     }
 
+    @Nullable
     public String getStatus() {
         return status;
     }
@@ -364,6 +392,7 @@ public class DnsStatistics {
         this.status = status;
     }
 
+    @Nullable
     public GravityLastUpdated getGravityLastUpdated() {
         return gravityLastUpdated;
     }
@@ -377,7 +406,7 @@ public class DnsStatistics {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
