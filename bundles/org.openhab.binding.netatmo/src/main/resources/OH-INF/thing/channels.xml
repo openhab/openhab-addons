@@ -285,7 +285,7 @@
 	</channel-type>
 
 	<channel-type id="noise">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Noise</label>
 		<description>Current Noise Level.</description>
 		<category>SoundVolume</category>
