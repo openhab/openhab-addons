@@ -6,7 +6,7 @@
 
 	<thing-type id="file">
 		<label>Ephemeris File</label>
-		<description>A file containing Jollyday events</description>
+		<description>Events defined in a Jollyday file</description>
 
 		<channels>
 			<channel id="title-today" typeId="event_current_title"/>
@@ -46,7 +46,7 @@
 
 	<thing-type id="dayset">
 		<label>Dayset</label>
-		<description>Events based on system a on dayset</description>
+		<description>Events based on a given dayset</description>
 
 		<channels>
 			<channel id="today" typeId="in-dayset"/>
