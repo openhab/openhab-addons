@@ -4,19 +4,116 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="PiHoleBridge" />
-			</supported-bridge-type-refs>
-		-->
-
+	<thing-type id="server">
 		<label>PiHole Binding Thing</label>
 		<description>Sample thing for PiHole Binding</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="domains_being_blocked" typeId="number-channel">
+				<label>Domains Blocked</label>
+				<description>The total number of domains currently being blocked.</description>
+			</channel>
+			<channel id="dns_queries_today" typeId="number-channel">
+				<label>DNS Queries Today</label>
+				<description>The count of DNS queries made today.</description>
+			</channel>
+			<channel id="ads_blocked_today" typeId="number-channel">
+				<label>Ads Blocked Today</label>
+				<description>The number of ads blocked today.</description>
+			</channel>
+			<channel id="ads_percentage_today" typeId="number-channel">
+				<label>Ads Percentage Today</label>
+				<description>The percentage of ads blocked today.</description>
+			</channel>
+			<channel id="unique_domains" typeId="number-channel">
+				<label>Unique Domains</label>
+				<description>The count of unique domains queried.</description>
+			</channel>
+			<channel id="queries_forwarded" typeId="number-channel">
+				<label>Queries Forwarded</label>
+				<description>The number of queries forwarded to an external DNS server.</description>
+			</channel>
+			<channel id="queries_cached" typeId="number-channel">
+				<label>Queries Cached</label>
+				<description>The number of queries served from the cache.</description>
+			</channel>
+			<channel id="clients_ever_seen" typeId="number-channel">
+				<label>Clients Ever Seen</label>
+				<description>The total number of unique clients ever seen.</description>
+			</channel>
+			<channel id="unique_clients" typeId="number-channel">
+				<label>Unique Clients</label>
+				<description>The current count of unique clients.</description>
+			</channel>
+			<channel id="dns_queries_all_types" typeId="number-channel">
+				<label>DNS Queries (All Types)</label>
+				<description>The total number of DNS queries of all types.</description>
+			</channel>
+			<channel id="reply_UNKNOWN" typeId="number-channel">
+				<label>Reply UNKNOWN</label>
+				<description>DNS replies with an unknown status.</description>
+			</channel>
+			<channel id="reply_NODATA" typeId="number-channel">
+				<label>Reply NODATA</label>
+				<description>DNS replies indicating no data.</description>
+			</channel>
+			<channel id="reply_NXDOMAIN" typeId="number-channel">
+				<label>Reply NXDOMAIN</label>
+				<description>DNS replies indicating non-existent domain.</description>
+			</channel>
+			<channel id="reply_CNAME" typeId="number-channel">
+				<label>Reply CNAME</label>
+				<description>DNS replies with a CNAME record.</description>
+			</channel>
+			<channel id="reply_IP" typeId="number-channel">
+				<label>Reply IP</label>
+				<description>DNS replies with an IP address.</description>
+			</channel>
+			<channel id="reply_DOMAIN" typeId="number-channel">
+				<label>Reply DOMAIN</label>
+				<description>DNS replies with a domain name.</description>
+			</channel>
+			<channel id="reply_RRNAME" typeId="number-channel">
+				<label>Reply RRNAME</label>
+				<description>DNS replies with a resource record name.</description>
+			</channel>
+			<channel id="reply_SERVFAIL" typeId="number-channel">
+				<label>Reply SERVFAIL</label>
+				<description>DNS replies indicating a server failure.</description>
+			</channel>
+			<channel id="reply_REFUSED" typeId="number-channel">
+				<label>Reply REFUSED</label>
+				<description>DNS replies indicating refusal.</description>
+			</channel>
+			<channel id="reply_NOTIMP" typeId="number-channel">
+				<label>Reply NOTIMP</label>
+				<description>DNS replies indicating not implemented.</description>
+			</channel>
+			<channel id="reply_OTHER" typeId="number-channel">
+				<label>Reply OTHER</label>
+				<description>DNS replies with other statuses.</description>
+			</channel>
+			<channel id="reply_DNSSEC" typeId="number-channel">
+				<label>Reply DNSSEC</label>
+				<description>DNS replies with DNSSEC information.</description>
+			</channel>
+			<channel id="reply_NONE" typeId="number-channel">
+				<label>Reply NONE</label>
+				<description>DNS replies with no data.</description>
+			</channel>
+			<channel id="reply_BLOB" typeId="number-channel">
+				<label>Reply BLOB</label>
+				<description>DNS replies with a BLOB (binary large object).</description>
+			</channel>
+			<channel id="dns_queries_all_replies" typeId="number-channel">
+				<label>DNS Queries (All Replies)</label>
+				<description>The total number of DNS queries with all reply types.</description>
+			</channel>
+			<channel id="privacy_level" typeId="number-channel">
+				<label>Privacy Level</label>
+				<description>The privacy level setting.</description>
+			</channel>
+			<channel id="enabled" typeId="enabled-channel"/>
 		</channels>
 
 		<config-description>
@@ -25,12 +122,12 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="password" type="text" required="true">
+			<parameter name="token" type="text" required="true">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password to access the device</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+			<parameter name="refreshIntervalSeconds" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in sec.</description>
 				<default>600</default>
@@ -39,10 +136,15 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for PiHole Binding</description>
+	<channel-type id="number-channel">
+		<item-type>Number</item-type>
+		<label>Number channel</label>
+		<state readOnly="true" />
+	</channel-type>
+	<channel-type id="enabled-channel">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<description>The current status of blocking</description>
+		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

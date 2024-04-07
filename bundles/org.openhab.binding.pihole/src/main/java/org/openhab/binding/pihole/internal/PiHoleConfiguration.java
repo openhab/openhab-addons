@@ -21,11 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class PiHoleConfiguration {
-
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
     public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    public String token = "";
+    public int refreshIntervalSeconds = 600;
 }
