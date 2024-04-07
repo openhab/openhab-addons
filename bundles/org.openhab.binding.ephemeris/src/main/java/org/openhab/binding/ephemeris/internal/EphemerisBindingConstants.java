@@ -27,21 +27,25 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class EphemerisBindingConstants {
 
-    private static final String BINDING_ID = "ephemeris";
+    public static final String BINDING_ID = "ephemeris";
+
+    public static final String LOCAL = "local";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_FILE = new ThingTypeUID(BINDING_ID, "file");
-    public static final ThingTypeUID THING_TYPE_DEFAULT = new ThingTypeUID(BINDING_ID, "default");
+    public static final ThingTypeUID THING_TYPE_HOLIDAY = new ThingTypeUID(BINDING_ID, "holiday");
     public static final ThingTypeUID THING_TYPE_DAYSET = new ThingTypeUID(BINDING_ID, "dayset");
     public static final ThingTypeUID THING_TYPE_WEEKEND = new ThingTypeUID(BINDING_ID, "weekend");
 
     // List of all Channel ids
-    public static final String CHANNEL_CURRENT_EVENT_TITLE = "currentTitle";
-    public static final String CHANNEL_NEXT_EVENT_TITLE = "nextTitle";
-    public static final String CHANNEL_NEXT_EVENT_START = "nextStart";
-    public static final String CHANNEL_NEXT_REMAINING = "remainingDays";
+    public static final String CHANNEL_CURRENT_EVENT = "title-today";
+    public static final String CHANNEL_NEXT_EVENT = "next-title";
+    public static final String CHANNEL_NEXT_START = "next-start";
+    public static final String CHANNEL_NEXT_REMAINING = "days-remaining";
     public static final String CHANNEL_TODAY = "today";
     public static final String CHANNEL_TOMORROW = "tomorrow";
+    public static final String CHANNEL_HOLIDAY_TODAY = "holiday-today";
+    public static final String CHANNEL_HOLIDAY_TOMORROW = "holiday-tomorrow";
 
     // Folder for xml storage eg: /etc/openhab/misc/ephemeris
     public static final String BINDING_DATA_PATH = "%s%smisc%s%s".formatted(OpenHAB.getConfigFolder(), File.separator,

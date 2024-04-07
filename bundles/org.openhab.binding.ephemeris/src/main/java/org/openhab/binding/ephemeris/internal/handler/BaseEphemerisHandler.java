@@ -28,11 +28,13 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BaseEphemerisHandler} is the base class for Ephemeris Things
+ * The {@link BaseEphemerisHandler} is the base class for Ephemeris Things. It takes care of
+ * update logic and update scheduling once a day.
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -70,7 +72,7 @@ public abstract class BaseEphemerisHandler extends BaseThingHandler {
         ZonedDateTime now = ZonedDateTime.now().withZoneSameLocal(zoneId);
 
         logger.info("Updating {} channels", getThing().getUID());
-        String error = internalUpdate(now);
+        String error = internalUpdate(now.truncatedTo(ChronoUnit.DAYS));
         if (error == null) {
             updateStatus(ThingStatus.ONLINE);
             ZonedDateTime nextUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
@@ -83,10 +85,12 @@ public abstract class BaseEphemerisHandler extends BaseThingHandler {
         }
     }
 
-    protected abstract @Nullable String internalUpdate(ZonedDateTime now);
+    protected abstract @Nullable String internalUpdate(ZonedDateTime today);
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO handle Refresh
+        if (RefreshType.REFRESH.equals(command)) {
+            updateData();
+        }
     }
 }

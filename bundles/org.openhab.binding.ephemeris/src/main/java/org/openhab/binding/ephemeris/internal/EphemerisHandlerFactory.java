@@ -21,9 +21,10 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ephemeris.internal.handler.DaysetHandler;
-import org.openhab.binding.ephemeris.internal.handler.DefaultHandler;
 import org.openhab.binding.ephemeris.internal.handler.FileHandler;
+import org.openhab.binding.ephemeris.internal.handler.HolidayHandler;
 import org.openhab.binding.ephemeris.internal.handler.WeekendHandler;
+import org.openhab.binding.ephemeris.internal.providers.EphemerisDescriptionProvider;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
@@ -44,18 +45,20 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.ephemeris", service = ThingHandlerFactory.class)
 public class EphemerisHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_FILE, THING_TYPE_DEFAULT,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_FILE, THING_TYPE_HOLIDAY,
             THING_TYPE_DAYSET, THING_TYPE_WEEKEND);
 
     private final EphemerisManager ephemerisManager;
     private final ZoneId zoneId;
+    private final EphemerisDescriptionProvider descriptionProvider;
 
     @Activate
     public EphemerisHandlerFactory(final @Reference EphemerisManager ephemerisManager,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference TimeZoneProvider timeZoneProvider,
+            final @Reference EphemerisDescriptionProvider descriptionProvider) {
         this.ephemerisManager = ephemerisManager;
         this.zoneId = timeZoneProvider.getTimeZone();
-
+        this.descriptionProvider = descriptionProvider;
         File folder = new File(BINDING_DATA_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
@@ -73,8 +76,8 @@ public class EphemerisHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_FILE.equals(thingTypeUID)) {
             return new FileHandler(thing, ephemerisManager, zoneId);
-        } else if (THING_TYPE_DEFAULT.equals(thingTypeUID)) {
-            return new DefaultHandler(thing, ephemerisManager, zoneId);
+        } else if (THING_TYPE_HOLIDAY.equals(thingTypeUID)) {
+            return new HolidayHandler(thing, ephemerisManager, zoneId, descriptionProvider);
         } else if (THING_TYPE_DAYSET.equals(thingTypeUID)) {
             return new DaysetHandler(thing, ephemerisManager, zoneId);
         } else if (THING_TYPE_WEEKEND.equals(thingTypeUID)) {

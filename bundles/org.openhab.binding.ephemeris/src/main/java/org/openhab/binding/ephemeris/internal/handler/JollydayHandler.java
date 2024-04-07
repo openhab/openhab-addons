@@ -17,7 +17,6 @@ import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,23 +30,22 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link DefaultHandler} delivers system default Ephemeris data.
+ * The {@link JollydayHandler} handles common parts for Jollyday file based events
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class DefaultHandler extends BaseEphemerisHandler {
+public abstract class JollydayHandler extends BaseEphemerisHandler {
 
-    public DefaultHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId) {
+    public JollydayHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId) {
         super(thing, ephemerisManager, zoneId);
     }
 
     @Override
-    protected @Nullable String internalUpdate(ZonedDateTime now) {
+    protected @Nullable String internalUpdate(ZonedDateTime today) {
         try {
-            ZonedDateTime today = now.truncatedTo(ChronoUnit.DAYS);
             String todayEvent = getEvent(today);
-            updateState(CHANNEL_CURRENT_EVENT_TITLE, toStringType(todayEvent));
+            updateState(CHANNEL_CURRENT_EVENT, toStringType(todayEvent));
 
             String nextEvent = "";
             ZonedDateTime nextDay = today;
@@ -57,19 +55,17 @@ public class DefaultHandler extends BaseEphemerisHandler {
                 nextEvent = getEvent(nextDay);
             }
 
-            updateState(CHANNEL_NEXT_EVENT_TITLE, toStringType(nextEvent));
+            updateState(CHANNEL_NEXT_EVENT, toStringType(nextEvent));
             updateState(CHANNEL_NEXT_REMAINING,
                     new QuantityType<>(Duration.between(today, nextDay).toDays(), Units.DAY));
-            updateState(CHANNEL_NEXT_EVENT_START, new DateTimeType(nextDay));
+            updateState(CHANNEL_NEXT_START, new DateTimeType(nextDay));
             return null;
         } catch (IllegalStateException e) {
             return "Unable to access Ephemeris data";
         }
     }
 
-    protected @Nullable String getEvent(ZonedDateTime day) {
-        return ephemeris.getBankHolidayName(day);
-    }
+    protected abstract @Nullable String getEvent(ZonedDateTime day);
 
     protected State toStringType(@Nullable String event) {
         return event == null || event.isEmpty() ? UnDefType.NULL : new StringType(event);

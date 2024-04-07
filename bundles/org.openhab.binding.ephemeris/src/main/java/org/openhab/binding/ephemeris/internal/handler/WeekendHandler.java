@@ -36,9 +36,9 @@ public class WeekendHandler extends BaseEphemerisHandler {
     }
 
     @Override
-    protected @Nullable String internalUpdate(ZonedDateTime now) {
-        updateState(CHANNEL_TODAY, OnOffType.from(ephemeris.isWeekend(now)));
-        updateState(CHANNEL_TOMORROW, OnOffType.from(ephemeris.isWeekend(now.plusDays(1))));
+    protected @Nullable String internalUpdate(ZonedDateTime today) {
+        updateState(CHANNEL_TODAY, OnOffType.from(ephemeris.isWeekend(today)));
+        updateState(CHANNEL_TOMORROW, OnOffType.from(ephemeris.isWeekend(today.plusDays(1))));
         return null;
     }
 }

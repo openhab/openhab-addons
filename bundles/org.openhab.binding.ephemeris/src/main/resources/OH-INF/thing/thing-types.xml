@@ -9,10 +9,10 @@
 		<description>A file containing Jollyday events</description>
 
 		<channels>
-			<channel id="currentTitle" typeId="event_current_title"/>
-			<channel id="nextTitle" typeId="event_next_title"/>
-			<channel id="nextStart" typeId="event_next_start"/>
-			<channel id="remainingDays" typeId="remaining_days"/>
+			<channel id="title-today" typeId="event_current_title"/>
+			<channel id="next-title" typeId="event_next_title"/>
+			<channel id="next-start" typeId="event_next_start"/>
+			<channel id="days-remaining" typeId="remaining_days"/>
 		</channels>
 
 		<config-description>
@@ -24,15 +24,23 @@
 
 	</thing-type>
 
-	<thing-type id="default">
-		<label>Ephemeris</label>
-		<description>Events based on system default Ephemeris configuration</description>
+	<thing-type id="holiday">
+		<label>Ephemeris Holidays</label>
+		<description>Holidays based on system default Ephemeris configuration</description>
 
 		<channels>
-			<channel id="currentTitle" typeId="event_current_title"/>
-			<channel id="nextTitle" typeId="event_next_title"/>
-			<channel id="nextStart" typeId="event_next_start"/>
-			<channel id="remainingDays" typeId="remaining_days"/>
+			<channel id="title-today" typeId="event_current_title"/>
+			<channel id="holiday-today" typeId="in-dayset">
+				<label>Holiday Today</label>
+				<description>Set to ON if today is a holiday</description>
+			</channel>
+			<channel id="holiday-tomorrow" typeId="in-dayset">
+				<label>Holiday Tomorrow</label>
+				<description>Set to ON if tomorrow is a holiday</description>
+			</channel>
+			<channel id="next-title" typeId="event_next_title"/>
+			<channel id="next-start" typeId="event_next_start"/>
+			<channel id="days-remaining" typeId="remaining_days"/>
 		</channels>
 	</thing-type>
 

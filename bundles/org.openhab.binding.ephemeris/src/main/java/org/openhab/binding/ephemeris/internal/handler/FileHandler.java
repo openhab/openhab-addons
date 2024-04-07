@@ -34,7 +34,7 @@ import org.openhab.core.thing.ThingStatusDetail;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class FileHandler extends DefaultHandler {
+public class FileHandler extends JollydayHandler {
     private Optional<File> definitionFile = Optional.empty();
 
     public FileHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId) {
