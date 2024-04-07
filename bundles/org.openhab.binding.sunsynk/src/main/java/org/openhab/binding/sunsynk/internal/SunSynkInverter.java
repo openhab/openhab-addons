@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.sunsynk.internal;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
-import javax.net.ssl.HttpsURLConnection;
+import java.util.Properties;
 
 import org.openhab.binding.sunsynk.internal.classes.APIdata;
 import org.openhab.binding.sunsynk.internal.classes.Battery;
@@ -30,6 +27,7 @@ import org.openhab.binding.sunsynk.internal.classes.Grid;
 import org.openhab.binding.sunsynk.internal.classes.RealTimeInData;
 import org.openhab.binding.sunsynk.internal.classes.Settings;
 import org.openhab.binding.sunsynk.internal.config.SunSynkInverterConfig;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,58 +63,35 @@ public class SunSynkInverter {
         this.alias = config.getAlias();
     }
 
-    public boolean sendGetState() { // Entry method to class for updating internal state from the inverter
+    public String sendGetState(Boolean batterySettingsUpdate) { // Entry method to class for updating internal state from the inverter
         logger.debug("Will get STATE for Inverter {} serial {}", this.alias, this.sn);
         // Get inverter infos
+        String response = null;
         try {
+            if (batterySettingsUpdate){
             logger.debug("Trying Common Settings");
-            boolean authenticated = getCommonSettings(); // battery charge settings
-            if (!authenticated)
-                return false;
+            response = getCommonSettings(); // battery charge settings
+            }
             logger.debug("Trying Grid Real Time Settings");
-            authenticated = getGridRealTime(); // grid status
-            if (!authenticated)
-                return false;
+            response = getGridRealTime(); // grid status
             logger.debug("Trying Battery Real Time Settings");
-            authenticated = getBatteryRealTime(); // battery status
-            if (!authenticated)
-                return false;
+            response = getBatteryRealTime(); // battery status
             logger.debug("Trying Temperature History");
-            authenticated = getInverterACDCTemperatures(); // get Inverter temperatures
-            if (!authenticated)
-                return false;
+            response = getInverterACDCTemperatures(); // get Inverter temperatures
             logger.debug("Trying Real Time Solar");
-            authenticated = getRealTimeIn(); // may not need this one used for solar values
-            if (!authenticated)
-                return false;
-
+            response = getRealTimeIn(); // may not need this one used for solar values could use Inverter (but would
+                                        // loose Solar power now)
         } catch (Exception e) {
-            logger.debug("Failed to get Inverter API information: ", e.getCause());
-            // updateStatus(ThingStatus.OFFLINE);
-            // Should Thing be put off line?
-            // Need to Throw an exception <----- got here to stop following debug log
-            return false;
+            logger.debug("Failed to get Inverter API information: {} ", e.getMessage());
+            int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
+            if (found > -1) {
+                return "Authentication Fail";
+            }
+            return "Failed";
         }
         logger.debug("Successfully got and parsed new data for Inverter {} serial {}", this.alias, this.sn);
-        return true;
+        return response;
     }
-    /*
-     * /
-     * public void sendGetGeneralInfo(){
-     * try{
-     * getCommonSettings(); // battery charge settings
-     * getGridRealTime(); // grid status
-     * getBatteryRealTime(); // battery status
-     * getInverterACDCTemperatures(); // get Inverter temperatures
-     * getRealTimeIn(); // may not need this one used for solar values
-     * 
-     * }catch (Exception e) {
-     * logger.debug("Failed to get Inverter API information: ", e);
-     * // Should Thing be put off line?
-     * return; // should return something?
-     * }
-     * }
-     */
 
     // ------ GETTERS ------ //
     public Settings getBatteryChargeSettings() {
@@ -145,91 +120,83 @@ public class SunSynkInverter {
     // ------ Battery charge settings ------ //
     // https://api.sunsynk.net/api/v1/common/setting/2211229948/read
     @SuppressWarnings("null")
-    boolean getCommonSettings() {// need to get this to run in the class, Ben suggested using a Builder
+    String getCommonSettings() throws IOException {
         // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/common/setting/" + this.sn + "/read"),
                 APIdata.static_access_token);
-        if (response == "Authentication Fail") {
-            return false;
-        }
-        if (response == "empty") {
-            return false;
-        }
+        if (response == "Failed" | response == "Authentication Fail")
+            return response;
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.batterySettings = gson.fromJson(response, Settings.class);
         this.batterySettings.buildLists();
-        return true;
+        return response;
     }
 
     // ------ Realtime Grid ------ //
     // https://api.sunsynk.net/api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
     @SuppressWarnings("null")
-    boolean getGridRealTime() {// need to get this to run in the class, Ben suggested using a Builder
+    String getGridRealTime() throws IOException {
         // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/grid/" + this.sn + "/realtime?sn=") + this.sn,
                 APIdata.static_access_token);
-        if (response == "Authentication Fail") {
-            return false;
-        }
+        if (response == "Failed" | response == "Authentication Fail")
+            return response;
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.grid = gson.fromJson(response, Grid.class);
         this.grid.sumVIP();
-        return true;
+        return response;
     }
 
     // ------ Realtime battery ------ //
     // https://api.sunsynk.net/api/v1/inverter/battery/{inverter_sn}/realtime?sn={inverter_sn}&lan
     @SuppressWarnings("null")
-    boolean getBatteryRealTime() {
+    String getBatteryRealTime() throws IOException {
         // Get URL Respnse
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/battery/" + this.sn + "/realtime?sn=" + this.sn + "&lan"),
                 APIdata.static_access_token);
-        if (response == "Authentication Fail") {
-            return false;
-        }
+        if (response == "Failed" | response == "Authentication Fail")
+            return response;
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.realTimeBattery = gson.fromJson(response, Battery.class);
-        return true;
+        return response;
     }
 
     // ------ Realtime acdc temperatures ------ //
     // https://api.sunsynk.net/api/v1/inverter/{inverter_sn}/output/day?lan=en&date={date}&column=dc_temp,igbt_temp
     @SuppressWarnings("null")
-    boolean getInverterACDCTemperatures() {
+    String getInverterACDCTemperatures() throws IOException {
         String date = getAPIFormatDate();
         // Get URL Respnse
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/" + this.sn + "/output/day?lan=en&date=" + date + "&column=dc_temp,igbt_temp"),
                 APIdata.static_access_token);
-        if (response == "Authentication Fail") {
-            return false;
-        }
+        if (response == "Failed" | response == "Authentication Fail")
+            return response;
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.inverter_day_temperatures = gson.fromJson(response, Daytemps.class);
         this.inverter_day_temperatures.getLastValue();
-        return true;
+        return response;
     }
 
     // ------ Realtime Input ------ //
     // https://api.sunsynk.net//api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
     @SuppressWarnings("null")
-    boolean getRealTimeIn() {// need to get this to run in the class, Ben suggested using a Builder
+    String getRealTimeIn() throws IOException {
         // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/" + this.sn + "/realtime/input"),
                 APIdata.static_access_token);
-        if (response == "Authentication Fail") {
-            return false;
-        }
+        if (response == "Failed" | response == "Authentication Fail")
+            return response;
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.realTimeDataIn = gson.fromJson(response, RealTimeInData.class);
         this.realTimeDataIn.sumPVIV();
-        return true;
+        return response;
     }
     // ------ COMMANDS ------ //
 
@@ -237,8 +204,17 @@ public class SunSynkInverter {
         // GET URL
         String path = "api/v1/common/setting/" + this.sn + "/set";
         // POST COMMAND
-        String postResponse = apiPostMethod(makeURL(path), body, access_token);
-        return postResponse;
+        try {
+            String postResponse = apiPostMethod(makeURL(path), body, access_token);
+            return postResponse;
+        } catch (Exception e) { // Don't think this will run
+            logger.debug("Failed to send to Inverter API: {} ", e.getMessage());
+            int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
+            if (found > -1) {
+                return "Authentication Fail";
+            }
+            return "Failed";
+        }
     }
 
     private static class CommandRequest {
@@ -255,62 +231,26 @@ public class SunSynkInverter {
 
     // ------ Helpers ------ //
 
-    private String apiPostMethod(String httpsURL, String body, String access_token) {
+    private String apiPostMethod(String httpsURL, String body, String access_token) throws IOException {
         String response = "";
-        try {
-            URL myUrl = new URL(httpsURL);
-            HttpsURLConnection connection = (HttpsURLConnection) myUrl.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Authorization", "Bearer " + access_token);
-            connection.setDoOutput(true);
-            OutputStream wr = connection.getOutputStream();
-            wr.write(body.getBytes("UTF-8"));
-            wr.flush();
-            wr.close();
-            logger.debug("POST Response Code: {}", connection.getResponseCode());
+        Properties headers = new Properties();
 
-            InputStream is = connection.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            response = br.readLine();
-            br.close();
-            connection.disconnect();
-        } catch (IOException e) {
-            logger.debug("apiPostMethod faied to get a response from {}} with token {} Eception.", httpsURL,
-                    access_token, e);
-            return "Empty";
-        }
+        headers.setProperty("Accept", "application/json");
+        headers.setProperty("Authorization", "Bearer " + access_token);
+        // headers.setProperty("Content-Type", "application/json"); // may not need this.
+        InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
+        response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
+
         return response;
     }
 
-    private String apiGetMethod(String httpsURL, String access_token) {
+    private String apiGetMethod(String httpsURL, String access_token) throws IOException {
         String response = "";
-        try {
-            URL myUrl = new URL(httpsURL);
-            HttpsURLConnection connection = (HttpsURLConnection) myUrl.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Authorization", "Bearer " + access_token);
-            connection.setDoOutput(true);
-            logger.debug("GET Response Code: {}.", connection.getResponseCode());
-            if (connection.getResponseCode() == 401) {
-                logger.debug("Authentication failure: likely token expire getting new token.");
-                return "Authentication Fail";
-            }
-            InputStream is = connection.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-            response = br.readLine();
-            br.close();
-            connection.disconnect();
-        } catch (IOException e) {
-            logger.debug("apiGetMethod faied to get a response from {}} with token {} Eception ", httpsURL,
-                    access_token, e.getCause());
-            return "Empty";
-        }
+        Properties headers = new Properties();
+        headers.setProperty("Accept", "application/json");
+        headers.setProperty("Content-Type", "application/json"); // may not need this.
+        headers.setProperty("Authorization", "Bearer " + access_token);
+        response = HttpUtil.executeUrl("GET", httpsURL, headers, null, "application/json", 2000);
         return response;
     }
 

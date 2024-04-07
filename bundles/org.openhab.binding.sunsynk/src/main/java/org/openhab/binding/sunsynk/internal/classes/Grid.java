@@ -60,6 +60,10 @@ public class Grid {
         private double etotalTo;
         private List<Integer> limiterPowerArr;
         private int limiterTotalPowerArr;
+
+        String content() {
+            return "[pac: " +pac+ "fac: "+ fac+ " quac: "+ qac + " pf: " +pf + " status: " + status + "etoday: {" + etodayFrom +", " + etodayTo + "} etotal: {"+etotalFrom +", " +etotalTo +"} limiterPowerArr: "+ limiterPowerArr +" limiterTotalPowerArr:"+ limiterTotalPowerArr +"]";
+        }
     }
 
     class VIP { // needs checking
@@ -96,4 +100,10 @@ public class Grid {
         // sumVIP();
         return this.current;
     }
+
+
+    public String toString() {
+        return "Content [code=" + code + ", msg=" + msg + ", data=" + data.content() + "]";
+    }
+
 }

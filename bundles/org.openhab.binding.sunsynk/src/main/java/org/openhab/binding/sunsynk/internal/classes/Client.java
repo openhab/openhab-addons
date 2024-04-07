@@ -56,7 +56,11 @@ public class Client {
     }
 
     public APIdata getData() { // Not used
-
         return data;
+    }
+
+    @Override
+    public String toString() {
+        return "Content [code=" + code + ", msg=" + msg + ", data=" + data + "]";
     }
 }
