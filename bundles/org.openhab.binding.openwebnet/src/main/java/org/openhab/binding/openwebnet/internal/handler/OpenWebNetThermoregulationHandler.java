@@ -34,6 +34,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 import org.openwebnet4j.communication.OWNException;
+import org.openwebnet4j.communication.Response;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.MalformedFrameException;
@@ -295,10 +296,24 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             } else {
                 newTemp = ((DecimalType) command).doubleValue();
             }
-            try {
-                send(Thermoregulation.requestWriteSetpointTemperature(getWhere(w.value()), newTemp, currentFunction));
-            } catch (MalformedFrameException | OWNException e) {
-                logger.warn("handleSetpoint() {}", e.getMessage());
+            if (newTemp >= 5.0 && newTemp <= 40.0) {
+                try {
+                    Response res;
+                    res = send(Thermoregulation.requestWriteSetpointTemperature(getWhere(w.value()), newTemp,
+                            currentFunction));
+                    // For zones no setPoint temperature confirmation message is returned from gw,
+                    // so we update channel with current requested temp on successful response.
+                    if (!isCentralUnit && res != null && res.isSuccess()) {
+                        updateState(CHANNEL_TEMP_SETPOINT, getAsQuantityTypeOrNull(newTemp, SIUnits.CELSIUS));
+                        currentSetPointTemp = newTemp;
+                    }
+                } catch (MalformedFrameException | OWNException e) {
+                    logger.warn("handleSetpoint() {}", e.getMessage());
+
+                }
+            } else {
+                logger.info("handleSetpoint() Setpoint temperature must be between 5°C and 40°C for thing {}",
+                        getThing().getUID());
             }
         } else {
             logger.warn("handleSetpoint() Unsupported command {} for thing {}", command, getThing().getUID());
@@ -465,8 +480,9 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             DimThermo dim = (DimThermo) tmsg.getDim();
             switch (dim) {
                 case TEMP_SETPOINT:
-                case COMPLETE_PROBE_STATUS:
                     updateSetpoint(tmsg);
+                    break;
+                case COMPLETE_PROBE_STATUS:
                     break;
                 case PROBE_TEMPERATURE:
                 case TEMPERATURE:
@@ -599,7 +615,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 }
                 String[] parameters = tmsg.getWhatParams();
                 if (parameters.length > 0 && tw.getType() == WhatThermoType.MANUAL) {
-                    // it should be like *4*110#TTTT*#0##
+                    // manual setpoint frame should be like *4*110#TTTT*#0##
                     newTemp = Thermoregulation.decodeTemperature(parameters[0]);
                     logger.debug("updateSetpoint() parsed temperature from {}: {} ---> {}", tmsg.toStringVerbose(),
                             parameters[0], newTemp);
