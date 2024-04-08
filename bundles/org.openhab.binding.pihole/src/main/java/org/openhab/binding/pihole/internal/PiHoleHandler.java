@@ -88,8 +88,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PiHoleHandler extends BaseThingHandler implements AdminService {
-
+    private static final int HTTP_DELAY_SECONDS = 1;
     private final Logger logger = LoggerFactory.getLogger(PiHoleHandler.class);
+    private final Object lock = new Object();
     private final HttpClient httpClient;
 
     private @Nullable AdminService adminService;
@@ -140,14 +141,18 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             return;
         }
 
-        try {
-            logger.debug("Refreshing DnsStatistics from PiHole");
-            local.summary().ifPresent(statistics -> dnsStatistics = statistics);
-            refresh();
-            updateStatus(ONLINE);
-        } catch (Exception e) {
-            logger.debug("Error occurred when refreshing DnsStatistics from PiHole", e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
+        // this block can be called from at least 2 threads
+        // check disableBlocking method
+        synchronized (lock) {
+            try {
+                logger.debug("Refreshing DnsStatistics from PiHole");
+                local.summary().ifPresent(statistics -> dnsStatistics = statistics);
+                refresh();
+                updateStatus(ONLINE);
+            } catch (Exception e) {
+                logger.debug("Error occurred when refreshing DnsStatistics from PiHole", e);
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
+            }
         }
     }
 
@@ -265,6 +270,13 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             throw new IllegalStateException("AdminService not initialized");
         }
         local.disableBlocking(seconds);
+        // update the summary to get the value of DISABLED_CHANNEL channel
+        scheduler.schedule(this::update, HTTP_DELAY_SECONDS, SECONDS);
+        if (seconds > 0) {
+            // update the summary to get the value of ENABLED_CHANNEL channel
+            // after the X seconds it probably will be true again
+            scheduler.schedule(this::update, seconds + HTTP_DELAY_SECONDS, SECONDS);
+        }
     }
 
     @Override
@@ -274,5 +286,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             throw new IllegalStateException("AdminService not initialized");
         }
         local.enableBlocking();
+        // update the summary to get the value of DISABLED_CHANNEL channel
+        scheduler.schedule(this::update, HTTP_DELAY_SECONDS, SECONDS);
     }
 }
