@@ -144,7 +144,6 @@ Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.2", user="lutron", passwo
 The leapbridge is an experimental bridge which allows the binding to work with the Caseta Smart Hub (non-Pro version) and the RadioRA 3 Processor.
 It can also be used to provide additional features, such as support for occupancy groups and device discovery, when used with Caseta Smart Hub Pro or RA2 Select.
 It uses the LEAP protocol over SSL, which is an undocumented protocol supported by some of Lutron's newer systems.
-Note that the LEAP protocol will not notify the bridge of keypad key presses.
 If you need this useful feature, you should use ipbridge instead.
 You can use both ipbridge and leapbridge at the same time, but each device should only be configured through one bridge.
 You should also be aware that LEAP and LIP integration IDs for the same device can be different.

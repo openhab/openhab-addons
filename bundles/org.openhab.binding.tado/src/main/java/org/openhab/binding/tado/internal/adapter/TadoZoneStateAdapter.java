@@ -48,6 +48,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -75,13 +76,14 @@ public class TadoZoneStateAdapter {
 
     public State getHumidity() {
         PercentageDataPoint humidity = zoneState.getSensorDataPoints().getHumidity();
-        return humidity != null ? toDecimalType(humidity.getPercentage()) : UnDefType.UNDEF;
+        return humidity != null ? new QuantityType<>(humidity.getPercentage(), Units.PERCENT) : UnDefType.UNDEF;
     }
 
-    public DecimalType getHeatingPower() {
+    public State getHeatingPower() {
         ActivityDataPoints dataPoints = zoneState.getActivityDataPoints();
-        return dataPoints.getHeatingPower() != null ? toDecimalType(dataPoints.getHeatingPower().getPercentage())
-                : DecimalType.ZERO;
+        return dataPoints.getHeatingPower() != null
+                ? new QuantityType<>(dataPoints.getHeatingPower().getPercentage().doubleValue(), Units.PERCENT)
+                : UnDefType.UNDEF;
     }
 
     public State getAcPower() {

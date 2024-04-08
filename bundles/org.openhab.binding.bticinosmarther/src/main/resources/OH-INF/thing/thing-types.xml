@@ -87,7 +87,7 @@
 	</channel-type>
 
 	<channel-type id="measures-humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Indoor humidity as measured by the sensor</description>
 		<category>Humidity</category>
