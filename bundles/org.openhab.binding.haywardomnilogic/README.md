@@ -107,10 +107,10 @@ Hayward OmniLogic Connection Parameters:
 |0     |0 = OK<br>1 = Error Present                                     |Error Present                  |
 |1     |0 = OK<br>1 = Alert Present                                     |Alert Present                  |
 |2     |0 = Standy<br>1 = Generating                                    |Generating                     |
-|3	   |0 = Not Paused<br>1 = Paused<br>                                |Paused                         |
-|4	   |0 = Local Not Paused<br>1 = Local Paused<br>                    |Local Pause                    |
+|3     |0 = Not Paused<br>1 = Paused<br>                                |Paused                         |
+|4     |0 = Local Not Paused<br>1 = Local Paused<br>                    |Local Pause                    |
 |5     |0 = Not Authenticated<><BR>1 = Authenticated                    |T-Cell Authenticated           |
-|6	   |0 = K1 Relay Off<br> 1 = K1 Relay On                            |K1 Relay Active                |
+|6     |0 = K1 Relay Off<br> 1 = K1 Relay On                            |K1 Relay Active                |
 |7     |0 = K2 Relay Off<br> 1 = K2 Relay On                            |K2 Relay Active                |
 
 ### Colorlogic Light Channels
