@@ -76,42 +76,42 @@ Hayward OmniLogic Connection Parameters:
 
 ### Chlorinator Error Bit Array
 
-|Bits  |Value        				 		                                |Description                    |              
+|Bits  |Value                                                               |Description                    |
 |------|--------------------------------------------------------------------|-------------------------------|
-|1:0   |00 = OK<br>  01 = Short<br> 10 = Open  								|Current Sensor			  		| 
-|3:2   |00 = OK<br>  01 = Short<br> 10 = Open  								|Voltage Sensor             	| 
-|5:4   |00 = OK<br>  01 = Short<br> 10 = Open  								|Cell Temp Sensor               | 
-|7:6   |00 = OK<br>  01 = Short<br> 10 = Open  								|Board Temp Sensor              | 
-|9:8   |00 = OK<br>  01 = Short<br> 10 = Open  								|K1 Relay                 		| 
-|11:10 |00 = OK<br>  01 = Short<br> 10 = Open  								|K2 Relay                 		| 
-|13:12 |00 = OK<br>  01 = Type<br> 10 = Authentication <br> 11 = Comm Loss 	|Cell Errors                	| 
-|14    |0									   								|Aquarite PCB Error             | 
+|1:0   |00 = OK<br>  01 = Short<br> 10 = Open                               |Current Sensor                 |
+|3:2   |00 = OK<br>  01 = Short<br> 10 = Open                               |Voltage Sensor                 |
+|5:4   |00 = OK<br>  01 = Short<br> 10 = Open                               |Cell Temp Sensor               |
+|7:6   |00 = OK<br>  01 = Short<br> 10 = Open                               |Board Temp Sensor              |
+|9:8   |00 = OK<br>  01 = Short<br> 10 = Open                               |K1 Relay                       |
+|11:10 |00 = OK<br>  01 = Short<br> 10 = Open                               |K2 Relay                       |
+|13:12 |00 = OK<br>  01 = Type<br> 10 = Authentication <br> 11 = Comm Loss  |Cell Errors                    |
+|14    |0                                                                   |Aquarite PCB Error             |
 
 ### Chlorinator Alert Bit Array
 
-|Bits  |Value        				 		                                |Description                    |               
+|Bits  |Value                                                               |Description                    |
 |------|--------------------------------------------------------------------|-------------------------------|
-|1:0   |00 = OK<br>  01 = Salt Low<br> 10 = Salt too Low					|Low salt				  		| 
-|2     |0 = OK<br>  1 = High  												|High Current            		| 
-|3     |0 = OK<br>  1 = Low					 								|Low Voltage              		| 
-|5:4   |00 = OK<br>  01 = Low<br> 10 = Scaleback<br> 11 = High				|Cell Water Temp          		| 
-|7:6   |00 = OK<br>  01 = High<br> 10 = Clearing							|Board Temp                		| 
-|8     |0																	|Not Used	                	| 
-|10:9  |0									   								|Not Used				        | 
-|12:11 |00 = OK<br>  01 = Clean				   								|Cell Cleaning/Runtime          | 
+|1:0   |00 = OK<br>  01 = Salt Low<br> 10 = Salt too Low                    |Low salt                       |
+|2     |0 = OK<br>  1 = High                                                |High Current                   |
+|3     |0 = OK<br>  1 = Low                                                 |Low Voltage                    |
+|5:4   |00 = OK<br>  01 = Low<br> 10 = Scaleback<br> 11 = High              |Cell Water Temp                |
+|7:6   |00 = OK<br>  01 = High<br> 10 = Clearing                            |Board Temp                     |
+|8     |0                                                                   |Not Used                       |
+|10:9  |0                                                                   |Not Used                       |
+|12:11 |00 = OK<br>  01 = Clean                                             |Cell Cleaning/Runtime          |
 
 ### Chlorinator Status Bit Array
 
-|Bits  |Value        				 		                            |Description                    |                  
+|Bits  |Value                                                           |Description                    |
 |------|----------------------------------------------------------------|-------------------------------|
-|0     |0 = OK<br>1 = Error Present										|Error Present			  		| 
-|1     |0 = OK<br>1 = Alert Present										|Alert Present            		| 
-|2     |0 = Standy<br>1 = Generating		 							|Generating              		| 
-|3	   |0 = Not Paused<br>1 = Paused<br> 								|Paused			          		| 
-|4	   |0 = Local Not Paused<br>1 = Local Paused<br>					|Local Pause               		| 
-|5     |0 = Not Authenticated<><BR>1 = Authenticated					|T-Cell Authenticated         	| 
-|6	   |0 = K1 Relay Off<br> 1 = K1 Relay On   							|K1 Relay Active		        | 
-|7     |0 = K2 Relay Off<br> 1 = K2 Relay On   							|K2 Relay Active		        | 
+|0     |0 = OK<br>1 = Error Present                                     |Error Present                  |
+|1     |0 = OK<br>1 = Alert Present                                     |Alert Present                  |
+|2     |0 = Standy<br>1 = Generating                                    |Generating                     |
+|3	   |0 = Not Paused<br>1 = Paused<br>                                |Paused                         |
+|4	   |0 = Local Not Paused<br>1 = Local Paused<br>                    |Local Pause                    |
+|5     |0 = Not Authenticated<><BR>1 = Authenticated                    |T-Cell Authenticated           |
+|6	   |0 = K1 Relay Off<br> 1 = K1 Relay On                            |K1 Relay Active                |
+|7     |0 = K2 Relay Off<br> 1 = K2 Relay On                            |K2 Relay Active                |
 
 ### Colorlogic Light Channels
 
