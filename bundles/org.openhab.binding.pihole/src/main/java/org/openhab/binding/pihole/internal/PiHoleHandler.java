@@ -43,6 +43,7 @@ import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channel
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_UNKNOWN_CHANNEL;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.UNIQUE_CLIENTS_CHANNEL;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.UNIQUE_DOMAINS_CHANNEL;
+import static org.openhab.core.library.unit.Units.PERCENT;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatus.UNKNOWN;
@@ -68,7 +69,7 @@ import org.openhab.binding.pihole.internal.rest.JettyAdminService;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -210,7 +211,8 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
 
         var adsPercentageToday = localDnsStatistics.getAdsPercentageToday();
         if (adsPercentageToday != null) {
-            updateState(ADS_PERCENTAGE_TODAY_CHANNEL, new PercentType(new BigDecimal(adsPercentageToday.toString())));
+            var state = new QuantityType<>(new BigDecimal(adsPercentageToday.toString()), PERCENT);
+            updateState(ADS_PERCENTAGE_TODAY_CHANNEL, state);
         }
         updateState(ENABLED_CHANNEL, OnOffType.from(localDnsStatistics.getEnabled()));
         if (localDnsStatistics.getEnabled()) {
