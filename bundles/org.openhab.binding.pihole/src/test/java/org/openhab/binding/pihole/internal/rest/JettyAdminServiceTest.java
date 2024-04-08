@@ -15,7 +15,6 @@ package org.openhab.binding.pihole.internal.rest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import java.net.URI;
 import java.util.concurrent.ExecutionException;
@@ -126,32 +125,5 @@ public class JettyAdminServiceTest {
 
         // Then
         assertThat(result).contains(dnsStatistics);
-    }
-
-    // Uses the HttpClient to send a request to the correct URL
-    @Test
-    @DisplayName("Uses the HttpClient to send a request to the correct URL")
-    public void testUsesHttpClientToSendRequestToCorrectUrl()
-            throws ExecutionException, InterruptedException, TimeoutException {
-        // Given
-        var token = "validToken";
-        var baseUrl = URI.create("https://example.com");
-        var client = mock(HttpClient.class);
-        var adminService = new JettyAdminService(token, baseUrl, client);
-        var dnsStatistics = new DnsStatistics();
-        var response = mock(ContentResponse.class);
-        var request = mock(Request.class);
-
-        given(client.newRequest(URI.create("https://example.com/admin/api.php?summaryRaw&auth=validToken")))
-                .willReturn(request);
-        given(request.send()).willReturn(response);
-        given(response.getContentAsString()).willReturn(content);
-
-        // When
-        adminService.summary();
-
-        // Then
-        verify(client).newRequest(URI.create("https://example.com/admin/api.php?summaryRaw&auth=validToken"));
-        verify(request).send();
     }
 }

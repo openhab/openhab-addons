@@ -188,39 +188,39 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             return;
         }
 
-        updateDecimalState(DOMAINS_BEING_BLOCKED_CHANNEL, localDnsStatistics.getDomainsBeingBlocked());
-        updateDecimalState(DNS_QUERIES_TODAY_CHANNEL, localDnsStatistics.getDnsQueriesToday());
-        updateDecimalState(ADS_BLOCKED_TODAY_CHANNEL, localDnsStatistics.getAdsBlockedToday());
-        updateDecimalState(UNIQUE_DOMAINS_CHANNEL, localDnsStatistics.getUniqueDomains());
-        updateDecimalState(QUERIES_FORWARDED_CHANNEL, localDnsStatistics.getQueriesForwarded());
-        updateDecimalState(QUERIES_CACHED_CHANNEL, localDnsStatistics.getQueriesCached());
-        updateDecimalState(CLIENTS_EVER_SEEN_CHANNEL, localDnsStatistics.getClientsEverSeen());
-        updateDecimalState(UNIQUE_CLIENTS_CHANNEL, localDnsStatistics.getUniqueClients());
-        updateDecimalState(DNS_QUERIES_ALL_TYPES_CHANNEL, localDnsStatistics.getDnsQueriesAllTypes());
-        updateDecimalState(REPLY_UNKNOWN_CHANNEL, localDnsStatistics.getReplyUnknown());
-        updateDecimalState(REPLY_NODATA_CHANNEL, localDnsStatistics.getReplyNoData());
-        updateDecimalState(REPLY_NXDOMAIN_CHANNEL, localDnsStatistics.getReplyNXDomain());
-        updateDecimalState(REPLY_CNAME_CHANNEL, localDnsStatistics.getReplyCName());
-        updateDecimalState(REPLY_IP_CHANNEL, localDnsStatistics.getReplyIP());
-        updateDecimalState(REPLY_DOMAIN_CHANNEL, localDnsStatistics.getReplyDomain());
-        updateDecimalState(REPLY_RRNAME_CHANNEL, localDnsStatistics.getReplyRRName());
-        updateDecimalState(REPLY_SERVFAIL_CHANNEL, localDnsStatistics.getReplyServFail());
-        updateDecimalState(REPLY_REFUSED_CHANNEL, localDnsStatistics.getReplyRefused());
-        updateDecimalState(REPLY_NOTIMP_CHANNEL, localDnsStatistics.getReplyNotImp());
-        updateDecimalState(REPLY_OTHER_CHANNEL, localDnsStatistics.getReplyOther());
-        updateDecimalState(REPLY_DNSSEC_CHANNEL, localDnsStatistics.getReplyDNSSEC());
-        updateDecimalState(REPLY_NONE_CHANNEL, localDnsStatistics.getReplyNone());
-        updateDecimalState(REPLY_BLOB_CHANNEL, localDnsStatistics.getReplyBlob());
-        updateDecimalState(DNS_QUERIES_ALL_REPLIES_CHANNEL, localDnsStatistics.getDnsQueriesAllTypes());
-        updateDecimalState(PRIVACY_LEVEL_CHANNEL, localDnsStatistics.getPrivacyLevel());
+        updateDecimalState(DOMAINS_BEING_BLOCKED_CHANNEL, localDnsStatistics.domainsBeingBlocked());
+        updateDecimalState(DNS_QUERIES_TODAY_CHANNEL, localDnsStatistics.dnsQueriesToday());
+        updateDecimalState(ADS_BLOCKED_TODAY_CHANNEL, localDnsStatistics.adsBlockedToday());
+        updateDecimalState(UNIQUE_DOMAINS_CHANNEL, localDnsStatistics.uniqueDomains());
+        updateDecimalState(QUERIES_FORWARDED_CHANNEL, localDnsStatistics.queriesForwarded());
+        updateDecimalState(QUERIES_CACHED_CHANNEL, localDnsStatistics.queriesCached());
+        updateDecimalState(CLIENTS_EVER_SEEN_CHANNEL, localDnsStatistics.clientsEverSeen());
+        updateDecimalState(UNIQUE_CLIENTS_CHANNEL, localDnsStatistics.uniqueClients());
+        updateDecimalState(DNS_QUERIES_ALL_TYPES_CHANNEL, localDnsStatistics.dnsQueriesAllTypes());
+        updateDecimalState(REPLY_UNKNOWN_CHANNEL, localDnsStatistics.replyUnknown());
+        updateDecimalState(REPLY_NODATA_CHANNEL, localDnsStatistics.replyNoData());
+        updateDecimalState(REPLY_NXDOMAIN_CHANNEL, localDnsStatistics.replyNXDomain());
+        updateDecimalState(REPLY_CNAME_CHANNEL, localDnsStatistics.replyCName());
+        updateDecimalState(REPLY_IP_CHANNEL, localDnsStatistics.replyIP());
+        updateDecimalState(REPLY_DOMAIN_CHANNEL, localDnsStatistics.replyDomain());
+        updateDecimalState(REPLY_RRNAME_CHANNEL, localDnsStatistics.replyRRName());
+        updateDecimalState(REPLY_SERVFAIL_CHANNEL, localDnsStatistics.replyServFail());
+        updateDecimalState(REPLY_REFUSED_CHANNEL, localDnsStatistics.replyRefused());
+        updateDecimalState(REPLY_NOTIMP_CHANNEL, localDnsStatistics.replyNotImp());
+        updateDecimalState(REPLY_OTHER_CHANNEL, localDnsStatistics.replyOther());
+        updateDecimalState(REPLY_DNSSEC_CHANNEL, localDnsStatistics.replyDNSSEC());
+        updateDecimalState(REPLY_NONE_CHANNEL, localDnsStatistics.replyNone());
+        updateDecimalState(REPLY_BLOB_CHANNEL, localDnsStatistics.replyBlob());
+        updateDecimalState(DNS_QUERIES_ALL_REPLIES_CHANNEL, localDnsStatistics.dnsQueriesAllTypes());
+        updateDecimalState(PRIVACY_LEVEL_CHANNEL, localDnsStatistics.privacyLevel());
 
-        var adsPercentageToday = localDnsStatistics.getAdsPercentageToday();
+        var adsPercentageToday = localDnsStatistics.adsPercentageToday();
         if (adsPercentageToday != null) {
             var state = new QuantityType<>(new BigDecimal(adsPercentageToday.toString()), PERCENT);
             updateState(ADS_PERCENTAGE_TODAY_CHANNEL, state);
         }
-        updateState(ENABLED_CHANNEL, OnOffType.from(localDnsStatistics.getEnabled()));
-        if (localDnsStatistics.getEnabled()) {
+        updateState(ENABLED_CHANNEL, OnOffType.from(localDnsStatistics.enabled()));
+        if (localDnsStatistics.enabled()) {
             updateState(DISABLE_ENABLE_CHANNEL, new StringType(ENABLE.toString()));
         }
     }
