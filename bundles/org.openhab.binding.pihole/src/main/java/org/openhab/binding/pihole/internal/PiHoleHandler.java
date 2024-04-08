@@ -54,8 +54,8 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeoutException;
@@ -234,7 +234,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(PiHoleActions.class);
+        return Set.of(PiHoleActions.class);
     }
 
     @Override
