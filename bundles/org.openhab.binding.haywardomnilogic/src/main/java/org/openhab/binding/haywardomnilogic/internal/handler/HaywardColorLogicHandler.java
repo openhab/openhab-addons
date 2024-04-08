@@ -101,62 +101,59 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
     public void setStateDescriptions() throws HaywardException {
         List<StateOption> options = new ArrayList<>();
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
-            if (bridgehandler != null) {
-                // Set Light Shows based on light type
-                Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_COLORLOGIC_CURRENTSHOW);
-                if (ch != null) {
-                    String lightType = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_COLORLOGIC_TYPE);
-                    if (lightType != null) {
-                        if ("COLOR_LOGIC_2_5".equals(lightType) || "COLOR_LOGIC_4_0".equals(lightType)) {
-                            options.add(new StateOption("0", "Voodoo Lounge"));
-                            options.add(new StateOption("1", "Deep Blue Sea"));
-                            options.add(new StateOption("2", "Afternoon Sky"));
-                            options.add(new StateOption("3", "Emerald"));
-                            options.add(new StateOption("4", "Sangria"));
-                            options.add(new StateOption("5", "Cloud White"));
-                            options.add(new StateOption("6", "Twilight"));
-                            options.add(new StateOption("7", "Tranquility"));
-                            options.add(new StateOption("8", "Gemstone"));
-                            options.add(new StateOption("9", "USA"));
-                            options.add(new StateOption("10", "Mardi Gras"));
-                            options.add(new StateOption("11", "Cool Cabaret"));
-                        } else if (lightType.contains("COLOR_LOGIC_UCL")) {
-                            options.add(new StateOption("0", "Voodoo Lounge"));
-                            options.add(new StateOption("1", "Deep Blue Sea"));
-                            options.add(new StateOption("2", "Royal Blue"));
-                            options.add(new StateOption("3", "Afternoon Sky"));
-                            options.add(new StateOption("4", "Aqua Green"));
-                            options.add(new StateOption("5", "Emerald"));
-                            options.add(new StateOption("6", "Cloud White"));
-                            options.add(new StateOption("7", "Warm Red"));
-                            options.add(new StateOption("8", "Flamingo"));
-                            options.add(new StateOption("9", "Vivid Violet"));
-                            options.add(new StateOption("10", "Sangria"));
-                            options.add(new StateOption("11", "Twilight"));
-                            options.add(new StateOption("12", "Tranquility"));
-                            options.add(new StateOption("13", "Gemstone"));
-                            options.add(new StateOption("14", "USA"));
-                            options.add(new StateOption("15", "Mardi Gras"));
-                            options.add(new StateOption("16", "Cool Cabaret"));
-                        }
-                        if ("COLOR_LOGIC_UCL_V2".equals(lightType)) {
-                            options.add(new StateOption("17", "Yellow"));
-                            options.add(new StateOption("18", "Orange"));
-                            options.add(new StateOption("19", "Gold"));
-                            options.add(new StateOption("20", "Mint"));
-                            options.add(new StateOption("21", "Teal"));
-                            options.add(new StateOption("22", "Burnt Orange"));
-                            options.add(new StateOption("23", "Pure White"));
-                            options.add(new StateOption("24", "Crisp White"));
-                            options.add(new StateOption("25", "Warm White"));
-                            options.add(new StateOption("26", "Bright Yellow"));
-                        }
-                        StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-                                .withOptions(options).build();
-                        bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
+        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+            // Set Light Shows based on light type
+            Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_COLORLOGIC_CURRENTSHOW);
+            if (ch != null) {
+                String lightType = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_COLORLOGIC_TYPE);
+                if (lightType != null) {
+                    if ("COLOR_LOGIC_2_5".equals(lightType) || "COLOR_LOGIC_4_0".equals(lightType)) {
+                        options.add(new StateOption("0", "Voodoo Lounge"));
+                        options.add(new StateOption("1", "Deep Blue Sea"));
+                        options.add(new StateOption("2", "Afternoon Sky"));
+                        options.add(new StateOption("3", "Emerald"));
+                        options.add(new StateOption("4", "Sangria"));
+                        options.add(new StateOption("5", "Cloud White"));
+                        options.add(new StateOption("6", "Twilight"));
+                        options.add(new StateOption("7", "Tranquility"));
+                        options.add(new StateOption("8", "Gemstone"));
+                        options.add(new StateOption("9", "USA"));
+                        options.add(new StateOption("10", "Mardi Gras"));
+                        options.add(new StateOption("11", "Cool Cabaret"));
+                    } else if (lightType.contains("COLOR_LOGIC_UCL")) {
+                        options.add(new StateOption("0", "Voodoo Lounge"));
+                        options.add(new StateOption("1", "Deep Blue Sea"));
+                        options.add(new StateOption("2", "Royal Blue"));
+                        options.add(new StateOption("3", "Afternoon Sky"));
+                        options.add(new StateOption("4", "Aqua Green"));
+                        options.add(new StateOption("5", "Emerald"));
+                        options.add(new StateOption("6", "Cloud White"));
+                        options.add(new StateOption("7", "Warm Red"));
+                        options.add(new StateOption("8", "Flamingo"));
+                        options.add(new StateOption("9", "Vivid Violet"));
+                        options.add(new StateOption("10", "Sangria"));
+                        options.add(new StateOption("11", "Twilight"));
+                        options.add(new StateOption("12", "Tranquility"));
+                        options.add(new StateOption("13", "Gemstone"));
+                        options.add(new StateOption("14", "USA"));
+                        options.add(new StateOption("15", "Mardi Gras"));
+                        options.add(new StateOption("16", "Cool Cabaret"));
                     }
+                    if ("COLOR_LOGIC_UCL_V2".equals(lightType)) {
+                        options.add(new StateOption("17", "Yellow"));
+                        options.add(new StateOption("18", "Orange"));
+                        options.add(new StateOption("19", "Gold"));
+                        options.add(new StateOption("20", "Mint"));
+                        options.add(new StateOption("21", "Teal"));
+                        options.add(new StateOption("22", "Burnt Orange"));
+                        options.add(new StateOption("23", "Pure White"));
+                        options.add(new StateOption("24", "Crisp White"));
+                        options.add(new StateOption("25", "Warm White"));
+                        options.add(new StateOption("26", "Bright Yellow"));
+                    }
+                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                            .withOptions(options).build();
+                    bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
                 }
             }
         }
