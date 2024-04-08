@@ -254,8 +254,9 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
             } else if (command == COMMAND_PUSH_BUTTON_STATUS) {
                 ThingTypeUID thingTypeUID = this.thing.getThingTypeUID();
                 if (thingTypeUID.equals(THING_TYPE_VMBELO) || thingTypeUID.equals(THING_TYPE_VMBGPO)
-                        || thingTypeUID.equals(THING_TYPE_VMBGPOD) || thingTypeUID.equals(THING_TYPE_VMBGPOD_2)) {
-                    // modules VMBELO, VMBGPO, VMBGPOD, VMBGPOD_2 use sub-address 4 for sensor
+                        || thingTypeUID.equals(THING_TYPE_VMBGPOD) || thingTypeUID.equals(THING_TYPE_VMBGPOD_2)
+                        || thingTypeUID.equals(THING_TYPE_VMBGPO_20)) {
+                    // modules VMBELO, VMBGPO, VMBGPOD, VMBGPOD_2, VMBGPO_20 use sub-address 4 for sensor
                     if (address == this.getModuleAddress().getSubAddresses()[3]) {
                         byte outputChannelsJustActivated = packet[5];
                         byte outputChannelsJustDeactivated = packet[6];
@@ -264,13 +265,20 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
                         triggerThermostatChannels(outputChannelsJustDeactivated, CommonTriggerEvents.RELEASED);
                     }
                     // modules VMBEL1, VMBEL2, VMBEL4, VMBELPIR, VMBGP1, VMBGP1-2, VMBGP2, VMBGP2-2, VMBGP4, VMBGP4-2,
-                    // VMBGP4PIR, VMBGP4PIR-2 use sub-address 1 for sensor, wich is not usable as push button
+                    // VMBGP4PIR, VMBGP4PIR-2, VMBEL1-20, VMBEL2-20, VMBEL4-20, VMBELO-20, VMBGP1-20, VMBGP2-20,
+                    // VMBGP4-20, VMBEL4PIR-20, VMBGP4PIR-20 use sub-address 1 for sensor, wich is not usable as push
+                    // button
                 } else if (thingTypeUID.equals(THING_TYPE_VMBEL1) || thingTypeUID.equals(THING_TYPE_VMBEL2)
                         || thingTypeUID.equals(THING_TYPE_VMBEL4) || thingTypeUID.equals(THING_TYPE_VMBELPIR)
                         || thingTypeUID.equals(THING_TYPE_VMBGP1) || thingTypeUID.equals(THING_TYPE_VMBGP1_2)
                         || thingTypeUID.equals(THING_TYPE_VMBGP2) || thingTypeUID.equals(THING_TYPE_VMBGP2_2)
                         || thingTypeUID.equals(THING_TYPE_VMBGP4) || thingTypeUID.equals(THING_TYPE_VMBGP4_2)
-                        || thingTypeUID.equals(THING_TYPE_VMBGP4PIR) || thingTypeUID.equals(THING_TYPE_VMBGP4PIR_2)) {
+                        || thingTypeUID.equals(THING_TYPE_VMBGP4PIR) || thingTypeUID.equals(THING_TYPE_VMBGP4PIR_2)
+                        || thingTypeUID.equals(THING_TYPE_VMBEL1_20) || thingTypeUID.equals(THING_TYPE_VMBEL2_20)
+                        || thingTypeUID.equals(THING_TYPE_VMBEL4_20) || thingTypeUID.equals(THING_TYPE_VMBELO_20)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP1_20) || thingTypeUID.equals(THING_TYPE_VMBGP2_20)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP4_20) || thingTypeUID.equals(THING_TYPE_VMBEL4PIR_20)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP4PIR_20)) {
                     if (address != this.getModuleAddress().getAddress()) {
                         byte outputChannelsJustActivated = packet[5];
                         byte outputChannelsJustDeactivated = packet[6];
