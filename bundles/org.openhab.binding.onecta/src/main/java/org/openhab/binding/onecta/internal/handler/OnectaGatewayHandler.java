@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OnectaGatewayHandler extends BaseThingHandler {
 
+    public static final String DOES_NOT_EXISTS = "Unit not registered at Onecta, unitID does not exists.";
     private final Logger logger = LoggerFactory.getLogger(OnectaGatewayHandler.class);
 
     private @Nullable OnectaConfiguration config;
@@ -49,7 +50,6 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private final DataTransportService dataTransService;
-    // private @Nullable ChannelsRefreshDelay channelsRefreshDelay;
 
     public OnectaGatewayHandler(Thing thing) {
         super(thing);
@@ -61,8 +61,6 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
 
         try {
-            // channelsRefreshDelay.add(channelUID.getId());
-
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception ex) {
             // catch exceptions and handle it in your binding
@@ -74,18 +72,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(OnectaConfiguration.class);
 
-        updateStatus(ThingStatus.UNKNOWN);
-
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
+        updateStatus(ThingStatus.ONLINE);
     }
 
     public void refreshDevice() {
@@ -109,7 +96,8 @@ public class OnectaGatewayHandler extends BaseThingHandler {
             updateState(CHANNEL_GW_WIFICONNENTION_STRENGTH, getWifiConnectionStrength());
 
         } else {
-            getThing().setProperty(PROPERTY_GW_NAME, "Unit not registered at Onecta, unitID does not exists.");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, DOES_NOT_EXISTS);
+            getThing().setProperty(PROPERTY_GW_NAME, DOES_NOT_EXISTS);
         }
     }
 

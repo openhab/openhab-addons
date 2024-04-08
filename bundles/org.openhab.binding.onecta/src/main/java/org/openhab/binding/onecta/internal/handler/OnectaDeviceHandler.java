@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class OnectaDeviceHandler extends BaseThingHandler {
 
+    public static final String DOES_NOT_EXISTS = "Unit not registered at Onecta, unitID does not exists.";
     private final Logger logger = LoggerFactory.getLogger(OnectaDeviceHandler.class);
 
     private @Nullable OnectaConfiguration config;
@@ -161,17 +162,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
         channelsRefreshDelay = new ChannelsRefreshDelay(
                 Long.parseLong(thing.getConfiguration().get("refreshDelay").toString()) * 1000);
 
-        updateStatus(ThingStatus.UNKNOWN);
-
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
+        updateStatus(ThingStatus.ONLINE);
 
         thing.setProperty(CHANNEL_AC_NAME, "");
     }
@@ -309,7 +300,8 @@ public class OnectaDeviceHandler extends BaseThingHandler {
             updateState(CHANNEL_AC_ENERGY_COOLING_CURRENT_YEAR, getEnergyCoolingCurrentYear());
 
         } else {
-            getThing().setProperty(PROPERTY_AC_NAME, "Unit not registered at Onecta, unitID does not exists.");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, DOES_NOT_EXISTS);
+            getThing().setProperty(PROPERTY_AC_NAME, DOES_NOT_EXISTS);
         }
     }
 

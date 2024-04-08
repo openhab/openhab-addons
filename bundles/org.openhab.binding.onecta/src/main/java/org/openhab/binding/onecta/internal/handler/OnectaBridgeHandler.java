@@ -78,20 +78,23 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         config = getConfigAs(OnectaConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
-        try {
-            String refreshToken = thing.getConfiguration().get(CHANNEL_REFRESH_TOKEN) == null ? ""
-                    : thing.getConfiguration().get(CHANNEL_REFRESH_TOKEN).toString();
-            OnectaConnectionClient.startConnecton(thing.getConfiguration().get(CHANNEL_USERID).toString(),
-                    thing.getConfiguration().get(CHANNEL_PASSWORD).toString(), refreshToken);
 
-            if (OnectaConnectionClient.isOnline()) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
+        scheduler.execute(() -> {
+            try {
+                String refreshToken = thing.getConfiguration().get(CHANNEL_REFRESH_TOKEN) == null ? ""
+                        : thing.getConfiguration().get(CHANNEL_REFRESH_TOKEN).toString();
+                OnectaConnectionClient.startConnecton(thing.getConfiguration().get(CHANNEL_USERID).toString(),
+                        thing.getConfiguration().get(CHANNEL_PASSWORD).toString(), refreshToken);
+
+                if (OnectaConnectionClient.isOnline()) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE);
+                }
+            } catch (DaikinCommunicationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-        } catch (DaikinCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
+        });
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 10,
                 Integer.parseInt(thing.getConfiguration().get(CHANNEL_REFRESHINTERVAL).toString()), TimeUnit.SECONDS);
