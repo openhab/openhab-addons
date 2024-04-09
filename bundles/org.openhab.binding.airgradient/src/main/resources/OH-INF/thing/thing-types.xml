@@ -10,7 +10,7 @@
 
 		<representation-property>token</representation-property>
 		<config-description>
-			<parameter name="token" type="text" required="true">
+			<parameter name="token" type="text" required="false">
 				<context>password</context>
 				<label>Token</label>
 				<description>Token to access the device</description>

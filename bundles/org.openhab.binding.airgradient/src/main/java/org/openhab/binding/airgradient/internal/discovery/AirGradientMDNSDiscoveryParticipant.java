@@ -15,6 +15,7 @@ package org.openhab.binding.airgradient.internal.discovery;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CONFIG_API_HOST_NAME;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CONFIG_API_REFRESH_INTERVAL;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CONFIG_API_TOKEN;
+import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CURRENT_MEASURES_LOCAL_PATH;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.DEFAULT_POLL_INTERVAL_LOCAL;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.THING_TYPE_API;
 
@@ -50,6 +51,8 @@ import org.slf4j.LoggerFactory;
 public class AirGradientMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_airgradient._tcp.local.";
+    private static final String MDNS_PROPERTY_SERIALNO = "serialno";
+    private static final String MDNS_PROPERTY_MODEL = "model";
 
     private final Logger logger = LoggerFactory.getLogger(AirGradientMDNSDiscoveryParticipant.class);
     protected final ThingRegistry thingRegistry;
@@ -71,7 +74,7 @@ public class AirGradientMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo si) {
-        logger.debug("Discovered {} at {}:\n{}", si.getQualifiedName(), si.getURLs(), si.getNiceTextString());
+        logger.debug("Discovered {} at {}: {}", si.getQualifiedName(), si.getURLs(), si.getNiceTextString());
 
         String urls[] = si.getURLs();
         if (urls == null || urls.length < 1) {
@@ -79,16 +82,19 @@ public class AirGradientMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
             return null;
         }
 
-        String serialNo = si.getPropertyString("serialno");
-        String hostName = urls[0] + "/measures/current";
-        String model = si.getPropertyString("model");
+        String hostName = urls[0] + CURRENT_MEASURES_LOCAL_PATH;
+        String model = si.getPropertyString(MDNS_PROPERTY_MODEL);
 
         Map<String, Object> properties = new HashMap<>(1);
         properties.put(CONFIG_API_TOKEN, "");
         properties.put(CONFIG_API_HOST_NAME, hostName);
         properties.put(CONFIG_API_REFRESH_INTERVAL, DEFAULT_POLL_INTERVAL_LOCAL);
 
-        ThingUID thingUID = new ThingUID(THING_TYPE_API, serialNo);
+        ThingUID thingUID = getThingUID(si);
+        if (thingUID == null) {
+            logger.debug("Failed creating thing as we couldn't create a UID for it (missing serialno)");
+            return null;
+        }
 
         logger.debug("Autodiscovered API {} with id {} with host name {}. It is a {}", si.getName(), thingUID, hostName,
                 model);
@@ -103,6 +109,12 @@ public class AirGradientMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
     public @Nullable ThingUID getThingUID(ServiceInfo si) {
         logger.debug("Getting thing ID for: App: {} Host: {} Name: {} Port: {} Serial: {}", si.getApplication(),
                 si.getHostAddresses(), si.getName(), si.getPort(), si.getPropertyString("serialno"));
-        return new ThingUID(THING_TYPE_API, si.getPropertyString("serialno"));
+
+        String serialNo = si.getPropertyString(MDNS_PROPERTY_SERIALNO);
+        if (serialNo == null) {
+            return null;
+        }
+
+        return new ThingUID(THING_TYPE_API, serialNo);
     }
 }

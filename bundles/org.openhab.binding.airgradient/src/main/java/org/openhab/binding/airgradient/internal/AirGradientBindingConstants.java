@@ -57,6 +57,7 @@ public class AirGradientBindingConstants {
     // URLs for API
     public static final String PING_PATH = "/public/api/v1/ping";
     public static final String CURRENT_MEASURES_PATH = "/public/api/v1/locations/measures/current?token=%s";
+    public static final String CURRENT_MEASURES_LOCAL_PATH = "/measures/current";
     public static final String LEDS_MODE_PATH = "/public/api/v1/sensors/%s/config/leds/mode?token=%s";
     public static final String CALIBRATE_CO2_PATH = "/public/api/v1/sensors/%s/co2/calibration?token=%s";
 
