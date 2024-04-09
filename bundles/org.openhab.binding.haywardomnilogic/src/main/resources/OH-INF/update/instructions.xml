@@ -6,10 +6,10 @@
 	<thing-type uid="haywardomnilogic:chlorinator">
 		<instruction-set targetVersion="1">
 			<update-channel id="chlorError">
-				<type>String</type>
+				<type>haywardomnilogic:chlorError</type>
 			</update-channel>
 			<update-channel id="chlorStatus">
-				<type>String</type>
+				<type>haywardomnilogic:chlorStatus</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -17,7 +17,7 @@
 	<thing-type uid="haywardomnilogic:filter">
 		<instruction-set targetVersion="1">
 			<update-channel id="filterSpeedRpm">
-				<type>Number:Frequency</type>
+				<type>haywardomnilogic:filterSpeedRpm</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -25,9 +25,8 @@
 	<thing-type uid="haywardomnilogic:pump">
 		<instruction-set targetVersion="1">
 			<update-channel id="pumpSpeedRpm">
-				<type>Number:Frequency</type>
+				<type>haywardomnilogic:pumpSpeedRpm</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
-
 </update:update-descriptions>

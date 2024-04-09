@@ -19,7 +19,7 @@
 			<channel id="chlorAlert" typeId="chlorAlert"/>
 			<channel id="chlorAvgSaltLevel" typeId="avgSaltLevel"/>
 			<channel id="chlorInstantSaltLevel" typeId="instantSaltLevel"/>
-			<channel id="chlorStatus" typeId="status"/>
+			<channel id="chlorStatus" typeId="chlorStatus"/>
 		</channels>
 
 		<properties>
@@ -87,7 +87,7 @@
 		<state pattern="%,d ppm" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="status">
+	<channel-type id="chlorStatus">
 		<item-type>String</item-type>
 		<label>Status</label>
 		<state pattern="%s" readOnly="true"/>
