@@ -367,15 +367,19 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         this.sendMQTT(this.basetopic + TOPIC_UPGRADE, "", false);
     }
 
-    public void showNotification(boolean hold, boolean wakeUp, boolean stack, String rtttl, String sound,
+    public void showNotification(boolean hold, boolean wakeUp, boolean stack, @Nullable String rtttl, @Nullable String sound,
             boolean loopSound, Map<String, Object> params) {
         AwtrixNotification notification = new AwtrixNotification();
         notification.updateFields(params);
         notification.setHold(hold);
         notification.setWakeUp(wakeUp);
         notification.setStack(stack);
-        notification.setRtttl(rtttl);
-        notification.setSound(sound);
+        if (rtttl != null) {
+            notification.setRtttl(rtttl);
+        }
+        if (sound != null) {
+            notification.setSound(sound);
+        }
         notification.setLoopSound(loopSound);
         String notificationMessage = notification.getNotificationConfig();
         this.sendMQTT(this.basetopic + TOPIC_NOTIFY, notificationMessage, false);
