@@ -13,8 +13,6 @@
 			<add-channel id="live_accumulatedConsumptionThisHour">
 				<type>tibber:consumption</type>
 			</add-channel>
-		</instruction-set>
-		<instruction-set targetVersion="2">
 			<add-channel id="live_accumulatedProductionThisHour">
 				<type>tibber:production</type>
 			</add-channel>
