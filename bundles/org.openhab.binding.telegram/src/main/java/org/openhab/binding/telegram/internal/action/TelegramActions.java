@@ -671,8 +671,8 @@ public class TelegramActions implements ThingActions {
     }
 
     public static boolean deleteTelegramQuery(ThingActions actions, @Nullable String replyId) {
-        if (actions instanceof TelegramActions) {
-            return ((TelegramActions) actions).deleteTelegramQuery(replyId);
+        if (actions instanceof TelegramActions telegramActions) {
+            return telegramActions.deleteTelegramQuery(replyId);
         } else {
             throw new IllegalArgumentException("Instance is not a TelegramActions class.");
         }
