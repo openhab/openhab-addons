@@ -481,18 +481,20 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
                         channelTypeUID = createChannelTypeForDatapointgroup(dpg, channelTypeUID);
                     }
 
-                    ChannelUID channelUID = new ChannelUID(thingUID, channel.getChannelId(), dpg.getLabel());
+                    ChannelUID channelUID = new ChannelUID(thingUID, channel.getChannelId(),
+                            dpg.getLabel().substring(4));
 
-                    String channelLabel = String.format("%s - %s", channel.getChannelLabel(),
+                    String channelLabel = String.format("%s",
                             i18nProvider.getText(bundle, dpg.getLabel(), "-", locale));
 
-                    String channelDescription = String.format("%s",
+                    String channelDescription = String.format("(%s) %s", channel.getChannelLabel(),
                             i18nProvider.getText(bundle, dpg.getDescription(), "-", locale));
 
                     Channel thingChannel = ChannelBuilder.create(channelUID)
                             .withAcceptedItemType(dpg.getOpenHabItemType()).withKind(ChannelKind.STATE)
-                            .withProperties(channelProps).withLabel(channelLabel).withDescription(channelDescription)
-                            .withType(channelTypeUID).withAutoUpdatePolicy(policy).build();
+                            .withProperties(channelProps).withLabel(capitalizeWordsInLabel(channelLabel))
+                            .withDescription(channelDescription).withType(channelTypeUID).withAutoUpdatePolicy(policy)
+                            .build();
                     thingChannels.add(thingChannel);
 
                     logger.debug("Thing channel created - device: {} - channelUID: {} - channel label: {}",
@@ -538,8 +540,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
     }
 
     private void reloadChannelTypes() throws FreeAtHomeGeneralException {
-        FreeAtHomeBridgeHandler freeAtHomeBridge = null;
-
         Bridge bridge = this.getBridge();
 
         ThingUID thingUID = thing.getUID();
@@ -609,6 +609,26 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
         mapChannelUID.clear();
 
         mapEventToChannelUID.clear();
+    }
+
+    private String capitalizeWordsInLabel(String label) {
+
+        // splliting up words using split function
+        String[] words = label.split(" ");
+
+        for (int i = 0; i < words.length; i++) {
+
+            // taking letter individually from sentences
+            String firstLetter = words[i].substring(0, 1);
+            String restOfWord = words[i].substring(1);
+
+            // making first letter uppercase using toUpperCase function
+            firstLetter = firstLetter.toUpperCase();
+            words[i] = firstLetter + restOfWord;
+        }
+
+        // joining the words together to make a sentence
+        return String.join(" ", words);
     }
 
     private boolean isThingHandlesVirtualDevice() {

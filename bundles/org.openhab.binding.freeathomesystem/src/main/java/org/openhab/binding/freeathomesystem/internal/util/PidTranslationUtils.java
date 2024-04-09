@@ -24,13 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class PidTranslationUtils {
-    public static final String PID_VALUETYPE_UNKNOWN = "PID_VALUETYPE_UNKNOWN";
-    public static final String PID_VALUETYPE_BOOLEAN = "PID_VALUETYPE_BOOLEAN";
-    public static final String PID_VALUETYPE_DECIMAL = "PID_VALUETYPE_DECIMAL";
-    public static final String PID_VALUETYPE_INTEGER = "PID_VALUETYPE_INTEGER";
-    public static final String PID_VALUETYPE_STRING = "PID_VALUETYPE_STRING";
-    public static final String PID_VALUETYPE_SHUTTERMOVEMENT = "PID_VALUETYPE_SHUTTERMOVEMENT";
-    public static final String PID_VALUETYPE_ENUM = "PID_VALUETYPE_ENUM";
+    public static final String PID_VALUETYPE_UNKNOWN = "unknown";
+    public static final String PID_VALUETYPE_BOOLEAN = "boolean";
+    public static final String PID_VALUETYPE_DECIMAL = "decimal";
+    public static final String PID_VALUETYPE_INTEGER = "integer";
+    public static final String PID_VALUETYPE_STRING = "string";
+    public static final String PID_VALUETYPE_SHUTTERMOVEMENT = "shuttermovement";
+    public static final String PID_VALUETYPE_ENUM = "enum";
 
     public static final String CATEGORY_UNDEFINED = "-";
     public static final String CATEGORY_BATTERY = "Battery";
@@ -642,7 +642,7 @@ public class PidTranslationUtils {
                             "pid-info-remaining-time-text")),
             Map.entry("0x0616",
                     new PIdContainerClass(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
-                            "pid-time-of-last-status-change-(star", "pid-time-of-last-status-change-(star-text")),
+                            "pid-time-of-last-status-change", "pid-time-of-last-status-change-text")),
             Map.entry("0x0618",
                     new PIdContainerClass(PID_VALUETYPE_UNKNOWN, CATEGORY_UNDEFINED, "", "",
                             "pid-lock-unlock-door-command", "pid-lock-unlock-door-command-text")),

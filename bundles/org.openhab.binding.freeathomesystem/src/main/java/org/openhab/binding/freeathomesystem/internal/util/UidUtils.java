@@ -30,9 +30,9 @@ public class UidUtils {
         String channelNameString;
 
         if (isReadOnly) {
-            channelNameString = valueType + "-channeltype-ro";
+            channelNameString = valueType + "-ro";
         } else {
-            channelNameString = valueType + "-channeltype";
+            channelNameString = valueType;
         }
 
         return new ChannelTypeUID(BINDING_ID, channelNameString);
