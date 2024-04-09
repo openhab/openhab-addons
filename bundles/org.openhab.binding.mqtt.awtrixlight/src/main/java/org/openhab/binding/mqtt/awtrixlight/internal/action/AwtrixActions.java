@@ -53,11 +53,27 @@ public class AwtrixActions implements ThingActions {
         }
     }
 
+    public static void blinkIndicator(@Nullable ThingActions actions, int indicatorId, int[] rgb, int blinkTimeInMs) {
+        if (actions instanceof AwtrixActions) {
+            ((AwtrixActions) actions).blinkIndicator(indicatorId, rgb, blinkTimeInMs);
+        } else {
+            throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
+        }
+    }
+
     @RuleAction(label = "Fade Indicator", description = "Fade indicator with indicatorId")
     public void fadeIndicator(int indicatorId, int[] rgb, int fadeTimeInMs) {
         AwtrixLightBridgeHandler localHandler = this.handler;
         if (localHandler != null) {
             localHandler.fadeIndicator(indicatorId, rgb, fadeTimeInMs);
+        }
+    }
+
+    public static void fadeIndicator(@Nullable ThingActions actions, int indicatorId, int[] rgb, int fadeTimeInMs) {
+        if (actions instanceof AwtrixActions) {
+            ((AwtrixActions) actions).fadeIndicator(indicatorId, rgb, fadeTimeInMs);
+        } else {
+            throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }
     }
 
@@ -69,11 +85,27 @@ public class AwtrixActions implements ThingActions {
         }
     }
 
+    public static void activateIndicator(@Nullable ThingActions actions, int indicatorId, int[] rgb) {
+        if (actions instanceof AwtrixActions) {
+            ((AwtrixActions) actions).activateIndicator(indicatorId, rgb);
+        } else {
+            throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
+        }
+    }
+
     @RuleAction(label = "Deactivate Indicator", description = "Turn off indicator with indicatorId")
     public void deactivateIndicator(int indicatorId) {
         AwtrixLightBridgeHandler localHandler = this.handler;
         if (localHandler != null) {
             localHandler.deactivateIndicator(indicatorId);
+        }
+    }
+
+    public static void deactivateIndicator(@Nullable ThingActions actions, int indicatorId) {
+        if (actions instanceof AwtrixActions) {
+            ((AwtrixActions) actions).deactivateIndicator(indicatorId);
+        } else {
+            throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }
     }
 
@@ -85,6 +117,14 @@ public class AwtrixActions implements ThingActions {
         }
     }
 
+    public static void reboot(@Nullable ThingActions actions) {
+        if (actions instanceof AwtrixActions) {
+            ((AwtrixActions) actions).reboot();
+        } else {
+            throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
+        }
+    }
+
     @RuleAction(label = "Upgrade", description = "Performs firmware upgrade")
     public void upgrade() {
         AwtrixLightBridgeHandler localHandler = this.handler;
@@ -93,11 +133,29 @@ public class AwtrixActions implements ThingActions {
         }
     }
 
+    public static void upgrade(@Nullable ThingActions actions) {
+        if (actions instanceof AwtrixActions) {
+            ((AwtrixActions) actions).upgrade();
+        } else {
+            throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
+        }
+    }
+
     @RuleAction(label = "Play Sound", description = "Plays the sound file with given name (without extension) if it exists")
     public void playSound(String melody) {
         AwtrixLightBridgeHandler localHandler = this.handler;
         if (localHandler != null) {
             localHandler.playSound(melody);
+        }
+    }
+
+    public static void playSound(@Nullable ThingActions actions, @Nullable String melody) {
+        if (actions instanceof AwtrixActions) {
+            if (melody != null) {
+                ((AwtrixActions) actions).playSound(melody);
+            }
+        } else {
+            throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }
     }
 
@@ -112,12 +170,33 @@ public class AwtrixActions implements ThingActions {
         }
     }
 
+    public static void showNotification(@Nullable ThingActions actions, @Nullable String message, @Nullable String icon) {
+        if (actions instanceof AwtrixActions) {
+            if (message != null && icon != null) {
+                ((AwtrixActions) actions).showNotification(message, icon);
+            }
+        } else {
+            throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
+        }
+    }
+
     @RuleAction(label = "Show Custom Notification", description = "Shows a notification with specified options")
     public void showCustomNotification(Map<String, Object> appParams, boolean hold, boolean wakeUp, boolean stack,
-            String rtttl, String sound, boolean loopSound) {
+            @Nullable String rtttl, @Nullable String sound, boolean loopSound) {
         AwtrixLightBridgeHandler localHandler = this.handler;
         if (localHandler != null) {
             localHandler.showNotification(hold, wakeUp, stack, rtttl, sound, loopSound, appParams);
+        }
+    }
+
+    public static void showCustomNotification(@Nullable ThingActions actions, @Nullable Map<String, Object> appParams, boolean hold, boolean wakeUp, boolean stack,
+    @Nullable String rtttl, @Nullable String sound, boolean loopSound) {
+        if (actions instanceof AwtrixActions) {
+            if (appParams != null) {
+                ((AwtrixActions) actions).showCustomNotification(appParams, hold, wakeUp, stack, rtttl, sound, loopSound);
+            }
+        } else {
+            throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }
     }
 }
