@@ -156,14 +156,6 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
         }
     }
 
-    private State getErrorCode() {
-        try {
-            return new StringType(this.dataTransService.getErrorCode());
-        } catch (Exception e) {
-            return UnDefType.UNDEF;
-        }
-    }
-
     private State getCurrentOperationMode() {
         try {
             return new StringType(dataTransService.getCurrentOperationMode().toString());
@@ -188,33 +180,9 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
         }
     }
 
-    private State getIsPowerfulModeActive() {
-        try {
-            return OnOffType.from(dataTransService.getIsPowerfulModeActive());
-        } catch (Exception e) {
-            return UnDefType.UNDEF;
-        }
-    }
-
     private State getTankTemperatur() {
         try {
             return new DecimalType(dataTransService.getTankTemperature());
-        } catch (Exception e) {
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private State getDaylightSavingTimeEnabled() {
-        try {
-            return OnOffType.from(this.dataTransService.getDaylightSavingTimeEnabled());
-        } catch (Exception e) {
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private State getFirmwareVerion() {
-        try {
-            return new StringType(this.dataTransService.getFirmwareVerion());
         } catch (Exception e) {
             return UnDefType.UNDEF;
         }
@@ -303,62 +271,6 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getCurrentTankTemperatureSetStep() {
         try {
             return new DecimalType(dataTransService.getCurrentTankTemperatureSetStep());
-        } catch (Exception e) {
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private State getOperationMode() {
-        try {
-            return new StringType(dataTransService.getCurrentOperationMode().toString());
-        } catch (Exception e) {
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private State getRegionCode() {
-        try {
-            return new StringType(this.dataTransService.getRegionCode());
-        } catch (Exception e) {
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private State getSerialNumber() {
-        try {
-            return new StringType(this.dataTransService.getSerialNumber());
-        } catch (Exception e) {
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private State getSsid() {
-        try {
-            return new StringType(this.dataTransService.getSsid());
-        } catch (Exception e) {
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private State getTimeZone() {
-        try {
-            return new StringType(this.dataTransService.getTimeZone());
-        } catch (Exception e) {
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private State getWifiConnectionSsid() {
-        try {
-            return new StringType(this.dataTransService.getWifiConectionSSid());
-        } catch (Exception e) {
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private State getWifiConnectionStrength() {
-        try {
-            return new DecimalType(this.dataTransService.getWifiConectionStrength());
         } catch (Exception e) {
             return UnDefType.UNDEF;
         }
