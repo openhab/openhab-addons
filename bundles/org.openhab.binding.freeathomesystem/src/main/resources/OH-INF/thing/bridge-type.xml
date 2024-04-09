@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="gateway">
-		<label>Free@Home Gateway</label>
+		<label>Free@home Gateway</label>
 		<description>This gateway represents the Free@Home Gateway</description>
 
 		<config-description>
