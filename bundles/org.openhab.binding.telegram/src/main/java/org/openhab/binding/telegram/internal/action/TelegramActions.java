@@ -308,7 +308,7 @@ public class TelegramActions implements ThingActions {
             DeleteMessage deleteMessage = new DeleteMessage(chatId, messageId);
             response = localHandler.execute(deleteMessage);
 
-            if ((response == null) || (response.errorCode() != 0)) {
+            if (response == null || response.errorCode() != 0) {
                 logger.debug("deleteTelegramQuery() - DeleteMessage execution not successful! Response: {}", response);
                 return false;
             }
