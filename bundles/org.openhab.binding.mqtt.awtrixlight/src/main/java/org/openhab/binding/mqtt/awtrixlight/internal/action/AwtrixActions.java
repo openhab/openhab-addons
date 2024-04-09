@@ -170,7 +170,8 @@ public class AwtrixActions implements ThingActions {
         }
     }
 
-    public static void showNotification(@Nullable ThingActions actions, @Nullable String message, @Nullable String icon) {
+    public static void showNotification(@Nullable ThingActions actions, @Nullable String message,
+            @Nullable String icon) {
         if (actions instanceof AwtrixActions) {
             if (message != null && icon != null) {
                 ((AwtrixActions) actions).showNotification(message, icon);
@@ -189,11 +190,13 @@ public class AwtrixActions implements ThingActions {
         }
     }
 
-    public static void showCustomNotification(@Nullable ThingActions actions, @Nullable Map<String, Object> appParams, boolean hold, boolean wakeUp, boolean stack,
-    @Nullable String rtttl, @Nullable String sound, boolean loopSound) {
+    public static void showCustomNotification(@Nullable ThingActions actions, @Nullable Map<String, Object> appParams,
+            boolean hold, boolean wakeUp, boolean stack, @Nullable String rtttl, @Nullable String sound,
+            boolean loopSound) {
         if (actions instanceof AwtrixActions) {
             if (appParams != null) {
-                ((AwtrixActions) actions).showCustomNotification(appParams, hold, wakeUp, stack, rtttl, sound, loopSound);
+                ((AwtrixActions) actions).showCustomNotification(appParams, hold, wakeUp, stack, rtttl, sound,
+                        loopSound);
             }
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
