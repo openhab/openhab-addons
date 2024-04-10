@@ -155,7 +155,10 @@ public class AwtrixLightBindingConstants {
     public static final String CHANNEL_FADE_TEXT = "fadeText";
     public static final String CHANNEL_GRADIENT_COLOR = "gradientColor";
     public static final String CHANNEL_ICON = "icon";
+    public static final String CHANNEL_LIFETIME = "lifetime";
+    public static final String CHANNEL_LIFETIME_MODE = "lifetimeMode";
     public static final String CHANNEL_LINE = "line";
+    public static final String CHANNEL_OVERLAY = "overlay";
     public static final String CHANNEL_PROGRESS = "progress";
     public static final String CHANNEL_PROGRESSC = "progressColor";
     public static final String CHANNEL_PROGRESSBC = "progressBackground";

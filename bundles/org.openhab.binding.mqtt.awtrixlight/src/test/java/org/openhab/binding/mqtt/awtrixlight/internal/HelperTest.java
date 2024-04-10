@@ -148,4 +148,14 @@ public class HelperTest {
         String appConfig6 = app.getAppConfig();
         assertEquals(appConfig, appConfig6);
     }
+
+    @Test
+    public void trimArray() {
+        BigDecimal[] untrimmed = { BigDecimal.ZERO, BigDecimal.ONE, BigDecimal.TEN, new BigDecimal(1000) };
+        BigDecimal[] trimmed = Helper.leftTrim(untrimmed, 2);
+
+        assertTrue(trimmed.length == 2);
+        assertEquals(trimmed[0], untrimmed[untrimmed.length - 2]);
+        assertEquals(trimmed[1], untrimmed[untrimmed.length - 1]);
+    }
 }

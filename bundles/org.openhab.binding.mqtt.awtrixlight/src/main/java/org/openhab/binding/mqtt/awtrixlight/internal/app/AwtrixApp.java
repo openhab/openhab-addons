@@ -47,8 +47,11 @@ public class AwtrixApp {
     public static final BigDecimal DEFAULT_PUSHICON = BigDecimal.ZERO;
     public static final BigDecimal DEFAULT_DURATION = new BigDecimal(7);
     public static final BigDecimal[] DEFAULT_LINE = {};
+    public static final BigDecimal DEFAULT_LIFETIME = BigDecimal.ZERO;
+    public static final BigDecimal DEFAULT_LIFETIME_MODE = BigDecimal.ZERO;
     public static final BigDecimal[] DEFAULT_BAR = {};
     public static final boolean DEFAULT_AUTOSCALE = true;
+    public static final String DEFAULT_OVERLAY = "Clear";
     public static final BigDecimal DEFAULT_PROGRESS = MINUSONE;
     public static final BigDecimal[] DEFAULT_PROGRESSC = {};
     public static final BigDecimal[] DEFAULT_PROGRESSBC = {};
@@ -73,8 +76,11 @@ public class AwtrixApp {
     private BigDecimal pushIcon = DEFAULT_PUSHICON;
     private BigDecimal duration = DEFAULT_DURATION;
     private BigDecimal[] line = DEFAULT_LINE;
+    private BigDecimal lifetime = DEFAULT_LIFETIME;
+    private BigDecimal lifetimeMode = DEFAULT_LIFETIME_MODE;
     private BigDecimal[] bar = DEFAULT_BAR;
     private boolean autoscale = DEFAULT_AUTOSCALE;
+    private String overlay = DEFAULT_OVERLAY;
     private BigDecimal progress = DEFAULT_PROGRESS;
     private BigDecimal[] progressC = DEFAULT_PROGRESSC;
     private BigDecimal[] progressBC = DEFAULT_PROGRESSBC;
@@ -102,8 +108,11 @@ public class AwtrixApp {
         this.pushIcon = getNumberValue(params, "pushIcon", DEFAULT_PUSHICON);
         this.duration = getNumberValue(params, "duration", DEFAULT_DURATION);
         this.line = getNumberArrayValue(params, "line", DEFAULT_LINE);
+        this.lifetime = getNumberValue(params, "lifetime", DEFAULT_LIFETIME);
+        this.lifetimeMode = getNumberValue(params, "lifetimeMode", DEFAULT_LIFETIME_MODE);
         this.bar = getNumberArrayValue(params, "bar", DEFAULT_BAR);
         this.autoscale = getBoolValue(params, "autoscale", DEFAULT_AUTOSCALE);
+        this.overlay = getStringValue(params, "overlay", DEFAULT_OVERLAY);
         this.progress = getNumberValue(params, "progress", DEFAULT_PROGRESS);
         this.progressC = getNumberArrayValue(params, "progressC", DEFAULT_PROGRESSC);
         this.progressBC = getNumberArrayValue(params, "progressBC", DEFAULT_PROGRESSBC);
@@ -118,29 +127,6 @@ public class AwtrixApp {
         this.effectSpeed = getNumberValue(effectSettingsValues, "effectSpeed", DEFAULT_EFFECTSPEED);
         this.effectPalette = getStringValue(effectSettingsValues, "effectPalette", DEFAULT_EFFECTPALETTE);
         this.effectBlend = getBoolValue(params, "effectBlend", DEFAULT_EFFECTBLEND);
-    }
-
-    protected Map<String, Object> getAppParams() {
-        Map<String, Object> fields = new HashMap<String, Object>();
-        fields.put("text", this.text);
-        fields.put("textCase", this.textCase);
-        fields.put("topText", this.topText);
-        fields.put("textOffset", this.textOffset);
-        fields.put("center", this.center);
-        fields.putAll(getColorConfig());
-        fields.putAll(getTextEffectConfig());
-        fields.putAll(getBackgroundConfig());
-        fields.putAll(getIconConfig());
-        fields.put("duration", this.duration);
-        fields.putAll(getGraphConfig());
-        fields.putAll(getProgressConfig());
-        if (this.scrollSpeed.compareTo(BigDecimal.ZERO) == 0) {
-            fields.put("noScroll", true);
-        } else {
-            fields.put("scrollSpeed", this.scrollSpeed);
-        }
-        fields.putAll(getEffectConfig());
-        return fields;
     }
 
     public String getAppConfig() {
@@ -268,6 +254,22 @@ public class AwtrixApp {
         this.line = line;
     }
 
+    public BigDecimal getLifetime() {
+        return this.lifetime;
+    }
+
+    public void setLifetime(BigDecimal lifetime) {
+        this.lifetime = lifetime;
+    }
+
+    public BigDecimal getLifetimeMode() {
+        return this.lifetimeMode;
+    }
+
+    public void setLifetimeMode(BigDecimal lifetimeMode) {
+        this.lifetimeMode = lifetimeMode;
+    }
+
     public BigDecimal[] getBar() {
         return this.bar;
     }
@@ -282,6 +284,14 @@ public class AwtrixApp {
 
     public void setAutoscale(Boolean autoscale) {
         this.autoscale = autoscale;
+    }
+
+    public String getOverlay() {
+        return this.overlay;
+    }
+
+    public void setOverlay(String overlay) {
+        this.overlay = overlay;
     }
 
     public BigDecimal getProgress() {
@@ -358,11 +368,38 @@ public class AwtrixApp {
                 + textOffset + ", center=" + center + ", color=" + Arrays.toString(color) + ", gradient="
                 + Arrays.toString(gradient) + ", blinkText=" + blinkText + ", fadeText=" + fadeText + ", background="
                 + Arrays.toString(background) + ", rainbow=" + rainbow + ", icon=" + icon + ", pushIcon=" + pushIcon
-                + ", duration=" + duration + ", line=" + Arrays.toString(line) + ", bar=" + Arrays.toString(bar)
-                + ", autoscale=" + autoscale + ", progress=" + progress + ", progressC=" + Arrays.toString(progressC)
+                + ", duration=" + duration + ", line=" + Arrays.toString(line) + ", lifetime=" + lifetime
+                + ", lifetimeMode=" + lifetimeMode + ", bar=" + Arrays.toString(bar) + ", autoscale=" + autoscale
+                + ", overlay=" + overlay + ", progress=" + progress + ", progressC=" + Arrays.toString(progressC)
                 + ", progressBC=" + Arrays.toString(progressBC) + ", scrollSpeed=" + scrollSpeed + ", effect=" + effect
                 + ", effectSpeed=" + effectSpeed + ", effectPalette=" + effectPalette + ", effectBlend=" + effectBlend
                 + "]";
+    }
+
+    protected Map<String, Object> getAppParams() {
+        Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put("text", this.text);
+        fields.put("textCase", this.textCase);
+        fields.put("topText", this.topText);
+        fields.put("textOffset", this.textOffset);
+        fields.put("center", this.center);
+        fields.put("lifetime", this.lifetime);
+        fields.put("lifetimeMode", this.lifetimeMode);
+        fields.put("overlay", this.overlay);
+        fields.putAll(getColorConfig());
+        fields.putAll(getTextEffectConfig());
+        fields.putAll(getBackgroundConfig());
+        fields.putAll(getIconConfig());
+        fields.put("duration", this.duration);
+        fields.putAll(getGraphConfig());
+        fields.putAll(getProgressConfig());
+        if (this.scrollSpeed.compareTo(BigDecimal.ZERO) == 0) {
+            fields.put("noScroll", true);
+        } else {
+            fields.put("scrollSpeed", this.scrollSpeed);
+        }
+        fields.putAll(getEffectConfig());
+        return fields;
     }
 
     private boolean getBoolValue(Map<String, Object> params, String key, boolean defaultValue) {
@@ -501,16 +538,16 @@ public class AwtrixApp {
         if (this.bar.length > 0) {
             graphType = "bar";
             if ("None".equals(this.icon)) {
-                data = leftTrim(this.bar, 16);
+                data = Helper.leftTrim(this.bar, 16);
             } else {
-                data = leftTrim(this.bar, 11);
+                data = Helper.leftTrim(this.bar, 11);
             }
         } else if (this.line.length > 0) {
             graphType = "line";
             if ("None".equals(this.icon)) {
-                data = leftTrim(this.line, 16);
+                data = Helper.leftTrim(this.line, 16);
             } else {
-                data = leftTrim(this.line, 11);
+                data = Helper.leftTrim(this.line, 11);
             }
         }
         if (graphType != null && data != null) {
@@ -518,17 +555,6 @@ public class AwtrixApp {
             fields.put("autoscale", this.autoscale);
         }
         return fields;
-    }
-
-    private BigDecimal[] leftTrim(BigDecimal[] data, int length) {
-        if (length < data.length) {
-            BigDecimal[] trimmed = new BigDecimal[length];
-            for (int i = data.length - length; i <= data.length; i++) {
-                trimmed[i - data.length - length] = data[i];
-            }
-            return trimmed;
-        }
-        return data;
     }
 
     private Map<String, Object> getProgressConfig() {
