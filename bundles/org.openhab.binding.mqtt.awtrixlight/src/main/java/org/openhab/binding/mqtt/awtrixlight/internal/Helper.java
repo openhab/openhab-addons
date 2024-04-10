@@ -164,4 +164,15 @@ public class Helper {
         }
         return array;
     }
+
+    public static BigDecimal[] leftTrim(BigDecimal[] data, int length) {
+        if (length < data.length) {
+            BigDecimal[] trimmed = new BigDecimal[length];
+            for (int i = data.length - length; i < data.length; i++) {
+                trimmed[i - (data.length - length)] = data[i];
+            }
+            return trimmed;
+        }
+        return data;
+    }
 }

@@ -31,7 +31,10 @@ import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingCo
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_FADE_TEXT;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_GRADIENT_COLOR;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_ICON;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_LIFETIME;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_LIFETIME_MODE;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_LINE;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_OVERLAY;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_PROGRESS;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_PROGRESSBC;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.CHANNEL_PROGRESSC;
@@ -285,6 +288,23 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                     }
                 }
                 break;
+            case CHANNEL_LIFETIME:
+                if (command instanceof QuantityType) {
+                    this.app.setLifetime(((QuantityType<?>) command).toBigDecimal());
+                }
+                break;
+            case CHANNEL_LIFETIME_MODE:
+                if (command instanceof StringType) {
+                    switch (command.toString()) {
+                        case "DELETE":
+                            this.app.setLifetimeMode(new BigDecimal(0));
+                            break;
+                        case "STALE":
+                            this.app.setLifetimeMode(new BigDecimal(1));
+                            break;
+                    }
+                }
+                break;
             case CHANNEL_BAR:
                 if (command instanceof StringType) {
                     try {
@@ -303,6 +323,11 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             case CHANNEL_AUTOSCALE:
                 if (command instanceof OnOffType) {
                     this.app.setAutoscale(command.equals(OnOffType.ON));
+                }
+                break;
+            case CHANNEL_OVERLAY:
+                if (command instanceof StringType) {
+                    this.app.setOverlay(((StringType) command).toString());
                 }
                 break;
             case CHANNEL_PROGRESS:
@@ -392,11 +417,20 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
             case CHANNEL_LINE:
                 this.app.setLine(AwtrixApp.DEFAULT_LINE);
                 break;
+            case CHANNEL_LIFETIME:
+                this.app.setLifetime(AwtrixApp.DEFAULT_LIFETIME);
+                break;
+            case CHANNEL_LIFETIME_MODE:
+                this.app.setLifetimeMode(AwtrixApp.DEFAULT_LIFETIME_MODE);
+                break;
             case CHANNEL_BAR:
                 this.app.setBar(AwtrixApp.DEFAULT_BAR);
                 break;
             case CHANNEL_AUTOSCALE:
                 this.app.setAutoscale(AwtrixApp.DEFAULT_AUTOSCALE);
+                break;
+            case CHANNEL_OVERLAY:
+                this.app.setOverlay(AwtrixApp.DEFAULT_OVERLAY);
                 break;
             case CHANNEL_PROGRESS:
                 this.app.setProgress(AwtrixApp.DEFAULT_PROGRESS);
@@ -414,6 +448,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
+        // TODO: Do not update all channels when any channel is linked
         initStates();
     }
 
@@ -625,12 +660,20 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         String lineString = Arrays.stream(line).map(BigDecimal::toString).collect(Collectors.joining(","));
         updateState(new ChannelUID(channelPrefix + CHANNEL_LINE), new StringType(lineString));
 
+        updateState(new ChannelUID(channelPrefix + CHANNEL_LIFETIME),
+                new QuantityType<>(this.app.getLifetime(), Units.SECOND));
+
+        String lifetimeMode = this.app.getLifetimeMode().equals(BigDecimal.ZERO) ? "DELETE" : "STALE";
+        updateState(new ChannelUID(channelPrefix + CHANNEL_LIFETIME_MODE), new StringType(lifetimeMode));
+
         BigDecimal[] bar = this.app.getBar().length > 0 ? this.app.getBar() : new BigDecimal[] { BigDecimal.ZERO };
         String barString = Arrays.stream(bar).map(BigDecimal::toString).collect(Collectors.joining(","));
         updateState(new ChannelUID(channelPrefix + CHANNEL_BAR), new StringType(barString));
 
         updateState(new ChannelUID(channelPrefix + CHANNEL_AUTOSCALE),
                 this.app.getAutoscale() ? OnOffType.ON : OnOffType.OFF);
+
+        updateState(new ChannelUID(channelPrefix + CHANNEL_OVERLAY), new StringType(this.app.getOverlay()));
 
         BigDecimal progress = this.app.getProgress().compareTo(BigDecimal.ZERO) > 0 ? this.app.getProgress()
                 : BigDecimal.ZERO;

@@ -71,8 +71,11 @@
 			<channel id="background" typeId="background"/>
 			<channel id="duration" typeId="duration"/>
 			<channel id="line" typeId="line"/>
+			<channel id="lifetime" typeId="lifetime"/>
+			<channel id="lifetimeMode" typeId="lifetimeMode"/>
 			<channel id="bar" typeId="bar"/>
 			<channel id="autoscale" typeId="autoscale"/>
+			<channel id="overlay" typeId="overlay"/>
 			<channel id="progress" typeId="progress"/>
 			<channel id="progressColor" typeId="progressColor"/>
 			<channel id="progressBackground" typeId="progressBackground"/>
@@ -420,7 +423,6 @@
 				<option value="PUSHOUTRETURN">Icon moves and reappears</option>
 			</options>
 		</state>
-
 	</channel-type>
 
 	<channel-type id="line">
@@ -430,8 +432,34 @@
 		<category>qualityofservice</category>
 		<tags>
 			<tag>Control</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="lifetime">
+		<item-type>Number:Time</item-type>
+		<label>App Lifetime</label>
+		<description>Remove the app if there was no update within specified seconds</description>
+		<category>time</category>
+		<tags>
+			<tag>Control</tag>
 			<tag>Duration</tag>
 		</tags>
+	</channel-type>
+
+	<channel-type id="lifetimeMode">
+		<item-type>String</item-type>
+		<label>App Lifetime Mode</label>
+		<description>Delete the app or mark as stale after lifetime</description>
+		<category>screen</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="DELETE">Delete</option>
+				<option value="STALE">Mark stale</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="bar">
@@ -452,6 +480,27 @@
 		<tags>
 			<tag>Control</tag>
 		</tags>
+	</channel-type>
+
+	<channel-type id="overlay">
+		<item-type>String</item-type>
+		<label>App Overlay</label>
+		<description>Overlay effect (overriden by global clock overlay)</description>
+		<category>screen</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="clear">Clear</option>
+				<option value="snow">Snow</option>
+				<option value="rain">Rain</option>
+				<option value="drizzle">Drizzle</option>
+				<option value="storm">Storm</option>
+				<option value="thunder">Thunder</option>
+				<option value="frost">Frost</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="progress">
