@@ -13,7 +13,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.onecta.internal.api.Enums;
@@ -23,7 +22,6 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.*;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 @ExtendWith(MockitoExtension.class)
@@ -243,8 +241,6 @@ public class OnectaWaterTankHandlerTest {
 
     @Test
     public void handleCommandTest() {
-        ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
-
         handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_HWT_POWER), OnOffType.ON);
         verify(dataTransServiceMock).setPowerOnOff(Enums.OnOff.ON);
 
