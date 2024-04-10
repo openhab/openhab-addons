@@ -169,10 +169,14 @@ public class OnectaWaterTankHandlerTest {
         when(dataTransServiceMock.getPowerFulModeOnOff()).thenThrow(new RuntimeException("Simulating exception"));
         when(dataTransServiceMock.getHeatupMode()).thenThrow(new RuntimeException("Simulating exception"));
         when(dataTransServiceMock.getTankTemperature()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTankTemperatureSet()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTankTemperatureSetMin()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTankTemperatureSetMax()).thenThrow(new RuntimeException("Simulating exception"));
-        when(dataTransServiceMock.getCurrentTankTemperatureSetStep()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getCurrentTankTemperatureSet())
+                .thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getCurrentTankTemperatureSetMin())
+                .thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getCurrentTankTemperatureSetMax())
+                .thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getCurrentTankTemperatureSetStep())
+                .thenThrow(new RuntimeException("Simulating exception"));
 
         handler.refreshDevice();
 
@@ -184,16 +188,16 @@ public class OnectaWaterTankHandlerTest {
                 UnDefType.UNDEF);
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_HWT_ERRORCODE),
                 UnDefType.UNDEF);
-        verify(callbackMock, times(1)).stateUpdated(
-                new ChannelUID(thingMock.getUID(), CHANNEL_HWT_IS_IN_EMERGENCY_STATE), UnDefType.UNDEF);
+        verify(callbackMock, times(1))
+                .stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_HWT_IS_IN_EMERGENCY_STATE), UnDefType.UNDEF);
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_HWT_IS_IN_ERROR_STATE),
                 UnDefType.UNDEF);
-        verify(callbackMock, times(1)).stateUpdated(
-                new ChannelUID(thingMock.getUID(), CHANNEL_HWT_IS_IN_INSTALLER_STATE), UnDefType.UNDEF);
+        verify(callbackMock, times(1))
+                .stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_HWT_IS_IN_INSTALLER_STATE), UnDefType.UNDEF);
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_HWT_IS_IN_WARNING_STATE),
                 UnDefType.UNDEF);
-        verify(callbackMock, times(1)).stateUpdated(
-                new ChannelUID(thingMock.getUID(), CHANNEL_HWT_IS_HOLIDAY_MODE_ACTIVE), UnDefType.UNDEF);
+        verify(callbackMock, times(1))
+                .stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_HWT_IS_HOLIDAY_MODE_ACTIVE), UnDefType.UNDEF);
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_HWT_POWERFUL_MODE),
                 UnDefType.UNDEF);
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_HWT_HEATUP_MODE),
@@ -241,15 +245,16 @@ public class OnectaWaterTankHandlerTest {
     public void handleCommandTest() {
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
 
-        handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_HWT_POWER),  OnOffType.ON);
+        handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_HWT_POWER), OnOffType.ON);
         verify(dataTransServiceMock).setPowerOnOff(Enums.OnOff.ON);
 
-        handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_HWT_POWERFUL_MODE),  OnOffType.ON);
+        handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_HWT_POWERFUL_MODE), OnOffType.ON);
         verify(dataTransServiceMock).setPowerFulModeOnOff(Enums.OnOff.ON);
 
-        handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_HWT_SETTEMP),  new QuantityType<>("25.0") );
+        handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_HWT_SETTEMP), new QuantityType<>("25.0"));
         verify(dataTransServiceMock).setCurrentTankTemperatureSet(25.0f);
 
-        verify(callbackMock,times(3)).statusUpdated(eq(thingMock), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+        verify(callbackMock, times(3)).statusUpdated(eq(thingMock),
+                argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
     }
 }
