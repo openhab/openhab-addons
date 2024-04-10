@@ -125,6 +125,22 @@ public class AwtrixActions implements ThingActions {
         }
     }
 
+    @RuleAction(label = "Sleep", description = "Send device to deep sleep")
+    public void sleep(int seconds) {
+        AwtrixLightBridgeHandler localHandler = this.handler;
+        if (localHandler != null) {
+            localHandler.sleep(seconds);
+        }
+    }
+
+    public static void sleep(@Nullable ThingActions actions, int seconds) {
+        if (actions instanceof AwtrixActions) {
+            ((AwtrixActions) actions).sleep(seconds);
+        } else {
+            throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
+        }
+    }
+
     @RuleAction(label = "Upgrade", description = "Performs firmware upgrade")
     public void upgrade() {
         AwtrixLightBridgeHandler localHandler = this.handler;

@@ -68,6 +68,7 @@ public class AwtrixLightBindingConstants {
     public static final String TOPIC_SCREEN = "/screen";
     public static final String TOPIC_SEND_SCREEN = "/sendscreen";
     public static final String TOPIC_SETTINGS = "/settings";
+    public static final String TOPIC_SLEEP = "/sleep";
     public static final String TOPIC_SOUND = "/sound";
     public static final String TOPIC_STATS = "/stats";
     public static final String TOPIC_STATS_CURRENT_APP = "/stats/currentApp";
