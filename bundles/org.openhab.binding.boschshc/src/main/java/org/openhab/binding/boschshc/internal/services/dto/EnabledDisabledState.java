@@ -10,44 +10,36 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.services.privacymode;
+package org.openhab.binding.boschshc.internal.services.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
 
 /**
- * Possible privacy mode states of security cameras.
+ * State that is serialized as either <code>ENABLED</code> or <code>DISABLED</code>.
  * 
  * @author David Pace - Initial contribution
  *
  */
 @NonNullByDefault
-public enum PrivacyModeState {
-
-    /**
-     * Privacy mode enabled / camera disabled
-     */
+public enum EnabledDisabledState {
     ENABLED,
-
-    /**
-     * Privacy mode disabled / camera enabled
-     */
     DISABLED;
 
     /**
-     * Converts an {@link OnOffType} state into a {@link PrivacyModeState}.
+     * Converts an {@link OnOffType} state into a {@link EnabledDisabledState}.
      * 
      * @param onOff the on/off state
-     * @return the corresponding privacy mode state
+     * @return the corresponding enabled/disabled state
      */
-    public static PrivacyModeState from(OnOffType onOff) {
+    public static EnabledDisabledState from(OnOffType onOff) {
         return onOff == OnOffType.ON ? ENABLED : DISABLED;
     }
 
     /**
-     * Converts this {@link PrivacyModeState} into an {@link OnOffType}.
+     * Converts this {@link EnabledDisabledState} into an {@link OnOffType}.
      * 
-     * @return the on/off state corresponding to the privacy mode state of this enumeration literal
+     * @return the on/off state corresponding to the enabled/disabled state of this enumeration literal
      */
     public OnOffType toOnOffType() {
         return OnOffType.from(this == ENABLED);
