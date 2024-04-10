@@ -70,6 +70,7 @@ import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingCo
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_SCREEN;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_SEND_SCREEN;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_SETTINGS;
+import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_SLEEP;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_SOUND;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_STATS;
 import static org.openhab.binding.mqtt.awtrixlight.internal.AwtrixLightBindingConstants.TOPIC_STATS_CURRENT_APP;
@@ -357,6 +358,10 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
 
     public void reboot() {
         this.sendMQTT(this.basetopic + TOPIC_REBOOT, "", false);
+    }
+
+    public void sleep(int seconds) {
+        this.sendMQTT(this.basetopic + TOPIC_SLEEP, "{\"sleep\":" + seconds + "}", false);
     }
 
     public void playSound(String melodyName) {
