@@ -187,9 +187,9 @@ public class BroadlinkMappingService {
             for (BroadlinkMappingService w : mappingInstances) {
                 switch (codeType) {
                     case "IR":
-                        w.commandDescriptionProvider.setCommandOptions(irTargetChannelUID, commandOptions);
+                        w.commandDescriptionProvider.setCommandOptions(w.irTargetChannelUID, commandOptions);
                     case "RF":
-                        w.commandDescriptionProvider.setCommandOptions(rfTargetChannelUID, commandOptions);
+                        w.commandDescriptionProvider.setCommandOptions(w.rfTargetChannelUID, commandOptions);
                 }
             }
         } else {
