@@ -70,7 +70,7 @@ public class DatahubTariffFilterFactory {
     public static final LocalDate IKAST_EL_NET_CUTOFF_DATE = LocalDate.of(2022, 10, 1);
     public static final LocalDate KONSTANT_CUTOFF_DATE = LocalDate.of(2023, 2, 1);
     public static final LocalDate N1_CUTOFF_DATE = LocalDate.of(2023, 1, 1);
-    public static final LocalDate RADIUS_CUTOFF_DATE = LocalDate.of(2023, 1, 1);
+    public static final LocalDate RADIUS_CUTOFF_DATE = LocalDate.of(2024, 4, 1);
 
     public static DatahubTariffFilter getGridTariffByGLN(String globalLocationNumber) {
         switch (globalLocationNumber) {
@@ -128,7 +128,7 @@ public class DatahubTariffFilterFactory {
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("30030")), Set.of(NOTE_NET_TARIFF_C),
                         DateQueryParameter.of(DateQueryParameterType.START_OF_DAY));
             case GLN_RADIUS:
-                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("DT_C_01")), Set.of(NOTE_NET_TARIFF_C_HOUR),
+                return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("DT_C_01")), Set.of(NOTE_NET_TARIFF_C),
                         DateQueryParameter.of(RADIUS_CUTOFF_DATE));
             case GLN_RAH_NET:
                 return new DatahubTariffFilter(Set.of(ChargeTypeCode.of("RAH-C")), Set.of(NOTE_NET_TARIFF_C_HOUR),
