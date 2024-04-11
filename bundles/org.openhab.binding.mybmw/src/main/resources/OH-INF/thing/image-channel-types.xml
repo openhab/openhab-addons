@@ -13,7 +13,7 @@
 		<label>Image Viewport</label>
 		<command>
 			<options>
-				<option value="AngleSideViewForty">Front Side View</option>
+				<option value="AngleSideViewForty">Left Side View</option>
 			</options>
 		</command>
 	</channel-type>
