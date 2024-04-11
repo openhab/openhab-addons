@@ -84,8 +84,11 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             ByteArrayOutputStream outputStream = buildCommandMessage(commandByte, codeBytes);
             byte[] padded = Utils.padTo(outputStream.toByteArray(), 16);
             byte[] message = buildMessage((byte) 0x6a, padded);
-            return sendAndReceiveDatagram(message, purpose);
+            byte[] response = sendAndReceiveDatagram(message, purpose);
+            return response;
         } catch (IOException e) {
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType("Error found during when entering IR learning mode"));
             logger.warn("Exception while sending command", e);
         }
 
@@ -115,10 +118,12 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     @SuppressWarnings("null")
-    private void sendCheckDataCommandAndLog(String irCommand) {
+    private void addIRCommand(String irCommand) {
         try {
             updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                     new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK));
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType("Adding new IR command " + irCommand + "..."));
             byte[] response = sendCommand(COMMAND_BYTE_CHECK_LEARNT_DATA, "send learnt code check command");
             if (response == null) {
                 logger.warn("Got nothing back while getting learnt code");
@@ -145,10 +150,12 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     @SuppressWarnings("null")
-    private void sendModifyDataCommandAndLog(String irCommand) {
+    private void modifyIRCommand(String irCommand) {
         try {
             updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                     new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_MODIFY));
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType("Modifying IR command " + irCommand + "..."));
             byte[] response = sendCommand(COMMAND_BYTE_CHECK_LEARNT_DATA, "send learnt code check command");
             if (response == null) {
                 logger.warn("Got nothing back while getting learnt code");
@@ -175,9 +182,11 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     @SuppressWarnings("null")
-    private void sendDeleteDataCommandAndLog(String irCommand) {
+    private void deleteIRCommand(String irCommand) {
         updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                 new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE));
+        updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                new StringType("Deleting IR command " + irCommand + "..."));
         String cmdLabel = mappingService.deleteCode(irCommand, "IR");
         if (cmdLabel != null) {
             updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
@@ -200,17 +209,17 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             }
             case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK: {
                 logger.debug("IR check and save command received");
-                sendCheckDataCommandAndLog(thingConfig.getNameOfCommandToLearn());
+                addIRCommand(thingConfig.getNameOfCommandToLearn());
                 break;
             }
             case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_MODIFY: {
                 logger.debug("IR Modify command received");
-                sendModifyDataCommandAndLog(thingConfig.getNameOfCommandToLearn());
+                modifyIRCommand(thingConfig.getNameOfCommandToLearn());
                 break;
             }
             case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE: {
                 logger.debug("IR delete command received");
-                sendDeleteDataCommandAndLog(thingConfig.getNameOfCommandToLearn());
+                deleteIRCommand(thingConfig.getNameOfCommandToLearn());
                 break;
             }
             default: {
