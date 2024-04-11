@@ -492,13 +492,9 @@ Image representation of the vehicle.
 | png                 | Image  | Read     | The image as png          |
 | view                | String | Write    | The view port of the car  |
 
-Possible view ports:
+Possible view ports (currently only one is available, which is automatically set as default):
 
-- _VehicleStatus_ Front Left Side View
-- _FrontView_ Front View
-- _FrontLeft_ Front Left Side View
-- _FrontRight_ Front Right Side View
-- _RearView_ Rear View
+- _AngleSideViewForty_ Front Left Side View
 
 ## Further Descriptions
 
