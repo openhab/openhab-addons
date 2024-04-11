@@ -37,29 +37,31 @@ Tibber Default:
 
 Tibber Pulse (optional):
 
-| Channel ID                  | Description                              | Read-only |
-|-----------------------------|------------------------------------------|-----------|
-| live_timestamp              | Timestamp for live measurements          | True      |
-| live_power                  | Live Power Consumption                   | True      |
-| live_lastMeterConsumption   | Last Recorded Meter Consumption          | True      |
-| live_accumulatedConsumption | Accumulated Consumption since Midnight   | True      |
-| live_accumulatedCost        | Accumulated Cost since Midnight          | True      |
-| live_accumulatedReward      | Accumulated Reward since Midnight        | True      |
-| live_currency               | Currency of Cost                         | True      |
-| live_minPower               | Min Power Consumption since Midnight     | True      |
-| live_averagePower           | Average Power Consumption since Midnight | True      |
-| live_maxPower               | Max Power Consumption since Midnight     | True      |
-| live_voltage1               | Voltage Phase 1                          | True      |
-| live_voltage2               | Voltage Phase  2                         | True      |
-| live_voltage3               | Voltage Phase 3                          | True      |
-| live_current1               | Current Phase 1                          | True      |
-| live_current2               | Current Phase 2                          | True      |
-| live_current3               | Current Phase 3                          | True      |
-| live_powerProduction        | Live Power Production                    | True      |
-| live_accumulatedProduction  | Accumulated Production since Midnight    | True      |
-| live_lastMeterProduction    | Last Recorded Meter Production           | True      |
-| live_minPowerproduction     | Min Power Production since Midnight      | True      |
-| live_maxPowerproduction     | Max Power Production since Midnight      | True      |
+| Channel ID                          | Description                                   | Read-only |
+|-------------------------------------|-----------------------------------------------|-----------|
+| live_timestamp                      | Timestamp for live measurements               | True      |
+| live_power                          | Live Power Consumption                        | True      |
+| live_lastMeterConsumption           | Last Recorded Meter Consumption               | True      |
+| live_accumulatedConsumption         | Accumulated Consumption since Midnight        | True      |
+| live_accumulatedConsumptionThisHour | Accumulated Consumption since last hour shift | True      |
+| live_accumulatedCost                | Accumulated Cost since Midnight               | True      |
+| live_accumulatedReward              | Accumulated Reward since Midnight             | True      |
+| live_currency                       | Currency of Cost                              | True      |
+| live_minPower                       | Min Power Consumption since Midnight          | True      |
+| live_averagePower                   | Average Power Consumption since Midnight      | True      |
+| live_maxPower                       | Max Power Consumption since Midnight          | True      |
+| live_voltage1                       | Voltage Phase 1                               | True      |
+| live_voltage2                       | Voltage Phase  2                              | True      |
+| live_voltage3                       | Voltage Phase 3                               | True      |
+| live_current1                       | Current Phase 1                               | True      |
+| live_current2                       | Current Phase 2                               | True      |
+| live_current3                       | Current Phase 3                               | True      |
+| live_powerProduction                | Live Power Production                         | True      |
+| live_accumulatedProduction          | Accumulated Production since Midnight         | True      |
+| live_accumulatedProductionThisHour  | Accumulated Production since last hour shift  | True      |
+| live_lastMeterProduction            | Last Recorded Meter Production                | True      |
+| live_minPowerproduction             | Min Power Production since Midnight           | True      |
+| live_maxPowerproduction             | Max Power Production since Midnight           | True      |
 
 ## Binding Configuration
 
@@ -238,6 +240,7 @@ DateTime                   TibberAPILiveTimestamp                "Timestamp - Li
 Number:Power               TibberAPILivePower                    "Live Power Consumption [%.0f W]"           {channel="tibber:tibberapi:7cfae492:live_power"}
 Number:Energy              TibberAPILiveLastMeterConsumption     "Last Meter Consumption [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_lastMeterConsumption"}
 Number:Energy              TibberAPILiveAccumulatedConsumption   "Accumulated Consumption [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumption"}
+Number:Energy              TibberAPILiveAccumulatedConsumptionThisHour   "kWh consumed since since last hour shift [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumptionLastHour"}
 Number:Dimensionless       TibberAPILiveAccumulatedCost          "Accumulated Cost [%.2f NOK]"               {channel="tibber:tibberapi:7cfae492:live_accumulatedCost"}
 Number:Dimensionless       TibberAPILiveAccumulatedReward        "Accumulated Reward [%.2f NOK]"             {channel="tibber:tibberapi:7cfae492:live_accumulatedReward"}
 String                     TibberAPILiveCurrency                 "Currency"                                  {channel="tibber:tibberapi:7cfae492:live_currency"}
@@ -252,6 +255,7 @@ Number:ElectricCurrent     TibberAPILiveCurrent2                 "Live Current P
 Number:ElectricCurrent     TibberAPILiveCurrent3                 "Live Current Phase 3 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current3"}
 Number:Power               TibberAPILivePowerProduction          "Live Power Production [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_powerProduction"}
 Number:Energy              TibberAPILiveAccumulatedProduction    "Accumulated Production [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_accumulatedProduction"}
+Number:Energy              TibberAPILiveAccumulatedProductionThisHour   "Net kWh produced since last hour shift [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedProductionThisHour"}
 Number:Energy              TibberAPILiveLastMeterProduction      "Min Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_lastMeterProduction"}
 Number:Power               TibberAPILiveMinPowerproduction       "Min Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_minPowerproduction"}
 Number:Power               TibberAPILiveMaxPowerproduction       "Max Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}
