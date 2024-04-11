@@ -41,6 +41,7 @@ public class BroadlinkMappingService {
     private final StorageService storageService;
     private final Storage<String> irStorage;
     private final Storage<String> rfStorage;
+    private static ArrayList<BroadlinkMappingService> mappingInstances = new ArrayList<BroadlinkMappingService>();
 
     public BroadlinkMappingService(BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
             ChannelUID irTargetChannelUID, ChannelUID rfTargetChannelUID, StorageService storageService) {
@@ -52,13 +53,15 @@ public class BroadlinkMappingService {
                 String.class.getClassLoader());
         rfStorage = this.storageService.getStorage(BroadlinkBindingConstants.RF_MAP_NAME,
                 String.class.getClassLoader());
-        notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
-        notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
+        mappingInstances.add(this);
+        notifyAvailableCommands(irStorage.getKeys(), "IR", false);
+        notifyAvailableCommands(rfStorage.getKeys(), "RF", false);
         logger.debug("BroadlinkMappingService constructed on behalf of {} and {}", this.irTargetChannelUID,
                 this.rfTargetChannelUID);
     }
 
     public void dispose() {
+        mappingInstances.remove(this);
     }
 
     public @Nullable String lookupCode(String command, String codeType) {
@@ -137,7 +140,7 @@ public class BroadlinkMappingService {
             logger.debug("{} Command label not found. Proceeding to store key value pair {},{} and reload Command list",
                     codeType, command, code);
             storage.put(command, code);
-            notifyAvailableCommands(storage.getKeys(), targetChannelUID);
+            notifyAvailableCommands(storage.getKeys(), codeType, true);
             return command;
         } else {
             logger.debug("{} Command label {} found. This is not a replace operation. Skipping", codeType, command);
@@ -151,7 +154,7 @@ public class BroadlinkMappingService {
             logger.debug("{} Command label found. Proceeding to store key value pair {},{} and reload Command list",
                     codeType, command, code);
             storage.put(command, code);
-            notifyAvailableCommands(storage.getKeys(), targetChannelUID);
+            notifyAvailableCommands(storage.getKeys(), codeType, true);
             return command;
         } else {
             logger.debug("{} Command label {} not found. This is not an add method. Skipping", codeType, command);
@@ -166,7 +169,7 @@ public class BroadlinkMappingService {
             logger.debug("{} Command label found. Proceeding to remove key pair {},{} and reload command list",
                     codeType, command, value);
             storage.remove(command);
-            notifyAvailableCommands(irStorage.getKeys(), targetChannelUID);
+            notifyAvailableCommands(storage.getKeys(), codeType, true);
             return command;
         } else {
             logger.debug("{} Command label {} not found. Can't delete a command that does not exist", codeType,
@@ -175,10 +178,29 @@ public class BroadlinkMappingService {
         }
     }
 
-    private void notifyAvailableCommands(Collection<String> commandNames, ChannelUID targetChannelUID) {
+    void notifyAvailableCommands(Collection<String> commandNames, String codeType, boolean refreshAllInstances) {
         List<CommandOption> commandOptions = new ArrayList<>();
         commandNames.forEach((c) -> commandOptions.add(new CommandOption(c, null)));
-        logger.debug("notifying framework about {} commands: {}", commandOptions.size(), commandNames.toString());
-        this.commandDescriptionProvider.setCommandOptions(targetChannelUID, commandOptions);
+        if (refreshAllInstances) {
+            logger.debug("notifying framework about {} commands: {} - All instances", commandOptions.size(),
+                    commandNames.toString());
+            for (BroadlinkMappingService w : mappingInstances) {
+                switch (codeType) {
+                    case "IR":
+                        w.commandDescriptionProvider.setCommandOptions(irTargetChannelUID, commandOptions);
+                    case "RF":
+                        w.commandDescriptionProvider.setCommandOptions(rfTargetChannelUID, commandOptions);
+                }
+            }
+        } else {
+            logger.debug("notifying framework about {} commands: {} for single {} device", commandOptions.size(),
+                    commandNames.toString(), codeType);
+            switch (codeType) {
+                case "IR":
+                    this.commandDescriptionProvider.setCommandOptions(irTargetChannelUID, commandOptions);
+                case "RF":
+                    this.commandDescriptionProvider.setCommandOptions(rfTargetChannelUID, commandOptions);
+            }
+        }
     }
 }
