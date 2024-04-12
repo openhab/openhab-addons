@@ -40,10 +40,11 @@ public class HueSyncLocalizer {
         key = key.replace("@text/", "");
 
         Bundle bundle = bundleContext.getBundle();
+
         @Nullable
         TranslationProvider translationProvider = bundleContext.getService(serviceReference);
 
-        String text = translationProvider != null ? translationProvider.getText(bundle, key, key, locale) : key;
+        String text = translationProvider.getText(bundle, key, key, locale);
 
         // TODO: Add log message in case of translation problem ...
         return text != null ? text : key;

@@ -94,32 +94,34 @@ public class HueSyncHandler extends BaseThingHandler {
         return scheduler.scheduleWithFixedDelay(task, initialDelay, interval, TimeUnit.SECONDS);
     }
 
-    // TODO: Remove "null" annotation ...
-    @SuppressWarnings({ "unchecked", "null" })
+    @SuppressWarnings("unchecked")
     private void startBackgroundTasks() {
-        Runnable statusUpdateTask = new HueSyncUpdateTask(this.connection, this.deviceInfo,
-                (deviceStatus) -> this.updateDeviceStatus(deviceStatus));
+        if (this.deviceInfo != null) {
+            HueSyncDeviceInfo device = this.deviceInfo;
+            Runnable statusUpdateTask = new HueSyncUpdateTask(this.connection, device,
+                    (deviceStatus) -> this.updateDeviceStatus(deviceStatus));
 
-        if (this.connection.isRegistered()) {
-            this.logger.debug("Device {} {}:{} is already registered", this.deviceInfo.name, this.deviceInfo.deviceType,
-                    this.deviceInfo.uniqueId);
+            if (this.connection.isRegistered()) {
+                this.logger.debug("Device {} {}:{} is already registered", device.name, device.deviceType,
+                        device.uniqueId);
 
-            this.startUpdateTask(statusUpdateTask);
-        } else {
-            this.logger.info("Starting device registration for {} {}:{}", this.deviceInfo.name,
-                    this.deviceInfo.deviceType, this.deviceInfo.uniqueId);
+                this.startUpdateTask(statusUpdateTask);
+            } else {
+                this.logger.info("Starting device registration for {} {}:{}", device.name, device.deviceType,
+                        device.uniqueId);
 
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "@text/thing.config.huesync.box.registration");
+                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "@text/thing.config.huesync.box.registration");
 
-            Runnable task = new HueSyncRegistrationTask(connection, deviceInfo, () -> thing.getStatus(),
-                    (registration) -> {
-                        this.setRegistration(registration);
-                        this.startUpdateTask(statusUpdateTask);
-                    });
+                Runnable task = new HueSyncRegistrationTask(connection, device, () -> thing.getStatus(),
+                        (registration) -> {
+                            this.setRegistration(registration);
+                            this.startUpdateTask(statusUpdateTask);
+                        });
 
-            this.deviceRegistrationTask = (ScheduledFuture<HueSyncRegistrationTask>) this.executeTask(task,
-                    HueSyncConstants.REGISTRATION_INITIAL_DELAY, HueSyncConstants.REGISTRATION_INTERVAL);
+                this.deviceRegistrationTask = (ScheduledFuture<HueSyncRegistrationTask>) this.executeTask(task,
+                        HueSyncConstants.REGISTRATION_INITIAL_DELAY, HueSyncConstants.REGISTRATION_INTERVAL);
+            }
         }
     }
 
@@ -200,12 +202,15 @@ public class HueSyncHandler extends BaseThingHandler {
                         addProperty(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", info.apiLevel));
                         addProperty(HueSyncHandler.PROPERTY_NETWORK_STATE, info.wifiState);
                     }
+
+                    try {
+                        this.checkCompatibility();
+                        this.startBackgroundTasks();
+                    } catch (HueSyncApiException e) {
+                        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    }
                 });
 
-                this.checkCompatibility();
-                this.startBackgroundTasks();
-            } catch (HueSyncApiException e) {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (Exception e) {
                 this.logger.error("{}", e.getMessage());
                 this.updateStatus(ThingStatus.OFFLINE);
