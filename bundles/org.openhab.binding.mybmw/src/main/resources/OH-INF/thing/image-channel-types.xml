@@ -13,11 +13,7 @@
 		<label>Image Viewport</label>
 		<command>
 			<options>
-				<option value="VehicleStatus">Front Side View</option>
-				<option value="FrontView">Front View</option>
-				<option value="FrontLeft">Left Side View</option>
-				<option value="FrontRight">Right Side View</option>
-				<option value="RearView">Rear View</option>
+				<option value="AngleSideViewForty">Left Side View</option>
 			</options>
 		</command>
 	</channel-type>
