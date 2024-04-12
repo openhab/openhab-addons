@@ -31,10 +31,10 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class JettyAdminService implements AdminService {
     private static final Logger logger = LoggerFactory.getLogger(JettyAdminService.class);
+    private static final Gson GSON = new Gson();
     private final String token;
     private final URI baseUrl;
     private final HttpClient client;
-    private final Gson gson = new Gson();
 
     public JettyAdminService(String token, URI baseUrl, HttpClient client) {
         this.token = token;
@@ -52,7 +52,7 @@ public class JettyAdminService implements AdminService {
         var request = client.newRequest(url);
         var response = request.send();
         var content = response.getContentAsString();
-        return Optional.ofNullable(gson.fromJson(content, DnsStatistics.class));
+        return Optional.ofNullable(GSON.fromJson(content, DnsStatistics.class));
     }
 
     @Override
