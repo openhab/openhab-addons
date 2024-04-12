@@ -146,18 +146,18 @@ when
 then
 	val actions = getActions("pihole", "pihole:server:as8af03m38")
 	if (actions !== null) {
-        // disable blocking for 5 * 60 seconds (5 minutes)
-        actions.disableBlocking(5 * 60)
+            // disable blocking for 5 * 60 seconds (5 minutes)
+            actions.disableBlocking(5 * 60)
     
-        // disable blocking for 5 minutes
-		actions.disableBlocking(5, TimeUnit.MINUTES)
+            // disable blocking for 5 minutes
+            actions.disableBlocking(5, TimeUnit.MINUTES)
     
-        // disable blocking for infinity
-		actions.disableBlocking(0)
-		actions.disableBlocking()
+            // disable blocking for infinity
+            actions.disableBlocking(0)
+            actions.disableBlocking()
     
-        // enable blocking
-		actions.enableBlocking()
+            // enable blocking
+            actions.enableBlocking()
 	} 
 end
 
