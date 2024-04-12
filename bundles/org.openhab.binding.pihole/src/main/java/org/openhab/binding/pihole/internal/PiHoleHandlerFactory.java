@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.pihole.internal;
 
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.*;
+import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.PI_HOLE_TYPE;
 
 import java.util.Set;
 
