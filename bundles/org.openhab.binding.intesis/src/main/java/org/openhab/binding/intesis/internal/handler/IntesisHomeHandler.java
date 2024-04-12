@@ -112,11 +112,10 @@ public class IntesisHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not set");
             return;
         } else {
-            logger.trace("trying to log in - current session ID: {}", sessionId);
-            login();
-
             // start background initialization:
             scheduler.submit(() -> {
+                logger.trace("initialize() - trying to log in");
+                login();
                 populateProperties();
                 // query available dataPoints and build dynamic channels
                 postRequestInSession(sessionId -> "{\"command\":\"getavailabledatapoints\",\"data\":{\"sessionID\":\""
@@ -136,7 +135,10 @@ public class IntesisHomeHandler extends BaseThingHandler {
             this.refreshJob = null;
         }
 
-        logout(sessionId);
+        // start background dispose:
+        scheduler.submit(() -> {
+            logout();
+        });
     }
 
     @Override
@@ -230,7 +232,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     Data data = gson.fromJson(resp.data, Data.class);
                     ResponseError error = gson.fromJson(resp.error, ResponseError.class);
                     if (error != null) {
-                        logger.debug("Login - Error: {}", error);
+                        logger.debug("login() - error: {}", error);
                     }
                     if (data != null) {
                         Id id = gson.fromJson(data.id, Id.class);
@@ -239,7 +241,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                         }
                     }
                 });
-        logger.trace("Login - received session ID: {}", sessionId);
+        logger.trace("login() - received session ID: {}", sessionId);
         if (sessionId != null && !sessionId.isEmpty()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -249,9 +251,15 @@ public class IntesisHomeHandler extends BaseThingHandler {
         return sessionId;
     }
 
-    public @Nullable String logout(String sessionId) {
-        String contentString = "{\"command\":\"logout\",\"data\":{\"sessionID\":\"" + sessionId + "\"}}";
-        return api.postRequest(config.ipAddress, contentString);
+    public @Nullable String logout() {
+        if (!sessionId.isEmpty()) { // we have a running session
+            String contentString = "{\"command\":\"logout\",\"data\":{\"sessionID\":\"" + sessionId + "\"}}";
+            logger.trace("logout() - session ID: {}", sessionId);
+            sessionId = ""; // not really necessary as it is called after dispose(), so sessionID is not used anympre,
+                            // but it is a cleaner way
+            return api.postRequest(config.ipAddress, contentString);
+        }
+        return null;
     }
 
     public void populateProperties() {
