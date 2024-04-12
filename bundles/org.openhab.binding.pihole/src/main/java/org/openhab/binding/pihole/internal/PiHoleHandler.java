@@ -110,6 +110,12 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
         updateStatus(UNKNOWN);
 
         var config = getConfigAs(PiHoleConfiguration.class);
+
+        if (config.refreshIntervalSeconds <= 0) {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/handler.init.wrongInterval");
+            return;
+        }
+
         {
             URI hostname;
             try {
@@ -124,11 +130,6 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
                 return;
             }
             adminService = new JettyAdminService(config.token, hostname, httpClient);
-        }
-
-        if (config.refreshIntervalSeconds <= 0) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/handler.init.wrongInterval");
-            return;
         }
         scheduledFuture = scheduler.scheduleWithFixedDelay(this::update, 0, config.refreshIntervalSeconds, SECONDS);
 
