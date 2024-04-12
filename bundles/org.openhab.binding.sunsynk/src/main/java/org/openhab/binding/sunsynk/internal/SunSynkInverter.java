@@ -63,14 +63,15 @@ public class SunSynkInverter {
         this.alias = config.getAlias();
     }
 
-    public String sendGetState(Boolean batterySettingsUpdate) { // Entry method to class for updating internal state from the inverter
+    public String sendGetState(Boolean batterySettingsUpdate) { // Entry method to class for updating internal state
+                                                                // from the inverter
         logger.debug("Will get STATE for Inverter {} serial {}", this.alias, this.sn);
         // Get inverter infos
         String response = null;
         try {
-            if (batterySettingsUpdate){
-            logger.debug("Trying Common Settings");
-            response = getCommonSettings(); // battery charge settings
+            if (batterySettingsUpdate) {
+                logger.debug("Trying Common Settings");
+                response = getCommonSettings(); // battery charge settings
             }
             logger.debug("Trying Grid Real Time Settings");
             response = getGridRealTime(); // grid status

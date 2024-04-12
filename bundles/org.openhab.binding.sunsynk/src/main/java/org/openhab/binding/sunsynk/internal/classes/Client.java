@@ -48,6 +48,14 @@ public class Client {
         return data.getRefreshToken();
     }
 
+    public Long getIssuedAt() {
+        return data.getIssuedAt();
+    }
+
+    public void setIssuedAt(Long issued_at) {
+        data.setIssuedAt(issued_at);
+    }
+
     public Optional<APIdata> safeAPIData() {
         if (this.data == null) {
             return Optional.empty();

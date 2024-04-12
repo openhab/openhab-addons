@@ -65,7 +65,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         super(thing);
     }
 
-
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
 
@@ -278,7 +277,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         this.batterySettingsUpdated = true;
         inverter = new SunSynkInverter(config);
         startAutomaticRefresh();
-  
+
         // These logging types should be primarily used by bindings
         // logger.trace("Example trace message");
         // logger.debug("Example debug message");
@@ -316,8 +315,8 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             } else
                 return;
             String response = inverter.sendGetState(this.batterySettingsUpdated);
-            if (response == "Authentication Fail") { // try refreshing log in
-                bridgehandler.initialize();
+            if (response == "Authentication Fail") { // try refreshing token
+                bridgehandler.refreshAccount();
                 return;
             }
             if (response == "Failed") { // unknown cause
