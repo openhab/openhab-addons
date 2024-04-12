@@ -485,7 +485,7 @@
 
 	<!-- Humidity Channel Type -->
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>@text/channel-type.humidity.label</label>
 		<description>@text/channel-type.humidity.description</description>
 		<category>Humidity</category>

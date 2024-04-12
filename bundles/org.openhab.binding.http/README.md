@@ -66,6 +66,9 @@ When concatenating the `baseURL` and `stateExtension` or `commandExtension` the 
 ### Value Transformations (`stateTransformation`, `commandTransformation`)
 
 Transformations can be used if the supplied value (or the required value) is different from what openHAB internal types require.
+
+The relevant transformation service needs to be installed via the Main UI or addons.cfg before use.
+
 Here are a few examples to unwrap an incoming value via `stateTransformation` from a complex response:
 
 | Received value                                                      | Tr. Service | Transformation                            |

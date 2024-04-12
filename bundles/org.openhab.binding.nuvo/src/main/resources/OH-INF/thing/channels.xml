@@ -122,6 +122,10 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="serialPort" type="text" required="false">
 				<context>serial-port</context>
@@ -380,6 +384,7 @@
 			<channel id="button_press" typeId="button_press"/>
 			<channel id="art_url" typeId="art_url"/>
 			<channel id="album_art" typeId="album_art"/>
+			<channel id="source_menu" typeId="source_menu"/>
 		</channels>
 	</channel-group-type>
 
@@ -534,6 +539,12 @@
 		<label>Album Art</label>
 		<description>The Album Art loaded from the art_url channel for display in a UI widget</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="source_menu">
+		<item-type>String</item-type>
+		<label>Source Menu</label>
+		<description>A selection containing the custom menu tree options for this source</description>
 	</channel-type>
 
 </thing:thing-descriptions>

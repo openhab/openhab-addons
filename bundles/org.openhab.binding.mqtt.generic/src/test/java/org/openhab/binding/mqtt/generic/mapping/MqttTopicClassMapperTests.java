@@ -221,8 +221,8 @@ public class MqttTopicClassMapperTests {
                 "homie/device123", fieldChangedObserverMock, 10);
         assertThat(future.isDone(), is(true));
 
-        SubscribeFieldToMQTTtopic field = attributes.subscriptions.stream().filter(f -> f.field.getName() == "state")
-                .findFirst().get();
+        SubscribeFieldToMQTTtopic field = attributes.subscriptions.stream()
+                .filter(f -> "state".equals(f.field.getName())).findFirst().get();
         field.processMessage(field.topic, "garbage".getBytes());
         verify(fieldChangedObserverMock, times(0)).attributeChanged(any(), any(), any(), any(), anyBoolean());
         assertThat(attributes.state.toString(), is("unknown"));

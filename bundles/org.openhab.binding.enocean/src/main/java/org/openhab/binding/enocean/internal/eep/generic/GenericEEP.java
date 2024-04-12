@@ -17,7 +17,6 @@ import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -53,24 +52,10 @@ import org.openhab.core.util.HexUtils;
 @NonNullByDefault
 public class GenericEEP extends EEP {
 
-    final List<Class<? extends State>> supportedStates = Collections.unmodifiableList(new LinkedList<>() {
-        private static final long serialVersionUID = 1L;
-
-        {
-            add(DateTimeType.class);
-            add(DecimalType.class);
-            add(HSBType.class);
-            add(OnOffType.class);
-            add(OpenClosedType.class);
-            add(PercentType.class);
-            add(PlayPauseType.class);
-            add(PointType.class);
-            add(RewindFastforwardType.class);
-            add(StringListType.class);
-            add(StringType.class);
-            add(UpDownType.class);
-        }
-    });
+    final List<Class<? extends State>> supportedStates = Collections
+            .unmodifiableList(List.of(DateTimeType.class, DecimalType.class, HSBType.class, OnOffType.class,
+                    OpenClosedType.class, PercentType.class, PlayPauseType.class, PointType.class,
+                    RewindFastforwardType.class, StringListType.class, StringType.class, UpDownType.class));
 
     public GenericEEP() {
         super();

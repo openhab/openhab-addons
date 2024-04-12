@@ -250,6 +250,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             forceStatusUpdate();
             return;
         }
+        if (channelUID.getId().equals(RobotCababilities.MOP_MODE.getChannel())) {
+            sendCommand(MiIoCommand.SET_MOP_MODE, "[" + command.toString() + "]");
+            forceStatusUpdate();
+            return;
+        }
         if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
                 && !command.toString().contentEquals("-")) {
             sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
@@ -383,6 +388,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_MODE)) {
             safeUpdateState(RobotCababilities.WATERBOX_MODE.getChannel(), statusInfo.getWaterBoxMode());
         }
+        if (deviceCapabilities.containsKey(RobotCababilities.MOP_MODE)) {
+            safeUpdateState(RobotCababilities.MOP_MODE.getChannel(), statusInfo.getMopMode());
+        }
         if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_STATUS)) {
             safeUpdateState(RobotCababilities.WATERBOX_STATUS.getChannel(), statusInfo.getWaterBoxStatus());
         }
@@ -506,7 +514,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                                 .toString());
                         break;
                     case 1:
-                        historyRecord.setStart(ZonedDateTime
+                        historyRecord.setEnd(ZonedDateTime
                                 .ofInstant(Instant.ofEpochSecond(value.longValue()), ZoneId.systemDefault())
                                 .toString());
                         break;
@@ -541,12 +549,14 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private void updateHistoryRecord(HistoryRecordDTO historyRecordDTO) {
         JsonObject historyRecord = GSON.toJsonTree(historyRecordDTO).getAsJsonObject();
         if (historyRecordDTO.getStart() != null) {
-            historyRecord.addProperty("start", historyRecordDTO.getStart().split("\\+")[0]);
-            updateState(CHANNEL_HISTORY_START_TIME, new DateTimeType(historyRecordDTO.getStart().split("\\+")[0]));
+            historyRecord.addProperty("start", historyRecordDTO.getStart().split("\\+")[0].split("\\-")[0]);
+            updateState(CHANNEL_HISTORY_START_TIME,
+                    new DateTimeType(historyRecordDTO.getStart().split("\\+")[0].split("\\-")[0]));
         }
         if (historyRecordDTO.getEnd() != null) {
-            historyRecord.addProperty("end", historyRecordDTO.getEnd().split("\\+")[0]);
-            updateState(CHANNEL_HISTORY_END_TIME, new DateTimeType(historyRecordDTO.getEnd().split("\\+")[0]));
+            historyRecord.addProperty("end", historyRecordDTO.getEnd().split("\\+")[0].split("\\-")[0]);
+            updateState(CHANNEL_HISTORY_END_TIME,
+                    new DateTimeType(historyRecordDTO.getEnd().split("\\+")[0].split("\\-")[0]));
         }
         if (historyRecordDTO.getDuration() != null) {
             long duration = TimeUnit.SECONDS.toMinutes(historyRecordDTO.getDuration().longValue());
@@ -640,7 +650,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 }
             }
             for (RobotCababilities cmd : FEATURES_CHANNELS) {
-                if (isLinked(cmd.getChannel())) {
+                if (isLinked(cmd.getChannel()) && !cmd.getCommand().isBlank()) {
                     sendCommand(cmd.getCommand());
                 }
             }

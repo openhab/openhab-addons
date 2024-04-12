@@ -109,6 +109,7 @@
     <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
+    <module>org.openhab.binding.dolbycp</module>
     <module>org.openhab.binding.dominoswiss</module>
     <module>org.openhab.binding.doorbird</module>
     <module>org.openhab.binding.draytonwiser</module>
@@ -248,6 +249,7 @@
     <module>org.openhab.binding.modbus.e3dc</module>
     <module>org.openhab.binding.modbus.sbc</module>
     <module>org.openhab.binding.modbus.studer</module>
+    <module>org.openhab.binding.modbus.sungrow</module>
     <module>org.openhab.binding.modbus.sunspec</module>
     <module>org.openhab.binding.modbus.stiebeleltron</module>
     <module>org.openhab.binding.modbus.helioseasycontrols</module>
@@ -321,6 +323,7 @@
     <module>org.openhab.binding.pushsafer</module>
     <module>org.openhab.binding.qbus</module>
     <module>org.openhab.binding.qolsysiq</module>
+    <module>org.openhab.binding.radiobrowser</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.revogi</module>
@@ -448,6 +451,7 @@
     <module>org.openhab.voice.marytts</module>
     <module>org.openhab.voice.mimictts</module>
     <module>org.openhab.voice.picotts</module>
+    <module>org.openhab.voice.pipertts</module>
     <module>org.openhab.voice.pollytts</module>
     <module>org.openhab.voice.rustpotterks</module>
     <module>org.openhab.voice.voicerss</module>

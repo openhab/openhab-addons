@@ -80,7 +80,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Actual measured room Humidity</description>
 		<category>Humidity</category>

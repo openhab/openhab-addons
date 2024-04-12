@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.evcc.internal.api.dto;
 
+import java.util.Map;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents the result object of the status response (/api/state).
- * This DTO was written for evcc version 0.117.0
+ * This DTO was written for evcc version 0.123.1
  *
  * @author Florian Hotze - Initial contribution
+ * @author Luca Arnecke - update to evcc version 0.123.1
  */
 public class Result {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
@@ -38,6 +41,12 @@ public class Result {
     @SerializedName("batterySoc")
     private float batterySoC;
 
+    @SerializedName("batteryDischargeControl")
+    private boolean batteryDischargeControl;
+
+    @SerializedName("batteryMode")
+    private String batteryMode;
+
     @SerializedName("gridConfigured")
     private boolean gridConfigured;
 
@@ -51,7 +60,16 @@ public class Result {
     private Loadpoint[] loadpoints;
 
     @SerializedName("prioritySoc")
-    private float batteryPrioritySoC;
+    private float prioritySoC;
+
+    @SerializedName("bufferSoc")
+    private float bufferSoC;
+
+    @SerializedName("bufferStartSoc")
+    private float bufferStartSoC;
+
+    @SerializedName("residualPower")
+    private float residualPower;
 
     @SerializedName("pvConfigured")
     private boolean pvConfigured;
@@ -61,6 +79,15 @@ public class Result {
 
     @SerializedName("siteTitle")
     private String siteTitle;
+
+    @SerializedName("vehicles")
+    private Map<String, Vehicle> vehicles;
+
+    @SerializedName("version")
+    private String version;
+
+    @SerializedName("availableVersion")
+    private String availableVersion;
 
     /**
      * @return battery's capacity
@@ -86,8 +113,29 @@ public class Result {
     /**
      * @return battery's priority state of charge
      */
-    public float getBatteryPrioritySoC() {
-        return batteryPrioritySoC;
+    public float getPrioritySoC() {
+        return prioritySoC;
+    }
+
+    /**
+     * @return Battery Buffer SoC
+     */
+    public float getBufferSoC() {
+        return bufferSoC;
+    }
+
+    /**
+     * @return Battery Buffer Start SoC
+     */
+    public float getBufferStartSoC() {
+        return bufferStartSoC;
+    }
+
+    /**
+     * @return Grid Residual Power
+     */
+    public float getResidualPower() {
+        return residualPower;
     }
 
     /**
@@ -95,6 +143,20 @@ public class Result {
      */
     public float getBatterySoC() {
         return batterySoC;
+    }
+
+    /**
+     * @return battery discharge control
+     */
+    public boolean getBatteryDischargeControl() {
+        return batteryDischargeControl;
+    }
+
+    /**
+     * @return battery mode
+     */
+    public String getBatteryMode() {
+        return batteryMode;
     }
 
     /**
@@ -144,5 +206,23 @@ public class Result {
      */
     public String getSiteTitle() {
         return siteTitle;
+    }
+
+    public Map<String, Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    /**
+     * @return evcc version
+     */
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * @return evcc available version
+     */
+    public String getAvailableVersion() {
+        return availableVersion;
     }
 }

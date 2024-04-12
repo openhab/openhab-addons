@@ -44,7 +44,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Gateway Management            |    `13`     |                       `bus_gateway`                        | Any IP gateway supporting OpenWebNet protocol should work        | Successfully tested: F452, F453, F453AV,F454, F455, MyHOMEServer1, MyHOME_Screen10, MyHOME_Screen3,5, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202            |
 | Lighting                      |     `1`     |             `bus_on_off_switch`, `bus_dimmer`              | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)                                                                                           |
 | Automation                    |     `2`     |                      `bus_automation`                      | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2                                                                                                                                                                              |
-| Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes)         | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455; Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details |
+| Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes)         | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455. Partially tested: Central Units 4-zones (models L/N/NT/HD/HC/HS4695) and 99-zones (model 3550). See [Channels - Thermo](#configuring-thermo) for more details |
 | Alarm                         |     `5`     |  `bus_alarm_system`, `bus_alarm_zone`                      | BUS Alarm system and zones                                       | Successfully tested: Burglar-alarm Unit 3486  |
 | Auxiliary (AUX)               |     `9`     |  `bus_aux`                                                 | AUX commands                                                     | Successfully tested: AUX configured for Burglar-alarm Unit 3486. **Only sending AUX commands is supported**    |
 | Basic, CEN & CEN+ Scenarios   | `0`, `15`, `25` | `bus_scenario_control`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ Scenarios events and virtual activation                 | Successfully tested: CEN/CEN+ scenario control: HC/HD/HS/L/N/NT4680 and basic scenario modules F420/IR3456 + L4680 (WHO=0)      |
@@ -159,11 +159,12 @@ Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with 
   - example sensor `5` of external zone `00` --> `where="500"`
   - example: slave sensor `3` of zone `2` --> `where="302"`
 
-The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="#0"` for a 99-zone Central Unit or `where="#0#1"` for a 4-zone Central Unit configured as zone 1.
+The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing with the `where` configuration parameter (`OpenWebNet Address`) set to `where="#0"` for a 99-zone Central Unit (model 3550) or `where="#0#1"` for a 4-zone Central Unit (models L/N/NT/HD/HC/HS 4695) configured as zone 1.
 
-##### Thermo Central Unit integration missing points
+##### Thermo Central Unit integration known limitations
 
 - Read setPoint temperature and current mode
+- Central Unit Programming and Customisations settings (T1/2/3 temperature levels, date & time, weekly/scenarios/holiday programming, etc.)
 - Holiday/Vacation activation command
 
 #### Configuring Alarm and Auxiliary (AUX)
@@ -244,7 +245,7 @@ OPEN command to execute: *5*8#134##
 | `temperature`                | `bus_thermo_zone`, `bus_thermo_sensor` | Number:Temperature | The zone currently sensed temperature                                                                                                 | R          | N        |
 | `setpointTemperature`        | `bus_thermo_zone`, `bus_thermo_cu`     | Number:Temperature | The zone or Central Unit setpoint temperature                                                                                         | R/W        | N        |
 | `function`                   | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set thermo function (`COOLING`, `HEATING`, `GENERIC`) or the Central Unit thermo function (`COOLING`, `HEATING`)             | R/W        | N        |
-| `mode`                       | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set mode (`MANUAL`, `PROTECTION`, `OFF`) or the Central Unit set mode ( `MANUAL`, `PROTECTION`, `OFF`, `WEEKLY`, `SCENARIO`) | R/W        | N        |
+| `mode`                       | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set mode (`AUTO`, `MANUAL`, `PROTECTION`, `OFF`) or the Central Unit set mode (`WEEKLY`, `SCENARIO`, `MANUAL`, `PROTECTION`, `OFF`) | R/W        | N        |
 | `speedFanCoil`               | `bus_thermo_zone`                      | String             | The zone fancoil speed: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`                                                                       | R/W        | N        |
 | `actuators`                  | `bus_thermo_zone`                      | String             | The zone actuator(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`            | R          | Y        |
 | `heatingValves`              | `bus_thermo_zone`                      | String             | The zone heating valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`            | R          | Y        |
@@ -252,8 +253,8 @@ OPEN command to execute: *5*8#134##
 | `localOffset`                | `bus_thermo_zone`                      | String             | The zone local offset status: `OFF`, `PROTECTION`, `MINUS_3`, `MINUS_2` , `MINUS_1`, `NORMAL`, `PLUS_1`, `PLUS_2`, `PLUS_3`           | R          | Y        |
 | `remoteControl`              | `bus_thermo_cu`                        | String             | The Central Unit Remote Control status: `ENABLED`, `DISABLED`                                                                         | R          | Y        |
 | `batteryStatus`              | `bus_thermo_cu`                        | String             | The Central Unit Battery status: `OK`, `KO`                                                                                           | R          | Y        |
-| `weeklyProgram`              | `bus_thermo_cu`                        | Number             | The program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`                                                                 | R/W        | N        |
-| `scenarioProgram`            | `bus_thermo_cu`                        | Number             | The program number (`1`, `2`, ... ,  `16`) when Central Unit mode is `SCENARIO`                                                       | R/W        | N        |
+| `weeklyProgram`              | `bus_thermo_cu`                        | Number             | The weekly program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`                                                                 | R/W        | N        |
+| `scenarioProgram`            | `bus_thermo_cu`                        | Number             | The scenario program number (`1`, `2`, ... ,  `16`) when Central Unit mode is `SCENARIO`                                                       | R/W        | N        |
 | `failureDiscovered`          | `bus_thermo_cu`                        | Switch             | Indicates if a Failure was discovered by the Central Unit: `ON`, `OFF`                                                                | R          | Y        |
 | `atLeastOneProbeOff`         | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in OFF mode: `ON`, `OFF`                                                                           | R          | Y        |
 | `atLeastOneProbeProtection`  | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in PROTECTION mode: `ON`, `OFF`                                                                    | R          | Y        |
@@ -305,16 +306,16 @@ See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-r
       - `EXTENDED_PRESS` - sent after `START_EXTENDED_PRESS` if you keep the button pressed longer; will be sent again every 0,5sec as long as you hold pressed (good for rules involving dimming/volume)
       - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
 
-#### `mode` for values WEEKLY and SCENARIO (thermo Central Unit)
+#### Thermo Central Unit `mode`: `WEEKLY` and `SCENARIO`
 
 There are three WEEKLY and sixteen SCENARIO programs defined for the thermo Central Unit.
 
-In order to activate one of them you have to use two different channels:
+In order to activate one specific weekly or scenario program two different channels must be used:
 
-- with `mode` you can set the mode (`WEEKLY` or `SCENARIO`)
-- with `weeklyProgram` (if `WEEKLY` was set) or with `scenarioProgram` (if `SCENARIO` was set) you can set the program number
+- with the `mode` channel it's possible to set the mode (`WEEKLY` or `SCENARIO`)
+- with `weeklyProgram` (if `WEEKLY` was set) or `scenarioProgram` (if `SCENARIO` was set) channels you can set the specific weekly/scenario program number
 
-Example: if you want to activate SCENARIO number 9 on the thermo Central Unit you have to set `mode` = `SCENARIO` and `scenarioProgram` = `9`.
+Example: if you want to activate SCENARIO number 9 on the thermo Central Unit you have to set channel `mode` = `SCENARIO` and channel `scenarioProgram` = `9`.
 
 ## Full Example
 

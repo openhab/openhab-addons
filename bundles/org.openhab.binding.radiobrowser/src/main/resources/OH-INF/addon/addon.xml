@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="radiobrowser" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Radio Browser Binding</name>
+	<description>This binding makes it easy to find a working radio stream using the open API called RadioBrowser.</description>
+	<connection>cloud</connection>
+
+</addon:addon>
