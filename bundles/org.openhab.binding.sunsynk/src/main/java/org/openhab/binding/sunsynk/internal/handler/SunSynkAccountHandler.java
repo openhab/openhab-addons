@@ -16,8 +16,8 @@ package org.openhab.binding.sunsynk.internal.handler;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -56,8 +56,8 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         super(bridge);
     }
 
-   @Override
-    public void handleCommand(@NonNull  ChannelUID channelUID, @NonNull Command command) {
+    @Override
+    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
     }
 
     @Override
@@ -113,8 +113,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         Client sunAccount = authenticate(accountConfig.getEmail(), accountConfig.getPassword());
         Optional<APIdata> checkAPI = sunAccount.safeAPIData();
         if (!checkAPI.isPresent()) { // API Data failed
-            logger.debug("Account fialed to Authenticate, likely a certificate path or maybe a password problem.");
-            updateStatus(ThingStatus.OFFLINE);
+            logger.debug("Account fialed to authenticate, likely a certificate path or maybe a password problem.");
             return;
         }
         APIdata apiData = checkAPI.get();
@@ -123,12 +122,40 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         Configuration configuration = editConfiguration();
         configuration.put("access_token", newToken);
         configuration.put("refresh_token", sunAccount.getRefreshTokenString());
-        long baseTime = new Date().getTime(); // Time Now
-        baseTime = baseTime + (sunAccount.getExpiresIn() * 1000L);
-        java.util.Date time = new java.util.Date((long) baseTime);
-        configuration.put("expires_in", time.toString());
+        configuration.put("expires_in", sunAccount.getExpiresIn());
+        configuration.put("issued_at", sunAccount.getIssuedAt());
         updateConfiguration(configuration);
         logger.debug("Account configuration updated : {}", configuration);
+    }
+
+    public void refreshAccount() {
+        Configuration configuration = editConfiguration();
+        Long expires_in = Long.parseLong(configuration.get("expires_in").toString());
+        Long issued_at = Long.parseLong(configuration.get("issued_at").toString());
+
+        if ((issued_at + expires_in) - Instant.now().getEpochSecond() > 30) { // 30 seconds
+            logger.debug("Account fialed to refresh, token not expired. Trying re-auth");
+            configAccount();
+            return;
+        }
+        SunSynkAccountConfig accountConfig = getConfigAs(SunSynkAccountConfig.class);
+        String refreshtToken = configuration.get("refresh_token").toString();
+        Client sunAccount = refresh(accountConfig.getEmail(), refreshtToken);
+        Optional<APIdata> checkAPI = sunAccount.safeAPIData();
+        if (!checkAPI.isPresent()) { // API Data failed
+            logger.debug("Account fialed to refresh, likely a certificate path or maybe a password problem.");
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
+        APIdata apiData = checkAPI.get();
+        String newToken = apiData.getAccessToken();
+        APIdata.static_access_token = newToken;
+        configuration.put("access_token", newToken);
+        configuration.put("refresh_token", sunAccount.getRefreshTokenString());
+        configuration.put("expires_in", sunAccount.getExpiresIn());
+        configuration.put("issued_at", sunAccount.getIssuedAt());
+        updateConfiguration(configuration);
+        logger.debug("Account configuration refreshed : {}", configuration);
     }
 
     private Client authenticate(String username, String password) {
@@ -154,6 +181,29 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         }
     }
 
+    private Client refresh(String username, String refreshToken) {
+
+        Gson gson = new Gson();
+        String response = "";
+        String httpsURL = makeLoginURL("oauth/token");
+        String payload = makeRefreshBody(username, refreshToken);
+        Properties headers = new Properties();
+        try {
+            headers.setProperty("Accept", "application/json");
+            headers.setProperty("Content-Type", "application/json"); // may not need this.
+            InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
+            response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
+            Client API_Token = gson.fromJson(response, Client.class);
+            return API_Token;
+        } catch (IOException e) {
+            logger.debug("Error attempting to autheticate account", e.getCause());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error attempting to authenticate account");
+            Client API_Token = new Client();
+            return API_Token;
+        }
+    }
+
     private static String makeLoginURL(String path) {
         return "https://api.sunsynk.net" + "/" + path;
     }
@@ -161,6 +211,12 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     private static String makeLoginBody(String username, String password) {
         String body = "{\"username\": \"" + username + "\", \"password\": \"" + password
                 + "\", \"grant_type\": \"password\", \"client_id\": \"csp-web\"}";
+        return body;
+    }
+
+    private static String makeRefreshBody(String username, String refresh_token) {
+        String body = "{\"grant_type\": \"refresh_token\", \"username\": \"" + username + "\", \"refresh_token\": \""
+                + refresh_token + "\", \"client_id\": \"csp-web\"}";
         return body;
     }
 }

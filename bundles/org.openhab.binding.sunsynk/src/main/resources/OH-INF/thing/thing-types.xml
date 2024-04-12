@@ -34,9 +34,14 @@
 				<description>SunSynk web services refresh secret</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="expires_in" type="text" required="false">
+			<parameter name="expires_in" type="integer" required="false">
 				<label>SunSynk Secret expiry</label>
-				<description>SunSynk web services secret expiry</description>
+				<description>SunSynk web services refresh token expiry</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="issued_at" type="integer" required="false">
+				<label>SunSynk Secret expiry</label>
+				<description>SunSynk web services refresh token issue at</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
