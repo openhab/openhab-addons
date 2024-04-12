@@ -31,7 +31,7 @@ To configure a timetable you first need to register at Deutsche Bahn developer p
 
 For the selection of the station within openHAB you need the eva no. of the station, i.e. a 7-digit number starting with 80 for Germany.
 The station ID is no longer available on the Open Data portal of Deutsche Bahn.
-You can look up the number at [here](https://www.michaeldittrich.de/ibnr/) or in the csv file [here](https://github.com/ratopi/haltestellendaten).
+You can look up the number at [www.michaeldittrich.de](https://www.michaeldittrich.de/ibnr/) or [in the CSV file](https://github.com/ratopi/haltestellendaten).
 
 ### Configure timetable bridge
 
