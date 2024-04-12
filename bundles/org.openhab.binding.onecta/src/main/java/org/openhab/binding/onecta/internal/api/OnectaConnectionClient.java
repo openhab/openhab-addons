@@ -25,7 +25,6 @@ import org.openhab.binding.onecta.internal.api.dto.units.Unit;
 import org.openhab.binding.onecta.internal.api.dto.units.Units;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationForbiddenException;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +50,7 @@ public class OnectaConnectionClient {
 
     private static OnectaSignInClient onectaSignInClient;
 
-    public static void SetConnectionClient(HttpClientFactory httpClientFactory) {
-        // httpClient = httpClientFactory.getCommonHttpClient();
+    public static void SetConnectionClient() {
         onectaSignInClient = new OnectaSignInClient();
     }
 
