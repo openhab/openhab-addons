@@ -83,6 +83,16 @@ public class PiHoleActions implements ThingActions {
         ((PiHoleActions) requireNonNull(actions)).disableBlocking(time);
     }
 
+    @RuleAction(label = "@text/action.disableInf.label", description = "@text/action.disableInf.description")
+    public void disableBlocking() throws ExecutionException, InterruptedException, TimeoutException {
+        disableBlocking(0, null);
+    }
+
+    public static void disableBlocking(@Nullable ThingActions actions)
+            throws ExecutionException, InterruptedException, TimeoutException {
+        ((PiHoleActions) requireNonNull(actions)).disableBlocking(0);
+    }
+
     @RuleAction(label = "@text/action.enable.label", description = "@text/action.enable.description")
     public void enableBlocking() throws ExecutionException, InterruptedException, TimeoutException {
         var local = handler;
