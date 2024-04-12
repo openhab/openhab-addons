@@ -48,7 +48,7 @@
 			<!-- channels to be removed -->
 			<!-- channels to be added -->
 			<!-- channels to be updated -->
-			<update-channel id="view" groupIds="image-values">
+			<update-channel id="view" groupIds="image">
 				<type>mybmw:image-view-channel</type>
 				<label>Image Viewport</label>
 			</update-channel>
@@ -91,7 +91,7 @@
 			<!-- channels to be removed -->
 			<!-- channels to be added -->
 			<!-- channels to be updated -->
-			<update-channel id="view" groupIds="image-values">
+			<update-channel id="view" groupIds="image">
 				<type>mybmw:image-view-channel</type>
 				<label>Image Viewport</label>
 			</update-channel>
@@ -132,7 +132,7 @@
 			<!-- channels to be removed -->
 			<!-- channels to be added -->
 			<!-- channels to be updated -->
-			<update-channel id="view" groupIds="image-values">
+			<update-channel id="view" groupIds="image">
 				<type>mybmw:image-view-channel</type>
 				<label>Image Viewport</label>
 			</update-channel>
@@ -183,7 +183,7 @@
 			<!-- channels to be removed -->
 			<!-- channels to be added -->
 			<!-- channels to be updated -->
-			<update-channel id="view" groupIds="image-values">
+			<update-channel id="view" groupIds="image">
 				<type>mybmw:image-view-channel</type>
 				<label>Image Viewport</label>
 			</update-channel>
