@@ -1,94 +1,170 @@
 # PiHole Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+The PiHole Binding is a bridge between OpenHAB and PiHole, enabling users to integrate PiHole statistics and controls into their home automation setup. PiHole is a DNS-based ad blocker that can run on a variety of platforms, including Raspberry Pi.
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
+PiHole is a powerful network-level advertisement and internet tracker blocking application. By intercepting DNS requests, it can prevent unwanted content from being displayed on devices connected to your network. The PiHole Binding allows you to monitor PiHole statistics and control its functionality directly from your OpenHAB setup.
 
-_Put each sentence in a separate line to improve readability of diffs._
+### Features
+
+- Real-time Statistics: Monitor key metrics such as the number of domains being blocked, DNS queries made today, ads blocked today, and more.
+- Control: Enable or disable PiHole's blocking functionality, configure blocking options, and adjust privacy settings directly from OpenHAB.
+- Integration: Seamlessly integrate PiHole data and controls with other OpenHAB items and rules to create advanced automation scenarios.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
-
-## Discovery
-
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the PiHole Binding
-#
-# Default secret key for the pairing of the PiHole Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+- `server`: PiHole server
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+### `server` Thing Configuration
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-### `sample` Thing Configuration
-
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name            | Type    | Description                                                                               | Default | Required | Advanced |
+|-----------------|---------|-------------------------------------------------------------------------------------------|---------|----------|----------|
+| hostname        | text    | Hostname or IP address of the device                                                      | N/A     | yes      | no       |
+| token           | text    | Token to access the device. To generate token go to `settings` > `API` > `Show API token` | N/A     | yes      | no       |
+| refreshInterval | integer | Interval the device is polled in sec.                                                     | 600     | no       | yes      |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Channel                 | Type   | Read/Write | Description                                                |
+|-------------------------|--------|------------|------------------------------------------------------------|
+| domains-being-blocked   | Number | RO         | The total number of domains currently being blocked.       |
+| dns-queries-today       | Number | RO         | The count of DNS queries made today.                       |
+| ads-blocked-today       | Number | RO         | The number of ads blocked today.                           |
+| ads-percentage-today    | Number | RO         | The percentage of ads blocked today.                       |
+| unique-domains          | Number | RO         | The count of unique domains queried.                       |
+| queries-forwarded       | Number | RO         | The number of queries forwarded to an external DNS server. |
+| queries-cached          | Number | RO         | The number of queries served from the cache.               |
+| clients-ever-seen       | Number | RO         | The total number of unique clients ever seen.              |
+| unique-clients          | Number | RO         | The current count of unique clients.                       |
+| dns-queries-all-types   | Number | RO         | The total number of DNS queries of all types.              |
+| reply-UNKNOWN           | Number | RO         | DNS replies with an unknown status.                        |
+| reply-NODATA            | Number | RO         | DNS replies indicating no data.                            |
+| reply-NXDOMAIN          | Number | RO         | DNS replies indicating non-existent domain.                |
+| reply-CNAME             | Number | RO         | DNS replies with a CNAME record.                           |
+| reply-IP                | Number | RO         | DNS replies with an IP address.                            |
+| reply-DOMAIN            | Number | RO         | DNS replies with a domain name.                            |
+| reply-RRNAME            | Number | RO         | DNS replies with a resource record name.                   |
+| reply-SERVFAIL          | Number | RO         | DNS replies indicating a server failure.                   |
+| reply-REFUSED           | Number | RO         | DNS replies indicating refusal.                            |
+| reply-NOTIMP            | Number | RO         | DNS replies indicating not implemented.                    |
+| reply-OTHER             | Number | RO         | DNS replies with other statuses.                           |
+| reply-DNSSEC            | Number | RO         | DNS replies with DNSSEC information.                       |
+| reply-NONE              | Number | RO         | DNS replies with no data.                                  |
+| reply-BLOB              | Number | RO         | DNS replies with a BLOB (binary large object).             |
+| dns-queries-all-replies | Number | RO         | The total number of DNS queries with all reply types.      |
+| privacy-level           | Number | RO         | The privacy level setting.                                 |
+| enabled                 | Switch | RO         | The current status of blocking                             |
+| disable-enable          | String | RW         | Is blocking enabled/disabled                               |
 
 ## Full Example
-
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
 
 ### Thing Configuration
 
 ```java
-Example thing configuration goes here.
+Thing pihole:server:a4a077edb8 "PiHole" @ "Location"
+[
+    refreshIntervalSeconds=600,
+    hostname="http://123.456.7.89",
+    token="as654gadf3h1dsfh654dfh6fh7et654asd3g21fh654eth8t4swd4g3s1g65sfg5"
+] {
+    Channels:
+        Type number : domains_being_blocked "Domains Blocked" [ ]
+        Type number : dns_queries_today "DNS Queries Today" [ ]
+        Type number : ads_blocked_today "Ads Blocked Today" [ ]
+        Type number : ads_percentage_today "Ads Percentage Today" [ ]
+        Type number : unique_domains "Unique Domains" [ ]
+        Type number : queries_forwarded "Queries Forwarded" [ ]
+        Type number : queries_cached "Queries Cached" [ ]
+        Type number : clients_ever_seen "Clients Ever Seen" [ ]
+        Type number : unique_clients "Unique Clients" [ ]
+        Type number : dns_queries_all_types "DNS Queries (All Types)" [ ]
+        Type number : reply_UNKNOWN "Reply UNKNOWN" [ ]
+        Type number : reply_NODATA "Reply NODATA" [ ]
+        Type number : reply_NXDOMAIN "Reply NXDOMAIN" [ ]
+        Type number : reply_CNAME "Reply CNAME" [ ]
+        Type number : reply_IP "Reply IP" [ ]
+        Type number : reply_DOMAIN "Reply DOMAIN" [ ]
+        Type number : reply_RRNAME "Reply RRNAME" [ ]
+        Type number : reply_SERVFAIL "Reply SERVFAIL" [ ]
+        Type number : reply_REFUSED "Reply REFUSED" [ ]
+        Type number : reply_NOTIMP "Reply NOTIMP" [ ]
+        Type number : reply_OTHER "Reply OTHER" [ ]
+        Type number : reply_DNSSEC "Reply DNSSEC" [ ]
+        Type number : reply_NONE "Reply NONE" [ ]
+        Type number : reply_BLOB "Reply BLOB" [ ]
+        Type number : dns_queries_all_replies "DNS Queries (All Replies)" [ ]
+        Type number : privacy_level "Privacy Level" [ ]
+        Type switch : enabled "Status" [ ]
+        Type string : disable-enable "Disable Blocking" [ ]
+}
 ```
+
 ### Item Configuration
 
 ```java
-Example item configuration goes here.
+Number domains_being_blocked "Domains Blocked" { channel="pihole:server:a4a077edb8:domains_being_blocked" }
+Number dns_queries_today "DNS Queries Today" { channel="pihole:server:a4a077edb8:dns_queries_today" }
+Number ads_blocked_today "Ads Blocked Today" { channel="pihole:server:a4a077edb8:ads_blocked_today" }
+Number ads_percentage_today "Ads Percentage Today" { channel="pihole:server:a4a077edb8:ads_percentage_today" }
+Number unique_domains "Unique Domains" { channel="pihole:server:a4a077edb8:unique_domains" }
+Number queries_forwarded "Queries Forwarded" { channel="pihole:server:a4a077edb8:queries_forwarded" }
+Number queries_cached "Queries Cached" { channel="pihole:server:a4a077edb8:queries_cached" }
+Number clients_ever_seen "Clients Ever Seen" { channel="pihole:server:a4a077edb8:clients_ever_seen" }
+Number unique_clients "Unique Clients" { channel="pihole:server:a4a077edb8:unique_clients" }
+Number dns_queries_all_types "DNS Queries (All Types)" { channel="pihole:server:a4a077edb8:dns_queries_all_types" }
+Number reply_UNKNOWN "Reply UNKNOWN" { channel="pihole:server:a4a077edb8:reply_UNKNOWN" }
+Number reply_NODATA "Reply NODATA" { channel="pihole:server:a4a077edb8:reply_NODATA" }
+Number reply_NXDOMAIN "Reply NXDOMAIN" { channel="pihole:server:a4a077edb8:reply_NXDOMAIN" }
+Number reply_CNAME "Reply CNAME" { channel="pihole:server:a4a077edb8:reply_CNAME" }
+Number reply_IP "Reply IP" { channel="pihole:server:a4a077edb8:reply_IP" }
+Number reply_DOMAIN "Reply DOMAIN" { channel="pihole:server:a4a077edb8:reply_DOMAIN" }
+Number reply_RRNAME "Reply RRNAME" { channel="pihole:server:a4a077edb8:reply_RRNAME" }
+Number reply_SERVFAIL "Reply SERVFAIL" { channel="pihole:server:a4a077edb8:reply_SERVFAIL" }
+Number reply_REFUSED "Reply REFUSED" { channel="pihole:server:a4a077edb8:reply_REFUSED" }
+Number reply_NOTIMP "Reply NOTIMP" { channel="pihole:server:a4a077edb8:reply_NOTIMP" }
+Number reply_OTHER "Reply OTHER" { channel="pihole:server:a4a077edb8:reply_OTHER" }
+Number reply_DNSSEC "Reply DNSSEC" { channel="pihole:server:a4a077edb8:reply_DNSSEC" }
+Number reply_NONE "Reply NONE" { channel="pihole:server:a4a077edb8:reply_NONE" }
+Number reply_BLOB "Reply BLOB" { channel="pihole:server:a4a077edb8:reply_BLOB" }
+Number dns_queries_all_replies "DNS Queries (All Replies)" { channel="pihole:server:a4a077edb8:dns_queries_all_replies" }
+Number privacy_level "Privacy Level" { channel="pihole:server:a4a077edb8:privacy_level" }
+Switch enabled "Status" { channel="pihole:server:a4a077edb8:enabled" }
+String disable_enable "Disable Blocking" { channel="pihole:server:a4a077edb8:disable-enable" }
 ```
 
-### Sitemap Configuration
+### Actions
 
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
+PiHole binding provides actions to use in rules:
+
+```java
+import java.util.concurrent.TimeUnit
+        
+rule "test"
+when
+    /* when */
+then
+	val actions = getActions("pihole", "pihole:server:as8af03m38")
+	if (actions !== null) {
+        // disable blocking for 5 * 60 seconds (5 minutes)
+        actions.disableBlocking(5 * 60)
+    
+        // disable blocking for 5 minutes
+		actions.disableBlocking(5, TimeUnit.MINUTES)
+    
+        // disable blocking for infinity
+		actions.disableBlocking(0)
+		actions.disableBlocking()
+    
+        // enable blocking
+		actions.enableBlocking()
+	} 
+end
+
 ```
 
-## Any custom content here!
+## Support ❤️
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+If you want to support the author of this binding, buy him a coffee:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S8UBWWY) <a href="https://buycoffee.to/magx2" target="_blank"><img src="https://buycoffee.to/btn/buycoffeeto-btn-primary.svg" alt="Postaw mi kawę na buycoffee.to" width="150"></a>
