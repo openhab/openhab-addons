@@ -97,7 +97,8 @@ public class HueSyncHandler extends BaseThingHandler {
     @SuppressWarnings("unchecked")
     private void startBackgroundTasks() {
         if (this.deviceInfo != null) {
-            HueSyncDeviceInfo device = this.deviceInfo;
+            HueSyncDeviceInfo device = (HueSyncDeviceInfo) this.deviceInfo;
+
             Runnable statusUpdateTask = new HueSyncUpdateTask(this.connection, device,
                     (deviceStatus) -> this.updateDeviceStatus(deviceStatus));
 
