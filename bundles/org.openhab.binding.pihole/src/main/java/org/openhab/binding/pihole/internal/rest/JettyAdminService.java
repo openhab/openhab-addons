@@ -30,8 +30,8 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class JettyAdminService implements AdminService {
-    private static final Logger logger = LoggerFactory.getLogger(JettyAdminService.class);
     private static final Gson GSON = new Gson();
+    private final Logger logger = LoggerFactory.getLogger(JettyAdminService.class);
     private final String token;
     private final URI baseUrl;
     private final HttpClient client;
