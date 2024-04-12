@@ -99,7 +99,7 @@ public class HueSyncHandler extends BaseThingHandler {
         if (this.deviceInfo != null) {
             HueSyncDeviceInfo device = (HueSyncDeviceInfo) this.deviceInfo;
 
-            Runnable statusUpdateTask = new HueSyncUpdateTask(this.connection, device,
+            Runnable statusUpdateTask = new HueSyncUpdateTask(this.connection, (HueSyncDeviceInfo) device,
                     (deviceStatus) -> this.updateDeviceStatus(deviceStatus));
 
             if (this.connection.isRegistered()) {
