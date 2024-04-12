@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.pihole.internal.rest;
 
-import static java.lang.String.format;
-
 import java.net.URI;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -60,7 +58,7 @@ public class JettyAdminService implements AdminService {
     @Override
     public void disableBlocking(long seconds) throws ExecutionException, InterruptedException, TimeoutException {
         logger.debug("Disabling blocking for {} seconds", seconds);
-        var url = baseUrl.resolve(format("/admin/api.php?disable=%s&auth=%s", seconds, token));
+        var url = baseUrl.resolve("/admin/api.php?disable=%s&auth=%s".formatted(seconds, token));
         var request = client.newRequest(url);
         request.send();
     }
@@ -68,7 +66,7 @@ public class JettyAdminService implements AdminService {
     @Override
     public void enableBlocking() throws ExecutionException, InterruptedException, TimeoutException {
         logger.debug("Enabling blocking");
-        var url = baseUrl.resolve(format("/admin/api.php?disable&auth=%s", token));
+        var url = baseUrl.resolve("/admin/api.php?disable&auth=%s".formatted(token));
         var request = client.newRequest(url);
         request.send();
     }
