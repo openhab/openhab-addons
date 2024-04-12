@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.huesync.internal.api.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * HDMI Sync Box Device Information Cababilities DTO
  * 
@@ -21,6 +23,7 @@ package org.openhab.binding.huesync.internal.api.dto;
  *      "https://developers.meethue.com/develop/hue-entertainment/hue-hdmi-sync-box-api/#Resource%20Table">Hue
  *      HDMI Sync Box API</a>
  */
+@NonNullByDefault
 public class HueSyncDeviceInfoCapabilities {
     /** The total number of IR codes configurable */
     public int maxIrCodes;

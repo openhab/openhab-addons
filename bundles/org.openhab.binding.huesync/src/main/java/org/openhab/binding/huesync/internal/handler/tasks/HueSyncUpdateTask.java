@@ -14,6 +14,7 @@ package org.openhab.binding.huesync.internal.handler.tasks;
 
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDeviceInfo;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
 import org.openhab.binding.huesync.internal.connection.HueSyncConnection;
@@ -25,6 +26,7 @@ import org.slf4j.Logger;
  * 
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public class HueSyncUpdateTask implements Runnable {
 
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncUpdateTask.class);
@@ -51,7 +53,9 @@ public class HueSyncUpdateTask implements Runnable {
 
             HueSyncDetailedDeviceInfo deviceStatus = this.connection.getDetailedDeviceInfo();
 
-            this.action.accept(deviceStatus);
+            if (deviceStatus != null)
+                this.action.accept(deviceStatus);
+
         } catch (Exception e) {
             this.logger.debug("{}", e.getMessage());
         }

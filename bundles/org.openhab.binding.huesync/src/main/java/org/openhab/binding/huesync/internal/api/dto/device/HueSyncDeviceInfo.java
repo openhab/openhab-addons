@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.huesync.internal.api.dto.device;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfoCapabilities;
 
 /**
@@ -24,17 +25,18 @@ import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfoCapabilitie
  *      "https://developers.meethue.com/develop/hue-entertainment/hue-hdmi-sync-box-api/#Resource%20Table">Hue
  *      HDMI Sync Box API</a>
  */
+@NonNullByDefault
 public class HueSyncDeviceInfo {
     /** Friendly name of the device */
-    public String name;
+    public @Nullable String name;
     /** Device Type identifier */
-    public String deviceType;
+    public @Nullable String deviceType;
     /**
      * Capitalized hex string of the 6 byte / 12 characters device id without
      * delimiters. Used as unique id on label, certificate common name, hostname
      * etc.
      */
-    public @NonNull String uniqueId = "";
+    public @Nullable String uniqueId;
     /**
      * Increased between firmware versions when api changes. Only apiLevel >= 7 is
      * supported.
@@ -44,17 +46,21 @@ public class HueSyncDeviceInfo {
      * User readable version of the device firmware, starting with decimal major
      * .minor .maintenance format e.g. “1.12.3”
      */
-    public String firmwareVersion;
+    public @Nullable String firmwareVersion;
     /**
      * Build number of the firmware. Unique for every build with newer builds
      * guaranteed a higher number than older.
      */
     public int buildNumber;
+
     public boolean termsAgreed;
+
     /** uninitialized, disconnected, lan, wan */
-    public String wifiState;
-    public String ipAddress;
-    public HueSyncDeviceInfoCapabilities capabilities;
+    public @Nullable String wifiState;
+    public @Nullable String ipAddress;
+
+    public @Nullable HueSyncDeviceInfoCapabilities capabilities;
+
     public boolean beta;
     public boolean overheating;
     public boolean bluetooth;

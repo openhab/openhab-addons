@@ -14,6 +14,7 @@ package org.openhab.binding.huesync.internal.api.dto.device;
 
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -26,28 +27,31 @@ import org.eclipse.jdt.annotation.Nullable;
  *      "https://developers.meethue.com/develop/hue-entertainment/hue-hdmi-sync-box-api/#Resource%20Table">Hue
  *      HDMI Sync Box API</a>
  */
+@NonNullByDefault
 public class HueSyncDetailedDeviceInfo extends HueSyncDeviceInfo {
-    public HueSyncDeteiledDeviceInfoWifi wifi;
-    public HueSyncDetailedDeviceInfoUpdate update;
+    public @Nullable HueSyncDetailedDeviceInfoWifi wifi;
+    public @Nullable HueSyncDetailedDeviceInfoUpdate update;
 
     /** UTC time when last check for update was performed. */
-    public Date lastCheckedUpdate;
+    public @Nullable Date lastCheckedUpdate;
     /**
      * Build number that is available to update to. Item is set to null when there
      * is no update available.
      */
-    public @Nullable Integer updatableBuildNumber;
+    public int updatableBuildNumber;
     /**
      * User readable version of the firmware the device can upgrade to. Item is set
      * to null when there is no update available.
      */
-    public @Nullable String updatableFirmwareVersion;
+    public int updatableFirmwareVersion;
     /**
-     * 1 = regular; 0 = off in powersave, passthrough or sync mode; 2 = dimmed in
-     * powersave or passthrough mode and off in sync mode
+     * 1 = regular;
+     * 0 = off in powersave, passthrough or sync mode;
+     * 2 = dimmed in powersave or passthrough mode and off in sync mode
      */
     public int ledMode;
+
     /** none, doSoftwareRestart, doFirmwareUpdate */
-    public String action;
-    public String pushlink;
+    public @Nullable String action;
+    public @Nullable String pushlink;
 }

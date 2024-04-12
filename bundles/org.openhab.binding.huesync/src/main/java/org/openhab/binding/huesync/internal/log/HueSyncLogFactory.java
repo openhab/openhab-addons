@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.huesync.internal.log;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public class HueSyncLogFactory {
 
     public static Logger getLogger(Class<?> clazz) {

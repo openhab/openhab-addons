@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
@@ -48,6 +48,7 @@ import org.slf4j.Logger;
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public class HueSyncHandler extends BaseThingHandler {
     private static final String PROPERTY_API_VERSION = "apiVersion";
     private static final String PROPERTY_NETWORK_STATE = "networkState";
@@ -59,8 +60,8 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private @Nullable HueSyncDeviceInfo deviceInfo;
 
-    private @NonNull HueSyncConnection connection;
-    private @NonNull HueSyncConfiguration config;
+    private HueSyncConnection connection;
+    private HueSyncConfiguration config;
 
     protected class HueSyncProperties {
 
@@ -93,10 +94,11 @@ public class HueSyncHandler extends BaseThingHandler {
         return scheduler.scheduleWithFixedDelay(task, initialDelay, interval, TimeUnit.SECONDS);
     }
 
+    // TODO: Remove "null" annotation ...
     @SuppressWarnings({ "unchecked", "null" })
     private void startBackgroundTasks() {
         Runnable statusUpdateTask = new HueSyncUpdateTask(this.connection, this.deviceInfo,
-                (deviceState) -> this.updateDeviceState(deviceState));
+                (deviceStatus) -> this.updateDeviceStatus(deviceStatus));
 
         if (this.connection.isRegistered()) {
             this.logger.debug("Device {} {}:{} is already registered", this.deviceInfo.name, this.deviceInfo.deviceType,
@@ -127,39 +129,38 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.config.statusUpdateInterval);
     }
 
-    private void updateDeviceState(HueSyncDetailedDeviceInfo deviceState) {
+    private void updateDeviceStatus(HueSyncDetailedDeviceInfo deviceState) {
         ThingStatus currentStatus = this.thing.getStatus();
+
         logger.trace("Current status: {}", currentStatus);
 
-        if (deviceState != null) {
-            if (currentStatus != ThingStatus.OFFLINE) {
-                this.updateStatus(ThingStatus.ONLINE);
-            }
-        } else {
-            if (currentStatus != ThingStatus.OFFLINE) {
-                this.updateStatus(ThingStatus.OFFLINE);
-            }
+        if (currentStatus != ThingStatus.OFFLINE) {
+            this.updateStatus(ThingStatus.ONLINE);
         }
     }
 
     private void setRegistration(HueSyncRegistration registration) {
-        this.stopTask(deviceRegistrationTask);
+        if (registration.registrationId != null && registration.accessToken != null) {
 
-        addProperty(HueSyncConstants.REGISTRATION_ID, registration.registrationId);
+            this.stopTask(deviceRegistrationTask);
 
-        this.config.registrationId = registration.registrationId;
-        this.config.apiAccessToken = registration.accessToken;
+            addProperty(HueSyncConstants.REGISTRATION_ID, registration.registrationId);
 
-        Configuration configuration = this.editConfiguration();
+            Configuration configuration = this.editConfiguration();
 
-        configuration.put(HueSyncConstants.REGISTRATION_ID, this.config.registrationId);
-        configuration.put(HueSyncConstants.API_TOKEN, this.config.apiAccessToken);
+            configuration.put(HueSyncConstants.REGISTRATION_ID, this.config.registrationId);
+            configuration.put(HueSyncConstants.API_TOKEN, this.config.apiAccessToken);
 
-        this.updateConfiguration(configuration);
-        this.updateStatus(ThingStatus.ONLINE);
+            this.updateConfiguration(configuration);
+            this.updateStatus(ThingStatus.ONLINE);
 
-        this.logger.info("Device registration for {} complete - Id: {}", this.deviceInfo.name,
-                registration.registrationId);
+            this.logger.info("Device registration for {} complete - Id: {}",
+                    this.deviceInfo != null
+                            ? this.deviceInfo.name != null ? this.deviceInfo.name : "⚠️ unknown device ⚠️"
+                            : "⚠️ unknown device ⚠️",
+
+                    registration.registrationId);
+        }
     }
 
     private void checkCompatibility() throws HueSyncApiException {
@@ -168,9 +169,9 @@ public class HueSyncHandler extends BaseThingHandler {
         }
     }
 
-    private void addProperty(@NonNull String key, @Nullable String value) {
+    private void addProperty(String key, @Nullable String value) {
         if (value != null) {
-            Map<@NonNull String, @NonNull String> properties = this.editProperties();
+            Map<String, String> properties = this.editProperties();
 
             properties.put(key, value);
 
@@ -190,12 +191,15 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.deviceInfo = this.connection.getDeviceInfo();
 
                 Optional.ofNullable(this.deviceInfo).ifPresent((info) -> {
-                    addProperty(Thing.PROPERTY_SERIAL_NUMBER, info.uniqueId);
-                    addProperty(Thing.PROPERTY_MODEL_ID, info.deviceType);
-                    addProperty(Thing.PROPERTY_FIRMWARE_VERSION, info.firmwareVersion);
+                    // Redundant null check required to avoid warning during build/development ...
+                    if (info != null) {
+                        addProperty(Thing.PROPERTY_SERIAL_NUMBER, info.uniqueId);
+                        addProperty(Thing.PROPERTY_MODEL_ID, info.deviceType);
+                        addProperty(Thing.PROPERTY_FIRMWARE_VERSION, info.firmwareVersion);
 
-                    addProperty(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", info.apiLevel));
-                    addProperty(HueSyncHandler.PROPERTY_NETWORK_STATE, info.wifiState);
+                        addProperty(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", info.apiLevel));
+                        addProperty(HueSyncHandler.PROPERTY_NETWORK_STATE, info.wifiState);
+                    }
                 });
 
                 this.checkCompatibility();

@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.huesync.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 
 /**
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public class HueSyncApiException extends HueSyncException {
     public HueSyncApiException(String message, Logger logger) {
         super(message, logger);

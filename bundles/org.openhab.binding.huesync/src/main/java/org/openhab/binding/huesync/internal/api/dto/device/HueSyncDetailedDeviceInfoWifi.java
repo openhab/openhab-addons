@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.huesync.internal.api.dto.device;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * HDMI Sync Box Device Information DTO - Wifi connection information
  * 
@@ -21,9 +24,16 @@ package org.openhab.binding.huesync.internal.api.dto.device;
  *      "https://developers.meethue.com/develop/hue-entertainment/hue-hdmi-sync-box-api/#Resource%20Table">Hue
  *      HDMI Sync Box API</a>
  */
-public class HueSyncDeteiledDeviceInfoWifi {
+@NonNullByDefault
+public class HueSyncDetailedDeviceInfoWifi {
     /** Wifi SSID */
-    public String ssid;
-    /** 0 = not connected; 1 = weak; 2 = fair; 3 = good; 4 = excellent */
+    public @Nullable String ssid;
+    /**
+     * 0 = not connected;
+     * 1 = weak;
+     * 2 = fair;
+     * 3 = good;
+     * 4 = excellent
+     */
     public int strength;
 }

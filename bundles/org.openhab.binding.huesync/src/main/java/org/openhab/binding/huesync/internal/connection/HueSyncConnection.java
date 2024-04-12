@@ -18,7 +18,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -42,7 +41,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -50,11 +48,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * @author Patrik Gfeller - Initial Contribution
  */
+@NonNullByDefault
 public class HueSyncConnection {
     /**
      * Request format: The Sync Box API can be accessed locally via HTTPS on root
      * level (port 443, /api/v1), resource level /api/v1/<resource> and in some
-     * cases subresource level /api/v1/<resource>/<subresource>.
+     * cases sub-resource level /api/v1/<resource>/<sub-resource>.
      */
     private static final String REQUEST_FORMAT = "https://%s:%s/%s/%s";
     private static final String API = "api/v1";
@@ -69,16 +68,15 @@ public class HueSyncConnection {
 
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncConnection.class);
 
-    private @NonNull HttpClient httpClient;
-    private @NonNull String host;
-    private @NonNull Integer port;
+    private HttpClient httpClient;
+    private String host;
+    private Integer port;
 
     private @Nullable String apiAccessToken;
     private @Nullable String registrationId;
 
     private ServiceRegistration<?> tlsProviderService;
 
-    @NonNullByDefault
     public HueSyncConnection(HttpClient httpClient, String host, Integer port, String apiAccessToken,
             String registrationId) throws CertificateException, IOException {
 
@@ -95,59 +93,57 @@ public class HueSyncConnection {
         this.httpClient = httpClient;
     }
 
+    @SuppressWarnings("null")
     public @Nullable HueSyncDeviceInfo getDeviceInfo() {
         HueSyncDeviceInfo deviceInfo = null;
 
-        try {
-            ContentResponse response = this.executeGetRequest(ENDPOINTS.DEVICE);
+        ContentResponse response = this.executeGetRequest(ENDPOINTS.DEVICE);
 
-            if (response.getStatus() == HttpStatus.OK_200) {
-                deviceInfo = this.deserialize(response.getContentAsString(), HueSyncDeviceInfo.class);
-            }
-        } catch (InterruptedException | ExecutionException | TimeoutException | JsonProcessingException e) {
-            this.logger.error("{}", e.getMessage());
+        if (this.responseReceived(response)) {
+            deviceInfo = this.deserialize(response.getContentAsString(), HueSyncDeviceInfo.class);
         }
 
         return deviceInfo;
     }
 
+    @SuppressWarnings("null")
     public @Nullable HueSyncDetailedDeviceInfo getDetailedDeviceInfo() {
         if (!this.isRegistered())
             return null;
 
         HueSyncDetailedDeviceInfo deviceInfo = null;
 
-        try {
-            ContentResponse response = this.executeGetRequest(ENDPOINTS.DEVICE);
+        ContentResponse response = this.executeGetRequest(ENDPOINTS.DEVICE);
 
-            if (response.getStatus() == HttpStatus.OK_200) {
-                deviceInfo = this.deserialize(response.getContentAsString(), HueSyncDetailedDeviceInfo.class);
-            }
-        } catch (InterruptedException | ExecutionException | TimeoutException | JsonProcessingException e) {
-            this.logger.error("{}", e.getMessage());
+        if (this.responseReceived(response)) {
+            deviceInfo = this.deserialize(response.getContentAsString(), HueSyncDetailedDeviceInfo.class);
         }
 
         return deviceInfo;
     }
 
-    public @Nullable HueSyncRegistration registerDevice(String id) {
+    public @Nullable HueSyncRegistration registerDevice(@Nullable String id) {
         HueSyncRegistration registration = null;
 
         try {
-            HueSyncRegistrationRequest dto = new HueSyncRegistrationRequest();
+            if (id != null) {
+                HueSyncRegistrationRequest dto = new HueSyncRegistrationRequest();
 
-            dto.appName = HueSyncConstants.APPLICATION_NAME;
-            dto.instanceName = id;
+                dto.appName = HueSyncConstants.APPLICATION_NAME;
+                dto.instanceName = id;
 
-            String json = ObjectMapper.writeValueAsString(dto);
+                String json = ObjectMapper.writeValueAsString(dto);
 
-            ContentResponse response = this.executeRequest(HttpMethod.POST, ENDPOINTS.REGISTRATIONS, json);
+                ContentResponse response = this.executeRequest(HttpMethod.POST, ENDPOINTS.REGISTRATIONS, json);
 
-            if (response.getStatus() == HttpStatus.OK_200) {
-                registration = this.deserialize(response.getContentAsString(), HueSyncRegistration.class);
+                if (this.responseReceived(response)) {
+                    registration = this.deserialize(response.getContentAsString(), HueSyncRegistration.class);
 
-                this.apiAccessToken = registration.accessToken;
-                this.registrationId = registration.registrationId;
+                    if (registration != null) {
+                        this.apiAccessToken = registration.accessToken;
+                        this.registrationId = registration.registrationId;
+                    }
+                }
             }
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonProcessingException e) {
             this.logger.error("{}", e.getMessage());
@@ -182,15 +178,35 @@ public class HueSyncConnection {
 
     // #region - private
 
-    private <T> T deserialize(String json, Class<T> type) throws JsonMappingException, JsonProcessingException {
-        return ObjectMapper.readValue(json, type);
+    private boolean responseReceived(@Nullable ContentResponse response) {
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
+            return true;
+        } else {
+            // TODO: responseReceived - log error details ...
+            return false;
+        }
     }
 
-    private ContentResponse executeGetRequest(String endpoint)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    private @Nullable <T> T deserialize(String json, Class<T> type) {
+        try {
+            return ObjectMapper.readValue(json, type);
+        } catch (JsonProcessingException | NoClassDefFoundError e) {
+            this.logger.error("{}", e.getMessage());
+
+            return null;
+        }
+    }
+
+    private @Nullable ContentResponse executeGetRequest(String endpoint) {
         String uri = String.format(REQUEST_FORMAT, this.host, this.port, API, endpoint);
 
-        return httpClient.GET(uri);
+        try {
+            return httpClient.GET(uri);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            this.logger.error("Endpoint: {} - {}", endpoint, e.getMessage());
+
+            return null;
+        }
     }
 
     private ContentResponse executeRequest(HttpMethod method, String endpoint)

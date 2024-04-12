@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.huesync.internal.api.dto.device;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * HDMI Sync Box Device Information DTO - Automatic Firmware update
  * 
@@ -21,7 +23,7 @@ package org.openhab.binding.huesync.internal.api.dto.device;
  *      "https://developers.meethue.com/develop/hue-entertainment/hue-hdmi-sync-box-api/#Resource%20Table">Hue
  *      HDMI Sync Box API</a>
  */
-
+@NonNullByDefault
 public class HueSyncDetailedDeviceInfoUpdate {
     /**
      * Sync Box checks daily for a firmware update. If true, an available update

@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.huesync.internal.api.dto.registration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * 
  * @author Patrik Gfeller - Initial Contribution
  */
+@NonNullByDefault
 public class HueSyncRegistrationRequest {
     /** User recognizable name of registered application */
-    public String appName;
+    public @Nullable String appName;
     /** User recognizable name of application instance. */
-    public String instanceName;
+    public @Nullable String instanceName;
 }
