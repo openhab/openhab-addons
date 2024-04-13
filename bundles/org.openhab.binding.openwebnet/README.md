@@ -244,18 +244,21 @@ OPEN command to execute: *5*8#134##
 | ---------------------------- | -------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | :--------: | :------: |
 | `temperature`                | `bus_thermo_zone`, `bus_thermo_sensor` | Number:Temperature | Currently sensed temperature for zone or sensor                                                                                                 | R          | N        |
 | `setpointTemperature`        | `bus_thermo_zone`, `bus_thermo_cu`     | Number:Temperature | The zone or Central Unit manual setpoint temperature                                                                                         | R/W        | N        |
-| `function`                   | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set thermo function (`COOLING`, `HEATING`, `GENERIC`) or the Central Unit thermo function (`COOLING`, `HEATING`)             | R/W        | N        |
+| `targetTemperature`          | `bus_thermo_zone`                      | Number:Temperature | The current zone target temperature according to `mode`, `setpointTemperature` and `localOffset` | R        | Y        
+|`function`                   | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set thermo function (`COOLING`, `HEATING`, `GENERIC`) or the Central Unit thermo function (`COOLING`, `HEATING`)             | R/W        | N        |
 | `mode`                       | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set mode (`AUTO`, `MANUAL`, `OFF`, `PROTECTION`) or the Central Unit set mode (`WEEKLY`, `MANUAL`, `SCENARIO`, `HOLIDAY`, `VACATION`, `OFF`, `PROTECTION`) | R/W        | N        |
 | `speedFanCoil`               | `bus_thermo_zone`                      | String             | The zone fancoil speed: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`                                                                       | R/W        | N        |
 | `actuators`                  | `bus_thermo_zone`                      | String             | The zone actuator(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`            | R          | Y        |
 | `heatingValves`              | `bus_thermo_zone`                      | String             | The zone heating valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`            | R          | Y        |
 | `conditioningValves`         | `bus_thermo_zone`                      | String             | The zone conditioning valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`            | R          | Y        |
-| `localOffset`                | `bus_thermo_zone`                      | String             | The zone local offset status: `OFF`, `PROTECTION`, `MINUS_3`, `MINUS_2` , `MINUS_1`, `NORMAL`, `PLUS_1`, `PLUS_2`, `PLUS_3`           | R          | Y        |
+| `heating`         | `bus_thermo_zone`                      | Switch             | `ON` if the zone heating valve is currently active (meaning heating is On)             | R          | Y        |
+| `cooling`         | `bus_thermo_zone`                      | Switch             | `ON` if the zone conditioning valve is currently active (meaning conditioning is On)             | R          | Y        |
+| `localOffset`                | `bus_thermo_zone`                      | String             | The zone local offset status: `OFF`, `PROTECTION`, `MINUS_3`, `MINUS_2` , `MINUS_1`, `NORMAL`, `PLUS_1`, `PLUS_2`, `PLUS_3`, as set on the room thermostat physical knob          | R          | Y        |
 | `remoteControl`              | `bus_thermo_cu`                        | String             | The Central Unit Remote Control status: `ENABLED`, `DISABLED`                                                                         | R          | Y        |
 | `batteryStatus`              | `bus_thermo_cu`                        | String             | The Central Unit Battery status: `OK`, `KO`                                                                                           | R          | Y        |
 | `weeklyProgram`              | `bus_thermo_cu`                        | Number             | The weekly program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`                                                                 | R/W        | N        |
 | `scenarioProgram`            | `bus_thermo_cu`                        | Number             | The scenario program number (`1`, `2`, ... ,  `16`) when Central Unit mode is `SCENARIO`                                                       | R/W        | N        |
-| `vacationDays`               | `bus_thermo_cu`                        | Number             | Number of days 1-255 the Central Unit will be set to Anti-freeze / Heat Protection temperature before returning to mode WEEKLY  | R/W        | N        |
+| `vacationDays`               | `bus_thermo_cu`                        | Number             | Number of days `1-255` the Central Unit will be set to Anti-freeze / Heat Protection temperature before returning to mode `WEEKLY`  | R/W        | N        |
 | `failureDiscovered`          | `bus_thermo_cu`                        | Switch             | Indicates if a Failure was discovered by the Central Unit (`ON`), or not (`OFF`)                                                                | R          | Y        |
 | `atLeastOneProbeOff`         | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in OFF mode (`ON`) or not (`OFF`) | R          | Y        |
 | `atLeastOneProbeProtection`  | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in PROTECTION mode (`ON`) or not (`OFF`)                                                                    | R          | Y        |
@@ -314,9 +317,9 @@ There are three WEEKLY and sixteen SCENARIO programs defined for the thermo Cent
 In order to activate one specific weekly or scenario program two different channels must be used:
 
 - with the `mode` channel it's possible to set the mode (`WEEKLY` or `SCENARIO`)
-- with `weeklyProgram` (if `WEEKLY` was set) or `scenarioProgram` (if `SCENARIO` was set) channels you can set the specific weekly/scenario program number
+- with `weeklyProgram` (if `WEEKLY` was set) or `scenarioProgram` (if `SCENARIO` was set) channels it's possible to set the specific weekly/scenario program number
 
-Example: if you want to activate SCENARIO number 9 on the thermo Central Unit you have to set channel `mode` = `SCENARIO` and channel `scenarioProgram` = `9`.
+Example: to activate SCENARIO number 9 on the thermo Central Unit then set channel `mode` = `SCENARIO` and channel `scenarioProgram` = `9`.
 
 ## Full Example
 

@@ -29,4 +29,18 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="openwebnet:bus_thermo_zone">
+		<instruction-set targetVersion="1">
+			<add-channel id="targetTemperature">
+				<type>openwebnet:targetTemperature</type>
+			</add-channel>
+			<add-channel id="heating">
+				<type>openwebnet:heating</type>
+			</add-channel>
+			<add-channel id="cooling">
+				<type>openwebnet:cooling</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>

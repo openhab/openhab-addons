@@ -483,6 +483,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     updateSetpoint(tmsg);
                     break;
                 case COMPLETE_PROBE_STATUS:
+                    updateTargetTemperature(tmsg);
                     break;
                 case PROBE_TEMPERATURE:
                 case TEMPERATURE:
@@ -604,6 +605,16 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         }
     }
 
+    private void updateTargetTemperature(Thermoregulation tmsg) {
+        try {
+            double temp = Thermoregulation.parseTemperature(tmsg);
+            updateState(CHANNEL_TEMP_TARGET, getAsQuantityTypeOrNull(temp, SIUnits.CELSIUS));
+        } catch (FrameException e) {
+            logger.warn("updateTargetTemperature() FrameException on frame {}: {}", tmsg, e.getMessage());
+            updateState(CHANNEL_TEMP_TARGET, UnDefType.UNDEF);
+        }
+    }
+
     private void updateSetpoint(Thermoregulation tmsg) {
         try {
             double newTemp = -1;
@@ -654,14 +665,46 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             Thermoregulation.ValveOrActuatorStatus cv = Thermoregulation.parseValveStatus(tmsg,
                     Thermoregulation.WhatThermoType.CONDITIONING);
             updateState(CHANNEL_CONDITIONING_VALVES, new StringType(cv.toString()));
+            updateHeatingCooling(false, cv);
 
             Thermoregulation.ValveOrActuatorStatus hv = Thermoregulation.parseValveStatus(tmsg,
                     Thermoregulation.WhatThermoType.HEATING);
             updateState(CHANNEL_HEATING_VALVES, new StringType(hv.toString()));
+            updateHeatingCooling(true, hv);
+
         } catch (FrameException e) {
             logger.warn("updateValveStatus() FrameException on frame {}: {}", tmsg, e.getMessage());
             updateState(CHANNEL_CONDITIONING_VALVES, UnDefType.UNDEF);
             updateState(CHANNEL_HEATING_VALVES, UnDefType.UNDEF);
+        }
+    }
+
+    private void updateHeatingCooling(boolean heating, Thermoregulation.ValveOrActuatorStatus v) {
+        boolean state = false;
+        switch (v) {
+            case STOP:
+            case CLOSED:
+            case OFF:
+            case OFF_FAN_COIL:
+            case OFF_SPEED_1:
+            case OFF_SPEED_2:
+            case OFF_SPEED_3:
+                state = false;
+                break;
+            case ON:
+            case ON_FAN_COIL:
+            case ON_SPEED_1:
+            case ON_SPEED_2:
+            case ON_SPEED_3:
+            case OPENED:
+                state = true;
+                break;
+        }
+
+        if (heating) {
+            updateState(CHANNEL_HEATING, OnOffType.from(state));
+        } else {
+            updateState(CHANNEL_COOLING, OnOffType.from(state));
         }
     }
 

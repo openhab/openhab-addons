@@ -16,8 +16,11 @@
 		<channels>
 			<!-- read only -->
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="conditioningValves" typeId="conditioningValves"/>
+			<channel id="targetTemperature" typeId="targetTemperature"/>
 			<channel id="heatingValves" typeId="heatingValves"/>
+			<channel id="conditioningValves" typeId="conditioningValves"/>
+			<channel id="heating" typeId="heating"/>
+			<channel id="cooling" typeId="cooling"/>
 			<channel id="actuators" typeId="actuators"/>
 			<channel id="localOffset" typeId="localOffset"/>
 			<!-- read/write -->
