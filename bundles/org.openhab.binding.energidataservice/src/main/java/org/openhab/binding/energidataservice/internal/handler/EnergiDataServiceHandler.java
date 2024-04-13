@@ -239,6 +239,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
 
             if (isLinked(CHANNEL_SPOT_PRICE)) {
                 if (cacheManager.getNumberOfFutureSpotPrices() < 13) {
+                    logger.warn("Spot prices are not yet available, retry scheduled (see details in Thing properties)");
                     retryPolicy = RetryPolicyFactory.whenExpectedSpotPriceDataMissing(DAILY_REFRESH_TIME_CET,
                             NORD_POOL_TIMEZONE);
                 } else {
