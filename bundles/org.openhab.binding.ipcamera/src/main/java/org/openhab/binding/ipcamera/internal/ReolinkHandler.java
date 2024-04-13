@@ -337,11 +337,11 @@ public class ReolinkHandler extends ChannelDuplexHandler {
             case CHANNEL_ACTIVATE_ALARM_OUTPUT: // cameras built in siren
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=AudioAlarmPlay" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\": \"AudioAlarmPlay\", \"param\": {\"alarm_mode\": \"manul\", \"manual_switch\": 1, \"channel\": "
+                            "[{\"cmd\": \"AudioAlarmPlay\", \"param\": {\"alarm_mode\": \"manul\", \"times\": 1, \"manual_switch\": 1, \"channel\": "
                                     + ipCameraHandler.cameraConfig.getNvrChannel() + " }}]");
                 } else {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=AudioAlarmPlay" + ipCameraHandler.reolinkAuth,
-                            "[{\"cmd\": \"AudioAlarmPlay\", \"param\": {\"alarm_mode\": \"manul\", \"manual_switch\": 0, \"channel\": "
+                            "[{\"cmd\": \"AudioAlarmPlay\", \"param\": {\"alarm_mode\": \"manul\", \"times\": 1, \"manual_switch\": 0, \"channel\": "
                                     + ipCameraHandler.cameraConfig.getNvrChannel() + " }}]");
                 }
                 break;
