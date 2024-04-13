@@ -70,8 +70,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private double currentSetPointTemp = 20.0d;
 
-    private Thermoregulation.@Nullable Function currentFunction = Function.HEATING;
-    private Thermoregulation.@Nullable OperationMode currentMode = OperationMode.PROTECTION;
+    private Thermoregulation.@Nullable Function currentFunction = null;
+    private Thermoregulation.@Nullable OperationMode currentMode = null;
     private int currentWeeklyPrgNum = 1;
     private int currentScenarioPrgNum = 1;
     private int currentVacationDays = 1;
@@ -515,31 +515,33 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             return;
         }
         Thermoregulation.WhatThermo what = tmsg.new WhatThermo(tmsg.getWhat().value());
-        if (what.getMode() == null) {
-            logger.warn("updateModeAndFunction() Could not parse Mode from: {}", tmsg.getFrameValue());
-            return;
-        }
+
         if (what.getFunction() == null) {
             logger.warn("updateModeAndFunction() Could not parse Function from: {}", tmsg.getFrameValue());
             return;
         }
-
         // update Function if it's not GENERIC
         Thermoregulation.Function function = what.getFunction();
         if (function != Function.GENERIC) {
-            updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
-            currentFunction = function;
+            if (currentFunction != function) {
+                updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
+                currentFunction = function;
+            }
+        }
+        if (what.getType() == WhatThermoType.HEATING || what.getType() == WhatThermoType.CONDITIONING
+                || what.getType() == WhatThermoType.GENERIC) {
+            // *4*1*z## and *4*0*z## do not tell us which mode is the zone now, so let's
+            // skip
+            return;
         }
 
-        // then update Mode
+        // update Mode
         Thermoregulation.OperationMode operationMode = null;
-        if (what.getType() != WhatThermoType.HEATING && what.getType() != WhatThermoType.CONDITIONING) {
-            // *4*1*z## and *4*0*z## do not tell us which mode is the zone now
-            operationMode = what.getMode();
-        }
 
-        // set ProgramNumber/vacationDays channels when necessary
+        operationMode = what.getMode();
+
         if (operationMode != null) {
+            // set ProgramNumber/vacationDays channels when necessary
             switch (operationMode) {
                 case VACATION:
                     updateVacationDays(tmsg);
@@ -557,11 +559,13 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                         getThing().getUID(), tmsg.getFrameValue());
                 return;
             } else {
-                updateState(CHANNEL_MODE, new StringType(operationMode.name()));
-                currentMode = operationMode;
+                if (currentMode != operationMode) {
+                    updateState(CHANNEL_MODE, new StringType(operationMode.name()));
+                    currentMode = operationMode;
+                }
             }
         } else {
-            logger.debug("updateModeAndFunction() Unrecognized mode from message: {}", tmsg.getFrameValue());
+            logger.warn("updateModeAndFunction() Unrecognized mode from message: {}", tmsg.getFrameValue());
         }
     }
 
