@@ -16,6 +16,7 @@ import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingCons
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonElement;
@@ -32,7 +33,7 @@ public class NumericTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected Object toBinding(Type type) throws ConverterException {
+    protected Object toBinding(Type type, ChannelType tp) throws ConverterException {
         Object valUpdate = null;
 
         if (type instanceof QuantityType quantityType) {
@@ -51,7 +52,7 @@ public class NumericTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected DecimalType fromBinding(JsonElement value, String type) throws ConverterException {
+    protected DecimalType fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
         if ("----".equals(value.getAsString())) {
             return new DecimalType(0);
         } else {

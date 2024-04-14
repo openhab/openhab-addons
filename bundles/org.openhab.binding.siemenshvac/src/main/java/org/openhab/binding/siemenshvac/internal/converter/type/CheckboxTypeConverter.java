@@ -15,6 +15,7 @@ package org.openhab.binding.siemenshvac.internal.converter.type;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonElement;
@@ -31,7 +32,7 @@ public class CheckboxTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected Object toBinding(Type type) throws ConverterException {
+    protected Object toBinding(Type type, ChannelType tp) throws ConverterException {
         throw new ConverterException("NIY");
     }
 
@@ -41,7 +42,7 @@ public class CheckboxTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected DecimalType fromBinding(JsonElement value, String type) throws ConverterException {
+    protected DecimalType fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
         throw new ConverterException("NIY");
     }
 

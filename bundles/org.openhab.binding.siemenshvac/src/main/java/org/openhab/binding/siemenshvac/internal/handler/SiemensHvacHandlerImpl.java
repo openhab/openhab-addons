@@ -226,10 +226,10 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             return;
         }
 
-        readDp(id, uid, type, true);
+        readDp(id, uid, tp, type, true);
     }
 
-    public void decodeReadDp(@Nullable JsonObject response, @Nullable String uid, @Nullable String dp,
+    public void decodeReadDp(@Nullable JsonObject response, @Nullable String uid, @Nullable String dp, ChannelType tp,
             @Nullable String type) {
         if (response != null && response.has("Data")) {
             JsonObject subResult = (JsonObject) response.get("Data");
@@ -244,7 +244,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
             try {
                 TypeConverter converter = ConverterFactory.getConverter(typer);
-                State state = (State) converter.convertFromBinding(subResult);
+                State state = (State) converter.convertFromBinding(subResult, tp);
                 if (state != null) {
                     updateState(updateKey, state);
                 } else {
@@ -259,7 +259,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         }
     }
 
-    private void readDp(String dp, String uid, String type, boolean async) {
+    private void readDp(String dp, String uid, ChannelType tp, String type, boolean async) {
         SiemensHvacConnector lcHvacConnector = hvacConnector;
 
         if ("-1".equals(dp)) {
@@ -289,7 +289,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                             logger.trace("End read : {}", dp);
 
                             if (response instanceof JsonObject jsonResponse) {
-                                decodeReadDp(jsonResponse, uid, dp, type);
+                                decodeReadDp(jsonResponse, uid, dp, tp, type);
                             }
                         }
                     });
@@ -297,7 +297,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             } else {
                 if (lcHvacConnector != null) {
                     JsonObject js = lcHvacConnector.doRequest(request);
-                    decodeReadDp(js, uid, dp, type);
+                    decodeReadDp(js, uid, dp, tp, type);
                 }
             }
         } catch (Exception e) {
@@ -309,7 +309,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         }
     }
 
-    private void writeDp(String dp, Type dpVal, String type) {
+    private void writeDp(String dp, Type dpVal, ChannelType tp, String type) {
         SiemensHvacConnector lcHvacConnector = hvacConnector;
 
         if (lcHvacConnector != null) {
@@ -330,7 +330,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             try {
                 TypeConverter converter = ConverterFactory.getConverter(type);
 
-                valUpdate = converter.convertToBinding(dpVal);
+                valUpdate = converter.convertToBinding(dpVal, tp);
                 if (valUpdate != null) {
                     String request = String.format("api/menutree/write_datapoint.json?Id=%s&Value=%s&Type=%s", dp,
                             valUpdate, type);
@@ -468,7 +468,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             }
 
             if (id != null && type != null) {
-                writeDp(id, commandVar, dptType);
+                writeDp(id, commandVar, tp, dptType);
             }
         }
     }

@@ -20,6 +20,7 @@ import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingCons
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonElement;
@@ -43,7 +44,7 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected Object toBinding(Type type) throws ConverterException {
+    protected Object toBinding(Type type, ChannelType tp) throws ConverterException {
         Object valUpdate = null;
 
         if (type instanceof DateTimeType dateTime) {
@@ -59,7 +60,7 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected DateTimeType fromBinding(JsonElement value, String type) throws ConverterException {
+    protected DateTimeType fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
         if ("----".equals(value.getAsString())) {
             return new DateTimeType();
         } else {

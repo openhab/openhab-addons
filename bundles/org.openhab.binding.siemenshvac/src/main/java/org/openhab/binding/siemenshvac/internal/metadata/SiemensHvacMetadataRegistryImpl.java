@@ -506,9 +506,22 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             }
             description = descBuilder.toString();
             label = channelTypeUID.getId();
-        }
+        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_RADIO)) {
+            StringBuilder descBuilder = new StringBuilder();
+            descBuilder.append("Radio:");
+            SiemensHvacMetadataPointChild child = dpt.getChild().get(0);
 
-        if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
+            StateOption stOpt0 = new StateOption("0", child.getOpt0());
+            descBuilder.append(String.format("(%s:%s)", "0", child.getOpt0()));
+            options.add(stOpt0);
+
+            StateOption stOpt1 = new StateOption("1", child.getOpt1());
+            descBuilder.append(String.format("(%s:%s)", "1", child.getOpt1()));
+            options.add(stOpt1);
+
+            description = descBuilder.toString();
+            label = channelTypeUID.getId();
+        } else if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
             BigDecimal min = new BigDecimal(dpt.getMin());
             BigDecimal max = new BigDecimal(dpt.getMax());
             BigDecimal step = new BigDecimal(dpt.getResolution());

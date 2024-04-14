@@ -15,6 +15,7 @@ package org.openhab.binding.siemenshvac.internal.converter.type;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterTypeException;
 import org.openhab.binding.siemenshvac.internal.converter.TypeConverter;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
@@ -33,23 +34,23 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     private final Logger logger = LoggerFactory.getLogger(AbstractTypeConverter.class);
 
     @Override
-    public Object convertToBinding(Type type) throws ConverterException {
+    public Object convertToBinding(Type type, ChannelType tp) throws ConverterException {
 
         if (type == UnDefType.NULL) {
             return null;
         } else if (type.getClass().isEnum()) {
-            return commandToBinding((Command) type);
+            return commandToBinding((Command) type, tp);
         } else if (!toBindingValidation(type)) {
             String errorMessage = String.format("Can't convert type %s with value '%s' to %s value",
                     type.getClass().getSimpleName(), type.toString(), this.getClass().getSimpleName());
             throw new ConverterTypeException(errorMessage);
         }
 
-        return toBinding(type);
+        return toBinding(type, tp);
     }
 
     @Override
-    public Type convertFromBinding(JsonObject dp) throws ConverterException {
+    public Type convertFromBinding(JsonObject dp, ChannelType tp) throws ConverterException {
 
         String type = null;
         JsonElement value = null;
@@ -79,13 +80,13 @@ public abstract class AbstractTypeConverter implements TypeConverter {
             return UnDefType.NULL;
         }
 
-        return fromBinding(value, type);
+        return fromBinding(value, type, tp);
     }
 
     /**
      * Converts an openHAB command to a SiemensHvacValue value.
      */
-    protected Object commandToBinding(Command command) throws ConverterException {
+    protected Object commandToBinding(Command command, ChannelType tp) throws ConverterException {
         throw new ConverterException("Unsupported command " + command.getClass().getSimpleName() + " for "
                 + this.getClass().getSimpleName());
     }
@@ -98,7 +99,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     /**
      * Converts the type to a datapoint value.
      */
-    protected abstract Object toBinding(Type type) throws ConverterException;
+    protected abstract Object toBinding(Type type, ChannelType tp) throws ConverterException;
 
     /**
      * Returns true, if the conversion from the binding to openHAB is possible.
@@ -108,7 +109,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     /**
      * Converts the datapoint value to an openHAB type.
      */
-    protected abstract Type fromBinding(JsonElement value, String type) throws ConverterException;
+    protected abstract Type fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException;
 
     /**
      * get underlying channel type to construct channel type UID

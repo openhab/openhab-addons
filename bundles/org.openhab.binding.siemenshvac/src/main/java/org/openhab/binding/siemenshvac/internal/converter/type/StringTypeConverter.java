@@ -17,6 +17,7 @@ import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonElement;
@@ -33,7 +34,7 @@ public class StringTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected Object toBinding(Type type) throws ConverterException {
+    protected Object toBinding(Type type, ChannelType tp) throws ConverterException {
         Object valUpdate = null;
 
         if (type instanceof PercentType percentValue) {
@@ -53,7 +54,7 @@ public class StringTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected StringType fromBinding(JsonElement value, String type) throws ConverterException {
+    protected StringType fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
         return new StringType(value.getAsString());
     }
 

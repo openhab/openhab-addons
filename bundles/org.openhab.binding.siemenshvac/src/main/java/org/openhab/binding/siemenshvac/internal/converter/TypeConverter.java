@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter;
 
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonObject;
@@ -26,12 +27,12 @@ public interface TypeConverter {
     /**
      * Converts an openHAB type to a SiemensHVac value.
      */
-    Object convertToBinding(Type type) throws ConverterException;
+    Object convertToBinding(Type type, ChannelType tp) throws ConverterException;
 
     /**
      * Converts a siemensHvac value to an openHAB type.
      */
-    Type convertFromBinding(JsonObject dp) throws ConverterException;
+    Type convertFromBinding(JsonObject dp, ChannelType tp) throws ConverterException;
 
     /**
      * get underlying channel type to construct channel type UID

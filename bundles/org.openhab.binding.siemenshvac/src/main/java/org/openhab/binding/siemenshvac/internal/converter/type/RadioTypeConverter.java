@@ -12,11 +12,16 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter.type;
 
+import java.util.List;
+
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonElement;
@@ -33,7 +38,7 @@ public class RadioTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected Object toBinding(Type type) throws ConverterException {
+    protected Object toBinding(Type type, ChannelType tp) throws ConverterException {
         Object valUpdate = null;
 
         if (type instanceof DecimalType decimalValue) {
@@ -44,7 +49,7 @@ public class RadioTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected Object commandToBinding(Command command) throws ConverterException {
+    protected Object commandToBinding(Command command, ChannelType tp) throws ConverterException {
         Object valUpdate = null;
 
         if (command instanceof DecimalType decimalValue) {
@@ -66,18 +71,20 @@ public class RadioTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected DecimalType fromBinding(JsonElement value, String type) throws ConverterException {
+    protected DecimalType fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
         DecimalType updateVal = new DecimalType();
         String valueSt = value.getAsString();
 
-        if ("Non".equals(valueSt)) {
-            updateVal = new DecimalType(0);
-        } else if ("Arrêt".equals(valueSt)) {
-            updateVal = new DecimalType(0);
-        } else if ("Marche".equals(valueSt)) {
-            updateVal = new DecimalType(1);
-        } else if ("Oui".equals(valueSt)) {
-            updateVal = new DecimalType(1);
+        StateDescription sd = tp.getState();
+
+        List<StateOption> options = sd.getOptions();
+        StateOption offOpt = options.get(0);
+        StateOption onOpt = options.get(1);
+
+        if (onOpt.getLabel().equals(valueSt)) {
+            updateVal = new DecimalType(onOpt.getValue());
+        } else if (offOpt.getLabel().equals(valueSt)) {
+            updateVal = new DecimalType(offOpt.getValue());
         }
 
         return updateVal;
