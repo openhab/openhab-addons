@@ -64,7 +64,7 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
         this.httpClientFactory = httpClientFactory;
         this.timeZoneProvider = timeZoneProvider;
         OnectaConfiguration.setHttpClientFactory(httpClientFactory);
-        OnectaConnectionClient.SetConnectionClient(httpClientFactory);
+        OnectaConnectionClient.SetConnectionClient();
     }
 
     @Override
