@@ -15,20 +15,13 @@ package org.openhab.binding.broadlink.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.events.Event;
-import org.openhab.core.events.EventFilter;
-import org.openhab.core.events.EventSubscriber;
-import org.openhab.core.events.TopicEventFilter;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.events.ChannelDescriptionChangedEvent;
 import org.openhab.core.types.CommandOption;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +33,8 @@ import org.slf4j.LoggerFactory;
  * @author John Marshall - Initial contribution
  */
 
-@Component(service = { BroadlinkMappingService.class, EventSubscriber.class }, property = {
-        "service.pid=org.openhab.binding.broadlink.internal.BroadlinkMappingService" })
-
 @NonNullByDefault
-public class BroadlinkMappingService implements EventSubscriber {
+public class BroadlinkMappingService {
     private final Logger logger = LoggerFactory.getLogger(BroadlinkMappingService.class);
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
     private final ChannelUID irTargetChannelUID;
@@ -52,8 +42,7 @@ public class BroadlinkMappingService implements EventSubscriber {
     private final StorageService storageService;
     private final Storage<String> irStorage;
     private final Storage<String> rfStorage;
-    private final Set<String> subscribedEventTypes = Set.of(ChannelDescriptionChangedEvent.TYPE);
-    private final EventFilter eventFilter = new TopicEventFilter("openhab/channels/command/.*");
+    private static ArrayList<BroadlinkMappingService> mappingInstances = new ArrayList<BroadlinkMappingService>();
 
     public BroadlinkMappingService(BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
             ChannelUID irTargetChannelUID, ChannelUID rfTargetChannelUID, StorageService storageService) {
@@ -65,32 +54,15 @@ public class BroadlinkMappingService implements EventSubscriber {
                 String.class.getClassLoader());
         rfStorage = this.storageService.getStorage(BroadlinkBindingConstants.RF_MAP_NAME,
                 String.class.getClassLoader());
-        notifyAvailableCommands(irStorage.getKeys(), irTargetChannelUID);
-        notifyAvailableCommands(rfStorage.getKeys(), rfTargetChannelUID);
+        mappingInstances.add(this);
+        notifyAvailableCommands(irStorage.getKeys(), "IR", false);
+        notifyAvailableCommands(rfStorage.getKeys(), "RF", false);
         logger.debug("BroadlinkMappingService constructed on behalf of {} and {}", this.irTargetChannelUID,
                 this.rfTargetChannelUID);
     }
 
     public void dispose() {
-    }
-
-    @Override
-    public Set<String> getSubscribedEventTypes() {
-        return subscribedEventTypes;
-    }
-
-    @Override
-    public @Nullable EventFilter getEventFilter() {
-        return eventFilter;
-    }
-
-    @Override
-    public void receive(Event event) {
-        String topic = event.getTopic();
-        String type = event.getType();
-        String payload = event.getPayload();
-        String source = event.getSource();
-        logger.debug("Event Received with type {}, topic {}. source {} and payload {}", type, topic, source, payload);
+        mappingInstances.remove(this);
     }
 
     public @Nullable String lookupCode(String command, String codeType) {
@@ -169,7 +141,7 @@ public class BroadlinkMappingService implements EventSubscriber {
             logger.debug("{} Command label not found. Proceeding to store key value pair {},{} and reload Command list",
                     codeType, command, code);
             storage.put(command, code);
-            notifyAvailableCommands(storage.getKeys(), targetChannelUID);
+            notifyAvailableCommands(storage.getKeys(), codeType, true);
             return command;
         } else {
             logger.debug("{} Command label {} found. This is not a replace operation. Skipping", codeType, command);
@@ -183,7 +155,7 @@ public class BroadlinkMappingService implements EventSubscriber {
             logger.debug("{} Command label found. Proceeding to store key value pair {},{} and reload Command list",
                     codeType, command, code);
             storage.put(command, code);
-            notifyAvailableCommands(storage.getKeys(), targetChannelUID);
+            notifyAvailableCommands(storage.getKeys(), codeType, true);
             return command;
         } else {
             logger.debug("{} Command label {} not found. This is not an add method. Skipping", codeType, command);
@@ -198,7 +170,7 @@ public class BroadlinkMappingService implements EventSubscriber {
             logger.debug("{} Command label found. Proceeding to remove key pair {},{} and reload command list",
                     codeType, command, value);
             storage.remove(command);
-            notifyAvailableCommands(irStorage.getKeys(), targetChannelUID);
+            notifyAvailableCommands(storage.getKeys(), codeType, true);
             return command;
         } else {
             logger.debug("{} Command label {} not found. Can't delete a command that does not exist", codeType,
@@ -207,10 +179,29 @@ public class BroadlinkMappingService implements EventSubscriber {
         }
     }
 
-    private void notifyAvailableCommands(Collection<String> commandNames, ChannelUID targetChannelUID) {
+    void notifyAvailableCommands(Collection<String> commandNames, String codeType, boolean refreshAllInstances) {
         List<CommandOption> commandOptions = new ArrayList<>();
         commandNames.forEach((c) -> commandOptions.add(new CommandOption(c, null)));
-        logger.debug("notifying framework about {} commands: {}", commandOptions.size(), commandNames.toString());
-        this.commandDescriptionProvider.setCommandOptions(targetChannelUID, commandOptions);
+        if (refreshAllInstances) {
+            logger.debug("notifying framework about {} commands: {} - All instances", commandOptions.size(),
+                    commandNames.toString());
+            for (BroadlinkMappingService w : mappingInstances) {
+                switch (codeType) {
+                    case "IR":
+                        w.commandDescriptionProvider.setCommandOptions(w.irTargetChannelUID, commandOptions);
+                    case "RF":
+                        w.commandDescriptionProvider.setCommandOptions(w.rfTargetChannelUID, commandOptions);
+                }
+            }
+        } else {
+            logger.debug("notifying framework about {} commands: {} for single {} device", commandOptions.size(),
+                    commandNames.toString(), codeType);
+            switch (codeType) {
+                case "IR":
+                    this.commandDescriptionProvider.setCommandOptions(irTargetChannelUID, commandOptions);
+                case "RF":
+                    this.commandDescriptionProvider.setCommandOptions(rfTargetChannelUID, commandOptions);
+            }
+        }
     }
 }

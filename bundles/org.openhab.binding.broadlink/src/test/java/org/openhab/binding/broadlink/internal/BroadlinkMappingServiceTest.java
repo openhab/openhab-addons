@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -94,13 +93,13 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
     public void notifiesTheFrameworkOfTheAvailableCommands() {
         new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2, storageService);
 
-        List<CommandOption> expected = new ArrayList<>();
-        List<CommandOption> expected2 = new ArrayList<>();
+        ArrayList<CommandOption> expected = new ArrayList<>();
+        ArrayList<CommandOption> expected2 = new ArrayList<>();
         expected.add(new CommandOption("IR_TEST_COMMAND_ON", null));
         expected.add(new CommandOption("IR_TEST_COMMAND_OFF", null));
         expected2.add(new CommandOption("RF_TEST_COMMAND_ON", null));
         expected2.add(new CommandOption("RF_TEST_COMMAND_OFF", null));
         verify(mockProvider).setCommandOptions(TEST_CHANNEL_UID, expected);
-        // verify(mockProvider).setCommandOptions(TEST_CHANNEL_UID2, expected2);
+        verify(mockProvider).setCommandOptions(TEST_CHANNEL_UID2, expected2);
     }
 }
