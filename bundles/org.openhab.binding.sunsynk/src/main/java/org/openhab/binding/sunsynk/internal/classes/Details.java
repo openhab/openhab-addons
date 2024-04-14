@@ -37,7 +37,6 @@ public class Details {
     }
 
     public ArrayList<String> getInverterUIDList() { // not used
-
         ArrayList<String> inverters = new ArrayList<String>();
         for (Details.Inverterdata.InverterInfo Inv : getInverters()) {
             String UID = Inv.getgsn() + Inv.getsn();

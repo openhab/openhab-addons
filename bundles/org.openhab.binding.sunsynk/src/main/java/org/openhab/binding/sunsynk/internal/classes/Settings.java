@@ -426,7 +426,6 @@ public class Settings {
     }
 
     public void setIntervalTime(String state, int interval) {
-
         this.timerTime.set(interval - 1, asAPITime(state));
         return;
     }
@@ -459,7 +458,6 @@ public class Settings {
     }
 
     public String buildBody() {
-
         String body = "{";
         body = body + "\"sn\":\"" + this.data.sn + "\",";
         body = body + "\"safetyType\":\"" + this.data.safetyType + "\",";

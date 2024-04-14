@@ -69,8 +69,9 @@ public class SunSynkInverter {
         // Get inverter infos
         String response = null;
         try {
-            if (batterySettingsUpdate == null)
+            if (batterySettingsUpdate == null) {
                 batterySettingsUpdate = false;
+            }
             if (!batterySettingsUpdate) { // normally get settings to track changes made by other UIs
                 logger.debug("Trying Common Settings");
                 response = getCommonSettings(); // battery charge settings
@@ -84,7 +85,6 @@ public class SunSynkInverter {
             logger.debug("Trying Real Time Solar");
             response = getRealTimeIn(); // may not need this one used for solar values could use Inverter (but would
                                         // loose Solar power now)
-
         } catch (Exception e) {
             logger.debug("Failed to get Inverter API information: {} ", e.getMessage());
             int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
@@ -128,8 +128,9 @@ public class SunSynkInverter {
         // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/common/setting/" + this.sn + "/read"),
                 APIdata.static_access_token);
-        if (response == "Failed" | response == "Authentication Fail")
+        if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
             return response;
+        }
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.batterySettings = gson.fromJson(response, Settings.class);
@@ -144,8 +145,9 @@ public class SunSynkInverter {
         // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/grid/" + this.sn + "/realtime?sn=") + this.sn,
                 APIdata.static_access_token);
-        if (response == "Failed" | response == "Authentication Fail")
+        if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
             return response;
+        }
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.grid = gson.fromJson(response, Grid.class);
@@ -161,8 +163,9 @@ public class SunSynkInverter {
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/battery/" + this.sn + "/realtime?sn=" + this.sn + "&lan"),
                 APIdata.static_access_token);
-        if (response == "Failed" | response == "Authentication Fail")
+        if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
             return response;
+        }
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.realTimeBattery = gson.fromJson(response, Battery.class);
@@ -178,8 +181,9 @@ public class SunSynkInverter {
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/" + this.sn + "/output/day?lan=en&date=" + date + "&column=dc_temp,igbt_temp"),
                 APIdata.static_access_token);
-        if (response == "Failed" | response == "Authentication Fail")
+        if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
             return response;
+        }
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.inverter_day_temperatures = gson.fromJson(response, Daytemps.class);
@@ -190,12 +194,12 @@ public class SunSynkInverter {
     // ------ Realtime Input ------ //
     // https://api.sunsynk.net//api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
     @SuppressWarnings("null")
-    String getRealTimeIn() throws IOException {
-        // Get URL Respnse
+    String getRealTimeIn() throws IOException { // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/" + this.sn + "/realtime/input"),
                 APIdata.static_access_token);
-        if (response == "Failed" | response == "Authentication Fail")
+        if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
             return response;
+        }
         // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.realTimeDataIn = gson.fromJson(response, RealTimeInData.class);

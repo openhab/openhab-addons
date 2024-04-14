@@ -39,12 +39,10 @@ public class Client {
     }
 
     public Long getExpiresIn() {
-
         return data.getExpiresIn();
     }
 
     public String getRefreshTokenString() {
-
         return data.getRefreshToken();
     }
 
