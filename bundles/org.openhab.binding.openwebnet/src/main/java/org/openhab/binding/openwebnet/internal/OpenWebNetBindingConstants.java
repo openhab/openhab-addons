@@ -151,6 +151,8 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_CU_BATTERY_STATUS = "batteryStatus";
     public static final String CHANNEL_CU_WEEKLY_PROGRAM_NUMBER = "weeklyProgram";
     public static final String CHANNEL_CU_SCENARIO_PROGRAM_NUMBER = "scenarioProgram";
+    public static final String CHANNEL_CU_VACATION_DAYS = "vacationDays";
+
     public static final String CHANNEL_CU_FAILURE_DISCOVERED = "failureDiscovered";
     public static final String CHANNEL_CU_AT_LEAST_ONE_PROBE_OFF = "atLeastOneProbeOff";
     public static final String CHANNEL_CU_AT_LEAST_ONE_PROBE_PROTECTION = "atLeastOneProbeProtection";
