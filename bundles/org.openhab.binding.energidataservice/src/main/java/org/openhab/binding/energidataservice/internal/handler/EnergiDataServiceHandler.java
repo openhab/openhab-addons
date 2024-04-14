@@ -25,7 +25,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -496,53 +495,35 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     }
 
     private void updateTimeSeries() {
-        TimeSeries spotPriceTimeSeries = new TimeSeries(REPLACE);
-        Map<DatahubTariff, TimeSeries> datahubTimeSeriesMap = new HashMap<>();
-        Map<DatahubTariff, BigDecimal> datahubPreviousTariff = new HashMap<>();
-        for (DatahubTariff datahubTariff : DatahubTariff.values()) {
-            datahubTimeSeriesMap.put(datahubTariff, new TimeSeries(REPLACE));
-        }
+        updatePriceTimeSeries(CHANNEL_SPOT_PRICE, cacheManager.getSpotPrices(), config.getCurrency(), false);
 
-        Map<Instant, BigDecimal> spotPriceMap = cacheManager.getSpotPrices();
-        List<Entry<Instant, BigDecimal>> spotPrices = spotPriceMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey()).toList();
-        for (Entry<Instant, BigDecimal> spotPrice : spotPrices) {
-            Instant hourStart = spotPrice.getKey();
-            if (isLinked(CHANNEL_SPOT_PRICE)) {
-                spotPriceTimeSeries.add(hourStart, getEnergyPrice(spotPrice.getValue(), config.getCurrency()));
-            }
-            for (Map.Entry<DatahubTariff, TimeSeries> entry : datahubTimeSeriesMap.entrySet()) {
-                DatahubTariff datahubTariff = entry.getKey();
-                String channelId = datahubTariff.getChannelId();
-                if (!isLinked(channelId)) {
-                    continue;
-                }
-                BigDecimal tariff = cacheManager.getTariff(datahubTariff, hourStart);
-                if (tariff != null) {
-                    BigDecimal previousTariff = datahubPreviousTariff.get(datahubTariff);
-                    if (previousTariff != null && tariff.equals(previousTariff)) {
-                        // Skip redundant states.
-                        continue;
-                    }
-                    TimeSeries timeSeries = entry.getValue();
-                    timeSeries.add(hourStart, getEnergyPrice(tariff, CURRENCY_DKK));
-                    datahubPreviousTariff.put(datahubTariff, tariff);
-                }
-            }
-        }
-        if (spotPriceTimeSeries.size() > 0) {
-            sendTimeSeries(CHANNEL_SPOT_PRICE, spotPriceTimeSeries);
-        }
-        for (Map.Entry<DatahubTariff, TimeSeries> entry : datahubTimeSeriesMap.entrySet()) {
-            DatahubTariff datahubTariff = entry.getKey();
+        for (DatahubTariff datahubTariff : DatahubTariff.values()) {
             String channelId = datahubTariff.getChannelId();
-            if (!isLinked(channelId)) {
+            updatePriceTimeSeries(channelId, cacheManager.getTariffs(datahubTariff), CURRENCY_DKK, true);
+        }
+    }
+
+    private void updatePriceTimeSeries(String channelId, Map<Instant, BigDecimal> priceMap, Currency currency,
+            boolean deduplicate) {
+        if (!isLinked(channelId)) {
+            return;
+        }
+        List<Entry<Instant, BigDecimal>> prices = priceMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .toList();
+        TimeSeries timeSeries = new TimeSeries(REPLACE);
+        BigDecimal previousTariff = null;
+        for (Entry<Instant, BigDecimal> price : prices) {
+            Instant hourStart = price.getKey();
+            BigDecimal priceValue = price.getValue();
+            if (deduplicate && priceValue.equals(previousTariff)) {
+                // Skip redundant states.
                 continue;
             }
-            TimeSeries timeSeries = entry.getValue();
-            if (timeSeries.size() > 0) {
-                sendTimeSeries(channelId, timeSeries);
-            }
+            timeSeries.add(hourStart, getEnergyPrice(priceValue, currency));
+            previousTariff = priceValue;
+        }
+        if (timeSeries.size() > 0) {
+            sendTimeSeries(channelId, timeSeries);
         }
     }
 
