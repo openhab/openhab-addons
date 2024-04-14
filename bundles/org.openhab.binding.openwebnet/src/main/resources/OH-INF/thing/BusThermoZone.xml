@@ -34,6 +34,7 @@
 			<property name="vendor">BTicino/Legrand</property>
 			<property name="model">Zone thermostat BTI-LN4691 (stand-alone), 3550 (99 zones Central Unit)</property>
 			<property name="ownDeviceType">410/420</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>ownId</representation-property>
