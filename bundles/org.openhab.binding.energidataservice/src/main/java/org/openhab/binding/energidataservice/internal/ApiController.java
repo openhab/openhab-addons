@@ -122,12 +122,8 @@ public class ApiController {
         try {
             String responseContent = sendRequest(request, properties);
             ElspotpriceRecords records = gson.fromJson(responseContent, ElspotpriceRecords.class);
-            if (records == null) {
+            if (records == null || Objects.isNull(records.records())) {
                 throw new DataServiceException("Error parsing response");
-            }
-
-            if (records.total() == 0 || Objects.isNull(records.records()) || records.records().length == 0) {
-                throw new DataServiceException("No records");
             }
 
             return Arrays.stream(records.records()).filter(Objects::nonNull).toArray(ElspotpriceRecord[]::new);
