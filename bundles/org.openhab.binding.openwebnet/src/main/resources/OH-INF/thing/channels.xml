@@ -116,7 +116,7 @@
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
-		<description>Set mode of the zone (read/write)</description>
+		<description>The zone operation mode (read/write)</description>
 		<state>
 			<options>
 				<option value="AUTO">Automatic</option>
@@ -230,7 +230,7 @@
 	<channel-type id="modeCentralUnit">
 		<item-type>String</item-type>
 		<label>Central Unit Mode</label>
-		<description>Set mode of the Central Unit (read/write)</description>
+		<description>The Central Unit operation mode (read/write)</description>
 		<state>
 			<options>
 				<option value="WEEKLY">Weekly</option>
@@ -238,6 +238,8 @@
 				<option value="MANUAL">Manual</option>
 				<option value="PROTECTION">Antifreeze / Heat Protection</option>
 				<option value="OFF">Off</option>
+				<option value="HOLIDAY">Holiday</option>
+				<option value="VACATION">Vacation</option>
 			</options>
 		</state>
 	</channel-type>
@@ -280,6 +282,13 @@
 				<option value="16">Scenario 16</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="vacationDays">
+		<item-type>Number</item-type>
+		<label>Vacation Days</label>
+		<description>Number of days the Central Unit will be set to Antifreeze / Heat Protection target temperature before
+			returning to mode WEEKLY (read/write)</description>
 	</channel-type>
 
 	<channel-type id="remoteControl" advanced="true">
