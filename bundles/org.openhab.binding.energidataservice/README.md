@@ -154,6 +154,9 @@ Channel `co2-emission-prognosis` provides estimated prognosis for future emissio
 Depending on the time of the day, an update of the prognosis may include estimates for more than 9 hours, but every update will have at least 9 hours into the future.
 A persistence configuration is required for this channel.
 
+Please note that the CO₂ emission channels only apply to Denmark.
+These channels will not be updated when the configured price area is not DK1 or DK2.
+
 ## Thing Actions
 
 Thing actions can be used to perform calculations as well as import prices directly into rules without relying on persistence.

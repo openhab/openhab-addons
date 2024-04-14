@@ -197,6 +197,18 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     }
 
     @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+
+        if (!"DK1".equals(config.priceArea) && !"DK2".equals(config.priceArea)
+                && (CHANNEL_CO2_EMISSION_PROGNOSIS.equals(channelUID.getId())
+                        || CHANNEL_CO2_EMISSION_REALTIME.contains(channelUID.getId()))) {
+            logger.warn("Item linked to channel '{}', but price area {} is not supported for this channel",
+                    channelUID.getId(), config.priceArea);
+        }
+    }
+
+    @Override
     public void channelUnlinked(ChannelUID channelUID) {
         super.channelUnlinked(channelUID);
 
@@ -404,6 +416,10 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
 
     private void updateCo2Emissions(Dataset dataset, String channelId, DateQueryParameter dateQueryParameter)
             throws InterruptedException, DataServiceException {
+        if (!"DK1".equals(config.priceArea) && !"DK2".equals(config.priceArea)) {
+            // Dataset is only for Denmark.
+            return;
+        }
         Map<String, String> properties = editProperties();
         CO2EmissionRecord[] emissionRecords = apiController.getCo2Emissions(dataset, config.priceArea,
                 dateQueryParameter, properties);
