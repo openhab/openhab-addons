@@ -69,7 +69,9 @@ public class SunSynkInverter {
         // Get inverter infos
         String response = null;
         try {
-            if (batterySettingsUpdate) {
+            if (batterySettingsUpdate == null)
+                batterySettingsUpdate = false;
+            if (!batterySettingsUpdate) { // normally get settings to track changes made by other UIs
                 logger.debug("Trying Common Settings");
                 response = getCommonSettings(); // battery charge settings
             }
@@ -82,6 +84,7 @@ public class SunSynkInverter {
             logger.debug("Trying Real Time Solar");
             response = getRealTimeIn(); // may not need this one used for solar values could use Inverter (but would
                                         // loose Solar power now)
+
         } catch (Exception e) {
             logger.debug("Failed to get Inverter API information: {} ", e.getMessage());
             int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");

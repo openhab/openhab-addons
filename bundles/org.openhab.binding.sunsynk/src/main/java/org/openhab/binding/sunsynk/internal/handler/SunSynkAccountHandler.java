@@ -129,15 +129,24 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     public void refreshAccount() {
+        Long expires_in;
+        Long issued_at;
         Configuration configuration = editConfiguration();
-        Long expires_in = Long.parseLong(configuration.get("expires_in").toString());
-        Long issued_at = Long.parseLong(configuration.get("issued_at").toString());
+        try {
+            expires_in = ((Long) configuration.get("expires_in"));
+            issued_at = ((Long) configuration.get("issued_at"));
+        } catch (Exception e) {
+            expires_in = Long.parseLong(configuration.get("expires_in").toString());
+            issued_at = Long.parseLong(configuration.get("issued_at").toString());
+        }
 
         if ((issued_at + expires_in) - Instant.now().getEpochSecond() > 30) { // 30 seconds
-            logger.debug("Account fialed to refresh, token not expired. Trying re-auth");
-            configAccount();
+            logger.debug("Account configuration token not expired.");
+            // logger.debug("Account fialed to refresh, token not expired. Trying re-auth");
+            // configAccount();
             return;
         }
+        logger.debug("Account configuration token expired : {}", configuration);
         SunSynkAccountConfig accountConfig = getConfigAs(SunSynkAccountConfig.class);
         String refreshtToken = configuration.get("refresh_token").toString();
         Client sunAccount = refresh(accountConfig.getEmail(), refreshtToken);
