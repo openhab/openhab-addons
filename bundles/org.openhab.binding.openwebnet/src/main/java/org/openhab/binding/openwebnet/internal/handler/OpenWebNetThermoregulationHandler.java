@@ -171,7 +171,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         if (command instanceof StringType) {
             Where w = deviceWhere;
             if (w == null) {
-                logger.warn("handleVacationDays() Where is null for thing {}", getThing().getUID());
+                logger.warn("handleSetFanSpeed() Where is null for thing {}", getThing().getUID());
                 return;
             }
             try {
@@ -183,7 +183,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 logger.warn("handleSetFanSpeed() Unsupported command {} for thing {}", command, getThing().getUID());
                 return;
             }
-
         } else {
             logger.warn("handleSetFanSpeed() Unsupported command {} for thing {}", command, getThing().getUID());
         }
@@ -301,7 +300,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             } catch (MalformedFrameException | OWNException e) {
                 logger.warn("handleSetpoint() {}", e.getMessage());
             }
-
         } else {
             logger.warn("handleSetpoint() Unsupported command {} for thing {}", command, getThing().getUID());
         }
@@ -346,6 +344,9 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                         tMsg = Thermoregulation.requestWriteVacationMode(whStr, currentFunction, currentVacationDays,
                                 currentWeeklyPrgNum);
                         break;
+                    default:
+                        logger.warn("handleMode() Unsupported command {} for CU thing {}", command,
+                                getThing().getUID());
                 }
             } else {// Zone accepted modes: MANUAL, OFF, PROTECTION, AUTO
                 switch (newMode) {
@@ -357,6 +358,9 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     case AUTO:
                         tMsg = Thermoregulation.requestWriteMode(whStr, newMode, Function.GENERIC, currentSetPointTemp);
                         break;
+                    default:
+                        logger.warn("handleMode() Unsupported command {} for ZONE thing {}", command,
+                                getThing().getUID());
                 }
             }
 
@@ -369,7 +373,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             } else {
                 logger.warn("handleMode() Unsupported command {} for thing {}", command, getThing().getUID());
             }
-
         }
     }
 
@@ -389,7 +392,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         if (command instanceof StringType) {
             Where w = deviceWhere;
             if (w == null) {
-                logger.warn("handleVacationDays() Where is null for thing {}", getThing().getUID());
+                logger.warn("handleFunction() Where is null for thing {}", getThing().getUID());
                 return;
             }
             try {
@@ -558,7 +561,9 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     private void updateProgramNumber(Thermoregulation tmsg) {
         @Nullable
         WhatThermo wt = (WhatThermo) tmsg.getWhat();
-
+        if (wt == null) {
+            return;
+        }
         Integer prNum = wt.programNumber();
         if (prNum != null) {
             if (wt.getMode() == OperationMode.SCENARIO) {
@@ -720,7 +725,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         try {
             send(Thermoregulation.requestTemperature(whereStr));
 
-            if (!((WhereThermo) deviceWhere).isProbe()) {
+            if (!((WhereThermo) w).isProbe()) {
                 // for bus_thermo_zone request also other single channels updates
                 send(Thermoregulation.requestSetPointTemperature(whereStr));
                 send(Thermoregulation.requestMode(whereStr));
