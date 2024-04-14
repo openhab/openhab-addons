@@ -250,12 +250,15 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             updateTimeSeries();
 
             if (isLinked(CHANNEL_SPOT_PRICE)) {
-                if (cacheManager.getNumberOfFutureSpotPrices() < 13) {
-                    logger.warn("Spot prices are not yet available, retry scheduled (see details in Thing properties)");
-                    retryPolicy = RetryPolicyFactory.whenExpectedSpotPriceDataMissing(DAILY_REFRESH_TIME_CET,
-                            NORD_POOL_TIMEZONE);
-                } else {
+                long numberOfFutureSpotPrices = cacheManager.getNumberOfFutureSpotPrices();
+                LocalTime now = LocalTime.now(NORD_POOL_TIMEZONE);
+
+                if (numberOfFutureSpotPrices >= 13 || (numberOfFutureSpotPrices == 12
+                        && now.isAfter(DAILY_REFRESH_TIME_CET.minusHours(1)) && now.isBefore(DAILY_REFRESH_TIME_CET))) {
                     retryPolicy = RetryPolicyFactory.atFixedTime(DAILY_REFRESH_TIME_CET, NORD_POOL_TIMEZONE);
+                } else {
+                    logger.warn("Spot prices are not available, retry scheduled (see details in Thing properties)");
+                    retryPolicy = RetryPolicyFactory.whenExpectedSpotPriceDataMissing();
                 }
             } else {
                 retryPolicy = RetryPolicyFactory.atFixedTime(LocalTime.MIDNIGHT, timeZoneProvider.getTimeZone());
@@ -293,10 +296,13 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
                     Duration.ofHours(-CacheManager.NUMBER_OF_HISTORIC_HOURS));
         }
         Map<String, String> properties = editProperties();
-        ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea, config.getCurrency(),
-                start, properties);
-        cacheManager.putSpotPrices(spotPriceRecords, config.getCurrency());
-        updateProperties(properties);
+        try {
+            ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea, config.getCurrency(),
+                    start, properties);
+            cacheManager.putSpotPrices(spotPriceRecords, config.getCurrency());
+        } finally {
+            updateProperties(properties);
+        }
     }
 
     private void downloadTariffs(DatahubTariff datahubTariff) throws InterruptedException, DataServiceException {
@@ -325,11 +331,11 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     private Collection<DatahubPricelistRecord> downloadPriceLists(GlobalLocationNumber globalLocationNumber,
             DatahubTariffFilter filter) throws InterruptedException, DataServiceException {
         Map<String, String> properties = editProperties();
-        Collection<DatahubPricelistRecord> records = apiController.getDatahubPriceLists(globalLocationNumber,
-                ChargeType.Tariff, filter, properties);
-        updateProperties(properties);
-
-        return records;
+        try {
+            return apiController.getDatahubPriceLists(globalLocationNumber, ChargeType.Tariff, filter, properties);
+        } finally {
+            updateProperties(properties);
+        }
     }
 
     private DatahubTariffFilter getGridTariffFilter() {
