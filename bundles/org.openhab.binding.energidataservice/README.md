@@ -303,6 +303,7 @@ var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant()
 **Result:** Price as `BigDecimal`.
 
 This action calculates the price for using given amount of power in the period from `start` till `end`.
+Returns `null` if the calculation cannot be performed due to missing price data within the requested period.
 
 Example:
 
@@ -402,7 +403,9 @@ var priceMap = actions.getPrices("SpotPrice,GridTariff");
 logInfo("Current spot price + grid tariff excl. VAT", priceMap.get(hourStart).toString)
 
 var price = actions.calculatePrice(Instant.now, now.plusHours(1).toInstant, 150 | W)
-logInfo("Total price for using 150 W for the next hour", price.toString)
+if (price != null) {
+    logInfo("Total price for using 150 W for the next hour", price.toString)
+}
 
 val ArrayList<Duration> durationPhases = new ArrayList<Duration>()
 durationPhases.add(Duration.ofMinutes(37))
@@ -467,7 +470,9 @@ utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,GridTariff")).forEach((valu
 console.log("Current spot price + grid tariff excl. VAT: " + priceMap.get(hourStart.toString()));
 
 var price = edsActions.calculatePrice(time.Instant.now(), time.Instant.now().plusSeconds(3600), Quantity("150 W"));
-console.log("Total price for using 150 W for the next hour: " + price.toString());
+if (price !== null) {
+    console.log("Total price for using 150 W for the next hour: " + price.toString());
+}
 
 var durationPhases = [];
 durationPhases.push(time.Duration.ofMinutes(37));

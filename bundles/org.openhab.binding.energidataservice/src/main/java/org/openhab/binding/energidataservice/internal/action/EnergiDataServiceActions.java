@@ -139,7 +139,7 @@ public class EnergiDataServiceActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.calculate-price.label", description = "@text/action.calculate-price.description")
-    public @ActionOutput(name = "price", type = "java.math.BigDecimal") BigDecimal calculatePrice(
+    public @ActionOutput(name = "price", type = "java.math.BigDecimal") @Nullable BigDecimal calculatePrice(
             @ActionInput(name = "start", type = "java.time.Instant") Instant start,
             @ActionInput(name = "end", type = "java.time.Instant") Instant end,
             @ActionInput(name = "power", type = "QuantityType<Power>") QuantityType<Power> power) {
@@ -149,7 +149,7 @@ public class EnergiDataServiceActions implements ThingActions {
             return priceCalculator.calculatePrice(start, end, power);
         } catch (MissingPriceException e) {
             logger.warn("{}", e.getMessage());
-            return BigDecimal.ZERO;
+            return null;
         }
     }
 
@@ -314,10 +314,10 @@ public class EnergiDataServiceActions implements ThingActions {
      * @param power Constant power consumption
      * @return Map of prices
      */
-    public static BigDecimal calculatePrice(@Nullable ThingActions actions, @Nullable Instant start,
+    public static @Nullable BigDecimal calculatePrice(@Nullable ThingActions actions, @Nullable Instant start,
             @Nullable Instant end, @Nullable QuantityType<Power> power) {
         if (start == null || end == null || power == null) {
-            return BigDecimal.ZERO;
+            return null;
         }
         if (actions instanceof EnergiDataServiceActions serviceActions) {
             return serviceActions.calculatePrice(start, end, power);
