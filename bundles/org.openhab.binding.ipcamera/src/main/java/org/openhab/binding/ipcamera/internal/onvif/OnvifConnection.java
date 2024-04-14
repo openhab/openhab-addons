@@ -380,6 +380,8 @@ public class OnvifConnection {
                     ipCameraHandler.rtspUri = rtspUri;
                 }
             }
+        } else {
+            logger.info("Unhandled ONVIF reply is: {}", message);
         }
     }
 

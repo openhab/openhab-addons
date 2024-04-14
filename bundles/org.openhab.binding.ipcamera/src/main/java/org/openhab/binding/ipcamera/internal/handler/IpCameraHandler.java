@@ -1731,20 +1731,14 @@ public class IpCameraHandler extends BaseThingHandler {
                             "[{ \"cmd\":\"GetAbility\", \"param\":{ \"User\":{ \"userName\":\"admin\" }}}]");
                 }
                 if (snapshotUri.isEmpty()) {
-                    if (cameraConfig.getNvrChannel() < 1) {
-                        snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=0&rs=openHAB" + reolinkAuth;
-                    } else {
-                        snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + (cameraConfig.getNvrChannel() - 1)
-                                + "&rs=openHAB" + reolinkAuth;
-                    }
+                    // ReolinkHandler will change the snapshotUri in the response to /api.cgi?cmd=Login
+                    snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + cameraConfig.getNvrChannel() + "&rs=openHAB"
+                            + reolinkAuth;
                 }
+                // channel numbers for snapshots start at 0, while the rtsp start at 1
                 if (rtspUri.isEmpty()) {
-                    if (cameraConfig.getNvrChannel() < 1) {
-                        rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_01_main";
-                    } else {
-                        rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0" + cameraConfig.getNvrChannel()
-                                + "_main";
-                    }
+                    rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0"
+                            + (cameraConfig.getNvrChannel() + 1) + "_main";
                 }
                 break;
         }
