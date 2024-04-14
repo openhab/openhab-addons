@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Lee Charlton - Initial contribution
  */
+
 // @NonNullByDefault
 public class SunSynkInverterHandler extends BaseThingHandler {
 
@@ -73,7 +74,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
-
         if (command instanceof RefreshType) {
             refreshStateAndUpdate();
         } else { // if (channelUID.getId().equals(SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE)) {}
@@ -248,19 +248,18 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     private void sendAPICommandToInverter(Settings inverterChargeSettings) {
         logger.debug("Ok - will handle command for CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE");
-
         SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
         // Settings inverterChargeSettings = inverter.getBatteryChargeSettings();
         String body = inverterChargeSettings.buildBody();
         String token = inverterChargeSettings.getToken();
         String response = inverter.sendCommandToSunSynk(body, token);
 
-        if (response == "Authentication Fail") { // try refreshing log in
+        if ("Authentication Fail".equals(response)) { // try refreshing log in
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not send Command to Inverter " + config.getAlias() + ". Authentication Failure !");
             return;
         }
-        if (response == "Failed") { // unknown cause
+        if ("Failed".equals(response)) { // unknown cause
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not send Command to Inverter " + config.getAlias() + ". Communication Failure !");
             return;
@@ -327,7 +326,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     }
 
     public void refreshStateAndUpdate() {
-
         if (this.lockoutTimer != null && this.lockoutTimer.isAfter(ZonedDateTime.now())) { // lockout calls that come
                                                                                            // too fast
             logger.debug("API call too frequent, ignored {} ", this.lockoutTimer);
@@ -345,26 +343,24 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             bridgeHandler.refreshAccount(); // Check account token
 
             if (batterySettingsUpdated != null) { // first time through
-                if (this.batterySettingsUpdated == true) { // have the settings been modified locally
+                if (this.batterySettingsUpdated) { // have the settings been modified locally
                     sendAPICommandToInverter(this.tempInverterChargeSettings); // update the battery settings
                 }
             }
             String response = inverter.sendGetState(this.batterySettingsUpdated); // get inverter settings
-            if (response == "Authentication Fail") {
+            if ("Authentication Fail".equals(response)) {
                 logger.debug("Authentication Failure !");
                 // bridgehandler.refreshAccount();
                 return;
             }
-            if (response == "Failed") { // unknown cause
+            if ("Failed".equals(response)) { // unknown cause
                 logger.debug("Communication Failure !");
                 return;
             }
-
             this.batterySettingsUpdated = false; // set to get settings from API
             bridgeHandler.setBridgeOnline();
             updateStatus(ThingStatus.ONLINE);
             publishChannels();
-
         }
     }
 
@@ -376,7 +372,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     private void publishChannels() {
         logger.debug("Updating Channels");
-
         Settings inverterChargeSettings = inverter.getBatteryChargeSettings();
         if (inverterChargeSettings == null) {
             return;
@@ -465,12 +460,12 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         updateState(CHANNEL_BATTERY_TEMPERATURE, new DecimalType(batteryState.getBatteryTemperature()));
 
         Daytemps batteryTempHist = inverter.getInverterTemperatureHistory();
-        Daytempsreturn batteryTemps = batteryTempHist.InverterTemperatures();
+        Daytempsreturn batteryTemps = batteryTempHist.inverterTemperatures();
         if (batteryTemps == null) {
             return;
         }
 
-        if (!batteryTemps.getStatus().equals("okay")) {
+        if (!"okay".equals(batteryTemps.getStatus())) {
             return;
         }
         updateState(CHANNEL_INVERTER_AC_TEMPERATURE, new DecimalType(batteryTemps.getDCTemperature()));

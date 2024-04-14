@@ -8,40 +8,40 @@
 	<!-- Bridge Thing Type -->
 
 	<bridge-type id="sunsynkaccount">
-		<label>Sunsynk Account</label>
-		<description>Access to SunSynk Account. Used to discover sites and inverters tied to account.</description>
+		<label>SunSynk Account</label>
+		<description>Access to SunSynk Account. Used to discover plants and inverters tied to account.</description>
 		<properties>
 			<property name="vendor">SunSynk</property>
 		</properties>
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>E-mail Address</label>
-				<description>E-mail address for your SunSynk Cloud account.</description>
+				<description>E-mail address for your SunSynk Connect account.</description>
 				<context>email</context>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>Password for your SunSynk Cloud account.</description>
+				<description>Password for your SunSynk Connect account.</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="access_token" type="text" required="false">
 				<label>SunSynk Secret</label>
-				<description>Secret for accessing SunSynk web services</description>
+				<description>Secret for accessing SunSynk Connect services.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refresh_token" type="text" required="false">
 				<label>SunSynk Refresh Secret</label>
-				<description>SunSynk web services refresh secret</description>
+				<description>SunSynk Connect services refresh secret.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="expires_in" type="integer" required="false">
 				<label>SunSynk Secret expiry</label>
-				<description>SunSynk web services refresh token expiry</description>
+				<description>SunSynk Connect services token expiry in seconds.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="issued_at" type="integer" required="false">
-				<label>SunSynk Secret expiry</label>
-				<description>SunSynk web services refresh token issue at</description>
+				<label>SunSynk Secret issue time stamp</label>
+				<description>SunSynk Connect services token issue time stamp.</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -61,27 +61,27 @@
 
 		<channels>
 			<channel id="Interval-1-grid-charge" typeId="grid-charge"/>
-			<channel id="Interval-1-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-1-grid-time" typeId="grid-time"/>
 			<channel id="Interval-1-grid-capacity" typeId="battery-target"/>
 			<channel id="Interval-1-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-2-grid-charge" typeId="grid-charge"/>
-			<channel id="Interval-2-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-2-grid-time" typeId="grid-time"/>
 			<channel id="Interval-2-grid-capacity" typeId="battery-target"/>
 			<channel id="Interval-2-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-3-grid-charge" typeId="grid-charge"/>
-			<channel id="Interval-3-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-3-grid-time" typeId="grid-time"/>
 			<channel id="Interval-3-grid-capacity" typeId="battery-target"/>
 			<channel id="Interval-3-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-4-grid-charge" typeId="grid-charge"/>
-			<channel id="Interval-4-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-4-grid-time" typeId="grid-time"/>
 			<channel id="Interval-4-grid-capacity" typeId="battery-target"/>
 			<channel id="Interval-4-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-5-grid-charge" typeId="grid-charge"/>
-			<channel id="Interval-5-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-5-grid-time" typeId="grid-time"/>
 			<channel id="Interval-5-grid-capacity" typeId="battery-target"/>
 			<channel id="Interval-5-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-6-grid-charge" typeId="grid-charge"/>
-			<channel id="Interval-6-grid-time" typeId="grid-tme"/>
+			<channel id="Interval-6-grid-time" typeId="grid-time"/>
 			<channel id="Interval-6-grid-capacity" typeId="battery-target"/>
 			<channel id="Interval-6-grid-power-limit" typeId="power-charge-limit"/>
 			<channel id="Interval-1-gen-charge" typeId="gen-charge"/>
@@ -107,15 +107,15 @@
 		<config-description>
 			<parameter name="sn" type="text" required="true">
 				<label>SunSynk Inverter Serial</label>
-				<description>Serial number of the inverter</description>
+				<description>Serial number of the inverter from SunSynk Connect.</description>
 			</parameter>
 			<parameter name="alias" type="text" required="true">
 				<label>SunSynk Inverter Name</label>
-				<description>Name of SunSynk inverter</description>
+				<description>Name of inverter from SunSynk Connect.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="true">
-				<label>Refresh time</label>
-				<description>Time in seconds to retrieve status from SunSynk web services. Greater than 60 seconds</description>
+				<label>Refresh time interval.</label>
+				<description>Time in seconds to retrieve status from SunSynk Connect services. Greater than 60 seconds.</description>
 				<default> 60 </default>
 				<advanced>true</advanced>
 			</parameter>
@@ -169,7 +169,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="grid-tme" advanced="true">
+	<channel-type id="grid-time" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Grid charge interval start time</label>
 		<description>"24hr time for the start of the interval. 00:00 to 23:55 are valid in 5 min increments with leading zero

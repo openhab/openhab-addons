@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.sunsynk.internal.handler;
 
-//import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.*;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -75,11 +75,11 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     public /* @NonNull */ List<Inverter> getInvertersFromSunSynk() {
-        logger.debug("Attempting to find inverters tied to account");
-        // Discover Connected plants and inverters.
+        logger.debug("Attempting to find inverters tied to account"); // Discover Connected plants and inverters.
         Details sunAccountDetails = getDetails(APIdata.static_access_token);
-        ArrayList<Inverter> inverters = sunAccountDetails.getInverters(APIdata.static_access_token);
-        // List<Inverterdata.InverterInfo> inverters = sunAccountDetails.getInverters();
+        ArrayList<Inverter> inverters = sunAccountDetails.getInverters(APIdata.static_access_token); // List<Inverterdata.InverterInfo>
+                                                                                                     // inverters =
+                                                                                                     // sunAccountDetails.getInverters();
         if (!inverters.isEmpty() | inverters != null) {
             return inverters;
         }
@@ -87,7 +87,6 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     private Details getDetails(String access_token) {
-
         try {
             Gson gson = new Gson();
             Properties headers = new Properties();
@@ -174,7 +173,6 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         String payload = makeLoginBody(username, password);
         Properties headers = new Properties();
         try {
-
             headers.setProperty("Accept", "application/json");
             headers.setProperty("Content-Type", "application/json"); // may not need this.
             InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
@@ -191,7 +189,6 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     private Client refresh(String username, String refreshToken) {
-
         Gson gson = new Gson();
         String response = "";
         String httpsURL = makeLoginURL("oauth/token");

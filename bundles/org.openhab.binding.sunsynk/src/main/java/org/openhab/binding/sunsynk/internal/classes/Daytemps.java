@@ -17,27 +17,11 @@ import java.util.List;
 /**
  * The {@link Daytemps} is the internal class for Inverter temperature history information
  * from the sunsynk Account.
- * The minute following midnight returns an empty array
+ * The minute following midnight returns an empty array.
  * 
  * @author Lee Charlton - Initial contribution
  */
-/*
- * "{"code":0,"msg":"Success","data":{"infos":[
- * {"unit":"℃","records":[{"time":"2024-03-22 00:00:40","value":"36.6","updateTime":null},
- * {"time":"2024-03-22 00:01:46","value":"36.6","updateTime":null},
- * {"time":"2024-03-22 00:02:53","value":"36.6","updateTime":null},
- * ...
- * {"time":"2024-03-22 15:24:24","value":"41.1","updateTime":null},
- * {"time":"2024-03-22 15:25:31","value":"41.0","updateTime":null}],"id":76,"label":"DC TEMP"},
- * 
- * {"unit":"℃","records":[{"time":"2024-03-22 00:00:40","value":"29.1","updateTime":null},
- * {"time":"2024-03-22 00:01:46","value":"29.1","updateTime":null},
- * {"time":"2024-03-22 00:02:53","value":"29.1","updateTime":null},
- * {"time":"2024-03-22 00:03:59","value":"29.1","updateTime":null},
- * ...
- * {"time":"2024-03-22 15:24:24","value":"33.3","updateTime":null},
- * {"time":"2024-03-22 15:25:31","value":"33.2","updateTime":null}],"id":77,"label":"AC TEMP"}]},"success":true}"
- */
+
 public class Daytemps {
     private int code;
     private String msg;
@@ -74,8 +58,25 @@ public class Daytemps {
         }
     }
 
-    public Daytempsreturn InverterTemperatures() {
+    public Daytempsreturn inverterTemperatures() {
         // getLastValue();
         return new Daytempsreturn(this.response_status, this.dc_temperature, this.ac_temperature);
     }
 }
+/*
+ * "{"code":0,"msg":"Success","data":{"infos":[
+ * {"unit":"℃","records":[{"time":"2024-03-22 00:00:40","value":"36.6","updateTime":null},
+ * {"time":"2024-03-22 00:01:46","value":"36.6","updateTime":null},
+ * {"time":"2024-03-22 00:02:53","value":"36.6","updateTime":null},
+ * ...
+ * {"time":"2024-03-22 15:24:24","value":"41.1","updateTime":null},
+ * {"time":"2024-03-22 15:25:31","value":"41.0","updateTime":null}],"id":76,"label":"DC TEMP"},
+ * 
+ * {"unit":"℃","records":[{"time":"2024-03-22 00:00:40","value":"29.1","updateTime":null},
+ * {"time":"2024-03-22 00:01:46","value":"29.1","updateTime":null},
+ * {"time":"2024-03-22 00:02:53","value":"29.1","updateTime":null},
+ * {"time":"2024-03-22 00:03:59","value":"29.1","updateTime":null},
+ * ...
+ * {"time":"2024-03-22 15:24:24","value":"33.3","updateTime":null},
+ * {"time":"2024-03-22 15:25:31","value":"33.2","updateTime":null}],"id":77,"label":"AC TEMP"}]},"success":true}"
+ */
