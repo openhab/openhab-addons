@@ -237,8 +237,16 @@ public class HueSyncConnection {
                     HueSyncConnectionHelper.ENDPOINTS.REGISTRATIONS, json, HueSyncRegistration.class);
 
             if (registration != null) {
-                this.helper.registrationId = registration.registrationId != null ? registration.registrationId : "";
-                this.helper.apiAccessToken = registration.accessToken != null ? registration.accessToken : "";
+                String registrationId = "";
+                String registrationToken = "";
+
+                if (registration.registrationId != null)
+                    registrationId = registration.registrationId;
+                if (registration.accessToken != null)
+                    registrationToken = registration.accessToken;
+
+                this.helper.registrationId = registrationId;
+                this.helper.apiAccessToken = registrationToken;
             }
 
             return registration;

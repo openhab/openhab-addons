@@ -96,20 +96,19 @@ public class HueSyncHandler extends BaseThingHandler {
 
     @SuppressWarnings("unchecked")
     private void startBackgroundTasks() {
-        if (this.deviceInfo != null) {
-            HueSyncDeviceInfo device = this.deviceInfo;
-
+        Optional.ofNullable(this.deviceInfo).ifPresent((device) -> {
             Runnable statusUpdateTask = new HueSyncUpdateTask(this.connection, device,
                     (deviceStatus) -> this.updateDeviceStatus(deviceStatus));
 
             if (this.connection.isRegistered()) {
-                this.logger.debug("Device {} {}:{} is already registered", device.name, device.deviceType,
-                        device.uniqueId);
+                // TODO: Create helper to log nullable strings ...
+                // this.logger.debug("Device {} {}:{} is already registered", device.name, device.deviceType,
+                // device.uniqueId);
 
                 this.startUpdateTask(statusUpdateTask);
             } else {
-                this.logger.info("Starting device registration for {} {}:{}", device.name, device.deviceType,
-                        device.uniqueId);
+                // this.logger.info("Starting device registration for {} {}:{}", device.name, device.deviceType,
+                // device.uniqueId);
 
                 this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/thing.config.huesync.box.registration");
@@ -123,7 +122,7 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.deviceRegistrationTask = (ScheduledFuture<HueSyncRegistrationTask>) this.executeTask(task,
                         HueSyncConstants.REGISTRATION_INITIAL_DELAY, HueSyncConstants.REGISTRATION_INTERVAL);
             }
-        }
+        });
     }
 
     @SuppressWarnings("unchecked")
