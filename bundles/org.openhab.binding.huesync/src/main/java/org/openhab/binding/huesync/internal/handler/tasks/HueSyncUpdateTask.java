@@ -15,6 +15,7 @@ package org.openhab.binding.huesync.internal.handler.tasks;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDeviceInfo;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
 import org.openhab.binding.huesync.internal.connection.HueSyncConnection;
@@ -34,10 +35,10 @@ public class HueSyncUpdateTask implements Runnable {
     private HueSyncConnection connection;
     private HueSyncDeviceInfo deviceInfo;
 
-    private Consumer<HueSyncDetailedDeviceInfo> action;
+    private Consumer<@Nullable HueSyncDetailedDeviceInfo> action;
 
     public HueSyncUpdateTask(HueSyncConnection connection, HueSyncDeviceInfo deviceInfo,
-            Consumer<HueSyncDetailedDeviceInfo> action) {
+            Consumer<@Nullable HueSyncDetailedDeviceInfo> action) {
 
         this.connection = connection;
         this.deviceInfo = deviceInfo;
@@ -53,8 +54,7 @@ public class HueSyncUpdateTask implements Runnable {
 
             HueSyncDetailedDeviceInfo deviceStatus = this.connection.getDetailedDeviceInfo();
 
-            if (deviceStatus != null)
-                this.action.accept(deviceStatus);
+            this.action.accept(deviceStatus);
 
         } catch (Exception e) {
             this.logger.debug("{}", e.getMessage());

@@ -97,9 +97,9 @@ public class HueSyncHandler extends BaseThingHandler {
     @SuppressWarnings("unchecked")
     private void startBackgroundTasks() {
         if (this.deviceInfo != null) {
-            HueSyncDeviceInfo device = (HueSyncDeviceInfo) this.deviceInfo;
+            HueSyncDeviceInfo device = this.deviceInfo;
 
-            Runnable statusUpdateTask = new HueSyncUpdateTask(this.connection, (HueSyncDeviceInfo) device,
+            Runnable statusUpdateTask = new HueSyncUpdateTask(this.connection, device,
                     (deviceStatus) -> this.updateDeviceStatus(deviceStatus));
 
             if (this.connection.isRegistered()) {
@@ -132,12 +132,14 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.config.statusUpdateInterval);
     }
 
-    private void updateDeviceStatus(HueSyncDetailedDeviceInfo deviceState) {
+    private void updateDeviceStatus(@Nullable HueSyncDetailedDeviceInfo deviceState) {
         ThingStatus currentStatus = this.thing.getStatus();
 
         logger.trace("Current status: {}", currentStatus);
 
-        if (currentStatus != ThingStatus.OFFLINE) {
+        if (deviceState == null) {
+            this.updateStatus(ThingStatus.OFFLINE);
+        } else {
             this.updateStatus(ThingStatus.ONLINE);
         }
     }

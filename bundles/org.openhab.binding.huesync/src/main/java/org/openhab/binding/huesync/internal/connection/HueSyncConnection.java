@@ -15,7 +15,6 @@ package org.openhab.binding.huesync.internal.connection;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -50,189 +49,224 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class HueSyncConnection {
+
     /**
-     * Request format: The Sync Box API can be accessed locally via HTTPS on root
-     * level (port 443, /api/v1), resource level /api/v1/<resource> and in some
-     * cases sub-resource level /api/v1/<resource>/<sub-resource>.
+     * 
+     * @author Patrik Gfeller - Initial Contribution
      */
-    private static final String REQUEST_FORMAT = "https://%s:%s/%s/%s";
-    private static final String API = "api/v1";
-    private static final Integer TIMEOUT_MILLISECONDS = 500;
+    protected class HueSyncConnectionHelper {
+        private static class ENDPOINTS {
+            public static final String DEVICE = "device";
+            public static final String REGISTRATIONS = "registrations";
+        }
 
-    private static class ENDPOINTS {
-        public static final String DEVICE = "device";
-        public static final String REGISTRATIONS = "registrations";
-    }
+        /**
+         * Request format: The Sync Box API can be accessed locally via HTTPS on root
+         * level (port 443, /api/v1), resource level /api/v1/<resource> and in some
+         * cases sub-resource level /api/v1/<resource>/<sub-resource>.
+         */
+        private static final String REQUEST_FORMAT = "https://%s:%s/%s/%s";
+        private static final String API = "api/v1";
+        private final Logger logger = HueSyncLogFactory.getLogger(HueSyncConnection.class);
 
-    private static final ObjectMapper ObjectMapper = new ObjectMapper();
+        private Integer port;
+        private String host;
 
+        private ServiceRegistration<?> tlsProviderService;
+        private HttpClient httpClient;
+
+        protected static final ObjectMapper ObjectMapper = new ObjectMapper();
+
+        protected String apiAccessToken;
+        protected String registrationId;
+
+        public HueSyncConnectionHelper(HttpClient httpClient, String host, Integer port, String apiAccessToken,
+                String registrationId) throws CertificateException, IOException {
+
+            this.host = host;
+            this.port = port;
+            this.apiAccessToken = apiAccessToken;
+            this.registrationId = registrationId;
+
+            HueSyncTrustManagerProvider trustManagerProvider = new HueSyncTrustManagerProvider(this.host, this.port);
+            BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+
+            this.tlsProviderService = context.registerService(TlsTrustManagerProvider.class.getName(),
+                    trustManagerProvider, null);
+            this.httpClient = httpClient;
+        }
+
+        protected @Nullable <T> T executeRequest(HttpMethod method, String endpoint, String payload, Class<T> type) {
+            try {
+                ContentResponse response = this.executeRequest(method, endpoint, payload);
+
+                if (response != null) {
+                    return processedResponse(response, type);
+                }
+
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                this.logger.error("{}", e.getMessage());
+            }
+            return null;
+        }
+
+        protected @Nullable <T> T executeGetRequest(String endpoint, Class<T> type) {
+            try {
+                ContentResponse response = this.executeGetRequest(endpoint);
+
+                if (response != null) {
+                    return processedResponse(response, type);
+                }
+
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                this.logger.error("{}", e.getMessage());
+            }
+
+            return null;
+        }
+
+        protected boolean isRegistered() {
+            if (this.apiAccessToken.isBlank() || this.registrationId.isBlank()) {
+                return false;
+            }
+
+            return true;
+        }
+
+        protected boolean unregisterDevice() {
+            if (this.isRegistered()) {
+                try {
+                    String endpoint = ENDPOINTS.REGISTRATIONS + "/" + this.registrationId;
+                    ContentResponse response = this.executeRequest(HttpMethod.DELETE, endpoint);
+
+                    if (response.getStatus() == HttpStatus.OK_200) {
+                        this.registrationId = "";
+                        this.apiAccessToken = "";
+
+                        return true;
+                    }
+                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                    this.logger.error("{}", e.getMessage());
+                }
+            }
+            return false;
+        }
+
+        protected void stop() {
+            this.tlsProviderService.unregister();
+        }
+
+        private @Nullable <T> T processedResponse(ContentResponse response, Class<T> type) {
+            switch (response.getStatus()) {
+                case HttpStatus.OK_200:
+                    return this.deserialize(response.getContentAsString(), type);
+                default:
+                    logger.warn("HTTP Status: {}", response.getStatus());
+                    return null;
+            }
+        }
+
+        private @Nullable <T> T deserialize(String json, Class<T> type) {
+            try {
+                return ObjectMapper.readValue(json, type);
+            } catch (JsonProcessingException | NoClassDefFoundError e) {
+                this.logger.error("{}", e.getMessage());
+
+                return null;
+            }
+        }
+
+        private ContentResponse executeRequest(HttpMethod method, String endpoint)
+                throws InterruptedException, TimeoutException, ExecutionException {
+            return this.executeRequest(method, endpoint, "");
+        }
+
+        private ContentResponse executeGetRequest(String endpoint)
+                throws InterruptedException, ExecutionException, TimeoutException {
+            String uri = String.format(REQUEST_FORMAT, this.host, this.port, API, endpoint);
+
+            return httpClient.GET(uri);
+        }
+
+        private ContentResponse executeRequest(HttpMethod method, String endpoint, String payload)
+                throws InterruptedException, TimeoutException, ExecutionException {
+
+            String uri = String.format(REQUEST_FORMAT, this.host, this.port, API, endpoint);
+
+            Request request = this.httpClient.newRequest(uri).method(method);
+
+            if (!payload.isBlank()) {
+                request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
+                        .content(new StringContentProvider(payload));
+            }
+
+            if (this.isRegistered()) {
+                request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.apiAccessToken);
+            }
+
+            return request.send();
+        }
+    };
+
+    private HueSyncConnectionHelper helper;
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncConnection.class);
-
-    private HttpClient httpClient;
-    private String host;
-    private Integer port;
-
-    private @Nullable String apiAccessToken;
-    private @Nullable String registrationId;
-
-    private ServiceRegistration<?> tlsProviderService;
 
     public HueSyncConnection(HttpClient httpClient, String host, Integer port, String apiAccessToken,
             String registrationId) throws CertificateException, IOException {
 
-        this.host = host;
-        this.port = port;
-        this.apiAccessToken = apiAccessToken;
-        this.registrationId = registrationId;
-
-        HueSyncTrustManagerProvider trustManagerProvider = new HueSyncTrustManagerProvider(this.host, this.port);
-        BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-
-        this.tlsProviderService = context.registerService(TlsTrustManagerProvider.class.getName(), trustManagerProvider,
-                null);
-        this.httpClient = httpClient;
+        this.helper = new HueSyncConnectionHelper(httpClient, host, port, apiAccessToken, registrationId);
     }
 
-    @SuppressWarnings("null")
     public @Nullable HueSyncDeviceInfo getDeviceInfo() {
-        HueSyncDeviceInfo deviceInfo = null;
-
-        ContentResponse response = this.executeGetRequest(ENDPOINTS.DEVICE);
-
-        if (this.responseReceived(response)) {
-            deviceInfo = this.deserialize(response.getContentAsString(), HueSyncDeviceInfo.class);
-        }
-
-        return deviceInfo;
-    }
-
-    @SuppressWarnings("null")
-    public @Nullable HueSyncDetailedDeviceInfo getDetailedDeviceInfo() {
-        if (!this.isRegistered())
-            return null;
-
-        HueSyncDetailedDeviceInfo deviceInfo = null;
-
-        ContentResponse response = this.executeGetRequest(ENDPOINTS.DEVICE);
-
-        if (this.responseReceived(response)) {
-            deviceInfo = this.deserialize(response.getContentAsString(), HueSyncDetailedDeviceInfo.class);
-        }
-
-        return deviceInfo;
+        return this.helper.executeGetRequest(HueSyncConnectionHelper.ENDPOINTS.DEVICE, HueSyncDeviceInfo.class);
     }
 
     public @Nullable HueSyncRegistration registerDevice(@Nullable String id) {
-        HueSyncRegistration registration = null;
+        if (id == null || id.isBlank()) {
+            return null;
+        }
+
+        HueSyncRegistrationRequest dto = new HueSyncRegistrationRequest();
+
+        dto.appName = HueSyncConstants.APPLICATION_NAME;
+        dto.instanceName = id;
 
         try {
-            if (id != null) {
-                HueSyncRegistrationRequest dto = new HueSyncRegistrationRequest();
+            String json = HueSyncConnectionHelper.ObjectMapper.writeValueAsString(dto);
+            HueSyncRegistration registration = this.helper.executeRequest(HttpMethod.POST,
+                    HueSyncConnectionHelper.ENDPOINTS.REGISTRATIONS, json, HueSyncRegistration.class);
 
-                dto.appName = HueSyncConstants.APPLICATION_NAME;
-                dto.instanceName = id;
-
-                String json = ObjectMapper.writeValueAsString(dto);
-
-                ContentResponse response = this.executeRequest(HttpMethod.POST, ENDPOINTS.REGISTRATIONS, json);
-
-                if (this.responseReceived(response)) {
-                    registration = this.deserialize(response.getContentAsString(), HueSyncRegistration.class);
-
-                    if (registration != null) {
-                        this.apiAccessToken = registration.accessToken;
-                        this.registrationId = registration.registrationId;
-                    }
-                }
+            if (registration != null) {
+                this.helper.registrationId = registration.registrationId != null ? registration.registrationId : "";
+                this.helper.apiAccessToken = registration.accessToken != null ? registration.accessToken : "";
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException | JsonProcessingException e) {
+
+            return registration;
+        } catch (JsonProcessingException e) {
             this.logger.error("{}", e.getMessage());
         }
 
-        return registration;
+        return null;
+    }
+
+    public @Nullable HueSyncDetailedDeviceInfo getDetailedDeviceInfo() {
+        if (this.helper.isRegistered()) {
+            return this.helper.executeRequest(HttpMethod.GET, HueSyncConnectionHelper.ENDPOINTS.DEVICE, "",
+                    HueSyncDetailedDeviceInfo.class);
+        }
+
+        return null;
+    }
+
+    public boolean isRegistered() {
+        return this.helper.isRegistered();
     }
 
     public boolean unregisterDevice() {
-        if (this.isRegistered()) {
-            try {
-                String endpoint = ENDPOINTS.REGISTRATIONS + "/" + this.registrationId;
-                ContentResponse response = this.executeRequest(HttpMethod.DELETE, endpoint);
-
-                return response.getStatus() == HttpStatus.OK_200;
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                this.logger.error("{}", e.getMessage());
-            }
-        }
-        return false;
+        return this.helper.unregisterDevice();
     }
 
     public void stop() {
-        this.tlsProviderService.unregister();
+        this.helper.stop();
     }
-
-    @SuppressWarnings("null")
-    public boolean isRegistered() {
-        return this.apiAccessToken != null && this.registrationId != null && !this.apiAccessToken.isBlank()
-                && !this.registrationId.isBlank();
-    }
-
-    // #region - private
-
-    private boolean responseReceived(@Nullable ContentResponse response) {
-        if (response != null && response.getStatus() == HttpStatus.OK_200) {
-            return true;
-        } else {
-            // TODO: responseReceived - log error details ...
-            return false;
-        }
-    }
-
-    private @Nullable <T> T deserialize(String json, Class<T> type) {
-        try {
-            return ObjectMapper.readValue(json, type);
-        } catch (JsonProcessingException | NoClassDefFoundError e) {
-            this.logger.error("{}", e.getMessage());
-
-            return null;
-        }
-    }
-
-    private @Nullable ContentResponse executeGetRequest(String endpoint) {
-        String uri = String.format(REQUEST_FORMAT, this.host, this.port, API, endpoint);
-
-        try {
-            return httpClient.GET(uri);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            this.logger.error("Endpoint: {} - {}", endpoint, e.getMessage());
-
-            return null;
-        }
-    }
-
-    private ContentResponse executeRequest(HttpMethod method, String endpoint)
-            throws InterruptedException, TimeoutException, ExecutionException {
-        return this.executeRequest(method, endpoint, "");
-    }
-
-    private ContentResponse executeRequest(HttpMethod method, String endpoint, String payload)
-            throws InterruptedException, TimeoutException, ExecutionException {
-
-        String uri = String.format(REQUEST_FORMAT, this.host, this.port, API, endpoint);
-
-        Request request = this.httpClient.newRequest(uri).method(method);
-
-        if (!payload.isBlank()) {
-            request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
-                    .content(new StringContentProvider(payload));
-        }
-
-        if (this.apiAccessToken != null && !this.apiAccessToken.isBlank()) {
-            // TODO: Check if we can use httpClient.setAuthenticationStore ...
-            request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.apiAccessToken);
-        }
-
-        return request.timeout(TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS).send();
-    }
-
-    // #endregion
 }
