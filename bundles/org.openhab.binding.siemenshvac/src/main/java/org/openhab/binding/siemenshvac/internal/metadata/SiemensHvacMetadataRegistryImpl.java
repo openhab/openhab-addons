@@ -511,13 +511,23 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             descBuilder.append("Radio:");
             SiemensHvacMetadataPointChild child = dpt.getChild().get(0);
 
-            StateOption stOpt0 = new StateOption("0", child.getOpt0());
-            descBuilder.append(String.format("(%s:%s)", "0", child.getOpt0()));
-            options.add(stOpt0);
+            if (dpt.getWriteAccess()) {
+                StateOption stOpt0 = new StateOption("OFF", child.getOpt0());
+                descBuilder.append(String.format("(%s:%s)", "OFF", child.getOpt0()));
+                options.add(stOpt0);
 
-            StateOption stOpt1 = new StateOption("1", child.getOpt1());
-            descBuilder.append(String.format("(%s:%s)", "1", child.getOpt1()));
-            options.add(stOpt1);
+                StateOption stOpt1 = new StateOption("ON", child.getOpt1());
+                descBuilder.append(String.format("(%s:%s)", "ON", child.getOpt1()));
+                options.add(stOpt1);
+            } else {
+                StateOption stOpt0 = new StateOption("CLOSED", child.getOpt0());
+                descBuilder.append(String.format("(%s:%s)", "OFF", child.getOpt0()));
+                options.add(stOpt0);
+
+                StateOption stOpt1 = new StateOption("OPEN", child.getOpt1());
+                descBuilder.append(String.format("(%s:%s)", "ON", child.getOpt1()));
+                options.add(stOpt1);
+            }
 
             description = descBuilder.toString();
             label = channelTypeUID.getId();
