@@ -61,6 +61,50 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | command          | all RMx                  | String               | IR Command code to transmit                     |
 | learningControl  | all RMx                  | String               | Learn mode command channel (see below)          |
 
+
+## Learning new remote codes
+
+To obtain the command codes, you can get this binding to put your Broadlink RMx device into 
+"learn mode" and then ask it for the code it learnt. Here are the steps:
+
+0. In the openHAB web UI, navigate to your RMx Thing
+1. Set the *Name of IR/RF command to learn* property to the name of the command you want the device to learn
+2. Click on its *Channels* tab
+3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead.(Only needed the first time)
+4. Click the item, and click the rectangular area that is marked NULL
+5. In the pop-up menu that appears, select *Learn IR command* for IR or *Learn RF command* for RF
+6. *The LED on your RM device will illuminate solidly*
+7. Point your IR/RF remote control at your RM device and keep pressing the button you'd like to learn. For RF, this can take 10-30 seconds
+8. *The LED on your RM device will extinguish once it has identified the command*
+9. If the command has been identified succesfully, the channel will have changed it name to "Learn command" or *RF command learnt*
+10. If no succes, the channel will be named "NULL". Inspect the `openhab.log` file on your openHAB server for any issues
+11. Check and save the IR/RF command by clicking the item once more and select "Check and save command". 
+12. Keep pressing the remote control with the command to check and save
+12. If succesfull, the channel will change name to the command saved
+13. If no succes, the channel be named "NULL", restart from step 3.
+
+
+The binding is also capable of modifying a previously stored code, and to delete a previously stored code.
+
+To modify a previously stored code, the procedure is the same as the one shown above, except that in step 4, the option to choose is *Modify IR command* or *Modify RF Command*
+
+*Please note that the "Learn command" will not modify a previously existent code, and the "Modify" command will not create a new command. This is done to avoid accidentally oeverwriting commands*
+
+In order to delete a previously stored code, the procedure is as follows:
+
+0. In the openHAB web UI, navigate to your RMx Thing
+1. Set the *Name of IR/RF command to learn* property to the name of the command you want the device to learn
+2. Click on its *Channels* tab
+3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead (Only needed the first time).
+4. Click the item, and click the rectangular area that is marked NULL
+5. In the pop-up menu that appears, select *Delete IR command* for IR or *Delete RF command* for RF
+
+*VERY IMPORTANT NOTE: Unlike the previous binding, writing the codes into the files is handled by OpenHAB. While it is possible to create a file externally, copy it in the proper location and use it as a remote codes database (As it is done in the case of Remote codes file migration) IT IS STRONGLY DISCOURAGED to modify the file while the binding is acive. Please make sure the binding is stopped before you modify a remote codes file manually. Also, have the following things in mind:*
+
+*-OpenHAB does not interpret a missing code file as empty. It will assume the file is corrupt and try to read from one of the backups, which can lead to confusion. if you want to empty your code file, create an empty file with a set of culry brackets, one per line*
+
+*-Remember if you manipulate the code file manually, remember to provide the proper location, and the proper ownership and permissions (Location is `$OPENHAB_USERDATA`, and permissions are `-rw-r--r-- 1 openhab openhab*
+
 ## Map File
 
 The Broadlink RM family of devices can transmit IR codes. The pro models add RF codes.
@@ -124,48 +168,6 @@ else:
     print(json.dumps(result,indent=2))
 ```
 
-## Learning new remote codes
-
-To obtain the command codes, you can get this binding to put your Broadlink RMx device into 
-"learn mode" and then ask it for the code it learnt. Here are the steps:
-
-0. In the openHAB web UI, navigate to your RMx Thing
-1. Set the *Name of IR/RF command to learn* property to the name of the command you want the device to learn
-2. Click on its *Channels* tab
-3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead.(Only needed the first time)
-4. Click the item, and click the rectangular area that is marked NULL
-5. In the pop-up menu that appears, select *Learn IR command* for IR or *Learn RF command* for RF
-6. *The LED on your RM device will illuminate solidly*
-7. Point your IR/RF remote control at your RM device and keep pressing the button you'd like to learn. For RF, this can take 10-30 seconds
-8. *The LED on your RM device will extinguish once it has identified the command*
-9. If the command has been identified succesfully, the channel will have changed it name to "Learn command" or *RF command learnt*
-10. If no succes, the channel will be named "NULL". Inspect the `openhab.log` file on your openHAB server for any issues
-11. Check and save the IR/RF command by clicking the item once more and select "Check and save command". 
-12. Keep pressing the remote control with the command to check and save
-12. If succesfull, the channel will change name to the command saved
-13. If no succes, the channel be named "NULL", restart from step 3.
-
-
-The binding is also capable of modifying a previously stored code, and to delete a previously stored code.
-
-To modify a previously stored code, the procedure is the same as the one shown above, except that in step 4, the option to choose is *Modify IR command* or *Modify RF Command*
-
-*Please note that the "Learn command" will not modify a previously existent code, and the "Modify" command will not create a new command. This is done to avoid accidentally oeverwriting commands*
-
-In order to delete a previously stored code, the procedure is as follows:
-
-0. In the openHAB web UI, navigate to your RMx Thing
-1. Set the *Name of IR/RF command to learn* property to the name of the command you want the device to learn
-2. Click on its *Channels* tab
-3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead (Only needed the first time).
-4. Click the item, and click the rectangular area that is marked NULL
-5. In the pop-up menu that appears, select *Delete IR command* for IR or *Delete RF command* for RF
-
-*VERY IMPORTANT NOTE: Unlike the previous binding, writing the codes into the files is handled by OpenHAB. While it is possible to create a file externally, copy it in the proper location and use it as a remote codes database (As it is done in the case of Remote codes file migration) IT IS STRONGLY DISCOURAGED to modify the file while the binding is acive. Please make sure the binding is stopped before you modify a remote codes file manually. Also, have the following things in mind:*
-
-*-OpenHAB does not interpret a missing code file as empty. It will assume the file is corrupt and try to read from one of the backups, which can lead to confusion. if you want to empty your code file, create an empty file with a set of culry brackets, one per line*
-
-*-Remember if you manipulate the code file manually, remember to provide the proper location, and the proper ownership and permissions (Location is `$OPENHAB_USERDATA`, and permissions are `-rw-r--r-- 1 openhab openhab*
 
 ## Full Example
 
@@ -179,4 +181,4 @@ Switch BroadlinkSP3 "Christmas Lights" [ "Lighting" ] { channel="broadlink:sp3:3
 
 - [Cato Sognen](https://community.openhab.org/u/cato_sognen)
 - [JAD](http://www.javadecompilers.com/jad) (Java Decompiler)
-
+- [Ricardo] (ricardol)
