@@ -34,8 +34,11 @@ import org.openhab.binding.netatmo.internal.handler.capability.DeviceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.DoorbellCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.RefreshAutoCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.AirQualityChannelHelper;
@@ -70,91 +73,100 @@ public enum ModuleType {
             new ChannelGroup(ApiBridgeChannelHelper.class, GROUP_MONITORING)),
 
     HOME(FeatureArea.NONE, "NAHome", 1, "home", ACCOUNT,
-            Set.of(DeviceCapability.class, HomeCapability.class, ChannelHelperCapability.class),
+            Set.of(DeviceCapability.class, HomeCapability.class, ChannelHelperCapability.class,
+                    RefreshCapability.class),
             new ChannelGroup(SecurityChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_SECURITY),
             new ChannelGroup(EnergyChannelHelper.class, GROUP_ENERGY)),
 
     PERSON(FeatureArea.SECURITY, "NAPerson", 1, "virtual", HOME,
-            Set.of(PersonCapability.class, ChannelHelperCapability.class),
+            Set.of(PersonCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             new ChannelGroup(PersonChannelHelper.class, GROUP_PERSON),
             new ChannelGroup(EventPersonChannelHelper.class, GROUP_PERSON_LAST_EVENT)),
 
     WELCOME(FeatureArea.SECURITY, "NACamera", 1, "camera", HOME,
-            Set.of(CameraCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL, ChannelGroup.EVENT,
+            Set.of(CameraCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.EVENT,
             new ChannelGroup(CameraChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_CAM_STATUS, GROUP_CAM_LIVE)),
 
-    TAG(FeatureArea.SECURITY, "NACamDoorTag", 1, "device", WELCOME, Set.of(ChannelHelperCapability.class),
-            ChannelGroup.SIGNAL, ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP,
-            new ChannelGroup(DoorTagChannelHelper.class, GROUP_TAG)),
+    TAG(FeatureArea.SECURITY, "NACamDoorTag", 1, "device", WELCOME,
+            Set.of(ChannelHelperCapability.class, ParentUpdateCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(DoorTagChannelHelper.class, GROUP_TAG)),
 
-    SIREN(FeatureArea.SECURITY, "NIS", 1, "device", WELCOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+    SIREN(FeatureArea.SECURITY, "NIS", 1, "device", WELCOME,
+            Set.of(ChannelHelperCapability.class, ParentUpdateCapability.class), ChannelGroup.SIGNAL,
             ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(SirenChannelHelper.class, GROUP_SIREN)),
 
     PRESENCE(FeatureArea.SECURITY, "NOC", 1, "camera", HOME,
-            Set.of(PresenceCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL, ChannelGroup.EVENT,
+            Set.of(PresenceCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.EVENT,
             new ChannelGroup(PresenceChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_CAM_STATUS, GROUP_CAM_LIVE,
                     GROUP_PRESENCE),
             new ChannelGroup(EventCameraChannelHelper.class, GROUP_SUB_EVENT)),
 
     DOORBELL(FeatureArea.SECURITY, "NDB", 1, "camera", HOME,
-            Set.of(DoorbellCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+            Set.of(DoorbellCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
+            ChannelGroup.SIGNAL,
             new ChannelGroup(CameraChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_DOORBELL_STATUS,
                     GROUP_DOORBELL_LIVE),
             new ChannelGroup(EventCameraChannelHelper.class, GROUP_DOORBELL_LAST_EVENT, GROUP_DOORBELL_SUB_EVENT)),
 
-    WEATHER_STATION(FeatureArea.WEATHER, "NAMain", 1, "configurable", ACCOUNT,
+    WEATHER_STATION(FeatureArea.WEATHER, "NAMain", 1, "weather", ACCOUNT,
             Set.of(DeviceCapability.class, WeatherCapability.class, MeasureCapability.class,
-                    ChannelHelperCapability.class),
+                    ChannelHelperCapability.class, RefreshAutoCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.HUMIDITY, ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE,
             ChannelGroup.AIR_QUALITY, ChannelGroup.LOCATION, ChannelGroup.NOISE, ChannelGroup.TEMP_INSIDE_EXT,
             new ChannelGroup(PressureChannelHelper.class, MeasureClass.PRESSURE, GROUP_TYPE_PRESSURE_EXTENDED)),
 
     OUTDOOR(FeatureArea.WEATHER, "NAModule1", 1, "device", WEATHER_STATION,
-            Set.of(MeasureCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL, ChannelGroup.HUMIDITY,
-            ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY, ChannelGroup.TEMP_OUTSIDE_EXT),
+            Set.of(MeasureCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.HUMIDITY, ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE,
+            ChannelGroup.BATTERY, ChannelGroup.TEMP_OUTSIDE_EXT),
 
-    WIND(FeatureArea.WEATHER, "NAModule2", 1, "device", WEATHER_STATION, Set.of(ChannelHelperCapability.class),
-            ChannelGroup.SIGNAL, ChannelGroup.TSTAMP_EXT, ChannelGroup.BATTERY,
-            new ChannelGroup(WindChannelHelper.class, GROUP_WIND)),
+    WIND(FeatureArea.WEATHER, "NAModule2", 1, "device", WEATHER_STATION,
+            Set.of(ChannelHelperCapability.class, ParentUpdateCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.TSTAMP_EXT, ChannelGroup.BATTERY, new ChannelGroup(WindChannelHelper.class, GROUP_WIND)),
 
     RAIN(FeatureArea.WEATHER, "NAModule3", 1, "device", WEATHER_STATION,
-            Set.of(MeasureCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
-            ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY,
+            Set.of(MeasureCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY,
             new ChannelGroup(RainChannelHelper.class, MeasureClass.RAIN_QUANTITY, GROUP_RAIN)),
 
     INDOOR(FeatureArea.WEATHER, "NAModule4", 1, "device", WEATHER_STATION,
-            Set.of(MeasureCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
-            ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY, ChannelGroup.HUMIDITY,
-            ChannelGroup.TEMP_INSIDE_EXT, ChannelGroup.AIR_QUALITY),
+            Set.of(MeasureCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.TSTAMP_EXT, ChannelGroup.MEASURE, ChannelGroup.BATTERY,
+            ChannelGroup.HUMIDITY, ChannelGroup.TEMP_INSIDE_EXT, ChannelGroup.AIR_QUALITY),
 
-    HOME_COACH(FeatureArea.AIR_CARE, "NHC", 1, "configurable", ACCOUNT,
+    HOME_COACH(FeatureArea.AIR_CARE, "NHC", 1, "weather", ACCOUNT,
             Set.of(DeviceCapability.class, AirCareCapability.class, MeasureCapability.class,
-                    ChannelHelperCapability.class),
+                    ChannelHelperCapability.class, RefreshAutoCapability.class),
             ChannelGroup.LOCATION, ChannelGroup.SIGNAL, ChannelGroup.NOISE, ChannelGroup.HUMIDITY,
             ChannelGroup.TEMP_INSIDE, ChannelGroup.MEASURE, ChannelGroup.TSTAMP_EXT,
             new ChannelGroup(AirQualityChannelHelper.class, GROUP_TYPE_AIR_QUALITY_EXTENDED),
             new ChannelGroup(PressureChannelHelper.class, MeasureClass.PRESSURE, GROUP_PRESSURE)),
 
-    PLUG(FeatureArea.ENERGY, "NAPlug", 1, "device", HOME, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL),
+    PLUG(FeatureArea.ENERGY, "NAPlug", 1, "device", HOME,
+            Set.of(ChannelHelperCapability.class, ParentUpdateCapability.class), ChannelGroup.SIGNAL),
 
-    VALVE(FeatureArea.ENERGY, "NRV", 1, "device", PLUG, Set.of(ChannelHelperCapability.class), ChannelGroup.SIGNAL,
+    VALVE(FeatureArea.ENERGY, "NRV", 1, "device", PLUG,
+            Set.of(ChannelHelperCapability.class, ParentUpdateCapability.class), ChannelGroup.SIGNAL,
             ChannelGroup.BATTERY_EXT),
 
-    THERMOSTAT(FeatureArea.ENERGY, "NATherm1", 1, "device", PLUG, Set.of(ChannelHelperCapability.class),
-            ChannelGroup.SIGNAL, ChannelGroup.BATTERY_EXT,
-            new ChannelGroup(Therm1ChannelHelper.class, GROUP_TYPE_TH_PROPERTIES)),
+    THERMOSTAT(FeatureArea.ENERGY, "NATherm1", 1, "device", PLUG,
+            Set.of(ChannelHelperCapability.class, ParentUpdateCapability.class), ChannelGroup.SIGNAL,
+            ChannelGroup.BATTERY_EXT, new ChannelGroup(Therm1ChannelHelper.class, GROUP_TYPE_TH_PROPERTIES)),
 
-    ROOM(FeatureArea.ENERGY, "NARoom", 1, "virtual", HOME, Set.of(RoomCapability.class, ChannelHelperCapability.class),
+    ROOM(FeatureArea.ENERGY, "NARoom", 1, "virtual", HOME,
+            Set.of(RoomCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             new ChannelGroup(RoomChannelHelper.class, GROUP_TYPE_ROOM_PROPERTIES, GROUP_TYPE_ROOM_TEMPERATURE),
             new ChannelGroup(SetpointChannelHelper.class, GROUP_SETPOINT)),
 
     SMOKE_DETECTOR(FeatureArea.SECURITY, "NSD", 1, "device", HOME,
-            Set.of(AlarmEventCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
-            ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT),
+            Set.of(AlarmEventCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT),
 
     CO_DETECTOR(FeatureArea.SECURITY, "NCO", 1, "device", HOME,
-            Set.of(AlarmEventCapability.class, ChannelHelperCapability.class), ChannelGroup.SIGNAL,
-            ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT);
+            Set.of(AlarmEventCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
+            ChannelGroup.SIGNAL, ChannelGroup.TIMESTAMP, ChannelGroup.ALARM_LAST_EVENT);
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 

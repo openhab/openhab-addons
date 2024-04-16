@@ -18,6 +18,7 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.Utils;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -37,8 +38,9 @@ import org.openhab.core.thing.Thing;
 public class BroadlinkRemoteModel4MiniHandler extends BroadlinkRemoteHandler {
 
     public BroadlinkRemoteModel4MiniHandler(Thing thing,
-            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
-        super(thing, commandDescriptionProvider);
+            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
+            StorageService storageService) {
+        super(thing, commandDescriptionProvider, storageService);
     }
 
     @Override
@@ -98,6 +100,11 @@ public class BroadlinkRemoteModel4MiniHandler extends BroadlinkRemoteHandler {
         int lsb = decryptedResponse[0] & 0xFF;
         int msb = decryptedResponse[1] & 0xFF;
         int payloadLength = (msb << 8) + lsb;
+        if ((payloadLength + 2) > decryptedResponse.length) {
+            logger.warn("Received incomplete message, expected length: {}, received: {}", payloadLength + 2,
+                    decryptedResponse.length);
+            payloadLength = decryptedResponse.length - 2;
+        }
         return Utils.slice(decryptedResponse, 6, payloadLength + 2);
     }
 }

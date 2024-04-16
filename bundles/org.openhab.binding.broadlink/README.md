@@ -32,12 +32,14 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | ipAddress           | String  |               | Sets the IP address of the Broadlink device                                       |
 | staticIp            | Boolean | true          | Enabled if your broadlink device has a Static IP set                              |
 | port                | Integer | 80            | The network port for the device                                                   |
-| macAddress          | String  |               | The device's MAC Address                                                           |
+| macAddress          | String  |               | The device's MAC Address                                                          |
 | pollingInterval     | Integer | 30            | The interval in seconds for polling the status of the device                      |
-| ignoreFailedUpdates | Boolean | false         | If enabled, failed status requests won't put the device `OFFLINE`                       |
-| mapFilename         | String  | broadlink.map | The map file that contains remote codes to send via IR                            |
+| nameOfCommandToLearn| String  | DEVICE_ON     | The name of the IR or RF command to learn when using the learn command channel    |
+| ignoreFailedUpdates | Boolean | false         | If enabled, failed status requests won't put the device `OFFLINE`                |
 
-> The `mapFilename` setting is applicable to the RM series of devices only.
+
+
+
 
 ## Channels
 
@@ -59,55 +61,111 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | command          | all RMx                  | String               | IR Command code to transmit                     |
 | learningControl  | all RMx                  | String               | Learn mode command channel (see below)          |
 
-## Map File
-
-The Broadlink RM family of devices can transmit IR codes.
-The map file contains a list of IR command codes to send via the device.
-The file uses the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and is stored in the `<OPENHAB_CONF>/transform` folder.
-By default, the file name is `broadlink.map` but can be changed using the `mapFile` setting.
-
-Here is a map file example:
-
-```
-TV_POWER=26008c0092961039103a1039101510151014101510151039103a10391015101411141015101510141139101510141114101510151014103a10141139103911391037123a10391000060092961039103911391014111410151015101411391039103a101411141015101510141015103911141015101510141015101510391015103911391039103a1039103911000d05000000000000000000000000
-heatpump_off=2600760069380D0C0D0C0D290D0C0D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D290D290D290D290D290D290E0002900000
-
-```
-
-The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu heat pump.
-To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
 
 ## Learning new remote codes
 
 To obtain the command codes, you can get this binding to put your Broadlink RMx device into 
 "learn mode" and then ask it for the code it learnt. Here are the steps:
 
-1. In the openHAB web UI, navigate to your RMx Thing, and click on its *Channels* tab
-2. Find the *Remote Learning Control* channel and create an Item for it
-3. Click the item, and click the rectangular area that is marked NULL
-4. In the pop-up menu that appears, select "Enter infrared learn mode"
-5. *The LED on your RM device will illuminate solidly*
-6. Point your IR remote control at your RM device and press the button you'd like to learn
-7. *The LED on your RM device will extinguish once it has learnt the command*
-8. Now click the rectangular area again (which will now show "Enter infrared learn mode")
-9. Select the "Check last captured IR code" menu option in the pop-up menu
-10. Inspect the `openhab.log` file on your openHAB server - you should see the following:
+0. In the openHAB web UI, navigate to your RMx Thing
+1. Set the *Name of IR/RF command to learn* property to the name of the command you want the device to learn
+2. Click on its *Channels* tab
+3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead.(Only needed the first time)
+4. Click the item, and click the rectangular area that is marked NULL
+5. In the pop-up menu that appears, select *Learn IR command* for IR or *Learn RF command* for RF
+6. *The LED on your RM device will illuminate solidly*
+7. Point your IR/RF remote control at your RM device and keep pressing the button you'd like to learn. For RF, this can take 10-30 seconds
+8. *The LED on your RM device will extinguish once it has identified the command*
+9. If the command has been identified succesfully, the channel will have changed it name to "Learn command" or *RF command learnt*
+10. If no succes, the channel will be named "NULL". Inspect the `openhab.log` file on your openHAB server for any issues
+11. Check and save the IR/RF command by clicking the item once more and select "Check and save command". 
+12. Keep pressing the remote control with the command to check and save
+12. If succesfull, the channel will change name to the command saved
+13. If no succes, the channel be named "NULL", restart from step 3.
+
+
+The binding is also capable of modifying a previously stored code, and to delete a previously stored code.
+
+To modify a previously stored code, the procedure is the same as the one shown above, except that in step 4, the option to choose is *Modify IR command* or *Modify RF Command*
+
+*Please note that the "Learn command" will not modify a previously existent code, and the "Modify" command will not create a new command. This is done to avoid accidentally oeverwriting commands*
+
+In order to delete a previously stored code, the procedure is as follows:
+
+0. In the openHAB web UI, navigate to your RMx Thing
+1. Set the *Name of IR/RF command to learn* property to the name of the command you want the device to learn
+2. Click on its *Channels* tab
+3. For IR find the *Remote Learning Control* channel and create an Item for it, for RF use the *Remote RF Learning Control* channel instead (Only needed the first time).
+4. Click the item, and click the rectangular area that is marked NULL
+5. In the pop-up menu that appears, select *Delete IR command* for IR or *Delete RF command* for RF
+
+*VERY IMPORTANT NOTE: Unlike the previous binding, writing the codes into the files is handled by OpenHAB. While it is possible to create a file externally, copy it in the proper location and use it as a remote codes database (As it is done in the case of Remote codes file migration) IT IS STRONGLY DISCOURAGED to modify the file while the binding is acive. Please make sure the binding is stopped before you modify a remote codes file manually. Also, have the following things in mind:*
+
+*-OpenHAB does not interpret a missing code file as empty. It will assume the file is corrupt and try to read from one of the backups, which can lead to confusion. if you want to empty your code file, create an empty file with a set of culry brackets, one per line*
+
+*-Remember if you manipulate the code file manually, remember to provide the proper location, and the proper ownership and permissions (Location is `$OPENHAB_USERDATA`, and permissions are `-rw-r--r-- 1 openhab openhab*
+
+## Map File
+
+The Broadlink RM family of devices can transmit IR codes. The pro models add RF codes.
+The map file contains a list of IR/RF command codes to send via the device.
+
+In this version of the binding, the IR codes are store in `$OPENHAB_USERDATA/jsondb/broadlink_ir.json` and for the RM Pro series of devices
+the RF codes are store in `$OPENHAB_USERDATA/jsondb/broadlink_rf.json`
+
+In previous versions of this binding, the file used the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and was stored in the `<OPENHAB_CONF>/transform` folder.
+By default, the file name was `broadlink.map` for the IR codes, but could be changed using the `mapFile` setting. In similar fashion, the RM pro models
+stored the RF codes in the `broadlinkrf.map` file. 
+
+Here is a map file example of the previous file format:
 
 ```
-[BroadlinkRemoteHandler] - BEGIN LAST LEARNT CODE (976 bytes)
-[BroadlinkRemoteHandler] - 2600bc017239100d0e2b0e0f100c107f55747be51a3e1d4ff4......f5be8b3d4ff4b
-4d77c44d105fa530546becaa2bcfbd348b30145447f55747be51a3747be51a3e1d4ff4b3f4f4f......a3e1d4ff4b348
-0145447f55747be51a3e1d4ff4b
-[BroadlinkRemoteHandler] - END LAST LEARNT CODE (1944 characters)
+TV_POWER=26008c0092961039103a1039101510151014101510151039103a10391015101411141015101510141139101510141114101510151014103a10141139103911391037123a10391000060092961039103911391014111410151015101411391039103a101411141015101510141015103911141015101510141015101510391015103911391039103a1039103911000d05000000000000000000000000
+heatpump_off=2600760069380D0C0D0C0D290D0C0D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D290D290D290D290D290D290E0002900000
 ```
 
-11. If you carefully copy the log line between the `BEGIN` and `END` messages, 
-    it should have exactly the number of characters as advised in the `END` message.
-    
-12. You can now paste a new entry into your `map` file, with the name of your choice; for example:
+The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu heat pump.
+To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
+For RF, the `rfcommand` channel is used. 
+
+In this version of the binding, storage of codes is handled by OpenHAB. The map files are stored in the $OPENHAB_USERDATA/jsondb directory. As an advatage, the files are now backed up by OpenHAB, which s more practical for migrations, data robustness, etc. having the storage of the codes handled by OpenHAB also provides uniformity in where the files are stored.
+
+With the change of the storage mechanism, the files are also changing format, and codes are now stored in json. As an example, a file with the commands shown in the previous example would look like this:
 
 ```
-BLURAY_ON=2600bc017239100d0e2b0e0f100c107f55747be51a3e1d4ff4...0145447f55747be51a3e1d4ff4b
+{
+  "TV_POWER": {
+    "value": "26008c0092961039103a1039101510151014101510151039103a10391015101411141015101510141139101510141114101510151014103a10141139103911391037123a10391000060092961039103911391014111410151015101411391039103a101411141015101510141015103911141015101510141015101510391015103911391039103a1039103911000d05000000000000000000000000"
+  },
+  "heatpump_off": {
+    "value": "2600760069380D0C0D0C0D290D0C0D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D290D0C0D0C0D0C0D0C0D0C0D0C0D290D0C0D290D290D290D290D290D290E0002900000"
+  }
+}
+```
+
+The code shown below is a Python script that can be used to convert from the old format to the new one:
+
+```
+import csv
+import json
+import sys
+import argparse
+
+parser=argparse.ArgumentParser(description= "Broadlink converter argument parser")
+parser.add_argument('-i','--input_filename', help='Input File Name', required=True)
+parser.add_argument('-o','--output_filename', help='Output File Name')
+args=parser.parse_args()
+
+result={}
+with open(args.input_filename,'r') as f:
+    red=csv.reader(f, delimiter='=')
+    for d in red:
+        result[d[0]] = { "class": "java.lang.String" , "value":d[1]}
+if args.output_filename:
+    with open(args.output_filename, 'w', encoding='utf-8') as f:
+        json.dump(result, f, ensure_ascii=False, indent=2)
+else:
+    print(json.dumps(result,indent=2))
 ```
 
 
@@ -123,4 +181,4 @@ Switch BroadlinkSP3 "Christmas Lights" [ "Lighting" ] { channel="broadlink:sp3:3
 
 - [Cato Sognen](https://community.openhab.org/u/cato_sognen)
 - [JAD](http://www.javadecompilers.com/jad) (Java Decompiler)
-
+- [Ricardo] (ricardol)

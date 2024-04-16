@@ -41,10 +41,10 @@
 			<default>30</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="mapFilename" type="text">
-			<label>Map File</label>
-			<description>Enter name of file containing mapping of commands to IR codes</description>
-			<default>broadlink.map</default>
+		<parameter name="nameOfCommandToLearn" type="text">
+			<label>Name of IR/RF command to learn</label>
+			<description>Enter name of the IR or RF command to learn when using the learn Command channel</description>
+			<default>DEVICE_ON</default>
 			<required>true</required>
 		</parameter>
 		<parameter name="ignoreFailedUpdates" type="boolean">

@@ -21,6 +21,8 @@ import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkMappingService;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.Utils;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -45,19 +47,23 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     public static final byte COMMAND_BYTE_CHECK_LEARNT_DATA = 0x04;
 
     private final BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider;
-    private @Nullable BroadlinkMappingService mappingService;
+    private final StorageService storageService;
+    protected @Nullable BroadlinkMappingService mappingService;
 
     public BroadlinkRemoteHandler(Thing thing,
-            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider) {
+            BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
+            StorageService storageService) {
         super(thing);
         this.commandDescriptionProvider = commandDescriptionProvider;
+        this.storageService = storageService;
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        this.mappingService = new BroadlinkMappingService(thingConfig.getMapFilename(), commandDescriptionProvider,
-                new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL));
+        this.mappingService = new BroadlinkMappingService(commandDescriptionProvider,
+                new ChannelUID(thing.getUID(), BroadlinkBindingConstants.COMMAND_CHANNEL),
+                new ChannelUID(thing.getUID(), BroadlinkBindingConstants.RF_COMMAND_CHANNEL), this.storageService);
     }
 
     @Override
@@ -78,8 +84,11 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             ByteArrayOutputStream outputStream = buildCommandMessage(commandByte, codeBytes);
             byte[] padded = Utils.padTo(outputStream.toByteArray(), 16);
             byte[] message = buildMessage((byte) 0x6a, padded);
-            return sendAndReceiveDatagram(message, purpose);
+            byte[] response = sendAndReceiveDatagram(message, purpose);
+            return response;
         } catch (IOException e) {
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType("Error found during when entering IR learning mode"));
             logger.warn("Exception while sending command", e);
         }
 
@@ -108,33 +117,97 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         return Utils.slice(decryptedResponse, 4, decryptedResponse.length);
     }
 
-    private void sendCheckDataCommandAndLog() {
+    @SuppressWarnings("null")
+    private void handleIRCommand(String irCommand, boolean replacement) {
         try {
+            String message = "";
+            if (replacement) {
+                message = "Modifying ";
+            } else {
+                message = "Adding ";
+            }
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType(message + irCommand + "..."));
+
             byte[] response = sendCommand(COMMAND_BYTE_CHECK_LEARNT_DATA, "send learnt code check command");
+
             if (response == null) {
                 logger.warn("Got nothing back while getting learnt code");
+                updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
             } else {
                 String hexString = Utils.toHexString(extractResponsePayload(response));
-                logger.info("BEGIN LAST LEARNT CODE");
-                logger.info("{}", hexString);
-                logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+                String cmdLabel = null;
+                if (replacement) {
+                    cmdLabel = mappingService.replaceCode(irCommand, hexString, "IR");
+                    message = "modified";
+                } else {
+                    cmdLabel = mappingService.storeCode(irCommand, hexString, "IR");
+                    message = "saved";
+                }
+                if (cmdLabel != null) {
+                    logger.info("BEGIN LAST LEARNT CODE");
+                    logger.info("{}", hexString);
+                    logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+                    updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                            new StringType("IR command " + irCommand + " " + message));
+                } else {
+                    if (replacement) {
+                        logger.info("Command label not previously stored. Skipping");
+                        updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                                new StringType("IR command " + irCommand + " does not exist"));
+                    } else {
+                        logger.info("Command label previously stored. Skipping");
+                        updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                                new StringType("IR command " + irCommand + " already  exists"));
+                    }
+                }
             }
         } catch (IOException e) {
             logger.warn("Exception while attempting to check learnt code: {}", e.getMessage());
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
+        }
+    }
+
+    @SuppressWarnings("null")
+    private void deleteIRCommand(String irCommand) {
+        updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE));
+        updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                new StringType("Deleting IR command " + irCommand + "..."));
+        String cmdLabel = mappingService.deleteCode(irCommand, "IR");
+        if (cmdLabel != null) {
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType("IR command " + irCommand + " deleted"));
+        } else {
+            updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                    new StringType("IR command " + irCommand + " not found"));
         }
     }
 
     void handleLearningCommand(String learningCommand) {
         logger.trace("Sending learning-channel command {}", learningCommand);
         switch (learningCommand) {
-            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN:
+            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN: {
+                updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
+                        new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_LEARN));
                 sendCommand(COMMAND_BYTE_ENTER_LEARNING, "enter remote code learning mode");
                 break;
-            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK:
-                sendCheckDataCommandAndLog();
+            }
+            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_CHECK: {
+                handleIRCommand(thingConfig.getNameOfCommandToLearn(), false);
                 break;
-            default:
+            }
+            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_MODIFY: {
+                handleIRCommand(thingConfig.getNameOfCommandToLearn(), true);
+                break;
+            }
+            case BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE: {
+                deleteIRCommand(thingConfig.getNameOfCommandToLearn());
+                break;
+            }
+            default: {
                 logger.warn("Unrecognised learning channel command: {}", learningCommand);
+            }
         }
     }
 
@@ -150,21 +223,16 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             return;
         }
 
-        Channel channel = thing.getChannel(channelUID.getId());
-        if (channel == null) {
-            logger.warn("Unexpected null channel while handling command {}", command.toFullString());
-            return;
-        }
-        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        ChannelTypeUID channelTypeUID = extractChannelType(channelUID, command);
         if (channelTypeUID == null) {
-            logger.warn("Unexpected null channelTypeUID while handling command {}", command.toFullString());
             return;
         }
+
         switch (channelTypeUID.getId()) {
             case BroadlinkBindingConstants.COMMAND_CHANNEL: {
-                logger.debug("Handling ir/rf command '{}' on channel {} of thing {}", command, channelUID.getId(),
+                logger.debug("Handling ir command '{}' on channel {} of thing {}", command, channelUID.getId(),
                         getThing().getLabel());
-                byte code[] = lookupCode(command, channelUID);
+                byte code[] = lookupIRCode(command, channelUID);
                 if (code != null) {
                     sendCode(code);
                 }
@@ -175,13 +243,28 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 break;
             default:
                 logger.debug("Thing {} has unknown channel type '{}'", getThing().getLabel(), channelTypeUID.getId());
+                break;
         }
     }
 
+    protected @Nullable ChannelTypeUID extractChannelType(ChannelUID channelUID, Command command) {
+        Channel channel = thing.getChannel(channelUID.getId());
+        if (channel == null) {
+            logger.warn("Unexpected null channel while handling command {}", command.toFullString());
+            return null;
+        }
+        ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+        if (channelTypeUID == null) {
+            logger.warn("Unexpected null channelTypeUID while handling command {}", command.toFullString());
+            return null;
+        }
+        return channelTypeUID;
+    }
+
     @SuppressWarnings("null")
-    private byte @Nullable [] lookupCode(Command command, ChannelUID channelUID) {
+    private byte @Nullable [] lookupIRCode(Command command, ChannelUID channelUID) {
         byte code[] = null;
-        String value = this.mappingService.lookup(command.toString());
+        String value = this.mappingService.lookupCode(command.toString(), "IR");
 
         if (value == null || value.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

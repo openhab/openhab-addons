@@ -74,14 +74,21 @@ public class BroadlinkBindingConstants {
 
     public static final String COMMAND_CHANNEL = "command";
     public static final String LEARNING_CONTROL_CHANNEL = "learningControl";
+    public static final String RF_COMMAND_CHANNEL = "rfcommand";
+    public static final String RF_LEARNING_CONTROL_CHANNEL = "learningRFControl";
     public static final String LEARNING_CONTROL_COMMAND_LEARN = "LEARN";
     public static final String LEARNING_CONTROL_COMMAND_CHECK = "CHECK";
+    public static final String LEARNING_CONTROL_COMMAND_MODIFY = "MODIFY";
+    public static final String LEARNING_CONTROL_COMMAND_DELETE = "DELETE";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_POWER_CONSUMPTION = "powerConsumption";
 
     public static final String COMMAND_POWER_ON = "powerOn";
     public static final String COMMAND_NIGHTLIGHT = "nightLight";
+
+    public static final String IR_MAP_NAME = "broadlink_ir";
+    public static final String RF_MAP_NAME = "broadlink_rf";
 
     public static final Unit<Temperature> BROADLINK_TEMPERATURE_UNIT = SIUnits.CELSIUS;
     public static final Unit<Dimensionless> BROADLINK_HUMIDITY_UNIT = Units.PERCENT;

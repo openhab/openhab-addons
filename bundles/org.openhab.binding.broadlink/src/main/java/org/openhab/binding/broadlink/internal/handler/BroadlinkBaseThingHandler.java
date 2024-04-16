@@ -209,9 +209,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     public void updateItemStatus() {
-        logger.trace("updateItemStatus; checking host availability at {}", thingConfig.getIpAddress());
         if (NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000, logger)) {
-            logger.trace("updateItemStatus; host found at {}", thingConfig.getIpAddress());
             if (!Utils.isOnline(getThing())) {
                 logger.trace("updateItemStatus; device not currently online, resolving");
                 transitionToOnline();

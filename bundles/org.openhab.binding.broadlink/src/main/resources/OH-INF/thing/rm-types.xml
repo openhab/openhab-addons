@@ -53,11 +53,13 @@
 		<channels>
 			<channel id="command" typeId="command"/>
 			<channel id="learningControl" typeId="learningControl"/>
+			<channel id="rfcommand" typeId="rfcommand"/>
+			<channel id="learningRFControl" typeId="learningRFControl"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
-		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
+		<config-description-ref uri="thing-type:broadlink:rmproconfig"/>
 	</thing-type>
 
 
