@@ -147,9 +147,9 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                     if (cr.getStatus() == 200) {
                         ForecastSolarObject localForecast = new ForecastSolarObject(cr.getContentAsString(),
                                 Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
-                        updateState(CHANNEL_JSON, StringType.valueOf(cr.getContentAsString()));
                         if (localForecast.isValid()) {
                             updateStatus(ThingStatus.ONLINE);
+                            updateState(CHANNEL_JSON, StringType.valueOf(cr.getContentAsString()));
                             setForecast(localForecast);
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

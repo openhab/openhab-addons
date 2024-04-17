@@ -88,7 +88,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                     return;
                 }
             }
-            updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.UNKNOWN);
             refreshJob = Optional
                     .of(scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL, TimeUnit.MINUTES));
         } else {
@@ -154,6 +154,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                 powerSum += fo.getActualPowerValue(now, mode);
                 daySum += fo.getDayTotal(now.toLocalDate(), mode);
             }
+            updateStatus(ThingStatus.ONLINE);
             updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ACTUAL,
                     Utils.getEnergyState(energySum));
             updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_REMAIN,

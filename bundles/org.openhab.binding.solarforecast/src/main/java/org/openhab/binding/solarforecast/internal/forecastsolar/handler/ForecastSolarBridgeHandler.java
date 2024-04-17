@@ -98,7 +98,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         updateConfiguration(editConfig);
         config = getConfigAs(ForecastSolarBridgeConfiguration.class);
         configuration = Optional.of(config);
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
         refreshJob = Optional
                 .of(scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL, TimeUnit.MINUTES));
     }
@@ -140,6 +140,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
             powerSum += fo.getActualPowerValue(now);
             daySum += fo.getDayTotal(now.toLocalDate());
         }
+        updateStatus(ThingStatus.ONLINE);
         updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energySum));
         updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(daySum - energySum));
         updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(daySum));
