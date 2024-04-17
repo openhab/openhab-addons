@@ -25,6 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class LinkyConfiguration {
     public String token = "";
     public String prmId = "";
+    public String clientId = "";
+    public String clientSecret = "";
 
     public boolean seemsValid() {
         return !prmId.isBlank();

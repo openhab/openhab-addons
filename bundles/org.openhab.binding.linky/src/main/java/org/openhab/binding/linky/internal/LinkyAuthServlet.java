@@ -83,25 +83,19 @@ public class LinkyAuthServlet extends HttpServlet {
         try {
             handleLinkyRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
 
-            LinkyAccountHandler accountHandler = linkyAuthService.getLinkyAccountHandler();
-
             resp.setContentType(CONTENT_TYPE);
 
             StringBuffer optionBuffer = new StringBuffer();
 
-            if (accountHandler != null) {
-                List<String> prmIds = accountHandler.getAllPrmId();
-                for (String prmId : prmIds) {
-                    optionBuffer.append("<option value=\"" + prmId + "\">" + prmId + "</option>");
-                }
+            List<String> prmIds = linkyAuthService.getAllPrmId();
+            for (String prmId : prmIds) {
+                optionBuffer.append("<option value=\"" + prmId + "\">" + prmId + "</option>");
             }
 
             replaceMap.put(KEY_PRMID_OPTION, optionBuffer.toString());
             replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
             replaceMap.put(KEY_RETRIEVE_TOKEN_URI, servletBaseURLSecure + "?state=OK");
-            if (accountHandler != null) {
-                replaceMap.put(KEY_AUTHORIZE_URI, accountHandler.formatAuthorizationUrl(servletBaseURLSecure));
-            }
+            replaceMap.put(KEY_AUTHORIZE_URI, linkyAuthService.formatAuthorizationUrl(servletBaseURLSecure));
             resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
             resp.getWriter().close();
         } catch (LinkyException ex) {
