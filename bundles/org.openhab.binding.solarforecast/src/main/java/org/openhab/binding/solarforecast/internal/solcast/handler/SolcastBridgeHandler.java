@@ -60,8 +60,8 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     private final Logger logger = LoggerFactory.getLogger(SolcastBridgeHandler.class);
 
     private List<SolcastPlaneHandler> planes = new ArrayList<>();
-    private Optional<SolcastBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private SolcastBridgeConfiguration configuration = new SolcastBridgeConfiguration();
     private ZoneId timeZone;
 
     public SolcastBridgeHandler(Bridge bridge, TimeZoneProvider tzp) {
@@ -76,15 +76,14 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
     @Override
     public void initialize() {
-        SolcastBridgeConfiguration config = getConfigAs(SolcastBridgeConfiguration.class);
-        configuration = Optional.of(config);
-        if (!config.apiKey.isBlank()) {
-            if (!configuration.get().timeZone.isBlank()) {
+        SolcastBridgeConfiguration configuration = getConfigAs(SolcastBridgeConfiguration.class);
+        if (!configuration.apiKey.isBlank()) {
+            if (!configuration.timeZone.isBlank()) {
                 try {
-                    timeZone = ZoneId.of(configuration.get().timeZone);
+                    timeZone = ZoneId.of(configuration.timeZone);
                 } catch (DateTimeException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/solarforecast.site.status.timezone" + " [\"" + configuration.get().timeZone + "\"]");
+                            "@text/solarforecast.site.status.timezone" + " [\"" + configuration.timeZone + "\"]");
                     return;
                 }
             }
@@ -235,10 +234,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     }
 
     String getApiKey() {
-        if (configuration.isPresent()) {
-            return configuration.get().apiKey;
-        }
-        return EMPTY;
+        return configuration.apiKey;
     }
 
     @Override
