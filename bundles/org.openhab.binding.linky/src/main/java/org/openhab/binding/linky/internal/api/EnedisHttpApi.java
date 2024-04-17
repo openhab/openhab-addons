@@ -55,7 +55,9 @@ public class EnedisHttpApi {
     // private static final String BASE_URL = "https://www.myelectricaldata.fr/";
     private static final String BASE_URL = "https://ext.prod-sandbox.api.enedis.fr/";
 
-    private static final String CONTRACT_URL = BASE_URL + "customers_upc/v5/usage_points/contracts";
+    private static final String CONTRACT_URL = BASE_URL
+            + "metering_data_dc/v5/daily_consumption?start=2024-04-01&end=2024-04-17";
+    // private static final String CONTRACT_URL = BASE_URL + "customers_upc/v5/usage_points/contracts";
     private static final String IDENTITY_URL = BASE_URL + "identity";
     private static final String CONTACT_URL = BASE_URL + "contact";
     private static final String ADDRESS_URL = BASE_URL + "addresses";
@@ -154,7 +156,8 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData("%s?usage_point_id=%s".formatted(CONTRACT_URL, config.prmId));
+        // String data = getData("%s?usage_point_id=%s".formatted(CONTRACT_URL, config.prmId));
+        String data = getData("%s&usage_point_id=%s".formatted(CONTRACT_URL, config.prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", CONTRACT_URL);
         }

@@ -35,16 +35,16 @@
 				<description>Your Enedis token (can be left empty, use the connection page to automatically fill it
 					http://youopenhab/connectlinky)</description>
 			</parameter>
-			
+
 			<parameter name="clientId" type="text" required="false">
-                <label>clientId</label>
-                <description>Your Enedis clientId</description>
-            </parameter>
-            <parameter name="clientSecret" type="text" required="false">
-                <label>clientSecret</label>
-                <description>Your Enedis clientSecret</description>
-            </parameter>
-            
+				<label>clientId</label>
+				<description>Your Enedis clientId</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="false">
+				<label>clientSecret</label>
+				<description>Your Enedis clientSecret</description>
+			</parameter>
+
 		</config-description>
 
 
