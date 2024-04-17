@@ -1494,54 +1494,54 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 ### Mijia Omni Robot Vacuum-Mop (<a name="dreame-vacuum-p2114o">dreame.vacuum.p2114o</a>) Channels
 
-| Channel              | Type                 | Description                              | Comment    |
-|----------------------|----------------------|------------------------------------------|------------|
-| actions              | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Vacuum Start Sweep","vacuum-stop-sweeping"="Vacuum Stop Sweeping","vacuum-start-room-sweep"="Vacuum Start Room Sweep","battery-start-charge"="Battery Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer","mop-reset-mop-life"="Mop Reset Mop Life"]` |
-| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping","8"="Drying","9"="Washing","10"="Go Washing","11"="Building","12"="Sweeping and Mopping","13"="Charging Completed"]` |
-| fault                | Number               | Robot Cleaner - Device Fault             |            |
-| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"]` |
-| battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
-| charging_state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
-| brush_left_time      | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
-| brush_life_level     | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
-| brush_left_time1     | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
-| brush_life_level1    | Number:Dimensionless | Side Cleaning Brush - Brush Life Level   |            |
-| filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
-| filter_left_time     | Number:Time          | Filter - Filter Left Time                |            |
-| work_mode            | Number               | Vacuum Extend - Work Mode                |            |
-| cleaning_time        | Number:Time          | Vacuum Extend - Cleaning Time            |            |
-| cleaning_area        | Number               | Vacuum Extend - Cleaning Area            |            |
-| cleaning_mode        | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="","1"="","2"="","3"=""]` |
-| mop_mode             | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
-| waterbox_status      | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="Removed","1"="Installed"]` |
-| task_status          | Number               | Vacuum Extend - Task Status              |            |
-| clean_extend_data    | String               | Vacuum Extend - Clean Extend Data        |            |
-| break_point_restart  | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Off","1"="On"]` |
-| carpet_press         | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="On","1"="Off"]` |
-| serial_number        | String               | Vacuum Extend - Serial Number            |            |
-| remote_state         | String               | Vacuum Extend - Remote State             |            |
-| clean_rags_tip       | Number:Time          | Vacuum Extend - Clean Rags Tip           |            |
-| keep_sweeper_time    | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
-| faults               | String               | Vacuum Extend - Faults                   |            |
-| nation_matched       | String               | Vacuum Extend - Nation Matched           |            |
-| relocation_status    | Number               | Vacuum Extend - Relocation Status        | Value mapping `["0"="1000000"]` |
-| laser_switch         | Number               | Vacuum Extend - Laser Switch             | Value mapping `["0"="Close","1"="Open"]` |
-| enable               | Switch               | Do Not Disturb - Enable                  |            |
-| start_time           | String               | Do Not Disturb - Start Time              |            |
-| end_time             | String               | Do Not Disturb - End Time                |            |
-| mult_map_info        | String               | Map - Mult Map Info                      |            |
-| volume               | Number               | Audio - Volume                           |            |
-| voice_packet_id      | String               | Audio - Voice Packet Id                  |            |
-| voice_change_state   | String               | Audio - Voice Change State               |            |
-| set_voice            | String               | Audio - Set Voice                        |            |
-| time_zone            | String               | Time - Time Zone                         |            |
-| timer_clean          | String               | Time - Timer Clean                       |            |
-| first_clean_time     | Number               | Clean Logs - First Clean Time            |            |
-| total_clean_time     | Number:Time          | Clean Logs - Total Clean Time            |            |
-| total_clean_times    | Number               | Clean Logs - Total Clean Times           |            |
-| total_clean_area     | Number               | Clean Logs - Total Clean Area            |            |
-| mop_life_level       | Number:Dimensionless | Mop - Mop Life Level                     |            |
-| mop_left_time        | Number:Time          | Mop - Mop Left Time                      |            |
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Vacuum Start Sweep","vacuum-stop-sweeping"="Vacuum Stop Sweeping","vacuum-start-room-sweep"="Vacuum Start Room Sweep","battery-start-charge"="Battery Start Charge","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","filter-reset-filter-life"="Filter Reset Filter Life","vacuum-extend-start-clean"="Vacuum Extend Start Clean","vacuum-extend-stop-clean"="Vacuum Extend Stop Clean","map-map-req"="Map Map Req","map-update-map"="Map Update Map","audio-position"="Audio Position","audio-play-sound"="Audio Play Sound","time-delete-timer"="Time Delete Timer","mop-reset-mop-life"="Mop Reset Mop Life"]` |
+| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Sweeping","2"="Idle","3"="Paused","4"="Error","5"="Go Charging","6"="Charging","7"="Mopping","8"="Drying","9"="Washing","10"="Go Washing","11"="Building","12"="Sweeping and Mopping","13"="Charging Completed"]` |
+| fault                      | Number               | Robot Cleaner - Device Fault             |            |
+| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["0"="Silent","1"="Basic","2"="Strong","3"="Full Speed"]` |
+| battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
+| charging_state             | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","5"="Go Charging"]` |
+| brush_left_time            | Number:Time          | Main Cleaning Brush - Brush Left Time    |            |
+| brush_life_level           | Number:Dimensionless | Main Cleaning Brush - Brush Life Level   |            |
+| brush_left_time1           | Number:Time          | Side Cleaning Brush - Brush Left Time    |            |
+| brush_life_level1          | Number:Dimensionless | Side Cleaning Brush - Brush Life Level   |            |
+| filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
+| work_mode                  | Number               | Vacuum Extend - Work Mode                |            |
+| cleaning_time              | Number:Time          | Vacuum Extend - Cleaning Time            |            |
+| cleaning_area              | Number               | Vacuum Extend - Cleaning Area            |            |
+| cleaning_mode              | Number               | Vacuum Extend - Cleaning Mode            | Value mapping `["0"="","1"="","2"="","3"=""]` |
+| mop_mode                   | Number               | Vacuum Extend - Mop Mode                 | Value mapping `["1"="Low","2"="Medium","3"="High"]` |
+| waterbox_status            | Number               | Vacuum Extend - Waterbox Status          | Value mapping `["0"="Removed","1"="Installed"]` |
+| task_status                | Number               | Vacuum Extend - Task Status              |            |
+| clean_extend_data          | String               | Vacuum Extend - Clean Extend Data        |            |
+| break_point_restart        | Number               | Vacuum Extend - Break Point Restart      | Value mapping `["0"="Off","1"="On"]` |
+| carpet_press               | Number               | Vacuum Extend - Carpet Press             | Value mapping `["0"="On","1"="Off"]` |
+| serial_number              | String               | Vacuum Extend - Serial Number            |            |
+| remote_state               | String               | Vacuum Extend - Remote State             |            |
+| clean_rags_tip             | Number:Time          | Vacuum Extend - Clean Rags Tip           |            |
+| keep_sweeper_time          | Number:Time          | Vacuum Extend - Keep Sweeper Time        |            |
+| faults                     | String               | Vacuum Extend - Faults                   |            |
+| nation_matched             | String               | Vacuum Extend - Nation Matched           |            |
+| relocation_status          | Number               | Vacuum Extend - Relocation Status        | Value mapping `["0"="1000000"]` |
+| laser_switch               | Number               | Vacuum Extend - Laser Switch             | Value mapping `["0"="Close","1"="Open"]` |
+| enable                     | Switch               | Do Not Disturb - Enable                  |            |
+| start_time                 | String               | Do Not Disturb - Start Time              |            |
+| end_time                   | String               | Do Not Disturb - End Time                |            |
+| mult_map_info              | String               | Map - Mult Map Info                      |            |
+| volume                     | Number               | Audio - Volume                           |            |
+| voice_packet_id            | String               | Audio - Voice Packet Id                  |            |
+| voice_change_state         | String               | Audio - Voice Change State               |            |
+| set_voice                  | String               | Audio - Set Voice                        |            |
+| time_zone                  | String               | Time - Time Zone                         |            |
+| timer_clean                | String               | Time - Timer Clean                       |            |
+| first_clean_time           | Number               | Clean Logs - First Clean Time            |            |
+| total_clean_time           | Number:Time          | Clean Logs - Total Clean Time            |            |
+| total_clean_times          | Number               | Clean Logs - Total Clean Times           |            |
+| total_clean_area           | Number               | Clean Logs - Total Clean Area            |            |
+| mop_life_level             | Number:Dimensionless | Mop - Mop Life Level                     |            |
+| mop_left_time              | Number:Time          | Mop - Mop Left Time                      |            |
 
 ### MOVA Z500 Robot Vacuum and Mop Cleaner (<a name="dreame-vacuum-p2156o">dreame.vacuum.p2156o</a>) Channels
 
@@ -7289,7 +7289,7 @@ Number save_map_status "Vslam Extend - Save Map Status" (G_vacuum) {channel="mii
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
-```
+```java
 Group G_vacuum "Mijia Omni Robot Vacuum-Mop" <status>
 String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
 Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
