@@ -39,6 +39,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -53,13 +54,12 @@ import org.openhab.core.types.TimeSeries.Policy;
  */
 @NonNullByDefault
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
-    private final PointType homeLocation;
-
     private List<ForecastSolarPlaneHandler> planes = new ArrayList<>();
+    private Optional<PointType> homeLocation;
     private Optional<ForecastSolarBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
-    public ForecastSolarBridgeHandler(Bridge bridge, PointType location) {
+    public ForecastSolarBridgeHandler(Bridge bridge, Optional<PointType> location) {
         super(bridge);
         homeLocation = location;
     }
@@ -72,12 +72,31 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     @Override
     public void initialize() {
         ForecastSolarBridgeConfiguration config = getConfigAs(ForecastSolarBridgeConfiguration.class);
+        PointType locationConfigured;
+
+        // handle location error cases
         if (config.location.isBlank()) {
-            Configuration editConfig = editConfiguration();
-            editConfig.put("location", homeLocation.toString());
-            updateConfiguration(editConfig);
-            config = getConfigAs(ForecastSolarBridgeConfiguration.class);
+            if (homeLocation.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/solarforecast.site.status.location-missing");
+                return;
+            } else {
+                locationConfigured = homeLocation.get();
+                // continue with openHAB location
+            }
+        } else {
+            try {
+                locationConfigured = new PointType(config.location);
+                // continue with location from configuration
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                return;
+            }
         }
+        Configuration editConfig = editConfiguration();
+        editConfig.put("location", locationConfigured.toString());
+        updateConfiguration(editConfig);
+        config = getConfigAs(ForecastSolarBridgeConfiguration.class);
         configuration = Optional.of(config);
         updateStatus(ThingStatus.ONLINE);
         refreshJob = Optional
@@ -104,7 +123,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     }
 
     /**
-     * Get data for all planes. Synchronized to protect parts map from being modified during update
+     * Get data for all planes. Synchronized to protect plane list from being modified during update
      */
     private synchronized void getData() {
         if (planes.isEmpty()) {

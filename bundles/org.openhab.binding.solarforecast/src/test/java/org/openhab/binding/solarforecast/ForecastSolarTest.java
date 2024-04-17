@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
+import java.util.Optional;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
@@ -243,7 +244,8 @@ class ForecastSolarTest {
     @Test
     void testPowerTimeSeries() {
         ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
-                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"), PointType.valueOf("1,2"));
+                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
+                Optional.of(PointType.valueOf("1,2")));
         CallbackMock cm = new CallbackMock();
         fsbh.setCallback(cm);
 
@@ -273,7 +275,8 @@ class ForecastSolarTest {
     @Test
     void testEnergyTimeSeries() {
         ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
-                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"), PointType.valueOf("1,2"));
+                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
+                Optional.of(PointType.valueOf("1,2")));
         CallbackMock cm = new CallbackMock();
         fsbh.setCallback(cm);
 

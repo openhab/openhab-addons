@@ -14,6 +14,8 @@ package org.openhab.binding.solarforecast.internal;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -46,7 +48,7 @@ import org.osgi.service.component.annotations.Reference;
 public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
     private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
-    private final PointType location;
+    private Optional<PointType> location = Optional.empty();
 
     @Activate
     public SolarForecastHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference LocationProvider lp,
@@ -55,9 +57,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         httpClient = hcf.getCommonHttpClient();
         PointType pt = lp.getLocation();
         if (pt != null) {
-            location = pt;
-        } else {
-            location = PointType.valueOf("0.0,0.0");
+            location = Optional.of(pt);
         }
     }
 

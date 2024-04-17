@@ -78,7 +78,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     public void initialize() {
         SolcastBridgeConfiguration config = getConfigAs(SolcastBridgeConfiguration.class);
         configuration = Optional.of(config);
-        if (config.apiKey.isBlank()) {
+        if (!config.apiKey.isBlank()) {
             if (!configuration.get().timeZone.isBlank()) {
                 try {
                     timeZone = ZoneId.of(configuration.get().timeZone);
@@ -122,7 +122,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     }
 
     /**
-     * Get data for all planes. Protect parts map from being modified during update
+     * Get data for all planes. Protect plane list from being modified during update
      */
     public synchronized void getData() {
         if (planes.isEmpty()) {
