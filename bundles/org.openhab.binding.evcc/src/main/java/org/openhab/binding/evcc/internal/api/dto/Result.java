@@ -47,11 +47,14 @@ public class Result {
     @SerializedName("batteryMode")
     private String batteryMode;
 
-    @SerializedName("gridConfigured")
-    private boolean gridConfigured;
+    @SerializedName("gridCurrents")
+    private float[] gridCurrents;
+
+    @SerializedName("gridEnergy")
+    private float gridEnergy;
 
     @SerializedName("gridPower")
-    private float gridPower;
+    private Float gridPower;
 
     @SerializedName("homePower")
     private float homePower;
@@ -160,16 +163,23 @@ public class Result {
     }
 
     /**
-     * @return whether grid is configured
+     * @return grid's currents
      */
-    public boolean getGridConfigured() {
-        return gridConfigured;
+    public float[] getGridCurrents() {
+        return gridCurrents;
+    }
+
+    /**
+     * @return grid's energy
+     */
+    public float getGridEnergy() {
+        return gridEnergy;
     }
 
     /**
      * @return grid's power
      */
-    public float getGridPower() {
+    public Float getGridPower() {
         return gridPower;
     }
 
