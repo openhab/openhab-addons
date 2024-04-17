@@ -32,8 +32,8 @@ public class Result {
     @SerializedName("batteryCapacity")
     private float batteryCapacity;
 
-    @SerializedName("batteryConfigured")
-    private boolean batteryConfigured;
+    @SerializedName("battery")
+    private Battery[] battery;
 
     @SerializedName("batteryPower")
     private float batteryPower;
@@ -71,8 +71,8 @@ public class Result {
     @SerializedName("residualPower")
     private float residualPower;
 
-    @SerializedName("pvConfigured")
-    private boolean pvConfigured;
+    @SerializedName("pv")
+    private PV[] pv;
 
     @SerializedName("pvPower")
     private float pvPower;
@@ -90,17 +90,17 @@ public class Result {
     private String availableVersion;
 
     /**
+     * @return all configured batteries
+     */
+    public Battery[] getBattery() {
+        return battery;
+    }
+
+    /**
      * @return battery's capacity
      */
     public float getBatteryCapacity() {
         return batteryCapacity;
-    }
-
-    /**
-     * @return whether battery is configured
-     */
-    public boolean getBatteryConfigured() {
-        return batteryConfigured;
     }
 
     /**
@@ -188,10 +188,10 @@ public class Result {
     }
 
     /**
-     * @return whether pv is configured
+     * @return all configured PVs
      */
-    public boolean getPvConfigured() {
-        return pvConfigured;
+    public PV[] getPV() {
+        return pv;
     }
 
     /**
