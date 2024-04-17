@@ -35,7 +35,7 @@ public interface LinkyAccountHandler {
      * @param reqCode The unique code passed by Smartthings to obtain the refresh and access tokens
      * @return returns the name of the Smartthings user that is authorized
      */
-    String authorize(String redirectUrl, String reqCode) throws LinkyException;
+    String authorize(String redirectUrl, String reqState, String reqCode) throws LinkyException;
 
     /**
      * Formats the Url to use to call Smartthings to authorize the application.

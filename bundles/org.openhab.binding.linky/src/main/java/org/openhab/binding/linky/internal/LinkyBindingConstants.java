@@ -30,6 +30,9 @@ public class LinkyBindingConstants {
 
     public static final String BINDING_ID = "linky";
 
+    public static final String clientId = "_88uJnEjEs_IMf4bjGZJV6gGxYga";
+    public static final String clientSecret = "6lsPfCmu0fEXuKYy3e0e6w8ydIca";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_LINKY = new ThingTypeUID(BINDING_ID, "linky");
 
@@ -69,16 +72,20 @@ public class LinkyBindingConstants {
     /**
      * Smartthings scopes needed by this binding to work.
      */
-    public static final String LINKY_SCOPES = Stream.of("r:devices:*", "w:devices:*", "x:devices:*", "r:hubs:*",
-            "r:locations:*", "w:locations:*", "x:locations:*", "r:scenes:*", "x:scenes:*", "r:rules:*", "w:rules:*",
-            "r:installedapps", "w:installedapps").collect(Collectors.joining(" "));
+    public static final String LINKY_SCOPES = Stream.of("am_application_scope", "default")
+            .collect(Collectors.joining(" "));
+    // "r:devices:*", "w:devices:*", "x:devices:*", "r:hubs:*",
+    // "r:locations:*", "w:locations:*", "x:locations:*", "r:scenes:*", "x:scenes:*", "r:rules:*", "w:rules:*",
+    // "r:installedapps", "w:installedapps"
 
     // List of Linky services related urls, information
     public static final String LINKY_ACCOUNT_URL = "https://www.myelectricaldata.fr/";
     public static final String LINKY_AUTHORIZE_URL = LINKY_ACCOUNT_URL + "v1/oauth2/authorize";
     public static final String LINKY_API_TOKEN_URL = LINKY_ACCOUNT_URL + "token";
 
-    public static final String ENEDIS_ACCOUNT_URL = "https://mon-compte-particulier.enedis.fr/";
-    public static final String ENEDIS_AUTHORIZE_URL = ENEDIS_ACCOUNT_URL + "dataconnect/v1/oauth2/authorize";
-    public static final String ENEDIS_API_TOKEN_URL = ENEDIS_ACCOUNT_URL + "token";
+    public static final String ENEDIS_API_ACCOUNT_URL = "https://ext.prod-sandbox.api.enedis.fr/";
+    public static final String ENEDIS_API_TOKEN_URL = ENEDIS_API_ACCOUNT_URL + "oauth2/v3/token";
+
+    public static final String ENEDIS_AUTH_ACCOUNT_URL = "https://mon-compte-particulier.enedis.fr/";
+    public static final String ENEDIS_AUTH_AUTHORIZE_URL = ENEDIS_AUTH_ACCOUNT_URL + "dataconnect/v1/oauth2/authorize";
 }
