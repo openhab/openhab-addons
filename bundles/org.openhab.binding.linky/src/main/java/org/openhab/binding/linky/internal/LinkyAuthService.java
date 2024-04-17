@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -31,6 +32,9 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Deactivate;
@@ -46,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
-public class LinkyAuthService implements LinkyAccountHandler {
+public class LinkyAuthService {
 
     private static final String TEMPLATE_PATH = "templates/";
     private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
@@ -56,14 +60,14 @@ public class LinkyAuthService implements LinkyAccountHandler {
     private @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) BundleContext bundleContext;
 
-    private final boolean oAuthSupport = true;
-    private @Nullable OAuthClientService oAuthService;
+    private OAuthClientService oAuthService;
+    private final ThingRegistry thingRegistry;
 
     public LinkyAuthService(final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
-            final @Reference ComponentContext componentContext) {
+            final @Reference ThingRegistry thingRegistry, final @Reference ComponentContext componentContext) {
 
         this.httpService = httpService;
-
+        this.thingRegistry = thingRegistry;
         this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID,
                 LinkyBindingConstants.ENEDIS_API_TOKEN_URL, LinkyBindingConstants.ENEDIS_AUTH_AUTHORIZE_URL,
                 LinkyBindingConstants.clientId, LinkyBindingConstants.clientSecret, LinkyBindingConstants.LINKY_SCOPES,
@@ -118,64 +122,54 @@ public class LinkyAuthService implements LinkyAccountHandler {
         }
     }
 
-    @Override
     public String authorize(String redirectUri, String reqState, String reqCode) throws LinkyException {
         // Will work only in case of direct oAuth2 authentification to enedis
         // this is not the case in v1 as we go trough MyElectricalData
 
-        if (oAuthSupport) {
-            try {
-                OAuthClientService oAuthService = this.oAuthService;
-                if (oAuthService == null) {
-                    throw new OAuthException("OAuth service is not initialized");
-                }
-                logger.debug("Make call to Enedis to get access token.");
-                final AccessTokenResponse credentials = oAuthService
-                        .getAccessTokenByClientCredentials(LinkyBindingConstants.LINKY_SCOPES);
+        try {
 
-                final String user = updateProperties(credentials);
-                logger.debug("Authorized for user: {}", user);
-                return user;
-            } catch (RuntimeException | OAuthException | IOException e) {
-                // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-                throw new LinkyException("Error during oAuth authorize :" + e.getMessage(), e);
-            } catch (final OAuthResponseException e) {
-                throw new LinkyException("\"Error during oAuth authorize :" + e.getMessage(), e);
-            }
-        }
-        // Fallback for MyElectricalData
-        else {
-            /*
-             * String token = EnedisHttpApi.getToken(httpClient, LinkyBindingConstants.clientId, reqCode);
-             *
-             * logger.debug("token: {}", token);
-             *
-             * Collection<Thing> col = this.thingRegistry.getAll();
-             * for (Thing thing : col) {
-             * if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
-             * Configuration config = thing.getConfiguration();
-             * String prmId = (String) config.get("prmId");
-             *
-             * if (!prmId.equals(reqCode)) {
-             * continue;
-             * }
-             *
-             * config.put("token", token);
-             * LinkyHandler handler = (LinkyHandler) thing.getHandler();
-             * if (handler != null) {
-             * handler.saveConfiguration(config);
-             * }
-             * }
-             * }
-             *
-             * return token;
-             */
+            logger.debug("Make call to Enedis to get access token.");
+            final AccessTokenResponse credentials = oAuthService
+                    .getAccessTokenByClientCredentials(LinkyBindingConstants.LINKY_SCOPES);
 
-            return "";
+            String accessToken = credentials.getAccessToken();
+
+            logger.debug("Acces token: {}", accessToken);
+            return accessToken;
+        } catch (RuntimeException | OAuthException | IOException e) {
+            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            throw new LinkyException("Error during oAuth authorize :" + e.getMessage(), e);
+        } catch (final OAuthResponseException e) {
+            throw new LinkyException("\"Error during oAuth authorize :" + e.getMessage(), e);
         }
+
+        /*
+         * String token = EnedisHttpApi.getToken(httpClient, LinkyBindingConstants.clientId, reqCode);
+         *
+         * logger.debug("token: {}", token);
+         *
+         * Collection<Thing> col = this.thingRegistry.getAll();
+         * for (Thing thing : col) {
+         * if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
+         * Configuration config = thing.getConfiguration();
+         * String prmId = (String) config.get("prmId");
+         *
+         * if (!prmId.equals(reqCode)) {
+         * continue;
+         * }
+         *
+         * config.put("token", token);
+         * LinkyHandler handler = (LinkyHandler) thing.getHandler();
+         * if (handler != null) {
+         * handler.saveConfiguration(config);
+         * }
+         * }
+         * }
+         *
+         * return token;
+         */
     }
 
-    @Override
     public boolean isAuthorized() {
         final AccessTokenResponse accessTokenResponse = getAccessTokenResponse();
 
@@ -183,56 +177,46 @@ public class LinkyAuthService implements LinkyAccountHandler {
                 && accessTokenResponse.getRefreshToken() != null;
     }
 
+    public String getToken() {
+        AccessTokenResponse accesToken = getAccessTokenResponse();
+        return accesToken.getAccessToken();
+    }
+
     private @Nullable AccessTokenResponse getAccessTokenResponse() {
         try {
-            OAuthClientService oAuthService = this.oAuthService;
-            return oAuthService == null ? null : oAuthService.getAccessTokenResponse();
+            return oAuthService.getAccessTokenResponse();
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
             logger.debug("Exception checking authorization: ", e);
             return null;
         }
     }
 
-    private String updateProperties(AccessTokenResponse credentials) {
-        return credentials.getAccessToken();
-    }
-
-    @Override
     public String formatAuthorizationUrl(String redirectUri) {
         // Will work only in case of direct oAuth2 authentification to enedis
         // this is not the case in v1 as we go trough MyElectricalData
-        if (oAuthSupport) {
-            try {
-                OAuthClientService oAuthService = this.oAuthService;
-                if (oAuthService == null) {
-                    throw new OAuthException("OAuth service is not initialized");
-                }
-
-                String uri = oAuthService.getAuthorizationUrl(redirectUri, null, "Linky");
-                return uri;
-            } catch (final OAuthException e) {
-                logger.debug("Error constructing AuthorizationUrl: ", e);
-                return "";
-            }
+        try {
+            String uri = this.oAuthService.getAuthorizationUrl(redirectUri, LinkyBindingConstants.LINKY_SCOPES,
+                    LinkyBindingConstants.BINDING_ID);
+            return uri;
+        } catch (final OAuthException e) {
+            logger.debug("Error constructing AuthorizationUrl: ", e);
+            return "";
         }
-        return "";
     }
 
-    @Override
     public List<String> getAllPrmId() {
         List<String> result = new ArrayList<String>();
-        /*
-         * Collection<Thing> col = this.thingRegistry.getAll();
-         *
-         * for (Thing thing : col) {
-         * if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
-         * Configuration config = thing.getConfiguration();
-         *
-         * String prmId = (String) config.get("prmId");
-         * result.add(prmId);
-         * }
-         * }
-         */
+
+        Collection<Thing> col = this.thingRegistry.getAll();
+
+        for (Thing thing : col) {
+            if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
+                Configuration config = thing.getConfiguration();
+
+                String prmId = (String) config.get("prmId");
+                result.add(prmId);
+            }
+        }
 
         return result;
     }

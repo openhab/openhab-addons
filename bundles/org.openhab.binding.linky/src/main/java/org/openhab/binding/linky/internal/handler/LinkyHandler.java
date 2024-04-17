@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.linky.internal.LinkyAuthService;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
@@ -73,6 +74,7 @@ public class LinkyHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable EnedisHttpApi enedisApi;
+    private LinkyAuthService authService;
 
     private @NonNullByDefault({}) String prmId;
     private @NonNullByDefault({}) String userId;
@@ -83,10 +85,12 @@ public class LinkyHandler extends BaseThingHandler {
         ALL
     }
 
-    public LinkyHandler(Thing thing, LocaleProvider localeProvider, Gson gson, HttpClient httpClient) {
+    public LinkyHandler(Thing thing, LocaleProvider localeProvider, Gson gson, HttpClient httpClient,
+            LinkyAuthService authService) {
         super(thing);
         this.gson = gson;
         this.httpClient = httpClient;
+        this.authService = authService;
 
         this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
@@ -150,7 +154,7 @@ public class LinkyHandler extends BaseThingHandler {
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
         if (config.seemsValid()) {
-            EnedisHttpApi api = new EnedisHttpApi(config, gson, httpClient);
+            EnedisHttpApi api = new EnedisHttpApi(config, gson, httpClient, authService);
             this.enedisApi = api;
 
             scheduler.submit(() -> {
