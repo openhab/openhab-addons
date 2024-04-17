@@ -220,5 +220,4 @@ public class LinkyAuthService {
 
         return result;
     }
-
 }
