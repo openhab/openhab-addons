@@ -22,6 +22,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.linky.internal.LinkyAuthService;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AddressInfo;
@@ -51,8 +52,10 @@ import com.google.gson.JsonSyntaxException;
 public class EnedisHttpApi {
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    private static final String BASE_URL = "https://www.myelectricaldata.fr/";
-    private static final String CONTRACT_URL = BASE_URL + "contracts";
+    // private static final String BASE_URL = "https://www.myelectricaldata.fr/";
+    private static final String BASE_URL = "https://ext.prod-sandbox.api.enedis.fr/";
+
+    private static final String CONTRACT_URL = BASE_URL + "customers_upc/v5/usage_points/contracts";
     private static final String IDENTITY_URL = BASE_URL + "identity";
     private static final String CONTACT_URL = BASE_URL + "contact";
     private static final String ADDRESS_URL = BASE_URL + "addresses";
@@ -66,12 +69,14 @@ public class EnedisHttpApi {
     private final Gson gson;
     private final HttpClient httpClient;
     private LinkyConfiguration config;
+    private LinkyAuthService authService;
 
     private boolean connected = false;
 
-    public EnedisHttpApi(LinkyConfiguration config, Gson gson, HttpClient httpClient) {
+    public EnedisHttpApi(LinkyConfiguration config, Gson gson, HttpClient httpClient, LinkyAuthService authService) {
         this.gson = gson;
         this.httpClient = httpClient;
+        this.authService = authService;
         this.config = config;
     }
 
@@ -94,7 +99,7 @@ public class EnedisHttpApi {
     }
 
     private String getData(String url) throws LinkyException {
-        return getData(url, httpClient, config.token);
+        return getData(url, httpClient, authService.getToken());
     }
 
     private static String getData(String url, HttpClient httpClient, String token) throws LinkyException {
@@ -102,7 +107,7 @@ public class EnedisHttpApi {
             Request request = httpClient.newRequest(url);
             request = request.method(HttpMethod.GET);
             if (!("".equals(token))) {
-                request = request.header("Authorization", token);
+                request = request.header("Authorization: Bearer ", token);
             }
 
             ContentResponse result = request.send();
@@ -149,7 +154,7 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData("%s/%s/cache".formatted(CONTRACT_URL, config.prmId));
+        String data = getData("%s?usage_point_id=%s".formatted(CONTRACT_URL, config.prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", CONTRACT_URL);
         }

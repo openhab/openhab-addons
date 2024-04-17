@@ -32,6 +32,7 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -65,6 +66,9 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final int REQUEST_BUFFER_SIZE = 8000;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
+
+    private LinkyAuthService authService;
+
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ZonedDateTime.class,
                     (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
@@ -90,15 +94,17 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
             final @Reference HttpClientFactory httpClientFactory, final @Reference OAuthFactory oAuthFactory,
-            final @Reference HttpService httpService, ComponentContext componentContext) {
+            final @Reference HttpService httpService, final @Reference ThingRegistry thingRegistry,
+            ComponentContext componentContext) {
         this.localeProvider = localeProvider;
+
+        authService = new LinkyAuthService(oAuthFactory, httpService, thingRegistry, componentContext);
+
         SslContextFactory sslContextFactory = new SslContextFactory.Client();
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
             sslContextFactory.setSslContext(sslContext);
-
-            LinkyAuthService authService = new LinkyAuthService(oAuthFactory, httpService, componentContext);
 
         } catch (NoSuchAlgorithmException e) {
             logger.warn("An exception occurred while requesting the SSL encryption algorithm : '{}'", e.getMessage(),
@@ -140,7 +146,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (supportsThingType(thing.getThingTypeUID())) {
-            LinkyHandler handler = new LinkyHandler(thing, localeProvider, gson, httpClient);
+            LinkyHandler handler = new LinkyHandler(thing, localeProvider, gson, httpClient, authService);
             return handler;
         }
 
