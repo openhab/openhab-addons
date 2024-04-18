@@ -113,6 +113,13 @@
 		<state pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
+	<channel-type id="targetTemperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Target temperature (read only)</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
@@ -121,7 +128,7 @@
 			<options>
 				<option value="AUTO">Automatic</option>
 				<option value="MANUAL">Manual</option>
-				<option value="PROTECTION">Antifreeze / Heat Protection</option>
+				<option value="PROTECTION">Anti-freeze / Heat Protection</option>
 				<option value="OFF">Off</option>
 			</options>
 		</state>
@@ -186,6 +193,20 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="heating" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Heating Active</label>
+		<description>Heating is active in the zone (read only)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cooling" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Cooling Active</label>
+		<description>Cooling is active in the zone (read only)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="actuators" advanced="true">
 		<item-type>String</item-type>
 		<label>Actuators Status</label>
@@ -215,7 +236,7 @@
 		<state readOnly="true">
 			<options>
 				<option value="OFF">Off</option>
-				<option value="PROTECTION">Antifreeze / Heat Protection</option>
+				<option value="PROTECTION">Anti-freeze / Heat Protection</option>
 				<option value="PLUS_3">+3</option>
 				<option value="PLUS_2">+2</option>
 				<option value="PLUS_1">+1</option>
@@ -236,7 +257,7 @@
 				<option value="WEEKLY">Weekly</option>
 				<option value="SCENARIO">Scenarios</option>
 				<option value="MANUAL">Manual</option>
-				<option value="PROTECTION">Antifreeze / Heat Protection</option>
+				<option value="PROTECTION">Anti-freeze / Heat Protection</option>
 				<option value="OFF">Off</option>
 				<option value="HOLIDAY">Holiday</option>
 				<option value="VACATION">Vacation</option>
@@ -287,7 +308,7 @@
 	<channel-type id="vacationDays">
 		<item-type>Number</item-type>
 		<label>Vacation Days</label>
-		<description>Number of days the Central Unit will be set to Antifreeze / Heat Protection target temperature before
+		<description>Number of days the Central Unit will be set to Anti-freeze / Heat Protection target temperature before
 			returning to mode WEEKLY (read/write)</description>
 	</channel-type>
 
@@ -332,7 +353,7 @@
 	<channel-type id="atLeastOneProbeProtection" advanced="true">
 		<item-type>Switch</item-type>
 		<label>At least one probe in PROTECTION</label>
-		<description>At least one probe in PROTECTION mode (Antifreeze / Heat Protection) indicator from Central Unit (read
+		<description>At least one probe in PROTECTION mode (Anti-freeze / Heat Protection) indicator from Central Unit (read
 			only)</description>
 		<state readOnly="true"></state>
 	</channel-type>

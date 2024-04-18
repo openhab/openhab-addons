@@ -70,8 +70,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private double currentSetPointTemp = 20.0d;
 
-    private Thermoregulation.@Nullable Function currentFunction = Function.HEATING;
-    private Thermoregulation.@Nullable OperationMode currentMode = OperationMode.PROTECTION;
+    private Thermoregulation.@Nullable Function currentFunction = null;
+    private Thermoregulation.@Nullable OperationMode currentMode = null;
     private int currentWeeklyPrgNum = 1;
     private int currentScenarioPrgNum = 1;
     private int currentVacationDays = 1;
@@ -483,6 +483,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     updateSetpoint(tmsg);
                     break;
                 case COMPLETE_PROBE_STATUS:
+                    updateTargetTemperature(tmsg);
                     break;
                 case PROBE_TEMPERATURE:
                 case TEMPERATURE:
@@ -514,31 +515,33 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             return;
         }
         Thermoregulation.WhatThermo what = tmsg.new WhatThermo(tmsg.getWhat().value());
-        if (what.getMode() == null) {
-            logger.warn("updateModeAndFunction() Could not parse Mode from: {}", tmsg.getFrameValue());
-            return;
-        }
+
         if (what.getFunction() == null) {
             logger.warn("updateModeAndFunction() Could not parse Function from: {}", tmsg.getFrameValue());
             return;
         }
-
         // update Function if it's not GENERIC
         Thermoregulation.Function function = what.getFunction();
         if (function != Function.GENERIC) {
-            updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
-            currentFunction = function;
+            if (currentFunction != function) {
+                updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
+                currentFunction = function;
+            }
+        }
+        if (what.getType() == WhatThermoType.HEATING || what.getType() == WhatThermoType.CONDITIONING
+                || what.getType() == WhatThermoType.GENERIC) {
+            // *4*1*z## and *4*0*z## do not tell us which mode is the zone now, so let's
+            // skip
+            return;
         }
 
-        // then update Mode
+        // update Mode
         Thermoregulation.OperationMode operationMode = null;
-        if (what.getType() != WhatThermoType.HEATING && what.getType() != WhatThermoType.CONDITIONING) {
-            // *4*1*z## and *4*0*z## do not tell us which mode is the zone now
-            operationMode = what.getMode();
-        }
 
-        // set ProgramNumber/vacationDays channels when necessary
+        operationMode = what.getMode();
+
         if (operationMode != null) {
+            // set ProgramNumber/vacationDays channels when necessary
             switch (operationMode) {
                 case VACATION:
                     updateVacationDays(tmsg);
@@ -556,11 +559,13 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                         getThing().getUID(), tmsg.getFrameValue());
                 return;
             } else {
-                updateState(CHANNEL_MODE, new StringType(operationMode.name()));
-                currentMode = operationMode;
+                if (currentMode != operationMode) {
+                    updateState(CHANNEL_MODE, new StringType(operationMode.name()));
+                    currentMode = operationMode;
+                }
             }
         } else {
-            logger.debug("updateModeAndFunction() Unrecognized mode from message: {}", tmsg.getFrameValue());
+            logger.warn("updateModeAndFunction() Unrecognized mode from message: {}", tmsg.getFrameValue());
         }
     }
 
@@ -601,6 +606,16 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         } catch (FrameException e) {
             logger.warn("updateTemperature() FrameException on frame {}: {}", tmsg, e.getMessage());
             updateState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
+        }
+    }
+
+    private void updateTargetTemperature(Thermoregulation tmsg) {
+        try {
+            double temp = Thermoregulation.parseTemperature(tmsg);
+            updateState(CHANNEL_TEMP_TARGET, getAsQuantityTypeOrNull(temp, SIUnits.CELSIUS));
+        } catch (FrameException e) {
+            logger.warn("updateTargetTemperature() FrameException on frame {}: {}", tmsg, e.getMessage());
+            updateState(CHANNEL_TEMP_TARGET, UnDefType.UNDEF);
         }
     }
 
@@ -654,14 +669,46 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             Thermoregulation.ValveOrActuatorStatus cv = Thermoregulation.parseValveStatus(tmsg,
                     Thermoregulation.WhatThermoType.CONDITIONING);
             updateState(CHANNEL_CONDITIONING_VALVES, new StringType(cv.toString()));
+            updateHeatingCooling(false, cv);
 
             Thermoregulation.ValveOrActuatorStatus hv = Thermoregulation.parseValveStatus(tmsg,
                     Thermoregulation.WhatThermoType.HEATING);
             updateState(CHANNEL_HEATING_VALVES, new StringType(hv.toString()));
+            updateHeatingCooling(true, hv);
+
         } catch (FrameException e) {
             logger.warn("updateValveStatus() FrameException on frame {}: {}", tmsg, e.getMessage());
             updateState(CHANNEL_CONDITIONING_VALVES, UnDefType.UNDEF);
             updateState(CHANNEL_HEATING_VALVES, UnDefType.UNDEF);
+        }
+    }
+
+    private void updateHeatingCooling(boolean heating, Thermoregulation.ValveOrActuatorStatus v) {
+        boolean state = false;
+        switch (v) {
+            case STOP:
+            case CLOSED:
+            case OFF:
+            case OFF_FAN_COIL:
+            case OFF_SPEED_1:
+            case OFF_SPEED_2:
+            case OFF_SPEED_3:
+                state = false;
+                break;
+            case ON:
+            case ON_FAN_COIL:
+            case ON_SPEED_1:
+            case ON_SPEED_2:
+            case ON_SPEED_3:
+            case OPENED:
+                state = true;
+                break;
+        }
+
+        if (heating) {
+            updateState(CHANNEL_HEATING, OnOffType.from(state));
+        } else {
+            updateState(CHANNEL_COOLING, OnOffType.from(state));
         }
     }
 
