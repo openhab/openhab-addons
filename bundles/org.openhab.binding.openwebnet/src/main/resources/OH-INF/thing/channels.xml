@@ -117,9 +117,6 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature</label>
 		<description>Target temperature (read only)</description>
-		<tags>
-			<tag>Temperature</tag>
-		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
