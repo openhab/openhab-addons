@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Node implements AbstractMqttAttributeClass.AttributeChanged {
-    private static final String[] EMPTY_ARRAY = new String[] {};
-
     private final Logger logger = LoggerFactory.getLogger(Node.class);
     // Homie
     public final String nodeID;

@@ -58,12 +58,6 @@ public class MqttChannelTypeProvider extends AbstractStorageBasedTypeProvider {
         this.thingTypeRegistry = thingTypeRegistry;
     }
 
-    public void putThingTypeIfAbsent(ThingTypeUID uid, ThingType type) {
-        if (getThingType(uid, null) == null) {
-            putThingType(type);
-        }
-    }
-
     public ThingTypeBuilder derive(ThingTypeUID newTypeId, ThingTypeUID baseTypeId) {
         ThingType baseType = thingTypeRegistry.getThingType(baseTypeId);
 
@@ -102,12 +96,12 @@ public class MqttChannelTypeProvider extends AbstractStorageBasedTypeProvider {
 
         oldUids.removeAll(uids);
         // oldUids now contains only UIDs that no longer exist. so remove them
-        oldUids.stream().forEach(uid -> removeChannelGroupType(uid));
-        types.stream().forEach(t -> putChannelGroupType(t));
+        oldUids.forEach(this::removeChannelGroupType);
+        types.forEach(this::putChannelGroupType);
     }
 
     public void removeChannelGroupTypesForPrefix(String prefix) {
-        channelGroupTypesForPrefix(prefix).stream().forEach(cgt -> removeChannelGroupType(cgt.getUID()));
+        channelGroupTypesForPrefix(prefix).forEach(cgt -> removeChannelGroupType(cgt.getUID()));
     }
 
     private Collection<ChannelGroupType> channelGroupTypesForPrefix(String prefix) {

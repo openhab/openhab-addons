@@ -60,8 +60,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HomieThingHandler extends AbstractMQTTThingHandler implements DeviceCallback, Consumer<List<Object>> {
-    private static final String[] EMPTY_ARRAY = new String[] {};
-
     private final Logger logger = LoggerFactory.getLogger(HomieThingHandler.class);
     protected Device device;
     protected final MqttChannelTypeProvider channelTypeProvider;
