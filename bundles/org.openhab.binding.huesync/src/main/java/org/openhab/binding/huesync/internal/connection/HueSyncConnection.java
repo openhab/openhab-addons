@@ -14,6 +14,7 @@ package org.openhab.binding.huesync.internal.connection;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -28,6 +29,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
+import org.openhab.binding.huesync.internal.HueSyncConstants.ENDPOINTS;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDeviceInfo;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
@@ -55,11 +57,6 @@ public class HueSyncConnection {
      * @author Patrik Gfeller - Initial Contribution
      */
     protected class HueSyncConnectionHelper {
-        private static class ENDPOINTS {
-            public static final String DEVICE = "device";
-            public static final String REGISTRATIONS = "registrations";
-        }
-
         /**
          * Request format: The Sync Box API can be accessed locally via HTTPS on root
          * level (port 443, /api/v1), resource level /api/v1/<resource> and in some
@@ -100,10 +97,7 @@ public class HueSyncConnection {
             try {
                 ContentResponse response = this.executeRequest(method, endpoint, payload);
 
-                if (response != null) {
-                    return processedResponse(response, type);
-                }
-
+                return processedResponse(response, type);
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 this.logger.error("{}", e.getMessage());
             }
@@ -114,10 +108,7 @@ public class HueSyncConnection {
             try {
                 ContentResponse response = this.executeGetRequest(endpoint);
 
-                if (response != null) {
-                    return processedResponse(response, type);
-                }
-
+                return processedResponse(response, type);
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 this.logger.error("{}", e.getMessage());
             }
@@ -218,7 +209,7 @@ public class HueSyncConnection {
     }
 
     public @Nullable HueSyncDeviceInfo getDeviceInfo() {
-        return this.helper.executeGetRequest(HueSyncConnectionHelper.ENDPOINTS.DEVICE, HueSyncDeviceInfo.class);
+        return this.helper.executeGetRequest(ENDPOINTS.DEVICE, HueSyncDeviceInfo.class);
     }
 
     public @Nullable HueSyncRegistration registerDevice(@Nullable String id) {
@@ -233,22 +224,17 @@ public class HueSyncConnection {
 
         try {
             String json = HueSyncConnectionHelper.ObjectMapper.writeValueAsString(dto);
-            HueSyncRegistration registration = this.helper.executeRequest(HttpMethod.POST,
-                    HueSyncConnectionHelper.ENDPOINTS.REGISTRATIONS, json, HueSyncRegistration.class);
+            HueSyncRegistration registration = this.helper.executeRequest(HttpMethod.POST, ENDPOINTS.REGISTRATIONS,
+                    json, HueSyncRegistration.class);
 
-            if (registration != null) {
-                String registrationId = "";
-                String registrationToken = "";
-
-                if (registration.registrationId != null)
-                    registrationId = registration.registrationId;
-                if (registration.accessToken != null)
-                    registrationToken = registration.accessToken;
-
-                this.helper.registrationId = registrationId;
-                this.helper.apiAccessToken = registrationToken;
-            }
-
+            Optional.ofNullable(registration).ifPresent((obj) -> {
+                Optional.ofNullable(obj.registrationId).ifPresent((regId) -> {
+                    this.helper.registrationId = regId;
+                });
+                Optional.ofNullable(obj.accessToken).ifPresent((regToken) -> {
+                    this.helper.apiAccessToken = regToken;
+                });
+            });
             return registration;
         } catch (JsonProcessingException e) {
             this.logger.error("{}", e.getMessage());
@@ -259,8 +245,7 @@ public class HueSyncConnection {
 
     public @Nullable HueSyncDetailedDeviceInfo getDetailedDeviceInfo() {
         if (this.helper.isRegistered()) {
-            return this.helper.executeRequest(HttpMethod.GET, HueSyncConnectionHelper.ENDPOINTS.DEVICE, "",
-                    HueSyncDetailedDeviceInfo.class);
+            return this.helper.executeRequest(HttpMethod.GET, ENDPOINTS.DEVICE, "", HueSyncDetailedDeviceInfo.class);
         }
 
         return null;

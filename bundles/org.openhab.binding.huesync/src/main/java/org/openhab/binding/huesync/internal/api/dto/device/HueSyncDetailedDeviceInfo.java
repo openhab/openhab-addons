@@ -49,7 +49,7 @@ public class HueSyncDetailedDeviceInfo extends HueSyncDeviceInfo {
      * 0 = off in powersave, passthrough or sync mode;
      * 2 = dimmed in powersave or passthrough mode and off in sync mode
      */
-    public int ledMode;
+    public int ledMode = -1;
 
     /** none, doSoftwareRestart, doFirmwareUpdate */
     public @Nullable String action;

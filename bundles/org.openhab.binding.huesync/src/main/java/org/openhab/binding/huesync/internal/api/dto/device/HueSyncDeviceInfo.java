@@ -41,7 +41,7 @@ public class HueSyncDeviceInfo {
      * Increased between firmware versions when api changes. Only apiLevel >= 7 is
      * supported.
      */
-    public int apiLevel;
+    public int apiLevel = 0;
     /**
      * User readable version of the device firmware, starting with decimal major
      * .minor .maintenance format e.g. “1.12.3”
@@ -51,7 +51,7 @@ public class HueSyncDeviceInfo {
      * Build number of the firmware. Unique for every build with newer builds
      * guaranteed a higher number than older.
      */
-    public int buildNumber;
+    public int buildNumber = 0;
 
     public boolean termsAgreed;
 

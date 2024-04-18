@@ -47,7 +47,6 @@ public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
         this.httpClientFactory = httpClientFactory;
     }
 
-    @SuppressWarnings("null")
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(HueSyncConstants.THING_TYPE_UID);
 

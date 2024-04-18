@@ -21,6 +21,8 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public class HueSyncApiException extends HueSyncException {
+    private static final long serialVersionUID = 0L;
+
     public HueSyncApiException(String message, Logger logger) {
         super(message, logger);
     }

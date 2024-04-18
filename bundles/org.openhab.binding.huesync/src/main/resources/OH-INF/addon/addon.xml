@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>Hue HDMI Sync Box Binding</name>
 	<description>Binding for the Hue HDMI Sync Box.</description>
+	<connection>local</connection>
 
 	<discovery-methods>
 		<discovery-method>

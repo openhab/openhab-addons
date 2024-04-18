@@ -17,6 +17,7 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -48,7 +49,6 @@ import org.slf4j.Logger;
 @NonNullByDefault
 @Component(service = MDNSDiscoveryParticipant.class, configurationPid = "mdnsdiscovery.huesync")
 public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
-    @SuppressWarnings("null")
     private Logger logger = HueSyncLogFactory.getLogger(HueSyncDiscoveryParticipant.class);
 
     /**
@@ -71,7 +71,6 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
         this.thingRegistry = thingRegistry;
     }
 
-    @SuppressWarnings("null")
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return Collections.singleton(HueSyncConstants.THING_TYPE_UID);
@@ -83,7 +82,6 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     @Override
-    @SuppressWarnings("null")
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         if (this.autoDiscoveryEnabled) {
             ThingUID uid = getThingUID(service);
@@ -101,9 +99,8 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
                             .withProperties(properties).build();
                     return result;
                 } catch (Exception e) {
-                    // TODO Handle exception
-                    // logger.error("Unable to query device information for {}: {}",
-                    // service.getQualifiedName(), e);
+                    logger.error("Unable to query device information for {}: {}", service.getQualifiedName(),
+                            e.getMessage());
                 }
             }
         }
@@ -134,19 +131,19 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
         updateService(componentContext);
     }
 
-    @SuppressWarnings("null")
     private void updateService(ComponentContext componentContext) {
         Dictionary<String, Object> properties = componentContext.getProperties();
 
         String autoDiscoveryPropertyValue = (String) properties
                 .get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY);
-
-        if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isBlank()) {
-            boolean value = Boolean.valueOf(autoDiscoveryPropertyValue);
-            if (value != this.autoDiscoveryEnabled) {
-                logger.debug("{} update: {} ➡️ {}", DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
-                        autoDiscoveryPropertyValue, value);
-                this.autoDiscoveryEnabled = value;
+        if (Optional.ofNullable(autoDiscoveryPropertyValue).isPresent()) {
+            if (!autoDiscoveryPropertyValue.isBlank()) {
+                boolean value = Boolean.valueOf(autoDiscoveryPropertyValue);
+                if (value != this.autoDiscoveryEnabled) {
+                    logger.debug("{} update: {} ➡️ {}", DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
+                            autoDiscoveryPropertyValue, value);
+                    this.autoDiscoveryEnabled = value;
+                }
             }
         }
     }
