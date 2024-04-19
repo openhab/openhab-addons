@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.handler.*;
 import org.openhab.binding.onecta.internal.service.DeviceDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -53,9 +52,7 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
             GATEWAY_THING_TYPE, WATERTANK_THING_TYPE, INDOORUNIT_THING_TYPE);
     private HttpClientFactory httpClientFactory;
     private final TimeZoneProvider timeZoneProvider;
-
     private @Nullable OnectaBridgeHandler bridgeHandler = null;
-
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
@@ -64,7 +61,6 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
         this.httpClientFactory = httpClientFactory;
         this.timeZoneProvider = timeZoneProvider;
         OnectaConfiguration.setHttpClientFactory(httpClientFactory);
-        OnectaConnectionClient.SetConnectionClient();
     }
 
     @Override
