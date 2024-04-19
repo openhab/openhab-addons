@@ -413,11 +413,11 @@ public class EvccHandler extends BaseThingHandler {
             Map<String, Vehicle> vehicles = result.getVehicles();
             logger.debug("Found {} vehicles on site {}.", vehicles.size(), sitename);
             updateStatus(ThingStatus.ONLINE);
-            Battery[] battery = result.getBattery();
-            batteryConfigured = ((battery != null) && (battery.length > 0));
+            Battery[] batteries = result.getBattery();
+            batteryConfigured = ((batteries != null) && (batteries.length > 0));
             gridConfigured = (result.getGridPower() != null);
-            PV[] pv = result.getPV();
-            pvConfigured = ((pv != null) && (pv.length > 0));
+            PV[] pvs = result.getPV();
+            pvConfigured = ((pvs != null) && (pvs.length > 0));
             createChannelsGeneral();
             updateChannelsGeneral();
             for (int i = 0; i < numberOfLoadpoints; i++) {

@@ -177,7 +177,7 @@ public class Result {
     }
 
     /**
-     * @return grid's power
+     * {@return grid's power} {@code null} if not available
      */
     public Float getGridPower() {
         return gridPower;
