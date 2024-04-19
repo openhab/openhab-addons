@@ -23,6 +23,7 @@ import org.openhab.binding.teslapowerwall.internal.api.BatterySOE;
 import org.openhab.binding.teslapowerwall.internal.api.GridStatus;
 import org.openhab.binding.teslapowerwall.internal.api.MeterAggregates;
 import org.openhab.binding.teslapowerwall.internal.api.Operations;
+import org.openhab.binding.teslapowerwall.internal.api.SystemStatus;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -126,6 +127,7 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
 
             BatterySOE batterySOE = webTargets.getBatterySOE(token);
             GridStatus gridStatus = webTargets.getGridStatus(token);
+            SystemStatus systemStatus = webTargets.getSystemStatus(token);
             MeterAggregates meterAggregates = webTargets.getMeterAggregates(token);
 
             updateStatus(ThingStatus.ONLINE);
@@ -138,6 +140,12 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
                         new StringType(gridStatus.grid_status));
                 updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRIDSERVICES,
                         (gridStatus.grid_services ? OnOffType.ON : OnOffType.OFF));
+            }
+            if (systemStatus != null) {
+                updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_FULL_PACK_ENERGY,
+                        new QuantityType<>(systemStatus.full_pack_energy, Units.KILOWATT_HOUR));
+                updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_DEGRADATION,
+                        new QuantityType<>((13500 - systemStatus.full_pack_energy) / 13500 * 100, Units.PERCENT));
 
             }
             if (meterAggregates != null) {

@@ -50,6 +50,8 @@ public class TeslaPowerwallBindingConstants {
     public static final String CHANNEL_TESLAPOWERWALL_SOLAR_INSTPOWER = "solar_instpower";
     public static final String CHANNEL_TESLAPOWERWALL_SOLAR_ENERGYEXPORTED = "solar_energyexported";
     public static final String CHANNEL_TESLAPOWERWALL_SOLAR_ENERGYIMPORTED = "solar_energyimported";
+    public static final String CHANNEL_TESLAPOWERWALL_FULL_PACK_ENERGY = "full_pack_energy";
+    public static final String CHANNEL_TESLAPOWERWALL_DEGRADATION = "degradation";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(TESLAPOWERWALL_THING);
 }

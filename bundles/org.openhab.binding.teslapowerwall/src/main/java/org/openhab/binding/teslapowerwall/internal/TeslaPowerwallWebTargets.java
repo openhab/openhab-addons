@@ -21,6 +21,7 @@ import org.openhab.binding.teslapowerwall.internal.api.BatterySOE;
 import org.openhab.binding.teslapowerwall.internal.api.GridStatus;
 import org.openhab.binding.teslapowerwall.internal.api.MeterAggregates;
 import org.openhab.binding.teslapowerwall.internal.api.Operations;
+import org.openhab.binding.teslapowerwall.internal.api.SystemStatus;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,7 @@ public class TeslaPowerwallWebTargets {
 
     private String getBatterySOEUri;
     private String getGridStatusUri;
+    private String getSystemStatusUri;
     private String getMeterAggregatesUri;
     private String getTokenUri;
     private String getOperationUri;
@@ -49,6 +51,7 @@ public class TeslaPowerwallWebTargets {
         String baseUri = "https://" + ipAddress + "/";
         getBatterySOEUri = baseUri + "api/system_status/soe";
         getGridStatusUri = baseUri + "api/system_status/grid_status";
+        getSystemStatusUri = baseUri + "api/system_status";
         getMeterAggregatesUri = baseUri + "api/meters/aggregates";
         getTokenUri = baseUri + "api/login/Basic";
         getOperationUri = baseUri + "api/operation";
@@ -101,6 +104,30 @@ public class TeslaPowerwallWebTargets {
         }
         logger.debug("getGridStatus response = {}", response);
         return GridStatus.parse(response);
+    }
+
+    public SystemStatus getSystemStatus(String token) throws TeslaPowerwallCommunicationException {
+        String response;
+        Properties headers = new Properties();
+        headers.setProperty("Content-Type", token);
+
+        synchronized (this) {
+            try {
+                response = HttpUtil.executeUrl("GET", getSystemStatusUri, headers, null, null, TIMEOUT_MS);
+            } catch (IOException ex) {
+                logger.debug("{}", ex.getLocalizedMessage(), ex);
+                // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
+                // error check below consistent.
+                response = null;
+            }
+        }
+
+        if (response == null) {
+            throw new TeslaPowerwallCommunicationException(
+                    String.format("Tesla Powerwall returned error while invoking %s", getSystemStatusUri));
+        }
+        logger.debug("getSystemStatus response = {}", response);
+        return SystemStatus.parse(response);
     }
 
     public MeterAggregates getMeterAggregates(String token) throws TeslaPowerwallCommunicationException {
