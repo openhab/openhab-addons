@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.teslapowerwall.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The TeslaPowerwallConfiguration class contains fields mapping thing configuration parameters.
  *
  * @author Paul Smedley - Initial contribution
  */
+@NonNullByDefault
 public class TeslaPowerwallConfiguration {
-    public String hostname;
+    public String hostname = "";
     public long refresh = 10;
-    public String email;
-    public String password;
+    public String email = "";
+    public String password = "";
 }

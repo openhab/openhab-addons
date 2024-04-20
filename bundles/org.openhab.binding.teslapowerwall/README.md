@@ -13,6 +13,7 @@ No auto discovery. The IP of the Powerwall should be added to /etc/hosts and a h
 ## Thing Configuration
 
 As a minimum, the IP address is needed:
+
 * hostname - The hostname of the Tesla Powerwall 2. Defaults to powerwall to avoid SSL certificate issues
 * email - the email of the local account on the Powerwall that the installer provided
 * password - the password of the local account on the Powerwall that the installer provided
@@ -30,14 +31,14 @@ As a minimum, the IP address is needed:
 | battery_instpower      | Number:Power   | Instantaneous Battery Power Supply
 | home_instpower         | Number:Power   | Instantaneous Home Power Supply
 | solar_instpower        | Number:Power   | Instantaneous Solar Power Supply
-| grid_energyexported    | Number:Power   | Total Grid Energy Exported
-| battery_energyexported | Number:Power   | Total Battery Energy Exported
-| home_energyexported    | Number:Power   | Total Home Energy Exported
-| solar_energyexported   | Number:Power   | Total Solar Energy Exported
-| grid_energyimported    | Number:Power   | Total Grid Energy Imported
-| battery_energyimported | Number:Power   | Total Battery Energy Imported
-| home_energyimported    | Number:Power   | Total Home Energy Imported
-| solar_energyimported   | Number:Power   | Total Solar Energy Imported
+| grid_energyexported    | Number:Energy  | Total Grid Energy Exported
+| battery_energyexported | Number:Energy  | Total Battery Energy Exported
+| home_energyexported    | Number:Energy  | Total Home Energy Exported
+| solar_energyexported   | Number:Energy  | Total Solar Energy Exported
+| grid_energyimported    | Number:Energy  | Total Grid Energy Imported
+| battery_energyimported | Number:Energy  | Total Battery Energy Imported
+| home_energyimported    | Number:Energy  | Total Home Energy Imported
+| solar_energyimported   | Number:Energy  | Total Solar Energy Imported
 
 ## Full Example
 

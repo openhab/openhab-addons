@@ -14,12 +14,15 @@ package org.openhab.binding.teslapowerwall.internal;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for when an unexpected response is received from the TeslaPowerwall controller.
  *
  * @author Paul Smedley - Initial contribution
  *
  */
+@NonNullByDefault
 public class TeslaPowerwallCommunicationException extends IOException {
     private static final long serialVersionUID = 529232811860854017L;
 

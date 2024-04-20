@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teslapowerwall.internal.api.BatterySOE;
 import org.openhab.binding.teslapowerwall.internal.api.GridStatus;
 import org.openhab.binding.teslapowerwall.internal.api.MeterAggregates;
@@ -35,6 +36,7 @@ import com.google.gson.JsonParser;
  * @author Paul Smedley - Initial Contribution
  *
  */
+@NonNullByDefault
 public class TeslaPowerwallWebTargets {
     private static final int TIMEOUT_MS = 30000;
 

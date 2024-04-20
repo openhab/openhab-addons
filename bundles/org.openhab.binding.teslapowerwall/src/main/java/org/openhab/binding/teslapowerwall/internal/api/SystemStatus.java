@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.teslapowerwall.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import com.google.gson.JsonParser;
  * @author Paul Smedley - Initial Contribution
  *
  */
+@NonNullByDefault
 public class SystemStatus {
     private static Logger LOGGER = LoggerFactory.getLogger(SystemStatus.class);
 
