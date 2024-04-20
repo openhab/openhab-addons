@@ -1,7 +1,7 @@
 # evcc Binding
 
-This binding integrates [evcc - electric vehicle charging control](https://evcc.io), a project that provides a control center for electric vehicle charging.
-The binding requires evcc [version 0.123.1](https://github.com/evcc-io/evcc/releases/tag/0.123.1) or newer and is tested with this version.
+This binding integrates [evcc](https://evcc.io), an extensible **E**lectric **V**ehicle **C**harge **C**ontroller and home energy management system.
+The binding is compatible to evcc [version 0.123.1](https://github.com/evcc-io/evcc/releases/tag/0.123.1) or newer and was tested with [version 0.125.0](https://github.com/evcc-io/evcc/releases/tag/0.125.0).
 
 You can easily install and upgrade evcc on openHABian using `sudo openhabian-config`.
 
