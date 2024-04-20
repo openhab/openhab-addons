@@ -707,7 +707,7 @@ public class EvccHandler extends BaseThingHandler {
         }
         boolean gridConfigured = this.gridConfigured;
         if (gridConfigured) {
-            float gridPower = ((result.getGridPower() == null) ? 0.0f : result.getGridPower());
+            float gridPower = result.getGridPower(); // will be 0.0f in case of null
             channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_GRID_POWER);
             updateState(channel, new QuantityType<>(gridPower, Units.WATT));
         }
