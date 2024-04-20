@@ -154,6 +154,9 @@ Channel `co2-emission-prognosis` provides estimated prognosis for future emissio
 Depending on the time of the day, an update of the prognosis may include estimates for more than 9 hours, but every update will have at least 9 hours into the future.
 A persistence configuration is required for this channel.
 
+Please note that the CO₂ emission channels only apply to Denmark.
+These channels will not be updated when the configured price area is not DK1 or DK2.
+
 ## Thing Actions
 
 Thing actions can be used to perform calculations as well as import prices directly into rules without relying on persistence.
@@ -303,6 +306,7 @@ var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant()
 **Result:** Price as `BigDecimal`.
 
 This action calculates the price for using given amount of power in the period from `start` till `end`.
+Returns `null` if the calculation cannot be performed due to missing price data within the requested period.
 
 Example:
 
@@ -402,7 +406,9 @@ var priceMap = actions.getPrices("SpotPrice,GridTariff");
 logInfo("Current spot price + grid tariff excl. VAT", priceMap.get(hourStart).toString)
 
 var price = actions.calculatePrice(Instant.now, now.plusHours(1).toInstant, 150 | W)
-logInfo("Total price for using 150 W for the next hour", price.toString)
+if (price != null) {
+    logInfo("Total price for using 150 W for the next hour", price.toString)
+}
 
 val ArrayList<Duration> durationPhases = new ArrayList<Duration>()
 durationPhases.add(Duration.ofMinutes(37))
@@ -467,7 +473,9 @@ utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,GridTariff")).forEach((valu
 console.log("Current spot price + grid tariff excl. VAT: " + priceMap.get(hourStart.toString()));
 
 var price = edsActions.calculatePrice(time.Instant.now(), time.Instant.now().plusSeconds(3600), Quantity("150 W"));
-console.log("Total price for using 150 W for the next hour: " + price.toString());
+if (price !== null) {
+    console.log("Total price for using 150 W for the next hour: " + price.toString());
+}
 
 var durationPhases = [];
 durationPhases.push(time.Duration.ofMinutes(37));

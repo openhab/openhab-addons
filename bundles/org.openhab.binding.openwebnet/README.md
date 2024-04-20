@@ -1,16 +1,18 @@
 # OpenWebNet (BTicino/Legrand) Binding
 
-This binding integrates BTicino / Legrand MyHOME&reg; BUS and Zigbee wireless (MyHOME_Radio&reg;) devices using the [OpenWebNet](https://en.wikipedia.org/wiki/OpenWebNet) protocol.
+This binding integrates **BTicino / Legrand** **MyHOME &reg; - BUS/SCS** and **MyHOME &reg; Radio - Zigbee** wireless devices using the [OpenWebNet](https://en.wikipedia.org/wiki/OpenWebNet) protocol.
 
 The binding supports:
 
-- both wired BUS/SCS (MyHOME) and wireless setups (MyHOME Zigbee). The two networks can be configured simultaneously
-- auto discovery of BUS/SCS IP and Zigbee USB gateways; auto discovery of devices
-- commands from openHAB and feedback (events) from BUS/SCS and wireless network
+- both wired MyHOME - BUS/SCS and wireless MyHOME Radio - Zigbee setups. The two networks can be configured simultaneously
+- auto discovery of MyHOME - BUS/SCS IP and  MyHOME Radio - Zigbee USB gateways; auto discovery of devices
+- commands from openHAB and feedback (events) from BUS/SCS and Radio network
 
 ![MyHOMEServer1 Gateway](doc/MyHOMEServer1_gateway.jpg)
-![F454 Gateway](doc/F454_gateway.png)
-![Zigbee USB Gateway](doc/USB_gateway.jpg)
+![F411/2](doc/BTI_F411_2.jpg)
+![NT4695](doc/BTI_NT4695.jpg)
+![MyHOME Radio USB Gateway](doc/USB_gateway.jpg)
+
 
 ## Supported Things
 
@@ -18,9 +20,9 @@ In order for this binding to work, a **BTicino/Legrand OpenWebNet gateway** is n
 
 These gateways have been tested with the binding:
 
-- **IP gateways** or scenario programmers, such as BTicino
-[F454](https://catalogue.bticino.com/BTI-F454-EN),
+- **MyHOME - BUS/SCS IP gateways** or scenario programmers, such as BTicino
 [MyHOMEServer1](https://catalogue.bticino.com/BTI-MYHOMESERVER1-EN),
+[F454](https://catalogue.bticino.com/BTI-F454-EN),
 [MyHOME_Screen10 (MH4893C)](https://catalogue.bticino.com/BTI-MH4893C-EN),
 [MyHOME_Screen3,5 (LN4890)](https://www.homesystems-legrandgroup.com/home/-/productsheets/2452536),
 [MH201](https://catalogue.bticino.com/BTI-MH201-EN),
@@ -29,7 +31,7 @@ These gateways have been tested with the binding:
 [MH200N](https://www.homesystems-legrandgroup.com/home/-/productsheets/2469209),
 [F453](https://www.homesystems-legrandgroup.com/home/-/productsheets/2703566),  etc.
 
-- **Zigbee USB Gateways**, such as [BTicino 3578](https://www.legrand.be/fr/catalogue/zigbee-interface-openzigbee-3578), also known as *Legrand 088328*
+- **MyHOME Radio - Zigbee USB Gateways**, such as [BTicino 3578](https://www.legrand.be/fr/catalogue/zigbee-interface-openzigbee-3578), also known as *Legrand 088328*
 
 Some of these modules are not on the BTicino catalogue anymore.
 
@@ -37,33 +39,33 @@ Some of these modules are not on the BTicino catalogue anymore.
 
 The following Things and OpenWebNet `WHOs` are supported:
 
-### For BUS/SCS
+### For MyHOME - BUS/SCS
 
 | Category                      |     WHO     |                       Thing Type IDs                       | Description                                                      | Status                                                                                                                                                                                                     |
 |-------------------------------|:-----------:|:----------------------------------------------------------:|------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Gateway Management            |    `13`     |                       `bus_gateway`                        | Any IP gateway supporting OpenWebNet protocol should work        | Successfully tested: F452, F453, F453AV,F454, F455, MyHOMEServer1, MyHOME_Screen10, MyHOME_Screen3,5, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202            |
 | Lighting                      |     `1`     |             `bus_on_off_switch`, `bus_dimmer`              | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)                                                                                           |
 | Automation                    |     `2`     |                      `bus_automation`                      | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2                                                                                                                                                                              |
-| Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes)         | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455. Partially tested: Central Units 4-zones (models L/N/NT/HD/HC/HS4695) and 99-zones (model 3550). See [Channels - Thermo](#configuring-thermo) for more details |
+| Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes)         | Successfully tested: Thermostats H/LN4691, HS4692, KG4691; sensors (probes): L/N/NT4577 + 3455; Central Units 4-zones (models L/N/NT/HD/HC/HS4695) and 99-zones (model 3550). See [Channels - Thermo](#configuring-thermo) for more details |
 | Alarm                         |     `5`     |  `bus_alarm_system`, `bus_alarm_zone`                      | BUS Alarm system and zones                                       | Successfully tested: Burglar-alarm Unit 3486  |
 | Auxiliary (AUX)               |     `9`     |  `bus_aux`                                                 | AUX commands                                                     | Successfully tested: AUX configured for Burglar-alarm Unit 3486. **Only sending AUX commands is supported**    |
 | Basic, CEN & CEN+ Scenarios   | `0`, `15`, `25` | `bus_scenario_control`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ Scenarios events and virtual activation                 | Successfully tested: CEN/CEN+ scenario control: HC/HD/HS/L/N/NT4680 and basic scenario modules F420/IR3456 + L4680 (WHO=0)      |
 | Dry Contact and IR Interfaces |    `25`     |                    `bus_dry_contact_ir`                    | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610      |
 | Energy Management             |    `18`     |                     `bus_energy_meter`                     | Energy Management                                                | Successfully tested: F520, F521. Partially tested: F522, F523                               |
 
-### For Zigbee (Radio)
+### For MyHOME Radio - Zigbee
 
 | Category             | WHO    | Thing Type IDs                                        | Description                                                           | Status                               |
 | -------------------- | :----: | :---------------------------------------------------: | :-------------------------------------------------------------------: | ------------------------------------ |
-| Gateway Management   | `13`   | `zb_gateway`                                          | Zigbee USB Gateway (models: BTI-3578 / LG 088328)                     | Tested: BTI-3578 and LG 088328       |
-| Lighting             | `1`    | `zb_dimmer`, `zb_on_off_switch`, `zb_on_off_switch2u` | Zigbee dimmers, switches and 2-unit switches                          | Tested: BTI-4591, BTI-3584, BTI-4585 |
-| Automation           | `2`    | `zb_automation`                                       | Zigbee roller shutters                                                |                                      |
+| Gateway Management   | `13`   | `zb_gateway`                                          | MyHOME Radio - Zigbee USB Gateway (models: BTI-3578 / LG 088328)                     | Tested: BTI-3578 and LG 088328       |
+| Lighting             | `1`    | `zb_dimmer`, `zb_on_off_switch`, `zb_on_off_switch2u` | Radio Zigbee dimmers, switches and 2-unit switches                          | Tested: BTI-4591, BTI-3584, BTI-4585 |
+| Automation           | `2`    | `zb_automation`                                       | Radio Zigbee roller shutters                                                |                                      |
 
 ## Discovery
 
 Gateway and Things discovery is supported by this binding.
 
-### BUS/SCS Discovery
+### MyHOME - BUS/SCS Discovery
 
 - BUS Gateway automatic discovery will work only for newer gateways supporting UPnP: F454, MyHOMEServer1, MH201, MH202, MH200N, MyHOME_Screen 10.
 For other gateways you can add them manually, see [Thing Configuration](#thing-configuration) below.
@@ -80,9 +82,9 @@ Setting the parameter `discoveryByActivation=true` for a BUS gateway Thing makes
 
 If a device cannot be discovered automatically from Inbox it's always possible to add it manually, see [Configuring Devices](#configuring-devices).
 
-### Zigbee Discovery
+### MyHOME Radio - Zigbee Discovery
 
-- The Zigbee USB Gateway must be inserted in one of the USB ports of the openHAB computer before a discovery is started
+- The MyHOME Radio - Zigbee USB Gateway must be inserted in one of the USB ports of the openHAB computer before a discovery is started
 - _**IMPORTANT NOTE:**_ As for other openHAB bindings using the USB/serial ports, on Linux the `openhab` user must be member of the `dialout` group to be able to use USB/serial port; set the group with the following command:
 
 ```shell
@@ -90,14 +92,14 @@ sudo usermod -a -G dialout openhab
 ```
 
 - The user will need to logout and login to see the new group added. If you added your user to this group and still cannot get permission, reboot Linux to ensure the new group permission is attached to the `openhab` user.
-- Once the Zigbee USB Gateway is added and online, a second Inbox scan will discover devices connected to it. Because of the Zigbee radio network, device discovery will take ~40-60 sec. Be patient!
-- Wireless devices must be part of the same Zigbee network of the Zigbee USB Gateway to discover them. Please refer to [this video by BTicino](https://www.youtube.com/watch?v=CoIgg_Xqhbo) to setup a Zigbee wireless network which includes the Zigbee USB Gateway
-- Only powered wireless devices part of the same Zigbee network and within radio coverage of the Zigbee USB Gateway will be discovered. Unreachable or not powered devices will be discovered as _GENERIC_ devices and cannot be controlled
-- Wireless control units cannot be discovered by the Zigbee USB Gateway and therefore are not supported
+- Once the MyHOME Radio - Zigbee USB Gateway is added and online, a second Inbox scan will discover devices connected to it. Because of the Zigbee radio network, device discovery will take ~40-60 sec. Be patient!
+- Wireless devices must be part of the same Zigbee network of the MyHOME Radio - Zigbee USB Gateway to discover them. Please refer to [this video by BTicino](https://www.youtube.com/watch?v=CoIgg_Xqhbo) to setup a Zigbee wireless network which includes the MyHOME Radio - Zigbee USB Gateway
+- Only powered wireless devices part of the same Zigbee network and within radio coverage of the MyHOME Radio - Zigbee USB Gateway will be discovered. Unreachable or not powered devices will be discovered as _GENERIC_ devices and cannot be controlled
+- Wireless control units cannot be discovered by the MyHOME Radio - Zigbee USB Gateway and therefore are not supported
 
 ## Thing Configuration
 
-### Configuring BUS/SCS Gateway
+### Configuring MyHOME - BUS/SCS Gateway
 
 Configuration parameters are:
 
@@ -109,18 +111,18 @@ Configuration parameters are:
   - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
   - in all other cases, a password must be configured. This includes gateways that have been discovered and added from Inbox: without a password configured they will remain OFFLINE
 - `discoveryByActivation`: discover BUS devices when they are activated also when a device scan hasn't been started from Inbox (`boolean`, _optional_, default: `false`). See [Discovery by Activation](#discovery-by-activation).
-- `dateTimeSynch`: synchronise date and time of slave elements on the SCS BUS using openHAB timestamp (`boolean`, _optional_, default: `false`). Set this parameter to `true` to send time-date synchronisation commands on the BUS when the timestamp received from the gateway differs by more than 1 minute from that of openHAB. Useful if the BUS gateway is not syncronized with Internet time servers and with daylight saving time changes.
+- `dateTimeSynch`: synchronise date and time of slave elements on the BUS using openHAB timestamp (`boolean`, _optional_, default: `false`). Set this parameter to `true` to send time-date synchronisation commands on the BUS when the timestamp received from the gateway differs by more than 1 minute from that of openHAB. Useful if the BUS gateway is not syncronized with Internet time servers and with daylight saving time changes.
 
-Alternatively the BUS/SCS Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
+Alternatively the MyHOME - BUS/SCS Gateway Thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
-### Configuring Wireless Zigbee USB Gateway
+### Configuring MyHOME Radio - Zigbee USB Gateway
 
 Configuration parameters are:
 
-- `serialPort` : the serial port where the Zigbee USB Gateway is connected (`String`, _mandatory_)
+- `serialPort` : the serial port where the  MyHOME Radio - Zigbee USB Gateway is connected (`String`, _mandatory_)
   - Examples: `/dev/ttyUSB0` (Linux/RaPi), `COM3` (Windows)
 
-Alternatively the Zigbee USB Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
+Alternatively the MyHOME Radio - Zigbee USB Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
 ### Configuring Devices
 
@@ -130,7 +132,7 @@ For any manually added device, you must configure:
 
 - the associated gateway Thing (`Parent Bridge` menu)
 - the `where` configuration parameter (`OpenWebNet Address`): this is the OpenWebNet address configured for the device in the BTicino/Legrand system. This address can be found either on the device itself (Physical configuration, using jumpers in case of BUS) or through the MyHOME_Suite software (Virtual configuration). The address can have several formats depending on the device/system:
-  - example for BUS/SCS system:
+  - example for MyHOME - BUS/SCS system:
     - light device A=`2` (Area 2), PL=`4` (Light-point 4) --> `where="24"`
     - light device A=`03`, PL=`11` on local bus `01` --> `where="0311#4#01"`
     - scenario control module address `53` --> `where="53"`
@@ -163,9 +165,9 @@ The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing wi
 
 ##### Thermo Central Unit integration known limitations
 
-- Read setPoint temperature and current mode
-- Central Unit Programming and Customisations settings (T1/2/3 temperature levels, date & time, weekly/scenarios/holiday programming, etc.)
-- Holiday/Vacation activation command
+- Read Central Unit setPoint temperature when in WEEKLY / SCENARIO / PROTECTION / VACATION / HOLIDAY
+- Set VACATION deadline date / time
+- Central Unit Programming and Customisations settings (T1/2/3 temperature levels, setting date & time, weekly/scenarios/holiday profiles programming, etc.)
 
 #### Configuring Alarm and Auxiliary (AUX)
 
@@ -210,7 +212,7 @@ OPEN command to execute: *5*8#134##
 
 ## Channels
 
-### Lighting, Automation, Basic/CEN/CEN+ Scenario Events, Dry Contact / IR Interfaces, Power and Aux channels
+### Lighting, Automation, Basic/CEN/CEN+ Scenario Events, Dry Contact / IR Interfaces, Power and AUX channels
 
 | Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                                                                            | Read/Write  |
 |-----------------------------------------|---------------------------------------------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------|:-----------:|
@@ -221,8 +223,8 @@ OPEN command to execute: *5*8#134##
 | `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#scenario-channels)                                                                                 | R (TRIGGER) |
 | `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if an IR Sensor is detecting movement (`ON`), or not  (`OFF`)                                                   |      R      |
 | `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                                                                                       |      R      |
-| `energyToday`                           | `bus_energy_meter`                                            | Number:Energy | Current day energy totalizer                                                                                                                                           |      R      |
-| `energyThisMonth`                       | `bus_energy_meter`                                            | Number:Energy | Current month energy totalizer                                                                                                                                         |      R      |
+| `energyToday`                           | `bus_energy_meter`                                            | Number:Energy | Current day energy                                                                                                                                           |      R      |
+| `energyThisMonth`                       | `bus_energy_meter`                                            | Number:Energy | Current month energy                                                                                                                                         |      R      |
 | `aux`                                   | `bus_aux`                                                     | String        | Possible commands: `ON`, `OFF`, `TOGGLE`, `STOP`, `UP`, `DOWN`, `ENABLED`, `DISABLED`, `RESET_GEN`, `RESET_BI`, `RESET_TRI`. Only `ON` and `OFF` are supported for now |     R/W     |
 
 ### Alarm channels
@@ -242,23 +244,27 @@ OPEN command to execute: *5*8#134##
 
 | Channel Type ID (channel ID) | Applies to Thing Type IDs              | Item Type          | Description                                                                                                                           | Read/Write | Advanced |
 | ---------------------------- | -------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | :--------: | :------: |
-| `temperature`                | `bus_thermo_zone`, `bus_thermo_sensor` | Number:Temperature | The zone currently sensed temperature                                                                                                 | R          | N        |
-| `setpointTemperature`        | `bus_thermo_zone`, `bus_thermo_cu`     | Number:Temperature | The zone or Central Unit setpoint temperature                                                                                         | R/W        | N        |
-| `function`                   | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set thermo function (`COOLING`, `HEATING`, `GENERIC`) or the Central Unit thermo function (`COOLING`, `HEATING`)             | R/W        | N        |
-| `mode`                       | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set mode (`AUTO`, `MANUAL`, `PROTECTION`, `OFF`) or the Central Unit set mode (`WEEKLY`, `SCENARIO`, `MANUAL`, `PROTECTION`, `OFF`) | R/W        | N        |
+| `temperature`                | `bus_thermo_zone`, `bus_thermo_sensor` | Number:Temperature | Currently sensed temperature for zone or sensor                                                                                                 | R          | N        |
+| `setpointTemperature`        | `bus_thermo_zone`, `bus_thermo_cu`     | Number:Temperature | The zone or Central Unit manual setpoint temperature                                                                                         | R/W        | N        |
+| `targetTemperature`          | `bus_thermo_zone`                      | Number:Temperature | The current zone target temperature according to `mode`, `setpointTemperature` and `localOffset` | R        | Y        
+|`function`                   | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set thermo function (`COOLING`, `HEATING`, `GENERIC`) or the Central Unit thermo function (`COOLING`, `HEATING`)             | R/W        | N        |
+| `mode`                       | `bus_thermo_zone`, `bus_thermo_cu`     | String             | The zone set mode (`AUTO`, `MANUAL`, `OFF`, `PROTECTION`) or the Central Unit set mode (`WEEKLY`, `MANUAL`, `SCENARIO`, `HOLIDAY`, `VACATION`, `OFF`, `PROTECTION`) | R/W        | N        |
 | `speedFanCoil`               | `bus_thermo_zone`                      | String             | The zone fancoil speed: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`                                                                       | R/W        | N        |
 | `actuators`                  | `bus_thermo_zone`                      | String             | The zone actuator(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`            | R          | Y        |
 | `heatingValves`              | `bus_thermo_zone`                      | String             | The zone heating valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`            | R          | Y        |
 | `conditioningValves`         | `bus_thermo_zone`                      | String             | The zone conditioning valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3`            | R          | Y        |
-| `localOffset`                | `bus_thermo_zone`                      | String             | The zone local offset status: `OFF`, `PROTECTION`, `MINUS_3`, `MINUS_2` , `MINUS_1`, `NORMAL`, `PLUS_1`, `PLUS_2`, `PLUS_3`           | R          | Y        |
+| `heating`         | `bus_thermo_zone`                      | Switch             | `ON` if the zone heating valve is currently active (meaning heating is On)             | R          | Y        |
+| `cooling`         | `bus_thermo_zone`                      | Switch             | `ON` if the zone conditioning valve is currently active (meaning conditioning is On)             | R          | Y        |
+| `localOffset`                | `bus_thermo_zone`                      | String             | The zone local offset status: `OFF`, `PROTECTION`, `MINUS_3`, `MINUS_2` , `MINUS_1`, `NORMAL`, `PLUS_1`, `PLUS_2`, `PLUS_3`, as set on the room thermostat physical knob          | R          | Y        |
 | `remoteControl`              | `bus_thermo_cu`                        | String             | The Central Unit Remote Control status: `ENABLED`, `DISABLED`                                                                         | R          | Y        |
 | `batteryStatus`              | `bus_thermo_cu`                        | String             | The Central Unit Battery status: `OK`, `KO`                                                                                           | R          | Y        |
 | `weeklyProgram`              | `bus_thermo_cu`                        | Number             | The weekly program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`                                                                 | R/W        | N        |
 | `scenarioProgram`            | `bus_thermo_cu`                        | Number             | The scenario program number (`1`, `2`, ... ,  `16`) when Central Unit mode is `SCENARIO`                                                       | R/W        | N        |
-| `failureDiscovered`          | `bus_thermo_cu`                        | Switch             | Indicates if a Failure was discovered by the Central Unit: `ON`, `OFF`                                                                | R          | Y        |
-| `atLeastOneProbeOff`         | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in OFF mode: `ON`, `OFF`                                                                           | R          | Y        |
-| `atLeastOneProbeProtection`  | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in PROTECTION mode: `ON`, `OFF`                                                                    | R          | Y        |
-| `atLeastOneProbeManual`      | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in MANUAL mode: `ON`, `OFF`                                                                        | R          | Y        |
+| `vacationDays`               | `bus_thermo_cu`                        | Number             | Number of days `1-255` the Central Unit will be set to Anti-freeze / Heat Protection temperature before returning to mode `WEEKLY`  | R/W        | N        |
+| `failureDiscovered`          | `bus_thermo_cu`                        | Switch             | Indicates if a Failure was discovered by the Central Unit (`ON`), or not (`OFF`)                                                                | R          | Y        |
+| `atLeastOneProbeOff`         | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in OFF mode (`ON`) or not (`OFF`) | R          | Y        |
+| `atLeastOneProbeProtection`  | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in PROTECTION mode (`ON`) or not (`OFF`)                                                                    | R          | Y        |
+| `atLeastOneProbeManual`      | `bus_thermo_cu`                        | Switch             | Indicates if at least one probe is in MANUAL mode (`ON`) or not (`OFF`)                                                                        | R          | Y        |
 
 ### Notes on channels
 
@@ -313,15 +319,15 @@ There are three WEEKLY and sixteen SCENARIO programs defined for the thermo Cent
 In order to activate one specific weekly or scenario program two different channels must be used:
 
 - with the `mode` channel it's possible to set the mode (`WEEKLY` or `SCENARIO`)
-- with `weeklyProgram` (if `WEEKLY` was set) or `scenarioProgram` (if `SCENARIO` was set) channels you can set the specific weekly/scenario program number
+- with `weeklyProgram` (if `WEEKLY` was set) or `scenarioProgram` (if `SCENARIO` was set) channels it's possible to set the specific weekly/scenario program number
 
-Example: if you want to activate SCENARIO number 9 on the thermo Central Unit you have to set channel `mode` = `SCENARIO` and channel `scenarioProgram` = `9`.
+Example: to activate SCENARIO number 9 on the thermo Central Unit then set channel `mode` = `SCENARIO` and channel `scenarioProgram` = `9`.
 
 ## Full Example
 
 ### openwebnet.things:
 
-BUS gateway and things configuration:
+MyHOME BUS/SCS gateway and Things configuration:
 
 ```java
 Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde", port=20000, discoveryByActivation=false ] {
@@ -349,7 +355,7 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
 }
 ```
 
-Zigbee USB Gateway and things configuration - for radio devices:
+MyHOME Radio - Zigbee USB Gateway and Things configuration:
 
 ```java
 Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
@@ -361,7 +367,7 @@ Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
 
 ### openwebnet.items:
 
-Example items linked to BUS devices:
+Example items linked to MyHOME - BUS/SCS devices:
 
 NOTE: lights, blinds and zones (thermostat) can be handled from personal assistants (Google Home, Alexa).
 In the following example some `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`) metadata were added as examples according to the [documentation for Google Assistant integration on openHAB](https://www.openhab.org/docs/ecosystem/google-assistant) and [the openHAB HomeKit Add-on documentation](https://www.openhab.org/addons/integrations/homekit/): see the specific openHAB documentation for updated configurations and more metadata options.
@@ -420,7 +426,7 @@ Switch              iAlarm_Zone_3_State         "Zone 3 state"                 (
 String              iAlarm_Zone_3_Alarm         "Zone 3 alarm"                 (gAlarm)         { channel="openwebnet:bus_alarm_zone:mybridge:Alarm_Zone_3:alarm" }
 ```
 
-Example items linked to OpenWebNet Zigbee devices:
+Example items linked to OpenWebNet MyHOME Radio - Zigbee devices:
 
 ```java
 Dimmer          iDimmer             "Dimmer [%.0f %%]"                  <DimmableLight>  (gKitchen)                   [ "Lighting" ]  { channel="openwebnet:zb_dimmer:myZBgateway:myZB_dimmer:brightness" }
