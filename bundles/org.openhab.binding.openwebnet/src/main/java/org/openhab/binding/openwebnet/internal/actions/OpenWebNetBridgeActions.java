@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetBridgeHandler;
 import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -23,6 +24,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openwebnet4j.OpenGateway;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.communication.Response;
+import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.OpenMessage;
 import org.slf4j.Logger;
@@ -52,9 +54,13 @@ public class OpenWebNetBridgeActions implements ThingActions {
         return bridgeHandler;
     }
 
-    @RuleAction(label = "sendMessage", description = "Sends a message to the gateway")
-    public boolean sendMessage(
-            @ActionInput(name = "message", label = "message", description = "The message to send") @Nullable String message) {
+    // If you return values, you do so by returning a Map<String,Object> and
+    // annotate the method itself with as many
+    // @ActionOutputs as you will return map entries.
+
+    @RuleAction(label = "sendMessage", description = "@text/action.sendMessage.desc")
+    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMessage(
+            @ActionInput(name = "message", label = "message", description = "@text/action.sendMessage.input.message.desc") @Nullable String message) {
         OpenWebNetBridgeHandler handler = bridgeHandler;
         if (handler == null) {
             logger.warn("openwebnet sendMessage: cannot send message, bridgeHandler is null");
@@ -62,7 +68,7 @@ public class OpenWebNetBridgeActions implements ThingActions {
         }
         OpenMessage msg;
         try {
-            msg = org.openwebnet4j.message.BaseOpenMessage.parse(message);
+            msg = BaseOpenMessage.parse(message);
         } catch (FrameException e) {
             logger.warn("openwebnet skipping sending message '{}': {}", message, e.getMessage());
             return false;
@@ -71,7 +77,7 @@ public class OpenWebNetBridgeActions implements ThingActions {
         if (gw != null && gw.isConnected()) {
             try {
                 Response res = gw.send(msg);
-                logger.debug("sent message '{}' to gateway. Response: {}", msg, res.getResponseMessages());
+                logger.debug("sent message {} to gateway. Response: {}", msg, res.getResponseMessages());
                 return res.isSuccess();
             } catch (OWNException e) {
                 logger.warn("exception while sending message '{}' to gateway: {}", msg, e.getMessage());
@@ -83,15 +89,12 @@ public class OpenWebNetBridgeActions implements ThingActions {
             return false;
         }
 
-        // If you return values, you do so by returning a Map<String,Object> and
-        // annotate the method itself with as many
-        // @ActionOutputs as you will return map entries.
     }
 
     // legacy delegate methods
-    public static void sendMessage(@Nullable ThingActions actions, @Nullable String message) {
+    public static Boolean sendMessage(@Nullable ThingActions actions, @Nullable String message) {
         if (actions instanceof OpenWebNetBridgeActions) {
-            ((OpenWebNetBridgeActions) actions).sendMessage(message);
+            return ((OpenWebNetBridgeActions) actions).sendMessage(message);
         } else {
             throw new IllegalArgumentException("Instance is not an OpenWebNetBridgeActions class.");
         }
