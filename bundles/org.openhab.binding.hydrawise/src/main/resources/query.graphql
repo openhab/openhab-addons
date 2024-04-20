@@ -17,29 +17,6 @@
           latitude
           longitude
         }
-        forecast(days: 3) {
-          time
-          updateTime
-          conditions
-          averageWindSpeed {
-            value
-            unit
-          }
-          highTemperature {
-            value
-            unit
-          }
-          lowTemperature {
-            value
-            unit
-          }
-          probabilityOfPrecipitation
-          precipitation {
-            value
-            unit
-          }
-          averageHumidity
-        }
       }
       zones {
         id

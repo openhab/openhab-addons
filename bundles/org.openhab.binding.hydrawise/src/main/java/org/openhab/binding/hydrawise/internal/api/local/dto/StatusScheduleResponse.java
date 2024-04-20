@@ -30,7 +30,7 @@ public class StatusScheduleResponse extends LocalScheduleResponse {
 
     public Integer nextpoll;
 
-    public List<Sensor> sensors = new LinkedList<>();
+    public List<Sensor> sensors = new LinkedList<Sensor>();
 
     public String message;
 
@@ -52,7 +52,7 @@ public class StatusScheduleResponse extends LocalScheduleResponse {
 
     public String lastContact;
 
-    public List<Forecast> forecast = new LinkedList<>();
+    public List<Forecast> forecast = new LinkedList<Forecast>();
 
     public String status;
 

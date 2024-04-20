@@ -2,7 +2,8 @@
   me {
     email
     lastContact
-      controllers {
+    controllers {
+      id
       location {
         forecast(days: 3) {
           time

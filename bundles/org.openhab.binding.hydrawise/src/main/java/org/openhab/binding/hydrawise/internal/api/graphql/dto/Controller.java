@@ -25,5 +25,4 @@ public class Controller {
     public Location location;
     public List<Zone> zones = null;
     public List<Sensor> sensors = null;
-    public List<Forecast> forecast = null;
 }

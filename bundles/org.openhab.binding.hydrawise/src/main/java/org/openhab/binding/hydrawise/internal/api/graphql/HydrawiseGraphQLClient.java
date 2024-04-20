@@ -94,6 +94,8 @@ public class HydrawiseGraphQLClient {
     private final HttpClient httpClient;
     private final OAuthClientService oAuthService;
     private String queryString = "";
+    private String weatherString = "";
+    private boolean weatherSupported = true;
 
     public HydrawiseGraphQLClient(HttpClient httpClient, OAuthClientService oAuthService) {
         this.httpClient = httpClient;
@@ -110,16 +112,45 @@ public class HydrawiseGraphQLClient {
     public @Nullable QueryResponse queryControllers()
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
         try {
-            QueryRequest query = new QueryRequest(getQueryString());
-            String queryJson = gson.toJson(query);
-            String response = sendGraphQLQuery(queryJson);
-            try {
-                return gson.fromJson(response, QueryResponse.class);
-            } catch (JsonSyntaxException e) {
-                throw new HydrawiseConnectionException("Invalid Response: " + response);
-            }
+            return queryRequest(getQueryString());
         } catch (IOException e) {
             throw new HydrawiseConnectionException(e);
+        }
+    }
+
+    /**
+     * Sends a GrapQL query for controller data
+     *
+     * @return QueryResponse
+     * @throws HydrawiseConnectionException
+     * @throws HydrawiseAuthenticationException
+     */
+    public @Nullable QueryResponse queryWeather()
+            throws HydrawiseConnectionException, HydrawiseAuthenticationException {
+        try {
+            return queryRequest(getWeatherString());
+        } catch (IOException e) {
+            throw new HydrawiseConnectionException(e);
+        }
+    }
+
+    /**
+     * Sends a GrapQL query for controller data
+     *
+     * @param queryString
+     * @return QueryResponse
+     * @throws HydrawiseConnectionException
+     * @throws HydrawiseAuthenticationException
+     */
+    private @Nullable QueryResponse queryRequest(String queryString)
+            throws HydrawiseConnectionException, HydrawiseAuthenticationException {
+        QueryRequest query = new QueryRequest(queryString);
+        String queryJson = gson.toJson(query);
+        String response = sendGraphQLQuery(queryJson);
+        try {
+            return gson.fromJson(response, QueryResponse.class);
+        } catch (JsonSyntaxException e) {
+            throw new HydrawiseConnectionException("Invalid Response: " + response);
         }
     }
 
@@ -256,32 +287,32 @@ public class HydrawiseGraphQLClient {
         sendGraphQLMutation(String.format(MUTATION_RESUME_ALL_ZONES, controllerId));
     }
 
-    /**
-     * Tests for a flaw in the Hydrawise GraphQL response that throws a 400 error if weather is not supported
-     *
-     * @return boolean
-     * @throws HydrawiseConnectionException
-     * @throws HydrawiseAuthenticationException
-     */
-    private boolean testWeather() throws HydrawiseConnectionException, HydrawiseAuthenticationException {
-        try {
-            QueryRequest query = new QueryRequest(getResourceString("weather-only.graphql"));
-            String queryJson = gson.toJson(query);
-            String response = sendGraphQLQuery(queryJson);
-
-            gson.fromJson(response, QueryResponse.class);
-            return true;
-        } catch (HydrawiseConnectionException e) {
-            if (e.getCode() == 400 && e.getResponse().indexOf("resolve promise") > 0) {
-                logger.debug("Weather not supported", e);
-                return false;
-            } else {
-                throw e;
-            }
-        } catch (IOException | JsonSyntaxException e) {
-            throw new HydrawiseConnectionException("Invalid Response: " + e.getMessage());
-        }
-    }
+    // /**
+    // * Tests for a flaw in the Hydrawise GraphQL response that throws a 400 error if weather is not supported
+    // *
+    // * @return boolean
+    // * @throws HydrawiseConnectionException
+    // * @throws HydrawiseAuthenticationException
+    // */
+    // private boolean testWeather() throws HydrawiseConnectionException, HydrawiseAuthenticationException {
+    // try {
+    // QueryRequest query = new QueryRequest(getResourceString("weather-only.graphql"));
+    // String queryJson = gson.toJson(query);
+    // String response = sendGraphQLQuery(queryJson);
+    //
+    // gson.fromJson(response, QueryResponse.class);
+    // return true;
+    // } catch (HydrawiseConnectionException e) {
+    // if (e.getCode() == 400 && e.getResponse().indexOf("resolve promise") > 0) {
+    // logger.debug("Weather not supported", e);
+    // return false;
+    // } else {
+    // throw e;
+    // }
+    // } catch (IOException | JsonSyntaxException e) {
+    // throw new HydrawiseConnectionException("Invalid Response: " + e.getMessage());
+    // }
+    // }
 
     private String sendGraphQLQuery(String content)
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
@@ -364,12 +395,26 @@ public class HydrawiseGraphQLClient {
         }
     }
 
-    private String getQueryString() throws IOException, HydrawiseConnectionException, HydrawiseAuthenticationException {
+    // private String getQueryString(boolean refresh) throws IOException {
+    // if (queryString.isBlank() || refresh) {
+    // queryString = getResourceString(
+    // weatherSupported ? "query-with-weather.graphql" : "query-without-weather.graphql");
+    // }
+    // return queryString;
+    // }
+
+    private String getQueryString() throws IOException {
         if (queryString.isBlank()) {
-            queryString = getResourceString(
-                    testWeather() ? "query-with-weather.graphql" : "query-without-weather.graphql");
+            queryString = getResourceString("query.graphql");
         }
         return queryString;
+    }
+
+    private String getWeatherString() throws IOException {
+        if (weatherString.isBlank()) {
+            weatherString = getResourceString("weather.graphql");
+        }
+        return weatherString;
     }
 
     private String getResourceString(String name) throws IOException {

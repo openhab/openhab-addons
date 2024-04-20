@@ -27,6 +27,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.measure.quantity.Speed;
+import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Volume;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -279,8 +281,8 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
     }
 
     private void updateZones(List<Zone> zones) {
-        AtomicReference<Boolean> anyRunning = new AtomicReference<>(false);
-        AtomicReference<Boolean> anySuspended = new AtomicReference<>(false);
+        AtomicReference<Boolean> anyRunning = new AtomicReference<Boolean>(false);
+        AtomicReference<Boolean> anySuspended = new AtomicReference<Boolean>(false);
         for (Zone zone : zones) {
             // there are 12 relays per expander, expanders will have a zoneNumber like:
             // 10 for expander 0, relay 10 = zone10
@@ -328,8 +330,9 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 updateGroupState(group, CHANNEL_ZONE_SUSPENDUNTIL, UnDefType.UNDEF);
             }
         }
-        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN, OnOffType.from(anyRunning.get()));
-        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPEND, OnOffType.from(anySuspended.get()));
+        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN, anyRunning.get() ? OnOffType.ON : OnOffType.OFF);
+        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPEND,
+                anySuspended.get() ? OnOffType.ON : OnOffType.OFF);
         updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPENDUNTIL, UnDefType.UNDEF);
     }
 
@@ -349,7 +352,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 updateGroupState(group, CHANNEL_SENSOR_OFFLEVEL, new DecimalType(sensor.model.offLevel));
             }
             if (sensor.status.active != null) {
-                updateGroupState(group, CHANNEL_SENSOR_ACTIVE, OnOffType.from(sensor.status.active));
+                updateGroupState(group, CHANNEL_SENSOR_ACTIVE, sensor.status.active ? OnOffType.ON : OnOffType.OFF);
             }
             if (sensor.status.waterFlow != null) {
                 updateGroupState(group, CHANNEL_SENSOR_WATERFLOW,
@@ -362,6 +365,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
         int i = 1;
         for (Forecast forecast : forecasts) {
             String group = "forecast" + (i++);
+            logger.trace("Updating {} {}", group, forecast.time);
             updateGroupState(group, CHANNEL_FORECAST_TIME, stringToDateTime(forecast.time));
             updateGroupState(group, CHANNEL_FORECAST_CONDITIONS, new StringType(forecast.conditions));
             updateGroupState(group, CHANNEL_FORECAST_HUMIDITY, new DecimalType(forecast.averageHumidity.intValue()));
@@ -383,12 +387,12 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
 
     private void updateTemperature(UnitValue temperature, String group, String channel) {
         logger.debug("TEMP {} {} {} {}", group, channel, temperature.unit, temperature.value);
-        updateGroupState(group, channel, new QuantityType<>(temperature.value,
+        updateGroupState(group, channel, new QuantityType<Temperature>(temperature.value,
                 "\\u00b0F".equals(temperature.unit) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS));
     }
 
     private void updateWindspeed(UnitValue wind, String group, String channel) {
-        updateGroupState(group, channel, new QuantityType<>(wind.value,
+        updateGroupState(group, channel, new QuantityType<Speed>(wind.value,
                 "mph".equals(wind.unit) ? ImperialUnits.MILES_PER_HOUR : SIUnits.KILOMETRE_PER_HOUR));
     }
 
