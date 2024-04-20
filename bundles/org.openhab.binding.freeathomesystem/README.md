@@ -132,7 +132,6 @@ Switch Livingroom_Lamp                      "Livingroom Lamp"         <switch>  
 Switch Livingroom_Aux                       "Livingroom Aux Switch"   <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:device:312095ad75:ABB700000012:ch000b#switch-on-off" }
 ```
 
-
 # Communities
 
 [openHAB community of this binding](https://community.openhab.org/t/abb-busch-jager-free-home-official-rest-api/141698)
