@@ -83,6 +83,10 @@ public class FreeAtHomeDatapointGroup {
 
                     break;
                 }
+                case INPUTOUTPUT:
+                case INPUT_AS_OUTPUT:
+                case UNKNOWN:
+                    break;
             }
         }
 

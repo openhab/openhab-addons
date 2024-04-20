@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
@@ -31,23 +31,28 @@ import org.osgi.service.component.annotations.Component;
  *
  */
 @Component(service = { FreeAtHomeChannelTypeProvider.class, ChannelTypeProvider.class })
+@NonNullByDefault
 public class FreeAtHomeChannelTypeProviderImpl implements FreeAtHomeChannelTypeProvider {
 
     private final Map<ChannelTypeUID, ChannelType> channelTypesByUID = new HashMap<>();
 
     @Override
-    public Collection<@NonNull ChannelType> getChannelTypes(@Nullable Locale locale) {
+    public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
         Collection<ChannelType> result = new ArrayList<>();
 
         for (ChannelTypeUID uid : channelTypesByUID.keySet()) {
-            result.add(channelTypesByUID.get(uid));
+            ChannelType channelType = channelTypesByUID.get(uid);
+
+            if (channelType != null) {
+                result.add(channelType);
+            }
         }
 
         return result;
     }
 
     @Override
-    public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
+    public @Nullable ChannelType getChannelType(@Nullable ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
         return channelTypesByUID.get(channelTypeUID);
     }
 

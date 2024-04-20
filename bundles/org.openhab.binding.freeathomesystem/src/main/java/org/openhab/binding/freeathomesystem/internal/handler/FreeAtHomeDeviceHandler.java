@@ -72,7 +72,6 @@ import org.slf4j.LoggerFactory;
 public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtHomeDeviceStateListener {
 
     private static final String CHANNEL_URI = "channel-type:freeathomesystem:config";
-    private static final String DEVICE_ID_CONFIG = "deviceId";
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeDeviceHandler.class);
     private FreeAtHomeDeviceDescription device = new FreeAtHomeDeviceDescription();
@@ -612,7 +611,6 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
     }
 
     private String capitalizeWordsInLabel(String label) {
-
         // splliting up words using split function
         String[] words = label.split(" ");
 

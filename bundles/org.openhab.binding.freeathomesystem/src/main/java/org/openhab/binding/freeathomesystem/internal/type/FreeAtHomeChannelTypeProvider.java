@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.freeathomesystem.internal.type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 
@@ -20,6 +21,7 @@ import org.openhab.core.thing.type.ChannelTypeProvider;
  * @author Andras Uhrin - Initial contribution
  *
  */
+@NonNullByDefault
 public interface FreeAtHomeChannelTypeProvider extends ChannelTypeProvider {
 
     public void addChannelType(ChannelType channelType);
