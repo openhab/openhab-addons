@@ -103,7 +103,8 @@ In order to manually configure a Thing:
 ```java
 Bridge freeathomesystem:bridge:mysysap [ ipAddress="...", username="...", password="..." ]
 {
-    Thing free-at-home-device    ABB700997F0A
+    Thing device    ABB700000001
+    Thing device    ABB700000012
 }
 ```
 
@@ -115,30 +116,26 @@ The creation of the openHAB channels to operate the free@home device is happenin
 Sample for the free@home thermostat device
 
 ```java
-Number Livingroom_MeasuredTemperature                     "Measured Temperature"            <temperature>  (Livingroom)  ["Measurement", "Temperature"] { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatMeasuredTemperature" }
-Number LivingRoom_Thermostat_SetpointTemperature          "Setpoint Temperature"            <temperature>  (Livingroom)  ["Setpoint", "Temperature"] { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatSetpointTemperature" }
-Switch LivingRoom_Thermostat_ThermostatActivationOnOff    "Thermostat Activation"           <switch>       (Livingroom) { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatOnoffSwitch" }
-Switch LivingRoom_Thermostat_MainEcoOnOff                 "Thermostat Eco Activation"       <switch>       (Livingroom) { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatEcoSwitch" }
-Number LivingRoom_ThermostatHeatingActive                 "Thermostat Heating Active"       <temperature>  (Livingroom)  ["Status"]       { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatHeatingActive" }
-Number LivingRoom_ThermostatHeatingDemand                 "Thermostat Heating Demand"       <temperature>  (Livingroom)  ["Status"]       { channel="freeathomesystem:thermostat:0836e63805:ABB700CF0FB0_0:thermostatHeatingDemand" }
+Switch Livingroom_Thermostat_Switch                       "Thermostat Siwtch"               <temperature>  (Livingroom)                              { channel="freeathomesystem:device:312095ad75:ABB700000001:ch0000#controller-on-off-request" }
+Switch LivingRoom_Thermostat_EcoOnOff                     "Thermostat Eco Activation"       <switch>       (Livingroom)                              { channel="freeathomesystem:device:312095ad75:ABB700000001:ch0000#eco-mode-on-off-request" }
+Number LivingRoom_Thermostat_MeasuredTemperature          "Measured Temperature"            <temperature>  (Livingroom)  ["Temperature"]             { channel="freeathomesystem:device:312095ad75:ABB700000001:ch0000#measured-temperature" }
+Number LivingRoom_Thermostat_SetpointTemperature          "Setpoint Temperature"            <temperature>  (Livingroom)  ["Setpoint", "Temperature"] { channel="freeathomesystem:device:312095ad75:ABB700000001:ch0000#absolute-setpoint-temperature" }
+Number LivingRoom_ThermostatHeatingActive                 "Thermostat Heating Active"       <temperature>  (Livingroom)  ["Status"]                  { channel="freeathomesystem:device:312095ad75:ABB700000001:ch0000#heating-active" }
+Number LivingRoom_ThermostatHeatingDemand                 "Thermostat Heating Demand"       <temperature>  (Livingroom)  ["Status"]                  { channel="freeathomesystem:device:312095ad75:ABB700000001:ch0000#status-indication" }
 ```
 
-Sample for the free@home sensor/actuator 1/1
+Sample for the free@home device for switch
 
 ```java
-Switch SwitchMoodlight_Livingroom                         "Moodlight Livingroom"     <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:actuator:0836e63805:ABB700D85E0A_0:switchChannel }
+Switch Livingroom_Switch                    "Livingroom Switch"       <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:device:312095ad75:ABB700000012:ch0000#switch-on-off" }
+Switch Livingroom_Lamp                      "Livingroom Lamp"         <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:device:312095ad75:ABB700000012:ch0006#switch-on-off" }
+Switch Livingroom_Aux                       "Livingroom Aux Switch"   <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:device:312095ad75:ABB700000012:ch000b#switch-on-off" }
 ```
 
-Sample for the free@home sensor/actuator 2/2
-
-```java
-Switch Switch_Livingroom_Double_1                         "Moodlight Livingroom"     <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:actuator:0836e63805:ABB700887F0A_0:switchChannel }
-Switch Switch_Livingroom_Double_2                         "Moodlight Livingroom"     <switch>  (Livingroom)  ["Light"]   { channel="freeathomesystem:actuator:0836e63805:ABB700887F0A_1:switchChannel }
-```
 
 # Communities
 
-[openHAB community of this binding](https://community.openhab.org/t/abb-busch-jager-free-home-official-rest-api/141698/71)
+[openHAB community of this binding](https://community.openhab.org/t/abb-busch-jager-free-home-official-rest-api/141698)
 
 [Busch-Jaeger Community](https://community.busch-jaeger.de/)
 
