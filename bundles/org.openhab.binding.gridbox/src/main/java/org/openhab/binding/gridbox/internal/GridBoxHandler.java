@@ -152,6 +152,9 @@ public class GridBoxHandler extends BaseThingHandler {
             if (systemId == null || systemId.isBlank()) {
                 config.systemId = API.getSystemId(config);
             }
+
+            updateScheduledFuture = scheduler.scheduleWithFixedDelay(this::update, 0, config.refreshInterval,
+                    TimeUnit.SECONDS);
         } catch (GridBoxApiAutheticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Username or password invalid?");
         } catch (IOException | InterruptedException e) {
@@ -162,9 +165,6 @@ public class GridBoxHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Unable to initialize GridBox thing, invalid response from API");
         }
-
-        updateScheduledFuture = scheduler.scheduleWithFixedDelay(this::update, 0, config.refreshInterval,
-                TimeUnit.SECONDS);
     }
 
     private void update() {
