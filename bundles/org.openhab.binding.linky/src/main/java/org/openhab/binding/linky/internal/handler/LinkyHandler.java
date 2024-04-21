@@ -22,12 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.linky.internal.LinkyAuthService;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
@@ -51,8 +48,6 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link LinkyHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -67,17 +62,15 @@ public class LinkyHandler extends BaseThingHandler {
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
-    private final HttpClient httpClient;
-    private final Gson gson;
 
     private final ExpiringDayCache<MeterReading> dailyConsumption;
 
     private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable EnedisHttpApi enedisApi;
-    private LinkyAuthService authService;
 
     private @NonNullByDefault({}) String prmId;
     private @NonNullByDefault({}) String userId;
+
+    private @Nullable EnedisHttpApi enedisApi;
 
     private enum Target {
         FIRST,
@@ -85,12 +78,8 @@ public class LinkyHandler extends BaseThingHandler {
         ALL
     }
 
-    public LinkyHandler(Thing thing, LocaleProvider localeProvider, Gson gson, HttpClient httpClient,
-            LinkyAuthService authService) {
+    public LinkyHandler(Thing thing, LocaleProvider localeProvider) {
         super(thing);
-        this.gson = gson;
-        this.httpClient = httpClient;
-        this.authService = authService;
 
         this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
@@ -150,44 +139,43 @@ public class LinkyHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing Linky handler.");
+
+        ApiBridgeHandler bridgeHandler = (ApiBridgeHandler) getBridge().getHandler();
+        enedisApi = bridgeHandler.getEnedisApi();
+
         updateStatus(ThingStatus.UNKNOWN);
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
         if (config.seemsValid()) {
-            EnedisHttpApi api = new EnedisHttpApi(config, gson, httpClient, authService);
-            this.enedisApi = api;
-
             scheduler.submit(() -> {
                 try {
-                    api.initialize();
-                    updateStatus(ThingStatus.ONLINE);
 
-                    PrmInfo prmInfo = api.getPrmInfo();
+                    PrmInfo prmInfo = enedisApi.getPrmInfo(config.prmId);
                     updateProperties(Map.of(USER_ID, prmInfo.customerId, PUISSANCE,
                             prmInfo.contractInfo.subscribedPower, PRM_ID, prmInfo.prmId));
 
-                    prmId = thing.getProperties().get(PRM_ID);
-                    userId = thing.getProperties().get(USER_ID);
+                    // prmId = thing.getProperties().get(PRM_ID);
+                    // userId = thing.getProperties().get(USER_ID);
 
-                    updateData();
+                    // updateData();
 
-                    disconnect();
+                    // disconnect();
 
                     final LocalDateTime now = LocalDateTime.now();
                     final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
                             .truncatedTo(ChronoUnit.HOURS);
 
-                    refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                            ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
-                            REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
-                } catch (LinkyException e) {
+                    // refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
+                    // ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
+                    // REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (Exception e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             });
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-mandatory-settings");
         }
+
     }
 
     /**
@@ -420,6 +408,7 @@ public class LinkyHandler extends BaseThingHandler {
                 to.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         EnedisHttpApi api = this.enedisApi;
+
         if (api != null) {
             try {
                 MeterReading meterReading = api.getEnergyData(userId, prmId, from, to);
@@ -430,29 +419,28 @@ public class LinkyHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
+
         return null;
     }
 
-    /*
-     *
-     * private @Nullable Consumption getPowerData(LocalDate from, LocalDate to) {
-     * logger.debug("getPowerData from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
-     * to.format(DateTimeFormatter.ISO_LOCAL_DATE));
-     * EnedisHttpApi api = this.enedisApi;
-     * if (api != null) {
-     * try {
-     * Consumption consumption = api.getPowerData(userId, prmId, from, to);
-     * updateStatus(ThingStatus.ONLINE);
-     * return consumption;
-     * } catch (LinkyException e) {
-     * logger.debug("Exception when getting power data: {}", e.getMessage(), e);
-     * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-     * }
-     * }
-     * return null;
-     * }
-     *
-     */
+    private @Nullable MeterReading getPowerData(LocalDate from, LocalDate to) {
+        logger.debug("getPowerData from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                to.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        EnedisHttpApi api = this.enedisApi;
+
+        if (api != null) {
+            try {
+                MeterReading meterReading = api.getPowerData(userId, prmId, from, to);
+                updateStatus(ThingStatus.ONLINE);
+                return meterReading;
+            } catch (LinkyException e) {
+                logger.debug("Exception when getting power data: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+
+        return null;
+    }
 
     private @Nullable String getTempoData() {
         logger.debug("getTempoData from");
@@ -468,15 +456,18 @@ public class LinkyHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
+
         return null;
     }
 
     private boolean isConnected() {
         EnedisHttpApi api = this.enedisApi;
-        return api == null ? false : api.isConnected();
+        // return api == null ? false : api.isConnected();
+        return true;
     }
 
     private void disconnect() {
+
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
@@ -485,6 +476,7 @@ public class LinkyHandler extends BaseThingHandler {
                 logger.debug("disconnect: {}", e.getMessage());
             }
         }
+
     }
 
     @Override

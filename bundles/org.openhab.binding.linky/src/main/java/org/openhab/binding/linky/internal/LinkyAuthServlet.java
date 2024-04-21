@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.UrlEncoded;
+import org.openhab.binding.linky.internal.handler.ApiBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,11 +63,11 @@ public class LinkyAuthServlet extends HttpServlet {
     private static final String KEY_PAGE_REFRESH = "pageRefresh";
 
     private final Logger logger = LoggerFactory.getLogger(LinkyAuthServlet.class);
-    private final LinkyAuthService linkyAuthService;
     private final String indexTemplate;
 
-    public LinkyAuthServlet(LinkyAuthService linkyAuthService, String indexTemplate) {
-        this.linkyAuthService = linkyAuthService;
+    private @NonNullByDefault({}) ApiBridgeHandler apiBridgeHandler;
+
+    public LinkyAuthServlet(ApiBridgeHandler apiBridgeHandler, String indexTemplate) {
         this.indexTemplate = indexTemplate;
     }
 
@@ -87,7 +88,7 @@ public class LinkyAuthServlet extends HttpServlet {
 
             StringBuffer optionBuffer = new StringBuffer();
 
-            List<String> prmIds = linkyAuthService.getAllPrmId();
+            List<String> prmIds = apiBridgeHandler.getAllPrmId();
             for (String prmId : prmIds) {
                 optionBuffer.append("<option value=\"" + prmId + "\">" + prmId + "</option>");
             }
@@ -95,7 +96,7 @@ public class LinkyAuthServlet extends HttpServlet {
             replaceMap.put(KEY_PRMID_OPTION, optionBuffer.toString());
             replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
             replaceMap.put(KEY_RETRIEVE_TOKEN_URI, servletBaseURLSecure + "?state=OK");
-            replaceMap.put(KEY_AUTHORIZE_URI, linkyAuthService.formatAuthorizationUrl(servletBaseURLSecure));
+            replaceMap.put(KEY_AUTHORIZE_URI, apiBridgeHandler.formatAuthorizationUrl(servletBaseURLSecure));
             resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
             resp.getWriter().close();
         } catch (LinkyException ex) {
@@ -139,7 +140,7 @@ public class LinkyAuthServlet extends HttpServlet {
             } else if (!StringUtil.isBlank(reqState)) {
                 try {
                     replaceMap.put(KEY_AUTHORIZED_USER, String.format(HTML_USER_AUTHORIZED,
-                            reqCode + " / " + linkyAuthService.authorize(servletBaseURL, reqState, reqCode)));
+                            reqCode + " / " + apiBridgeHandler.authorize(servletBaseURL, reqState, reqCode)));
                 } catch (RuntimeException e) {
                     logger.debug("Exception during authorizaton: ", e);
                     replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
