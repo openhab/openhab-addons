@@ -319,7 +319,7 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     private void throwOutOfRangeException(Instant query) {
-        if (getForecastBegin() == Instant.MAX || getForecastEnd() == Instant.MIN) {
+        if (getForecastBegin().equals(Instant.MAX) || getForecastEnd().equals(Instant.MIN)) {
             throw new SolarForecastException(this, "Forecast invalid time range");
         }
         if (query.isBefore(getForecastBegin())) {
@@ -333,9 +333,8 @@ public class ForecastSolarObject implements SolarForecast {
                             + dateOutputFormatter.format(getForecastBegin()) + " - "
                             + dateOutputFormatter.format(getForecastEnd()));
         } else {
-            logger.warn("Query " + dateOutputFormatter.format(query) + " is fine in range: "
-                    + dateOutputFormatter.format(getForecastBegin()) + " - "
-                    + dateOutputFormatter.format(getForecastEnd()) + ". This shouldn't happen!");
+            logger.warn("Query {} is fine in range: {} - {}. This shouldn't happen!", dateOutputFormatter.format(query),
+                    dateOutputFormatter.format(getForecastBegin()), dateOutputFormatter.format(getForecastEnd()));
         }
     }
 

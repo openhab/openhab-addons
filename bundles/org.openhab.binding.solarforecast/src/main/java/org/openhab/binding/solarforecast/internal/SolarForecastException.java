@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.solarforecast.internal;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 
@@ -27,15 +26,5 @@ public class SolarForecastException extends RuntimeException {
 
     public SolarForecastException(SolarForecast ref, String message) {
         super(ref.getIdentifier() + " # " + message);
-    }
-
-    @Override
-    public @NonNull String getMessage() {
-        String message = super.getMessage();
-        if (message == null) {
-            return SolarForecastBindingConstants.EMPTY;
-        } else {
-            return message;
-        }
     }
 }
