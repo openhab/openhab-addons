@@ -52,7 +52,7 @@ public class SolcastPlaneMock extends SolcastPlaneHandler {
     @Override
     protected SolcastObject fetchData() {
         forecast.ifPresent(forecastObject -> {
-            if (forecastObject.isExpired() || !forecastObject.isValid()) {
+            if (forecastObject.isExpired()) {
                 String content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
                 SolcastObject sco1 = new SolcastObject("sc-test", content, Instant.now().plusSeconds(3600),
                         new TimeZP());

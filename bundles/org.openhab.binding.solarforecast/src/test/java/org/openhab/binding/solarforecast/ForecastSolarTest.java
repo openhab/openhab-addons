@@ -186,7 +186,6 @@ class ForecastSolarTest {
             double d = fo.getActualPowerValue(query);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            System.out.println(sfe.getMessage());
             assertTrue(sfe.getMessage().contains(TOO_EARLY_INDICATOR),
                     "Expected: " + TOO_EARLY_INDICATOR + " Received: " + sfe.getMessage());
         }

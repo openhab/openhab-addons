@@ -85,8 +85,8 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             if (handler != null) {
                 if (handler instanceof SolcastBridgeHandler sbh) {
                     bridgeHandler = Optional.of(sbh);
-                    bridgeHandler.get().addPlane(this);
                     forecast = Optional.of(new SolcastObject(thing.getUID().getAsString(), bridgeHandler.get()));
+                    bridgeHandler.get().addPlane(this);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.plane.status.wrong-handler [\"" + handler + "\"]");
@@ -113,36 +113,34 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             forecast.ifPresent(forecastObject -> {
-                if (forecastObject.isValid()) {
-                    String group = channelUID.getGroupId();
-                    String channel = channelUID.getIdWithoutGroup();
-                    QueryMode mode = QueryMode.Average;
-                    switch (group) {
-                        case GROUP_AVERAGE:
-                            mode = QueryMode.Average;
-                            break;
-                        case GROUP_OPTIMISTIC:
-                            mode = QueryMode.Optimistic;
-                            break;
-                        case GROUP_PESSIMISTIC:
-                            mode = QueryMode.Pessimistic;
-                            break;
-                        case GROUP_RAW:
-                            forecast.ifPresent(f -> {
-                                updateState(GROUP_RAW + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_JSON,
-                                        StringType.valueOf(f.getRaw()));
-                            });
-                    }
-                    switch (channel) {
-                        case CHANNEL_ENERGY_ESTIMATE:
-                            sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecastObject.getEnergyTimeSeries(mode));
-                            break;
-                        case CHANNEL_POWER_ESTIMATE:
-                            sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecastObject.getPowerTimeSeries(mode));
-                            break;
-                        default:
-                            updateChannels(forecastObject);
-                    }
+                String group = channelUID.getGroupId();
+                String channel = channelUID.getIdWithoutGroup();
+                QueryMode mode = QueryMode.Average;
+                switch (group) {
+                    case GROUP_AVERAGE:
+                        mode = QueryMode.Average;
+                        break;
+                    case GROUP_OPTIMISTIC:
+                        mode = QueryMode.Optimistic;
+                        break;
+                    case GROUP_PESSIMISTIC:
+                        mode = QueryMode.Pessimistic;
+                        break;
+                    case GROUP_RAW:
+                        forecast.ifPresent(f -> {
+                            updateState(GROUP_RAW + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_JSON,
+                                    StringType.valueOf(f.getRaw()));
+                        });
+                }
+                switch (channel) {
+                    case CHANNEL_ENERGY_ESTIMATE:
+                        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecastObject.getEnergyTimeSeries(mode));
+                        break;
+                    case CHANNEL_POWER_ESTIMATE:
+                        sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecastObject.getPowerTimeSeries(mode));
+                        break;
+                    default:
+                        updateChannels(forecastObject);
                 }
             });
         }
@@ -150,7 +148,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
 
     protected synchronized SolcastObject fetchData() {
         forecast.ifPresent(forecastObject -> {
-            if (forecastObject.isExpired() || !forecastObject.isValid()) {
+            if (forecastObject.isExpired()) {
                 logger.trace("Get new forecast {}", forecastObject.toString());
                 String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
                 String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);

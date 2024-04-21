@@ -24,25 +24,22 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
+import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastBridgeHandler;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneHandler;
-import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.internal.BridgeImpl;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
@@ -57,8 +54,9 @@ class SolcastTest {
     private static final TimeZP TIMEZONEPROVIDER = new TimeZP();
     // double comparison tolerance = 1 Watt
     private static final double TOLERANCE = 0.001;
-    public static final QuantityType<Power> POWER_UNDEF = Utils.getPowerState(-1);
-    public static final QuantityType<Energy> ENERGY_UNDEF = Utils.getEnergyState(-1);
+
+    public static final String TOO_LATE_INDICATOR = "too late";
+    public static final String DAY_MISSING_INDICATOR = "not available in forecast";
 
     /**
      * "2022-07-18T00:00+02:00[Europe/Berlin]": 0,
@@ -260,7 +258,13 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(TEST_ZONE);
         SolcastObject scfo = new SolcastObject("sc-test", content, now.toInstant(), TIMEZONEPROVIDER);
-        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Average), 0.01, "Invalid");
+        try {
+            double d = scfo.getActualEnergyValue(now, QueryMode.Average);
+            fail("Exception expected instead of " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+                    "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
+        }
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
         assertEquals(18.946, scfo.getActualEnergyValue(now, QueryMode.Average), 0.01, "Actual data");
@@ -275,7 +279,14 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(TEST_ZONE);
         SolcastObject scfo = new SolcastObject("sc-test", content, now.toInstant(), TIMEZONEPROVIDER);
-        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Average), 0.01, "Invalid");
+        try {
+            double d = scfo.getActualEnergyValue(now, QueryMode.Average);
+            fail("Exception expected instead of " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+                    "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
+        }
+
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
 
@@ -286,7 +297,7 @@ class SolcastTest {
         // test daily forecasts + cumulated getEnergy
         double totalEnergy = 0;
         ZonedDateTime start = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 6; i++) {
             QuantityType qt = scfo.getDay(start.toLocalDate().plusDays(i));
             QuantityType eqt = scfo.getEnergy(start.plusDays(i).toInstant(), start.plusDays(i + 1).toInstant());
 
@@ -348,7 +359,13 @@ class SolcastTest {
         } catch (IllegalArgumentException e) {
             assertEquals("Solcast doesn't support argument rubbish", e.getMessage(), "Rubbish argument");
         }
-        assertEquals(POWER_UNDEF, scfo.getPower(past), "Normal Power");
+        try {
+            scfo.getPower(past);
+            fail("Exception expected");
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+                    "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
+        }
     }
 
     @Test
@@ -356,13 +373,29 @@ class SolcastTest {
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
         ZonedDateTime now = ZonedDateTime.now(TEST_ZONE);
         SolcastObject scfo = new SolcastObject("sc-test", content, now.toInstant(), TIMEZONEPROVIDER);
-        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Average), 0.01, "Data available - day not in");
+        try {
+            double d = scfo.getActualEnergyValue(now, QueryMode.Average);
+            fail("Exception expected instead of " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+                    "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
+        }
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         scfo.join(content);
-        assertEquals(-1.0, scfo.getActualEnergyValue(now, QueryMode.Average), 0.01,
-                "Data available after merge - day not in");
-        assertEquals(-1.0, scfo.getDayTotal(now.toLocalDate(), QueryMode.Average), 0.01,
-                "Data available after merge - day not in");
+        try {
+            double d = scfo.getActualEnergyValue(now, QueryMode.Average);
+            fail("Exception expected instead of " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+                    "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
+        }
+        try {
+            double d = scfo.getDayTotal(now.toLocalDate(), QueryMode.Average);
+            fail("Exception expected instead of " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains(DAY_MISSING_INDICATOR),
+                    "Expected: " + DAY_MISSING_INDICATOR + " Received: " + sfe.getMessage());
+        }
     }
 
     @Test
@@ -562,7 +595,7 @@ class SolcastTest {
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#power-estimate");
         TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:thing:average#power-estimate");
         assertEquals(336, ts1.size(), "TimeSeries size");
-
+        assertEquals(336, ts2.size(), "TimeSeries size");
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
         while (iter1.hasNext()) {
@@ -573,6 +606,9 @@ class SolcastTest {
             assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() * 2,
                     0.1, "Power Value");
         }
+        scbh.dispose();
+        scph1.dispose();
+        scph2.dispose();
     }
 
     @Test
@@ -599,6 +635,7 @@ class SolcastTest {
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#energy-estimate");
         TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:thing:average#energy-estimate");
         assertEquals(336, ts1.size(), "TimeSeries size");
+        assertEquals(336, ts2.size(), "TimeSeries size");
 
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
@@ -610,6 +647,9 @@ class SolcastTest {
             assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() * 2,
                     0.1, "Power Value");
         }
+        scbh.dispose();
+        scph1.dispose();
+        scph2.dispose();
     }
 
     @Test
@@ -621,7 +661,9 @@ class SolcastTest {
         scbh.setCallback(cm);
 
         SolcastPlaneHandler scph1 = new SolcastPlaneMock(bi);
+        CallbackMock cm1 = new CallbackMock();
         scph1.initialize();
+        scph1.setCallback(cm1);
 
         // simulate trigger of refresh job
         scbh.getData();
@@ -633,9 +675,5 @@ class SolcastTest {
             TimeSeries.Entry e1 = iter1.next();
             assertEquals("kWh", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
         }
-
-        // simulate item refresh
-        scbh.handleCommand(new ChannelUID("a:b:c:" + SolarForecastBindingConstants.CHANNEL_POWER_ACTUAL),
-                RefreshType.REFRESH);
     }
 }

@@ -53,15 +53,16 @@ public class ForecastSolarObject implements SolarForecast {
     private final TreeMap<ZonedDateTime, Double> wattHourMap = new TreeMap<>();
     private final TreeMap<ZonedDateTime, Double> wattMap = new TreeMap<>();
     private final DateTimeFormatter dateInputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    DateTimeFormatter dateOutputFormatter = DateTimeFormatter.ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT)
-            .withZone(ZoneId.systemDefault());
+
+    private DateTimeFormatter dateOutputFormatter = DateTimeFormatter
+            .ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT).withZone(ZoneId.systemDefault());
     private ZoneId zone = ZoneId.systemDefault();
     private Optional<String> rawData = Optional.empty();
     private Instant expirationDateTime;
     private String identifier;
 
     public ForecastSolarObject(String id) {
-        expirationDateTime = Instant.now();
+        expirationDateTime = Instant.now().minusSeconds(1);
         identifier = id;
     }
 
@@ -342,5 +343,4 @@ public class ForecastSolarObject implements SolarForecast {
     public String getIdentifier() {
         return identifier;
     }
-
 }

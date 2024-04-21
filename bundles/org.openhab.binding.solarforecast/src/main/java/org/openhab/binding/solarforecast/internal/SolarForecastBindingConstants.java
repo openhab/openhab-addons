@@ -56,5 +56,4 @@ public class SolarForecastBindingConstants {
     public static final String SLASH = "/";
     public static final String EMPTY = "";
     public static final String PATTERN_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
 }

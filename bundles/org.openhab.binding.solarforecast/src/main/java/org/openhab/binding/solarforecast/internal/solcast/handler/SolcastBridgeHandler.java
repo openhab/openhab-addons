@@ -28,6 +28,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
@@ -137,25 +138,33 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                 case Pessimistic -> GROUP_PESSIMISTIC;
                 default -> GROUP_AVERAGE;
             };
+            boolean update = true;
             double energySum = 0;
             double powerSum = 0;
             double daySum = 0;
             for (Iterator<SolcastPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
-                SolcastPlaneHandler sfph = iterator.next();
-                SolcastObject fo = sfph.fetchData();
-                energySum += fo.getActualEnergyValue(now, mode);
-                powerSum += fo.getActualPowerValue(now, mode);
-                daySum += fo.getDayTotal(now.toLocalDate(), mode);
+                try {
+                    SolcastPlaneHandler sfph = iterator.next();
+                    SolcastObject fo = sfph.fetchData();
+                    energySum += fo.getActualEnergyValue(now, mode);
+                    powerSum += fo.getActualPowerValue(now, mode);
+                    daySum += fo.getDayTotal(now.toLocalDate(), mode);
+                } catch (SolarForecastException sfe) {
+                    logger.warn(sfe.getMessage());
+                    update = false;
+                }
             }
-            updateStatus(ThingStatus.ONLINE);
-            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ACTUAL,
-                    Utils.getEnergyState(energySum));
-            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_REMAIN,
-                    Utils.getEnergyState(daySum - energySum));
-            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_TODAY,
-                    Utils.getEnergyState(daySum));
-            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ACTUAL,
-                    Utils.getPowerState(powerSum));
+            if (update) {
+                updateStatus(ThingStatus.ONLINE);
+                updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ACTUAL,
+                        Utils.getEnergyState(energySum));
+                updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_REMAIN,
+                        Utils.getEnergyState(daySum - energySum));
+                updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_TODAY,
+                        Utils.getEnergyState(daySum));
+                updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ACTUAL,
+                        Utils.getPowerState(powerSum));
+            }
         });
     }
 

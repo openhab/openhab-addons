@@ -133,25 +133,29 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         if (planes.isEmpty()) {
             return;
         }
-        try {
-            double energySum = 0;
-            double powerSum = 0;
-            double daySum = 0;
-            for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
+        boolean update = true;
+        double energySum = 0;
+        double powerSum = 0;
+        double daySum = 0;
+        for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
+            try {
                 ForecastSolarPlaneHandler sfph = iterator.next();
                 ForecastSolarObject fo = sfph.fetchData();
                 ZonedDateTime now = ZonedDateTime.now(fo.getZone());
                 energySum += fo.getActualEnergyValue(now);
                 powerSum += fo.getActualPowerValue(now);
                 daySum += fo.getDayTotal(now.toLocalDate());
+            } catch (SolarForecastException sfe) {
+                logger.warn(sfe.getMessage());
+                update = false;
             }
+        }
+        if (update) {
             updateStatus(ThingStatus.ONLINE);
             updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energySum));
             updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(daySum - energySum));
             updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(daySum));
             updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(powerSum));
-        } catch (SolarForecastException sfe) {
-            logger.warn(sfe.getMessage());
         }
     }
 
