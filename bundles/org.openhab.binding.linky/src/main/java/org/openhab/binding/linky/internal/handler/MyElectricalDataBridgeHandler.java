@@ -51,5 +51,4 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
         super.dispose();
     }
-
 }
