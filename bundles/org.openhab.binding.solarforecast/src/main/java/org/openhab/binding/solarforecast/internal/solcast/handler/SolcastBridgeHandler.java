@@ -131,18 +131,12 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         ZonedDateTime now = ZonedDateTime.now(getTimeZone());
         List<QueryMode> modes = List.of(QueryMode.Average, QueryMode.Pessimistic, QueryMode.Optimistic);
         modes.forEach(mode -> {
-            String group = GROUP_AVERAGE;
-            switch (mode) {
-                case Average:
-                    group = GROUP_AVERAGE;
-                    break;
-                case Optimistic:
-                    group = GROUP_OPTIMISTIC;
-                    break;
-                case Pessimistic:
-                    group = GROUP_PESSIMISTIC;
-                    break;
-            }
+            String group = switch (mode) {
+                case Average -> GROUP_AVERAGE;
+                case Optimistic -> GROUP_OPTIMISTIC;
+                case Pessimistic -> GROUP_PESSIMISTIC;
+                default -> GROUP_AVERAGE;
+            };
             double energySum = 0;
             double powerSum = 0;
             double daySum = 0;
