@@ -174,7 +174,7 @@ public class ForecastSolarObject implements SolarForecast {
                 return f.getValue() / 1000.0;
             } else {
                 // floor date doesn't fit
-                return -1;
+                throwOutOfRangeException(queryDateTime.toInstant());
             }
         } else if (f == null && c != null) {
             if (c.getKey().toLocalDate().equals(queryDateTime.toLocalDate())) {
@@ -182,7 +182,7 @@ public class ForecastSolarObject implements SolarForecast {
                 return 0;
             } else {
                 // ceiling date doesn't fit
-                return -1;
+                throwOutOfRangeException(queryDateTime.toInstant());
             }
         } else if (f != null && c != null) {
             // we're during suntime!
@@ -199,6 +199,7 @@ public class ForecastSolarObject implements SolarForecast {
             actualPowerValue = ((1 - interpolation) * powerFloor) + (interpolation * powerCeiling);
             return actualPowerValue / 1000.0;
         } // else both null - this shall not happen
+        throwOutOfRangeException(queryDateTime.toInstant());
         return -1;
     }
 
@@ -213,7 +214,7 @@ public class ForecastSolarObject implements SolarForecast {
 
     public double getDayTotal(LocalDate queryDate) {
         if (rawData.isEmpty()) {
-            return -1;
+            throw new SolarForecastException(this, "No forecast data available");
         }
         JSONObject contentJson = new JSONObject(rawData.get());
         JSONObject resultJson = contentJson.getJSONObject("result");
@@ -221,16 +222,14 @@ public class ForecastSolarObject implements SolarForecast {
 
         if (wattsDay.has(queryDate.toString())) {
             return wattsDay.getDouble(queryDate.toString()) / 1000.0;
+        } else {
+            throw new SolarForecastException(this, "Day " + queryDate + " not available in forecast");
         }
-        return -1;
     }
 
     public double getRemainingProduction(ZonedDateTime queryDateTime) {
         double daily = getDayTotal(queryDateTime.toLocalDate());
         double actual = getActualEnergyValue(queryDateTime);
-        if (daily < 0 || actual < 0) {
-            return -1;
-        }
         return daily - actual;
     }
 

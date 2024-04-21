@@ -53,6 +53,12 @@ class ForecastSolarTest {
     public static final QuantityType<Power> POWER_UNDEF = Utils.getPowerState(-1);
     public static final QuantityType<Energy> ENERGY_UNDEF = Utils.getEnergyState(-1);
 
+    public static final String TOO_EARLY_INDICATOR = "too early";
+    public static final String TOO_LATE_INDICATOR = "too late";
+    public static final String INVALID_RANGE_INDICATOR = "invalid time range";
+    public static final String NO_GORECAST_INDICATOR = "No forecast data";
+    public static final String DAY_MISSING_INDICATOR = "not available in forecast";
+
     @Test
     void testForecastObject() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
@@ -131,18 +137,32 @@ class ForecastSolarTest {
         ZonedDateTime query = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
         try {
             double d = fo.getActualEnergyValue(query);
-            fail("Actual Energy without time range");
+            fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains("invalid time range"), "invalid time range");
+            assertTrue(sfe.getMessage().contains(INVALID_RANGE_INDICATOR),
+                    "Expected: " + INVALID_RANGE_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getRemainingProduction(query);
-            fail("Remaining Production without time range");
+            fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains("invalid time range"), "invalid time range");
+            assertTrue(sfe.getMessage().contains(NO_GORECAST_INDICATOR),
+                    "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
         }
-        assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Today Production");
-        assertEquals(-1.0, fo.getDayTotal(query.plusDays(1).toLocalDate()), TOLERANCE, "Tomorrow Production");
+        try {
+            double d = fo.getDayTotal(query.toLocalDate());
+            fail("Exception expected instead of " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains(NO_GORECAST_INDICATOR),
+                    "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
+        }
+        try {
+            double d = fo.getDayTotal(query.plusDays(1).toLocalDate());
+            fail("Exception expected instead of " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains(NO_GORECAST_INDICATOR),
+                    "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
+        }
 
         // valid object - query date one day too early
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
@@ -150,24 +170,33 @@ class ForecastSolarTest {
         fo = new ForecastSolarObject("fs-test", content, query.toInstant());
         try {
             double d = fo.getActualEnergyValue(query);
-            fail("Remaining Production without time range " + d);
+            fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains("too early"), "too early");
+            assertTrue(sfe.getMessage().contains(TOO_EARLY_INDICATOR),
+                    "Expected: " + TOO_EARLY_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getRemainingProduction(query);
-            fail("Remaining Production without time range " + d);
+            fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains("too early"), "too early");
+            assertTrue(sfe.getMessage().contains(DAY_MISSING_INDICATOR),
+                    "Expected: " + DAY_MISSING_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getActualPowerValue(query);
-            // fail("Remaining Production without time range " + d);
+            fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
             System.out.println(sfe.getMessage());
-            assertTrue(sfe.getMessage().contains("too early"), "too early");
+            assertTrue(sfe.getMessage().contains(TOO_EARLY_INDICATOR),
+                    "Expected: " + TOO_EARLY_INDICATOR + " Received: " + sfe.getMessage());
         }
-        assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
+        try {
+            double d = fo.getDayTotal(query.toLocalDate());
+            fail("Exception expected instead of " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains(DAY_MISSING_INDICATOR),
+                    "Expected: " + DAY_MISSING_INDICATOR + " Received: " + sfe.getMessage());
+        }
 
         // one minute later we reach a valid date
         query = query.plusMinutes(1);
@@ -180,18 +209,32 @@ class ForecastSolarTest {
         query = LocalDateTime.of(2022, 7, 19, 0, 0).atZone(TEST_ZONE);
         try {
             double d = fo.getActualEnergyValue(query);
-            fail("Remaining Production without time range " + d);
+            fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains("too late"), "too late");
+            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+                    "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getRemainingProduction(query);
-            fail("Remaining Production without time range " + d);
+            fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains("too late"), "too late");
+            assertTrue(sfe.getMessage().contains(DAY_MISSING_INDICATOR),
+                    "Expected: " + DAY_MISSING_INDICATOR + " Received: " + sfe.getMessage());
         }
-        assertEquals(-1.0, fo.getActualPowerValue(query), TOLERANCE, "Remain out of scope");
-        assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
+        try {
+            double d = fo.getActualPowerValue(query);
+            fail("Exception expected instead of " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+                    "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
+        }
+        try {
+            double d = fo.getDayTotal(query.toLocalDate());
+            fail("Exception expected instead of " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains(DAY_MISSING_INDICATOR),
+                    "Expected: " + DAY_MISSING_INDICATOR + " Received: " + sfe.getMessage());
+        }
 
         // one minute earlier we reach a valid date
         query = query.minusMinutes(1);
@@ -235,7 +278,7 @@ class ForecastSolarTest {
             fo.getEnergy(queryDateTime.toInstant(), queryDateTime.plusDays(2).toInstant());
             fail("Too early exception missing");
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains("too early"), "Too early exception");
+            assertTrue(sfe.getMessage().contains("not available"), "not available expected: " + sfe.getMessage());
         }
         try {
             fo.getDay(queryDateTime.toLocalDate(), "optimistic");

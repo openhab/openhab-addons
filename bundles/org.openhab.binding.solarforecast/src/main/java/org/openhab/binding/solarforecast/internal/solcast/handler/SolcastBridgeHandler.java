@@ -159,7 +159,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         });
     }
 
-    public void forecastUpdate() {
+    public synchronized void forecastUpdate() {
         if (planes.isEmpty()) {
             return;
         }

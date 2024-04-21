@@ -155,7 +155,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         }
     }
 
-    public void forecastUpdate() {
+    public synchronized void forecastUpdate() {
         if (planes.isEmpty()) {
             return;
         }
