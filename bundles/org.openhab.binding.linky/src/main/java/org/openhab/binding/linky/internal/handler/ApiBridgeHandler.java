@@ -155,7 +155,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
-
     }
 
     /*
@@ -173,7 +172,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -200,7 +198,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         } catch (NamespaceException | ServletException | IOException e) {
             logger.warn("Error during linky servlet startup", e);
         }
-
     }
 
     /**
@@ -331,5 +328,4 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         return result;
     }
-
 }

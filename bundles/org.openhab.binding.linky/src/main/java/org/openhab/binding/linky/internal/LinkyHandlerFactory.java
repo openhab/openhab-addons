@@ -100,13 +100,11 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
         this.httpService = httpService;
         this.thingRegistry = thingRegistry;
         this.componentContext = componentContext;
-
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return LinkyBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID);
-
     }
 
     @Override
@@ -125,7 +123,5 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-
     }
-
 }
