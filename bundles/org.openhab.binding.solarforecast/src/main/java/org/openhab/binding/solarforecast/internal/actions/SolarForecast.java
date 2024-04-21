@@ -100,4 +100,11 @@ public interface SolarForecast {
      * @return TimeSeries containing QuantityType<Energy>
      */
     TimeSeries getEnergyTimeSeries(QueryMode mode);
+
+    /**
+     * SolarForecast identifier
+     *
+     * @return unique String to identify solar plane
+     */
+    String getIdentifier();
 }

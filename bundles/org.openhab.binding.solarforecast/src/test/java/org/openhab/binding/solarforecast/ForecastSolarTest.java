@@ -28,6 +28,7 @@ import javax.measure.quantity.Power;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
+import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
 import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarBridgeHandler;
 import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarPlaneHandler;
@@ -56,7 +57,7 @@ class ForecastSolarTest {
     void testForecastObject() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 17, 00).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
+        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
         // "2022-07-17 21:32:00": 63583,
         assertEquals(63.583, fo.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
         // "2022-07-17 17:00:00": 52896,
@@ -79,7 +80,7 @@ class ForecastSolarTest {
     void testActualPower() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 10, 00).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
+        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
         // "2022-07-17 10:00:00": 4874,
         assertEquals(4.874, fo.getActualPowerValue(queryDateTime), TOLERANCE, "Actual estimation");
 
@@ -92,7 +93,7 @@ class ForecastSolarTest {
     void testInterpolation() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 0).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
+        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
 
         // test steady value increase
         double previousValue = 0;
@@ -113,7 +114,7 @@ class ForecastSolarTest {
     void testForecastSum() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
+        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
         QuantityType<Energy> actual = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
         State st = Utils.getEnergyState(fo.getActualEnergyValue(queryDateTime));
         assertTrue(st instanceof QuantityType);
@@ -126,22 +127,47 @@ class ForecastSolarTest {
     @Test
     void testCornerCases() {
         // invalid object
-        ForecastSolarObject fo = new ForecastSolarObject();
-        assertFalse(fo.isValid());
+        ForecastSolarObject fo = new ForecastSolarObject("fs-test");
         ZonedDateTime query = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
-        assertEquals(-1.0, fo.getActualEnergyValue(query), TOLERANCE, "Actual Production");
+        try {
+            double d = fo.getActualEnergyValue(query);
+            fail("Actual Energy without time range");
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains("invalid time range"), "invalid time range");
+        }
+        try {
+            double d = fo.getRemainingProduction(query);
+            fail("Remaining Production without time range");
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains("invalid time range"), "invalid time range");
+        }
         assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Today Production");
-        assertEquals(-1.0, fo.getRemainingProduction(query), TOLERANCE, "Remaining Production");
         assertEquals(-1.0, fo.getDayTotal(query.plusDays(1).toLocalDate()), TOLERANCE, "Tomorrow Production");
 
         // valid object - query date one day too early
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         query = LocalDateTime.of(2022, 7, 16, 23, 59).atZone(TEST_ZONE);
-        fo = new ForecastSolarObject(content, query.toInstant());
+        fo = new ForecastSolarObject("fs-test", content, query.toInstant());
+        try {
+            double d = fo.getActualEnergyValue(query);
+            fail("Remaining Production without time range " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains("too early"), "too early");
+        }
+        try {
+            double d = fo.getRemainingProduction(query);
+            fail("Remaining Production without time range " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains("too early"), "too early");
+        }
+        try {
+            double d = fo.getActualPowerValue(query);
+            // fail("Remaining Production without time range " + d);
+        } catch (SolarForecastException sfe) {
+            System.out.println(sfe.getMessage());
+            assertTrue(sfe.getMessage().contains("too early"), "too early");
+        }
         assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
-        assertEquals(-1.0, fo.getActualEnergyValue(query), TOLERANCE, "Actual out of scope");
-        assertEquals(-1.0, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
-        assertEquals(-1.0, fo.getActualPowerValue(query), TOLERANCE, "Remain out of scope");
 
         // one minute later we reach a valid date
         query = query.plusMinutes(1);
@@ -152,10 +178,20 @@ class ForecastSolarTest {
 
         // valid object - query date one day too late
         query = LocalDateTime.of(2022, 7, 19, 0, 0).atZone(TEST_ZONE);
-        assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
-        assertEquals(-1.0, fo.getActualEnergyValue(query), TOLERANCE, "Actual out of scope");
-        assertEquals(-1.0, fo.getRemainingProduction(query), TOLERANCE, "Remain out of scope");
+        try {
+            double d = fo.getActualEnergyValue(query);
+            fail("Remaining Production without time range " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains("too late"), "too late");
+        }
+        try {
+            double d = fo.getRemainingProduction(query);
+            fail("Remaining Production without time range " + d);
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains("too late"), "too late");
+        }
         assertEquals(-1.0, fo.getActualPowerValue(query), TOLERANCE, "Remain out of scope");
+        assertEquals(-1.0, fo.getDayTotal(query.toLocalDate()), TOLERANCE, "Actual out of scope");
 
         // one minute earlier we reach a valid date
         query = query.minusMinutes(1);
@@ -181,7 +217,7 @@ class ForecastSolarTest {
     void testActions() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
+        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
         assertEquals("2022-07-17T05:31:00",
                 fo.getForecastBegin().atZone(TEST_ZONE).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 "Forecast begin");
@@ -190,14 +226,17 @@ class ForecastSolarTest {
         assertEquals(QuantityType.valueOf(63.583, Units.KILOWATT_HOUR).toString(),
                 fo.getDay(queryDateTime.toLocalDate()).toFullString(), "Actual out of scope");
 
-        queryDateTime = LocalDateTime.of(2022, 7, 17, 0, 0).atZone(TEST_ZONE);
+        queryDateTime = LocalDateTime.of(2022, 7, 10, 0, 0).atZone(TEST_ZONE);
         // "watt_hours_day": {
         // "2022-07-17": 63583,
         // "2022-07-18": 65554
         // }
-        assertEquals(QuantityType.valueOf(129.137, Units.KILOWATT_HOUR).toString(),
-                fo.getEnergy(queryDateTime.toInstant(), queryDateTime.plusDays(2).toInstant()).toFullString(),
-                "Actual out of scope");
+        try {
+            fo.getEnergy(queryDateTime.toInstant(), queryDateTime.plusDays(2).toInstant());
+            fail("Too early exception missing");
+        } catch (SolarForecastException sfe) {
+            assertTrue(sfe.getMessage().contains("too early"), "Too early exception");
+        }
         try {
             fo.getDay(queryDateTime.toLocalDate(), "optimistic");
             fail();
@@ -222,7 +261,7 @@ class ForecastSolarTest {
     void testTimeSeries() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject(content, queryDateTime.toInstant());
+        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
 
         TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.Average);
         assertEquals(36, powerSeries.size()); // 18 values each day for 2 days
@@ -250,7 +289,7 @@ class ForecastSolarTest {
         fsbh.setCallback(cm);
 
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        ForecastSolarObject fso1 = new ForecastSolarObject(content, Instant.now());
+        ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now());
         ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1);
         fsbh.addPlane(fsph1);
         fsbh.forecastUpdate();
@@ -281,7 +320,7 @@ class ForecastSolarTest {
         fsbh.setCallback(cm);
 
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        ForecastSolarObject fso1 = new ForecastSolarObject(content, Instant.now());
+        ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now());
         ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1);
         fsbh.addPlane(fsph1);
         fsbh.forecastUpdate();

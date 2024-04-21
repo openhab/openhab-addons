@@ -54,6 +54,7 @@ public class SolcastObject implements SolarForecast {
     private final TreeMap<ZonedDateTime, Double> pessimisticDataMap = new TreeMap<>();
     private final TimeZoneProvider timeZoneProvider;
 
+    private String identifier;
     private Optional<JSONObject> rawData = Optional.of(new JSONObject());
     private Instant expirationDateTime;
     private long period = 30;
@@ -76,13 +77,15 @@ public class SolcastObject implements SolarForecast {
         }
     }
 
-    public SolcastObject(TimeZoneProvider tzp) {
+    public SolcastObject(String id, TimeZoneProvider tzp) {
         // invalid forecast object
+        identifier = id;
         timeZoneProvider = tzp;
         expirationDateTime = Instant.now();
     }
 
-    public SolcastObject(String content, Instant expiration, TimeZoneProvider tzp) {
+    public SolcastObject(String id, String content, Instant expiration, TimeZoneProvider tzp) {
+        identifier = id;
         expirationDateTime = expiration;
         timeZoneProvider = tzp;
         add(content);
@@ -459,5 +462,10 @@ public class SolcastObject implements SolarForecast {
         } else {
             return QueryMode.Average;
         }
+    }
+
+    @Override
+    public String getIdentifier() {
+        return identifier;
     }
 }

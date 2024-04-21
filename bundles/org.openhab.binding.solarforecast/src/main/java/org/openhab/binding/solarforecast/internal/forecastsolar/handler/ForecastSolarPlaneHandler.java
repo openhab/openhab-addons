@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
+import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
@@ -65,11 +66,12 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     private Optional<ForecastSolarBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<PointType> location = Optional.empty();
     private Optional<String> apiKey = Optional.empty();
-    private ForecastSolarObject forecast = new ForecastSolarObject();
+    private ForecastSolarObject forecast;
 
     public ForecastSolarPlaneHandler(Thing thing, HttpClient hc) {
         super(thing);
         httpClient = hc;
+        forecast = new ForecastSolarObject(thing.getUID().getAsString());
     }
 
     @Override
@@ -115,16 +117,14 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            if (forecast.isValid()) {
-                if (CHANNEL_POWER_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                    sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Average));
-                } else if (CHANNEL_ENERGY_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                    sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Average));
-                } else if (CHANNEL_JSON.equals(channelUID.getIdWithoutGroup())) {
-                    updateState(CHANNEL_JSON, StringType.valueOf(forecast.getRaw()));
-                } else {
-                    fetchData();
-                }
+            if (CHANNEL_POWER_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
+                sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Average));
+            } else if (CHANNEL_ENERGY_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
+                sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Average));
+            } else if (CHANNEL_JSON.equals(channelUID.getIdWithoutGroup())) {
+                updateState(CHANNEL_JSON, StringType.valueOf(forecast.getRaw()));
+            } else {
+                fetchData();
             }
         }
     }
@@ -134,7 +134,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
      */
     protected ForecastSolarObject fetchData() {
         if (location.isPresent()) {
-            if (forecast.isExpired() || !forecast.isValid()) {
+            if (forecast.isExpired()) {
                 String url = getBaseUrl() + "estimate/" + location.get().getLatitude() + SLASH
                         + location.get().getLongitude() + SLASH + configuration.get().declination + SLASH
                         + configuration.get().azimuth + SLASH + configuration.get().kwp + "?damping="
@@ -145,13 +145,14 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                 try {
                     ContentResponse cr = httpClient.GET(url);
                     if (cr.getStatus() == 200) {
-                        ForecastSolarObject localForecast = new ForecastSolarObject(cr.getContentAsString(),
-                                Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
-                        if (localForecast.isValid()) {
+                        try {
+                            ForecastSolarObject localForecast = new ForecastSolarObject(thing.getUID().getAsString(),
+                                    cr.getContentAsString(),
+                                    Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
                             updateStatus(ThingStatus.ONLINE);
                             updateState(CHANNEL_JSON, StringType.valueOf(cr.getContentAsString()));
                             setForecast(localForecast);
-                        } else {
+                        } catch (SolarForecastException fse) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                     "@text/solarforecast.plane.status.json-status");
                         }

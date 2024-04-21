@@ -31,6 +31,8 @@ import javax.measure.quantity.Power;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
+import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
@@ -51,17 +53,21 @@ public class ForecastSolarObject implements SolarForecast {
     private final TreeMap<ZonedDateTime, Double> wattHourMap = new TreeMap<>();
     private final TreeMap<ZonedDateTime, Double> wattMap = new TreeMap<>();
     private final DateTimeFormatter dateInputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    DateTimeFormatter dateOutputFormatter = DateTimeFormatter.ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT)
+            .withZone(ZoneId.systemDefault());
     private ZoneId zone = ZoneId.systemDefault();
     private Optional<String> rawData = Optional.empty();
     private Instant expirationDateTime;
+    private String identifier;
 
-    public ForecastSolarObject() {
+    public ForecastSolarObject(String id) {
         expirationDateTime = Instant.now();
+        identifier = id;
     }
 
-    public ForecastSolarObject(String content, Instant expirationDate) {
+    public ForecastSolarObject(String id, String content, Instant expirationDate) throws SolarForecastException {
         expirationDateTime = expirationDate;
+        identifier = id;
         if (!content.isEmpty()) {
             rawData = Optional.of(content);
             try {
@@ -71,6 +77,8 @@ public class ForecastSolarObject implements SolarForecast {
                 JSONObject wattJson = resultJson.getJSONObject("watts");
                 String zoneStr = contentJson.getJSONObject("message").getJSONObject("info").getString("timezone");
                 zone = ZoneId.of(zoneStr);
+                dateOutputFormatter = DateTimeFormatter.ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT)
+                        .withZone(zone);
                 Iterator<String> iter = wattHourJson.keys();
                 // put all values of the current day into sorted tree map
                 while (iter.hasNext()) {
@@ -81,28 +89,24 @@ public class ForecastSolarObject implements SolarForecast {
                         wattHourMap.put(zdt, wattHourJson.getDouble(dateStr));
                         wattMap.put(zdt, wattJson.getDouble(dateStr));
                     } catch (DateTimeParseException dtpe) {
-                        logger.warn("Exception parsing time {} Reason: {}", dateStr, dtpe.getMessage());
-                        return;
+                        logger.warn("Error parsing time {} Reason: {}", dateStr, dtpe.getMessage());
+                        throw new SolarForecastException(this,
+                                "Error parsing time " + dateStr + " Reason: " + dtpe.getMessage());
                     }
                 }
             } catch (JSONException je) {
                 logger.debug("Error parsing JSON response {} - {}", content, je.getMessage());
+                throw new SolarForecastException(this,
+                        "Error parsing JSON response " + content + " Reason: " + je.getMessage());
             }
         }
-    }
-
-    public boolean isValid() {
-        return !(wattHourMap.isEmpty() || wattMap.isEmpty());
     }
 
     public boolean isExpired() {
         return expirationDateTime.isBefore(Instant.now());
     }
 
-    public double getActualEnergyValue(ZonedDateTime queryDateTime) {
-        if (!isValid()) {
-            return -1;
-        }
+    public double getActualEnergyValue(ZonedDateTime queryDateTime) throws SolarForecastException {
         Entry<ZonedDateTime, Double> f = wattHourMap.floorEntry(queryDateTime);
         Entry<ZonedDateTime, Double> c = wattHourMap.ceilingEntry(queryDateTime);
         if (f != null && c == null) {
@@ -112,7 +116,7 @@ public class ForecastSolarObject implements SolarForecast {
                 return f.getValue() / 1000.0;
             } else {
                 // floor date doesn't fit
-                return -1;
+                throwOutOfRangeException(queryDateTime.toInstant());
             }
         } else if (f == null && c != null) {
             if (c.getKey().toLocalDate().equals(queryDateTime.toLocalDate())) {
@@ -120,7 +124,7 @@ public class ForecastSolarObject implements SolarForecast {
                 return 0;
             } else {
                 // ceiling date doesn't fit
-                return -1;
+                throwOutOfRangeException(queryDateTime.toInstant());
             }
         } else if (f != null && c != null) {
             // ceiling and floor available
@@ -146,6 +150,7 @@ public class ForecastSolarObject implements SolarForecast {
                 return 0;
             }
         } // else both null - date time doesn't fit to forecast data
+        throwOutOfRangeException(queryDateTime.toInstant());
         return -1;
     }
 
@@ -159,9 +164,6 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     public double getActualPowerValue(ZonedDateTime queryDateTime) {
-        if (!isValid()) {
-            return -1;
-        }
         double actualPowerValue = 0;
         Entry<ZonedDateTime, Double> f = wattMap.floorEntry(queryDateTime);
         Entry<ZonedDateTime, Double> c = wattMap.ceilingEntry(queryDateTime);
@@ -224,9 +226,6 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     public double getRemainingProduction(ZonedDateTime queryDateTime) {
-        if (!isValid()) {
-            return -1;
-        }
         double daily = getDayTotal(queryDateTime.toLocalDate());
         double actual = getActualEnergyValue(queryDateTime);
         if (daily < 0 || actual < 0) {
@@ -236,7 +235,7 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     public String getRaw() {
-        if (isValid() && rawData.isPresent()) {
+        if (rawData.isPresent()) {
             return rawData.get();
         }
         return "{}";
@@ -248,7 +247,7 @@ public class ForecastSolarObject implements SolarForecast {
 
     @Override
     public String toString() {
-        return "Expiration: " + expirationDateTime + ", Valid: " + isValid() + ", Data:" + wattHourMap;
+        return "Expiration: " + expirationDateTime + ", Data:" + wattHourMap;
     }
 
     /**
@@ -303,19 +302,46 @@ public class ForecastSolarObject implements SolarForecast {
 
     @Override
     public Instant getForecastBegin() {
-        if (isValid()) {
-            ZonedDateTime zdt = wattHourMap.firstEntry().getKey();
-            return zdt.toInstant();
+        if (wattHourMap.isEmpty()) {
+            return Instant.MAX;
         }
-        return Instant.MAX;
+        ZonedDateTime zdt = wattHourMap.firstEntry().getKey();
+        return zdt.toInstant();
     }
 
     @Override
     public Instant getForecastEnd() {
-        if (isValid()) {
-            ZonedDateTime zdt = wattHourMap.lastEntry().getKey();
-            return zdt.toInstant();
+        if (wattHourMap.isEmpty()) {
+            return Instant.MIN;
         }
-        return Instant.MIN;
+        ZonedDateTime zdt = wattHourMap.lastEntry().getKey();
+        return zdt.toInstant();
     }
+
+    private void throwOutOfRangeException(Instant query) {
+        if (getForecastBegin() == Instant.MAX || getForecastEnd() == Instant.MIN) {
+            throw new SolarForecastException(this, "Forecast invalid time range");
+        }
+        if (query.isBefore(getForecastBegin())) {
+            throw new SolarForecastException(this,
+                    "Query " + dateOutputFormatter.format(query) + " too early. Valid range: "
+                            + dateOutputFormatter.format(getForecastBegin()) + " - "
+                            + dateOutputFormatter.format(getForecastEnd()));
+        } else if (query.isAfter(getForecastEnd())) {
+            throw new SolarForecastException(this,
+                    "Query " + dateOutputFormatter.format(query) + " too late. Valid range: "
+                            + dateOutputFormatter.format(getForecastBegin()) + " - "
+                            + dateOutputFormatter.format(getForecastEnd()));
+        } else {
+            logger.warn("Query " + dateOutputFormatter.format(query) + " is fine in range: "
+                    + dateOutputFormatter.format(getForecastBegin()) + " - "
+                    + dateOutputFormatter.format(getForecastEnd()) + ". This shouldn't happen!");
+        }
+    }
+
+    @Override
+    public String getIdentifier() {
+        return identifier;
+    }
+
 }

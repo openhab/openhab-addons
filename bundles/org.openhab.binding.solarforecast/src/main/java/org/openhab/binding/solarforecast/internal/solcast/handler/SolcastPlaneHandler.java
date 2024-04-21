@@ -86,7 +86,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 if (handler instanceof SolcastBridgeHandler sbh) {
                     bridgeHandler = Optional.of(sbh);
                     bridgeHandler.get().addPlane(this);
-                    forecast = Optional.of(new SolcastObject(bridgeHandler.get()));
+                    forecast = Optional.of(new SolcastObject(thing.getUID().getAsString(), bridgeHandler.get()));
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.plane.status.wrong-handler [\"" + handler + "\"]");
@@ -160,7 +160,8 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
                     ContentResponse crEstimate = estimateRequest.send();
                     if (crEstimate.getStatus() == 200) {
-                        SolcastObject localForecast = new SolcastObject(crEstimate.getContentAsString(),
+                        SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(),
+                                crEstimate.getContentAsString(),
                                 Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES),
                                 bridgeHandler.get());
 

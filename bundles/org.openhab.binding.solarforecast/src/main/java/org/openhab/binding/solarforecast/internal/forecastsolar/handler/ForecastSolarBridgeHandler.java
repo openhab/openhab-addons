@@ -26,6 +26,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
@@ -46,6 +47,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ForecastSolarBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
@@ -54,6 +57,7 @@ import org.openhab.core.types.TimeSeries.Policy;
  */
 @NonNullByDefault
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
+    private final Logger logger = LoggerFactory.getLogger(ForecastSolarBridgeHandler.class);
     private List<ForecastSolarPlaneHandler> planes = new ArrayList<>();
     private Optional<PointType> homeLocation;
     private Optional<ForecastSolarBridgeConfiguration> configuration = Optional.empty();
@@ -129,22 +133,26 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         if (planes.isEmpty()) {
             return;
         }
-        double energySum = 0;
-        double powerSum = 0;
-        double daySum = 0;
-        for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
-            ForecastSolarPlaneHandler sfph = iterator.next();
-            ForecastSolarObject fo = sfph.fetchData();
-            ZonedDateTime now = ZonedDateTime.now(fo.getZone());
-            energySum += fo.getActualEnergyValue(now);
-            powerSum += fo.getActualPowerValue(now);
-            daySum += fo.getDayTotal(now.toLocalDate());
+        try {
+            double energySum = 0;
+            double powerSum = 0;
+            double daySum = 0;
+            for (Iterator<ForecastSolarPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
+                ForecastSolarPlaneHandler sfph = iterator.next();
+                ForecastSolarObject fo = sfph.fetchData();
+                ZonedDateTime now = ZonedDateTime.now(fo.getZone());
+                energySum += fo.getActualEnergyValue(now);
+                powerSum += fo.getActualPowerValue(now);
+                daySum += fo.getDayTotal(now.toLocalDate());
+            }
+            updateStatus(ThingStatus.ONLINE);
+            updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energySum));
+            updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(daySum - energySum));
+            updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(daySum));
+            updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(powerSum));
+        } catch (SolarForecastException sfe) {
+            logger.warn(sfe.getMessage());
         }
-        updateStatus(ThingStatus.ONLINE);
-        updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energySum));
-        updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(daySum - energySum));
-        updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(daySum));
-        updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(powerSum));
     }
 
     public void forecastUpdate() {
