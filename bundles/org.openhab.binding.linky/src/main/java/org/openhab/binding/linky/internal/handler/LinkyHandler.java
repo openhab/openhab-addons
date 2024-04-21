@@ -152,7 +152,6 @@ public class LinkyHandler extends BaseThingHandler {
                 }
             });
         }
-
     }
 
     /**
@@ -405,7 +404,6 @@ public class LinkyHandler extends BaseThingHandler {
                 logger.debug("disconnect: {}", e.getMessage());
             }
         }
-
     }
 
     @Override
