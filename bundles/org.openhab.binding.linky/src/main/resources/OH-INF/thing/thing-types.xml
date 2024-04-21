@@ -4,7 +4,51 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+    <bridge-type id="EnedisBridge">
+        <label>EnedisBridge</label>
+        <description>
+            Provides your energy consumption data.
+            In order to receive the data, you must activate your account at
+            https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
+        </description>
+        
+        <config-description>
+            <parameter name="clientId" type="text" required="false">
+                <label>clientId</label>
+                <description>Your Enedis clientId</description>
+            </parameter>
+            <parameter name="clientSecret" type="text" required="false">
+                <label>clientSecret</label>
+                <description>Your Enedis clientSecret</description>
+            </parameter>
+        </config-description>
+        
+    </bridge-type>
+    
+    <bridge-type id="MyElectricalDataBridge">
+        <label>EnedisBridge</label>
+        <description>
+            Provides your energy consumption data.
+            In order to receive the data, you must activate your account at
+            https://espace-client-particuliers.enedis.fr/web/espace-particuliers/compteur-linky.
+        </description>
+        
+        <config-description>
+	        <parameter name="token" type="text" required="false">
+	            <label>Token</label>
+	            <description>Your Enedis token (can be left empty, use the connection page to automatically fill it
+	                http://youopenhab/connectlinky)</description>
+	        </parameter>
+        </config-description>
+    </bridge-type>
+    
 	<thing-type id="linky">
+	
+	    <supported-bridge-type-refs>
+	           <bridge-type-ref id="EnedisBridge"/>
+               <bridge-type-ref id="MyElectricalDataBridge"/>
+        </supported-bridge-type-refs>
+        
 		<label>Linky</label>
 		<description>
 			Provides your energy consumption data.
@@ -30,21 +74,6 @@
 				<label>PrmId</label>
 				<description>Your PrmId</description>
 			</parameter>
-			<parameter name="token" type="text" required="false">
-				<label>Token</label>
-				<description>Your Enedis token (can be left empty, use the connection page to automatically fill it
-					http://youopenhab/connectlinky)</description>
-			</parameter>
-
-			<parameter name="clientId" type="text" required="false">
-				<label>clientId</label>
-				<description>Your Enedis clientId</description>
-			</parameter>
-			<parameter name="clientSecret" type="text" required="false">
-				<label>clientSecret</label>
-				<description>Your Enedis clientSecret</description>
-			</parameter>
-
 		</config-description>
 
 

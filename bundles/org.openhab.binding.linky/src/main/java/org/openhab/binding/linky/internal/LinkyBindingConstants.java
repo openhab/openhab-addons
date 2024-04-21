@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.linky.internal;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,7 +35,13 @@ public class LinkyBindingConstants {
     public static final String clientSecret = "6lsPfCmu0fEXuKYy3e0e6w8ydIca";
 
     // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_API_ENEDIS_BRIDGE = new ThingTypeUID(BINDING_ID, "EnedisBridge");
+    public static final ThingTypeUID THING_TYPE_API_MYELECTRICALDATA_BRIDGE = new ThingTypeUID(BINDING_ID,
+            "MyElectricalDataBridge");
     public static final ThingTypeUID THING_TYPE_LINKY = new ThingTypeUID(BINDING_ID, "linky");
+
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_API_ENEDIS_BRIDGE,
+            THING_TYPE_API_MYELECTRICALDATA_BRIDGE, THING_TYPE_LINKY);
 
     // Thing properties
     public static final String PUISSANCE = "puissance";

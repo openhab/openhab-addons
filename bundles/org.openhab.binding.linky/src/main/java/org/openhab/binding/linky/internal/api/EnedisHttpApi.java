@@ -22,8 +22,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.linky.internal.LinkyAuthService;
-import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AddressInfo;
 import org.openhab.binding.linky.internal.dto.ContactInfo;
@@ -36,6 +34,7 @@ import org.openhab.binding.linky.internal.dto.MeterResponse;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.TempoResponse;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
+import org.openhab.binding.linky.internal.handler.ApiBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,14 +49,15 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class EnedisHttpApi {
+
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // private static final String BASE_URL = "https://www.myelectricaldata.fr/";
     private static final String BASE_URL = "https://ext.prod-sandbox.api.enedis.fr/";
 
-    private static final String CONTRACT_URL = BASE_URL
-            + "metering_data_dc/v5/daily_consumption?start=2024-04-01&end=2024-04-17";
-    // private static final String CONTRACT_URL = BASE_URL + "customers_upc/v5/usage_points/contracts";
+    // private static final String CONTRACT_URL = BASE_URL
+    // + "metering_data_dc/v5/daily_consumption?start=2024-04-01&end=2024-04-17";
+    private static final String CONTRACT_URL = BASE_URL + "customers_upc/v5/usage_points/contracts";
     private static final String IDENTITY_URL = BASE_URL + "identity";
     private static final String CONTACT_URL = BASE_URL + "contact";
     private static final String ADDRESS_URL = BASE_URL + "addresses";
@@ -70,16 +70,14 @@ public class EnedisHttpApi {
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
-    private LinkyConfiguration config;
-    private LinkyAuthService authService;
+    private ApiBridgeHandler apiBridgeHandler;
 
     private boolean connected = false;
 
-    public EnedisHttpApi(LinkyConfiguration config, Gson gson, HttpClient httpClient, LinkyAuthService authService) {
+    public EnedisHttpApi(ApiBridgeHandler apiBridgeHandler, Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.httpClient = httpClient;
-        this.authService = authService;
-        this.config = config;
+        this.apiBridgeHandler = apiBridgeHandler;
     }
 
     public void initialize() throws LinkyException {
@@ -101,7 +99,7 @@ public class EnedisHttpApi {
     }
 
     private String getData(String url) throws LinkyException {
-        return getData(url, httpClient, authService.getToken());
+        return getData(url, httpClient, apiBridgeHandler.getToken());
     }
 
     private static String getData(String url, HttpClient httpClient, String token) throws LinkyException {
@@ -109,7 +107,8 @@ public class EnedisHttpApi {
             Request request = httpClient.newRequest(url);
             request = request.method(HttpMethod.GET);
             if (!("".equals(token))) {
-                request = request.header("Authorization: Bearer ", token);
+                request = request.header("Authorization", "Bearer " + token);
+                request = request.header("accept", "application/json");
             }
 
             ContentResponse result = request.send();
@@ -135,16 +134,16 @@ public class EnedisHttpApi {
         }
     }
 
-    public PrmInfo getPrmInfo() throws LinkyException {
+    public PrmInfo getPrmInfo(String prmId) throws LinkyException {
         PrmInfo result = new PrmInfo();
-        Customer customer = getCustomer();
+        Customer customer = getCustomer(prmId);
         UsagePoint usagePoint = customer.usagePoints[0];
 
         result.contractInfo = usagePoint.contracts;
         result.usagePointInfo = usagePoint.usagePoint;
-        result.identityInfo = getIdentity();
-        result.addressInfo = getAddress();
-        result.contactInfo = getContact();
+        result.identityInfo = getIdentity(prmId);
+        result.addressInfo = getAddress(prmId);
+        result.contactInfo = getContact(prmId);
 
         result.prmId = result.usagePointInfo.usagePointId;
         result.customerId = customer.customerId;
@@ -152,12 +151,12 @@ public class EnedisHttpApi {
         return result;
     }
 
-    public Customer getCustomer() throws LinkyException {
+    public Customer getCustomer(String prmId) throws LinkyException {
         if (!connected) {
             initialize();
         }
-        // String data = getData("%s?usage_point_id=%s".formatted(CONTRACT_URL, config.prmId));
-        String data = getData("%s&usage_point_id=%s".formatted(CONTRACT_URL, config.prmId));
+        String data = getData("%s?usage_point_id=%s".formatted(CONTRACT_URL, prmId));
+        // String data = getData("%s&usage_point_id=%s".formatted(CONTRACT_URL, config.prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", CONTRACT_URL);
         }
@@ -173,11 +172,11 @@ public class EnedisHttpApi {
         }
     }
 
-    public AddressInfo getAddress() throws LinkyException {
+    public AddressInfo getAddress(String prmId) throws LinkyException {
         if (!connected) {
             initialize();
         }
-        String data = getData("%s/%s/cache".formatted(ADDRESS_URL, config.prmId));
+        String data = getData("%s/%s/cache".formatted(ADDRESS_URL, prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", ADDRESS_URL);
         }
@@ -193,11 +192,11 @@ public class EnedisHttpApi {
         }
     }
 
-    public IdentityInfo getIdentity() throws LinkyException {
+    public IdentityInfo getIdentity(String prmId) throws LinkyException {
         if (!connected) {
             initialize();
         }
-        String data = getData("%s/%s/cache".formatted(IDENTITY_URL, config.prmId));
+        String data = getData("%s/%s/cache".formatted(IDENTITY_URL, prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", IDENTITY_URL);
         }
@@ -213,11 +212,11 @@ public class EnedisHttpApi {
         }
     }
 
-    public ContactInfo getContact() throws LinkyException {
+    public ContactInfo getContact(String prmId) throws LinkyException {
         if (!connected) {
             initialize();
         }
-        String data = getData("%s/%s/cache".formatted(CONTACT_URL, config.prmId));
+        String data = getData("%s/%s/cache".formatted(CONTACT_URL, prmId));
 
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", CONTACT_URL);
@@ -304,4 +303,5 @@ public class EnedisHttpApi {
             return "";
         }
     }
+
 }

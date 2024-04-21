@@ -12,25 +12,20 @@
  */
 package org.openhab.binding.linky.internal;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.linky.internal.handler.EnedisBridgeHandler;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
+import org.openhab.binding.linky.internal.handler.MyElectricalDataBridgeHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.net.http.TrustAllTrustManager;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
@@ -63,11 +58,14 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final DateTimeFormatter LINKY_LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
     private static final DateTimeFormatter LINKY_LOCALDATETIME_FORMATTER = DateTimeFormatter
             .ofPattern("uuuu-MM-dd HH:mm:ss");
-    private static final int REQUEST_BUFFER_SIZE = 8000;
 
     private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
 
-    private LinkyAuthService authService;
+    private final HttpClientFactory httpClientFactory;
+    private final OAuthFactory oAuthFactory;
+    private final HttpService httpService;
+    private final ThingRegistry thingRegistry;
+    private final ComponentContext componentContext;
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ZonedDateTime.class,
@@ -89,7 +87,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
     private final LocaleProvider localeProvider;
-    private final HttpClient httpClient;
 
     @Activate
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
@@ -98,58 +95,37 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
             ComponentContext componentContext) {
         this.localeProvider = localeProvider;
 
-        authService = new LinkyAuthService(oAuthFactory, httpService, thingRegistry, componentContext);
+        this.httpClientFactory = httpClientFactory;
+        this.oAuthFactory = oAuthFactory;
+        this.httpService = httpService;
+        this.thingRegistry = thingRegistry;
+        this.componentContext = componentContext;
 
-        SslContextFactory sslContextFactory = new SslContextFactory.Client();
-        try {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
-            sslContextFactory.setSslContext(sslContext);
-
-        } catch (NoSuchAlgorithmException e) {
-            logger.warn("An exception occurred while requesting the SSL encryption algorithm : '{}'", e.getMessage(),
-                    e);
-        } catch (KeyManagementException e) {
-            logger.warn("An exception occurred while initialising the SSL context : '{}'", e.getMessage(), e);
-        }
-        this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);
-        httpClient.setFollowRedirects(false);
-        httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
-    }
-
-    @Override
-    protected void activate(ComponentContext componentContext) {
-        super.activate(componentContext);
-        try {
-
-            httpClient.start();
-        } catch (Exception e) {
-            logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
-        }
-    }
-
-    @Override
-    protected void deactivate(ComponentContext componentContext) {
-        super.deactivate(componentContext);
-        try {
-            httpClient.stop();
-        } catch (Exception e) {
-            logger.warn("Unable to stop Jetty HttpClient {}", e.getMessage());
-        }
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return LinkyBindingConstants.THING_TYPE_LINKY.equals(thingTypeUID);
+        return LinkyBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID);
+
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (supportsThingType(thing.getThingTypeUID())) {
-            LinkyHandler handler = new LinkyHandler(thing, localeProvider, gson, httpClient, authService);
+        if (thing.getThingTypeUID().equals(LinkyBindingConstants.THING_TYPE_API_ENEDIS_BRIDGE)) {
+            EnedisBridgeHandler handler = new EnedisBridgeHandler((Bridge) thing, this.httpClientFactory,
+                    this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
+            return handler;
+        } else if (thing.getThingTypeUID().equals(LinkyBindingConstants.THING_TYPE_API_MYELECTRICALDATA_BRIDGE)) {
+            MyElectricalDataBridgeHandler handler = new MyElectricalDataBridgeHandler((Bridge) thing,
+                    this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
+            return handler;
+        } else if (thing.getThingTypeUID().equals(LinkyBindingConstants.THING_TYPE_LINKY)) {
+            LinkyHandler handler = new LinkyHandler(thing, localeProvider);
             return handler;
         }
 
         return null;
+
     }
+
 }
