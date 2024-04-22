@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
 public class SolcastPlaneHandler extends BaseThingHandler implements SolarForecastProvider {
     private final Logger logger = LoggerFactory.getLogger(SolcastPlaneHandler.class);
     private final HttpClient httpClient;
-    private Optional<SolcastPlaneConfiguration> configuration = Optional.empty();
+    private SolcastPlaneConfiguration configuration = new SolcastPlaneConfiguration();
     private Optional<SolcastBridgeHandler> bridgeHandler = Optional.empty();
     protected Optional<SolcastObject> forecast = Optional.empty();
 
@@ -75,8 +75,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
 
     @Override
     public void initialize() {
-        SolcastPlaneConfiguration c = getConfigAs(SolcastPlaneConfiguration.class);
-        configuration = Optional.of(c);
+        configuration = getConfigAs(SolcastPlaneConfiguration.class);
 
         // connect Bridge & Status
         Bridge bridge = getBridge();
@@ -150,8 +149,8 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         forecast.ifPresent(forecastObject -> {
             if (forecastObject.isExpired()) {
                 logger.trace("Get new forecast {}", forecastObject.toString());
-                String forecastUrl = String.format(FORECAST_URL, configuration.get().resourceId);
-                String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.get().resourceId);
+                String forecastUrl = String.format(FORECAST_URL, configuration.resourceId);
+                String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.resourceId);
                 try {
                     // get actual estimate
                     Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
@@ -160,7 +159,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     if (crEstimate.getStatus() == 200) {
                         SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(),
                                 crEstimate.getContentAsString(),
-                                Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES),
+                                Instant.now().plus(configuration.refreshInterval, ChronoUnit.MINUTES),
                                 bridgeHandler.get());
 
                         // get forecast
