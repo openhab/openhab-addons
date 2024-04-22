@@ -19,7 +19,7 @@
 			<channel id="energy-actual" typeId="energy-actual"/>
 			<channel id="energy-remain" typeId="energy-remain"/>
 			<channel id="energy-today" typeId="energy-today"/>
-			<channel id="raw" typeId="raw-channel"/>
+			<channel id="json" typeId="json"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:solarforecast:fs-plane"/>

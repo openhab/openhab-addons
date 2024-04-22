@@ -77,7 +77,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
     @Override
     public void initialize() {
-        SolcastBridgeConfiguration configuration = getConfigAs(SolcastBridgeConfiguration.class);
+        configuration = getConfigAs(SolcastBridgeConfiguration.class);
         if (!configuration.apiKey.isBlank()) {
             if (!configuration.timeZone.isBlank()) {
                 try {

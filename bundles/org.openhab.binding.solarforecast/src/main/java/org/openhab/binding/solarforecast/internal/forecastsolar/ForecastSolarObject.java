@@ -224,7 +224,8 @@ public class ForecastSolarObject implements SolarForecast {
         if (wattsDay.has(queryDate.toString())) {
             return wattsDay.getDouble(queryDate.toString()) / 1000.0;
         } else {
-            throw new SolarForecastException(this, "Day " + queryDate + " not available in forecast");
+            throw new SolarForecastException(this,
+                    "Day " + queryDate + " not available in forecast. " + getTimeRange());
         }
     }
 
@@ -324,18 +325,18 @@ public class ForecastSolarObject implements SolarForecast {
         }
         if (query.isBefore(getForecastBegin())) {
             throw new SolarForecastException(this,
-                    "Query " + dateOutputFormatter.format(query) + " too early. Valid range: "
-                            + dateOutputFormatter.format(getForecastBegin()) + " - "
-                            + dateOutputFormatter.format(getForecastEnd()));
+                    "Query " + dateOutputFormatter.format(query) + " too early. " + getTimeRange());
         } else if (query.isAfter(getForecastEnd())) {
             throw new SolarForecastException(this,
-                    "Query " + dateOutputFormatter.format(query) + " too late. Valid range: "
-                            + dateOutputFormatter.format(getForecastBegin()) + " - "
-                            + dateOutputFormatter.format(getForecastEnd()));
+                    "Query " + dateOutputFormatter.format(query) + " too late. " + getTimeRange());
         } else {
-            logger.warn("Query {} is fine in range: {} - {}. This shouldn't happen!", dateOutputFormatter.format(query),
-                    dateOutputFormatter.format(getForecastBegin()), dateOutputFormatter.format(getForecastEnd()));
+            logger.warn("Query {} is fine. {}", dateOutputFormatter.format(query), getTimeRange());
         }
+    }
+
+    private String getTimeRange() {
+        return "Valid range: " + dateOutputFormatter.format(getForecastBegin()) + " - "
+                + dateOutputFormatter.format(getForecastEnd());
     }
 
     @Override
