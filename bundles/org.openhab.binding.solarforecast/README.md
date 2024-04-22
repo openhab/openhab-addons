@@ -186,7 +186,9 @@ Returns `Instant` of the latest possible forecast data available.
 
 Returns `QuantityType<Power>` at the given `Instant` timestamp.
 Respect `getForecastBegin` and `getForecastEnd` to get a valid value.
-Check for negative value in case of errors.
+Check log or catch exceptions for error handling
+- IllegalArgumentException thrown in case of problems with call arguments
+- SolarForecastException thrown in case of problems with timestamp and available forecast data
 
 ### `getDay`
 
@@ -197,7 +199,9 @@ Check for negative value in case of errors.
 
 Returns `QuantityType<Energy>` at the given `localDate`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambiguous values.
-Check for negative value in case of errors.
+Check log or catch exceptions for error handling
+- IllegalArgumentException thrown in case of problems with call arguments
+- SolarForecastException thrown in case of problems with timestamp and available forecast data
 
 ### `getEnergy`
 
@@ -209,7 +213,9 @@ Check for negative value in case of errors.
 
 Returns `QuantityType<Energy>` between the timestamps `startTimestamp` and `endTimestamp`.
 Respect `getForecastBegin` and `getForecastEnd` to avoid ambiguous values.
-Check for negative value in case of errors.
+Check log or catch exceptions for error handling
+- IllegalArgumentException thrown in case of problems with call arguments
+- SolarForecastException thrown in case of problems with timestamp and available forecast data
 
 ## Date Time
 
