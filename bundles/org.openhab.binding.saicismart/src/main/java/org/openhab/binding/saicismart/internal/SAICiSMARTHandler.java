@@ -77,7 +77,6 @@ public class SAICiSMARTHandler extends BaseThingHandler {
     private @Nullable Future<?> pollingJob;
     private ZonedDateTime lastAlarmMessage;
     private ZonedDateTime lastCarActivity;
-    private SAICTranslationProvider i18nProvider;
 
     /**
      * If the binding is initialized, treat the car as active (lastCarActivity = now) to get some first data.
@@ -86,9 +85,8 @@ public class SAICiSMARTHandler extends BaseThingHandler {
      * @param timeZoneProvider
      * @param thing
      */
-    public SAICiSMARTHandler(SAICTranslationProvider i18nProvider, TimeZoneProvider timeZoneProvider, Thing thing) {
+    public SAICiSMARTHandler(TimeZoneProvider timeZoneProvider, Thing thing) {
         super(thing);
-        this.i18nProvider = i18nProvider;
         this.timeZoneProvider = timeZoneProvider;
         lastAlarmMessage = ZonedDateTime.now(getTimeZone());
         lastCarActivity = ZonedDateTime.now(getTimeZone());
@@ -143,7 +141,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         // Validate configuration
         if (this.config.vin.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText("thing-type.config.saicismart.vehicle.vin.required", "VIN is empty!"));
+                    "@text/thing-type.config.saicismart.vehicle.vin.required");
             return;
         }
 
@@ -168,9 +166,9 @@ public class SAICiSMARTHandler extends BaseThingHandler {
                         logger.debug("ABRP: {}", execute);
                     }
                 } catch (Exception e) {
+                    logger.warn("Could not refresh car data.", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            i18nProvider.getText("addon.saicismart.error.refresh.car.data",
-                                    "Could not refresh car data", config.vin, e.getMessage()));
+                            "@text/addon.saicismart.error.refresh.car.data");
                 }
             }
         }

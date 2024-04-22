@@ -85,11 +85,8 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
     private HttpClient httpClient;
     private @Nullable Future<?> pollingJob;
 
-    private SAICTranslationProvider i18nProvider;
-
-    public SAICiSMARTBridgeHandler(SAICTranslationProvider i18nProvider, Bridge bridge, HttpClient httpClient) {
+    public SAICiSMARTBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        this.i18nProvider = i18nProvider;
         this.httpClient = httpClient;
     }
 
@@ -105,18 +102,18 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
 
         // Validate configuration
         if (this.config.username.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider
-                    .getText("thing-type.config.saicismart.bridge.username.required", "iSMART Username is empty!"));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/thing-type.config.saicismart.bridge.username.required");
             return;
         }
         if (this.config.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider
-                    .getText("thing-type.config.saicismart.bridge.password.required", "iSMART Password is empty!"));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/thing-type.config.saicismart.bridge.password.required");
             return;
         }
         if (this.config.username.length() > 50) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider
-                    .getText("thing-type.config.saicismart.bridge.username.toolong", "iSMART Username too long!"));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/thing-type.config.saicismart.bridge.username.toolong");
             return;
         }
         pollingJob = scheduler.scheduleWithFixedDelay(this::updateStatus, 1,
