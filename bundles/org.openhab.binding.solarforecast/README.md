@@ -67,7 +67,7 @@ If you have 25 free calls per day, each plane needs 2 calls per update a refresh
 
 ## Solcast Channels
 
-Each `sc-plane` reports its own values including a `raw` channel holding JSON content.
+Each `sc-plane` reports its own values including a `json` channel holding JSON content.
 The `sc-site` bridge sums up all attached `sc-plane` values and provides total forecast for your home location.  
 
 Channels are covering today's actual data with current, remaining and today's total prediction.
@@ -86,7 +86,7 @@ Scenarios are clustered in groups:
 | energy-actual           | Number:Energy | kWh  | Today's forecast till now                       | no       |
 | energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          | no       |
 | energy-today            | Number:Energy | kWh  | Today's forecast in total                       | no       |
-| raw                     | String        | -    | Plain JSON response without conversions         | yes      |
+| json                    | String        | -    | Plain JSON response without conversions         | yes      |
 
 ## ForecastSolar Configuration
 
@@ -138,7 +138,7 @@ So you need to know what you're doing.
 
 ## ForecastSolar Channels
 
-Each `fs-plane` reports its own values including a `raw` channel holding JSON content.
+Each `fs-plane` reports its own values including a `json` channel holding JSON content.
 The `fs-site` bridge sums up all attached `fs-plane` values and provides the total forecast for your home location.  
 
 Channels are covering today's actual data with current, remaining and total prediction.
@@ -153,7 +153,7 @@ Forecasts are delivered up to 3 days for paid personal plans.
 | energy-actual           | Number:Energy | kWh  | Today's forecast till now                       | no       |
 | energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          | no       |
 | energy-today            | Number:Energy | kWh  | Today's forecast in total                       | no       |
-| raw                     | String        | -    | Plain JSON response without conversions         | yes      |
+| json                    | String        | -    | Plain JSON response without conversions         | yes      |
 
 
 ## Thing Actions
