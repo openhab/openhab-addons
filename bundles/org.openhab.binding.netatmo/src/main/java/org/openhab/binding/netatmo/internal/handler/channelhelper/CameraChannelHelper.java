@@ -57,41 +57,11 @@ public class CameraChannelHelper extends ChannelHelper {
                 case CHANNEL_MONITORING -> camera.getMonitoring();
                 case CHANNEL_SD_CARD -> toStringType(camera.getSdStatus());
                 case CHANNEL_ALIM_STATUS -> toStringType(camera.getAlimStatus());
-                default -> liveChannels(channelId, config, camera, OnOffType.ON.equals(camera.getMonitoring()),
-                        localUrl != null);
+                default -> liveChannels(channelId, (String) config.get(QUALITY_CONF_ENTRY), camera,
+                        OnOffType.ON.equals(camera.getMonitoring()), localUrl != null);
             };
         }
         return null;
-    }
-
-    private @Nullable State liveChannels(String channelId, Configuration config, HomeStatusModule camera,
-            boolean isMonitoring, boolean isLocal) {
-        if (vpnUrl == null) {
-            setUrls(Objects.requireNonNull(camera.getVpnUrl()), localUrl);
-        }
-        return switch (channelId) {
-            case CHANNEL_LIVEPICTURE_VPN_URL -> toStringType(getLivePictureURL(false, isMonitoring));
-            case CHANNEL_LIVEPICTURE_LOCAL_URL ->
-                isLocal ? toStringType(getLivePictureURL(true, isMonitoring)) : UnDefType.NULL;
-            case CHANNEL_LIVEPICTURE -> {
-                State result = toRawType(getLivePictureURL(isLocal, isMonitoring));
-                if (UnDefType.NULL.equals(result) && isLocal) {
-                    // If local read of the picture is unsuccessfull, try the VPN version
-                    result = toRawType(getLivePictureURL(false, isMonitoring));
-                }
-                yield result;
-            }
-            case CHANNEL_LIVESTREAM_VPN_URL ->
-                getLiveStreamURL(false, (String) config.get(QUALITY_CONF_ENTRY), isMonitoring);
-            case CHANNEL_LIVESTREAM_LOCAL_URL ->
-                isLocal ? getLiveStreamURL(true, (String) config.get(QUALITY_CONF_ENTRY), isMonitoring)
-                        : UnDefType.NULL;
-            default -> null;
-        };
-    }
-
-    private String getUrl(boolean local) {
-        return Objects.requireNonNull(local ? localUrl : vpnUrl);
     }
 
     public @Nullable String getLivePictureURL(boolean local, boolean isMonitoring) {
@@ -99,6 +69,33 @@ public class CameraChannelHelper extends ChannelHelper {
             return null;
         }
         return "%s%s".formatted(getUrl(local), LIVE_PICTURE);
+    }
+
+    private @Nullable State liveChannels(String channelId, String qualityConf, HomeStatusModule camera,
+            boolean isMonitoring, boolean isLocal) {
+        if (vpnUrl == null) {
+            setUrls(Objects.requireNonNull(camera.getVpnUrl()), localUrl);
+        }
+        return switch (channelId) {
+            case CHANNEL_LIVESTREAM_LOCAL_URL ->
+                isLocal ? getLiveStreamURL(true, qualityConf, isMonitoring) : UnDefType.NULL;
+            case CHANNEL_LIVEPICTURE_LOCAL_URL ->
+                isLocal ? toStringType(getLivePictureURL(true, isMonitoring)) : UnDefType.NULL;
+            case CHANNEL_LIVESTREAM_VPN_URL -> getLiveStreamURL(false, qualityConf, isMonitoring);
+            case CHANNEL_LIVEPICTURE_VPN_URL -> toStringType(getLivePictureURL(false, isMonitoring));
+            case CHANNEL_LIVEPICTURE -> {
+                State result = toRawType(getLivePictureURL(isLocal, isMonitoring));
+                if (UnDefType.NULL.equals(result) && isLocal) {// If local read is unsuccessfull, try the VPN version
+                    result = toRawType(getLivePictureURL(false, isMonitoring));
+                }
+                yield result;
+            }
+            default -> null;
+        };
+    }
+
+    private String getUrl(boolean local) {
+        return Objects.requireNonNull(local ? localUrl : vpnUrl);
     }
 
     private State getLiveStreamURL(boolean local, @Nullable String configQual, boolean isMonitoring) {
