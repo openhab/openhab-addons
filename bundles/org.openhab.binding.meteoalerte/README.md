@@ -5,7 +5,7 @@ This binding provides its own icon set and provides appropriate static and dynam
 
 ## Discovery
 
-Once a bridge with the api Key has been created, appropriate departments can be auto discovered based on system location.
+Once a bridge with the API key has been created, appropriate departments can be auto discovered based on system location.
 
 ## Binding Configuration
 
@@ -20,7 +20,7 @@ The `api` bridge has only one configuration parameter :
 | apikey    | Data-platform token to access the service. Mandatory. |
 
 To obtain an API key, you must create an account on https://portail-api.meteofrance.fr/web/fr/
-Inside the Portail API, create an application on "Bulletin Vigilance" and generate they API Key ( set duration to 0)
+Inside the Portail API, create an application on "Bulletin Vigilance" and generate they API Key (set duration to 0).
 
 ## Thing Configuration
 
