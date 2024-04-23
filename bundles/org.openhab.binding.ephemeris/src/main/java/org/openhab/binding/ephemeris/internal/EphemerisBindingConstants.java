@@ -46,6 +46,8 @@ public class EphemerisBindingConstants {
     public static final String CHANNEL_TOMORROW = "tomorrow";
     public static final String CHANNEL_HOLIDAY_TODAY = "holiday-today";
     public static final String CHANNEL_HOLIDAY_TOMORROW = "holiday-tomorrow";
+    public static final String CHANNEL_EVENT_TODAY = "event-today";
+    public static final String CHANNEL_EVENT_TOMORROW = "event-tomorrow";
 
     // Folder for xml storage eg: /etc/openhab/misc/ephemeris
     public static final String BINDING_DATA_PATH = "%s%smisc%s%s".formatted(OpenHAB.getConfigFolder(), File.separator,

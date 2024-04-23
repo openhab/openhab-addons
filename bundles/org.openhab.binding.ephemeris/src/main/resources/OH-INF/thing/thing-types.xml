@@ -10,6 +10,14 @@
 
 		<channels>
 			<channel id="title-today" typeId="event_current_title"/>
+			<channel id="event-today" typeId="in-dayset">
+				<label>Event Today</label>
+				<description>Set to ON if an event exists today</description>
+			</channel>
+			<channel id="event-tomorrow" typeId="in-dayset">
+				<label>Event Tomorrow</label>
+				<description>Set to ON if an event exists tomorrow</description>
+			</channel>
 			<channel id="next-title" typeId="event_next_title"/>
 			<channel id="next-start" typeId="event_next_start"/>
 			<channel id="days-remaining" typeId="remaining_days"/>

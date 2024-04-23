@@ -40,7 +40,6 @@ The file has to use the syntax described here : https://www.openhab.org/docs/con
 | name            | text    | Name of the dayset used   | N/A     | yes      | no       |
 
 
-
 ## Channels
 
 _Here you should provide information about available channel types, what their meaning is and how they can be used._
@@ -53,29 +52,28 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
 
 ### Thing Configuration
 
 ```java
-Example thing configuration goes here.
+Thing ephemeris:holiday:local "Holidays"
+Thing ephemeris:weekend:local "Week-end"
+Thing ephemeris:file:events "Event" [fileName="events.xml"]
 ```
 
 ### Item Configuration
 
 ```java
-Example item configuration goes here.
+String         ToD_Event_Current          "Event Today"       <calendar>    (gEvents)       ["Event"]                     {channel="ephemeris:file:events:title-today"}
+String         ToD_Event_Next          "Event Next"       <calendar>    (gEvents)       ["Event"]                     {channel="ephemeris:file:events:next-title"}
+Number:Time    ToD_Event_Next_Left       "Event In"          <calendar>    (gEvents)       ["Measurement","Duration"]    {channel="ephemeris:file:events:days-remaining", unit="day"}
+
+Switch         ToD_Week_End_Current           "Week-End"                <calendar>    (gWeekEnd)          ["Event"]                     {channel="ephemeris:weekend:local:today"}
+Switch         ToD_Week_End_Tomorrow           "Week-End Tomorrow"         <calendar>    (gWeekEnd)          ["Event"]                     {channel="ephemeris:weekend:local:tomorrow"}
+
+String         ToD_Holiday_Current              "Holiday Today"       <calendar>    (gHoliday)            ["Event"]                     {channel="ephemeris:holiday:local:title-today"}
+String         ToD_Holiday_Next              "Holiday Next"           <calendar>    (gHoliday)            ["Event"]                     {channel="ephemeris:holiday:local:next-title"}
+Number:Time    ToD_Holiday_Next_Left           "Holiday In"              <calendar>    (gHoliday)            ["Measurement","Duration"]    {channel="ephemeris:holiday:local:days-remaining", unit="day"}
+
 ```
 
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ephemeris.internal.handler;
 
-import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.BINDING_DATA_PATH;
+import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ephemeris.internal.configuration.FileConfiguration;
 import org.openhab.core.ephemeris.EphemerisManager;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -49,10 +50,18 @@ public class FileHandler extends JollydayHandler {
     }
 
     @Override
-    protected @Nullable String internalUpdate(ZonedDateTime now) {
+    protected @Nullable String internalUpdate(ZonedDateTime today) {
         if (definitionFile.isPresent()) {
             File file = definitionFile.get();
-            return file.exists() ? super.internalUpdate(now) : "Missing file: %s".formatted(file.getAbsolutePath());
+            if (file.exists()) {
+                String event = getEvent(today);
+                updateState(CHANNEL_EVENT_TODAY, OnOffType.from(event != null));
+
+                event = getEvent(today.plusDays(1));
+                updateState(CHANNEL_EVENT_TOMORROW, OnOffType.from(event != null));
+                return super.internalUpdate(today);
+            }
+            return "Missing file: %s".formatted(file.getAbsolutePath());
         }
         throw new IllegalArgumentException("Initialization problem, please file a bug.");
     }
