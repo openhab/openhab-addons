@@ -179,7 +179,6 @@ public class TapoUtils {
                 return String.format("%s %s %s (%s)", DEVICE_VENDOR, deviceModel, deviceLabel, alias);
             }
             return String.format("%s %s %s", DEVICE_VENDOR, deviceModel, deviceLabel);
-
         } catch (Exception e) {
             return "";
         }

@@ -39,7 +39,7 @@ public record TapoRequest(@Expose String method, @Expose @Nullable Object params
      * Create request with command (method) sent to device
      */
     public TapoRequest(String method) {
-        this(method, null, System.currentTimeMillis());
+        this(method, "", System.currentTimeMillis());
     }
 
     /***********************************************
