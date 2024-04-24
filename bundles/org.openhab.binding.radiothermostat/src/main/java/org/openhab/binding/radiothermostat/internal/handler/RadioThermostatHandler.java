@@ -289,13 +289,15 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
         // Disable Remote Temp and Message Area on shutdown
         if (ThingStatus.ONLINE.equals(this.getThing().getStatus())) {
-            if (isLinked(REMOTE_TEMP)) {
-                connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
-            }
+            scheduler.schedule(() -> {
+                if (isLinked(REMOTE_TEMP)) {
+                    connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
+                }
 
-            if (isLinked(MESSAGE)) {
-                connector.sendCommand("mode", "0", PMA_RESOURCE);
-            }
+                if (isLinked(MESSAGE)) {
+                    connector.sendCommand("mode", "0", PMA_RESOURCE);
+                }
+            }, 0, TimeUnit.SECONDS);
         }
 
         ScheduledFuture<?> refreshJob = this.refreshJob;
