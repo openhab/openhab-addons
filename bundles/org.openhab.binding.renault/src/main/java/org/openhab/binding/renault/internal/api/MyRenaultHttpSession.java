@@ -235,7 +235,7 @@ public class MyRenaultHttpSession {
     public void getCockpit(Car car) throws RenaultForbiddenException, RenaultUpdateException,
             RenaultNotImplementedException, RenaultAPIGatewayException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
-                + "/kamereon/kca/car-adapter/v2/cars/" + config.vin + "/cockpit?country=" + getCountry(config));
+                + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/cockpit?country=" + getCountry(config));
         if (responseJson != null) {
             car.setCockpit(responseJson);
         }
