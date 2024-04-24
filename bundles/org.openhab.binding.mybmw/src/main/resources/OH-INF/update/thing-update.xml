@@ -44,15 +44,6 @@
 			</add-channel>
 			<!-- channels to be updated -->
 		</instruction-set>
-		<instruction-set targetVersion="3">
-			<!-- channels to be removed -->
-			<!-- channels to be added -->
-			<!-- channels to be updated -->
-			<update-channel id="view" groupIds="image">
-				<type>mybmw:image-view-channel</type>
-				<label>Image Viewport</label>
-			</update-channel>
-		</instruction-set>
 	</thing-type>
 	<thing-type uid="mybmw:bev">
 		<instruction-set targetVersion="1">
@@ -87,15 +78,6 @@
 			</add-channel>
 			<!-- channels to be updated -->
 		</instruction-set>
-		<instruction-set targetVersion="3">
-			<!-- channels to be removed -->
-			<!-- channels to be added -->
-			<!-- channels to be updated -->
-			<update-channel id="view" groupIds="image">
-				<type>mybmw:image-view-channel</type>
-				<label>Image Viewport</label>
-			</update-channel>
-		</instruction-set>
 	</thing-type>
 	<thing-type uid="mybmw:conv">
 		<instruction-set targetVersion="1">
@@ -127,15 +109,6 @@
 				<label>Force image update channel</label>
 			</add-channel>
 			<!-- channels to be updated -->
-		</instruction-set>
-		<instruction-set targetVersion="3">
-			<!-- channels to be removed -->
-			<!-- channels to be added -->
-			<!-- channels to be updated -->
-			<update-channel id="view" groupIds="image">
-				<type>mybmw:image-view-channel</type>
-				<label>Image Viewport</label>
-			</update-channel>
 		</instruction-set>
 	</thing-type>
 	<thing-type uid="mybmw:phev">
@@ -178,15 +151,6 @@
 				<label>Force image update channel</label>
 			</add-channel>
 			<!-- channels to be updated -->
-		</instruction-set>
-		<instruction-set targetVersion="3">
-			<!-- channels to be removed -->
-			<!-- channels to be added -->
-			<!-- channels to be updated -->
-			<update-channel id="view" groupIds="image">
-				<type>mybmw:image-view-channel</type>
-				<label>Image Viewport</label>
-			</update-channel>
 		</instruction-set>
 	</thing-type>
 
