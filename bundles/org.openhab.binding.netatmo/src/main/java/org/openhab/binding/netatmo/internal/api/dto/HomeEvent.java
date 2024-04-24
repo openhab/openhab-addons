@@ -103,12 +103,11 @@ public class HomeEvent extends Event {
         return internalGetUrl(vignette);
     }
 
-    private @Nullable String internalGetUrl(@Nullable Snapshot image) {
-        return image == null ? null : image.url();
+    public List<HomeEvent> getSubEvents() {
+        return subevents.stream().peek(subevent -> subevent.setCameraId(getCameraId())).toList();
     }
 
-    public List<HomeEvent> getSubEvents() {
-        subevents.forEach(subevent -> subevent.setCameraId(getCameraId()));
-        return subevents;
+    private @Nullable String internalGetUrl(@Nullable Snapshot image) {
+        return image == null ? null : image.url();
     }
 }
