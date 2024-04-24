@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
@@ -151,7 +152,10 @@ public class It600Handler extends BaseThingHandler {
         findLongProperty("ep_9:sIT600TH:LocalTemperature_x100", "LocalTemperature_x100")
                 .map(DeviceProperty.LongDeviceProperty::getValue).map(BigDecimal::new)
                 .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN))).map(DecimalType::new)
-                .ifPresent(state -> updateState(channelUID, state));
+                .ifPresent(state -> {
+                    updateState(channelUID, state);
+                    updateStatus(ONLINE);
+                });
     }
 
     private void handleCommandForExpectedTemperature(ChannelUID channelUID, Command command) {
@@ -159,7 +163,10 @@ public class It600Handler extends BaseThingHandler {
             findLongProperty("ep_9:sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
                     .map(DeviceProperty.LongDeviceProperty::getValue).map(BigDecimal::new)
                     .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN))).map(DecimalType::new)
-                    .ifPresent(state -> updateState(channelUID, state));
+                    .ifPresent(state -> {
+                        updateState(channelUID, state);
+                        updateStatus(ONLINE);
+                    });
             return;
         }
 
@@ -181,6 +188,7 @@ public class It600Handler extends BaseThingHandler {
                 findLongProperty("ep_9:sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
                         .ifPresent(prop -> prop.setValue(value));
                 findLongProperty("ep_9:sIT600TH:HoldType", "HoldType").ifPresent(prop -> prop.setValue((long) MANUAL));
+                updateStatus(ONLINE);
             }
             return;
         }
@@ -201,7 +209,10 @@ public class It600Handler extends BaseThingHandler {
                             logger.warn("Unknown value {} for property HoldType!", value);
                             yield "AUTO";
                         }
-                    }).map(StringType::new).ifPresent(state -> updateState(channelUID, state));
+                    }).map(StringType::new).ifPresent(state -> {
+                        updateState(channelUID, state);
+                        updateStatus(ONLINE);
+                    });
             return;
         }
 
@@ -224,6 +235,7 @@ public class It600Handler extends BaseThingHandler {
                 return;
             }
             cloudApi.setValueForProperty(dsn, property.get().getName(), value);
+            updateStatus(ONLINE);
             return;
         }
 
@@ -248,6 +260,11 @@ public class It600Handler extends BaseThingHandler {
     }
 
     private SortedSet<DeviceProperty<?>> findDeviceProperties() {
-        return this.cloudApi.findPropertiesForDevice(dsn);
+        try {
+            return this.cloudApi.findPropertiesForDevice(dsn);
+        } catch (Exception e) {
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
+            return new TreeSet<>();
+        }
     }
 }
