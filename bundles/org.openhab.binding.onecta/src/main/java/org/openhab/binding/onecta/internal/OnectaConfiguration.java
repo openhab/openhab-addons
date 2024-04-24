@@ -33,27 +33,30 @@ public class OnectaConfiguration {
      */
     private @Nullable static Thing bridgeThing = null;
     private @Nullable static HttpClientFactory httpClientFactory = null;
-
     private @Nullable static HttpClient httpClient = null;
 
-    public static void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        OnectaConfiguration.httpClientFactory = httpClientFactory;
-        httpClient = httpClientFactory.getCommonHttpClient();
+    public void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        if (this.httpClientFactory == null) {
+            this.httpClientFactory = httpClientFactory;
+            this.httpClient = httpClientFactory.getCommonHttpClient();
+        }
     }
 
-    public static void setBridgeThing(Thing bridgeThing) {
-        OnectaConfiguration.bridgeThing = bridgeThing;
+    public void setBridgeThing(Thing bridgeThing) {
+        if (this.bridgeThing == null) {
+            this.bridgeThing = bridgeThing;
+        }
     }
 
-    public static String getHost() {
+    public String getHost() {
         return OnectaConfiguration.bridgeThing.getConfiguration().get(CHANNEL_OPENHAB_HOST).toString();
     };
 
-    public static @Nullable HttpClient getHttpClient() {
+    public @Nullable HttpClient getHttpClient() {
         return httpClient;
     }
 
-    public static @Nullable HttpClientFactory getHttpClientFactory() {
+    public @Nullable HttpClientFactory getHttpClientFactory() {
         return httpClientFactory;
     }
 }

@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.*;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 
 /**
@@ -30,15 +31,13 @@ import org.openhab.core.thing.binding.ThingHandler;
  *
  */
 @NonNullByDefault
-public class DummyThing implements Thing {
+public class DummyBridge implements Bridge {
 
     private ThingTypeUID thingTypeUID;
     private ThingHandler thingHandler;
     private ThingStatus thingStatus;
-    private Configuration configuration = new Configuration();
-    private Map<String, String> properties = new HashMap<>();
 
-    public DummyThing(ThingTypeUID thingTypeUID, ThingHandler thingHandler, ThingStatus thingStatus) {
+    public DummyBridge(ThingTypeUID thingTypeUID, ThingHandler thingHandler, ThingStatus thingStatus) {
         this.thingTypeUID = thingTypeUID;
         this.thingHandler = thingHandler;
         this.thingStatus = thingStatus;
@@ -92,8 +91,18 @@ public class DummyThing implements Thing {
     }
 
     @Override
-    public @Nullable ThingHandler getHandler() {
-        return this.thingHandler;
+    public @Nullable Thing getThing(ThingUID thingUID) {
+        return null;
+    }
+
+    @Override
+    public List<Thing> getThings() {
+        return List.of();
+    }
+
+    @Override
+    public @Nullable BridgeHandler getHandler() {
+        return null;
     }
 
     @Override
@@ -105,18 +114,14 @@ public class DummyThing implements Thing {
     public void setBridgeUID(@Nullable ThingUID bridgeUID) {
     }
 
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
-    }
-
     @Override
     public Configuration getConfiguration() {
-        return this.configuration;
+        return new Configuration();
     }
 
     @Override
     public ThingUID getUID() {
-        return new ThingUID("dummy");
+        return new ThingUID("dummy:dummy:dummy");
     }
 
     @Override
@@ -126,7 +131,7 @@ public class DummyThing implements Thing {
 
     @Override
     public Map<@NonNull String, @NonNull String> getProperties() {
-        return this.properties;
+        return new HashMap<>();
     }
 
     @Override
@@ -136,7 +141,6 @@ public class DummyThing implements Thing {
 
     @Override
     public void setProperties(Map<@NonNull String, @NonNull String> properties) {
-        this.properties = properties;
     }
 
     @Override

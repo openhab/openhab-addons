@@ -18,6 +18,7 @@ import org.openhab.binding.onecta.internal.service.DataTransportService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -26,6 +27,11 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.UnDefType;
 
+/**
+ *
+ * @author Alexander Drent - Initial contribution
+ *
+ */
 @ExtendWith(MockitoExtension.class)
 public class OnectaGatewayHandlerTest {
 
@@ -40,6 +46,9 @@ public class OnectaGatewayHandlerTest {
     @Mock
     private DataTransportService dataTransServiceMock;
 
+    @Mock
+    private ChannelUID channelUIDMock;
+
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         Configuration thingConfiguration = new Configuration();
@@ -48,6 +57,7 @@ public class OnectaGatewayHandlerTest {
         handler = new OnectaGatewayHandler(thingMock);
         handler.setCallback(callbackMock);
 
+        handler.handleCommand(channelUIDMock, OpenClosedType.OPEN);
         // add Mock dataTransServiceMock to handler
         Field privateDataTransServiceField = OnectaGatewayHandler.class.getDeclaredField("dataTransService");
         privateDataTransServiceField.setAccessible(true);

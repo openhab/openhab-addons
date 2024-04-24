@@ -6,8 +6,13 @@ import java.util.List;
 
 import org.openhab.core.thing.Thing;
 
+/**
+ *
+ * @author Alexander Drent - Initial contribution
+ *
+ */
 public class ChannelsRefreshDelay {
-    private class ChannelDelay {
+    protected class ChannelDelay {
         private String channel;
         private Long endDelay;
 
@@ -36,10 +41,14 @@ public class ChannelsRefreshDelay {
     }
 
     public void add(String channel) {
+        ChannelDelay channelDelay = findChannel(channel);
+        if (channelDelay != null) {
+            channelRefreshDelay.remove(channelDelay);
+        }
         channelRefreshDelay.add(new ChannelDelay(channel, this.delay));
     }
 
-    public ChannelDelay findChannel(String channel) {
+    private ChannelDelay findChannel(String channel) {
         return channelRefreshDelay.stream().filter(channelDelay -> channel.equals(channelDelay.getChannel().toString()))
                 .findFirst().orElse(null);
     }

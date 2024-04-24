@@ -45,6 +45,7 @@ public class OnectaConnectionClient {
     private static JsonArray rawData = new JsonArray();
     private static Units onectaData = new Units();
     private static OnectaSignInClient onectaSignInClient;
+    private OnectaConfiguration onectaConfiguration = new OnectaConfiguration();
 
     public OnectaConnectionClient() {
         if (onectaSignInClient == null) {
@@ -72,7 +73,7 @@ public class OnectaConnectionClient {
             if (!onectaSignInClient.isOnline()) {
                 onectaSignInClient.signIn();
             }
-            response = OnectaConfiguration.getHttpClient().newRequest(OnectaProperties.getBaseUrl(""))
+            response = onectaConfiguration.getHttpClient().newRequest(OnectaProperties.getBaseUrl(""))
                     .method(HttpMethod.GET)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
@@ -108,7 +109,7 @@ public class OnectaConnectionClient {
             if (!onectaSignInClient.isOnline()) {
                 onectaSignInClient.signIn();
             }
-            response = OnectaConfiguration.getHttpClient().newRequest(url).method(HttpMethod.PATCH)
+            response = onectaConfiguration.getHttpClient().newRequest(url).method(HttpMethod.PATCH)
                     .content(new StringContentProvider(new Gson().toJson(body)), MediaType.APPLICATION_JSON)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)

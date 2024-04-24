@@ -51,16 +51,17 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE, DEVICE_THING_TYPE,
             GATEWAY_THING_TYPE, WATERTANK_THING_TYPE, INDOORUNIT_THING_TYPE);
     private HttpClientFactory httpClientFactory;
-    private final TimeZoneProvider timeZoneProvider;
+    private TimeZoneProvider timeZoneProvider;
     private @Nullable OnectaBridgeHandler bridgeHandler = null;
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private OnectaConfiguration onectaConfiguration = new OnectaConfiguration();
 
     @Activate
     public OnectaBridgeHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClientFactory = httpClientFactory;
         this.timeZoneProvider = timeZoneProvider;
-        OnectaConfiguration.setHttpClientFactory(httpClientFactory);
+        onectaConfiguration.setHttpClientFactory(httpClientFactory);
     }
 
     @Override
@@ -74,7 +75,7 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals((BRIDGE_THING_TYPE))) {
             bridgeHandler = new OnectaBridgeHandler((Bridge) thing);
-            OnectaConfiguration.setBridgeThing((Bridge) thing);
+            onectaConfiguration.setBridgeThing((Bridge) thing);
 
             DeviceDiscoveryService deviceDiscoveryService = new DeviceDiscoveryService(bridgeHandler);
             bridgeHandler.setDiscovery(deviceDiscoveryService);

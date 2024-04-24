@@ -26,6 +26,11 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
+/**
+ *
+ * @author Alexander Drent - Initial contribution
+ *
+ */
 @ExtendWith(MockitoExtension.class)
 public class OnectaBridgeHandlerTest {
 
@@ -81,7 +86,7 @@ public class OnectaBridgeHandlerTest {
     }
 
     @Test
-    public void initializeShouldCallTheCallbackOffline() throws DaikinCommunicationException, InterruptedException {
+    public void initializeShouldCallTheCallbackOfflineTest() throws DaikinCommunicationException, InterruptedException {
         when(onectaConnectionClientMock.isOnline()).thenReturn(false);
         handler.initialize();
 
@@ -91,7 +96,7 @@ public class OnectaBridgeHandlerTest {
     }
 
     @Test
-    public void initializeShouldCallTheCallbackOfflineByException()
+    public void initializeShouldCallTheCallbackOfflineByExceptionTest()
             throws DaikinCommunicationException, InterruptedException {
         doThrow(new DaikinCommunicationException("Connection failed")).when(onectaConnectionClientMock)
                 .startConnecton(anyString(), anyString(), anyString());
@@ -103,7 +108,7 @@ public class OnectaBridgeHandlerTest {
     }
 
     @Test
-    public void initializeShouldCallTheCallbackOnline() throws DaikinCommunicationException, InterruptedException {
+    public void initializeShouldCallTheCallbackOnlineTest() throws DaikinCommunicationException, InterruptedException {
         when(onectaConnectionClientMock.isOnline()).thenReturn(true);
         handler.initialize();
         Thread.sleep(500);
