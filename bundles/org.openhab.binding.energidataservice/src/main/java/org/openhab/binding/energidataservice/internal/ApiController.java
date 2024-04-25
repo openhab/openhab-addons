@@ -122,12 +122,8 @@ public class ApiController {
         try {
             String responseContent = sendRequest(request, properties);
             ElspotpriceRecords records = gson.fromJson(responseContent, ElspotpriceRecords.class);
-            if (records == null) {
+            if (records == null || Objects.isNull(records.records())) {
                 throw new DataServiceException("Error parsing response");
-            }
-
-            if (records.total() == 0 || Objects.isNull(records.records()) || records.records().length == 0) {
-                throw new DataServiceException("No records");
             }
 
             return Arrays.stream(records.records()).filter(Objects::nonNull).toArray(ElspotpriceRecord[]::new);
@@ -262,6 +258,9 @@ public class ApiController {
             Map<String, String> properties) throws InterruptedException, DataServiceException {
         if (dataset != Dataset.CO2Emission && dataset != Dataset.CO2EmissionPrognosis) {
             throw new IllegalArgumentException("Invalid dataset " + dataset + " for getting CO2 emissions");
+        }
+        if (!"DK1".equals(priceArea) && !"DK2".equals(priceArea)) {
+            throw new IllegalArgumentException("Invalid price area " + priceArea + " for getting CO2 emissions");
         }
         Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + dataset)
                 .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) //

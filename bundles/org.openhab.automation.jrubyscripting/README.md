@@ -916,7 +916,7 @@ Furthermore, you can manipulate the managed timers using the built-in [timers](h
 ```ruby
 # timers is a special object to access the timers created with an id
 rule "cancel all timers" do
-  received_command Cancel_All_Timers, to: ON # Send a command to this item to cancel all timers
+  received_command Cancel_All_Timers, command: ON # Send a command to this item to cancel all timers
   run do
     gOutdoorLights.members.each do |item_as_timer_id|
       timers.cancel(item_as_timer_id)
@@ -925,7 +925,7 @@ rule "cancel all timers" do
 end
 
 rule "reschedule all timers" do
-  received_command Reschedule_All_Timers, to: ON # Send a command to this item to restart all timers
+  received_command Reschedule_All_Timers, command: ON # Send a command to this item to restart all timers
   run do
     gOutdoorLights.members.each do |item_as_timer_id|
       timers.reschedule(item_as_timer_id)
@@ -1467,7 +1467,7 @@ See [#updated](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/Bu
 
 ```ruby
 rule "Received a command" do
-  received_command DoorBell, to: ON
+  received_command DoorBell, command: ON
   run do |event|
     notify "Someone pressed the door bell"
     play_sound "doorbell.mp3"
@@ -1673,7 +1673,7 @@ See [Execution Blocks](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/
 A rule with a trigger and an execution block can be created with just one line.
 
 ```ruby
-received_command(My_Switch, to: ON) { My_Light.on }
+received_command(My_Switch, command: ON) { My_Light.on }
 ```
 
 See [Terse Rules](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/Terse.html) for full details.
