@@ -153,8 +153,8 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                             updateState(CHANNEL_JSON, StringType.valueOf(cr.getContentAsString()));
                             setForecast(localForecast);
                         } catch (SolarForecastException fse) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/solarforecast.plane.status.json-status");
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                                    "@text/solarforecast.plane.status.json-status [\"" + fse.getMessage() + "\"]");
                         }
                     } else {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

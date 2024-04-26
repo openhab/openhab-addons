@@ -103,9 +103,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     @Override
     public void dispose() {
         super.dispose();
-        if (bridgeHandler.isPresent()) {
-            bridgeHandler.get().removePlane(this);
-        }
+        bridgeHandler.ifPresent(bridge -> bridge.removePlane(this));
     }
 
     @Override
@@ -146,98 +144,84 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     }
 
     protected synchronized SolcastObject fetchData() {
-        forecast.ifPresent(forecastObject -> {
-            if (forecastObject.isExpired()) {
-                logger.trace("Get new forecast {}", forecastObject.toString());
-                String forecastUrl = String.format(FORECAST_URL, configuration.resourceId);
-                String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.resourceId);
-                try {
-                    // get actual estimate
-                    Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
-                    estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
-                    ContentResponse crEstimate = estimateRequest.send();
-                    if (crEstimate.getStatus() == 200) {
-                        SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(),
-                                crEstimate.getContentAsString(),
-                                Instant.now().plus(configuration.refreshInterval, ChronoUnit.MINUTES),
-                                bridgeHandler.get());
+        bridgeHandler.ifPresent(bridge -> {
+            forecast.ifPresent(forecastObject -> {
+                if (forecastObject.isExpired()) {
+                    logger.trace("Get new forecast {}", forecastObject.toString());
+                    String forecastUrl = String.format(FORECAST_URL, configuration.resourceId);
+                    String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.resourceId);
+                    try {
+                        // get actual estimate
+                        Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
+                        estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
+                        ContentResponse crEstimate = estimateRequest.send();
+                        if (crEstimate.getStatus() == 200) {
+                            SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(),
+                                    crEstimate.getContentAsString(),
+                                    Instant.now().plus(configuration.refreshInterval, ChronoUnit.MINUTES), bridge);
 
-                        // get forecast
-                        Request forecastRequest = httpClient.newRequest(forecastUrl);
-                        forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridgeHandler.get().getApiKey());
-                        ContentResponse crForecast = forecastRequest.send();
+                            // get forecast
+                            Request forecastRequest = httpClient.newRequest(forecastUrl);
+                            forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
+                            ContentResponse crForecast = forecastRequest.send();
 
-                        if (crForecast.getStatus() == 200) {
-                            localForecast.join(crForecast.getContentAsString());
-                            setForecast(localForecast);
-                            updateState(GROUP_RAW + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_JSON,
-                                    StringType.valueOf(forecast.get().getRaw()));
-                            updateStatus(ThingStatus.ONLINE);
+                            if (crForecast.getStatus() == 200) {
+                                localForecast.join(crForecast.getContentAsString());
+                                setForecast(localForecast);
+                                updateState(GROUP_RAW + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_JSON,
+                                        StringType.valueOf(forecast.get().getRaw()));
+                                updateStatus(ThingStatus.ONLINE);
+                            } else {
+                                logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl,
+                                        crForecast.getStatus());
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "@text/solarforecast.plane.status.http-status [\"" + crForecast.getStatus()
+                                                + "\"]");
+                            }
                         } else {
-                            logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl, crForecast.getStatus());
+                            logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl,
+                                    crEstimate.getStatus());
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/solarforecast.plane.status.http-status [\"" + crForecast.getStatus()
+                                    "@text/solarforecast.plane.status.http-status [\"" + crEstimate.getStatus()
                                             + "\"]");
                         }
-                    } else {
-                        logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl,
-                                crEstimate.getStatus());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/solarforecast.plane.status.http-status [\"" + crEstimate.getStatus() + "\"]");
+                    } catch (ExecutionException | TimeoutException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    } catch (InterruptedException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        Thread.currentThread().interrupt();
                     }
-                } catch (ExecutionException | TimeoutException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                } catch (InterruptedException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    Thread.currentThread().interrupt();
+                } else {
+                    updateChannels(forecastObject);
                 }
-            } else {
-                updateChannels(forecastObject);
-            }
+            });
         });
         return forecast.get();
     }
 
     protected void updateChannels(SolcastObject f) {
+        if (bridgeHandler.isEmpty()) {
+            return;
+        }
         ZonedDateTime now = ZonedDateTime.now(bridgeHandler.get().getTimeZone());
         List<QueryMode> modes = List.of(QueryMode.Average, QueryMode.Pessimistic, QueryMode.Optimistic);
         modes.forEach(mode -> {
             double energyDay = f.getDayTotal(now.toLocalDate(), mode);
             double energyProduced = f.getActualEnergyValue(now, mode);
-            switch (mode) {
-                case Average:
-                    updateState(GROUP_AVERAGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ACTUAL,
-                            Utils.getEnergyState(energyProduced));
-                    updateState(GROUP_AVERAGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_REMAIN,
-                            Utils.getEnergyState(energyDay - energyProduced));
-                    updateState(GROUP_AVERAGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_TODAY,
-                            Utils.getEnergyState(energyDay));
-                    updateState(GROUP_AVERAGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ACTUAL,
-                            Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Average)));
-                    break;
-                case Optimistic:
-                    updateState(GROUP_OPTIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ACTUAL,
-                            Utils.getEnergyState(energyProduced));
-                    updateState(GROUP_OPTIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_REMAIN,
-                            Utils.getEnergyState(energyDay - energyProduced));
-                    updateState(GROUP_OPTIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_TODAY,
-                            Utils.getEnergyState(energyDay));
-                    updateState(GROUP_OPTIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ACTUAL,
-                            Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Average)));
-                    break;
-                case Pessimistic:
-                    updateState(GROUP_PESSIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ACTUAL,
-                            Utils.getEnergyState(energyProduced));
-                    updateState(GROUP_PESSIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_REMAIN,
-                            Utils.getEnergyState(energyDay - energyProduced));
-                    updateState(GROUP_PESSIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_TODAY,
-                            Utils.getEnergyState(energyDay));
-                    updateState(GROUP_PESSIMISTIC + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ACTUAL,
-                            Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Average)));
-                    break;
-                default:
-                    break;
-            }
+            String group = switch (mode) {
+                case Average -> GROUP_AVERAGE;
+                case Optimistic -> GROUP_OPTIMISTIC;
+                case Pessimistic -> GROUP_PESSIMISTIC;
+                case Error -> throw new IllegalStateException("mode " + mode + " not expected");
+            };
+            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ACTUAL,
+                    Utils.getEnergyState(energyProduced));
+            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_REMAIN,
+                    Utils.getEnergyState(energyDay - energyProduced));
+            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_TODAY,
+                    Utils.getEnergyState(energyDay));
+            updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ACTUAL,
+                    Utils.getPowerState(f.getActualPowerValue(now, QueryMode.Average)));
         });
     }
 

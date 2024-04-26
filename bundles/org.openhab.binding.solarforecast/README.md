@@ -50,7 +50,7 @@ Correct time zone is necessary to show correct forecast times in UI.
 
 `apiKey` can be obtained in your [Account Settings](https://toolkit.solcast.com.au/account)
 
-`timeZone` leave it empty to evaluate Regional Settings of your openHAB installation. 
+`timeZone` can be left empty to evaluate Regional Settings of your openHAB installation. 
 See [DateTime](#date-time) section for more information.
 
 ### Solcast Plane Configuration
@@ -144,7 +144,6 @@ The `fs-site` bridge sums up all attached `fs-plane` values and provides the tot
 Channels are covering today's actual data with current, remaining and total prediction.
 Forecasts are delivered up to 3 days for paid personal plans.
 
-
 | Channel                 | Type          | Unit | Description                                     | Advanced |
 |-------------------------|---------------|------|-------------------------------------------------|----------|
 | power-estimate          | Number:Power  | W    | Power forecast for next hours/days              | no       |
@@ -154,7 +153,6 @@ Forecasts are delivered up to 3 days for paid personal plans.
 | energy-remain           | Number:Energy | kWh  | Today's remaining forecast till sunset          | no       |
 | energy-today            | Number:Energy | kWh  | Today's forecast in total                       | no       |
 | json                    | String        | -    | Plain JSON response without conversions         | yes      |
-
 
 ## Thing Actions
 
@@ -308,6 +306,24 @@ rule "Tomorrow Forecast Calculation"
         val energyState = solarforecastActions.getDay(LocalDate.now.plusDays(1))
         logInfo("SF Tests","{}",energyState)
         ForecastSolarHome_Tomorrow.postUpdate(energyState) 
+end
+```
+
+### Handle exceptions
+
+```java
+import java.time.temporal.ChronoUnit
+
+rule "Exception Handling"
+    when
+        System started
+    then 
+        val solcastActions = getActions("solarforecast","solarforecast:sc-site:3cadcde4dc")
+        try {
+            val forecast = solcastActions.getPower(solcastActions.getForecastEnd.plus(30,ChronoUnit.MINUTES))
+        } catch(RuntimeException e) {
+            logError("Exception","Handle {}",e.getMessage)
+        }
 end
 ```
 

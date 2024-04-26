@@ -146,7 +146,8 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
                 powerSum += fo.getActualPowerValue(now);
                 daySum += fo.getDayTotal(now.toLocalDate());
             } catch (SolarForecastException sfe) {
-                logger.info("{}", sfe.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/solarforecast.site.status.exception [\"" + sfe.getMessage() + "\"]");
                 update = false;
             }
         }

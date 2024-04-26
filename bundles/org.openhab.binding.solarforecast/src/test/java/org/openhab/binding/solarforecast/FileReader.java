@@ -41,7 +41,7 @@ public class FileReader {
             return buf.toString();
         } catch (IOException e) {
             // fail if file cannot be read
-            assertFalse(filename.isBlank(), "Read failute " + filename);
+            assertFalse(filename.isBlank(), "Read failure " + filename);
         }
         return SolarForecastBindingConstants.EMPTY;
     }
