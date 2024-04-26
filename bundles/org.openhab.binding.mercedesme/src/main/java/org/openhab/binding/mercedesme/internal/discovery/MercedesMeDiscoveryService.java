@@ -39,7 +39,8 @@ public class MercedesMeDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void vehicleDiscovered(AccountHandler ac, String vin, Map<String, Object> properties) {
-        String vehicleType = properties.get("vehicle").toString();
+        Object vehicleTypeObj = properties.get("vehicle");
+        String vehicleType = ((vehicleTypeObj == null) ? "unknown" : vehicleTypeObj.toString());
         ThingTypeUID ttuid = null;
         switch (vehicleType) {
             case Constants.BEV:

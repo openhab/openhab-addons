@@ -97,7 +97,7 @@ public class Mapper {
                 case "rangeliquid":
                 case "distanceStart":
                 case "distanceReset":
-                    Unit lengthUnit = defaultLengthUnit;
+                    Unit<?> lengthUnit = defaultLengthUnit;
                     if (value.hasDistanceUnit()) {
                         observer = new UOMObserver(value.getDistanceUnit().toString());
                         if (observer.getUnit().isEmpty()) {
@@ -128,7 +128,7 @@ public class Mapper {
 
                 case "averageSpeedStart":
                 case "averageSpeedReset":
-                    Unit speedUnit = defaultSpeedUnit;
+                    Unit<?> speedUnit = defaultSpeedUnit;
                     if (value.hasSpeedUnit()) {
                         observer = new UOMObserver(value.getSpeedUnit().toString());
                         if (observer.getUnit().isEmpty()) {
@@ -315,7 +315,7 @@ public class Mapper {
                 case "tirepressureFrontRight":
                 case "tirepressureRearLeft":
                 case "tirepressureRearRight":
-                    Unit pressureUnit = defaultPressureUnit;
+                    Unit<?> pressureUnit = defaultPressureUnit;
                     if (value.hasPressureUnit()) {
                         observer = new UOMObserver(value.getPressureUnit().toString());
                         if (observer.getUnit().isEmpty()) {

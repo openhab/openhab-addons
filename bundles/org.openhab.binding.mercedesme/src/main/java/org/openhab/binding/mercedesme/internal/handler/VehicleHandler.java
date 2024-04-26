@@ -15,6 +15,7 @@ package org.openhab.binding.mercedesme.internal.handler;
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -300,16 +301,18 @@ public class VehicleHandler extends BaseThingHandler {
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.trace("Air Conditioning Temperature Setting not supported");
                 } else {
-                    QuantityType<Temperature> tempToSet = ((QuantityType<Temperature>) command);
-                    TemperatureConfigure tc = TemperatureConfigure.newBuilder()
-                            .addTemperaturePoints(TemperaturePoint.newBuilder().setZoneValue(activeTemperaturePoint)
-                                    .setTemperatureInCelsius(tempToSet.toInvertibleUnit(SIUnits.CELSIUS).intValue())
-                                    .build())
-                            .build();
-                    CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
-                            .setRequestId(UUID.randomUUID().toString()).setTemperatureConfigure(tc).build();
-                    ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-                    accountHandler.get().sendCommand(cm);
+                    QuantityType<?> targetTemp = (QuantityType<?>) command;
+                    QuantityType<?> targetTempCelsius = targetTemp.toInvertibleUnit(SIUnits.CELSIUS);
+                    if (targetTempCelsius != null) {
+                        TemperatureConfigure tc = TemperatureConfigure.newBuilder()
+                                .addTemperaturePoints(TemperaturePoint.newBuilder().setZoneValue(activeTemperaturePoint)
+                                        .setTemperatureInCelsius(targetTempCelsius.intValue()).build())
+                                .build();
+                        CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
+                                .setRequestId(UUID.randomUUID().toString()).setTemperatureConfigure(tc).build();
+                        ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
+                        accountHandler.get().sendCommand(cm);
+                    }
                 }
             } else if ("active".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("commandZevPreconditioningStart");
@@ -443,7 +446,7 @@ public class VehicleHandler extends BaseThingHandler {
                         autoUnlockToSelect = ((OnOffType) command).equals(OnOffType.ON);
                         sendCommand = true;
                     } else if ("max-soc".equals(channelUID.getIdWithoutGroup())) {
-                        maxSocToSelect = ((QuantityType) command).intValue();
+                        maxSocToSelect = ((QuantityType<?>) command).intValue();
                         sendCommand = true;
                     } // else - nothing to be sent
                     if (sendCommand) {
@@ -516,41 +519,31 @@ public class VehicleHandler extends BaseThingHandler {
         } else {
             com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningConfigureSeats.Builder builder = ZEVPreconditioningConfigureSeats
                     .newBuilder();
-            if (eventStorage.get("hvac#front-left").getState() != UnDefType.UNDEF
-                    && !"hvac#front-left".equals(channelUID.getId())) {
-                OnOffType oot = (OnOffType) eventStorage.get("hvac#front-left").getState();
-                builder.setFrontLeft(OnOffType.ON.equals(oot));
-            }
-            if (eventStorage.get("hvac#front-right").getState() != UnDefType.UNDEF
-                    && !"hvac#front-right".equals(channelUID.getId())) {
-                OnOffType oot = (OnOffType) eventStorage.get("hvac#front-right").getState();
-                builder.setFrontRight(OnOffType.ON.equals(oot));
-            }
-            if (eventStorage.get("hvac#rear-left").getState() != UnDefType.UNDEF
-                    && !"hvac#rear-left".equals(channelUID.getId())) {
-                OnOffType oot = (OnOffType) eventStorage.get("hvac#rear-left").getState();
-                builder.setRearLeft(OnOffType.ON.equals(oot));
-            }
-            if (eventStorage.get("hvac#rear-right").getState() != UnDefType.UNDEF
-                    && !"hvac#rear-right".equals(channelUID.getId())) {
-                OnOffType oot = (OnOffType) eventStorage.get("hvac#rear-right").getState();
-                builder.setRearRight(OnOffType.ON.equals(oot));
-            }
-            // now overwrite command
-            switch (channelUID.getId()) {
-                case "hvac#front-left":
-                    builder.setFrontLeft(OnOffType.ON.equals(command));
-                    break;
-                case "hvac#front-right":
-                    builder.setFrontRight(OnOffType.ON.equals(command));
-                    break;
-                case "hvac#rear-left":
-                    builder.setRearLeft(OnOffType.ON.equals(command));
-                    break;
-                case "hvac#rear-right":
-                    builder.setRearRight(OnOffType.ON.equals(command));
-                    break;
-            }
+
+            List<String> seatList = Arrays.asList(
+                    new String[] { "hvac#front-left", "hvac#front-right", "hvac#rear-left", "hvac#rear-right" });
+            seatList.forEach(seat -> {
+                ChannelStateMap csm = eventStorage.get(seat);
+                if (csm != null) {
+                    if (csm.getState() != UnDefType.UNDEF && !seat.equals(channelUID.getId())) {
+                        OnOffType oot = (OnOffType) csm.getState();
+                        switch (seat) {
+                            case "hvac#front-left":
+                                builder.setFrontLeft(OnOffType.ON.equals(oot));
+                                break;
+                            case "hvac#front-right":
+                                builder.setFrontRight(OnOffType.ON.equals(oot));
+                                break;
+                            case "hvac#rear-left":
+                                builder.setRearLeft(OnOffType.ON.equals(oot));
+                                break;
+                            case "hvac#rear-right":
+                                builder.setRearRight(OnOffType.ON.equals(oot));
+                                break;
+                        }
+                    }
+                }
+            });
             ZEVPreconditioningConfigureSeats seats = builder.build();
             CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
                     .setRequestId(UUID.randomUUID().toString()).setZevPreconditionConfigureSeats(seats).build();
@@ -657,7 +650,7 @@ public class VehicleHandler extends BaseThingHandler {
                     case "soc":
                         if (!Constants.COMBUSTION.equals(vehicleType)) {
                             if (config.get().batteryCapacity > 0) {
-                                float socValue = ((QuantityType<Length>) csm.getState()).floatValue();
+                                float socValue = ((QuantityType<?>) csm.getState()).floatValue();
                                 float batteryCapacity = config.get().batteryCapacity;
                                 float chargedValue = Math.round(socValue * 1000 * batteryCapacity / 1000) / (float) 100;
                                 ChannelStateMap charged = new ChannelStateMap("charged", GROUP_RANGE,
@@ -775,7 +768,7 @@ public class VehicleHandler extends BaseThingHandler {
                             if (observer.getUnit().isEmpty()) {
                                 logger.trace("No Unit found for temperature - take default ");
                             } else {
-                                temperatureUnit = observer.getUnit().get();
+                                temperatureUnit = (Unit<Temperature>) observer.getUnit().get();
                             }
                         }
                         ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "temperature");

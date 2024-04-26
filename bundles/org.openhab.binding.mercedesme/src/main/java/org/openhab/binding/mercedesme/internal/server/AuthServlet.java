@@ -36,7 +36,7 @@ public class AuthServlet extends HttpServlet {
         AuthService myAuthService = AuthService.getAuthService(request.getLocalPort());
         String guid = request.getParameter(Constants.GUID);
         String pin = request.getParameter(Constants.PIN);
-        if (guid == null && pin == null) {
+        if (guid == null && pin == null && myAuthService != null) {
             // request PIN
             String requestVal = myAuthService.requestPin();
             if (!Constants.NOT_SET.equals(requestVal)) {
@@ -61,7 +61,7 @@ public class AuthServlet extends HttpServlet {
                 response.getWriter().println("</HTML>");
             }
 
-        } else if (guid != null && pin == null) {
+        } else if (guid != null && pin == null && myAuthService != null) {
             // show insert PIN input field
 
             response.setContentType("text/html");
@@ -83,7 +83,7 @@ public class AuthServlet extends HttpServlet {
             response.getWriter().println("</form>");
             response.getWriter().println("</BODY>");
             response.getWriter().println("</HTML>");
-        } else if (guid != null && pin != null) {
+        } else if (guid != null && pin != null && myAuthService != null) {
             // call getToken and show result
             boolean result = myAuthService.requestToken(guid + ":" + pin);
             response.setContentType("text/html");

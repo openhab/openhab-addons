@@ -146,16 +146,16 @@ public class Utils {
     public static String getCallbackIP() throws SocketException {
         // https://stackoverflow.com/questions/901755/how-to-get-the-ip-of-the-computer-on-linux-through-java
         // https://stackoverflow.com/questions/1062041/ip-address-not-obtained-in-java
-        for (Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces(); ifaces
-                .hasMoreElements();) {
-            NetworkInterface iface = ifaces.nextElement();
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+        while (networkInterfaces.hasMoreElements()) {
+            NetworkInterface networkInterface = networkInterfaces.nextElement();
             try {
-                if (!iface.isLoopback()) {
-                    if (iface.isUp()) {
-                        for (Enumeration<InetAddress> addresses = iface.getInetAddresses(); addresses
-                                .hasMoreElements();) {
+                if (!networkInterface.isLoopback()) {
+                    if (networkInterface.isUp()) {
+                        Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                        while (addresses.hasMoreElements()) {
                             InetAddress address = addresses.nextElement();
-                            if (address instanceof Inet4Address) {
+                            if (address != null && address instanceof Inet4Address) {
                                 return address.getHostAddress();
                             }
                         }
@@ -163,7 +163,7 @@ public class Utils {
                 }
             } catch (SocketException se) {
                 // Calling one network interface failed - continue searching
-                LOGGER.warn("Network {} failed {}", iface.getName(), se.getMessage());
+                LOGGER.warn("Network {} failed {}", networkInterface.getName(), se.getMessage());
             }
         }
         throw new SocketException("IP address not detected");
@@ -311,7 +311,7 @@ public class Utils {
      * @param newData
      * @return
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Map combineMaps(Map oldData, Map newData) {
         final Map combined = new TreeMap();
         oldData.forEach((key, value) -> {
@@ -427,8 +427,9 @@ public class Utils {
                 ZONE_HASHMAP.put(zones[i].name(), zones[i].getNumber());
             }
         }
-        if (ZONE_HASHMAP.containsKey(zone)) {
-            return ZONE_HASHMAP.get(zone);
+        Integer zoneNumber = ZONE_HASHMAP.get(zone);
+        if (zoneNumber != null) {
+            return zoneNumber;
         }
         return -1;
     }
@@ -440,8 +441,9 @@ public class Utils {
                 PROGRAM_HASHMAP.put(programs[i].name(), programs[i].getNumber());
             }
         }
-        if (PROGRAM_HASHMAP.containsKey(program)) {
-            return PROGRAM_HASHMAP.get(program);
+        Integer programNumber = PROGRAM_HASHMAP.get(program);
+        if (programNumber != null) {
+            return programNumber;
         }
         return -1;
     }

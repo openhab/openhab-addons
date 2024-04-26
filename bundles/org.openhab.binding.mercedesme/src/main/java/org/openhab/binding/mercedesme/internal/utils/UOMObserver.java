@@ -57,8 +57,8 @@ public class UOMObserver {
     public static final String TIME_US = "TIME_US";
     public static final String TIME_ROW = "TIME_ROW";
 
-    private static final Map<String, String> PATTERN_MAP = new HashMap<String, String>();
-    private static final Map<String, Unit> UNIT_MAP = new HashMap<String, Unit>();
+    private static final Map<String, String> PATTERN_MAP = new HashMap<>();
+    private static final Map<String, Unit<?>> UNIT_MAP = new HashMap<>();
 
     private String label = Constants.NOT_SET;
 
@@ -113,8 +113,8 @@ public class UOMObserver {
         return label;
     }
 
-    public Optional<Unit> getUnit() {
-        Unit u = UNIT_MAP.get(label);
+    public Optional<Unit<?>> getUnit() {
+        Unit<?> u = UNIT_MAP.get(label);
         if (u != null) {
             return Optional.of(u);
         } else {
