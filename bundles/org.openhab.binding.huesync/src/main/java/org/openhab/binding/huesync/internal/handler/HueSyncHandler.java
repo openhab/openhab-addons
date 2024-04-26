@@ -13,6 +13,7 @@
 package org.openhab.binding.huesync.internal.handler;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -28,7 +29,7 @@ import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDevice
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
-import org.openhab.binding.huesync.internal.connection.HueSyncConnection;
+import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncApiException;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncRegistrationTask;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTask;
@@ -61,20 +62,22 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private @Nullable HueSyncDeviceInfo deviceInfo;
 
-    private HueSyncConnection connection;
+    private HueSyncDeviceConnection connection;
     private HueSyncConfiguration config;
 
     protected class HueSyncProperties {
 
     };
 
-    public HueSyncHandler(Thing thing, HttpClientFactory httpClientFactory) throws CertificateException, IOException {
+    public HueSyncHandler(Thing thing, HttpClientFactory httpClientFactory)
+            throws CertificateException, IOException, URISyntaxException {
         super(thing);
 
         HttpClient httpClient = httpClientFactory.getCommonHttpClient();
+        httpClient.setName(this.thing.getUID().getAsString());
 
         this.config = getConfigAs(HueSyncConfiguration.class);
-        this.connection = new HueSyncConnection(httpClient, this.config.host, this.config.port,
+        this.connection = new HueSyncDeviceConnection(httpClient, this.config.host, this.config.port,
                 this.config.apiAccessToken, this.config.registrationId);
     }
 
