@@ -459,6 +459,8 @@ public class SolcastObject implements SolarForecast {
                 return QueryMode.Optimistic;
             } else if (SolarForecast.PESSIMISTIC.equals(args[0])) {
                 return QueryMode.Pessimistic;
+            } else if (SolarForecast.AVERAGE.equals(args[0])) {
+                return QueryMode.Average;
             } else {
                 logger.info("Argument {} not supported", args[0]);
                 return QueryMode.Error;

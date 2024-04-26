@@ -161,6 +161,8 @@ class SolcastTest {
          * "period": "PT30M"
          */
         assertEquals(1.9176, scfo.getActualPowerValue(now, QueryMode.Average), TOLERANCE, "Estimate power " + now);
+        assertEquals(1.9176, scfo.getPower(now.toInstant(), "average").doubleValue(), TOLERANCE,
+                "Estimate power " + now);
         assertEquals(1.754, scfo.getActualPowerValue(now.plusMinutes(30), QueryMode.Average), TOLERANCE,
                 "Estimate power " + now.plusMinutes(30));
 
