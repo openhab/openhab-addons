@@ -34,9 +34,6 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.mercedesme")
 public class MercedesMeDiscoveryService extends AbstractDiscoveryService {
 
-    /**
-     * Creates a AdorneDiscoveryService with disabled auto-discovery.
-     */
     public MercedesMeDiscoveryService() {
         super(Constants.DISCOVERABLE_DEVICE_TYPE_UIDS, 0, false);
     }

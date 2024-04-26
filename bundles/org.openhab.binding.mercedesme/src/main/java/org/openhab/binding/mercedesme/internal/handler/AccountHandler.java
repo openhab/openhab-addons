@@ -417,7 +417,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             capabilitiesMap.put(vin, featureMap);
             return featureMap;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.trace("Error retreiving capabilities: {}", e.getMessage());
+            logger.trace("Error retrieving capabilities: {}", e.getMessage());
             featureMap.clear();
         }
         return featureMap;

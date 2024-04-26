@@ -54,7 +54,7 @@ import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
 @WebSocket
 @NonNullByDefault
 public class MBWebsocket {
-    // timeout 14 Minutes - just below scheduling of 15 Minutes by Accounthandler
+    // timeout 14 Minutes - just below scheduling of 15 Minutes by AccountHandler
     private static final int CONNECT_TIMEOUT_MS = 14 * 60 * 1000;
     // standard runtime of Websocket
     private static final int WS_RUNTIME_MS = 60 * 1000;
@@ -156,7 +156,7 @@ public class MBWebsocket {
         return false;
     }
 
-    private void sendAchnowledgeMessage(ClientMessage message) {
+    private void sendAcknowledgeMessage(ClientMessage message) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             message.writeTo(baos);
@@ -188,7 +188,7 @@ public class MBWebsocket {
             if (!b) {
                 // after keep alive is finished add 5 minutes to cover e.g. door events after trip is finished
                 runTill = Instant.now().plusMillis(KEEP_ALIVE_ADDON);
-                logger.trace("Wbesocket - keep alive stop - run till {}", runTill.toString());
+                logger.trace("Websocket - keep alive stop - run till {}", runTill.toString());
             }
         }
         keepAlive = b;
@@ -208,7 +208,7 @@ public class MBWebsocket {
                     AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
                             .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
                     ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
-                    sendAchnowledgeMessage(cm);
+                    sendAcknowledgeMessage(cm);
                 }
             } else if (pm.hasAssignedVehicles()) {
                 for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
@@ -217,7 +217,7 @@ public class MBWebsocket {
                 }
                 AcknowledgeAssignedVehicles ack = AcknowledgeAssignedVehicles.newBuilder().build();
                 ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeAssignedVehicles(ack).build();
-                sendAchnowledgeMessage(cm);
+                sendAcknowledgeMessage(cm);
             } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
                 AppTwinCommandStatusUpdatesByVIN csubv = pm.getApptwinCommandStatusUpdatesByVin();
                 accountHandler.commandStatusUpdate(csubv.getUpdatesByVinMap());
@@ -225,18 +225,18 @@ public class MBWebsocket {
                         .newBuilder().setSequenceNumber(csubv.getSequenceNumber()).build();
                 ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeApptwinCommandStatusUpdateByVin(ack)
                         .build();
-                sendAchnowledgeMessage(cm);
+                sendAcknowledgeMessage(cm);
             } else if (pm.hasApptwinPendingCommandRequest()) {
                 logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
             } else if (pm.hasDebugMessage()) {
                 logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
             } else {
-                logger.trace("MB Message: {} not handeled", pm.getAllFields());
+                logger.trace("MB Message: {} not handled", pm.getAllFields());
             }
         } catch (IOException e) {
             // don't report thing status errors here.
             // Sometimes messages cannot be decoded which doesn't effect the overall functionality
-            logger.trace("IOEXception {}", e.getMessage());
+            logger.trace("IOException {}", e.getMessage());
         } catch (Error err) {
             logger.trace("Error caught {}", err.getMessage());
         }
@@ -244,7 +244,7 @@ public class MBWebsocket {
 
     @OnWebSocketClose
     public void onDisconnect(Session session, int statusCode, String reason) {
-        logger.debug("Disonnected from server. Status {} Reason {}", statusCode, reason);
+        logger.debug("Disconnected from server. Status {} Reason {}", statusCode, reason);
         this.session = null;
         // ensure execution stop if disconnect was triggered from server side
         interrupt();

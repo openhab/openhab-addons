@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link UOMObserver} responsible to identify Unit and StatePattern for a Mercedes VehcileAttribute
+ * {@link UOMObserver} responsible to identify Unit and StatePattern for a Mercedes VehicleAttribute
  *
  * @author Bernd Weymann - Initial contribution
  */

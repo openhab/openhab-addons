@@ -108,7 +108,7 @@ class StatusTests {
         AccessTokenResponse token = new AccessTokenResponse();
         token.setExpiresIn(3000);
         token.setAccessToken(Constants.JUNIT_TOKEN);
-        token.setRefreshToken(Constants.JUNIT_REFERSH_TOKEN);
+        token.setRefreshToken(Constants.JUNIT_REFRESH_TOKEN);
         ahm.onAccessTokenResponse(token);
         ahm.connect();
         assertEquals(ThingStatus.ONLINE, tcl.getThingStatus().getStatus(), "Auth Online");
@@ -128,7 +128,7 @@ class StatusTests {
         AccessTokenResponse token = new AccessTokenResponse();
         token.setExpiresIn(3000);
         token.setAccessToken(Constants.JUNIT_TOKEN);
-        token.setRefreshToken(Constants.JUNIT_REFERSH_TOKEN);
+        token.setRefreshToken(Constants.JUNIT_REFRESH_TOKEN);
         token.setCreatedOn(Instant.now());
         token.setTokenType("Bearer");
         token.setScope(Constants.SCOPE);

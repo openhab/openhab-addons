@@ -139,13 +139,13 @@ public class AuthService {
             req.header("X-Request-Id", UUID.randomUUID().toString());
 
             // Content URL form
-            String clientid = "client_id="
+            String clientId = "client_id="
                     + URLEncoder.encode(Utils.getLoginAppId(config.region), StandardCharsets.UTF_8.toString());
             String grantAttribute = "grant_type=password";
             String userAttribute = "username=" + URLEncoder.encode(config.email, StandardCharsets.UTF_8.toString());
             String passwordAttribute = "password=" + URLEncoder.encode(password, StandardCharsets.UTF_8.toString());
             String scopeAttribute = "scope=" + URLEncoder.encode(Constants.SCOPE, StandardCharsets.UTF_8.toString());
-            String content = clientid + "&" + grantAttribute + "&" + userAttribute + "&" + passwordAttribute + "&"
+            String content = clientId + "&" + grantAttribute + "&" + userAttribute + "&" + passwordAttribute + "&"
                     + scopeAttribute;
             req.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
             req.content(new StringContentProvider(content));

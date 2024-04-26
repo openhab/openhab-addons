@@ -64,7 +64,7 @@ public class Mapper {
     public static Unit<Volume> defaultVolumeUnit = Units.LITRE;
     public static Unit<Speed> defaultSpeedUnit = SIUnits.KILOMETRE_PER_HOUR;
 
-    public static void initialze(UnitProvider up) {
+    public static void initialize(UnitProvider up) {
         // Configure Mapper default values
         Unit<Length> lengthUnit = up.getUnit(Length.class);
         if (lengthUnit != null) {

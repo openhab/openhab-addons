@@ -57,11 +57,11 @@ public class ChannelStateMap {
         return state;
     }
 
-    public boolean hasUomObersever() {
+    public boolean hasUomObserver() {
         return !uomObserver.isEmpty();
     }
 
-    public UOMObserver getUomObersever() {
+    public UOMObserver getUomObserver() {
         return uomObserver.get();
     }
 

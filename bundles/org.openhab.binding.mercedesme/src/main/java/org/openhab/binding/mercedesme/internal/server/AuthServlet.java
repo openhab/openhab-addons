@@ -62,7 +62,7 @@ public class AuthServlet extends HttpServlet {
             }
 
         } else if (guid != null && pin == null) {
-            // show instert PIN input field
+            // show insert PIN input field
 
             response.setContentType("text/html");
             response.setStatus(HttpServletResponse.SC_OK);

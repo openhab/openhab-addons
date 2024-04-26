@@ -19,7 +19,7 @@
 		<state readOnly="true">
 			<options>
 				<option value="0">Plugged</option>
-				<option value="2">Unlugged</option>
+				<option value="2">Unplugged</option>
 			</options>
 		</state>
 	</channel-type>
@@ -29,7 +29,7 @@
 		<state readOnly="true">
 			<options>
 				<option value="0">Plugged</option>
-				<option value="2">Unlugged</option>
+				<option value="2">Unplugged</option>
 			</options>
 		</state>
 	</channel-type>

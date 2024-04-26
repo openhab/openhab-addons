@@ -345,7 +345,7 @@ public class VehicleHandler extends BaseThingHandler {
             } else if ("aux-heat".equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get("featureAuxHeat");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.trace("Auxiliray Heating not supported");
+                    logger.trace("Auxiliary Heating not supported");
                 } else {
                     if (OnOffType.ON.equals(command)) {
                         AuxheatStart auxHeatStart = AuxheatStart.newBuilder().build();
@@ -418,7 +418,7 @@ public class VehicleHandler extends BaseThingHandler {
                 boolean autoUnlockToSelect = false;
                 String supported = thing.getProperties().get("commandChargeProgramConfigure");
                 if (Boolean.FALSE.toString().equals(supported)) {
-                    logger.trace("Charge Program Cosnfigure not supported");
+                    logger.trace("Charge Program Configure not supported");
                 } else {
                     boolean sendCommand = false;
                     if ("program".equals(channelUID.getIdWithoutGroup())) {
@@ -429,7 +429,7 @@ public class VehicleHandler extends BaseThingHandler {
                                     .getInt(Constants.MAX_SOC_KEY);
                             autoUnlockToSelect = chargeGroupValueStorage
                                     .getJSONObject(Integer.toString(selectedChargeProgram))
-                                    .getBoolean(Constants.AUTOUNLOCK_KEY);
+                                    .getBoolean(Constants.AUTO_UNLOCK_KEY);
                             updateChannel(new ChannelStateMap("max-soc", GROUP_CHARGE,
                                     QuantityType.valueOf(maxSocToSelect, Units.PERCENT)));
                             updateChannel(new ChannelStateMap("auto-unlock", GROUP_CHARGE,
@@ -514,44 +514,44 @@ public class VehicleHandler extends BaseThingHandler {
         if (Boolean.FALSE.toString().equals(supported)) {
             logger.trace("Seat Conditioning not supported");
         } else {
-            com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningConfigureSeats.Builder buidler = ZEVPreconditioningConfigureSeats
+            com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningConfigureSeats.Builder builder = ZEVPreconditioningConfigureSeats
                     .newBuilder();
             if (eventStorage.get("hvac#front-left").getState() != UnDefType.UNDEF
                     && !"hvac#front-left".equals(channelUID.getId())) {
                 OnOffType oot = (OnOffType) eventStorage.get("hvac#front-left").getState();
-                buidler.setFrontLeft(OnOffType.ON.equals(oot));
+                builder.setFrontLeft(OnOffType.ON.equals(oot));
             }
             if (eventStorage.get("hvac#front-right").getState() != UnDefType.UNDEF
                     && !"hvac#front-right".equals(channelUID.getId())) {
                 OnOffType oot = (OnOffType) eventStorage.get("hvac#front-right").getState();
-                buidler.setFrontRight(OnOffType.ON.equals(oot));
+                builder.setFrontRight(OnOffType.ON.equals(oot));
             }
             if (eventStorage.get("hvac#rear-left").getState() != UnDefType.UNDEF
                     && !"hvac#rear-left".equals(channelUID.getId())) {
                 OnOffType oot = (OnOffType) eventStorage.get("hvac#rear-left").getState();
-                buidler.setRearLeft(OnOffType.ON.equals(oot));
+                builder.setRearLeft(OnOffType.ON.equals(oot));
             }
             if (eventStorage.get("hvac#rear-right").getState() != UnDefType.UNDEF
                     && !"hvac#rear-right".equals(channelUID.getId())) {
                 OnOffType oot = (OnOffType) eventStorage.get("hvac#rear-right").getState();
-                buidler.setRearRight(OnOffType.ON.equals(oot));
+                builder.setRearRight(OnOffType.ON.equals(oot));
             }
             // now overwrite command
             switch (channelUID.getId()) {
                 case "hvac#front-left":
-                    buidler.setFrontLeft(OnOffType.ON.equals(command));
+                    builder.setFrontLeft(OnOffType.ON.equals(command));
                     break;
                 case "hvac#front-right":
-                    buidler.setFrontRight(OnOffType.ON.equals(command));
+                    builder.setFrontRight(OnOffType.ON.equals(command));
                     break;
                 case "hvac#rear-left":
-                    buidler.setRearLeft(OnOffType.ON.equals(command));
+                    builder.setRearLeft(OnOffType.ON.equals(command));
                     break;
                 case "hvac#rear-right":
-                    buidler.setRearRight(OnOffType.ON.equals(command));
+                    builder.setRearRight(OnOffType.ON.equals(command));
                     break;
             }
-            ZEVPreconditioningConfigureSeats seats = buidler.build();
+            ZEVPreconditioningConfigureSeats seats = builder.build();
             CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
                     .setRequestId(UUID.randomUUID().toString()).setZevPreconditionConfigureSeats(seats).build();
             ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
@@ -559,8 +559,8 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    public void distributeCommandStatus(AppTwinCommandStatusUpdatesByPID cmdUpadtes) {
-        Map<Long, AppTwinCommandStatus> updates = cmdUpadtes.getUpdatesByPidMap();
+    public void distributeCommandStatus(AppTwinCommandStatusUpdatesByPID cmdUpdates) {
+        Map<Long, AppTwinCommandStatus> updates = cmdUpdates.getUpdatesByPidMap();
         updates.forEach((key, value) -> {
             // Command name
             ChannelStateMap csmCommand = new ChannelStateMap("cmd-name", GROUP_COMMAND,
@@ -628,7 +628,7 @@ public class VehicleHandler extends BaseThingHandler {
                     case "range-electric":
                         if (!Constants.COMBUSTION.equals(vehicleType)) {
                             ChannelStateMap radiusElectric = new ChannelStateMap("radius-electric", GROUP_RANGE,
-                                    guessRangeRadius((QuantityType<Length>) csm.getState()), csm.getUomObersever());
+                                    guessRangeRadius((QuantityType<Length>) csm.getState()), csm.getUomObserver());
                             updateChannel(radiusElectric);
                         } else {
                             block = true;
@@ -638,7 +638,7 @@ public class VehicleHandler extends BaseThingHandler {
                         if (!Constants.BEV.equals(vehicleType)) {
                             QuantityType<Length> fuelRangeState = (QuantityType<Length>) csm.getState();
                             ChannelStateMap radiusFuel = new ChannelStateMap("radius-fuel", GROUP_RANGE,
-                                    guessRangeRadius(fuelRangeState), csm.getUomObersever());
+                                    guessRangeRadius(fuelRangeState), csm.getUomObserver());
                             updateChannel(radiusFuel);
                         } else {
                             block = true;
@@ -648,7 +648,7 @@ public class VehicleHandler extends BaseThingHandler {
                         if (Constants.HYBRID.equals(vehicleType)) {
                             QuantityType<Length> hybridRangeState = (QuantityType<Length>) csm.getState();
                             ChannelStateMap radiusHybrid = new ChannelStateMap("radius-hybrid", GROUP_RANGE,
-                                    guessRangeRadius(hybridRangeState), csm.getUomObersever());
+                                    guessRangeRadius(hybridRangeState), csm.getUomObserver());
                             updateChannel(radiusHybrid);
                         } else {
                             block = true;
@@ -742,7 +742,7 @@ public class VehicleHandler extends BaseThingHandler {
                     updateChannel(new ChannelStateMap("home-distance", Constants.GROUP_RANGE,
                             QuantityType.valueOf(distance / 1000, observer.getUnit().get()), observer));
                 } else {
-                    logger.trace("No kome location found");
+                    logger.trace("No home location found");
                 }
 
             } else {
@@ -842,18 +842,18 @@ public class VehicleHandler extends BaseThingHandler {
             if (atts.containsKey("chargePrograms")) {
                 ChargeProgramsValue cpv = atts.get("chargePrograms").getChargeProgramsValue();
                 if (cpv.getChargeProgramParametersCount() > 0) {
-                    List<ChargeProgramParameters> chareProgeamParameters = cpv.getChargeProgramParametersList();
+                    List<ChargeProgramParameters> chargeProgramParameters = cpv.getChargeProgramParametersList();
                     List<CommandOption> commandOptions = new ArrayList<CommandOption>();
                     List<StateOption> stateOptions = new ArrayList<StateOption>();
                     synchronized (chargeGroupValueStorage) {
                         chargeGroupValueStorage.clear();
-                        chareProgeamParameters.forEach(program -> {
+                        chargeProgramParameters.forEach(program -> {
                             String programName = program.getChargeProgram().name();
                             int number = Utils.getChargeProgramNumber(programName);
                             if (number >= 0) {
                                 JSONObject programValuesJson = new JSONObject();
                                 programValuesJson.put(Constants.MAX_SOC_KEY, program.getMaxSoc());
-                                programValuesJson.put(Constants.AUTOUNLOCK_KEY, program.getAutoUnlock());
+                                programValuesJson.put(Constants.AUTO_UNLOCK_KEY, program.getAutoUnlock());
                                 chargeGroupValueStorage.put(Integer.toString(number), programValuesJson);
                                 commandOptions.add(new CommandOption(Integer.toString(number), programName));
                                 stateOptions.add(new StateOption(Integer.toString(number), programName));
@@ -934,8 +934,8 @@ public class VehicleHandler extends BaseThingHandler {
         /**
          * Check correct channel patterns
          */
-        if (csm.hasUomObersever()) {
-            UOMObserver deliveredObserver = csm.getUomObersever();
+        if (csm.hasUomObserver()) {
+            UOMObserver deliveredObserver = csm.getUomObserver();
             UOMObserver storedObserver = unitStorage.get(channel);
             boolean change = true;
             if (storedObserver != null) {

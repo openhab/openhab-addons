@@ -143,12 +143,12 @@ public class Constants {
     public static final String SCOPE = "openid email phone profile offline_access ciam-uid";
 
     public static final String MAX_SOC_KEY = "maxsoc";
-    public static final String AUTOUNLOCK_KEY = "autolock";
+    public static final String AUTO_UNLOCK_KEY = "autolock";
 
     public static final String CHANNEL_MILEAGE = "mileage";
     public static final String CHANNEL_TEMPERATURE = "temperature";
 
     public static final String JUNIT_SERVER_ADDR = "http://999.999.999.999:99999/mb-auth";
     public static final String JUNIT_TOKEN = "junitTestToken";
-    public static final String JUNIT_REFERSH_TOKEN = "junitRefreshToken";
+    public static final String JUNIT_REFRESH_TOKEN = "junitRefreshToken";
 }

@@ -85,8 +85,8 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         mmsop = sop;
         mmdsdp = dsdp;
 
-        Utils.initialze(tzp, lp);
-        Mapper.initialze(up);
+        Utils.initialize(tzp, lp);
+        Mapper.initialize(up);
         mdAdjuster = new MercedesMeMetadataAdjuster(mdr, iclr, up);
         httpClient = hcf.getCommonHttpClient();
         discoveryService = new MercedesMeDiscoveryService();

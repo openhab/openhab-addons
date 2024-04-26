@@ -79,7 +79,7 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
     private static final List<Integer> PORTS = new ArrayList<Integer>();
-    private static final List<CommandOption> FAHRENHIT_COMMAND_OPTIONS = new ArrayList<CommandOption>();
+    private static final List<CommandOption> FAHRENHEIT_COMMAND_OPTIONS = new ArrayList<CommandOption>();
     private static final List<CommandOption> CELSIUS_COMMAND_OPTIONS = new ArrayList<CommandOption>();
 
     private static final int R = 6371; // Radius of the earth
@@ -101,7 +101,7 @@ public class Utils {
     public static final Map<String, Integer> ZONE_HASHMAP = new HashMap<String, Integer>();
     public static final Map<String, Integer> PROGRAM_HASHMAP = new HashMap<String, Integer>();
 
-    public static void initialze(TimeZoneProvider tzp, LocaleProvider lp) {
+    public static void initialize(TimeZoneProvider tzp, LocaleProvider lp) {
         timeZoneProvider = tzp;
         localeProvider = lp;
     }
@@ -546,34 +546,34 @@ public class Utils {
 
     public static List<CommandOption> getTemperatureOptions(Unit unit) {
         if (ImperialUnits.FAHRENHEIT.equals(unit)) {
-            if (FAHRENHIT_COMMAND_OPTIONS.isEmpty()) {
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("60 °F", "60 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("61 °F", "61 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("62 °F", "62 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("63 °F", "63 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("64 °F", "64 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("65 °F", "65 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("66 °F", "66 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("67 °F", "67 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("68 °F", "68 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("69 °F", "69 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("70 °F", "70 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("71 °F", "71 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("72 °F", "72 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("73 °F", "73 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("74 °F", "74 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("75 °F", "75 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("76 °F", "76 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("77 °F", "77 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("78 °F", "78 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("79 °F", "79 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("80 °F", "80 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("81 °F", "81 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("82 °F", "82 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("83 °F", "83 °F"));
-                FAHRENHIT_COMMAND_OPTIONS.add(new CommandOption("84 °F", "84 °F"));
+            if (FAHRENHEIT_COMMAND_OPTIONS.isEmpty()) {
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("60 °F", "60 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("61 °F", "61 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("62 °F", "62 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("63 °F", "63 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("64 °F", "64 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("65 °F", "65 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("66 °F", "66 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("67 °F", "67 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("68 °F", "68 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("69 °F", "69 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("70 °F", "70 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("71 °F", "71 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("72 °F", "72 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("73 °F", "73 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("74 °F", "74 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("75 °F", "75 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("76 °F", "76 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("77 °F", "77 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("78 °F", "78 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("79 °F", "79 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("80 °F", "80 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("81 °F", "81 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("82 °F", "82 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("83 °F", "83 °F"));
+                FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("84 °F", "84 °F"));
             }
-            return FAHRENHIT_COMMAND_OPTIONS;
+            return FAHRENHEIT_COMMAND_OPTIONS;
         } else if (SIUnits.CELSIUS.equals(unit)) {
             if (CELSIUS_COMMAND_OPTIONS.isEmpty()) {
                 CELSIUS_COMMAND_OPTIONS.add(new CommandOption("16 °C", "16 °C"));
