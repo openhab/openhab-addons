@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -95,8 +96,8 @@ public class HomeStatusModule extends NAThing {
         return sirenStatus;
     }
 
-    public @Nullable String getVpnUrl() {
-        return vpnUrl;
+    public String getVpnUrl() {
+        return Objects.requireNonNull(vpnUrl);
     }
 
     public boolean isLocal() {

@@ -99,7 +99,7 @@ public class CameraChannelHelper extends ChannelHelper {
     }
 
     private State getLiveStreamURL(boolean local, @Nullable String configQual, boolean isMonitoring) {
-        if (!isMonitoring || (local && (localUrl != null))) {
+        if (!isMonitoring || (local && (localUrl == null))) {
             return UnDefType.NULL;
         }
         String finalQual = configQual != null ? configQual : "poor";

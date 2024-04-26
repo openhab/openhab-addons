@@ -87,7 +87,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
         super.updateHomeStatusModule(newData);
         // Per documentation vpn_url expires every 3 hours and on camera reboot. So useless to reping it if not changed
         String newVpnUrl = newData.getVpnUrl();
-        if (newVpnUrl != null && !newVpnUrl.equals(vpnUrl)) {
+        if (!newVpnUrl.equals(vpnUrl)) {
             // This will also decrease the number of requests emitted toward Netatmo API.
             localUrl = newData.isLocal() ? ping(newVpnUrl) : null;
             logger.debug("localUrl set to {} for camera {}", localUrl, thingUID);
