@@ -97,6 +97,11 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         apiConfig = getConfigAs(AirGradientAPIConfiguration.class);
+        if (!apiConfig.isValid()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Need to set hostname to a valid URL. Refresh interval needs to be a positive integer.");
+            return;
+        }
 
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         // the framework is then able to reuse the resources from the thing handler initialization.
@@ -189,7 +194,8 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
                     return parsePrometheus(stringResponse);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.getContentAsString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Status code from service: " + response.getStatus());
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

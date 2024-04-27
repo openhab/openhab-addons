@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.airgradient.internal.config;
 
+import java.net.URI;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -25,4 +27,27 @@ public class AirGradientAPIConfiguration {
     public String hostname = "";
     public String token = "";
     public int refreshInterval = 600;
+
+    public boolean isValid() {
+
+        // hostname must be entered and be a URI
+        if ("".equals(hostname)) {
+            return false;
+        }
+
+        try {
+            URI.create(hostname);
+        } catch (IllegalArgumentException iae) {
+            return false;
+        }
+
+        // token is optional
+
+        // refresh interval is positive integer
+        if (refreshInterval < 0) {
+            return false;
+        }
+
+        return true;
+    }
 }

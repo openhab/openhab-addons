@@ -282,8 +282,8 @@ public class AirGradientAPIHandlerTest {
         sut.setCallback(callbackMock);
         sut.pollingCode();
 
-        verify(callbackMock).statusUpdated(requireNonNull(bridge),
-                new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, null));
+        verify(callbackMock).statusUpdated(requireNonNull(bridge), new ThingStatusInfo(ThingStatus.OFFLINE,
+                ThingStatusDetail.COMMUNICATION_ERROR, "Status code from service: 500"));
     }
 
     @Test
