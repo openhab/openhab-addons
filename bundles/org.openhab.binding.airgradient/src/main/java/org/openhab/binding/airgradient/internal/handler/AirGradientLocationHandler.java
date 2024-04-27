@@ -84,7 +84,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
                         }
                     }
                 } else {
-                    logger.debug(
+                    logger.warn(
                             "Received unknown command {} for calibration on channel {}, which we don't know how to handle",
                             command.toString(), channelUID.getId());
                 }
