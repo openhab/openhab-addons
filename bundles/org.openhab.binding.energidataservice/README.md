@@ -90,6 +90,19 @@ The recommended persistence strategy is `forecast`, as it ensures a clean histor
 Prices from the past 24 hours and all forthcoming prices will be stored.
 Any changes that impact published prices (e.g. selecting or deselecting VAT Profile) will result in the replacement of persisted prices within this period.
 
+##### Manually Persisting History
+
+During extended service interruptions, data unavailability, or openHAB downtime, historic prices may be absent from persistence.
+A console command is provided to fill gaps: `energidataservice update [SpotPrice|GridTariff|SystemTariff|TransmissionGridTariff|ElectricityTax|ReducedElectricitytax] <StartDate> [<EndDate>]`.
+
+Example:
+
+```shell
+energidataservice update spotprice 2024-04-12 2024-04-14
+```
+
+This can also be useful for retrospectively changing the [VAT profile](https://www.openhab.org/addons/transformations/vat/).
+
 #### Grid Tariff
 
 Discounts are automatically taken into account for channel `grid-tariff` so that it represents the actual price.
