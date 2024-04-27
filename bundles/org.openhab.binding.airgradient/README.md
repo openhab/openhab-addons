@@ -67,25 +67,25 @@ To add a location, you need to know the location ID. To get the location ID, you
 
 For more information about the data in the channels, please refer to the models in https://api.airgradient.com/public/docs/api/v1/
 
-| Channel    | Type                 | Read/Write | Description                                                                      |
-|------------|----------------------|------------|----------------------------------------------------------------------------------|
-| pm01       | Number:Density       | Read       | Particulate Matter 1 (0.001mm)                                                   |
-| pm02       | Number:Density       | Read       | Particulate Matter 2 (0.002mm)                                                   |
-| pm10       | Number:Density       | Read       | Particulate Matter 10 (0.01mm)                                                   |
-| pm003Count | Switch               | Read       | The number of particles with a diameter beyond 0.3 microns in 1 deciliter of air |
-| rco2       | Number:Density       | Read       | Carbon dioxide PPM                                                               |
-| tvoc       | Number:Density       | Read       | Total Volatile Organic Compounds                                                 |
-| atmp       | Number:Temperature   | Read       | Ambient Temperature                                                              |
-| rhum       | Number:Dimensionless | Read       | Relative Humidity Percentage                                                     |
-| wifi       | Number               | Read       | Received signal strength indicator                                               |
-| boot       | Number:Dimensionless | Read       | Number of measure uploads since last reboot (boot)                               |
+| Channel     | Type                 | Read/Write | Description                                                                      |
+|-------------|----------------------|------------|----------------------------------------------------------------------------------|
+| pm01        | Number:Density       | Read       | Particulate Matter 1 (0.001mm)                                                   |
+| pm02        | Number:Density       | Read       | Particulate Matter 2 (0.002mm)                                                   |
+| pm10        | Number:Density       | Read       | Particulate Matter 10 (0.01mm)                                                   |
+| pm003-count | Switch               | Read       | The number of particles with a diameter beyond 0.3 microns in 1 deciliter of air |
+| rco2        | Number:Density       | Read       | Carbon dioxide PPM                                                               |
+| tvoc        | Number:Density       | Read       | Total Volatile Organic Compounds                                                 |
+| atmp        | Number:Temperature   | Read       | Ambient Temperature                                                              |
+| rhum        | Number:Dimensionless | Read       | Relative Humidity Percentage                                                     |
+| wifi        | Number               | Read       | Received signal strength indicator                                               |
+| boot        | Number:Dimensionless | Read       | Number of measure uploads since last reboot (boot)                               |
 
 ## Full Example
 
 ### Thing Configuration
 
 ```java
-Bridge airgradient:airgradientapi:home "My Home" [ token="abc123...." ] {
+Bridge airgradient:airgradient-api:home "My Home" [ token="abc123...." ] {
     Thing location      "654321"               "Outside"      [ location="654321" ]
 }
 ```

@@ -29,14 +29,14 @@ public class AirGradientBindingConstants {
     private static final String BINDING_ID = "airgradient";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "airgradientapi");
+    public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "airgradient-api");
     public static final ThingTypeUID THING_TYPE_LOCATION = new ThingTypeUID(BINDING_ID, "location");
 
     // List of all Channel ids
     public static final String CHANNEL_PM_01 = "pm01";
     public static final String CHANNEL_PM_02 = "pm02";
     public static final String CHANNEL_PM_10 = "pm10";
-    public static final String CHANNEL_PM_003_COUNT = "pm003Count";
+    public static final String CHANNEL_PM_003_COUNT = "pm003-count";
     public static final String CHANNEL_ATMP = "atmp";
     public static final String CHANNEL_RHUM = "rhum";
     public static final String CHANNEL_WIFI = "wifi";
@@ -44,7 +44,7 @@ public class AirGradientBindingConstants {
     public static final String CHANNEL_TVOC = "tvoc";
     public static final String CHANNEL_LEDS_MODE = "leds";
     public static final String CHANNEL_CALIBRATION = "calibration";
-    public static final String CHANNEL_BOOT = "boot";
+    public static final String CHANNEL_UPLOADS_SINCE_BOOT = "uploads-since-boot";
 
     // List of all properties
     public static final String PROPERTY_NAME = "name";

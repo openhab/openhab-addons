@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="airgradientapi">
+	<bridge-type id="airgradient-api">
 		<label>AirGradient API</label>
 		<description>Connection to the AirGradient API</description>
 
@@ -34,7 +34,7 @@
 	<!-- Sample Thing Type -->
 	<thing-type id="location">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="airgradientapi"/>
+			<bridge-type-ref id="airgradient-api"/>
 		</supported-bridge-type-refs>
 
 		<label>AirGradient Location</label>
@@ -44,7 +44,7 @@
 			<channel id="pm01" typeId="pm1"/>
 			<channel id="pm02" typeId="pm2"/>
 			<channel id="pm10" typeId="pm10"/>
-			<channel id="pm003Count" typeId="particle-count"/>
+			<channel id="pm003-count" typeId="particle-count"/>
 			<channel id="atmp" typeId="system.outdoor-temperature"/>
 			<channel id="rhum" typeId="system.atmospheric-humidity"/>
 			<channel id="wifi" typeId="wifi"/>
@@ -52,7 +52,7 @@
 			<channel id="tvoc" typeId="tvoc"/>
 			<channel id="leds" typeId="leds-mode"/>
 			<channel id="calibration" typeId="calibration"/>
-			<channel id="boot" typeId="boot"/>
+			<channel id="uploads-since-boot" typeId="uploads-since-boot"/>
 		</channels>
 
 		<properties>
@@ -120,7 +120,7 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="boot">
+	<channel-type id="uploads-since-boot">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Upload count</label>
 		<description>Number of uploads since last reboot (boot)</description>
