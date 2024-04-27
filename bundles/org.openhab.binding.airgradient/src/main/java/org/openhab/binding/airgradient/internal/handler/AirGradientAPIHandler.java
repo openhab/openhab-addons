@@ -101,7 +101,6 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
         scheduler.execute(() -> {
             try {
                 ContentResponse response = httpClient.GET(generatePingUrl());
