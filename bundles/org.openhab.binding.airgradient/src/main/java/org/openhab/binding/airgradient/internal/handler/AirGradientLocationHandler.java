@@ -94,7 +94,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
             }
         } else {
             // This is read only
-            logger.debug("Received command {} for channel {}, which we don't know how to handle", command.toString(),
+            logger.warn("Received command {} for channel {}, which we don't know how to handle", command.toString(),
                     channelUID.getId());
         }
     }
