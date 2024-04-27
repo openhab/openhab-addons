@@ -13,7 +13,6 @@ This API is documented at https://api.airgradient.com/public/docs/api/v1/
 ![AirGradient sensors](doc/airgradient_sensors.png)
 
 This binding supports all the different AirGradient sensors, providing most of the sensor data.
-If you are missing something, please let the author know.
 
 - `bridge`: Connection to the API
 - `location`: Location in the API to read values for
