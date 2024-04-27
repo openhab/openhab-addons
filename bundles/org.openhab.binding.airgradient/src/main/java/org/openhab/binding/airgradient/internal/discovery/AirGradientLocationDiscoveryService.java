@@ -58,7 +58,6 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
 
     public AirGradientLocationDiscoveryService() {
         super(Set.of(THING_TYPE_LOCATION), SEARCH_TIME, BACKGROUND_DISCOVERY);
-        logger.debug("Constructing discovery service");
     }
 
     @Override
