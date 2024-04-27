@@ -87,7 +87,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
             pollingCode();
         } else {
             // This is read only
-            logger.debug("Received command {} for channel {}, but the API is read only", command.toString(),
+            logger.warn("Received command {} for channel {}, but the API is read only", command.toString(),
                     channelUID.getId());
         }
     }
