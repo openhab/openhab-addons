@@ -51,8 +51,6 @@ To add a location, you need to know the location ID. To get the location ID, you
 2. Navigate to Locations from the upper left hamburger menu.
 3. Here you will find a list of all of your sensors, with a location ID in the left column. Use that id when you add new Location things.
 
-
-
 ### `API` Thing Configuration
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
