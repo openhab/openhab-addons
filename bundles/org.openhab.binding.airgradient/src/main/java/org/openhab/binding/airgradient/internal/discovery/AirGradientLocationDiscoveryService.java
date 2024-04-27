@@ -34,6 +34,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
@@ -62,7 +63,13 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
 
     @Override
     protected void startScan() {
-        ThingUID bridgeUid = apiHandler.getThing().getHandler().getThing().getUID();
+        BridgeHandler bridge = apiHandler.getThing().getHandler();
+        if (bridge == null) {
+            logger.debug("Missing bridge, can't start scan.");
+            return;
+        }
+
+        ThingUID bridgeUid = bridge.getThing().getUID();
         logger.debug("Starting Location discovery for bridge {}", bridgeUid);
 
         List<Measure> measures = apiHandler.getMeasures();

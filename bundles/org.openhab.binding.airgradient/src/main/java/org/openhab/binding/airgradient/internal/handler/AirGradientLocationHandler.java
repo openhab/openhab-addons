@@ -14,7 +14,7 @@ package org.openhab.binding.airgradient.internal.handler;
 
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.*;
 
-import java.util.function.Function;
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +32,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,18 +127,25 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         updateProperty(PROPERTY_NAME, measure.locationName);
         updateProperty(PROPERTY_SERIAL_NO, measure.serialno);
 
-        updateStateNullSafe(CHANNEL_ATMP, measure.atmp, (d) -> new QuantityType<>(d, SIUnits.CELSIUS));
-        updateStateNullSafe(CHANNEL_PM_003_COUNT, measure.pm003Count, (d) -> new QuantityType<>(d, Units.ONE));
-        updateStateNullSafe(CHANNEL_PM_01, measure.pm01, (d) -> new QuantityType<>(d, Units.MICROGRAM_PER_CUBICMETRE));
-        updateStateNullSafe(CHANNEL_PM_02, measure.pm02, (d) -> new QuantityType<>(d, Units.MICROGRAM_PER_CUBICMETRE));
-        updateStateNullSafe(CHANNEL_PM_10, measure.pm10, (d) -> new QuantityType<>(d, Units.MICROGRAM_PER_CUBICMETRE));
-        updateStateNullSafe(CHANNEL_RCO2, measure.rco2,
-                (d) -> new QuantityType<>(d.longValue(), Units.PARTS_PER_MILLION));
-        updateStateNullSafe(CHANNEL_RHUM, measure.rhum, (d) -> new QuantityType<>(d, Units.PERCENT));
-        updateStateNullSafe(CHANNEL_TVOC, measure.tvoc,
-                (d) -> new QuantityType<>(d.longValue(), Units.PARTS_PER_BILLION));
-        updateStateNullSafe(CHANNEL_WIFI, measure.wifi, (d) -> new QuantityType<>(d, Units.DECIBEL_MILLIWATTS));
-        updateStateNullSafe(CHANNEL_LEDS_MODE, measure.ledMode, (s) -> StringType.valueOf(s));
+        updateMeasurement(CHANNEL_ATMP, toQuantityType(measure.atmp, SIUnits.CELSIUS));
+        updateMeasurement(CHANNEL_PM_003_COUNT, toQuantityType(measure.pm003Count, Units.ONE));
+        updateMeasurement(CHANNEL_PM_01, toQuantityType(measure.pm01, Units.MICROGRAM_PER_CUBICMETRE));
+        updateMeasurement(CHANNEL_PM_02, toQuantityType(measure.pm02, Units.MICROGRAM_PER_CUBICMETRE));
+        updateMeasurement(CHANNEL_PM_10, toQuantityType(measure.pm10, Units.MICROGRAM_PER_CUBICMETRE));
+        updateMeasurement(CHANNEL_RHUM, toQuantityType(measure.rhum, Units.PERCENT));
+
+        Double rco2 = measure.rco2;
+        if (rco2 != null) {
+            updateMeasurement(CHANNEL_RCO2, toQuantityType(rco2.longValue(), Units.PARTS_PER_MILLION));
+        }
+
+        Double tvoc = measure.tvoc;
+        if (tvoc != null) {
+            updateMeasurement(CHANNEL_TVOC, toQuantityType(tvoc.longValue(), Units.PARTS_PER_BILLION));
+        }
+
+        updateMeasurement(CHANNEL_WIFI, toQuantityType(measure.wifi, Units.DECIBEL_MILLIWATTS));
+        updateMeasurement(CHANNEL_LEDS_MODE, toStringType(measure.ledMode));
     }
 
     public void setLedMode(String ledMode) {
@@ -146,33 +154,20 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         updateState(ledsChannel, StringType.valueOf(ledMode));
     }
 
-    private void updateStateNullSafe(String channelName, @Nullable Double measure,
-            Function<Double, QuantityType<?>> valueFunc) {
-        if (measure == null) {
-            updateState(channelName, UnDefType.NULL);
-        } else {
-            ChannelUID channelUid = new ChannelUID(thing.getUID(), channelName);
-            if (isLinked(channelUid)) {
-                QuantityType<?> v = valueFunc.apply(measure);
-                logger.debug("Setting Channel {} to: {}", channelUid, v);
-                updateState(channelName, v);
-            }
+    private void updateMeasurement(String channelName, State state) {
+        ChannelUID channelUid = new ChannelUID(thing.getUID(), channelName);
+        if (isLinked(channelUid)) {
+            logger.debug("Setting Channel {} to: {}", channelUid, state);
+            updateState(channelName, state);
         }
     }
 
-    private void updateStateNullSafe(String channelName, @Nullable String value,
-            Function<String, StringType> valueFunc) {
-        if (value == null) {
-            logger.debug("Channel name {} is {}", channelName, value);
-            updateState(channelName, UnDefType.NULL);
-        } else {
-            ChannelUID channelUid = new ChannelUID(thing.getUID(), channelName);
-            if (isLinked(channelUid)) {
-                StringType v = valueFunc.apply(value);
-                logger.debug("Setting Channel {} to: {}", channelUid, v);
-                updateState(channelName, v);
-            }
-        }
+    public static State toQuantityType(@Nullable Number value, Unit<?> unit) {
+        return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
+    }
+
+    public static State toStringType(@Nullable String value) {
+        return value == null ? UnDefType.NULL : StringType.valueOf(value);
     }
 
     /**
