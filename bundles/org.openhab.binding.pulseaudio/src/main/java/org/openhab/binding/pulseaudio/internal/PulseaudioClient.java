@@ -396,6 +396,7 @@ public class PulseaudioClient {
         do {
             int simpleTcpPortToTry = new Random().nextInt(minPort, maxPort + 1);
             if (filterSimpleProtocolTCPModules(m -> m.getPort() == simpleTcpPortToTry).findAny().isPresent()) {
+                currentTry++;
                 logger.warn("port {} already in use in the server, retrying random port generation",
                         simpleTcpPortToTry);
                 continue;
