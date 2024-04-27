@@ -133,8 +133,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         Map<String, Measure> measureMap = measures.stream().collect(Collectors.toMap((m) -> getMeasureId(m), (m) -> m));
 
         for (Thing t : getThing().getThings()) {
-            AirGradientLocationHandler handler = (AirGradientLocationHandler) t.getHandler();
-            if (handler != null) {
+            if (t.getHandler() instanceof AirGradientLocationHandler  handler) {
                 String locationId = handler.getLocationId();
                 @Nullable
                 Measure measure = measureMap.get(locationId);
