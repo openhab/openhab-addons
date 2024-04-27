@@ -141,4 +141,7 @@ public class Measure {
 
     @Nullable
     public String ledCo2ThresholdEnd;
+
+    @Nullable
+    public Long boot; // Number of times sensor has uploaded data since last reboot
 }

@@ -83,6 +83,7 @@ For more information about the data in the channels, please refer to the models 
 | atmp       | Number:Temperature   | Read       | Ambient Temperature                                                              |
 | rhum       | Number:Dimensionless | Read       | Relative Humidity Percentage                                                     |
 | wifi       | Number               | Read       | Received signal strength indicator                                               |
+| boot       | Number:Dimensionless | Read       | Number of measure uploads since last reboot (boot)                               |
 
 ## Full Example
 

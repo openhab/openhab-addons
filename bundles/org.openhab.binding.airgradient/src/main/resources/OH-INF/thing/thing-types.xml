@@ -52,6 +52,7 @@
 			<channel id="tvoc" typeId="tvoc"/>
 			<channel id="leds" typeId="leds-mode"/>
 			<channel id="calibration" typeId="calibration"/>
+			<channel id="boot" typeId="boot"/>
 		</channels>
 
 		<properties>
@@ -117,6 +118,13 @@
 		<label>TVOC</label>
 		<description>Total Volatile Organic Compounds</description>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="boot">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Upload count</label>
+		<description>Number of uploads since last reboot (boot)</description>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="leds-mode">

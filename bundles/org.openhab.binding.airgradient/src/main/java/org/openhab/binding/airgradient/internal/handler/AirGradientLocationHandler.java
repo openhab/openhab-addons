@@ -133,6 +133,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         updateMeasurement(CHANNEL_PM_02, toQuantityType(measure.pm02, Units.MICROGRAM_PER_CUBICMETRE));
         updateMeasurement(CHANNEL_PM_10, toQuantityType(measure.pm10, Units.MICROGRAM_PER_CUBICMETRE));
         updateMeasurement(CHANNEL_RHUM, toQuantityType(measure.rhum, Units.PERCENT));
+        updateMeasurement(CHANNEL_BOOT, toQuantityType(measure.boot, Units.ONE));
 
         Double rco2 = measure.rco2;
         if (rco2 != null) {

@@ -42,6 +42,7 @@ public class AirGradientBindingConstants {
     public static final String CHANNEL_TVOC = "tvoc";
     public static final String CHANNEL_LEDS_MODE = "leds";
     public static final String CHANNEL_CALIBRATION = "calibration";
+    public static final String CHANNEL_BOOT = "boot";
 
     // List of all properties
     public static final String PROPERTY_NAME = "name";
