@@ -155,8 +155,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         List<Thing> things = getThing().getThings();
         List<String> results = new ArrayList<>(things.size());
         for (Thing t : things) {
-            AirGradientLocationHandler handler = (AirGradientLocationHandler) t.getHandler();
-            if (handler != null) {
+            if (t.getHandler() instanceof AirGradientLocationHandler  handler) {
                 results.add(handler.getLocationId());
             }
         }
