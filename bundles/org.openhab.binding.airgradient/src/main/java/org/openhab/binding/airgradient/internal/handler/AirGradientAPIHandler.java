@@ -75,6 +75,8 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private final Gson gson;
 
+    private @NonNullByDefault({}) AirGradientAPIConfiguration apiConfig = null;
+
     public AirGradientAPIHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
@@ -94,7 +96,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        AirGradientAPIConfiguration config = getConfiguration();
+        apiConfig = getConfigAs(AirGradientAPIConfiguration.class);
 
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         // the framework is then able to reuse the resources from the thing handler initialization.
@@ -115,7 +117,8 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
             }
         });
 
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 5, config.refreshInterval, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 5, apiConfig.refreshInterval,
+                TimeUnit.SECONDS);
     }
 
     private static String getMeasureId(Measure measure) {
@@ -330,46 +333,42 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> p = pollingJob;
-        if (p != null) {
-            p.cancel(true);
-            pollingJob = null;
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            this.pollingJob = null;
         }
     }
 
     private @Nullable String generatePingUrl() {
-        AirGradientAPIConfiguration config = getConfiguration();
-        if (hasCloudUrl(config)) {
-            return config.hostname + PING_PATH;
+        if (hasCloudUrl()) {
+            return apiConfig.hostname + PING_PATH;
         } else {
-            return config.hostname;
+            return apiConfig.hostname;
         }
     }
 
     private @Nullable String generateMeasuresUrl() {
-        AirGradientAPIConfiguration config = getConfiguration();
-        if (hasCloudUrl(config)) {
-            return config.hostname + String.format(CURRENT_MEASURES_PATH, config.token);
+        if (hasCloudUrl()) {
+            return apiConfig.hostname + String.format(CURRENT_MEASURES_PATH, apiConfig.token);
         } else {
-            return config.hostname;
+            return apiConfig.hostname;
         }
     }
 
     private @Nullable String generateCalibrationCo2Url(String serialNo) {
-        AirGradientAPIConfiguration config = getConfiguration();
-        if (hasCloudUrl(config)) {
-            return config.hostname + String.format(CALIBRATE_CO2_PATH, serialNo, config.token);
+        if (hasCloudUrl()) {
+            return apiConfig.hostname + String.format(CALIBRATE_CO2_PATH, serialNo, apiConfig.token);
         } else {
-            return config.hostname;
+            return apiConfig.hostname;
         }
     }
 
     private @Nullable String generateGetLedsModeUrl(String serialNo) {
-        AirGradientAPIConfiguration config = getConfiguration();
-        if (hasCloudUrl(config)) {
-            return config.hostname + String.format(LEDS_MODE_PATH, serialNo, config.token);
+        if (hasCloudUrl()) {
+            return apiConfig.hostname + String.format(LEDS_MODE_PATH, serialNo, apiConfig.token);
         } else {
-            return config.hostname;
+            return apiConfig.hostname;
         }
     }
 
@@ -378,13 +377,13 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
      *
      * @return true if this is a URL against the cloud API
      */
-    private boolean hasCloudUrl(AirGradientAPIConfiguration config) {
-        URI url = URI.create(config.hostname);
+    private boolean hasCloudUrl() {
+        URI url = URI.create(apiConfig.hostname);
         return url.getPath().equals("/");
     }
 
-    private AirGradientAPIConfiguration getConfiguration() {
-        return getConfigAs(AirGradientAPIConfiguration.class);
+    protected void setConfiguration(AirGradientAPIConfiguration config) {
+        this.apiConfig = config;
     }
 
     private @Nullable ContentResponse restCall(@Nullable String url)

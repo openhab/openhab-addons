@@ -30,7 +30,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfiguration;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -156,12 +155,9 @@ public class AirGradientAPIHandlerTest {
         bridge = Mockito.mock(Bridge.class);
         httpClientMock = Mockito.mock(HttpClient.class);
         requestMock = Mockito.mock(Request.class);
-        Configuration configuration = Mockito.mock(Configuration.class);
-
-        Mockito.when(bridge.getConfiguration()).thenReturn(requireNonNull(configuration));
-        Mockito.when(configuration.as(AirGradientAPIConfiguration.class)).thenReturn(TEST_CONFIG);
 
         sut = new AirGradientAPIHandler(requireNonNull(bridge), requireNonNull(httpClientMock));
+        sut.setConfiguration(TEST_CONFIG);
     }
 
     @Test

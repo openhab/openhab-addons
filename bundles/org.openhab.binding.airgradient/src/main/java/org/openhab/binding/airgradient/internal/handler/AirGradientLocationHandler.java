@@ -48,6 +48,8 @@ public class AirGradientLocationHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AirGradientLocationHandler.class);
 
+    private @NonNullByDefault({}) AirGradientLocationConfiguration locationConfig = null;
+
     public AirGradientLocationHandler(Thing thing) {
         super(thing);
     }
@@ -102,6 +104,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         // the framework is then able to reuse the resources from the thing handler initialization.
         // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
+        locationConfig = getConfigAs(AirGradientLocationConfiguration.class);
 
         Bridge controller = getBridge();
         if (controller == null) {
@@ -114,8 +117,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
     }
 
     public String getLocationId() {
-        AirGradientLocationConfiguration config = getConfigAs(AirGradientLocationConfiguration.class);
-        return config.location;
+        return locationConfig.location;
     }
 
     public void setMeasurment(String locationId, Measure measure) {
@@ -154,7 +156,6 @@ public class AirGradientLocationHandler extends BaseThingHandler {
     private void updateMeasurement(String channelName, State state) {
         ChannelUID channelUid = new ChannelUID(thing.getUID(), channelName);
         if (isLinked(channelUid)) {
-            logger.debug("Setting Channel {} to: {}", channelUid, state);
             updateState(channelName, state);
         }
     }
