@@ -5,6 +5,20 @@
 
 	<type>binding</type>
 	<name>AirGradient Binding</name>
-	<description>This is the binding for AirGradient.</description>
+	<description>This is the binding for AirGradient air quality sensors.</description>
+	<connection>hybrid</connection>
+	<!-- <countries/> All -->
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_airgradient._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>
