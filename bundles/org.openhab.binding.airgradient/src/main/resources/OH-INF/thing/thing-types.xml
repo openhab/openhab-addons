@@ -45,8 +45,8 @@
 			<channel id="pm02" typeId="pm2"/>
 			<channel id="pm10" typeId="pm10"/>
 			<channel id="pm003Count" typeId="particle-count"/>
-			<channel id="atmp" typeId="temperature"/>
-			<channel id="rhum" typeId="humidity"/>
+			<channel id="atmp" typeId="system.outdoor-temperature"/>
+			<channel id="rhum" typeId="system.atmospheric-humidity"/>
 			<channel id="wifi" typeId="wifi"/>
 			<channel id="rco2" typeId="co2"/>
 			<channel id="tvoc" typeId="tvoc"/>
@@ -95,22 +95,6 @@
 		<label>Particle Count</label>
 		<description>Count of particles in 1 decilitre of air</description>
 		<state readOnly="true" pattern="%d"/>
-	</channel-type>
-
-	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Temperature</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<description>Humidity</description>
-		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="wifi">
