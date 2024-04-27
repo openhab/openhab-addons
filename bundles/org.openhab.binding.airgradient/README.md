@@ -19,7 +19,7 @@ This binding supports all the different AirGradient sensors, providing most of t
 
 ## Discovery
 
-Auto-discovery of locations is implemented.
+Autodiscovery of locations is implemented.
 Start by adding an AirGradient API thing.
 When that is added and online, run a scan for new things in the AirGradient binding.
 
