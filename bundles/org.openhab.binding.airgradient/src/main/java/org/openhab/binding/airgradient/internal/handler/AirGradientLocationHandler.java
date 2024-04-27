@@ -58,8 +58,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             Bridge bridge = getBridge();
             if (bridge != null) {
-                AirGradientAPIHandler handler = (AirGradientAPIHandler) bridge.getHandler();
-                if (handler != null) {
+                if (bridge.getHandler() instanceof AirGradientAPIHandler handler) {
                     handler.pollingCode();
                 }
             }
