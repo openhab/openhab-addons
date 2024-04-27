@@ -391,7 +391,6 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        logger.debug("Getting supported services");
         return Set.of(AirGradientLocationDiscoveryService.class);
     }
 }
