@@ -61,6 +61,7 @@ Once the system location will be changed, the background discovery updates the c
 |-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | apikey          | API key to access the OpenWeatherMap API. **Mandatory**                                                                                                                                                                                                                           |
 | refreshInterval | Specifies the refresh interval (in minutes). Optional, the default value is 60, the minimum value is 1.                                                                                                                                                                           |
+| apiVersion      | Set API version to use, new generated OpenWeather accounts may use 3.0, older can try 2.5. Valid values are: `2.5`, `3.0`.                                                                                                                                                        |
 | language        | Language to be used by the OpenWeatherMap API. Optional, valid values are: `ar`, `bg`, `ca`, `de`, `el`, `en`, `es`, `fa`, `fi`, `fr`, `gl`, `hr`, `hu`, `it`, `ja`, `kr`, `la`, `lt`, `mk`,  `nl`, `pl`, `pt`, `ro`, `ru`, `se`, `sk`, `sl`, `tr`, `ua`, `vi`, `zh_cn`, `zh_tw`. |
 
 ### Current Weather And Forecast
@@ -287,10 +288,11 @@ Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="AAA", re
 #### One Call API Version
 
 ```java
-Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="Add your API key", refreshInterval=60, language="de"] {
+Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="Add your API key", refreshInterval=60, language="de", apiVersion="2.5"] {
     Thing onecall local "Local Weather and Forecast" [location="xxx,yyy"]
     Thing onecall-history local-history "Local History" [location="xxx,yyy", historyDay=1]
 }
+If you create a new OpenWeather account, you maybe need to set the api version to 3.0. 
 ```
 
 ### Items
