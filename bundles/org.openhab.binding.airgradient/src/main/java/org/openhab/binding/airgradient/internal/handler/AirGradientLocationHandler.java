@@ -67,8 +67,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
             if (command instanceof StringType stringCommand) {
                 Bridge bridge = getBridge();
                 if (bridge != null) {
-                    AirGradientAPIHandler handler = (AirGradientAPIHandler) bridge.getHandler();
-                    if (handler != null) {
+                    if (bridge.getHandler() instanceof AirGradientAPIHandler handler) {
                         handler.setLedMode(getSerialNo(), stringCommand.toFullString());
                     }
                 }
