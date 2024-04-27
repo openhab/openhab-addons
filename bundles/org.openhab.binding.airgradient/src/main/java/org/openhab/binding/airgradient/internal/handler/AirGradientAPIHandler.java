@@ -108,20 +108,6 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.execute(() -> {
-            try {
-                ContentResponse response = restCall(generatePingUrl());
-                if (isSuccess(response)) {
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            response.getContentAsString());
-                }
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        });
-
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 5, apiConfig.refreshInterval,
                 TimeUnit.SECONDS);
     }
@@ -343,14 +329,6 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         if (pollingJob != null) {
             pollingJob.cancel(true);
             this.pollingJob = null;
-        }
-    }
-
-    private @Nullable String generatePingUrl() {
-        if (hasCloudUrl()) {
-            return apiConfig.hostname + PING_PATH;
-        } else {
-            return apiConfig.hostname;
         }
     }
 
