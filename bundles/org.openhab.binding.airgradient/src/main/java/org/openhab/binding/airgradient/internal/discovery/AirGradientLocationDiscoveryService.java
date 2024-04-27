@@ -57,7 +57,7 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
     private @NonNullByDefault({}) AirGradientAPIHandler apiHandler;
 
     public AirGradientLocationDiscoveryService() {
-        super(Set.of(THING_TYPE_LOCATION), SEARCH_TIME, BACKGROUND_DISCOVERY);
+        super(Set.of(THING_TYPE_LOCATION), (int) SEARCH_TIME.getSeconds(), BACKGROUND_DISCOVERY);
     }
 
     @Override

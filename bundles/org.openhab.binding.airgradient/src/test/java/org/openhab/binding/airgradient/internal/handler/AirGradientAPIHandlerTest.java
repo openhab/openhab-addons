@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -147,10 +148,14 @@ public class AirGradientAPIHandlerTest {
     @Nullable
     HttpClient httpClientMock;
 
+    @Nullable
+    Request requestMock;
+
     @BeforeEach
     public void setUp() {
         bridge = Mockito.mock(Bridge.class);
         httpClientMock = Mockito.mock(HttpClient.class);
+        requestMock = Mockito.mock(Request.class);
         Configuration configuration = Mockito.mock(Configuration.class);
 
         Mockito.when(bridge.getConfiguration()).thenReturn(requireNonNull(configuration));
@@ -168,7 +173,8 @@ public class AirGradientAPIHandlerTest {
     @Test
     public void testGetMeasuresNone() throws Exception {
         ContentResponse response = Mockito.mock(ContentResponse.class);
-        Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
+        Mockito.when(httpClientMock.newRequest(anyString())).thenReturn(requestMock);
+        Mockito.when(requestMock.send()).thenReturn(response);
         Mockito.when(response.getMediaType()).thenReturn("application/json");
         Mockito.when(response.getStatus()).thenReturn(500);
 
@@ -179,7 +185,8 @@ public class AirGradientAPIHandlerTest {
     @Test
     public void testGetMeasuresSingle() throws Exception {
         ContentResponse response = Mockito.mock(ContentResponse.class);
-        Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
+        Mockito.when(httpClientMock.newRequest(anyString())).thenReturn(requestMock);
+        Mockito.when(requestMock.send()).thenReturn(response);
         Mockito.when(response.getStatus()).thenReturn(200);
         Mockito.when(response.getMediaType()).thenReturn("application/json");
         Mockito.when(response.getContentAsString()).thenReturn(SINGLE_CONTENT);
@@ -193,7 +200,8 @@ public class AirGradientAPIHandlerTest {
     @Test
     public void testGetMeasuresMulti() throws Exception {
         ContentResponse response = Mockito.mock(ContentResponse.class);
-        Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
+        Mockito.when(httpClientMock.newRequest(anyString())).thenReturn(requestMock);
+        Mockito.when(requestMock.send()).thenReturn(response);
         Mockito.when(response.getStatus()).thenReturn(200);
         Mockito.when(response.getMediaType()).thenReturn("application/json");
         Mockito.when(response.getContentAsString()).thenReturn(MULTI_CONTENT);
@@ -208,7 +216,8 @@ public class AirGradientAPIHandlerTest {
     @Test
     public void testGetMeasuresMulti2() throws Exception {
         ContentResponse response = Mockito.mock(ContentResponse.class);
-        Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
+        Mockito.when(httpClientMock.newRequest(anyString())).thenReturn(requestMock);
+        Mockito.when(requestMock.send()).thenReturn(response);
         Mockito.when(response.getStatus()).thenReturn(200);
         Mockito.when(response.getMediaType()).thenReturn("application/json");
         Mockito.when(response.getContentAsString()).thenReturn(MULTI_CONTENT2);
@@ -223,7 +232,8 @@ public class AirGradientAPIHandlerTest {
     @Test
     public void testGetMeasuresPrometheus() throws Exception {
         ContentResponse response = Mockito.mock(ContentResponse.class);
-        Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
+        Mockito.when(httpClientMock.newRequest(anyString())).thenReturn(requestMock);
+        Mockito.when(requestMock.send()).thenReturn(response);
         Mockito.when(response.getStatus()).thenReturn(200);
         Mockito.when(response.getMediaType()).thenReturn("text/plain");
         Mockito.when(response.getContentAsString()).thenReturn(PROMETHEUS_CONTENT);
@@ -245,7 +255,8 @@ public class AirGradientAPIHandlerTest {
     @Test
     public void testGetMeasuresOpenMetrics() throws Exception {
         ContentResponse response = Mockito.mock(ContentResponse.class);
-        Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
+        Mockito.when(httpClientMock.newRequest(anyString())).thenReturn(requestMock);
+        Mockito.when(requestMock.send()).thenReturn(response);
         Mockito.when(response.getStatus()).thenReturn(200);
         Mockito.when(response.getMediaType()).thenReturn("application/openmetrics-text");
         Mockito.when(response.getContentAsString()).thenReturn(OPEN_METRICS_CONTENT);
@@ -267,7 +278,8 @@ public class AirGradientAPIHandlerTest {
     @Test
     public void testPollNoData() throws Exception {
         ContentResponse response = Mockito.mock(ContentResponse.class);
-        Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
+        Mockito.when(httpClientMock.newRequest(anyString())).thenReturn(requestMock);
+        Mockito.when(requestMock.send()).thenReturn(response);
         Mockito.when(response.getStatus()).thenReturn(500);
         ThingHandlerCallback callbackMock = Mockito.mock(ThingHandlerCallback.class);
 
@@ -281,7 +293,8 @@ public class AirGradientAPIHandlerTest {
     @Test
     public void testPollHasData() throws Exception {
         ContentResponse response = Mockito.mock(ContentResponse.class);
-        Mockito.when(httpClientMock.GET(anyString())).thenReturn(response);
+        Mockito.when(httpClientMock.newRequest(anyString())).thenReturn(requestMock);
+        Mockito.when(requestMock.send()).thenReturn(response);
         Mockito.when(response.getStatus()).thenReturn(200);
         Mockito.when(response.getContentAsString()).thenReturn(MULTI_CONTENT);
         ThingHandlerCallback callbackMock = Mockito.mock(ThingHandlerCallback.class);

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.airgradient.internal;
 
+import java.time.Duration;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -63,12 +65,15 @@ public class AirGradientBindingConstants {
     public static final String CALIBRATE_CO2_PATH = "/public/api/v1/sensors/%s/co2/calibration?token=%s";
 
     // Discovery
-    public static final int SEARCH_TIME = 15;
+    public static final Duration SEARCH_TIME = Duration.ofSeconds(15);
     public static final boolean BACKGROUND_DISCOVERY = true;
-    public static final int DEFAULT_POLL_INTERVAL_LOCAL = 10; // Seconds
+    public static final Duration DEFAULT_POLL_INTERVAL_LOCAL = Duration.ofSeconds(10);
 
     // Media types
     public static final String CONTENTTYPE_JSON = "application/json";
     public static final String CONTENTTYPE_TEXT = "text/plain";
     public static final String CONTENTTYPE_OPENMETRICS = "application/openmetrics-text";
+
+    // Communication
+    public static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(10);
 }

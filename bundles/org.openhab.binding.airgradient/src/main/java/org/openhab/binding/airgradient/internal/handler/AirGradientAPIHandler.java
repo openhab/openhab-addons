@@ -103,8 +103,8 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
         scheduler.execute(() -> {
             try {
-                ContentResponse response = httpClient.GET(generatePingUrl());
-                if (response.getStatus() == 200) {
+                ContentResponse response = restCall(generatePingUrl());
+                if (isSuccess(response)) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -170,11 +170,11 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
      */
     public List<Measure> getMeasures() {
         try {
-            ContentResponse response = httpClient.GET(generateMeasuresUrl());
+            ContentResponse response = restCall(generateMeasuresUrl());
             String contentType = response.getMediaType();
             logger.debug("Got measurements with status {}: {} ({})", response.getStatus(),
                     response.getContentAsString(), contentType);
-            if (response.getStatus() == 200) {
+            if (isSuccess(response)) {
                 updateStatus(ThingStatus.ONLINE);
                 String stringResponse = response.getContentAsString().trim();
 
@@ -197,6 +197,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     public void setLedMode(String serialNo, String mode) {
         Request request = httpClient.newRequest(generateGetLedsModeUrl(serialNo));
+        request.timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
         request.method(HttpMethod.PUT);
         request.header(HttpHeader.CONTENT_TYPE, CONTENTTYPE_JSON);
         LedMode ledMode = new LedMode();
@@ -207,7 +208,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         try {
             ContentResponse response = request.send();
             logger.debug("Response from setting LEDs mode: {}", response.getStatus());
-            if (response.getStatus() == 200) {
+            if (isSuccess(response)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.getContentAsString());
@@ -220,10 +221,9 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
     public void calibrateCo2(String serialNo) {
         logger.debug("Triggering CO2 calibration for {}", serialNo);
         try {
-            Request request = httpClient.POST(generateCalibrationCo2Url(serialNo));
-            ContentResponse response = request.send();
+            ContentResponse response = restCall(generateCalibrationCo2Url(serialNo), HttpMethod.POST);
             logger.debug("Response from calibration: {}", response.getStatus());
-            if (response.getStatus() == 200) {
+            if (isSuccess(response)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.getContentAsString());
@@ -314,7 +314,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
         if (measures != null) {
             List<@Nullable Measure> nullableMeasuresWithoutNulls = measures.stream().filter(Objects::nonNull).toList();
-            List<Measure> measuresWithoutNulls = new ArrayList<Measure>(nullableMeasuresWithoutNulls.size());
+            List<Measure> measuresWithoutNulls = new ArrayList<>(nullableMeasuresWithoutNulls.size());
             for (@Nullable
             Measure m : nullableMeasuresWithoutNulls) {
                 if (m != null) {
@@ -385,6 +385,32 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     private AirGradientAPIConfiguration getConfiguration() {
         return getConfigAs(AirGradientAPIConfiguration.class);
+    }
+
+    private @Nullable ContentResponse restCall(@Nullable String url)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        return restCall(url, HttpMethod.GET);
+    }
+
+    private @Nullable ContentResponse restCall(@Nullable String url, HttpMethod method)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        if (url == null) {
+            return null;
+        }
+
+        Request request = httpClient.newRequest(url);
+        request.timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+        request.method(method);
+        return request.send();
+    }
+
+    private static boolean isSuccess(@Nullable ContentResponse response) {
+        if (response == null) {
+            return false;
+        }
+
+        int status = response.getStatus();
+        return status >= 200 && status < 300;
     }
 
     // Discovery

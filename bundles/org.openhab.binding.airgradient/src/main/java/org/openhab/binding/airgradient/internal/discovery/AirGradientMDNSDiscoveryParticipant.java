@@ -88,7 +88,7 @@ public class AirGradientMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
         Map<String, Object> properties = new HashMap<>(1);
         properties.put(CONFIG_API_TOKEN, "");
         properties.put(CONFIG_API_HOST_NAME, hostName);
-        properties.put(CONFIG_API_REFRESH_INTERVAL, DEFAULT_POLL_INTERVAL_LOCAL);
+        properties.put(CONFIG_API_REFRESH_INTERVAL, DEFAULT_POLL_INTERVAL_LOCAL.getSeconds());
 
         ThingUID thingUID = getThingUID(si);
         if (thingUID == null) {
