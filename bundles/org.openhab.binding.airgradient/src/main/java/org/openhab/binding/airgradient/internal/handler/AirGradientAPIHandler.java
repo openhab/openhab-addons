@@ -83,7 +83,6 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("Handle command {} for channel {}!", command.toFullString(), channelUID);
         if (command instanceof RefreshType) {
             pollingCode();
         } else {
