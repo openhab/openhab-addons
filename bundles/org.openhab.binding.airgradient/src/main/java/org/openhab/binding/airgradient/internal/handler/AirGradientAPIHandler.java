@@ -163,28 +163,27 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
      * @return list of measures
      */
     public List<Measure> getMeasures() {
-        try {
-            ContentResponse response = restCall(generateMeasuresUrl());
+        ContentResponse response = sendRequest(generateRequest(generateMeasuresUrl()));
+        if (response != null) {
             String contentType = response.getMediaType();
             logger.debug("Got measurements with status {}: {} ({})", response.getStatus(),
                     response.getContentAsString(), contentType);
+
             if (isSuccess(response)) {
-                updateStatus(ThingStatus.ONLINE);
                 String stringResponse = response.getContentAsString().trim();
 
-                if (CONTENTTYPE_JSON.equals(contentType)) {
-                    return parseJson(stringResponse);
-                } else if (CONTENTTYPE_TEXT.equals(contentType)) {
-                    return parsePrometheus(stringResponse);
-                } else if (CONTENTTYPE_OPENMETRICS.equals(contentType)) {
-                    return parsePrometheus(stringResponse);
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Status code from service: " + response.getStatus());
+                if (null != contentType)
+                    switch (contentType) {
+                        case CONTENTTYPE_JSON:
+                            return parseJson(stringResponse);
+                        case CONTENTTYPE_TEXT:
+                            return parsePrometheus(stringResponse);
+                        case CONTENTTYPE_OPENMETRICS:
+                            return parsePrometheus(stringResponse);
+                        default:
+                            logger.debug("Unhandled content type returned: {}", contentType);
+                    }
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
         return Collections.emptyList();
@@ -200,32 +199,12 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         String modeJson = gson.toJson(ledMode);
         logger.debug("Setting LEDS mode for {}: {}", serialNo, modeJson);
         request.content(new StringContentProvider(CONTENTTYPE_JSON, modeJson, StandardCharsets.UTF_8));
-        try {
-            ContentResponse response = request.send();
-            logger.debug("Response from setting LEDs mode: {}", response.getStatus());
-            if (isSuccess(response)) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.getContentAsString());
-            }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
+        sendRequest(request);
     }
 
     public void calibrateCo2(String serialNo) {
         logger.debug("Triggering CO2 calibration for {}", serialNo);
-        try {
-            ContentResponse response = restCall(generateCalibrationCo2Url(serialNo), HttpMethod.POST);
-            logger.debug("Response from calibration: {}", response.getStatus());
-            if (isSuccess(response)) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.getContentAsString());
-            }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
+        sendRequest(generateRequest(generateCalibrationCo2Url(serialNo), HttpMethod.POST));
     }
 
     private List<Measure> parsePrometheus(String stringResponse) {
@@ -370,13 +349,11 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         this.apiConfig = config;
     }
 
-    private @Nullable ContentResponse restCall(@Nullable String url)
-            throws InterruptedException, TimeoutException, ExecutionException {
-        return restCall(url, HttpMethod.GET);
+    private @Nullable Request generateRequest(@Nullable String url) {
+        return generateRequest(url, HttpMethod.GET);
     }
 
-    private @Nullable ContentResponse restCall(@Nullable String url, HttpMethod method)
-            throws InterruptedException, TimeoutException, ExecutionException {
+    private @Nullable Request generateRequest(@Nullable String url, HttpMethod method) {
         if (url == null) {
             return null;
         }
@@ -384,7 +361,30 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         Request request = httpClient.newRequest(url);
         request.timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
         request.method(method);
-        return request.send();
+        return request;
+    }
+
+    private @Nullable ContentResponse sendRequest(@Nullable Request request) {
+        if (request == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to generate request");
+        }
+
+        @Nullable
+        ContentResponse response = null;
+        try {
+            response = request.send();
+            logger.debug("Response from {}: {}", request.getURI(), response.getStatus());
+            if (isSuccess(response)) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Returned status code: " + response.getStatus());
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+
+        return response;
     }
 
     private static boolean isSuccess(@Nullable ContentResponse response) {
