@@ -148,7 +148,6 @@ public class AirGradientLocationHandler extends BaseThingHandler {
 
     public void setLedMode(String ledMode) {
         ChannelUID ledsChannel = new ChannelUID(thing.getUID(), CHANNEL_LEDS_MODE);
-        logger.debug("Updating LEDs mode of '{}' to '{}'", ledsChannel.toString(), ledMode);
         updateState(ledsChannel, StringType.valueOf(ledMode));
     }
 
