@@ -272,6 +272,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         reconnecting = false;
     }
 
+    /**
+     * Return the OpenGateway linked to this BridgeHandler
+     *
+     * @return the linked OpenGateway
+     */
     public @Nullable OpenGateway getGateway() {
         return gateway;
     }

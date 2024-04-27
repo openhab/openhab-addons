@@ -326,7 +326,7 @@ Example: to activate SCENARIO number 9 on the thermo Central Unit then set chann
 ## Rule Actions
 
 The following Rule actions can be used to send arbitrary OpenWebNet messages on the MyHOME BUS. 
-Actions can be used for example to send commands to the BUS for a WHOs not currently supported by the binding.
+Actions can be used for example to send commands to the BUS for a WHOs not yet supported by the binding.
 
 - `Boolean sendMessage(String message)` returns a `Boolean` = `true` if the `message` (OpenWebNet frame) was successfully sent via the gateway, `false` otherwise.
 - `Map<String, Object> sendMessageWithResponse(String message)` same as previous one, but returns a `Map<String, Object>` with following keys:

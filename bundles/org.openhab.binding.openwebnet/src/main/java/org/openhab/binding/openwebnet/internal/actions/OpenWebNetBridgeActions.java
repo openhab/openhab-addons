@@ -62,7 +62,7 @@ public class OpenWebNetBridgeActions implements ThingActions {
 
     @RuleAction(label = "sendMessage", description = "@text/action.sendMessage.desc")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMessage(
-            @ActionInput(name = "message", label = "message", description = "@text/action.sendMessage.input.message.desc") String message) {
+            @ActionInput(name = "message", label = "message", description = "@text/action.sendMessage.input.message.desc") @Nullable String message) {
 
         @Nullable
         Boolean s = (Boolean) sendMessageInternal(message).get("success");
@@ -75,15 +75,19 @@ public class OpenWebNetBridgeActions implements ThingActions {
 
     @RuleAction(label = "sendMessageWithResponse", description = "@text/action.sendMessageWithResponse.desc")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") @ActionOutput(name = "responseMessages", type = "java.util.List<String>") Map<String, Object> sendMessageWithResponse(
-            @ActionInput(name = "message", label = "message", description = "@text/action.sendMessage.input.message.desc") String message) {
+            @ActionInput(name = "message", label = "message", description = "@text/action.sendMessage.input.message.desc") @Nullable String message) {
         return sendMessageInternal(message);
     }
 
-    private Map<String, Object> sendMessageInternal(String message) {
+    private Map<String, Object> sendMessageInternal(@Nullable String message) {
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("success", Boolean.FALSE);
         responseMap.put("responseMessages", Collections.emptyList());
 
+        if (message == null || message.isBlank()) {
+            logger.warn("openwebnet sendMessage: cannot send message, message is null or empty");
+            return responseMap;
+        }
         OpenWebNetBridgeHandler handler = bridgeHandler;
         if (handler == null) {
             logger.warn("openwebnet sendMessage: cannot send message, bridgeHandler is null.");
@@ -96,6 +100,7 @@ public class OpenWebNetBridgeActions implements ThingActions {
             logger.warn("openwebnet skipping sending message '{}': {}.", message, e.getMessage());
             return responseMap;
         }
+
         OpenGateway gw = handler.getGateway();
         if (gw != null && gw.isConnected()) {
             try {
