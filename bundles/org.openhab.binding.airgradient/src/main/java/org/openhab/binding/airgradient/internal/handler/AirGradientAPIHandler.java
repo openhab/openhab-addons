@@ -14,16 +14,12 @@ package org.openhab.binding.airgradient.internal.handler;
 
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.*;
 
-import java.lang.reflect.Type;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -43,8 +39,6 @@ import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfigurati
 import org.openhab.binding.airgradient.internal.discovery.AirGradientLocationDiscoveryService;
 import org.openhab.binding.airgradient.internal.model.LedMode;
 import org.openhab.binding.airgradient.internal.model.Measure;
-import org.openhab.binding.airgradient.internal.prometheus.PrometheusMetric;
-import org.openhab.binding.airgradient.internal.prometheus.PrometheusTextParser;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -58,7 +52,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link AirGradientAPIHandler} is responsible for handling commands, which are
@@ -163,23 +156,24 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
      * @return list of measures
      */
     public List<Measure> getMeasures() {
-        ContentResponse response = sendRequest(generateRequest(generateMeasuresUrl()));
+        ContentResponse response = sendRequest(
+                RESTHelper.generateRequest(httpClient, RESTHelper.generateMeasuresUrl(apiConfig)));
         if (response != null) {
             String contentType = response.getMediaType();
             logger.debug("Got measurements with status {}: {} ({})", response.getStatus(),
                     response.getContentAsString(), contentType);
 
-            if (isSuccess(response)) {
+            if (RESTHelper.isSuccess(response)) {
                 String stringResponse = response.getContentAsString().trim();
 
                 if (null != contentType)
                     switch (contentType) {
                         case CONTENTTYPE_JSON:
-                            return parseJson(stringResponse);
+                            return JsonParserHelper.parseJson(gson, stringResponse);
                         case CONTENTTYPE_TEXT:
-                            return parsePrometheus(stringResponse);
+                            return PrometheusParserHelper.parsePrometheus(stringResponse);
                         case CONTENTTYPE_OPENMETRICS:
-                            return parsePrometheus(stringResponse);
+                            return PrometheusParserHelper.parsePrometheus(stringResponse);
                         default:
                             logger.debug("Unhandled content type returned: {}", contentType);
                     }
@@ -190,7 +184,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
     }
 
     public void setLedMode(String serialNo, String mode) {
-        Request request = httpClient.newRequest(generateGetLedsModeUrl(serialNo));
+        Request request = httpClient.newRequest(RESTHelper.generateGetLedsModeUrl(apiConfig, serialNo));
         request.timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
         request.method(HttpMethod.PUT);
         request.header(HttpHeader.CONTENT_TYPE, CONTENTTYPE_JSON);
@@ -204,102 +198,35 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     public void calibrateCo2(String serialNo) {
         logger.debug("Triggering CO2 calibration for {}", serialNo);
-        sendRequest(generateRequest(generateCalibrationCo2Url(serialNo), HttpMethod.POST));
+        sendRequest(RESTHelper.generateRequest(httpClient, RESTHelper.generateCalibrationCo2Url(apiConfig, serialNo),
+                HttpMethod.POST));
     }
 
-    private List<Measure> parsePrometheus(String stringResponse) {
-        List<PrometheusMetric> metrics = PrometheusTextParser.parse(stringResponse);
-        Measure measure = new Measure();
-
-        for (PrometheusMetric metric : metrics) {
-            if (metric.getMetricName().equals("pm01")) {
-                measure.pm01 = metric.getValue();
-            } else if (metric.getMetricName().equals("pm02")) {
-                measure.pm02 = metric.getValue();
-            } else if (metric.getMetricName().equals("pm10")) {
-                measure.pm10 = metric.getValue();
-            } else if (metric.getMetricName().equals("rco2")) {
-                measure.rco2 = metric.getValue();
-            } else if (metric.getMetricName().equals("atmp")) {
-                measure.atmp = metric.getValue();
-            } else if (metric.getMetricName().equals("rhum")) {
-                measure.rhum = metric.getValue();
-            } else if (metric.getMetricName().equals("tvoc")) {
-                measure.tvoc = metric.getValue();
-            } else if (metric.getMetricName().equals("nox")) {
-                measure.noxIndex = metric.getValue();
-            } else if (metric.getMetricName().equals("airgradient_wifi_rssi_dbm")) {
-                measure.wifi = metric.getValue();
-            } else if (metric.getMetricName().equals("airgradient_co2_ppm")) {
-                measure.rco2 = metric.getValue();
-            } else if (metric.getMetricName().equals("airgradient_pm1_ugm3")) {
-                measure.pm01 = metric.getValue();
-            } else if (metric.getMetricName().equals("airgradient_pm2d5_ugm3")) {
-                measure.pm02 = metric.getValue();
-            } else if (metric.getMetricName().equals("airgradient_pm10_ugm3")) {
-                measure.pm10 = metric.getValue();
-            } else if (metric.getMetricName().equals("airgradient_pm0d3_p100ml")) {
-                measure.pm003Count = metric.getValue();
-            } else if (metric.getMetricName().equals("airgradient_tvoc_index")) {
-                measure.tvoc = metric.getValue();
-            } else if (metric.getMetricName().equals("airgradient_tvoc_raw_index")) {
-                measure.tvocIndex = metric.getValue();
-            } else if (metric.getMetricName().equals("airgradient_nox_index")) {
-                measure.noxIndex = metric.getValue();
-            } else if (metric.getMetricName().equals("airgradient_temperature_degc")) {
-                measure.atmp = metric.getValue();
-            } else if (metric.getMetricName().equals("airgradient_humidity_percent")) {
-                measure.rhum = metric.getValue();
-            }
-
-            if (metric.getLabels().containsKey("id")) {
-                String id = metric.getLabels().get("id");
-                measure.serialno = id;
-                measure.locationId = id;
-                measure.locationName = id;
-            }
-
-            if (metric.getLabels().containsKey("airgradient_serial_number")) {
-                String id = metric.getLabels().get("airgradient_serial_number");
-                measure.serialno = id;
-                measure.locationId = id;
-                measure.locationName = id;
-            }
+    private @Nullable ContentResponse sendRequest(@Nullable final Request request) {
+        if (request == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to generate request");
         }
 
-        return Arrays.asList(measure);
-    }
-
-    private List<Measure> parseJson(String stringResponse) {
-        List<@Nullable Measure> measures = null;
-        if (stringResponse.startsWith("[")) {
-            // Array of measures, like returned from the AirGradients API
-            Type measuresType = new TypeToken<List<@Nullable Measure>>() {
-            }.getType();
-            measures = gson.fromJson(stringResponse, measuresType);
-        } else if (stringResponse.startsWith("{")) {
-            // Single measure e.g. if you read directly from the device
-            Type measureType = new TypeToken<Measure>() {
-            }.getType();
-            Measure measure = gson.fromJson(stringResponse, measureType);
-            measures = new ArrayList<@Nullable Measure>(1);
-            measures.add(measure);
-        }
-
-        if (measures != null) {
-            List<@Nullable Measure> nullableMeasuresWithoutNulls = measures.stream().filter(Objects::nonNull).toList();
-            List<Measure> measuresWithoutNulls = new ArrayList<>(nullableMeasuresWithoutNulls.size());
-            for (@Nullable
-            Measure m : nullableMeasuresWithoutNulls) {
-                if (m != null) {
-                    measuresWithoutNulls.add(m);
+        @Nullable
+        ContentResponse response = null;
+        try {
+            response = request.send();
+            if (response != null) {
+                logger.debug("Response from {}: {}", request.getURI(), response.getStatus());
+                if (RESTHelper.isSuccess(response)) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Returned status code: " + response.getStatus());
                 }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response");
             }
-
-            return measuresWithoutNulls;
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
-        return Collections.emptyList();
+        return response;
     }
 
     @Override
@@ -311,89 +238,8 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         }
     }
 
-    private @Nullable String generateMeasuresUrl() {
-        if (hasCloudUrl()) {
-            return apiConfig.hostname + String.format(CURRENT_MEASURES_PATH, apiConfig.token);
-        } else {
-            return apiConfig.hostname;
-        }
-    }
-
-    private @Nullable String generateCalibrationCo2Url(String serialNo) {
-        if (hasCloudUrl()) {
-            return apiConfig.hostname + String.format(CALIBRATE_CO2_PATH, serialNo, apiConfig.token);
-        } else {
-            return apiConfig.hostname;
-        }
-    }
-
-    private @Nullable String generateGetLedsModeUrl(String serialNo) {
-        if (hasCloudUrl()) {
-            return apiConfig.hostname + String.format(LEDS_MODE_PATH, serialNo, apiConfig.token);
-        } else {
-            return apiConfig.hostname;
-        }
-    }
-
-    /**
-     * Returns true if this is a URL against the cloud.
-     *
-     * @return true if this is a URL against the cloud API
-     */
-    private boolean hasCloudUrl() {
-        URI url = URI.create(apiConfig.hostname);
-        return url.getPath().equals("/");
-    }
-
     protected void setConfiguration(AirGradientAPIConfiguration config) {
         this.apiConfig = config;
-    }
-
-    private @Nullable Request generateRequest(@Nullable String url) {
-        return generateRequest(url, HttpMethod.GET);
-    }
-
-    private @Nullable Request generateRequest(@Nullable String url, HttpMethod method) {
-        if (url == null) {
-            return null;
-        }
-
-        Request request = httpClient.newRequest(url);
-        request.timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
-        request.method(method);
-        return request;
-    }
-
-    private @Nullable ContentResponse sendRequest(@Nullable Request request) {
-        if (request == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to generate request");
-        }
-
-        @Nullable
-        ContentResponse response = null;
-        try {
-            response = request.send();
-            logger.debug("Response from {}: {}", request.getURI(), response.getStatus());
-            if (isSuccess(response)) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Returned status code: " + response.getStatus());
-            }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-
-        return response;
-    }
-
-    private static boolean isSuccess(@Nullable ContentResponse response) {
-        if (response == null) {
-            return false;
-        }
-
-        int status = response.getStatus();
-        return status >= 200 && status < 300;
     }
 
     // Discovery

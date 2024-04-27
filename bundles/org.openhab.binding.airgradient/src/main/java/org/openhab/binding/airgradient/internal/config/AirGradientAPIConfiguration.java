@@ -50,4 +50,14 @@ public class AirGradientAPIConfiguration {
 
         return true;
     }
+
+    /**
+     * Returns true if this is a URL against the cloud.
+     *
+     * @return true if this is a URL against the cloud API
+     */
+    public boolean hasCloudUrl() {
+        URI url = URI.create(hostname);
+        return url.getPath().equals("/");
+    }
 }
