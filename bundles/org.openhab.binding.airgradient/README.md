@@ -1,7 +1,5 @@
 # AirGradient Binding
 
-![AirGradient logo](doc/logo.png)
-
 AirGradient provides open source and open hardware air quality monitors.
 
 This binding reads air quality data from the AirGradient (https://www.airgradient.com/) API.
@@ -30,8 +28,8 @@ If you don't specify any path on the server, the binding will behave as if the h
 
 The binding will adapt to the content type of the returned content to support different formats for getting data both from local and cloud installations.
 
-| Name              | Hostname                                                       | Content-Type                 | Parser |
-|-------------------|----------------------------------------------------------------|------------------------------|--------|
+| Name              | Hostname                                                        | Content-Type                 | Parser |
+|-------------------|-----------------------------------------------------------------|------------------------------|--------|
 | API               | Hostnames without any path (e.g., https://api.airgradient.com/) | application/json             | JSON parser for the AirGradient API, correct paths will be appended to the calls |
 | Local OpenMetrics | Hostnames with path (e.g., http://192.168.x.x/metrics)          | application/openmetrics-text | OpenMetrics parser |
 | Local Web         | Hostnames with path (e.g., http://192.168.x.x/measures/current) | application/json             | JSON parser for the AirGradient API, as if you returned the value of sendToServer() payload |
@@ -53,17 +51,17 @@ To add a location, you need to know the location ID. To get the location ID, you
 
 ### `API` Thing Configuration
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| token           | text    | Token to access the device            | N/A     | yes     | no        |
-| hostname        | text    | Hostname or IP address of the API     | https://api.airgradient.com/      | no      | yes      |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name            | Type    | Description                           | Default                      | Required | Advanced |
+|-----------------|---------|---------------------------------------|------------------------------|----------|----------|
+| token           | text    | Token to access the device            | N/A                          | yes      | no       |
+| hostname        | text    | Hostname or IP address of the API     | https://api.airgradient.com/ | no       | yes      |
+| refreshInterval | integer | Interval the device is polled in sec. | 600                          | no       | yes      |
 
 ### `Location` Thing Configuration
 
 | Name            | Type    | Description                                                       | Default | Required | Advanced |
 |-----------------|---------|-------------------------------------------------------------------|---------|----------|----------|
-| location        | text    | A number identifying the location id in the AirGradient Dashboard | N/A     | yes     | no        |
+| location        | text    | A number identifying the location id in the AirGradient Dashboard | N/A     | yes      | no       |
 
 ## Channels
 
