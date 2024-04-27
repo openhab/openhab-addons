@@ -18,12 +18,15 @@ import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +44,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.energidataservice.internal.ApiController;
 import org.openhab.binding.energidataservice.internal.CacheManager;
 import org.openhab.binding.energidataservice.internal.DatahubTariff;
+import org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants;
+import org.openhab.binding.energidataservice.internal.PriceListParser;
 import org.openhab.binding.energidataservice.internal.action.EnergiDataServiceActions;
 import org.openhab.binding.energidataservice.internal.api.ChargeType;
 import org.openhab.binding.energidataservice.internal.api.ChargeTypeCode;
@@ -246,7 +251,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
             updatePrices();
-            updateTimeSeries();
+            updateElectricityTimeSeriesFromCache();
 
             if (isLinked(CHANNEL_SPOT_PRICE)) {
                 long numberOfFutureSpotPrices = cacheManager.getNumberOfFutureSpotPrices();
@@ -297,7 +302,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         Map<String, String> properties = editProperties();
         try {
             ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea, config.getCurrency(),
-                    start, properties);
+                    start, DateQueryParameter.EMPTY, properties);
             cacheManager.putSpotPrices(spotPriceRecords, config.getCurrency());
         } finally {
             updateProperties(properties);
@@ -305,10 +310,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     }
 
     private void downloadTariffs(DatahubTariff datahubTariff) throws InterruptedException, DataServiceException {
-        GlobalLocationNumber globalLocationNumber = switch (datahubTariff) {
-            case GRID_TARIFF -> config.getGridCompanyGLN();
-            default -> config.getEnerginetGLN();
-        };
+        GlobalLocationNumber globalLocationNumber = getGlobalLocationNumber(datahubTariff);
         if (globalLocationNumber.isEmpty()) {
             return;
         }
@@ -316,15 +318,26 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
             logger.debug("Cached tariffs of type {} still valid, skipping download.", datahubTariff);
             cacheManager.updateTariffs(datahubTariff);
         } else {
-            DatahubTariffFilter filter = switch (datahubTariff) {
-                case GRID_TARIFF -> getGridTariffFilter();
-                case SYSTEM_TARIFF -> DatahubTariffFilterFactory.getSystemTariff();
-                case TRANSMISSION_GRID_TARIFF -> DatahubTariffFilterFactory.getTransmissionGridTariff();
-                case ELECTRICITY_TAX -> DatahubTariffFilterFactory.getElectricityTax();
-                case REDUCED_ELECTRICITY_TAX -> DatahubTariffFilterFactory.getReducedElectricityTax();
-            };
+            DatahubTariffFilter filter = getDatahubTariffFilter(datahubTariff);
             cacheManager.putTariffs(datahubTariff, downloadPriceLists(globalLocationNumber, filter));
         }
+    }
+
+    private DatahubTariffFilter getDatahubTariffFilter(DatahubTariff datahubTariff) {
+        return switch (datahubTariff) {
+            case GRID_TARIFF -> getGridTariffFilter();
+            case SYSTEM_TARIFF -> DatahubTariffFilterFactory.getSystemTariff();
+            case TRANSMISSION_GRID_TARIFF -> DatahubTariffFilterFactory.getTransmissionGridTariff();
+            case ELECTRICITY_TAX -> DatahubTariffFilterFactory.getElectricityTax();
+            case REDUCED_ELECTRICITY_TAX -> DatahubTariffFilterFactory.getReducedElectricityTax();
+        };
+    }
+
+    private GlobalLocationNumber getGlobalLocationNumber(DatahubTariff datahubTariff) {
+        return switch (datahubTariff) {
+            case GRID_TARIFF -> config.getGridCompanyGLN();
+            default -> config.getEnerginetGLN();
+        };
     }
 
     private Collection<DatahubPricelistRecord> downloadPriceLists(GlobalLocationNumber globalLocationNumber,
@@ -369,8 +382,8 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
                     start);
         }
 
-        return new DatahubTariffFilter(filter, DateQueryParameter.of(filter.getDateQueryParameter(),
-                Duration.ofHours(-CacheManager.NUMBER_OF_HISTORIC_HOURS)));
+        return new DatahubTariffFilter(filter,
+                DateQueryParameter.of(filter.getStart(), Duration.ofHours(-CacheManager.NUMBER_OF_HISTORIC_HOURS)));
     }
 
     private void refreshCo2EmissionPrognosis() {
@@ -494,7 +507,79 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         }
     }
 
-    private void updateTimeSeries() {
+    /**
+     * Download spot prices in requested period and update corresponding channel with time series.
+     * 
+     * @param startDate Start date of period
+     * @param endDate End date of period
+     * @return number of published states
+     */
+    public int updateSpotPriceTimeSeries(LocalDate startDate, LocalDate endDate)
+            throws InterruptedException, DataServiceException {
+        if (!isLinked(CHANNEL_SPOT_PRICE)) {
+            return 0;
+        }
+        Map<String, String> properties = editProperties();
+        try {
+            Currency currency = config.getCurrency();
+            ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea, currency,
+                    DateQueryParameter.of(startDate), DateQueryParameter.of(endDate.plusDays(1)), properties);
+            boolean isDKK = EnergiDataServiceBindingConstants.CURRENCY_DKK.equals(currency);
+            TimeSeries spotPriceTimeSeries = new TimeSeries(REPLACE);
+            if (spotPriceRecords.length == 0) {
+                return 0;
+            }
+            for (ElspotpriceRecord record : Arrays.stream(spotPriceRecords)
+                    .sorted(Comparator.comparing(ElspotpriceRecord::hour)).toList()) {
+                spotPriceTimeSeries.add(record.hour(), getEnergyPrice(
+                        (isDKK ? record.spotPriceDKK() : record.spotPriceEUR()).divide(BigDecimal.valueOf(1000)),
+                        currency));
+            }
+            sendTimeSeries(CHANNEL_SPOT_PRICE, spotPriceTimeSeries);
+            return spotPriceRecords.length;
+        } finally {
+            updateProperties(properties);
+        }
+    }
+
+    /**
+     * Download tariffs in requested period and update corresponding channel with time series.
+     * 
+     * @param datahubTariff Tariff to update
+     * @param startDate Start date of period
+     * @param endDate End date of period
+     * @return number of published states
+     */
+    public int updateTariffTimeSeries(DatahubTariff datahubTariff, LocalDate startDate, LocalDate endDate)
+            throws InterruptedException, DataServiceException {
+        if (!isLinked(datahubTariff.getChannelId())) {
+            return 0;
+        }
+        GlobalLocationNumber globalLocationNumber = getGlobalLocationNumber(datahubTariff);
+        if (globalLocationNumber.isEmpty()) {
+            return 0;
+        }
+        DatahubTariffFilter filter = getDatahubTariffFilter(datahubTariff);
+        DateQueryParameter start = filter.getStart();
+        DateQueryParameterType filterStartDateType = start.getDateType();
+        LocalDate filterStartDate = start.getDate();
+        if (filterStartDateType != null) {
+            // For filters with date relative to current date, override with provided parameters.
+            filter = new DatahubTariffFilter(filter, DateQueryParameter.of(startDate), DateQueryParameter.of(endDate));
+        } else if (filterStartDate != null && startDate.isBefore(filterStartDate)) {
+            throw new IllegalArgumentException("Start date before " + start.getDate() + " is not supported");
+        }
+        Collection<DatahubPricelistRecord> datahubRecords = downloadPriceLists(globalLocationNumber, filter);
+        ZoneId zoneId = timeZoneProvider.getTimeZone();
+        Instant firstHourStart = startDate.atStartOfDay(zoneId).toInstant();
+        Instant lastHourStart = endDate.plusDays(1).atStartOfDay(zoneId).toInstant();
+        Map<Instant, BigDecimal> tariffMap = new PriceListParser().toHourly(datahubRecords, firstHourStart,
+                lastHourStart);
+
+        return updatePriceTimeSeries(datahubTariff.getChannelId(), tariffMap, CURRENCY_DKK, true);
+    }
+
+    private void updateElectricityTimeSeriesFromCache() {
         updatePriceTimeSeries(CHANNEL_SPOT_PRICE, cacheManager.getSpotPrices(), config.getCurrency(), false);
 
         for (DatahubTariff datahubTariff : DatahubTariff.values()) {
@@ -503,10 +588,10 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         }
     }
 
-    private void updatePriceTimeSeries(String channelId, Map<Instant, BigDecimal> priceMap, Currency currency,
+    private int updatePriceTimeSeries(String channelId, Map<Instant, BigDecimal> priceMap, Currency currency,
             boolean deduplicate) {
         if (!isLinked(channelId)) {
-            return;
+            return 0;
         }
         List<Entry<Instant, BigDecimal>> prices = priceMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
                 .toList();
@@ -525,6 +610,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         if (timeSeries.size() > 0) {
             sendTimeSeries(channelId, timeSeries);
         }
+        return timeSeries.size();
     }
 
     /**

@@ -106,7 +106,7 @@ public class ApiController {
      * @throws DataServiceException
      */
     public ElspotpriceRecord[] getSpotPrices(String priceArea, Currency currency, DateQueryParameter start,
-            Map<String, String> properties) throws InterruptedException, DataServiceException {
+            DateQueryParameter end, Map<String, String> properties) throws InterruptedException, DataServiceException {
         if (!SUPPORTED_CURRENCIES.contains(currency)) {
             throw new IllegalArgumentException("Invalid currency " + currency.getCurrencyCode());
         }
@@ -118,6 +118,10 @@ public class ApiController {
                 .param("columns", "HourUTC,SpotPrice" + currency) //
                 .agent(userAgent) //
                 .method(HttpMethod.GET);
+
+        if (!end.isEmpty()) {
+            request = request.param("end", end.toString());
+        }
 
         try {
             String responseContent = sendRequest(request, properties);
@@ -209,9 +213,14 @@ public class ApiController {
                 .agent(userAgent) //
                 .method(HttpMethod.GET);
 
-        DateQueryParameter dateQueryParameter = tariffFilter.getDateQueryParameter();
-        if (!dateQueryParameter.isEmpty()) {
-            request = request.param("start", dateQueryParameter.toString());
+        DateQueryParameter start = tariffFilter.getStart();
+        if (!start.isEmpty()) {
+            request = request.param("start", start.toString());
+        }
+
+        DateQueryParameter end = tariffFilter.getEnd();
+        if (!end.isEmpty()) {
+            request = request.param("end", end.toString());
         }
 
         try {
