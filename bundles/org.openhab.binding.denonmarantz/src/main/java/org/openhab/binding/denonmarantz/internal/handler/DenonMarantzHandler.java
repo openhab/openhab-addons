@@ -35,6 +35,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
@@ -69,24 +71,27 @@ import org.xml.sax.SAXException;
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  */
+@NonNullByDefault
 public class DenonMarantzHandler extends BaseThingHandler implements DenonMarantzStateChangedListener {
 
     private final Logger logger = LoggerFactory.getLogger(DenonMarantzHandler.class);
     private static final int RETRY_TIME_SECONDS = 30;
     private HttpClient httpClient;
-    private DenonMarantzConnector connector;
-    private DenonMarantzConfiguration config;
+    private @Nullable DenonMarantzConnector connector;
+    private DenonMarantzConfiguration config = new DenonMarantzConfiguration();
     private DenonMarantzConnectorFactory connectorFactory = new DenonMarantzConnectorFactory();
     private DenonMarantzState denonMarantzState;
-    private ScheduledFuture<?> retryJob;
+    private @Nullable ScheduledFuture<?> retryJob;
 
     public DenonMarantzHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
+        denonMarantzState = new DenonMarantzState(this);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        DenonMarantzConnector connector = this.connector;
         if (connector == null) {
             return;
         }
@@ -297,7 +302,6 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
     @Override
     public void initialize() {
-        cancelRetry();
         config = getConfigAs(DenonMarantzConfiguration.class);
 
         // Configure Connection type (Telnet/HTTP) and number of zones
@@ -313,7 +317,6 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
             return;
         }
 
-        denonMarantzState = new DenonMarantzState(this);
         configureZoneChannels();
         updateStatus(ThingStatus.UNKNOWN);
         // create connection (either Telnet or HTTP)
@@ -322,19 +325,21 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
     }
 
     private void createConnection() {
+        DenonMarantzConnector connector = this.connector;
         if (connector != null) {
             connector.dispose();
         }
-        connector = connectorFactory.getConnector(config, denonMarantzState, scheduler, httpClient,
+        this.connector = connector = connectorFactory.getConnector(config, denonMarantzState, scheduler, httpClient,
                 this.getThing().getUID().getAsString());
         connector.connect();
     }
 
     private void cancelRetry() {
-        ScheduledFuture<?> localRetryJob = retryJob;
-        if (localRetryJob != null && !localRetryJob.isDone()) {
-            localRetryJob.cancel(false);
+        ScheduledFuture<?> retryJob = this.retryJob;
+        if (retryJob != null) {
+            retryJob.cancel(true);
         }
+        this.retryJob = null;
     }
 
     private void configureZoneChannels() {
@@ -413,10 +418,11 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
     @Override
     public void dispose() {
+        DenonMarantzConnector connector = this.connector;
         if (connector != null) {
             connector.dispose();
-            connector = null;
         }
+        this.connector = null;
         cancelRetry();
         super.dispose();
     }
@@ -450,7 +456,13 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
             // Don't flood the log with thing 'updated: OFFLINE' when already offline
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         }
-        connector.dispose();
+
+        DenonMarantzConnector connector = this.connector;
+        if (connector != null) {
+            connector.dispose();
+        }
+        this.connector = null;
+
         retryJob = scheduler.schedule(this::createConnection, RETRY_TIME_SECONDS, TimeUnit.SECONDS);
     }
 }
