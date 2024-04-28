@@ -123,13 +123,11 @@ public class GridBoxHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(GridBoxConfiguration.class);
-        String user = config.email;
-        if (user == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User ID not provided");
+        if (config.email == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User email not provided");
             return;
         }
-        String password = config.password;
-        if (password == null) {
+        if (config.password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User password not provided");
             return;
         }
@@ -143,15 +141,13 @@ public class GridBoxHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         try {
-            String idToken = config.idToken;
-            if (idToken == null || idToken.isBlank()) {
-                config.idToken = API.getIdToken(config);
-            }
+            config.idToken = API.getIdToken(config);
 
             String systemId = config.systemId;
             if (systemId == null || systemId.isBlank()) {
                 config.systemId = API.getSystemId(config);
             }
+            updateStatus(ThingStatus.ONLINE);
 
             updateScheduledFuture = scheduler.scheduleWithFixedDelay(this::update, 0, config.refreshInterval,
                     TimeUnit.SECONDS);
@@ -159,10 +155,10 @@ public class GridBoxHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Username or password invalid?");
         } catch (IOException | InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Connection to GridBox lost, try to re-connect in " + CONNECTION_RETRY_PERIOD + " seconds");
+                    "Connection to GridBox lost, reconnecting in " + CONNECTION_RETRY_PERIOD + " seconds");
             scheduler.schedule(this::initialize, CONNECTION_RETRY_PERIOD, TimeUnit.SECONDS);
         } catch (GridBoxApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unable to initialize GridBox thing, invalid response from API");
         }
     }
@@ -177,26 +173,27 @@ public class GridBoxHandler extends BaseThingHandler {
                     "Authentication lost, trying to re-authenticate");
             stopUpdater();
             config.idToken = null;
-            scheduler.execute(this::initialize);
+            initializeApi();
         } catch (GridBoxApiSystemNotFoundException e) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
                     "System ID not known, try to re-acquire it");
             stopUpdater();
             config.systemId = null;
-            scheduler.execute(this::initialize);
+            initializeApi();
         } catch (IOException | InterruptedException | GridBoxApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Connection to GridBox lost, try to re-establish connection in " + CONNECTION_RETRY_PERIOD
                             + " seconds");
             stopUpdater();
-            scheduler.schedule(this::initialize, CONNECTION_RETRY_PERIOD, TimeUnit.SECONDS);
+            scheduler.schedule(this::initializeApi, CONNECTION_RETRY_PERIOD, TimeUnit.SECONDS);
         }
     }
 
     private void stopUpdater() {
+        ScheduledFuture<?> updateScheduledFuture = this.updateScheduledFuture;
         if (updateScheduledFuture != null) {
             updateScheduledFuture.cancel(true);
-            updateScheduledFuture = null;
+            this.updateScheduledFuture = null;
         }
     }
 

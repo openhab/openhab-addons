@@ -110,16 +110,18 @@ public class GridBoxApi {
         String body = response.body();
         int status = response.statusCode();
         if (status != 200) {
-            logger.warn("Invalid response of authentication request, status: {}, \n body: {}", status, body);
+            logger.debug("Invalid response of authentication request, returned status: {}", status);
+            logger.trace("Response body: {}", body);
             throw new GridBoxApiAutheticationException("Authentication request returned an invalid response");
-        }
+        } 
 
         logger.atTrace().log(() -> "Authentication request returned body: {}".formatted(body));
 
         Optional<String> idTokenValue = parseIdTokenValue(body);
 
         if (idTokenValue.isEmpty()) {
-            logger.warn("Invalid response of authentication request, status: {}, \n body: {}", status, body);
+            logger.debug("Invalid response of authentication request, returned status: {}", status);
+            logger.trace("Response body: {}", body);
             throw new GridBoxApiAutheticationException("Authentication request returned an invalid response");
         }
 
@@ -173,10 +175,12 @@ public class GridBoxApi {
         int status = response.statusCode();
 
         if (status == 403) {
-            logger.warn("Access forbidden: status: {}, \n body: {}", status, body);
+            logger.debug("Gateway request returned access forbidden, returned status: {}", status);
+            logger.trace("Response body: {}", body);
             throw new GridBoxApiAutheticationException("Gateway request forbidden");
         } else if (status != 200) {
-            logger.warn("Invalid response of gateway request: status: {}, \n body: {}", status, response);
+            logger.debug("Invalid response of gateway request, returned status {}", status);
+            logger.trace("Response body: {}", body);
             throw new GridBoxApiException("Gateway request returned an invalid response");
         }
 
@@ -184,7 +188,8 @@ public class GridBoxApi {
 
         Optional<String> systemIdValue = parseSystemIdValue(body);
         if (systemIdValue.isEmpty()) {
-            logger.warn("Invalid response of gateway request: status: {}, \n body: {}", status, response);
+            logger.debug("Invalid response of gateway request, returned status {}", status);
+            logger.trace("Response body: {}", body);
             throw new GridBoxApiException("Gateway request returned an invalid response");
         }
 
@@ -247,13 +252,16 @@ public class GridBoxApi {
         int status = response.statusCode();
         String body = response.body();
         if (status == 403) {
-            logger.warn("Access forbidden: status: {}, \n body: {}", status, body);
+            logger.debug("Live data request returned access forbidden, status {}", status);
+            logger.trace("Response body: {}", body);
             throw new GridBoxApiAutheticationException("Live Data request forbidden");
         } else if (status == 404) {
-            logger.warn("Invalid response of live data request: status: {}, \n body: {}", status, body);
+            logger.debug("Invalid response of live data request, returned status {}", status);
+            logger.trace("Response body: {}", body);
             throw new GridBoxApiSystemNotFoundException("Live Data request returned an invalid response");
         } else if (status != 200) {
-            logger.warn("Invalid response of live data request: status: {}, \n body: {}", status, body);
+            logger.debug("Invalid response of live data request, returned status {}", status);
+            logger.trace("Response body: {}", body);
             throw new GridBoxApiException("Live Data request returned an invalid response");
         }
 
