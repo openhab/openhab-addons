@@ -63,7 +63,6 @@ public class OpenWebNetBridgeActions implements ThingActions {
     @RuleAction(label = "sendMessage", description = "@text/action.sendMessage.desc")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "message", label = "message", description = "@text/action.sendMessage.input.message.desc") @Nullable String message) {
-
         @Nullable
         Boolean s = (Boolean) sendMessageInternal(message).get("success");
         if (s != null) {
@@ -111,7 +110,6 @@ public class OpenWebNetBridgeActions implements ThingActions {
                         .collect(Collectors.toList());
                 responseMap.put("responseMessages", resultList);
                 return responseMap;
-
             } catch (OWNException e) {
                 logger.warn("openwebnet exception while sending message '{}' to gateway: {}.", msg, e.getMessage());
                 return responseMap;
@@ -125,16 +123,16 @@ public class OpenWebNetBridgeActions implements ThingActions {
 
     // legacy delegate methods
     public static Boolean sendMessage(@Nullable ThingActions actions, String message) {
-        if (actions instanceof OpenWebNetBridgeActions) {
-            return ((OpenWebNetBridgeActions) actions).sendMessage(message);
+        if (actions instanceof OpenWebNetBridgeActions openwebnetBridgeActions) {
+            return openwebnetBridgeActions.sendMessage(message);
         } else {
             throw new IllegalArgumentException("Instance is not an OpenWebNetBridgeActions class.");
         }
     }
 
     public static Map<String, Object> sendMessageWithResponse(@Nullable ThingActions actions, String message) {
-        if (actions instanceof OpenWebNetBridgeActions) {
-            return ((OpenWebNetBridgeActions) actions).sendMessageWithResponse(message);
+        if (actions instanceof OpenWebNetBridgeActions openwebnetBridgeActions) {
+            return openwebnetBridgeActions.sendMessageWithResponse(message);
         } else {
             throw new IllegalArgumentException("Instance is not an OpenWebNetBridgeActions class.");
         }
