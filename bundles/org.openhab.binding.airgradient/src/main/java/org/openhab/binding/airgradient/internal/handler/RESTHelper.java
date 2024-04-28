@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfiguration;
@@ -72,14 +71,5 @@ public class RESTHelper {
         request.timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
         request.method(method);
         return request;
-    }
-
-    public static boolean isSuccess(@Nullable ContentResponse response) {
-        if (response == null) {
-            return false;
-        }
-
-        int status = response.getStatus();
-        return status >= 200 && status < 300;
     }
 }

@@ -35,6 +35,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfiguration;
 import org.openhab.binding.airgradient.internal.discovery.AirGradientLocationDiscoveryService;
 import org.openhab.binding.airgradient.internal.model.LedMode;
@@ -163,7 +164,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
             logger.debug("Got measurements with status {}: {} ({})", response.getStatus(),
                     response.getContentAsString(), contentType);
 
-            if (RESTHelper.isSuccess(response)) {
+            if (HttpStatus.isSuccess(response.getStatus())) {
                 String stringResponse = response.getContentAsString().trim();
 
                 if (null != contentType)
@@ -213,7 +214,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
             response = request.send();
             if (response != null) {
                 logger.debug("Response from {}: {}", request.getURI(), response.getStatus());
-                if (RESTHelper.isSuccess(response)) {
+                if (HttpStatus.isSuccess(response.getStatus())) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
