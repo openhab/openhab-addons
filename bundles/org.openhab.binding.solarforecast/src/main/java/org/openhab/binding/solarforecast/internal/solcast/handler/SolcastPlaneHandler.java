@@ -110,7 +110,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             forecast.ifPresent(forecastObject -> {
-                String group = channelUID.getGroupId();
+                String group = (channelUID.getGroupId() != null) ? channelUID.getGroupId() : "";
                 String channel = channelUID.getIdWithoutGroup();
                 QueryMode mode = QueryMode.Average;
                 switch (group) {

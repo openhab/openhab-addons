@@ -57,12 +57,12 @@ public class SolarForecastActions implements ThingActions {
                 QuantityType<Energy> measure = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
-                    State s = solarForecast.getDay(localDate, args);
-                    if (s instanceof QuantityType<?> quantityState) {
-                        measure = measure.add((QuantityType<Energy>) quantityState);
+                    QuantityType<Energy> qt = solarForecast.getDay(localDate, args);
+                    if (qt.floatValue() >= 0) {
+                        measure = measure.add(qt);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.debug("Ambiguous measure {} found for {}", s, localDate);
+                        logger.debug("Ambiguous measure {} found for {}", qt, localDate);
                         return Utils.getEnergyState(-1);
                     }
                 }
@@ -87,12 +87,12 @@ public class SolarForecastActions implements ThingActions {
                 QuantityType<Power> measure = QuantityType.valueOf(0, MetricPrefix.KILO(Units.WATT));
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
-                    State s = solarForecast.getPower(timestamp, args);
-                    if (s instanceof QuantityType<?> quantityState) {
-                        measure = measure.add((QuantityType<Power>) quantityState);
+                    QuantityType<Power> qt = solarForecast.getPower(timestamp, args);
+                    if (qt.floatValue() >= 0) {
+                        measure = measure.add(qt);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.debug("Ambiguous measure {} found for {}", s, timestamp);
+                        logger.debug("Ambiguous measure {} found for {}", qt, timestamp);
                         return Utils.getPowerState(-1);
                     }
                 }
@@ -118,12 +118,12 @@ public class SolarForecastActions implements ThingActions {
                 QuantityType<Energy> measure = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
                 for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
                     SolarForecast solarForecast = iterator.next();
-                    State s = solarForecast.getEnergy(start, end, args);
-                    if (s instanceof QuantityType<?> quantityState) {
-                        measure = measure.add((QuantityType<Energy>) quantityState);
+                    QuantityType<Energy> qt = solarForecast.getEnergy(start, end, args);
+                    if (qt.floatValue() >= 0) {
+                        measure = measure.add(qt);
                     } else {
                         // break in case of failure getting values to avoid ambiguous values
-                        logger.debug("Ambiguous measure {} found between {} and {}", s, start, end);
+                        logger.debug("Ambiguous measure {} found between {} and {}", qt, start, end);
                         return Utils.getEnergyState(-1);
                     }
                 }
