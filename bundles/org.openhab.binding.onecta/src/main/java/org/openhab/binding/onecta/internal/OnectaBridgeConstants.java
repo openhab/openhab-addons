@@ -32,6 +32,7 @@ public class OnectaBridgeConstants {
     public static final String CLIMATECONTROL = "climateControl";
     public static final String WATERTANK = "domesticHotWaterTank";
     public static final String INDOORUNIT = "indoorUnit";
+
     public static final String CHANNEL_REFRESH_TOKEN = "refreshToken";
     public static final String CHANNEL_PASSWORD = "password";
     public static final String CHANNEL_USERID = "userId";

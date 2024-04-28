@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -28,7 +27,6 @@ public class ChannelsRefreshDelayTest {
 
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        MockitoAnnotations.initMocks(this);
         channelsRefreshDelayMock = new ChannelsRefreshDelay(2000L);
 
         Field privateChannelsRefreshDelayField = ChannelsRefreshDelay.class.getDeclaredField("channelRefreshDelay");
