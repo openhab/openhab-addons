@@ -47,8 +47,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ForecastSolarBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
@@ -57,7 +55,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
-    private final Logger logger = LoggerFactory.getLogger(ForecastSolarBridgeHandler.class);
     private List<ForecastSolarPlaneHandler> planes = new ArrayList<>();
     private Optional<PointType> homeLocation;
     private Optional<ForecastSolarBridgeConfiguration> configuration = Optional.empty();
