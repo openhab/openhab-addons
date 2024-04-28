@@ -10,28 +10,28 @@
 		<description>GridBox Thing</description>
 
 		<channels>
-			<channel id="batteryCapacity" typeId="system.electric-energy"/>
-			<channel id="batteryNominalCapacity" typeId="system.electric-energy"/>
-			<channel id="batteryPower" typeId="system.electric-power"/>
-			<channel id="batteryRemainingCharge" typeId="system.electric-energy"/>
-			<channel id="batteryStateOfCharge" typeId="stateOfCharge"/>
-			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="battery-capacity" typeId="system.electric-energy"/>
+			<channel id="battery-nominal-capacity" typeId="system.electric-energy"/>
+			<channel id="battery-power" typeId="system.electric-power"/>
+			<channel id="battery-remaining-charge" typeId="system.electric-energy"/>
+			<channel id="battery-state-of-charge" typeId="stateOfCharge"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="consumption" typeId="system.electric-power"/>
-			<channel id="directConsumption" typeId="system.electric-power"/>
-			<channel id="directConsumptionEV" typeId="system.electric-power"/>
-			<channel id="directConsumptionHeatPump" typeId="system.electric-power"/>
-			<channel id="directConsumptionHeater" typeId="system.electric-power"/>
-			<channel id="directConsumptionHousehold" typeId="system.electric-power"/>
-			<channel id="directConsumptionRate" typeId="rate"/>
-			<channel id="evChargingStationPower" typeId="system.electric-power"/>
-			<channel id="heatPumpPower" typeId="system.electric-power"/>
-			<channel id="photovoltaicProduction" typeId="system.electric-power"/>
+			<channel id="direct-consumption" typeId="system.electric-power"/>
+			<channel id="direct-consumption-ev" typeId="system.electric-power"/>
+			<channel id="direct-consumption-heat-pump" typeId="system.electric-power"/>
+			<channel id="direct-consumption-heater" typeId="system.electric-power"/>
+			<channel id="direct-consumption-household" typeId="system.electric-power"/>
+			<channel id="direct-consumption-rate" typeId="rate"/>
+			<channel id="ev-charging-station-power" typeId="system.electric-power"/>
+			<channel id="heat-pump-power" typeId="system.electric-power"/>
+			<channel id="photovoltaic-production" typeId="system.electric-power"/>
 			<channel id="production" typeId="system.electric-power"/>
-			<channel id="selfConsumption" typeId="system.electric-power"/>
-			<channel id="selfConsumptionRate" typeId="rate"/>
-			<channel id="selfSufficiencyRate" typeId="rate"/>
-			<channel id="selfSupply" typeId="system.electric-power"/>
-			<channel id="totalConsumption" typeId="system.electric-power"/>
+			<channel id="self-consumption" typeId="system.electric-power"/>
+			<channel id="self-consumption-rate" typeId="rate"/>
+			<channel id="self-sufficiency-rate" typeId="rate"/>
+			<channel id="self-supply" typeId="system.electric-power"/>
+			<channel id="total-consumption" typeId="system.electric-power"/>
 		</channels>
 
 		<config-description>

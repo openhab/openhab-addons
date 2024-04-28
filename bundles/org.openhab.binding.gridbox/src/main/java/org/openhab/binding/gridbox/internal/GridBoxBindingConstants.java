@@ -30,26 +30,26 @@ public class GridBoxBindingConstants {
     public static final ThingTypeUID THING_TYPE_GRIDBOX = new ThingTypeUID(BINDING_ID, "gridbox");
 
     // List of all Channel ids
-    public static final String BATTERY_CAPACITY = "batteryCapacity";
-    public static final String BATTERY_NOMINAL_CAPACITY = "batteryNominalCapacity";
-    public static final String BATTERY_POWER = "batteryPower";
-    public static final String BATTERY_REMAINING_CHARGE = "batteryRemainingCharge";
-    public static final String BATTERY_STATE_OF_CHARGE = "batteryStateOfCharge";
-    public static final String BATTERY_LEVEL = "batteryLevel";
+    public static final String BATTERY_CAPACITY = "battery-capacity";
+    public static final String BATTERY_NOMINAL_CAPACITY = "battery-nominal-capacity";
+    public static final String BATTERY_POWER = "battery-power";
+    public static final String BATTERY_REMAINING_CHARGE = "battery-remaining-charge";
+    public static final String BATTERY_STATE_OF_CHARGE = "battery-state-of-charge";
+    public static final String BATTERY_LEVEL = "battery-level";
     public static final String CONSUMPTION = "consumption";
-    public static final String DIRECT_CONSUMPTION = "directConsumption";
-    public static final String DIRECT_CONSUMPTION_EV = "directConsumptionEV";
-    public static final String DIRECT_CONSUMPTION_HEAT_PUMP = "directConsumptionHeatPump";
-    public static final String DIRECT_CONSUMPTION_HEATER = "directConsumptionHeater";
-    public static final String DIRECT_CONSUMPTION_HOUSEHOLD = "directConsumptionHousehold";
-    public static final String DIRECT_CONSUMPTION_RATE = "directConsumptionRate";
-    public static final String EV_CHARGING_STATION_POWER = "evChargingStationPower";
-    public static final String HEAT_PUMP_POWER = "heatPumpPower";
-    public static final String PHOTOVOLTAIC_PRODUCTION = "photovoltaicProduction";
+    public static final String DIRECT_CONSUMPTION = "direct-consumption";
+    public static final String DIRECT_CONSUMPTION_EV = "direct-consumption-ev";
+    public static final String DIRECT_CONSUMPTION_HEAT_PUMP = "direct-consumption-heat-pump";
+    public static final String DIRECT_CONSUMPTION_HEATER = "direct-consumption-heater";
+    public static final String DIRECT_CONSUMPTION_HOUSEHOLD = "direct-consumption-household";
+    public static final String DIRECT_CONSUMPTION_RATE = "direct-consumption-rate";
+    public static final String EV_CHARGING_STATION_POWER = "ev-charging-station-power";
+    public static final String HEAT_PUMP_POWER = "heat-pump-power";
+    public static final String PHOTOVOLTAIC_PRODUCTION = "photovoltaic-production";
     public static final String PRODUCTION = "production";
-    public static final String SELF_CONSUMPTION = "selfConsumption";
-    public static final String SELF_CONSUMPTION_RATE = "selfConsumptionRate";
-    public static final String SELF_SUFFICIENCY_RATE = "selfSufficiencyRate";
-    public static final String SELF_SUPPLY = "selfSupply";
-    public static final String TOTAL_CONSUMPTION = "totalConsumption";
+    public static final String SELF_CONSUMPTION = "self-consumption";
+    public static final String SELF_CONSUMPTION_RATE = "self-consumption-rate";
+    public static final String SELF_SUFFICIENCY_RATE = "self-sufficiency-rate";
+    public static final String SELF_SUPPLY = "self-supply";
+    public static final String TOTAL_CONSUMPTION = "total-consumption";
 }
