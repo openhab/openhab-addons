@@ -101,7 +101,7 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
         ThingUID bridgeUid = bridge.getThing().getUID();
         logger.debug("Starting Location discovery for bridge {}", bridgeUid);
 
-        List<Measure> measures = apiHandler.getMeasures();
+        List<Measure> measures = apiHandler.getApiController().getMeasures();
         Set<String> registeredLocationIds = new HashSet<>(apiHandler.getRegisteredLocationIds());
 
         for (Measure measure : measures) {

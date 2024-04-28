@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.airgradient.internal.handler;
+package org.openhab.binding.airgradient.internal.communication;
 
 import java.util.Arrays;
 import java.util.List;

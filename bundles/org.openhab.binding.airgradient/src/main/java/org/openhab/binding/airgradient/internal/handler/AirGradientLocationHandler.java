@@ -69,7 +69,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
                 Bridge bridge = getBridge();
                 if (bridge != null) {
                     if (bridge.getHandler() instanceof AirGradientAPIHandler handler) {
-                        handler.setLedMode(getSerialNo(), stringCommand.toFullString());
+                        handler.getApiController().setLedMode(getSerialNo(), stringCommand.toFullString());
                     }
                 }
             } else {
@@ -82,7 +82,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
                     Bridge bridge = getBridge();
                     if (bridge != null) {
                         if (bridge.getHandler() instanceof AirGradientAPIHandler handler) {
-                            handler.calibrateCo2(getSerialNo());
+                            handler.getApiController().calibrateCo2(getSerialNo());
                         }
                     }
                 } else {
