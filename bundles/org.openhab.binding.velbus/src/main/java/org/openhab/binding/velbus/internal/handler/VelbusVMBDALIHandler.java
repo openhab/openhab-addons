@@ -100,7 +100,7 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
                     try {
                         virtualColorChannels[i - 1] = new VelbusVirtualColorChannel(virtualLight);
                     } catch (Exception e) {
-                        logger.error("VMBDALI on address {} : Virtual Light {} has wrong channel format '{}'. {}",
+                        logger.warn("VMBDALI on address {} : Virtual Light {} has wrong channel format '{}'. {}",
                                 getModuleAddress().getAddress(), i, virtualLight, e.getMessage());
                     }
                 }
