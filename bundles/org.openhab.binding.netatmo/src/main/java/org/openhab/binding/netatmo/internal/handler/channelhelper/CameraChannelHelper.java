@@ -46,8 +46,8 @@ public class CameraChannelHelper extends ChannelHelper {
     }
 
     public void setUrls(String vpnUrl, @Nullable String localUrl) {
-        this.vpnUrl = vpnUrl;
         this.localUrl = localUrl;
+        this.vpnUrl = vpnUrl;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class CameraChannelHelper extends ChannelHelper {
     }
 
     public @Nullable String getLivePictureURL(boolean local, boolean isMonitoring) {
-        if (!isMonitoring || (local && (localUrl != null))) {
+        if (!isMonitoring || (local && (localUrl == null))) {
             return null;
         }
         return "%s%s".formatted(getUrl(local), LIVE_PICTURE);
@@ -94,8 +94,8 @@ public class CameraChannelHelper extends ChannelHelper {
         };
     }
 
-    private String getUrl(boolean local) {
-        return Objects.requireNonNull(local ? localUrl : vpnUrl);
+    private @Nullable String getUrl(boolean local) {
+        return local ? localUrl : vpnUrl;
     }
 
     private State getLiveStreamURL(boolean local, @Nullable String configQual, boolean isMonitoring) {
