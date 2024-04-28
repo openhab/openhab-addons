@@ -83,10 +83,8 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
 
         ScheduledFuture<?> localDiscoveryFuture = this.discoveryFuture;
         if (localDiscoveryFuture != null) {
-            if (!localDiscoveryFuture.isCancelled()) {
-                localDiscoveryFuture.cancel(true);
-                this.discoveryFuture = null;
-            }
+            localDiscoveryFuture.cancel(true);
+            this.discoveryFuture = null;
         }
     }
 
