@@ -101,7 +101,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
 
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 5, apiConfig.refreshInterval,
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, apiConfig.refreshInterval,
                 TimeUnit.SECONDS);
     }
 
