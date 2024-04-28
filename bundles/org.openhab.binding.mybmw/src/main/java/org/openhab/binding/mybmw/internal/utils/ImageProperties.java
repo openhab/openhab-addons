@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ImageProperties {
     public static final int RETRY_COUNTER = 5;
     public int failCounter = 0;
-    public String viewport = "AngleSideViewForty"; // default view
+    public String viewport = "VehicleStatus"; // default view
 
     public ImageProperties(String viewport) {
         this.viewport = viewport;
