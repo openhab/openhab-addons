@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -51,8 +50,8 @@ public class EventChannelHelper extends ChannelHelper {
     }
 
     public void setUrls(String vpnUrl, @Nullable String localUrl) {
-        this.vpnUrl = vpnUrl;
         this.localUrl = localUrl;
+        this.vpnUrl = vpnUrl;
     }
 
     @Override
@@ -92,8 +91,8 @@ public class EventChannelHelper extends ChannelHelper {
         };
     }
 
-    private String getUrl(boolean local) {
-        return Objects.requireNonNull(local ? localUrl : vpnUrl);
+    private @Nullable String getUrl(boolean local) {
+        return local ? localUrl : vpnUrl;
     }
 
     private State getStreamURL(boolean local, @Nullable String videoId, VideoStatus videoStatus) {
