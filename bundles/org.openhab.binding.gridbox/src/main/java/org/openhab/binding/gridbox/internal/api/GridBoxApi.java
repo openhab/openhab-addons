@@ -113,7 +113,7 @@ public class GridBoxApi {
             logger.debug("Invalid response of authentication request, returned status: {}", status);
             logger.trace("Response body: {}", body);
             throw new GridBoxApiAutheticationException("Authentication request returned an invalid response");
-        } 
+        }
 
         logger.atTrace().log(() -> "Authentication request returned body: {}".formatted(body));
 
