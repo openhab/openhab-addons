@@ -13,6 +13,8 @@
 package org.openhab.binding.airgradient.internal.discovery;
 
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.BACKGROUND_DISCOVERY;
+import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.BACKGROUND_DISCOVERY_DELAY;
+import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.BACKGROUND_DISCOVERY_INTERVAL;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CONFIG_LOCATION;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_NAME;
@@ -25,6 +27,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,9 +59,35 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
     private final Logger logger = LoggerFactory.getLogger(AirGradientLocationDiscoveryService.class);
 
     private @NonNullByDefault({}) AirGradientAPIHandler apiHandler;
+    private @Nullable ScheduledFuture<?> discoveryFuture;
 
     public AirGradientLocationDiscoveryService() {
         super(Set.of(THING_TYPE_LOCATION), (int) SEARCH_TIME.getSeconds(), BACKGROUND_DISCOVERY);
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Start AirGradient background discovery");
+
+        ScheduledFuture<?> localDiscoveryFuture = this.discoveryFuture;
+        if (localDiscoveryFuture == null || localDiscoveryFuture.isCancelled()) {
+            this.discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan,
+                    BACKGROUND_DISCOVERY_DELAY.getSeconds(), BACKGROUND_DISCOVERY_INTERVAL.getSeconds(),
+                    TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stopping AirGradient background discovery");
+
+        ScheduledFuture<?> localDiscoveryFuture = this.discoveryFuture;
+        if (localDiscoveryFuture != null) {
+            if (!localDiscoveryFuture.isCancelled()) {
+                localDiscoveryFuture.cancel(true);
+                this.discoveryFuture = null;
+            }
+        }
     }
 
     @Override
