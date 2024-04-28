@@ -163,7 +163,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
             HomeEvent event = cap.getDeviceLastEvent(handler.getId(), moduleType.apiName);
             if (event != null) {
                 result.add(event);
-                result.addAll(event.getSubevents());
+                result.addAll(event.getSubEvents());
             }
         });
         return result;

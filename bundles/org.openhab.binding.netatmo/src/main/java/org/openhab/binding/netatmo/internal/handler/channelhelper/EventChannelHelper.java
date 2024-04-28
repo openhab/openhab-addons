@@ -24,6 +24,7 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.VideoStatu
 import org.openhab.binding.netatmo.internal.api.dto.Event;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
+import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -78,7 +79,7 @@ public class EventChannelHelper extends ChannelHelper {
             case CHANNEL_EVENT_CAMERA_ID:
                 return toStringType(event.getCameraId());
             case CHANNEL_EVENT_SUBTYPE:
-                return event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL);
+                return event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL);
             case CHANNEL_EVENT_SNAPSHOT:
                 return toRawType(event.getSnapshotUrl());
             case CHANNEL_EVENT_SNAPSHOT_URL:
