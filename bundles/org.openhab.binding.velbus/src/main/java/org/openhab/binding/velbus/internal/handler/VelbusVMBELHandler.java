@@ -65,8 +65,8 @@ public class VelbusVMBELHandler extends VelbusThermostatHandler {
 
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);
-        } else if (command instanceof OnOffType) {
-            byte commandByte = determineCommandByte((OnOffType) command);
+        } else if (command instanceof OnOffType commandAsOnOffType) {
+            byte commandByte = determineCommandByte(commandAsOnOffType);
 
             VelbusRelayPacket packet = new VelbusRelayPacket(getModuleAddress(), commandByte);
 
