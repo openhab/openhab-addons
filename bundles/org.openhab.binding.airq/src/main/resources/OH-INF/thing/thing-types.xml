@@ -217,12 +217,12 @@
 		<label>Door Event (exp)</label>
 		<state readOnly="true"></state>
 	</channel-type>
-	
-   <channel-type id="h2s" advanced="false">
-        <item-type unitHint="µg/m³">Number:Density</item-type>
-        <label>Hydrogen Sulfide (H₂S)</label>
-        <state readOnly="true" pattern="%.2f %unit%"></state>
-    </channel-type>
+
+	<channel-type id="h2s" advanced="false">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Hydrogen Sulfide (H₂S)</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
 
 	<channel-type id="health" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
