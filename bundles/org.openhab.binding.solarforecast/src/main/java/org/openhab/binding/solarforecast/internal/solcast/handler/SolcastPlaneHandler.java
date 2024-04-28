@@ -85,7 +85,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 if (handler instanceof SolcastBridgeHandler sbh) {
                     bridgeHandler = Optional.of(sbh);
                     forecast = Optional.of(new SolcastObject(thing.getUID().getAsString(), bridgeHandler.get()));
-                    bridgeHandler.get().addPlane(this);
+                    sbh.addPlane(this);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.plane.status.wrong-handler [\"" + handler + "\"]");
@@ -110,7 +110,10 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             forecast.ifPresent(forecastObject -> {
-                String group = (channelUID.getGroupId() != null) ? channelUID.getGroupId() : "";
+                String group = channelUID.getGroupId();
+                if (group == null) {
+                    group = EMPTY;
+                }
                 String channel = channelUID.getIdWithoutGroup();
                 QueryMode mode = QueryMode.Average;
                 switch (group) {

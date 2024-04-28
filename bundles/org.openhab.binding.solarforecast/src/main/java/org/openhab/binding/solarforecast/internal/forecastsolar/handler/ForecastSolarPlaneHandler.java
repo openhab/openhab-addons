@@ -157,6 +157,8 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                                     "@text/solarforecast.plane.status.json-status [\"" + fse.getMessage() + "\"]");
                         }
                     } else {
+                        logger.trace("Call {} failed with status {}. Response: {}", url, cr.getStatus(),
+                                cr.getContentAsString());
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/solarforecast.plane.status.http-status [\"" + cr.getStatus() + "\"]");
                     }

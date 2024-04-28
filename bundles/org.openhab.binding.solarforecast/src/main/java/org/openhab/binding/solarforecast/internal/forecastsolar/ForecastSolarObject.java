@@ -96,7 +96,6 @@ public class ForecastSolarObject implements SolarForecast {
                     }
                 }
             } catch (JSONException je) {
-                logger.debug("Error parsing JSON response {} - {}", content, je.getMessage());
                 throw new SolarForecastException(this,
                         "Error parsing JSON response " + content + " Reason: " + je.getMessage());
             }

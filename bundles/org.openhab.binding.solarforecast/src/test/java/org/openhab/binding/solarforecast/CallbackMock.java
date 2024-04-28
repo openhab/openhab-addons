@@ -78,13 +78,11 @@ public class CallbackMock implements ThingHandlerCallback {
     }
 
     @Override
-    public void validateConfigurationParameters(Thing thing,
-            Map<@NonNull String, @NonNull Object> configurationParameters) {
+    public void validateConfigurationParameters(Thing thing, Map<String, Object> configurationParameters) {
     }
 
     @Override
-    public void validateConfigurationParameters(Channel channel,
-            Map<@NonNull String, @NonNull Object> configurationParameters) {
+    public void validateConfigurationParameters(Channel channel, Map<String, Object> configurationParameters) {
     }
 
     @Override
