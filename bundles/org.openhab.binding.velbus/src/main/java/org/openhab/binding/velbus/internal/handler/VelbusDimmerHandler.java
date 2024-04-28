@@ -104,8 +104,10 @@ public class VelbusDimmerHandler extends VelbusThingHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        logger.trace("onPacketReceived() was called");
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
+        }
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte address = packet[2];
@@ -126,5 +128,7 @@ public class VelbusDimmerHandler extends VelbusThingHandler {
                 updateState(getModuleAddress().getChannelId(velbusChannelIdentifier), state);
             }
         }
+
+        return true;
     }
 }
