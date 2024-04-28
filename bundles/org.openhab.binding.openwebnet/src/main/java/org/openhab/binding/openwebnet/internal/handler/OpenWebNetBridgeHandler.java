@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.internal.actions.OpenWebNetBridgeActions;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetBusBridgeConfig;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetZigBeeBridgeConfig;
@@ -271,9 +272,18 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         reconnecting = false;
     }
 
+    /**
+     * Return the OpenGateway linked to this BridgeHandler
+     *
+     * @return the linked OpenGateway
+     */
+    public @Nullable OpenGateway getGateway() {
+        return gateway;
+    }
+
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(OpenWebNetDeviceDiscoveryService.class);
+        return Set.of(OpenWebNetDeviceDiscoveryService.class, OpenWebNetBridgeActions.class);
     }
 
     /**
