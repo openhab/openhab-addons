@@ -14,6 +14,7 @@ package org.openhab.binding.smaenergymeter.internal.packet;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smaenergymeter.internal.handler.EnergyMeter;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.binding.smaenergymeter.internal.handler.EnergyMeter;
  *
  * @author Łukasz Dywicki - Initial contribution
  */
+@NonNullByDefault
 public interface PayloadHandler {
 
     void handle(EnergyMeter energyMeter) throws IOException;

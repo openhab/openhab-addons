@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smaenergymeter.internal.handler.EnergyMeter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Łukasz Dywicki - Initial contribution
  */
+
+@NonNullByDefault
 public class PacketListener {
 
     private final DefaultPacketListenerRegistry registry;
@@ -42,8 +46,8 @@ public class PacketListener {
     public static final String DEFAULT_MCAST_GRP = "239.12.255.254";
     public static final int DEFAULT_MCAST_PORT = 9522;
 
-    private MulticastSocket socket;
-    private ScheduledFuture<?> future;
+    private @Nullable MulticastSocket socket;
+    private @Nullable ScheduledFuture<?> future;
 
     public PacketListener(DefaultPacketListenerRegistry registry, String multicastGroup, int port) {
         this.registry = registry;
@@ -81,13 +85,16 @@ public class PacketListener {
     }
 
     void close() throws IOException {
+
         if (future != null) {
             future.cancel(true);
+            future = null;
         }
 
         InetAddress address = InetAddress.getByName(multicastGroup);
         socket.leaveGroup(address);
         socket.close();
+        socket = null;
     }
 
     public void request() {
@@ -96,11 +103,11 @@ public class PacketListener {
 
     static class ReceivingTask implements Runnable {
         private final Logger logger = LoggerFactory.getLogger(ReceivingTask.class);
-        private final DatagramSocket socket;
+        private final @Nullable DatagramSocket socket;
         private final String group;
         private final List<PayloadHandler> handlers;
 
-        ReceivingTask(DatagramSocket socket, String group, List<PayloadHandler> handlers) {
+        ReceivingTask(@Nullable DatagramSocket socket, String group, List<PayloadHandler> handlers) {
             this.socket = socket;
             this.group = group;
             this.handlers = handlers;
@@ -120,7 +127,7 @@ public class PacketListener {
                         handler.handle(meter);
                     }
                 } catch (IOException e) {
-                    logger.info("Unexpected payload received for group {}", group, e);
+                    logger.debug("Unexpected payload received for group {}", group, e);
                 }
             } catch (IOException e) {
                 logger.warn("Failed to receive data for multicast group {}", group, e);

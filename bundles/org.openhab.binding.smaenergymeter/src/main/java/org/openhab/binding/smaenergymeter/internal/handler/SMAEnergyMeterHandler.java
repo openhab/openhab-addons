@@ -15,7 +15,6 @@ package org.openhab.binding.smaenergymeter.internal.handler;
 import static org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants.*;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smaenergymeter.internal.configuration.EnergyMeterConfig;
@@ -64,27 +63,31 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         logger.debug("Initializing SMAEnergyMeter handler '{}'", getThing().getUID());
 
         EnergyMeterConfig config = getConfigAs(EnergyMeterConfig.class);
 
-        int port = (config.getPort() == null) ? PacketListener.DEFAULT_MCAST_PORT : config.getPort();
-
         try {
-            listener = listenerRegistry.getListener(config.getMcastGroup(), port);
             serialNumber = config.getSerialNumber();
             if (serialNumber == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "Meter serial number missing");
                 return;
             }
+            String mcastGroup = config.getMcastGroup();
+            if (mcastGroup == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "mcast group is missing");
+                return;
+            }
+            listener = listenerRegistry.getListener(mcastGroup, config.getPort());
 
             logger.debug("Activated handler for SMA Energy Meter with S/N '{}'", serialNumber);
 
-            int pollingPeriod = (config.getPollingPeriod() == null) ? 30 : config.getPollingPeriod();
             listener.addPayloadHandler(this);
-            listener.open(pollingPeriod);
-            logger.debug("Polling job scheduled to run every {} sec. for '{}'", pollingPeriod, getThing().getUID());
+            listener.open(config.getPollingPeriod());
+            logger.debug("Polling job scheduled to run every {} sec. for '{}'", config.getPollingPeriod(),
+                    getThing().getUID());
             // we do not set online status here, it will be set only when data is received
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
@@ -97,6 +100,7 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
 
         if (listener != null) {
             listener.removePayloadHandler(this);
+            listener = null;
         }
     }
 
@@ -105,6 +109,8 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
         if (serialNumber == null || !serialNumber.equals(energyMeter.getSerialNumber())) {
             return;
         }
+        updateStatus(ThingStatus.ONLINE);
+        
         logger.debug("Update SMAEnergyMeter {} data '{}'", serialNumber, getThing().getUID());
 
         updateState(CHANNEL_POWER_IN, energyMeter.getPowerIn());
@@ -126,23 +132,5 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
         updateState(CHANNEL_POWER_OUT_L3, energyMeter.getPowerOutL3());
         updateState(CHANNEL_ENERGY_IN_L3, energyMeter.getEnergyInL3());
         updateState(CHANNEL_ENERGY_OUT_L3, energyMeter.getEnergyOutL3());
-
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    @Nullable
-    private static String retrieveSerialNumber(Map<String, String> properties) {
-        String property = properties.get(Thing.PROPERTY_SERIAL_NUMBER);
-        if (property == null) {
-            return null;
-        }
-        try {
-            // old format in decimal form
-            int identifier = Integer.parseInt(property);
-            return Integer.toHexString(identifier);
-        } catch (NumberFormatException e) {
-            // hex form for newly discovered meters
-            return property;
-        }
     }
 }

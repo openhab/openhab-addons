@@ -72,7 +72,7 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService imp
                     PacketListener.DEFAULT_MCAST_PORT);
             packetListener.open(30);
         } catch (IOException e) {
-            logger.error("Could not start background discovery", e);
+            logger.warn("Could not start background discovery", e);
             return;
         }
 

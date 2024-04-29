@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smaenergymeter.internal.packet.PacketListener.ReceivingTask;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -32,6 +33,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Łukasz Dywicki - Initial contribution
  */
+
+@NonNullByDefault
 @Component
 public class DefaultPacketListenerRegistry implements PacketListenerRegistry {
 
