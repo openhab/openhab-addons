@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.handler.AirGradientAPIHandler;
 import org.openhab.binding.airgradient.internal.model.Measure;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -99,37 +100,41 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
         ThingUID bridgeUid = bridge.getThing().getUID();
         logger.debug("Starting Location discovery for bridge {}", bridgeUid);
 
-        List<Measure> measures = apiHandler.getApiController().getMeasures();
-        Set<String> registeredLocationIds = new HashSet<>(apiHandler.getRegisteredLocationIds());
+        try {
+            List<Measure> measures = apiHandler.getApiController().getMeasures();
+            Set<String> registeredLocationIds = new HashSet<>(apiHandler.getRegisteredLocationIds());
 
-        for (Measure measure : measures) {
-            String id = measure.getLocationId();
-            if (id.isEmpty()) {
-                // Local devices don't have location ID.
-                id = measure.getSerialNo();
+            for (Measure measure : measures) {
+                String id = measure.getLocationId();
+                if (id.isEmpty()) {
+                    // Local devices don't have location ID.
+                    id = measure.getSerialNo();
+                }
+
+                String name = measure.getLocationName();
+                if (name.isEmpty()) {
+                    name = "Sensor_" + measure.getSerialNo();
+                }
+
+                if (!registeredLocationIds.contains(id)) {
+                    Map<String, Object> properties = new HashMap<>(1);
+                    properties.put(PROPERTY_NAME, name);
+                    properties.put(PROPERTY_FIRMWARE_VERSION, measure.getFirmwareVersion());
+                    properties.put(PROPERTY_SERIAL_NO, measure.getSerialNo());
+                    properties.put(CONFIG_LOCATION, id);
+
+                    ThingUID thingUID = new ThingUID(THING_TYPE_LOCATION, bridgeUid, id);
+
+                    logger.debug("Adding location {} with id {} to bridge {} with location id {}", name, thingUID,
+                            bridgeUid, measure.getLocationId());
+                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                            .withBridge(bridgeUid).withLabel(name).withRepresentationProperty(CONFIG_LOCATION).build();
+
+                    thingDiscovered(discoveryResult);
+                }
             }
-
-            String name = measure.getLocationName();
-            if (name.isEmpty()) {
-                name = "Sensor_" + measure.getSerialNo();
-            }
-
-            if (!registeredLocationIds.contains(id)) {
-                Map<String, Object> properties = new HashMap<>(1);
-                properties.put(PROPERTY_NAME, name);
-                properties.put(PROPERTY_FIRMWARE_VERSION, measure.getFirmwareVersion());
-                properties.put(PROPERTY_SERIAL_NO, measure.getSerialNo());
-                properties.put(CONFIG_LOCATION, id);
-
-                ThingUID thingUID = new ThingUID(THING_TYPE_LOCATION, bridgeUid, id);
-
-                logger.debug("Adding location {} with id {} to bridge {} with location id {}", name, thingUID,
-                        bridgeUid, measure.getLocationId());
-                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUid).withLabel(name).withRepresentationProperty(CONFIG_LOCATION).build();
-
-                thingDiscovered(discoveryResult);
-            }
+        } catch (AirGradientCommunicationException agce) {
+            logger.warn("Failed discovery due to communication exception: {}", agce.getMessage());
         }
     }
 

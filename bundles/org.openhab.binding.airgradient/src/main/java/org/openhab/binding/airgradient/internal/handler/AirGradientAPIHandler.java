@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.communication.RemoteAPIController;
 import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfiguration;
 import org.openhab.binding.airgradient.internal.discovery.AirGradientLocationDiscoveryService;
@@ -86,7 +87,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
             return;
         }
 
-        apiController = new RemoteAPIController(httpClient, gson, this, apiConfig);
+        apiController = new RemoteAPIController(httpClient, gson, apiConfig);
 
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         // the framework is then able to reuse the resources from the thing handler initialization.
@@ -108,20 +109,26 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
     }
 
     protected void pollingCode() {
-        List<Measure> measures = apiController.getMeasures();
-        Map<String, Measure> measureMap = measures.stream().collect(Collectors.toMap((m) -> getMeasureId(m), (m) -> m));
+        try {
+            List<Measure> measures = apiController.getMeasures();
+            updateStatus(ThingStatus.ONLINE);
+            Map<String, Measure> measureMap = measures.stream()
+                    .collect(Collectors.toMap((m) -> getMeasureId(m), (m) -> m));
 
-        for (Thing t : getThing().getThings()) {
-            if (t.getHandler() instanceof AirGradientLocationHandler handler) {
-                String locationId = handler.getLocationId();
-                @Nullable
-                Measure measure = measureMap.get(locationId);
-                if (measure != null) {
-                    handler.setMeasurment(locationId, measure);
-                } else {
-                    logger.debug("Could not find measures for location {}", locationId);
+            for (Thing t : getThing().getThings()) {
+                if (t.getHandler() instanceof AirGradientLocationHandler handler) {
+                    String locationId = handler.getLocationId();
+                    @Nullable
+                    Measure measure = measureMap.get(locationId);
+                    if (measure != null) {
+                        handler.setMeasurment(locationId, measure);
+                    } else {
+                        logger.debug("Could not find measures for location {}", locationId);
+                    }
                 }
             }
+        } catch (AirGradientCommunicationException agce) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
         }
     }
 
@@ -161,16 +168,6 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     public RemoteAPIController getApiController() {
         return apiController;
-    }
-
-    @Override
-    public void updateStatus(ThingStatus thingStatus) {
-        super.updateStatus(thingStatus);
-    }
-
-    @Override
-    public void updateStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail, @Nullable String string) {
-        super.updateStatus(thingStatus, thingStatusDetail, string);
     }
 
     // Discovery

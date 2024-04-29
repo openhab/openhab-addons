@@ -25,9 +25,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.communication.RemoteAPIController;
 import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfiguration;
 
@@ -139,9 +141,6 @@ public class RemoteApiControllerTest {
     private RemoteAPIController sut;
 
     @Nullable
-    AirGradientAPIHandler bridge;
-
-    @Nullable
     HttpClient httpClientMock;
 
     @Nullable
@@ -149,11 +148,10 @@ public class RemoteApiControllerTest {
 
     @BeforeEach
     public void setUp() {
-        bridge = Mockito.mock(AirGradientAPIHandler.class);
         httpClientMock = Mockito.mock(HttpClient.class);
         requestMock = Mockito.mock(Request.class);
 
-        sut = new RemoteAPIController(requireNonNull(httpClientMock), new Gson(), requireNonNull(bridge), TEST_CONFIG);
+        sut = new RemoteAPIController(requireNonNull(httpClientMock), new Gson(), TEST_CONFIG);
     }
 
     @Test
@@ -164,8 +162,9 @@ public class RemoteApiControllerTest {
         Mockito.when(response.getMediaType()).thenReturn("application/json");
         Mockito.when(response.getStatus()).thenReturn(500);
 
-        var res = sut.getMeasures();
-        assertThat(res, is(empty()));
+        AirGradientCommunicationException agce = Assertions.assertThrows(AirGradientCommunicationException.class,
+                () -> sut.getMeasures());
+        assertThat(agce.getMessage(), is("Returned status code: 500"));
     }
 
     @Test

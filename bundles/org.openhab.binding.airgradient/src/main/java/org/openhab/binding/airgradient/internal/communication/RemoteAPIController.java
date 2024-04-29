@@ -34,11 +34,8 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfiguration;
-import org.openhab.binding.airgradient.internal.handler.AirGradientAPIHandler;
 import org.openhab.binding.airgradient.internal.model.LedMode;
 import org.openhab.binding.airgradient.internal.model.Measure;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,14 +53,11 @@ public class RemoteAPIController {
 
     private final HttpClient httpClient;
     private final Gson gson;
-    private final AirGradientAPIHandler handler;
     private final AirGradientAPIConfiguration apiConfig;
 
-    public RemoteAPIController(HttpClient httpClient, Gson gson, AirGradientAPIHandler handler,
-            AirGradientAPIConfiguration apiConfig) {
+    public RemoteAPIController(HttpClient httpClient, Gson gson, AirGradientAPIConfiguration apiConfig) {
         this.httpClient = httpClient;
         this.gson = gson;
-        this.handler = handler;
         this.apiConfig = apiConfig;
     }
 
@@ -71,8 +65,9 @@ public class RemoteAPIController {
      * Return list of measures from AirGradient API.
      *
      * @return list of measures
+     * @throws AirGradientCommunicationException if unable to communicate with sensor or API.
      */
-    public List<Measure> getMeasures() {
+    public List<Measure> getMeasures() throws AirGradientCommunicationException {
         ContentResponse response = sendRequest(
                 RESTHelper.generateRequest(httpClient, RESTHelper.generateMeasuresUrl(apiConfig)));
         if (response != null) {
@@ -100,7 +95,7 @@ public class RemoteAPIController {
         return Collections.emptyList();
     }
 
-    public void setLedMode(String serialNo, String mode) {
+    public void setLedMode(String serialNo, String mode) throws AirGradientCommunicationException {
         Request request = httpClient.newRequest(RESTHelper.generateGetLedsModeUrl(apiConfig, serialNo));
         request.timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
         request.method(HttpMethod.PUT);
@@ -113,16 +108,16 @@ public class RemoteAPIController {
         sendRequest(request);
     }
 
-    public void calibrateCo2(String serialNo) {
+    public void calibrateCo2(String serialNo) throws AirGradientCommunicationException {
         logger.debug("Triggering CO2 calibration for {}", serialNo);
         sendRequest(RESTHelper.generateRequest(httpClient, RESTHelper.generateCalibrationCo2Url(apiConfig, serialNo),
                 HttpMethod.POST));
     }
 
-    private @Nullable ContentResponse sendRequest(@Nullable final Request request) {
+    private @Nullable ContentResponse sendRequest(@Nullable final Request request)
+            throws AirGradientCommunicationException {
         if (request == null) {
-            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to generate request");
+            throw new AirGradientCommunicationException("Unable to generate request");
         }
 
         @Nullable
@@ -131,17 +126,18 @@ public class RemoteAPIController {
             response = request.send();
             if (response != null) {
                 logger.debug("Response from {}: {}", request.getURI(), response.getStatus());
-                if (HttpStatus.isSuccess(response.getStatus())) {
-                    handler.updateStatus(ThingStatus.ONLINE);
-                } else {
-                    handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Returned status code: " + response.getStatus());
+                if (!HttpStatus.isSuccess(response.getStatus())) {
+                    throw new AirGradientCommunicationException("Returned status code: " + response.getStatus());
                 }
             } else {
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response");
+                throw new AirGradientCommunicationException("No response");
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            String message = e.getMessage();
+            if (message == null) {
+                message = "Communication error";
+            }
+            throw new AirGradientCommunicationException(message, e);
         }
 
         return response;

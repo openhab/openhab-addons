@@ -77,8 +77,7 @@ public class AirGradientAPIHandlerTest {
 
         sut = new AirGradientAPIHandler(requireNonNull(bridge), requireNonNull(httpClientMock));
         sut.setConfiguration(TEST_CONFIG);
-        sut.setApiController(
-                new RemoteAPIController(requireNonNull(httpClientMock), new Gson(), requireNonNull(sut), TEST_CONFIG));
+        sut.setApiController(new RemoteAPIController(requireNonNull(httpClientMock), new Gson(), TEST_CONFIG));
     }
 
     @Test

@@ -18,6 +18,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.config.AirGradientLocationConfiguration;
 import org.openhab.binding.airgradient.internal.model.Measure;
 import org.openhab.core.library.types.QuantityType;
@@ -66,25 +67,15 @@ public class AirGradientLocationHandler extends BaseThingHandler {
             }
         } else if (CHANNEL_LEDS_MODE.equals(channelUID.getId())) {
             if (command instanceof StringType stringCommand) {
-                Bridge bridge = getBridge();
-                if (bridge != null) {
-                    if (bridge.getHandler() instanceof AirGradientAPIHandler handler) {
-                        handler.getApiController().setLedMode(getSerialNo(), stringCommand.toFullString());
-                    }
-                }
+                setLedModeOnDevice(stringCommand.toFullString());
             } else {
-                logger.debug("Received command {} for channel {}, but it needs a string command", command.toString(),
+                logger.warn("Received command {} for channel {}, but it needs a string command", command.toString(),
                         channelUID.getId());
             }
         } else if (CHANNEL_CALIBRATION.equals(channelUID.getId())) {
             if (command instanceof StringType stringCommand) {
                 if ("co2".equals(stringCommand.toFullString())) {
-                    Bridge bridge = getBridge();
-                    if (bridge != null) {
-                        if (bridge.getHandler() instanceof AirGradientAPIHandler handler) {
-                            handler.getApiController().calibrateCo2(getSerialNo());
-                        }
-                    }
+                    calibrateCo2OnDevice();
                 } else {
                     logger.warn(
                             "Received unknown command {} for calibration on channel {}, which we don't know how to handle",
@@ -95,6 +86,34 @@ public class AirGradientLocationHandler extends BaseThingHandler {
             // This is read only
             logger.warn("Received command {} for channel {}, which we don't know how to handle", command.toString(),
                     channelUID.getId());
+        }
+    }
+
+    private void setLedModeOnDevice(String mode) {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            if (bridge.getHandler() instanceof AirGradientAPIHandler handler) {
+                try {
+                    handler.getApiController().setLedMode(getSerialNo(), mode);
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (AirGradientCommunicationException agce) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
+                }
+            }
+        }
+    }
+
+    private void calibrateCo2OnDevice() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            if (bridge.getHandler() instanceof AirGradientAPIHandler handler) {
+                try {
+                    handler.getApiController().calibrateCo2(getSerialNo());
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (AirGradientCommunicationException agce) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
+                }
+            }
         }
     }
 
