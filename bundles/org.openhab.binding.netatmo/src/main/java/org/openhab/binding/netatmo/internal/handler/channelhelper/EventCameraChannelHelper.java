@@ -30,7 +30,7 @@ import org.openhab.core.types.State;
  *
  */
 @NonNullByDefault
-public class EventCameraChannelHelper extends ChannelHelper {
+public class EventCameraChannelHelper extends EventChannelHelper {
 
     public EventCameraChannelHelper(Set<String> providedGroups) {
         super(providedGroups);
