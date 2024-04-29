@@ -14,6 +14,7 @@ package org.openhab.binding.airgradient.internal.handler;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,6 +58,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> pollingJob;
     private final HttpClient httpClient;
     private final Gson gson;
+    private final Set<PollEventListener> pollListeners = new HashSet<>(1);
 
     private @NonNullByDefault({}) RemoteAPIController apiController = null;
     private @NonNullByDefault({}) AirGradientAPIConfiguration apiConfig = null;
@@ -112,6 +114,8 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
         try {
             List<Measure> measures = apiController.getMeasures();
             updateStatus(ThingStatus.ONLINE);
+            triggerPollEvent(measures);
+
             Map<String, Measure> measureMap = measures.stream()
                     .collect(Collectors.toMap((m) -> getMeasureId(m), (m) -> m));
 
@@ -168,6 +172,22 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
 
     public RemoteAPIController getApiController() {
         return apiController;
+    }
+
+    // Event listening
+
+    public void addPollEventListener(PollEventListener listener) {
+        pollListeners.add(listener);
+    }
+
+    public void removePollEventListener(PollEventListener listener) {
+        pollListeners.remove(listener);
+    }
+
+    public void triggerPollEvent(List<Measure> measures) {
+        for (PollEventListener listener : pollListeners) {
+            listener.pollEvent(measures);
+        }
     }
 
     // Discovery

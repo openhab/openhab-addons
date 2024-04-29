@@ -140,7 +140,6 @@ public class AirGradientLocationHandler extends BaseThingHandler {
     }
 
     public void setMeasurment(String locationId, Measure measure) {
-        logger.debug("Updating measure for location {}, with name: {}", locationId, measure.locationName);
         updateProperty(PROPERTY_FIRMWARE_VERSION, measure.firmwareVersion);
         updateProperty(PROPERTY_NAME, measure.locationName);
         updateProperty(PROPERTY_SERIAL_NO, measure.serialno);

@@ -67,8 +67,6 @@ public class AirGradientBindingConstants {
     public static final Duration SEARCH_TIME = Duration.ofSeconds(15);
     public static final boolean BACKGROUND_DISCOVERY = true;
     public static final Duration DEFAULT_POLL_INTERVAL_LOCAL = Duration.ofSeconds(10);
-    public static final Duration BACKGROUND_DISCOVERY_DELAY = Duration.ofSeconds(10);
-    public static final Duration BACKGROUND_DISCOVERY_INTERVAL = Duration.ofSeconds(120);
 
     // Media types
     public static final String CONTENTTYPE_JSON = "application/json";

@@ -13,8 +13,6 @@
 package org.openhab.binding.airgradient.internal.discovery;
 
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.BACKGROUND_DISCOVERY;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.BACKGROUND_DISCOVERY_DELAY;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.BACKGROUND_DISCOVERY_INTERVAL;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CONFIG_LOCATION;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_NAME;
@@ -28,12 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.handler.AirGradientAPIHandler;
+import org.openhab.binding.airgradient.internal.handler.PollEventListener;
 import org.openhab.binding.airgradient.internal.model.Measure;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -55,7 +53,8 @@ import org.slf4j.LoggerFactory;
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = AirGradientLocationDiscoveryService.class)
 @NonNullByDefault
-public class AirGradientLocationDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class AirGradientLocationDiscoveryService extends AbstractDiscoveryService
+        implements ThingHandlerService, PollEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(AirGradientLocationDiscoveryService.class);
 
@@ -69,70 +68,62 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start AirGradient background discovery");
-
-        ScheduledFuture<?> localDiscoveryFuture = this.discoveryFuture;
-        if (localDiscoveryFuture == null || localDiscoveryFuture.isCancelled()) {
-            this.discoveryFuture = scheduler.scheduleWithFixedDelay(this::startScan,
-                    BACKGROUND_DISCOVERY_DELAY.getSeconds(), BACKGROUND_DISCOVERY_INTERVAL.getSeconds(),
-                    TimeUnit.SECONDS);
-        }
+        apiHandler.addPollEventListener(this);
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping AirGradient background discovery");
+        apiHandler.removePollEventListener(this);
+    }
 
-        ScheduledFuture<?> localDiscoveryFuture = this.discoveryFuture;
-        if (localDiscoveryFuture != null) {
-            localDiscoveryFuture.cancel(true);
-            this.discoveryFuture = null;
+    @Override
+    public void pollEvent(List<Measure> measures) {
+        BridgeHandler bridge = apiHandler.getThing().getHandler();
+        if (bridge == null) {
+            logger.debug("Missing bridge, can't discover sensors for unknown bridge.");
+            return;
+        }
+
+        ThingUID bridgeUid = bridge.getThing().getUID();
+
+        Set<String> registeredLocationIds = new HashSet<>(apiHandler.getRegisteredLocationIds());
+        for (Measure measure : measures) {
+            String id = measure.getLocationId();
+            if (id.isEmpty()) {
+                // Local devices don't have location ID.
+                id = measure.getSerialNo();
+            }
+
+            String name = measure.getLocationName();
+            if (name.isEmpty()) {
+                name = "Sensor_" + measure.getSerialNo();
+            }
+
+            if (!registeredLocationIds.contains(id)) {
+                Map<String, Object> properties = new HashMap<>(4);
+                properties.put(PROPERTY_NAME, name);
+                properties.put(PROPERTY_FIRMWARE_VERSION, measure.getFirmwareVersion());
+                properties.put(PROPERTY_SERIAL_NO, measure.getSerialNo());
+                properties.put(CONFIG_LOCATION, id);
+
+                ThingUID thingUID = new ThingUID(THING_TYPE_LOCATION, bridgeUid, id);
+
+                logger.debug("Adding location {} with id {} to bridge {} with location id {}", name, thingUID,
+                        bridgeUid, measure.getLocationId());
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                        .withBridge(bridgeUid).withLabel(name).withRepresentationProperty(CONFIG_LOCATION).build();
+
+                thingDiscovered(discoveryResult);
+            }
         }
     }
 
     @Override
     protected void startScan() {
-        BridgeHandler bridge = apiHandler.getThing().getHandler();
-        if (bridge == null) {
-            logger.debug("Missing bridge, can't start scan.");
-            return;
-        }
-
-        ThingUID bridgeUid = bridge.getThing().getUID();
-        logger.debug("Starting Location discovery for bridge {}", bridgeUid);
-
         try {
             List<Measure> measures = apiHandler.getApiController().getMeasures();
-            Set<String> registeredLocationIds = new HashSet<>(apiHandler.getRegisteredLocationIds());
-
-            for (Measure measure : measures) {
-                String id = measure.getLocationId();
-                if (id.isEmpty()) {
-                    // Local devices don't have location ID.
-                    id = measure.getSerialNo();
-                }
-
-                String name = measure.getLocationName();
-                if (name.isEmpty()) {
-                    name = "Sensor_" + measure.getSerialNo();
-                }
-
-                if (!registeredLocationIds.contains(id)) {
-                    Map<String, Object> properties = new HashMap<>(1);
-                    properties.put(PROPERTY_NAME, name);
-                    properties.put(PROPERTY_FIRMWARE_VERSION, measure.getFirmwareVersion());
-                    properties.put(PROPERTY_SERIAL_NO, measure.getSerialNo());
-                    properties.put(CONFIG_LOCATION, id);
-
-                    ThingUID thingUID = new ThingUID(THING_TYPE_LOCATION, bridgeUid, id);
-
-                    logger.debug("Adding location {} with id {} to bridge {} with location id {}", name, thingUID,
-                            bridgeUid, measure.getLocationId());
-                    DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                            .withBridge(bridgeUid).withLabel(name).withRepresentationProperty(CONFIG_LOCATION).build();
-
-                    thingDiscovered(discoveryResult);
-                }
-            }
+            pollEvent(measures);
         } catch (AirGradientCommunicationException agce) {
             logger.warn("Failed discovery due to communication exception: {}", agce.getMessage());
         }
