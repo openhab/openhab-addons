@@ -30,6 +30,9 @@
 			<channel id="degradation" typeId="teslapowerwall-degradation"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname/IP Address</label>
