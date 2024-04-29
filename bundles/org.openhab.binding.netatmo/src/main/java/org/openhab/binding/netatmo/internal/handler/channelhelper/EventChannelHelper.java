@@ -37,7 +37,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class EventChannelHelper extends ChannelHelper {
-    private @NonNullByDefault({}) String vpnUrl;
+    private @Nullable String vpnUrl;
     private @Nullable String localUrl;
     protected ModuleType moduleType = ModuleType.UNKNOWN;
 
@@ -49,17 +49,15 @@ public class EventChannelHelper extends ChannelHelper {
         this.moduleType = moduleType;
     }
 
-    public void setUrls(String vpnUrl, @Nullable String localUrl) {
+    public void setUrls(@Nullable String vpnUrl, @Nullable String localUrl) {
         this.localUrl = localUrl;
         this.vpnUrl = vpnUrl;
     }
 
     @Override
     public void setNewData(@Nullable NAObject data) {
-        if (data instanceof Event event) {
-            if (!event.getEventType().validFor(moduleType)) {
-                return;
-            }
+        if (data instanceof Event event && !event.getEventType().validFor(moduleType)) {
+            return;
         }
         super.setNewData(data);
     }
@@ -96,9 +94,10 @@ public class EventChannelHelper extends ChannelHelper {
     }
 
     private State getStreamURL(boolean local, @Nullable String videoId, VideoStatus videoStatus) {
-        if ((local && localUrl == null) || videoId == null || videoStatus != VideoStatus.AVAILABLE) {
+        String url = getUrl(local);
+        if (url == null || videoId == null || videoStatus != VideoStatus.AVAILABLE) {
             return UnDefType.NULL;
         }
-        return toStringType("%s/vod/%s/index.m3u8", getUrl(local), videoId);
+        return toStringType("%s/vod/%s/index.m3u8", url, videoId);
     }
 }
