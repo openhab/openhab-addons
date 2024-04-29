@@ -22,6 +22,8 @@ import org.openhab.binding.modbus.discovery.ModbusDiscoveryParticipant;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Nagy Attila Gabor - initial contribution
  *
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ModbusEndpointDiscoveryService.class)
 @NonNullByDefault
 public class ModbusEndpointDiscoveryService implements ModbusThingHandlerDiscoveryService {
 

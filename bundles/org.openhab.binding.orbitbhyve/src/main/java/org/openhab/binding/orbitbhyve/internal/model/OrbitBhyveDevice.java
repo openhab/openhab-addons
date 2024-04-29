@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
@@ -52,7 +54,8 @@ public class OrbitBhyveDevice {
     @SerializedName("last_connected_at")
     String lastConnectedAt = "";
 
-    JsonObject location = new JsonObject();
+    @Nullable
+    JsonElement location = null;
 
     @SerializedName("suggested_start_time")
     String suggestedStartTime = "";

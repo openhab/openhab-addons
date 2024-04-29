@@ -85,9 +85,9 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
     private @Nullable OpenWeatherMapOneCallAPIData weatherData;
 
     // forecastMinutes, -Hours and -Days determine the number of channel groups to create for each type
-    private int forecastMinutes = 0;
-    private int forecastHours = 12;
-    private int forecastDays = 6;
+    private int forecastMinutes = 60;
+    private int forecastHours = 48;
+    private int forecastDays = 8;
     private int numberOfAlerts = 0;
 
     public OpenWeatherMapOneCallHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
@@ -666,6 +666,15 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
             case CHANNEL_SUNSET:
                 state = getDateTimeTypeState(forecastData.getSunset());
                 break;
+            case CHANNEL_MOONRISE:
+                state = getDateTimeTypeState(forecastData.getMoonrise());
+                break;
+            case CHANNEL_MOONSET:
+                state = getDateTimeTypeState(forecastData.getMoonset());
+                break;
+            case CHANNEL_MOON_PHASE:
+                state = getDecimalTypeState(forecastData.getMoonPhase());
+                break;
             case CHANNEL_CONDITION:
                 if (!forecastData.getWeather().isEmpty()) {
                     state = getStringTypeState(forecastData.getWeather().get(0).getDescription());
@@ -809,19 +818,19 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
             Alert alert = alerts.get(count);
             switch (channelId) {
                 case CHANNEL_ALERT_EVENT:
-                    state = getStringTypeState(alert.event);
+                    state = getStringTypeState(alert.getEvent());
                     break;
                 case CHANNEL_ALERT_DESCRIPTION:
-                    state = getStringTypeState(alert.description);
+                    state = getStringTypeState(alert.getDescription());
                     break;
                 case CHANNEL_ALERT_ONSET:
-                    state = getDateTimeTypeState(alert.start);
+                    state = getDateTimeTypeState(alert.getStart());
                     break;
                 case CHANNEL_ALERT_EXPIRES:
-                    state = getDateTimeTypeState(alert.end);
+                    state = getDateTimeTypeState(alert.getEnd());
                     break;
                 case CHANNEL_ALERT_SOURCE:
-                    state = getStringTypeState(alert.senderName);
+                    state = getStringTypeState(alert.getSenderName());
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);

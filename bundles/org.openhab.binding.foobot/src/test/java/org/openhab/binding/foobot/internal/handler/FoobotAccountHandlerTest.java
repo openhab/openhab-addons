@@ -42,7 +42,7 @@ public class FoobotAccountHandlerTest {
             } catch (IOException e) {
                 throw new AssertionError(e.getMessage());
             }
-        };
+        }
     };
     private final FoobotAccountHandler handler = new FoobotAccountHandler(bridge, connector);
 

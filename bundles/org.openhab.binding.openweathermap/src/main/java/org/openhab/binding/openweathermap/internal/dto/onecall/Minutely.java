@@ -13,12 +13,7 @@
 package org.openhab.binding.openweathermap.internal.dto.onecall;
 
 /**
- * Holds the data from the deserialised JSON response. Created using http://www.jsonschema2pojo.org/.
- * Settings:
- * Annotation Style: GSON
- * Use primitive types
- * Use double numbers
- * allow additional properties
+ * Holds the data from the <code>minutely</code> object of the JSON response of the One Call APIs.
  *
  * @author Wolfgang Klimt - Initial contribution
  */
@@ -30,15 +25,7 @@ public class Minutely {
         return dt;
     }
 
-    public void setDt(int dt) {
-        this.dt = dt;
-    }
-
     public double getPrecipitation() {
         return precipitation;
-    }
-
-    public void setPrecipitation(double precipitation) {
-        this.precipitation = precipitation;
     }
 }

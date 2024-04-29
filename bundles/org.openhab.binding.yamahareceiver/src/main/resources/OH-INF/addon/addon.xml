@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>YamahaReceiver Binding</name>
-	<description>For all network enabled Yamaha receivers.</description>
+	<description>This is the binding for network enabled Yamaha receivers (without MusicCast support).</description>
 	<connection>local</connection>
 
 	<discovery-methods>
@@ -14,7 +14,7 @@
 			<match-properties>
 				<match-property>
 					<name>manufacturer</name>
-					<regex>(?i).*YAMAHA.*</regex>
+					<regex>.*YAMAHA.*</regex>
 				</match-property>
 				<match-property>
 					<name>deviceType</name>

@@ -228,7 +228,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
     }
 
     public static Map<String, Object> getProperties(Integer[] heatpumpValues) {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
 
         String heatpumpType = HeatpumpType.fromCode(heatpumpValues[78]).getName();
 

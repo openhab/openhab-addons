@@ -42,8 +42,8 @@ public class MinecraftSocketHandler implements WebSocketEventHandler {
     private Logger logger = LoggerFactory.getLogger(MinecraftSocketHandler.class);
 
     private BehaviorSubject<ServerData> serverRx = BehaviorSubject.create();
-    private BehaviorSubject<List<SignData>> signsRx = BehaviorSubject.<List<SignData>> create();
-    private BehaviorSubject<List<PlayerData>> playersRx = BehaviorSubject.<List<PlayerData>> create();
+    private BehaviorSubject<List<SignData>> signsRx = BehaviorSubject.create();
+    private BehaviorSubject<List<PlayerData>> playersRx = BehaviorSubject.create();
 
     private Gson gson = new GsonBuilder().create();
 

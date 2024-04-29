@@ -60,7 +60,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         SENSOR_IS_NULL,
         SENSOR_ID_NEGATIVE,
         UNKNOWN
-    };
+    }
 
     public enum UpdateStatus {
         OK,

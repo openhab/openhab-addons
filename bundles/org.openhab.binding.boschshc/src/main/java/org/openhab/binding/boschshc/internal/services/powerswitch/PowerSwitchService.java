@@ -24,7 +24,9 @@ import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitc
 @NonNullByDefault
 public class PowerSwitchService extends BoschSHCService<PowerSwitchServiceState> {
 
+    public static final String POWER_SWITCH_SERVICE_NAME = "PowerSwitch";
+
     public PowerSwitchService() {
-        super("PowerSwitch", PowerSwitchServiceState.class);
+        super(POWER_SWITCH_SERVICE_NAME, PowerSwitchServiceState.class);
     }
 }

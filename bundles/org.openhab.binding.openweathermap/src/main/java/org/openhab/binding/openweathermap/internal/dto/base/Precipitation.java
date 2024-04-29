@@ -31,16 +31,8 @@ public class Precipitation {
         return oneHour;
     }
 
-    public void set1h(Double oneHour) {
-        this.oneHour = oneHour;
-    }
-
     public @Nullable Double get3h() {
         return threeHours;
-    }
-
-    public void set3h(Double threeHours) {
-        this.threeHours = threeHours;
     }
 
     public Double getVolume() {

@@ -21,12 +21,15 @@ import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * Spotify Rule Actions.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = SpotifyActions.class)
 @ThingActionsScope(name = "spotify")
 @NonNullByDefault
 public class SpotifyActions implements ThingActions, ThingHandlerService {

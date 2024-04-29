@@ -25,6 +25,8 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ethan Dye - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = OmnilinkActions.class)
 @ThingActionsScope(name = "omnilink")
 @NonNullByDefault
 public class OmnilinkActions implements ThingActions {

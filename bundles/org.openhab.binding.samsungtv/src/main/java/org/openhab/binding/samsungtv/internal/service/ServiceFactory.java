@@ -32,7 +32,7 @@ public class ServiceFactory {
 
     @SuppressWarnings("serial")
     private static final Map<String, Class<? extends SamsungTvService>> SERVICEMAP = Collections
-            .unmodifiableMap(new HashMap<String, Class<? extends SamsungTvService>>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
                     put(MainTVServerService.SERVICE_NAME, MainTVServerService.class);
                     put(MediaRendererService.SERVICE_NAME, MediaRendererService.class);

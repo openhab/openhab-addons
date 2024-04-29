@@ -39,6 +39,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2 = new ThingTypeUID(BINDING_ID, "window-contact-2");
     public static final ThingTypeUID THING_TYPE_MOTION_DETECTOR = new ThingTypeUID(BINDING_ID, "motion-detector");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
+    public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL_2 = new ThingTypeUID(BINDING_ID, "shutter-control-2");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
     public static final ThingTypeUID THING_TYPE_CLIMATE_CONTROL = new ThingTypeUID(BINDING_ID, "climate-control");
     public static final ThingTypeUID THING_TYPE_WALL_THERMOSTAT = new ThingTypeUID(BINDING_ID, "wall-thermostat");
@@ -49,6 +50,11 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_SMART_PLUG_COMPACT = new ThingTypeUID(BINDING_ID, "smart-plug-compact");
     public static final ThingTypeUID THING_TYPE_SMART_BULB = new ThingTypeUID(BINDING_ID, "smart-bulb");
     public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR = new ThingTypeUID(BINDING_ID, "smoke-detector");
+    public static final ThingTypeUID THING_TYPE_UNIVERSAL_SWITCH = new ThingTypeUID(BINDING_ID, "universal-switch");
+    public static final ThingTypeUID THING_TYPE_UNIVERSAL_SWITCH_2 = new ThingTypeUID(BINDING_ID, "universal-switch-2");
+    public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR_2 = new ThingTypeUID(BINDING_ID, "smoke-detector-2");
+    public static final ThingTypeUID THING_TYPE_LIGHT_CONTROL_2 = new ThingTypeUID(BINDING_ID, "light-control-2");
+    public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
 
     public static final ThingTypeUID THING_TYPE_USER_DEFINED_STATE = new ThingTypeUID(BINDING_ID, "user-defined-state");
 
@@ -73,6 +79,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_VALVE_TAPPET_POSITION = "valve-tappet-position";
     public static final String CHANNEL_SETPOINT_TEMPERATURE = "setpoint-temperature";
     public static final String CHANNEL_CHILD_LOCK = "child-lock";
+    public static final String CHANNEL_CHILD_PROTECTION = "child-protection";
     public static final String CHANNEL_PRIVACY_MODE = "privacy-mode";
     public static final String CHANNEL_CAMERA_NOTIFICATION = "camera-notification";
     public static final String CHANNEL_SYSTEM_AVAILABILITY = "system-availability";
@@ -91,6 +98,18 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_ILLUMINANCE = "illuminance";
     public static final String CHANNEL_BYPASS_STATE = "bypass-state";
     public static final String CHANNEL_SIGNAL_STRENGTH = "signal-strength";
+    public static final String CHANNEL_KEY_CODE = "key-code";
+    public static final String CHANNEL_KEY_NAME = "key-name";
+    public static final String CHANNEL_KEY_EVENT_TYPE = "key-event-type";
+    public static final String CHANNEL_KEY_EVENT_TIMESTAMP = "key-event-timestamp";
+
+    // numbered channels
+    // the rationale for introducing numbered channels was discussed in
+    // https://github.com/openhab/openhab-addons/pull/16400
+    public static final String CHANNEL_POWER_SWITCH_1 = "power-switch-1";
+    public static final String CHANNEL_POWER_SWITCH_2 = "power-switch-2";
+    public static final String CHANNEL_CHILD_PROTECTION_1 = "child-protection-1";
+    public static final String CHANNEL_CHILD_PROTECTION_2 = "child-protection-2";
 
     public static final String CHANNEL_USER_DEFINED_STATE = "user-state";
 

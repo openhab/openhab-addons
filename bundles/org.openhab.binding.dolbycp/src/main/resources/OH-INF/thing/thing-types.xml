@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dolbycp"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="cp750">
+		<label>CP750 Device</label>
+		<description>Binding for Dolby Cinema Processor CP750</description>
+
+		<channels>
+			<channel id="fader" typeId="fader"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="input" typeId="input"/>
+			<channel id="analog" typeId="input-analog"/>
+			<channel id="dig1" typeId="input-dig1"/>
+			<channel id="dig2" typeId="input-dig2"/>
+			<channel id="dig3" typeId="input-dig3"/>
+			<channel id="dig4" typeId="input-dig4"/>
+			<channel id="nonsync" typeId="input-non_sync"/>
+			<channel id="mic" typeId="input-mic"/>
+		</channels>
+
+		<properties>
+			<property name="osVersion"></property>
+		</properties>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<default>61408</default>
+				<description>Port to access the device</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<advanced>true</advanced>
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>5</default>
+			</parameter>
+			<parameter name="reconnectInterval" type="integer" unit="s" min="0">
+				<advanced>true</advanced>
+				<label>Retry Interval</label>
+				<description>Reconnect interval in seconds after connection failure (0 = disabled)</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="fader">
+		<item-type>Dimmer</item-type>
+		<label>Fader</label>
+		<description>Fader state</description>
+	</channel-type>
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute state</description>
+	</channel-type>
+	<channel-type id="input">
+		<item-type>String</item-type>
+		<label>Current Input</label>
+		<description>Handles the state of INPUT_MODE</description>
+		<state pattern="%s">
+			<options>
+				<option value="analog">Analog</option>
+				<option value="dig_1">Digital 1</option>
+				<option value="dig_2">Digital 2</option>
+				<option value="dig_3">Digital 3</option>
+				<option value="dig_4">Digital 4</option>
+				<option value="non_sync">Non-Sync</option>
+				<option value="mic">Microphone</option>
+				<option value="last">Last active input</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="input-analog">
+		<item-type>Switch</item-type>
+		<label>Analog Input</label>
+		<description>Handles the state of INPUT_MODE=analog</description>
+	</channel-type>
+	<channel-type id="input-dig1">
+		<item-type>Switch</item-type>
+		<label>Digital Input 1</label>
+		<description>Handles the state of INPUT_MODE=dig_1</description>
+	</channel-type>
+	<channel-type id="input-dig2">
+		<item-type>Switch</item-type>
+		<label>Digital Input 2</label>
+		<description>Handles the state of INPUT_MODE=dig_3</description>
+	</channel-type>
+	<channel-type id="input-dig3">
+		<item-type>Switch</item-type>
+		<label>Digital Input 3</label>
+		<description>Handles the state of INPUT_MODE=dig_3</description>
+	</channel-type>
+	<channel-type id="input-dig4">
+		<item-type>Switch</item-type>
+		<label>Digital Input 4</label>
+		<description>Handles the state of INPUT_MODE=dig_4</description>
+	</channel-type>
+	<channel-type id="input-non_sync">
+		<item-type>Switch</item-type>
+		<label>Non-Sync Input</label>
+		<description>Handles the state of INPUT_MODE=non_sync</description>
+	</channel-type>
+	<channel-type id="input-mic">
+		<item-type>Switch</item-type>
+		<label>Mic Input</label>
+		<description>Handles the state of INPUT_MODE=mic</description>
+	</channel-type>
+</thing:thing-descriptions>

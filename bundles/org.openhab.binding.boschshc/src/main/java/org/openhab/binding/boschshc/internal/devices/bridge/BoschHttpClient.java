@@ -56,6 +56,16 @@ public class BoschHttpClient extends HttpClient {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    /**
+     * Default number of seconds for HTTP request timeouts
+     */
+    public static final long DEFAULT_TIMEOUT_SECONDS = 10;
+
+    /**
+     * The time unit used for default HTTP request timeouts
+     */
+    public static final TimeUnit DEFAULT_TIMEOUT_UNIT = TimeUnit.SECONDS;
+
     private final String ipAddress;
     private final String systemPassword;
 
@@ -101,7 +111,32 @@ public class BoschHttpClient extends HttpClient {
      * @return Bosch SHC URL for passed endpoint
      */
     public String getBoschShcUrl(String endpoint) {
-        return String.format("https://%s:8444/%s", this.ipAddress, endpoint);
+        String url = String.format("https://%s:8444/%s", this.ipAddress, endpoint);
+        return escapeURL(url);
+    }
+
+    /**
+     * Performs specific URL escaping required for certain Bosch SHC URLs.
+     * <p>
+     * In particular, hash characters in child device IDs must be escaped with <code>%23</code>.
+     * <p>
+     * Invalid example:
+     * 
+     * <pre>
+     * https://host:port/devices/hdm:ZigBee:70ac08fffe5294ea#3/services/PowerSwitch/state
+     * </pre>
+     * 
+     * Valid example:
+     * 
+     * <pre>
+     * https://host:port/devices/hdm:ZigBee:70ac08fffe5294ea%233/services/PowerSwitch/state
+     * </pre>
+     * 
+     * @param url the URL to be escaped
+     * @return the escaped URL
+     */
+    private String escapeURL(String url) {
+        return url.replace("#", "%23");
     }
 
     /**
@@ -299,7 +334,7 @@ public class BoschHttpClient extends HttpClient {
 
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json")
                 .header("api-version", "3.2") // see https://github.com/BoschSmartHome/bosch-shc-api-docs/issues/80
-                .timeout(10, TimeUnit.SECONDS); // Set default timeout
+                .timeout(DEFAULT_TIMEOUT_SECONDS, DEFAULT_TIMEOUT_UNIT); // Set default timeout
 
         if (content != null) {
             final String body;

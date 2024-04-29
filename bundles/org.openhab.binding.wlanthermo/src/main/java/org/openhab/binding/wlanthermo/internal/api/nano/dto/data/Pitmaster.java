@@ -28,10 +28,10 @@ public class Pitmaster {
 
     @SerializedName("type")
     @Expose
-    private List<String> type = new ArrayList<String>();
+    private List<String> type = new ArrayList<>();
     @SerializedName("pm")
     @Expose
-    private List<Pm> pm = new ArrayList<Pm>();
+    private List<Pm> pm = new ArrayList<>();
 
     /**
      * No args constructor for use in serialization

@@ -121,7 +121,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> loginFuture;
 
     // List of futures used for command retries
-    private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<ScheduledFuture<?>>();
+    private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<>();
 
     /**
      * List of executions

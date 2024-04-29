@@ -36,7 +36,7 @@ abstract class BaseChannelHandler<T> implements ChannelHandler {
     private final ResponseListener<T> defaultResponseListener = createResponseListener();
 
     protected <Y> ResponseListener<Y> createResponseListener() {
-        return new ResponseListener<Y>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(String error) {

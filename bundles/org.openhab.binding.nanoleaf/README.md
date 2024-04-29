@@ -36,7 +36,7 @@ You can set the **color** for each panel and in the case of a Nanoleaf Canvas or
 | Lines                  | NL59 | Lines                                                      |     X     |               |
 | Canvas                 | NL29 | Squares                                                    |     X     |       X       |
 
- x  = Supported  (-) = unknown (no device available to test)
+  x = Supported  (-) = unknown (no device available to test)
 
 ## Discovery
 
@@ -104,12 +104,15 @@ Compare the following output with the right picture at the beginning of the arti
 
 ```
 
+As mentioned above this only works for the squared panels.
+It is recommended to instead use the layout-channel described below which works for all designs.
+
 ## State
 
 The state channel shows an image of the panels on the wall.
 You have to configure things for each panel to get the correct color.
 Since the colors of the panels can make it difficult to see the panel ids, please use the layout channel where the background color is always white to identify them.
-For state to work, you need to set static colors to your panel. 
+For state to work, you need to set static colors to your panel.
 This is because Nanoleaf does not return updates on colors for dynamic effects and animations.
 
 ![Image](doc/NanoCanvas_rendered.png)
@@ -160,19 +163,19 @@ This discovers all connected panels with their IDs.
 
 The controller bridge has the following channels:
 
-| Channel             | Item Type          | Description                                                                                               | Read Only |
-|---------------------|--------------------|-----------------------------------------------------------------------------------------------------------|-----------|
-| color               | Color              | Color, power and brightness of all light panels                                                           | No        |
-| colorTemperature    | Dimmer             | Color temperature (in percent) of all light panels                                                        | No        |
-| colorTemperatureAbs | Number:Temperature | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                           | No        |
-| colorMode           | String             | Color mode of the light panels                                                                            | Yes       |
-| effect              | String             | Selected effect of the light panels                                                                       | No        |
-| layout              | Image              | Shows the layout of your panels with IDs.                                                                 | Yes       |
-| rhythmState         | Switch             | Connection state of the rhythm module                                                                     | Yes       |
-| rhythmActive        | Switch             | Activity state of the rhythm module                                                                       | Yes       |
-| rhythmMode          | Number             | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                             | No        |
-| state               | Image              | Shows the current state of your panels with colors.                                                       | Yes       |
-| swipe               | Trigger            | [Canvas / Shapes Only] Detects Swipes over the panel. LEFT, RIGHT, UP, DOWN events are supported.         | Yes       |
+| Channel             | Item Type          | Description                                                                                       | Read Only |
+|---------------------|--------------------|---------------------------------------------------------------------------------------------------|-----------|
+| color               | Color              | Color, power and brightness of all light panels                                                   | No        |
+| colorTemperature    | Dimmer             | Color temperature (in percent) of all light panels                                                | No        |
+| colorTemperatureAbs | Number:Temperature | Color temperature (in Kelvin, 1200 to 6500) of all light panels                                   | No        |
+| colorMode           | String             | Color mode of the light panels                                                                    | Yes       |
+| effect              | String             | Selected effect of the light panels                                                               | No        |
+| layout              | Image              | Shows the layout of your panels with IDs.                                                         | Yes       |
+| rhythmState         | Switch             | Connection state of the rhythm module                                                             | Yes       |
+| rhythmActive        | Switch             | Activity state of the rhythm module                                                               | Yes       |
+| rhythmMode          | Number             | Sound source for the rhythm module. 0=Microphone, 1=Aux cable                                     | No        |
+| state               | Image              | Shows the current state of your panels with colors.                                               | Yes       |
+| swipe               | Trigger            | [Canvas / Shapes Only] Detects Swipes over the panel. LEFT, RIGHT, UP, DOWN events are supported. | Yes       |
 
 A lightpanel thing has the following channels:
 

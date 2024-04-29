@@ -121,7 +121,7 @@ public class WemoUtil {
     }
 
     private static Map<String, String> buildBuiltinXMLEntityMap() {
-        Map<String, String> entities = new HashMap<String, String>(10);
+        Map<String, String> entities = new HashMap<>(10);
         entities.put("lt", "<");
         entities.put("gt", ">");
         entities.put("amp", "&");

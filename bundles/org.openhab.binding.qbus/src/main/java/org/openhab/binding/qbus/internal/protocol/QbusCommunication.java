@@ -270,7 +270,7 @@ public final class QbusCommunication extends BaseThingHandler {
 
         qbusListenerRunning = false;
         logger.trace("Event listener thread stopped on thread {}", Thread.currentThread().getId());
-    };
+    }
 
     /**
      * Called by other methods to send json data to Qbus.

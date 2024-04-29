@@ -71,4 +71,9 @@ class UserStateServiceStateTest {
         subject.setState(true);
         assertEquals(OnOffType.ON, subject.toOnOffType());
     }
+
+    @Test
+    void testToString() {
+        assertEquals("UserStateServiceState{state=false, type='userdefinedstates'}", subject.toString());
+    }
 }

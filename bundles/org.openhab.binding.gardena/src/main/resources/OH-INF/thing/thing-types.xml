@@ -597,7 +597,7 @@
 	</channel-type>
 
 	<channel-type id="soilHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Soil Humidity</label>
 		<description>Soil humidity</description>
 		<state readOnly="true" pattern="%d %%"/>

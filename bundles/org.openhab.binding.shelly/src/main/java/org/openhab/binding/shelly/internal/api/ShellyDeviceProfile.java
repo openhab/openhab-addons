@@ -218,7 +218,8 @@ public class ShellyDeviceProfile {
         isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR) || thingType.equals(THING_TYPE_SHELLYPLUSSMOKE_STR);
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
         boolean isUNI = thingType.equals(THING_TYPE_SHELLYUNI_STR);
-        isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR);
+        isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR)
+                || thingType.equals(THING_TYPE_SHELLYBLUHT_STR);
         isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR) || thingType.equals(THING_TYPE_SHELLYDOORWIN2_STR)
                 || thingType.equals(THING_TYPE_SHELLYBLUDW_STR);
         isMotion = thingType.startsWith(THING_TYPE_SHELLYMOTION_STR)
@@ -403,12 +404,12 @@ public class ShellyDeviceProfile {
     }
 
     public static boolean isGeneration2(String thingType) {
-        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro")
-                || thingType.startsWith("shellymini") || isBluSeries(thingType);
+        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || thingType.contains("mini")
+                || isBluSeries(thingType);
     }
 
     public static boolean isBluSeries(String thingType) {
-        return thingType.startsWith("shellyblu");
+        return thingType.startsWith("shellyblu") && !thingType.startsWith(THING_TYPE_SHELLYBLUGW_STR);
     }
 
     public boolean coiotEnabled() {
@@ -429,6 +430,8 @@ public class ShellyDeviceProfile {
                 return (THING_TYPE_SHELLYBLUDW_STR + "-" + mac).toLowerCase();
             case SHELLYDT_BLUMOTION:
                 return (THING_TYPE_SHELLYBLUMOTION_STR + "-" + mac).toLowerCase();
+            case SHELLYDT_BLUHT:
+                return (THING_TYPE_SHELLYBLUHT_STR + "-" + mac).toLowerCase();
             default:
                 throw new IllegalArgumentException("Unsupported BLU device model " + model);
         }

@@ -312,8 +312,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (stopping != null) {
                 stopping.complete(false);
             }
-            isStopping = new CompletableFuture<Boolean>(); // set this so we can check if stop confirmation has been
-                                                           // received
+            isStopping = new CompletableFuture<>(); // set this so we can check if stop confirmation has been
+                                                    // received
         }
 
         Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
@@ -421,8 +421,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (settingURI != null) {
                 settingURI.complete(false);
             }
-            isSettingURI = new CompletableFuture<Boolean>(); // set this so we don't start playing when not finished
-                                                             // setting URI
+            isSettingURI = new CompletableFuture<>(); // set this so we don't start playing when not finished
+                                                      // setting URI
         } else {
             logger.debug("New URI {} is same as previous on renderer {}", nowPlayingUri, thing.getLabel());
         }
@@ -1651,7 +1651,12 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")) {
                 updateState(ALBUM_ART, UnDefType.UNDEF);
             } else {
-                State albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
+                State albumArt = null;
+                try {
+                    albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
+                } catch (IllegalArgumentException e) {
+                    logger.debug("Invalid album art URI: {}", media.getAlbumArtUri(), e);
+                }
                 if (albumArt == null) {
                     logger.debug("Failed to download the content of album art from URL {}", media.getAlbumArtUri());
                     if (!isCurrent) {

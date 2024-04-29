@@ -119,7 +119,7 @@ public class GroupePSAHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
-    };
+    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -398,7 +398,7 @@ public class GroupePSAHandler extends BaseThingHandler {
 
     protected <T extends Quantity<T>> void updateState(String channelID, @Nullable BigDecimal number, Unit<T> unit) {
         if (number != null) {
-            updateState(channelID, new QuantityType<T>(number, unit));
+            updateState(channelID, new QuantityType<>(number, unit));
         } else {
             updateState(channelID, UnDefType.UNDEF);
         }

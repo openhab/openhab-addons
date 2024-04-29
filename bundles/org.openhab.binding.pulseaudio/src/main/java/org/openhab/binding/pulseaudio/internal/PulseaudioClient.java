@@ -149,7 +149,7 @@ public class PulseaudioClient {
      */
     public synchronized void update() {
         // one step copy
-        modules = new ArrayList<Module>(Parser.parseModules(listModules()));
+        modules = new ArrayList<>(Parser.parseModules(listModules()));
 
         List<AbstractAudioDeviceConfig> newItems = new ArrayList<>(); // prepare new list before assigning it
         if (configuration.sink) {
@@ -382,7 +382,7 @@ public class PulseaudioClient {
         if (itemType == null) {
             return Optional.empty();
         }
-        List<Module> modulesCopy = new ArrayList<Module>(modules);
+        List<Module> modulesCopy = new ArrayList<>(modules);
         var isSource = item instanceof Source;
         return modulesCopy.stream() // iteration on modules
                 .filter(module -> MODULE_SIMPLE_PROTOCOL_TCP_NAME.equals(module.getPaName())) // filter on module name

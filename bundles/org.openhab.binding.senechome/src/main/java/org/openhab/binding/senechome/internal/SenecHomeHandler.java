@@ -326,7 +326,7 @@ public class SenecHomeHandler extends BaseThingHandler {
         } else {
             value = value.setScale(scale, RoundingMode.HALF_UP);
         }
-        updateState(channel.getUID(), new QuantityType<Q>(value, unit));
+        updateState(channel.getUID(), new QuantityType<>(value, unit));
     }
 
     protected BigDecimal getSenecValue(String value) {

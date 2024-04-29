@@ -154,6 +154,12 @@ public class EcovacsXmppDevice implements EcovacsDevice {
     }
 
     @Override
+    public Optional<byte[]> downloadCleanMapImage(CleanLogRecord record)
+            throws EcovacsApiException, InterruptedException {
+        return Optional.empty();
+    }
+
+    @Override
     public void connect(final EventListener listener, final ScheduledExecutorService scheduler)
             throws EcovacsApiException {
         EcovacsApiConfiguration config = api.getConfig();

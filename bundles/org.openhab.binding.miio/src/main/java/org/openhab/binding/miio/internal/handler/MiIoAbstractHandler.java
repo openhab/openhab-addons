@@ -114,7 +114,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return "id:" + ret;
         }
         return "failed";
-    });;
+    });
     protected static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
     protected static final long CACHE_EXPIRY_NETWORK = TimeUnit.SECONDS.toMillis(60);
 
