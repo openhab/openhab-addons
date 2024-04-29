@@ -22,6 +22,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants;
 import org.openhab.binding.smaenergymeter.internal.packet.PacketListener.ReceivingTask;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -40,7 +41,8 @@ public class DefaultPacketListenerRegistry implements PacketListenerRegistry {
 
     private final Logger logger = LoggerFactory.getLogger(DefaultPacketListenerRegistry.class);
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1,
-            (runnable) -> new Thread(runnable, "sma-energy-meter-receiver"));
+            (runnable) -> new Thread(runnable,
+                    "OH-binding-" + SMAEnergyMeterBindingConstants.BINDING_ID + "-listener"));
     private final Map<String, PacketListener> listeners = new ConcurrentHashMap<>();
 
     @Override

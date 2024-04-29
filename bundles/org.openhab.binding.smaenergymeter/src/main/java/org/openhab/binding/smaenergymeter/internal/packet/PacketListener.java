@@ -68,6 +68,7 @@ public class PacketListener {
     }
 
     public boolean isOpen() {
+        MulticastSocket socket = this.socket;
         return socket != null && socket.isConnected();
     }
 
@@ -76,25 +77,29 @@ public class PacketListener {
             // no need to bind socket second time
             return;
         }
-        socket = new MulticastSocket(port);
+        MulticastSocket socket = new MulticastSocket(port);
         socket.setSoTimeout(5000);
         InetAddress address = InetAddress.getByName(multicastGroup);
         socket.joinGroup(address);
 
         future = registry.addTask(new ReceivingTask(socket, multicastGroup + ":" + port, handlers), intervalSec);
+        this.socket = socket;
     }
 
     void close() throws IOException {
-
+        ScheduledFuture<?> future = this.future;
         if (future != null) {
             future.cancel(true);
-            future = null;
+            this.future = null;
         }
 
         InetAddress address = InetAddress.getByName(multicastGroup);
-        socket.leaveGroup(address);
-        socket.close();
-        socket = null;
+        MulticastSocket socket = this.socket;
+        if (socket != null) {
+            socket.leaveGroup(address);
+            socket.close();
+            this.socket = null;
+        }
     }
 
     public void request() {
@@ -117,7 +122,10 @@ public class PacketListener {
             try {
                 byte[] bytes = new byte[608];
                 DatagramPacket msgPacket = new DatagramPacket(bytes, bytes.length);
-                socket.receive(msgPacket);
+                DatagramSocket socket = this.socket;
+                if (socket != null) {
+                    socket.receive(msgPacket);
+                }
 
                 try {
                     EnergyMeter meter = new EnergyMeter();

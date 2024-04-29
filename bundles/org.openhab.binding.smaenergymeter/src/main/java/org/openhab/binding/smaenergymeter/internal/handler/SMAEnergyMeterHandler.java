@@ -53,6 +53,7 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
             logger.debug("Refreshing {}", channelUID);
+            PacketListener listener = this.listener;
             if (listener != null) {
                 listener.request();
             }
@@ -80,12 +81,13 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "mcast group is missing");
                 return;
             }
-            listener = listenerRegistry.getListener(mcastGroup, config.getPort());
+            PacketListener listener = listenerRegistry.getListener(mcastGroup, config.getPort());
 
             logger.debug("Activated handler for SMA Energy Meter with S/N '{}'", serialNumber);
 
             listener.addPayloadHandler(this);
             listener.open(config.getPollingPeriod());
+            this.listener = listener;
             logger.debug("Polling job scheduled to run every {} sec. for '{}'", config.getPollingPeriod(),
                     getThing().getUID());
             // we do not set online status here, it will be set only when data is received
@@ -97,20 +99,21 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
     @Override
     public void dispose() {
         logger.debug("Disposing SMAEnergyMeter handler '{}'", getThing().getUID());
-
+        PacketListener listener = this.listener;
         if (listener != null) {
             listener.removePayloadHandler(this);
-            listener = null;
+            this.listener = null;
         }
     }
 
     @Override
     public void handle(EnergyMeter energyMeter) {
+        String serialNumber = this.serialNumber;
         if (serialNumber == null || !serialNumber.equals(energyMeter.getSerialNumber())) {
             return;
         }
         updateStatus(ThingStatus.ONLINE);
-        
+
         logger.debug("Update SMAEnergyMeter {} data '{}'", serialNumber, getThing().getUID());
 
         updateState(CHANNEL_POWER_IN, energyMeter.getPowerIn());

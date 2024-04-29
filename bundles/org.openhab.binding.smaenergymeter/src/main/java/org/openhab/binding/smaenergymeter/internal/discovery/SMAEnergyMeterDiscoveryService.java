@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smaenergymeter.internal.handler.EnergyMeter;
 import org.openhab.binding.smaenergymeter.internal.packet.PacketListener;
 import org.openhab.binding.smaenergymeter.internal.packet.PacketListenerRegistry;
@@ -42,12 +44,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osman Basha - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.smaenergymeter")
 public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService implements PayloadHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SMAEnergyMeterDiscoveryService.class);
     private final PacketListenerRegistry listenerRegistry;
-    private PacketListener packetListener;
+    private @Nullable PacketListener packetListener;
 
     @Activate
     public SMAEnergyMeterDiscoveryService(@Reference PacketListenerRegistry listenerRegistry) {
@@ -62,6 +65,7 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService imp
 
     @Override
     protected void startBackgroundDiscovery() {
+        PacketListener packetListener = this.packetListener;
         if (packetListener != null) {
             return;
         }
@@ -77,11 +81,15 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService imp
         }
 
         packetListener.addPayloadHandler(this);
+        this.packetListener = packetListener;
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        packetListener.removePayloadHandler(this);
+        PacketListener packetListener = this.packetListener;
+        if (packetListener != null) {
+            packetListener.removePayloadHandler(this);
+        }
     }
 
     @Override
