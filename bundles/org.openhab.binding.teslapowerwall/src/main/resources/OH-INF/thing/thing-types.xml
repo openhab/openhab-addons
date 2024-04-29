@@ -72,7 +72,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery SOE</label>
 		<description>Current battery state of charge</description>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 	<channel-type id="teslapowerwall-mode">
 		<item-type>String</item-type>
@@ -167,7 +167,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Degradation</label>
 		<description>Current battery degradation %</description>
-		<state pattern="%.1f %unit%"/>
+		<state pattern="%.1f %%"/>
 	</channel-type>
 
 </thing:thing-descriptions>
