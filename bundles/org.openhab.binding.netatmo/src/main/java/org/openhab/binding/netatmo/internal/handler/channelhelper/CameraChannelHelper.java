@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.handler.channelhelper;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
-import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,14 +37,14 @@ public class CameraChannelHelper extends ChannelHelper {
     private static final String QUALITY_CONF_ENTRY = "quality";
     private static final String LIVE_PICTURE = "/live/snapshot_720.jpg";
 
-    private @NonNullByDefault({}) String vpnUrl;
+    private @Nullable String vpnUrl;
     private @Nullable String localUrl;
 
     public CameraChannelHelper(Set<String> providedGroups) {
         super(providedGroups);
     }
 
-    public void setUrls(String vpnUrl, @Nullable String localUrl) {
+    public void setUrls(@Nullable String vpnUrl, @Nullable String localUrl) {
         this.localUrl = localUrl;
         this.vpnUrl = vpnUrl;
     }
@@ -65,16 +64,17 @@ public class CameraChannelHelper extends ChannelHelper {
     }
 
     public @Nullable String getLivePictureURL(boolean local, boolean isMonitoring) {
-        if (!isMonitoring || (local && (localUrl == null))) {
+        String url = getUrl(local);
+        if (!isMonitoring || url == null) {
             return null;
         }
-        return "%s%s".formatted(getUrl(local), LIVE_PICTURE);
+        return "%s%s".formatted(url, LIVE_PICTURE);
     }
 
     private @Nullable State liveChannels(String channelId, String qualityConf, HomeStatusModule camera,
             boolean isMonitoring, boolean isLocal) {
         if (vpnUrl == null) {
-            setUrls(Objects.requireNonNull(camera.getVpnUrl()), localUrl);
+            setUrls(camera.getVpnUrl(), localUrl);
         }
         return switch (channelId) {
             case CHANNEL_LIVESTREAM_LOCAL_URL ->
@@ -99,10 +99,11 @@ public class CameraChannelHelper extends ChannelHelper {
     }
 
     private State getLiveStreamURL(boolean local, @Nullable String configQual, boolean isMonitoring) {
-        if (!isMonitoring || (local && (localUrl == null))) {
+        String url = getUrl(local);
+        if (!isMonitoring || url == null) {
             return UnDefType.NULL;
         }
         String finalQual = configQual != null ? configQual : "poor";
-        return toStringType("%s/live/%sindex.m3u8", getUrl(local), local ? "files/%s/".formatted(finalQual) : "");
+        return toStringType("%s/live/%sindex.m3u8", url, local ? "files/%s/".formatted(finalQual) : "");
     }
 }
