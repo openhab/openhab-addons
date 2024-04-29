@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,7 +58,6 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
     private final Logger logger = LoggerFactory.getLogger(AirGradientLocationDiscoveryService.class);
 
     private @NonNullByDefault({}) AirGradientAPIHandler apiHandler;
-    private @Nullable ScheduledFuture<?> discoveryFuture;
 
     public AirGradientLocationDiscoveryService() {
         super(Set.of(THING_TYPE_LOCATION), (int) SEARCH_TIME.getSeconds(), BACKGROUND_DISCOVERY);

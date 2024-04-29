@@ -166,11 +166,6 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         updateMeasurement(CHANNEL_LEDS_MODE, toStringType(measure.ledMode));
     }
 
-    public void setLedMode(String ledMode) {
-        ChannelUID ledsChannel = new ChannelUID(thing.getUID(), CHANNEL_LEDS_MODE);
-        updateState(ledsChannel, StringType.valueOf(ledMode));
-    }
-
     private void updateMeasurement(String channelName, State state) {
         ChannelUID channelUid = new ChannelUID(thing.getUID(), channelName);
         if (isLinked(channelUid)) {
@@ -178,11 +173,11 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         }
     }
 
-    public static State toQuantityType(@Nullable Number value, Unit<?> unit) {
+    private static State toQuantityType(@Nullable Number value, Unit<?> unit) {
         return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
     }
 
-    public static State toStringType(@Nullable String value) {
+    private static State toStringType(@Nullable String value) {
         return value == null ? UnDefType.NULL : StringType.valueOf(value);
     }
 
@@ -191,7 +186,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
      *
      * @return serial number of this sensor.
      */
-    public String getSerialNo() {
+    private String getSerialNo() {
         String serialNo = thing.getProperties().get(PROPERTY_SERIAL_NO);
         if (serialNo == null) {
             serialNo = "";
