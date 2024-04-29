@@ -29,7 +29,6 @@ public class AirGradientAPIConfiguration {
     public int refreshInterval = 600;
 
     public boolean isValid() {
-
         // hostname must be entered and be a URI
         if ("".equals(hostname)) {
             return false;
@@ -44,11 +43,7 @@ public class AirGradientAPIConfiguration {
         // token is optional
 
         // refresh interval is positive integer
-        if (refreshInterval < 0) {
-            return false;
-        }
-
-        return true;
+        return (refreshInterval > 0);
     }
 
     /**

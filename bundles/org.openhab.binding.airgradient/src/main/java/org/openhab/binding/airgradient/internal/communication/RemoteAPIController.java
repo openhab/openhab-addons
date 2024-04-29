@@ -78,7 +78,7 @@ public class RemoteAPIController {
             if (HttpStatus.isSuccess(response.getStatus())) {
                 String stringResponse = response.getContentAsString().trim();
 
-                if (null != contentType)
+                if (null != contentType) {
                     switch (contentType) {
                         case CONTENTTYPE_JSON:
                             return JsonParserHelper.parseJson(gson, stringResponse);
@@ -89,6 +89,7 @@ public class RemoteAPIController {
                         default:
                             logger.debug("Unhandled content type returned: {}", contentType);
                     }
+                }
             }
         }
 
