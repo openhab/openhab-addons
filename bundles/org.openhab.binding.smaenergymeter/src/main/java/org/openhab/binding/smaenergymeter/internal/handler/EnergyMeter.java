@@ -73,7 +73,7 @@ public class EnergyMeter {
     public void parse(byte[] bytes) throws IOException {
         try {
             String sma = new String(Arrays.copyOfRange(bytes, 0, 3));
-            if (!sma.equals("SMA")) {
+            if (!"SMA".equals(sma)) {
                 throw new IOException("Not a SMA telegram." + sma);
             }
             byte[] protocolId = Arrays.copyOfRange(bytes, 16, 18);

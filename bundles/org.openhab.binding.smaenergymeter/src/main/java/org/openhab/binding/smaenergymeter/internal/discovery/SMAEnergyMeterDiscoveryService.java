@@ -89,6 +89,7 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService imp
         PacketListener packetListener = this.packetListener;
         if (packetListener != null) {
             packetListener.removePayloadHandler(this);
+            this.packetListener = null;
         }
     }
 

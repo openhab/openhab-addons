@@ -103,16 +103,19 @@ public class PacketListener {
     }
 
     public void request() {
-        registry.execute(new ReceivingTask(socket, multicastGroup + ":" + port, handlers));
+        MulticastSocket socket = this.socket;
+        if (socket != null) {
+            registry.execute(new ReceivingTask(socket, multicastGroup + ":" + port, handlers));
+        }
     }
 
     static class ReceivingTask implements Runnable {
         private final Logger logger = LoggerFactory.getLogger(ReceivingTask.class);
-        private final @Nullable DatagramSocket socket;
+        private final DatagramSocket socket;
         private final String group;
         private final List<PayloadHandler> handlers;
 
-        ReceivingTask(@Nullable DatagramSocket socket, String group, List<PayloadHandler> handlers) {
+        ReceivingTask(DatagramSocket socket, String group, List<PayloadHandler> handlers) {
             this.socket = socket;
             this.group = group;
             this.handlers = handlers;
@@ -123,9 +126,7 @@ public class PacketListener {
                 byte[] bytes = new byte[608];
                 DatagramPacket msgPacket = new DatagramPacket(bytes, bytes.length);
                 DatagramSocket socket = this.socket;
-                if (socket != null) {
-                    socket.receive(msgPacket);
-                }
+                socket.receive(msgPacket);
 
                 try {
                     EnergyMeter meter = new EnergyMeter();

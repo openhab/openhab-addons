@@ -64,7 +64,6 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
         logger.debug("Initializing SMAEnergyMeter handler '{}'", getThing().getUID());
 
         EnergyMeterConfig config = getConfigAs(EnergyMeterConfig.class);
@@ -82,10 +81,11 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
                 return;
             }
             PacketListener listener = listenerRegistry.getListener(mcastGroup, config.getPort());
-
+            updateStatus(ThingStatus.UNKNOWN);
             logger.debug("Activated handler for SMA Energy Meter with S/N '{}'", serialNumber);
 
             listener.addPayloadHandler(this);
+
             listener.open(config.getPollingPeriod());
             this.listener = listener;
             logger.debug("Polling job scheduled to run every {} sec. for '{}'", config.getPollingPeriod(),
