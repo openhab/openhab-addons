@@ -1010,7 +1010,7 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void setCommandStateOptions() {
-        List<StateOption> commandTypeOptions = new ArrayList<StateOption>();
+        List<StateOption> commandTypeOptions = new ArrayList<>();
         CommandType[] ctValues = CommandType.values();
         for (int i = 0; i < ctValues.length; i++) {
             if (!"UNRECOGNIZED".equals(ctValues[i].toString())) {
@@ -1019,7 +1019,7 @@ public class VehicleHandler extends BaseThingHandler {
             }
         }
         mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_COMMAND, "cmd-name"), commandTypeOptions);
-        List<StateOption> commandStateOptions = new ArrayList<StateOption>();
+        List<StateOption> commandStateOptions = new ArrayList<>();
         CommandState[] csValues = CommandState.values();
         for (int j = 0; j < csValues.length; j++) {
             if (!"UNRECOGNIZED".equals(csValues[j].toString())) {

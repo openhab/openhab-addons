@@ -32,7 +32,7 @@ import org.openhab.core.items.MetadataRegistry;
  */
 @NonNullByDefault
 public class MetadataRegistryMock implements MetadataRegistry {
-    List<Metadata> l = new ArrayList<Metadata>();
+    List<Metadata> l = new ArrayList<>();
 
     @Override
     public void addRegistryChangeListener(RegistryChangeListener<Metadata> listener) {

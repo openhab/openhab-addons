@@ -70,7 +70,7 @@ public class MBWebsocket {
     private boolean running = false;
     private Instant runTill = Instant.now();
     private @Nullable Session session;
-    private List<ClientMessage> commandQueue = new ArrayList<ClientMessage>();
+    private List<ClientMessage> commandQueue = new ArrayList<>();
 
     private boolean keepAlive = false;
 

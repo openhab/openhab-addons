@@ -78,9 +78,9 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 @NonNullByDefault
 public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-    private static final List<Integer> PORTS = new ArrayList<Integer>();
-    private static final List<CommandOption> FAHRENHEIT_COMMAND_OPTIONS = new ArrayList<CommandOption>();
-    private static final List<CommandOption> CELSIUS_COMMAND_OPTIONS = new ArrayList<CommandOption>();
+    private static final List<Integer> PORTS = new ArrayList<>();
+    private static final List<CommandOption> FAHRENHEIT_COMMAND_OPTIONS = new ArrayList<>();
+    private static final List<CommandOption> CELSIUS_COMMAND_OPTIONS = new ArrayList<>();
 
     private static final int R = 6371; // Radius of the earth
     private static int port = 8090;

@@ -134,7 +134,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
     }
 
     @Override
-    public List<@NonNull ChannelBuilder> createChannelBuilders(ChannelGroupUID channelGroupUID,
+    public List<ChannelBuilder> createChannelBuilders(ChannelGroupUID channelGroupUID,
             ChannelGroupTypeUID channelGroupTypeUID) {
         return new ArrayList<ChannelBuilder>();
     }

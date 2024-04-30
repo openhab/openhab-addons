@@ -25,7 +25,6 @@ import org.openhab.binding.mercedesme.internal.utils.Utils;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
 import com.daimler.mbcarkit.proto.VehicleCommands.CommandRequest;
-import com.daimler.mbcarkit.proto.VehicleEvents;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgram;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
@@ -121,7 +120,7 @@ public class ProtoConverter {
                     case "temperature_points_value":
                         JSONArray temperaturepointsJson = value.getJSONObject(valueKey)
                                 .getJSONArray("temperature_points");
-                        List<TemperaturePoint> tpList = new ArrayList<VehicleEvents.TemperaturePoint>();
+                        List<TemperaturePoint> tpList = new ArrayList<>();
                         for (int i = 0; i < temperaturepointsJson.length(); i++) {
                             com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePoint.Builder tpBuilder = TemperaturePoint
                                     .newBuilder();
@@ -149,7 +148,7 @@ public class ProtoConverter {
                         builder.setTemperaturePointsValue(tpValueProto);
                         break;
                     case "charge_programs_value":
-                        List<ChargeProgramParameters> chargeProgramsList = new ArrayList<ChargeProgramParameters>();
+                        List<ChargeProgramParameters> chargeProgramsList = new ArrayList<>();
                         JSONArray chargeProgramsJsonArray = value.getJSONArray("charge_programs_value");
                         for (int i = 0; i < chargeProgramsJsonArray.length(); i++) {
                             com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters.Builder chargeProgramBuilder = ChargeProgramParameters
