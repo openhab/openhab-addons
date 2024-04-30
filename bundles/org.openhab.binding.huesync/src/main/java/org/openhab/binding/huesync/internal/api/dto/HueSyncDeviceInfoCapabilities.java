@@ -15,7 +15,7 @@ package org.openhab.binding.huesync.internal.api.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * HDMI Sync Box Device Information Cababilities DTO
+ * HDMI Sync Box Device Information Capabilities DTO
  * 
  * @author Patrik Gfeller - Initial Contribution
  * 

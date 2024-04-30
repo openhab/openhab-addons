@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:huesync">
+	<config-description uri="thing-type:huesync:thing">
 		<parameter-group name="connection">
 			<label>Connection Settings</label>
 		</parameter-group>

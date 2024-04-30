@@ -31,6 +31,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.huesync.internal.HueSyncConstants.ENDPOINTS;
+import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.osgi.framework.BundleContext;
@@ -67,9 +68,9 @@ public class HueSyncConnection {
     @Nullable
     private HueSyncAuthenticationResult authentication;
 
-    protected String registrationId;
+    protected String registrationId = "";
 
-    public HueSyncConnection(HttpClient httpClient, String host, Integer port, String token, String registrationId)
+    public HueSyncConnection(HttpClient httpClient, String host, Integer port)
             throws CertificateException, IOException, URISyntaxException {
 
         this.host = host;
@@ -77,7 +78,7 @@ public class HueSyncConnection {
 
         this.uri = new URI(String.format("https://%s:%s", this.host, this.port));
 
-        this.registrationId = registrationId;
+        // this.registrationId = registrationId;
 
         HueSyncTrustManagerProvider trustManagerProvider = new HueSyncTrustManagerProvider(this.host, this.port);
         BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
@@ -85,7 +86,6 @@ public class HueSyncConnection {
         this.tlsProviderService = context.registerService(TlsTrustManagerProvider.class.getName(), trustManagerProvider,
                 null);
         this.httpClient = httpClient;
-        this.setAuthentication(token);
     }
 
     protected @Nullable <T> T executeRequest(HttpMethod method, String endpoint, String payload, Class<T> type) {
@@ -117,6 +117,8 @@ public class HueSyncConnection {
 
     protected void setAuthentication(String token) {
         if (!token.isBlank()) {
+            this.unsetAuthentication();
+
             this.authentication = new HueSyncAuthenticationResult(this.uri, token);
             this.httpClient.getAuthenticationStore().addAuthenticationResult(this.authentication);
         }
@@ -148,18 +150,45 @@ public class HueSyncConnection {
         return false;
     }
 
-    protected void stop() {
+    protected void dispose() {
         this.tlsProviderService.unregister();
     }
 
     private @Nullable <T> T processedResponse(ContentResponse response, Class<T> type) {
-        switch (response.getStatus()) {
+        int status = response.getStatus();
+        /*
+         * 400 Invalid State:
+         * Registration in progress
+         * 
+         * 401 Authentication failed:
+         * If credentials are missing or invalid, errors out. If credentials are missing, continues on to GET only the
+         * Configuration state when unauthenticated, to allow for device identification.
+         * 
+         * 404 Invalid URI Path:
+         * Accessing URI path which is not supported
+         * 
+         * 500 Internal:
+         * Internal errors like out of memory
+         */
+        switch (status) {
             case HttpStatus.OK_200:
                 return this.deserialize(response.getContentAsString(), type);
+            case HttpStatus.BAD_REQUEST_400:
+                logger.info("registration in progress: no token received yet");
+                break;
+            case HttpStatus.UNAUTHORIZED_401:
+                logger.error("credentials missing or invalid");
+                break;
+            case HttpStatus.NOT_FOUND_404:
+                logger.error("invalid device URI or API endpoint");
+                break;
+            case HttpStatus.INTERNAL_SERVER_ERROR_500:
+                logger.error("hue sync box server problem");
+                break;
             default:
-                logger.warn("HTTP Status: {}", response.getStatus());
-                return null;
+                logger.warn("unexpected HTTP status: {}", status);
         }
+        return null;
     }
 
     private @Nullable <T> T deserialize(String json, Class<T> type) {
@@ -197,5 +226,12 @@ public class HueSyncConnection {
         }
 
         return request.send();
+    }
+
+    public void updateConfig(HueSyncConfiguration config) {
+        if (!config.apiAccessToken.isBlank()) {
+            this.registrationId = config.registrationId;
+            this.setAuthentication(config.apiAccessToken);
+        }
     }
 }

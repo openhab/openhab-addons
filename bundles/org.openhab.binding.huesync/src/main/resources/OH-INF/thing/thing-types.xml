@@ -4,60 +4,27 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="box">
-
+	<thing-type id="huesyncthing">
 		<label>Hue HDMI Sync Box</label>
+
 		<description>Sync your smart lights to your on-screen TV content with the Philips Hue Play HDMI Sync Box. Four HDMI
 			inputs allow you to connect your media devices to your Hue setup, resulting in a fast, seamless display of colorful
-			smart light that responds to and reflects the content you watch or listen to.</description>
+			smart light that responds to and reflects the content you watch or listen to.
+		</description>
+
+
 		<properties>
 			<property name="vendor">Philips</property>
 		</properties>
 
-		<config-description>
-			<parameter-group name="connection">
-				<label>Connection Settings</label>
-			</parameter-group>
+		<representation-property>host</representation-property>
 
-			<parameter name="host" type="text" groupName="connection">
-				<context>network-address</context>
-				<label>Network Address</label>
-				<description>Network address of the HDMI Sync Box.</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="port" type="integer" min="1" max="65535" groupName="connection">
-				<context></context>
-				<label>Port</label>
-				<description>Port of the HDMI Sync Box.</description>
-				<advanced>true</advanced>
-				<default>443</default>
-				<required>true</required>
-			</parameter>
-			<parameter name="registrationId" type="text" groupName="connection">
-				<context></context>
-				<label>Application Registration Id</label>
-				<description>The id of the API registration.</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="apiAccessToken" type="text" groupName="connection">
-				<context>password</context>
-				<label>API Access Token</label>
-				<description>To enable the binding to communicate with the device, a registration is required. Once the registration
-					process is completed, the acquired token will authorize the binding to interact with the device. After initial
-					discovery and thing creation the device will stay offline. Press the registration button on the sync box for 3
-					seconds to grant the binding the required permissions.</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="statusUpdateInterval" type="integer" min="1" step="1" unit="s" groupName="connection">
-				<label>Status Update Interval</label>
-				<description>Seconds between fetching values from the Hue Sync Box.</description>
-				<advanced>true</advanced>
-				<default>10</default>
-				<unitLabel>Seconds</unitLabel>
-			</parameter>
-
-		</config-description>
+		<config-description-ref uri="thing-type:huesync:thing"/>
 
 	</thing-type>
+
+	<channel-group-type id="deviceGroup">
+		<label>Device Information</label>
+	</channel-group-type>
 
 </thing:thing-descriptions>

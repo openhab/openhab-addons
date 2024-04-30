@@ -34,7 +34,8 @@ public class HueSyncConstants {
     public static final Integer MINIMAL_API_VERSION = 7;
 
     public static final String BINDING_ID = "huesync";
-    public static final ThingTypeUID THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "box");
+    public static final String THING_TYPE_ID = "huesyncthing";
+    public static final ThingTypeUID THING_TYPE_UID = new ThingTypeUID(BINDING_ID, THING_TYPE_ID);
 
     public static final String PARAMETER_HOST = "host";
     public static final String PARAMETER_PORT = "port";

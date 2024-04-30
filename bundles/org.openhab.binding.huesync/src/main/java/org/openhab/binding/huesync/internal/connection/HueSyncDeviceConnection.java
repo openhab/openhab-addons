@@ -27,6 +27,7 @@ import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDevice
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequest;
+import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.slf4j.Logger;
 
@@ -42,10 +43,10 @@ public class HueSyncDeviceConnection {
     private HueSyncConnection connection;
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncDeviceConnection.class);
 
-    public HueSyncDeviceConnection(HttpClient httpClient, String host, Integer port, String apiAccessToken,
-            String registrationId) throws CertificateException, IOException, URISyntaxException {
+    public HueSyncDeviceConnection(HttpClient httpClient, String host, Integer port)
+            throws CertificateException, IOException, URISyntaxException {
 
-        this.connection = new HueSyncConnection(httpClient, host, port, apiAccessToken, registrationId);
+        this.connection = new HueSyncConnection(httpClient, host, port);
     }
 
     public @Nullable HueSyncDeviceInfo getDeviceInfo() {
@@ -96,7 +97,11 @@ public class HueSyncDeviceConnection {
         return this.connection.unregisterDevice();
     }
 
-    public void stop() {
-        this.connection.stop();
+    public void dispose() {
+        this.connection.dispose();
+    }
+
+    public void updateConfig(HueSyncConfiguration config) {
+        this.connection.updateConfig(config);
     }
 }

@@ -77,8 +77,7 @@ public class HueSyncHandler extends BaseThingHandler {
         httpClient.setName(this.thing.getUID().getAsString());
 
         this.config = getConfigAs(HueSyncConfiguration.class);
-        this.connection = new HueSyncDeviceConnection(httpClient, this.config.host, this.config.port,
-                this.config.apiAccessToken, this.config.registrationId);
+        this.connection = new HueSyncDeviceConnection(httpClient, this.config.host, this.config.port);
     }
 
     // #region private
@@ -199,6 +198,11 @@ public class HueSyncHandler extends BaseThingHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
+        // initialize is also called, if the thing configuration was updated
+        // TODO: Improve handling of configuration changes ...
+        this.config = getConfigAs(HueSyncConfiguration.class);
+        this.connection.updateConfig(this.config);
+
         scheduler.execute(() -> {
             try {
                 this.deviceInfo = this.connection.getDeviceInfo();
@@ -230,12 +234,27 @@ public class HueSyncHandler extends BaseThingHandler {
         // TODO: Implementation ...
     }
 
+    /*
+     * TODO: Solve shutdown timing problem(s):
+     * 
+     * 2024-04-30 21:38:43.874 [ERROR] [sync.internal.handler.HueSyncHandler] - The service has been unregistered
+     * {org.openhab.core.io.net.http.TlsTrustManagerProvider}={service.id=494, service.bundleid=249,
+     * service.scope=singleton}
+     * 2024-04-30 21:38:43.875 [INFO ] [sync.internal.handler.HueSyncHandler] - Thing HueSyncBox-...
+     * (huesync:huesyncthing:HueSyncBox-...) disposed.
+     * 2024-04-30 21:38:53.085 [TRACE] [rnal.handler.tasks.HueSyncUpdateTask] - Status update query for Sync Box
+     * HSB1:...
+     * 2024-04-30 21:38:53.111 [TRACE] [sync.internal.handler.HueSyncHandler] - Current status: UNINITIALIZED
+     * 2024-04-30 21:38:53.113 [WARN ] [.core.thing.binding.BaseThingHandler] - Handler HueSyncHandler tried updating
+     * the thing status although the handler was already disposed.
+     */
+
     @Override
     public void dispose() {
         super.dispose();
 
         try {
-            this.connection.stop();
+            this.connection.dispose();
 
             this.stopTask(deviceRegistrationTask);
             this.stopTask(deviceUpdateTask);
