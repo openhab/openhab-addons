@@ -288,7 +288,7 @@ class ForecastSolarTest {
     }
 
     @Test
-    void Exceptions() {
+    void testExceptions() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
         ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
