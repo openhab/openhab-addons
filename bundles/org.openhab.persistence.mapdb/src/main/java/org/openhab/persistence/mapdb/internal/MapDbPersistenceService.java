@@ -35,6 +35,7 @@ import org.mapdb.DBMaker;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.items.Item;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
@@ -82,8 +83,8 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     private @NonNullByDefault({}) DB db;
     private @NonNullByDefault({}) Map<String, String> map;
 
-    private transient Gson mapper = new GsonBuilder().registerTypeHierarchyAdapter(State.class, new StateTypeAdapter())
-            .create();
+    private transient Gson mapper = new GsonBuilder().setDateFormat(DateTimeType.DATE_PATTERN_JSON_COMPAT)
+            .registerTypeHierarchyAdapter(State.class, new StateTypeAdapter()).create();
 
     @Activate
     public void activate() {

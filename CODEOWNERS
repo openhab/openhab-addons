@@ -114,6 +114,7 @@
 /bundles/org.openhab.binding.folderwatcher/ @goopilot
 /bundles/org.openhab.binding.folding/ @fa2k
 /bundles/org.openhab.binding.foobot/ @airboxlab @Hilbrand
+/bundles/org.openhab.binding.freeathomesystem/ @andrasU
 /bundles/org.openhab.binding.freebox/ @lolodomo
 /bundles/org.openhab.binding.freeboxos/ @clinique
 /bundles/org.openhab.binding.freecurrency/ @J-N-K
@@ -305,6 +306,7 @@
 /bundles/org.openhab.binding.rotel/ @lolodomo
 /bundles/org.openhab.binding.russound/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.sagercaster/ @clinique
+/bundles/org.openhab.binding.saicismart/ @tisoft @dougculnane
 /bundles/org.openhab.binding.samsungtv/ @paulianttila
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.semsportal/ @itb3

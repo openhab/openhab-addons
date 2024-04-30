@@ -116,6 +116,12 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | errorBars                 | Switch               | rw | Calculate Maximum Errors                                            |
 | warmupPhase               | Switch               | rw | Output data as Warmup Phase                                         |
 
+## Usage with Docker
+
+This binding requires the JVM cryptographic strength policy to be set to "unlimited".
+Otherwise the connection to the device will fail.
+See the [openHAB Docker image documentation](https://github.com/openhab/openhab-docker/blob/main/README.md#java-cryptographic-strength-policy) for details.
+
 ## Example
 
 ### air-Q.things

@@ -73,7 +73,7 @@ public class WifiStationHandler extends HostHandler {
             LanAccessPoint lanAp = wifiHost.get().accessPoint();
             if (lanAp != null) {
                 updateChannelString(GROUP_WIFI, WIFI_HOST, "%s-%s".formatted(lanAp.type(), lanAp.uid()));
-                updateWifiStationChannels(lanAp.getSignal(), lanAp.getSsid(), lanAp.rxRate(), lanAp.txRate());
+                updateWifiStationChannels(lanAp.getRSSI(), lanAp.getSsid(), lanAp.rxRate(), lanAp.txRate());
                 return;
             }
         }

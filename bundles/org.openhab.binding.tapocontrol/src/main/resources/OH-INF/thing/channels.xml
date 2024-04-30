@@ -4,104 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- ############################### CHANNEL-GROUPS ############################### -->
-
-	<!-- CHANNEL GROUP TYPES -->
-	<!--Device-Status Channel Type -->
-	<channel-group-type id="deviceState">
-		<label>Device State</label>
-		<description>Information about the device</description>
-		<channels>
-			<channel id="wifiSignal" typeId="system.signal-strength"/>
-			<channel id="onTime" typeId="ontime"/>
-			<channel id="overheated" typeId="overheated"/>
-		</channels>
-	</channel-group-type>
-
-	<!--Device-Status Channel Type (Small) -->
-	<channel-group-type id="deviceStateS">
-		<label>Device State</label>
-		<description>Information about the device</description>
-		<channels>
-			<channel id="wifiSignal" typeId="system.signal-strength"/>
-			<channel id="overheated" typeId="overheated"/>
-		</channels>
-	</channel-group-type>
-
-	<!--Actor Channel Type -->
-	<channel-group-type id="smartPlug">
-		<label>SmartPlug</label>
-		<description>Tapo Smart Plug Power Outlet</description>
-		<channels>
-			<channel id="output" typeId="outputChannel"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="powerStrip">
-		<label>SmartPlug</label>
-		<description>Tapo Smart Plug Power Outlet</description>
-		<channels>
-			<channel id="output1" typeId="outputChannel">
-				<label>Output Switch 1</label>
-				<description>Switches the power state on/off of the first socket</description>
-			</channel>
-			<channel id="output2" typeId="outputChannel">
-				<label>Output Switch 2</label>
-				<description>Switches the power state on/off of the second socket</description>
-			</channel>
-			<channel id="output3" typeId="outputChannel">
-				<label>Output Switch 3</label>
-				<description>Switches the power state on/off of the third socket</description>
-			</channel>
-		</channels>
-	</channel-group-type>
-
-	<!--Light-Bulb Channel Type -->
-	<channel-group-type id="lightBulb">
-		<label>Light Bulb</label>
-		<description>Tapo Smart Light Bulb</description>
-		<channels>
-			<channel id="output" typeId="lightOn"/>
-			<channel id="brightness" typeId="dimmerChannel"/>
-			<channel id="colorTemperature" typeId="colorTemperature"/>
-		</channels>
-	</channel-group-type>
-
-	<!--Color Channel Type -->
-	<channel-group-type id="colorBulb">
-		<label>Color Light Bulb</label>
-		<description>Tapo Multicolor Smart Light Bulb</description>
-		<channels>
-			<channel id="output" typeId="lightOn"/>
-			<channel id="brightness" typeId="dimmerChannel"/>
-			<channel id="color" typeId="colorChannel"/>
-			<channel id="colorTemperature" typeId="colorTemperature"/>
-		</channels>
-	</channel-group-type>
-
-	<!-- LightStrip -->
-	<channel-group-type id="lightStrip">
-		<label>Color Light Strip</label>
-		<description>Tapo Multicolor Smart Light Strip</description>
-		<channels>
-			<channel id="output" typeId="lightOn"/>
-			<channel id="brightness" typeId="dimmerChannel"/>
-			<channel id="color" typeId="colorChannel"/>
-			<channel id="colorTemperature" typeId="colorTemperature"/>
-		</channels>
-	</channel-group-type>
-
-	<!-- Energy Monitor -->
-	<channel-group-type id="energyMonitor">
-		<label>Energy Usage</label>
-		<description>Energy and Power usage</description>
-		<channels>
-			<channel id="actualPower" typeId="actualPowerChannel"></channel>
-			<channel id="todayEnergyUsage" typeId="todayEnergyUsageChannel"></channel>
-			<channel id="todayRuntime" typeId="todayRuntimeChannel"></channel>
-		</channels>
-	</channel-group-type>
-
 	<!-- ############################### CHANNELS ############################### -->
 
 	<!-- ACTOR CHANNEL TYPES -->
@@ -132,6 +34,22 @@
 		<state readOnly="false"/>
 	</channel-type>
 
+	<!-- Color Bulb Mode -->
+	<channel-type id="colorBulbMode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Working mode of device</description>
+		<category>LightBulb</category>
+		<state readOnly="false"/>
+		<command>
+			<options>
+				<option value="WHITE_LIGHT">White</option>
+				<option value="COLOR_LIGHT">Color</option>
+				<option value="LIGHT_FX">Effects</option>
+			</options>
+		</command>
+	</channel-type>
+
 	<!-- Color Channel Type -->
 	<channel-type id="colorChannel">
 		<item-type>Color</item-type>
@@ -145,9 +63,37 @@
 	<channel-type id="colorTemperature">
 		<item-type>Number</item-type>
 		<label>Color Temperature</label>
-		<description>This channel supports adjusting the color temperature from 2700K to 6500K.</description>
+		<description>This channel supports adjusting the color temperature from 2200K to 6500K.</description>
 		<category>LightBulb</category>
-		<state min="2500" max="6500" pattern="%d K"/>
+		<state min="2200" max="6500" pattern="%d K"/>
+	</channel-type>
+
+	<!-- SENSOR CHANNEL TYPES -->
+	<!-- SmartContact "isOpen" Channel Type -->
+	<channel-type id="isOpenChannel">
+		<item-type>Switch</item-type>
+		<label>Is Open</label>
+		<description>Contact (Window/Door) is Open</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Temperature Channel Type -->
+	<channel-type id="temperatureChannel">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature as measured by the sensor</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
+	</channel-type>
+
+	<!-- Humidity Channel Type -->
+	<channel-type id="humidityChannel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Current relative humidity</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 
@@ -170,8 +116,24 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<!-- is Online -->
+	<channel-type id="isOnlineChannel">
+		<item-type>Switch</item-type>
+		<label>Is Online</label>
+		<description>Device is Online</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
-	<!-- DEVICE-STATE CHANNEL TYPES -->
+	<!-- battery Level -->
+	<channel-type id="batteryLowChannel">
+		<item-type>Switch</item-type>
+		<label>Battery Low</label>
+		<description>Battery of device is low</description>
+		<category>LowBattery</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<!-- ENERGY USAGE CHANNEL TYPES -->
 	<!-- actual power usage -->
 	<channel-type id="actualPowerChannel">
 		<item-type>Number:Power</item-type>
@@ -199,6 +161,24 @@
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
+	<!-- month energy usage -->
+	<channel-type id="monthEnergyUsageChannel">
+		<item-type>Number:Energy</item-type>
+		<label>Month Usage</label>
+		<description>Energy usage last month</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<!-- month runtime -->
+	<channel-type id="monthRuntimeChannel">
+		<item-type>Number:Time</item-type>
+		<label>Month Runtime</label>
+		<description>Runtime last month (On-Time)</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+
 	<!-- ADVANCED SETTING CHANNELS -->
 	<!-- device led -->
 	<channel-type id="led" advanced="true">
@@ -214,6 +194,45 @@
 		<label>Fade Light</label>
 		<description>Make the light darker or lighter slowly</description>
 		<category>Switch</category>
+	</channel-type>
+
+	<!-- ALARM CHANNEL CHANNELS -->
+	<!-- has active alarm -->
+	<channel-type id="alarmIsActiveChannel">
+		<item-type>Switch</item-type>
+		<label>Active Alarm</label>
+		<description>Device has an active alarm</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- active alarm source -->
+	<channel-type id="alarmSourceChannel">
+		<item-type>String</item-type>
+		<label>Alarm Source</label>
+		<description>Source of active alarm</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- TRIGGER CHANNELS -->
+	<!-- contact opened -->
+	<channel-type id="batteryLowEvent">
+		<kind>Trigger</kind>
+		<label>Battery Low</label>
+		<description>Battery state has changed to low. Replace Battery</description>
+	</channel-type>
+	<!-- contact opened -->
+	<channel-type id="contactOpenEvent">
+		<kind>Trigger</kind>
+		<label>Contact Opened</label>
+		<description>Event is fired if contact changes from closed to open</description>
+	</channel-type>
+	<!-- contact closed -->
+	<channel-type id="contactCloseEvent">
+		<kind>Trigger</kind>
+		<label>Contact Closed</label>
+		<description>Event is fired if contact changes from open to closed</description>
 	</channel-type>
 
 </thing:thing-descriptions>

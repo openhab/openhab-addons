@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class EnergiDataServiceBindingConstants {
 
-    private static final String BINDING_ID = "energidataservice";
+    public static final String BINDING_ID = "energidataservice";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SERVICE = new ThingTypeUID(BINDING_ID, "service");
