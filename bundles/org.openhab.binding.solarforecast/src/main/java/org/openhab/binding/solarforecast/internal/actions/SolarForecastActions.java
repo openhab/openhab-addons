@@ -140,59 +140,23 @@ public class SolarForecastActions implements ThingActions {
 
     @RuleAction(label = "@text/actionForecastBeginLabel", description = "@text/actionForecastBeginDesc")
     public Instant getForecastBegin() {
-        Instant returnBeginTime = Instant.MAX;
         if (thingHandler.isPresent()) {
-            List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
-            if (!l.isEmpty()) {
-                for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
-                    SolarForecast solarForecast = iterator.next();
-                    Instant begin = solarForecast.getForecastBegin();
-                    // break in case of failure getting values to avoid ambiguous values
-                    if (begin.equals(Instant.MAX)) {
-                        return Instant.MAX;
-                    }
-                    // take latest possible timestamp to avoid ambiguous values
-                    if (begin.isBefore(returnBeginTime)) {
-                        returnBeginTime = begin;
-                    }
-                }
-                return returnBeginTime;
-            } else {
-                logger.trace("No forecasts found - return invalid date MAX");
-                return returnBeginTime;
-            }
+            List<SolarForecast> forecastObjectList = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
+            return Utils.getCommonStartTime(forecastObjectList);
         } else {
             logger.trace("Handler missing - return invalid date MAX");
-            return returnBeginTime;
+            return Instant.MAX;
         }
     }
 
     @RuleAction(label = "@text/actionForecastEndLabel", description = "@text/actionForecastEndDesc")
     public Instant getForecastEnd() {
-        Instant returnEndTime = Instant.MIN;
         if (thingHandler.isPresent()) {
-            List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
-            if (!l.isEmpty()) {
-                for (Iterator<SolarForecast> iterator = l.iterator(); iterator.hasNext();) {
-                    SolarForecast solarForecast = iterator.next();
-                    Instant forecastEndTime = solarForecast.getForecastEnd();
-                    // break in case of failure getting values to avoid ambiguous values
-                    if (forecastEndTime.equals(Instant.MIN)) {
-                        return Instant.MIN;
-                    }
-                    // take earliest possible timestamp to avoid ambiguous values
-                    if (forecastEndTime.isAfter(returnEndTime)) {
-                        returnEndTime = forecastEndTime;
-                    }
-                }
-                return returnEndTime;
-            } else {
-                logger.trace("No forecasts found - return invalid date MIN");
-                return returnEndTime;
-            }
+            List<SolarForecast> forecastObjectList = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
+            return Utils.getCommonEndTime(forecastObjectList);
         } else {
             logger.trace("Handler missing - return invalid date MIN");
-            return returnEndTime;
+            return Instant.MIN;
         }
     }
 

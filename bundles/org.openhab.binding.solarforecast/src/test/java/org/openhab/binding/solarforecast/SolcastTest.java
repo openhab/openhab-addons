@@ -580,18 +580,16 @@ class SolcastTest {
         bi.setHandler(scbh);
         CallbackMock cm = new CallbackMock();
         scbh.setCallback(cm);
-
         SolcastPlaneHandler scph1 = new SolcastPlaneMock(bi);
         CallbackMock cm1 = new CallbackMock();
         scph1.initialize();
         scph1.setCallback(cm1);
+        scbh.getData();
 
         SolcastPlaneHandler scph2 = new SolcastPlaneMock(bi);
         CallbackMock cm2 = new CallbackMock();
         scph2.initialize();
         scph2.setCallback(cm2);
-
-        // simulate trigger of refresh job
         scbh.getData();
 
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#power-estimate");
@@ -606,7 +604,7 @@ class SolcastTest {
             assertEquals("kW", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
             assertEquals("kW", ((QuantityType<?>) e2.state()).getUnit().toString(), "Power Unit");
             assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() * 2,
-                    0.1, "Power Value");
+                    0.01, "Power Value");
         }
         scbh.dispose();
         scph1.dispose();

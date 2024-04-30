@@ -36,4 +36,8 @@ public class ForecastSolarPlaneMock extends ForecastSolarPlaneHandler {
         super.setCallback(new CallbackMock());
         super.setForecast(fso);
     }
+
+    public void updateForecast(ForecastSolarObject fso) {
+        super.setForecast(fso);
+    }
 }

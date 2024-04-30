@@ -15,10 +15,12 @@ package org.openhab.binding.solarforecast;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -29,6 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.SolarForecastException;
+import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
 import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarBridgeHandler;
 import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarPlaneHandler;
@@ -256,7 +259,7 @@ class ForecastSolarTest {
     }
 
     @Test
-    void testActions() {
+    void Exceptions() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
         ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
@@ -351,6 +354,80 @@ class ForecastSolarTest {
             assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() / 2,
                     0.1, "Power Value");
         }
+    }
+
+    @Test
+    void testCommonForecastStartEnd() {
+        ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
+                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
+                Optional.of(PointType.valueOf("1,2")));
+        CallbackMock cmSite = new CallbackMock();
+        fsbh.setCallback(cmSite);
+        String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
+        ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne, Instant.now());
+        ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1One);
+        fsbh.addPlane(fsph1);
+        fsbh.forecastUpdate();
+
+        String contentTwo = FileReader.readFileInString("src/test/resources/forecastsolar/resultNextDay.json");
+        ForecastSolarObject fso1Two = new ForecastSolarObject("fs-plane", contentTwo, Instant.now());
+        ForecastSolarPlaneHandler fsph2 = new ForecastSolarPlaneMock(fso1Two);
+        CallbackMock cmPlane = new CallbackMock();
+        fsph2.setCallback(cmPlane);
+        ((ForecastSolarPlaneMock) fsph2).updateForecast(fso1Two);
+        fsbh.addPlane(fsph2);
+        fsbh.forecastUpdate();
+
+        TimeSeries tsPlaneOne = cmPlane.getTimeSeries("test::plane:power-estimate");
+        TimeSeries tsSite = cmSite.getTimeSeries("solarforecast:fs-site:bridge:power-estimate");
+        Iterator<TimeSeries.Entry> planeIter = tsPlaneOne.getStates().iterator();
+        Iterator<TimeSeries.Entry> siteIter = tsSite.getStates().iterator();
+        while (siteIter.hasNext()) {
+            TimeSeries.Entry planeEntry = planeIter.next();
+            TimeSeries.Entry siteEntry = siteIter.next();
+            assertEquals("kW", ((QuantityType<?>) planeEntry.state()).getUnit().toString(), "Power Unit");
+            assertEquals("kW", ((QuantityType<?>) siteEntry.state()).getUnit().toString(), "Power Unit");
+            assertEquals(((QuantityType<?>) planeEntry.state()).doubleValue(),
+                    ((QuantityType<?>) siteEntry.state()).doubleValue() / 2, 0.1, "Power Value");
+        }
+        // only one day shall be reported which is available in both planes
+        LocalDate ld = LocalDate.of(2022, 7, 18);
+        assertEquals(ld.atStartOfDay(ZoneId.of("UTC")).toInstant(), tsSite.getBegin().truncatedTo(ChronoUnit.DAYS),
+                "TimeSeries start");
+        assertEquals(ld.atStartOfDay(ZoneId.of("UTC")).toInstant(), tsSite.getEnd().truncatedTo(ChronoUnit.DAYS),
+                "TimeSeries end");
+    }
+
+    @Test
+    void testActions() {
+        ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
+                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
+                Optional.of(PointType.valueOf("1,2")));
+        CallbackMock cmSite = new CallbackMock();
+        fsbh.setCallback(cmSite);
+        String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
+        ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne, Instant.now());
+        ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1One);
+        fsbh.addPlane(fsph1);
+        fsbh.forecastUpdate();
+
+        String contentTwo = FileReader.readFileInString("src/test/resources/forecastsolar/resultNextDay.json");
+        ForecastSolarObject fso1Two = new ForecastSolarObject("fs-plane", contentTwo, Instant.now());
+        ForecastSolarPlaneHandler fsph2 = new ForecastSolarPlaneMock(fso1Two);
+        CallbackMock cmPlane = new CallbackMock();
+        fsph2.setCallback(cmPlane);
+        ((ForecastSolarPlaneMock) fsph2).updateForecast(fso1Two);
+        fsbh.addPlane(fsph2);
+        fsbh.forecastUpdate();
+
+        SolarForecastActions sfa = new SolarForecastActions();
+        sfa.setThingHandler(fsbh);
+        // only one day shall be reported which is available in both planes
+        LocalDate ld = LocalDate.of(2022, 7, 18);
+        assertEquals(ld.atStartOfDay(ZoneId.of("UTC")).toInstant(), sfa.getForecastBegin().truncatedTo(ChronoUnit.DAYS),
+                "TimeSeries start");
+        assertEquals(ld.atStartOfDay(ZoneId.of("UTC")).toInstant(), sfa.getForecastEnd().truncatedTo(ChronoUnit.DAYS),
+                "TimeSeries end");
     }
 
     @Test

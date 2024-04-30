@@ -184,14 +184,25 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         modes.forEach(mode -> {
             TreeMap<Instant, QuantityType<?>> combinedPowerForecast = new TreeMap<>();
             TreeMap<Instant, QuantityType<?>> combinedEnergyForecast = new TreeMap<>();
+
+            // bugfix: https://github.com/weymann/OH3-SolarForecast-Drops/issues/5
+            // find common start and end time which fits to all forecast objects to avoid ambiguous values
+            final Instant commonStart = Utils.getCommonStartTime(forecastObjects);
+            final Instant commonEnd = Utils.getCommonEndTime(forecastObjects);
             forecastObjects.forEach(fc -> {
                 TimeSeries powerTS = fc.getPowerTimeSeries(mode);
                 powerTS.getStates().forEach(entry -> {
-                    Utils.addState(combinedPowerForecast, entry);
+                    if (Utils.isAfterOrEqual(entry.timestamp(), commonStart)
+                            && Utils.isBeforeOrEqual(entry.timestamp(), commonEnd)) {
+                        Utils.addState(combinedPowerForecast, entry);
+                    }
                 });
                 TimeSeries energyTS = fc.getEnergyTimeSeries(mode);
                 energyTS.getStates().forEach(entry -> {
-                    Utils.addState(combinedEnergyForecast, entry);
+                    if (Utils.isAfterOrEqual(entry.timestamp(), commonStart)
+                            && Utils.isBeforeOrEqual(entry.timestamp(), commonEnd)) {
+                        Utils.addState(combinedEnergyForecast, entry);
+                    }
                 });
             });
             // create TimeSeries and distribute

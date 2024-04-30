@@ -13,6 +13,8 @@
 package org.openhab.binding.solarforecast.internal.utils;
 
 import java.time.Instant;
+import java.util.Iterator;
+import java.util.List;
 import java.util.TreeMap;
 
 import javax.measure.MetricPrefix;
@@ -20,6 +22,7 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.TimeSeries.Entry;
@@ -50,9 +53,54 @@ public class Utils {
         QuantityType<?> qt1 = map.get(timestamp);
         if (qt1 != null) {
             QuantityType<?> qt2 = (QuantityType<?>) entry.state();
-            map.put(timestamp, QuantityType.valueOf(qt1.doubleValue() + qt2.doubleValue(), qt2.getUnit()));
+            double combinedValue = qt1.doubleValue() + qt2.doubleValue();
+            map.put(timestamp, QuantityType.valueOf(combinedValue, qt2.getUnit()));
         } else {
             map.put(timestamp, (QuantityType<?>) entry.state());
         }
+    }
+
+    public static boolean isBeforeOrEqual(Instant query, Instant reference) {
+        return query.isBefore(reference) || query.equals(reference);
+    }
+
+    public static boolean isAfterOrEqual(Instant query, Instant reference) {
+        return query.isAfter(reference) || query.equals(reference);
+    }
+
+    public static Instant getCommonStartTime(List<SolarForecast> forecastObjects) {
+        if (forecastObjects.isEmpty()) {
+            return Instant.MAX;
+        }
+        Instant start = Instant.MIN;
+        for (Iterator<SolarForecast> iterator = forecastObjects.iterator(); iterator.hasNext();) {
+            SolarForecast sf = iterator.next();
+            // if start is maximum there's no forecast data available - return immediately
+            if (sf.getForecastBegin().equals(Instant.MAX)) {
+                return Instant.MAX;
+            } else if (sf.getForecastBegin().isAfter(start)) {
+                // take latest timestamp from all forecasts
+                start = sf.getForecastBegin();
+            }
+        }
+        return start;
+    }
+
+    public static Instant getCommonEndTime(List<SolarForecast> forecastObjects) {
+        if (forecastObjects.isEmpty()) {
+            return Instant.MIN;
+        }
+        Instant end = Instant.MAX;
+        for (Iterator<SolarForecast> iterator = forecastObjects.iterator(); iterator.hasNext();) {
+            SolarForecast sf = iterator.next();
+            // if end is minimum there's no forecast data available - return immediately
+            if (sf.getForecastEnd().equals(Instant.MIN)) {
+                return Instant.MIN;
+            } else if (sf.getForecastEnd().isBefore(end)) {
+                // take earliest timestamp from all forecast
+                end = sf.getForecastEnd();
+            }
+        }
+        return end;
     }
 }
