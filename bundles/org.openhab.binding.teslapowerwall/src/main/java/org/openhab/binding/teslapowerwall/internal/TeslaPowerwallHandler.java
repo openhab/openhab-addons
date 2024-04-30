@@ -122,7 +122,7 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
                 updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_MODE,
                         new StringType(operations.mode));
                 updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_RESERVE,
-                        new QuantityType<>(operations.reserve, Units.PERCENT));
+                        new QuantityType<>(((operations.reserve / 0.95) - (5 / 0.95)), Units.PERCENT));
             }
 
             BatterySOE batterySOE = webTargets.getBatterySOE(token);
@@ -133,7 +133,7 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             if (batterySOE != null) {
                 updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_BATTERYSOE,
-                        new QuantityType<>(batterySOE.soe, Units.PERCENT));
+                        new QuantityType<>(((batterySOE.soe / 0.95) - (5 / 0.95)), Units.PERCENT));
             }
             if (gridStatus != null) {
                 updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRIDSTATUS,
