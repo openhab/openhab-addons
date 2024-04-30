@@ -49,9 +49,8 @@ public class ConvertedInputStream extends AudioStream {
     private final AudioFormat outputAudioFormat;
     private final InputStream pcmInnerInputStream;
 
-    private final static Set<String> COMPATIBLE_CODEC = Set.of(AudioFormat.CODEC_PCM_ALAW, AudioFormat.CODEC_PCM_ULAW,
+    private static final Set<String> COMPATIBLE_CODEC = Set.of(AudioFormat.CODEC_PCM_ALAW, AudioFormat.CODEC_PCM_ULAW,
             AudioFormat.CODEC_PCM_UNSIGNED);
-
     public ConvertedInputStream(AudioStream innerInputStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioFileException, IOException {
 
