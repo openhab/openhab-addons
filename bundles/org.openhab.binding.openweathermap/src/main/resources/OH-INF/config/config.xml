@@ -13,8 +13,8 @@
 		</parameter>
 		<parameter name="apiVersion" type="text">
 			<label>One Call API Version</label>
-			<description>One Call API version (defaults to 2.5, version 3.0 is available, but needs different subscription).</description>
-			<default>2.5</default>
+			<description>One Call API version (defaults to 3.0, version 2.5 is to be closed in June 2024).</description>
+			<default>3.0</default>
 			<options>
 				<option value="2.5">2.5</option>
 				<option value="3.0">3.0</option>
