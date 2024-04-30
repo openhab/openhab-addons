@@ -35,6 +35,7 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
 import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarBridgeHandler;
 import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarPlaneHandler;
+import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarPlaneMock;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.PointType;
@@ -66,7 +67,8 @@ class ForecastSolarTest {
     void testForecastObject() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 17, 00).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
+        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content,
+                queryDateTime.toInstant().plus(1, ChronoUnit.DAYS));
         // "2022-07-17 21:32:00": 63583,
         assertEquals(63.583, fo.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
         // "2022-07-17 17:00:00": 52896,
@@ -89,7 +91,8 @@ class ForecastSolarTest {
     void testActualPower() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 10, 00).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
+        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content,
+                queryDateTime.toInstant().plus(1, ChronoUnit.DAYS));
         // "2022-07-17 10:00:00": 4874,
         assertEquals(4.874, fo.getActualPowerValue(queryDateTime), TOLERANCE, "Actual estimation");
 
@@ -102,7 +105,8 @@ class ForecastSolarTest {
     void testInterpolation() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 0).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
+        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content,
+                queryDateTime.toInstant().plus(1, ChronoUnit.DAYS));
 
         // test steady value increase
         double previousValue = 0;
@@ -123,7 +127,8 @@ class ForecastSolarTest {
     void testForecastSum() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
+        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content,
+                queryDateTime.toInstant().plus(1, ChronoUnit.DAYS));
         QuantityType<Energy> actual = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
         QuantityType<Energy> st = Utils.getEnergyState(fo.getActualEnergyValue(queryDateTime));
         assertTrue(st instanceof QuantityType);
@@ -360,7 +365,7 @@ class ForecastSolarTest {
         fsbh.setCallback(cm);
 
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now());
+        ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));
         ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1);
         fsbh.addPlane(fsph1);
         fsbh.forecastUpdate();
@@ -390,13 +395,15 @@ class ForecastSolarTest {
         CallbackMock cmSite = new CallbackMock();
         fsbh.setCallback(cmSite);
         String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne, Instant.now());
+        ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne,
+                Instant.now().plus(1, ChronoUnit.DAYS));
         ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1One);
         fsbh.addPlane(fsph1);
         fsbh.forecastUpdate();
 
         String contentTwo = FileReader.readFileInString("src/test/resources/forecastsolar/resultNextDay.json");
-        ForecastSolarObject fso1Two = new ForecastSolarObject("fs-plane", contentTwo, Instant.now());
+        ForecastSolarObject fso1Two = new ForecastSolarObject("fs-plane", contentTwo,
+                Instant.now().plus(1, ChronoUnit.DAYS));
         ForecastSolarPlaneHandler fsph2 = new ForecastSolarPlaneMock(fso1Two);
         CallbackMock cmPlane = new CallbackMock();
         fsph2.setCallback(cmPlane);
@@ -432,13 +439,15 @@ class ForecastSolarTest {
         CallbackMock cmSite = new CallbackMock();
         fsbh.setCallback(cmSite);
         String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne, Instant.now());
+        ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne,
+                Instant.now().plus(1, ChronoUnit.DAYS));
         ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1One);
         fsbh.addPlane(fsph1);
         fsbh.forecastUpdate();
 
         String contentTwo = FileReader.readFileInString("src/test/resources/forecastsolar/resultNextDay.json");
-        ForecastSolarObject fso1Two = new ForecastSolarObject("fs-plane", contentTwo, Instant.now());
+        ForecastSolarObject fso1Two = new ForecastSolarObject("fs-plane", contentTwo,
+                Instant.now().plus(1, ChronoUnit.DAYS));
         ForecastSolarPlaneHandler fsph2 = new ForecastSolarPlaneMock(fso1Two);
         CallbackMock cmPlane = new CallbackMock();
         fsph2.setCallback(cmPlane);
@@ -465,7 +474,7 @@ class ForecastSolarTest {
         fsbh.setCallback(cm);
 
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now());
+        ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));
         ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1);
         fsbh.addPlane(fsph1);
         fsbh.forecastUpdate();

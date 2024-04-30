@@ -10,15 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarforecast;
+package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
 import static org.mockito.Mockito.mock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.solarforecast.CallbackMock;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
-import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarPlaneHandler;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.internal.ThingImpl;
 
@@ -34,6 +35,7 @@ public class ForecastSolarPlaneMock extends ForecastSolarPlaneHandler {
         super(new ThingImpl(SolarForecastBindingConstants.FORECAST_SOLAR_PLANE, new ThingUID("test", "plane")),
                 mock(HttpClient.class));
         super.setCallback(new CallbackMock());
+        setLocation(PointType.valueOf("1.23,9.87"));
         super.setForecast(fso);
     }
 

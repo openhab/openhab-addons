@@ -37,6 +37,7 @@ import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastBridgeHandler;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneHandler;
+import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneMock;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.internal.BridgeImpl;
