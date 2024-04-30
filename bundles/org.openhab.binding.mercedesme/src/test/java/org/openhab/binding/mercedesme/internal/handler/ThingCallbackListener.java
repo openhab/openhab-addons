@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigDescription;
@@ -40,6 +39,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.UnDefType;
 
 /**
  * {@link ThingCallbackListener} Listener mock to store vehicle state updates
@@ -70,10 +70,12 @@ public class ThingCallbackListener implements ThingHandlerCallback {
     public void stateUpdated(ChannelUID channelUID, State state) {
         updatesReceived.put(channelUID.toString(), state);
         Map<String, State> groupMap = updatesPerGroupMap.get(channelUID.getGroupId());
-        String groupId = channelUID.getGroupId();
-        if (groupMap == null && groupId != null) {
+        if (groupMap == null) {
             groupMap = new HashMap<>();
-            updatesPerGroupMap.put(groupId, groupMap);
+            String groupId = channelUID.getGroupId();
+            if (groupId != null) {
+                updatesPerGroupMap.put(groupId, groupMap);
+            }
         }
         groupMap.put(channelUID.toString(), state);
     }
@@ -92,13 +94,11 @@ public class ThingCallbackListener implements ThingHandlerCallback {
     }
 
     @Override
-    public void validateConfigurationParameters(Thing thing,
-            Map<@NonNull String, @NonNull Object> configurationParameters) {
+    public void validateConfigurationParameters(Thing thing, Map<String, Object> configurationParameters) {
     }
 
     @Override
-    public void validateConfigurationParameters(Channel channel,
-            Map<@NonNull String, @NonNull Object> configurationParameters) {
+    public void validateConfigurationParameters(Channel channel, Map<String, Object> configurationParameters) {
     }
 
     @Override
@@ -151,5 +151,13 @@ public class ThingCallbackListener implements ThingHandlerCallback {
 
     @Override
     public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
+    }
+
+    public State getResponse(String channel) {
+        State response = updatesReceived.get(channel);
+        if (response != null) {
+            return response;
+        }
+        return UnDefType.UNDEF;
     }
 }

@@ -99,8 +99,11 @@ class ProtoTest {
             FileInputStream fis = new FileInputStream("src/test/resources/proto-blob/MB-BEV-EQA-Charging.blob");
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
             VehicleEvents.VEPUpdatesByVIN updates = pm.getVepUpdates();
-            Map<String, VehicleAttributeStatus> m = updates.getUpdatesMap().get(VIN_ANON).getAttributesMap();
+            VEPUpdate vepUpdate = updates.getUpdatesMap().get(VIN_ANON);
+            assertNotNull(vepUpdate);
+            Map<String, VehicleAttributeStatus> m = vepUpdate.getAttributesMap();
             VehicleAttributeStatus value = m.get("endofchargetime");
+            assertNotNull(value);
             long minutesAfterMIdnight = value.getIntValue();
             long hours = minutesAfterMIdnight / 60;
             long minutes = minutesAfterMIdnight - hours * 60;

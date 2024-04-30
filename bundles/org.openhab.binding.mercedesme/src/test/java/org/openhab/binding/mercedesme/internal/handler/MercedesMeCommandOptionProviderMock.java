@@ -44,4 +44,12 @@ public class MercedesMeCommandOptionProviderMock extends MercedesMeCommandOption
     public void setCommandOptions(ChannelUID cuid, List<CommandOption> col) {
         commands.put(cuid.toString(), col);
     }
+
+    public List<CommandOption> getCommandList(String channel) {
+        List<CommandOption> commandList = commands.get(channel);
+        if (commandList != null) {
+            return commandList;
+        }
+        return List.of();
+    }
 }

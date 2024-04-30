@@ -102,9 +102,9 @@ class StatusTests {
         ahm.initialize();
         assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "Auth Offline");
         assertEquals(ThingStatusDetail.NONE, tcl.getThingStatus().getStatusDetail(), "Auth details");
-        assertTrue(
-                tcl.getThingStatus().getDescription().contains("@text/mercedesme.account.status.authorization-needed"),
-                "Auth text");
+        String statusDescription = tcl.getThingStatus().getDescription();
+        assertNotNull(statusDescription);
+        assertTrue(statusDescription.contains("@text/mercedesme.account.status.authorization-needed"), "Auth text");
         AccessTokenResponse token = new AccessTokenResponse();
         token.setExpiresIn(3000);
         token.setAccessToken(Constants.JUNIT_TOKEN);

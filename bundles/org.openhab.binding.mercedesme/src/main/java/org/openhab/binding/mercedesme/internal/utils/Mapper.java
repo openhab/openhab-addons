@@ -331,7 +331,6 @@ public class Mapper {
             }
         }
         return INVALID_MAP;
-
     }
 
     private static State getContact(boolean b) {

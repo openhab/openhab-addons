@@ -81,7 +81,7 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        MercedesMeDynamicStateDescriptionProviderMock patternMock = new MercedesMeDynamicStateDescriptionProviderMock();
+        MercedesMeDynamicStateDescriptionProviderMock<?> patternMock = new MercedesMeDynamicStateDescriptionProviderMock<>();
         MercedesMeCommandOptionProviderMock commandOptionMock = new MercedesMeCommandOptionProviderMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
                 mock(MercedesMeStateOptionProvider.class), patternMock);
@@ -109,18 +109,18 @@ class VehicleHandlerTest {
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
-        assertTrue(updateListener.updatesReceived.get("test::bev:range#mileage").toFullString().endsWith("mi"),
+        assertTrue(updateListener.getResponse("test::bev:range#mileage").toFullString().endsWith("mi"),
                 "Mileague Unit");
-        assertTrue(updateListener.updatesReceived.get("test::bev:range#range-electric").toFullString().endsWith("mi"),
+        assertTrue(updateListener.getResponse("test::bev:range#range-electric").toFullString().endsWith("mi"),
                 "Range Electric Unit");
-        assertTrue(updateListener.updatesReceived.get("test::bev:trip#distance").toFullString().endsWith("mi"),
+        assertTrue(updateListener.getResponse("test::bev:trip#distance").toFullString().endsWith("mi"),
                 "Range Electric Unit");
-        assertTrue(updateListener.updatesReceived.get("test::bev:tires#pressure-front-left").toFullString()
-                .endsWith("psi"), "Pressure Unit");
-        assertTrue(updateListener.updatesReceived.get("test::bev:hvac#temperature").toFullString().endsWith("°F"),
+        assertTrue(updateListener.getResponse("test::bev:tires#pressure-front-left").toFullString().endsWith("psi"),
+                "Pressure Unit");
+        assertTrue(updateListener.getResponse("test::bev:hvac#temperature").toFullString().endsWith("°F"),
                 "Temperature Unit");
         assertEquals("%.0f °F", patternMock.patternMap.get("test::bev:hvac#temperature"), "Temperature Pattern");
-        commandOptionMock.commands.get("test::bev:hvac#temperature").forEach(cmd -> {
+        commandOptionMock.getCommandList("test::bev:hvac#temperature").forEach(cmd -> {
             assertTrue(cmd.getCommand().endsWith(" °F"), "Command Option Fahrenheit Unit");
         });
 
@@ -129,7 +129,7 @@ class VehicleHandlerTest {
         update = ProtoConverter.json2Proto(json, true);
         vh.distributeContent(update);
         assertEquals("%.1f °C", patternMock.patternMap.get("test::bev:hvac#temperature"), "Temperature Pattern");
-        commandOptionMock.commands.get("test::bev:hvac#temperature").forEach(cmd -> {
+        commandOptionMock.getCommandList("test::bev:hvac#temperature").forEach(cmd -> {
             assertTrue(cmd.getCommand().endsWith(" °C"), "Command Option Celsius Unit");
         });
     }
@@ -164,10 +164,8 @@ class VehicleHandlerTest {
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
-        assertEquals("2023-09-06 13:55",
-                ((DateTimeType) updateListener.updatesReceived.get("test::bev:charge#end-time"))
-                        .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"),
-                "End of Charge Time");
+        assertEquals("2023-09-06 13:55", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
+                .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
     }
 
     @Test
@@ -188,12 +186,9 @@ class VehicleHandlerTest {
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
         vh.distributeContent(update);
         assertEquals(2, updateListener.updatesReceived.size(), "Update Count");
-        assertEquals("2023-09-19 20:45",
-                ((DateTimeType) updateListener.updatesReceived.get("test::bev:charge#end-time"))
-                        .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"),
-                "End of Charge Time");
-        assertEquals("2.1 kW", updateListener.updatesReceived.get("test::bev:charge#power").toFullString(),
-                "Charge Power");
+        assertEquals("2023-09-19 20:45", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
+                .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
+        assertEquals("2.1 kW", updateListener.getResponse("test::bev:charge#power").toFullString(), "Charge Power");
     }
 
     @Test
@@ -214,9 +209,8 @@ class VehicleHandlerTest {
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
         vh.distributeContent(update);
         assertEquals(3, updateListener.updatesReceived.size(), "Update Count");
-        assertEquals("1.23,4.56", updateListener.updatesReceived.get("test::bev:position#gps").toFullString(),
-                "GPS update");
-        assertEquals("41.9 °", updateListener.updatesReceived.get("test::bev:position#heading").toFullString(),
+        assertEquals("1.23,4.56", updateListener.getResponse("test::bev:position#gps").toFullString(), "GPS update");
+        assertEquals("41.9 °", updateListener.getResponse("test::bev:position#heading").toFullString(),
                 "Heading Update");
     }
 
@@ -238,11 +232,11 @@ class VehicleHandlerTest {
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
         vh.distributeContent(update);
         assertEquals(3, updateListener.updatesReceived.size(), "Update Count");
-        assertEquals("15017 km", updateListener.updatesReceived.get("test::bev:range#mileage").toFullString(),
+        assertEquals("15017 km", updateListener.getResponse("test::bev:range#mileage").toFullString(),
                 "Mileage Update");
-        assertEquals("246 km", updateListener.updatesReceived.get("test::bev:range#radius-electric").toFullString(),
+        assertEquals("246 km", updateListener.getResponse("test::bev:range#radius-electric").toFullString(),
                 "Range Update");
-        assertEquals("307 km", updateListener.updatesReceived.get("test::bev:range#range-electric").toFullString(),
+        assertEquals("307 km", updateListener.getResponse("test::bev:range#range-electric").toFullString(),
                 "Range Radius Update");
     }
 
@@ -299,17 +293,14 @@ class VehicleHandlerTest {
         vh.distributeContent(update);
 
         // Test charged / uncharged battery and filled / unfilled tank volume
-        assertEquals("5.800000190734863 kWh",
-                updateListener.updatesReceived.get("test::hybrid:range#charged").toFullString(),
+        assertEquals("5.800000190734863 kWh", updateListener.getResponse("test::hybrid:range#charged").toFullString(),
                 "Battery Charged Update");
         assertEquals("3.4000000953674316 kWh",
-                updateListener.updatesReceived.get("test::hybrid:range#uncharged").toFullString(),
-                "Battery Uncharged Update");
-        assertEquals("9.579999923706055 l",
-                updateListener.updatesReceived.get("test::hybrid:range#tank-remain").toFullString(),
+                updateListener.getResponse("test::hybrid:range#uncharged").toFullString(), "Battery Uncharged Update");
+        assertEquals("9.579999923706055 l", updateListener.getResponse("test::hybrid:range#tank-remain").toFullString(),
                 "Tank Remain Update");
-        assertEquals("50.31999969482422 l",
-                updateListener.updatesReceived.get("test::hybrid:range#tank-open").toFullString(), "Tank Open Update");
+        assertEquals("50.31999969482422 l", updateListener.getResponse("test::hybrid:range#tank-open").toFullString(),
+                "Tank Open Update");
     }
 
     @Test
@@ -404,16 +395,16 @@ class VehicleHandlerTest {
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
         vh.distributeContent(update);
-        assertEquals("22 °C", updateListener.updatesReceived.get("test::bev:hvac#temperature").toFullString(),
+        assertEquals("22 °C", updateListener.getResponse("test::bev:hvac#temperature").toFullString(),
                 "Temperature Point One Updated");
 
         ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_HVAC, "zone");
         updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
         vh.handleCommand(cuid, new DecimalType(2));
-        assertEquals("2", updateListener.updatesReceived.get("test::bev:hvac#zone").toFullString(),
+        assertEquals("2", updateListener.getResponse("test::bev:hvac#zone").toFullString(),
                 "Temperature Point One Updated");
-        assertEquals("19 °C", updateListener.updatesReceived.get("test::bev:hvac#temperature").toFullString(),
+        assertEquals("19 °C", updateListener.getResponse("test::bev:hvac#temperature").toFullString(),
                 "Temperature Point One Updated");
         vh.handleCommand(cuid, new DecimalType(-1));
     }
@@ -470,8 +461,7 @@ class VehicleHandlerTest {
 
         ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "max-soc");
         vh.handleCommand(cuid, QuantityType.valueOf("90 %"));
-        int selectedChargeProgram = ((DecimalType) updateListener.updatesReceived.get("test::bev:charge#program"))
-                .intValue();
+        int selectedChargeProgram = ((DecimalType) updateListener.getResponse("test::bev:charge#program")).intValue();
         assertEquals(selectedChargeProgram,
                 Utils.getChargeProgramNumber(ahm.getCommand().get("charge_program").toString()),
                 "Charge Program Command");

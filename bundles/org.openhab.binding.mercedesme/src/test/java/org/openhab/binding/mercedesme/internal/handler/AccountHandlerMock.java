@@ -21,10 +21,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
+import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
@@ -36,6 +39,7 @@ import com.daimler.mbcarkit.proto.Client.ClientMessage;
  */
 @NonNullByDefault
 public class AccountHandlerMock extends AccountHandler {
+    private static VolatileStorageService storageService = new VolatileStorageService();
     private static LocaleProvider localeProvider = new LocaleProvider() {
 
         @Override
@@ -52,8 +56,11 @@ public class AccountHandlerMock extends AccountHandler {
     }
 
     public AccountHandlerMock(Bridge b, @Nullable String storedObject) {
-        super(b, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class), localeProvider,
-                new StorageServiceMock<String>(storedObject));
+        super(b, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class), localeProvider, storageService);
+        if (storedObject != null) {
+            Storage<String> storage = storageService.getStorage(Constants.BINDING_ID);
+            storage.put("a@b.c", storedObject);
+        }
     }
 
     @Override
