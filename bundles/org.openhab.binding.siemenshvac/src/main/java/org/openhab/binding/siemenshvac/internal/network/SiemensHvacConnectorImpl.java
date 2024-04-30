@@ -244,11 +244,9 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private void unregisterRequestHandler(SiemensHvacRequestHandler handler) throws SiemensHvacException {
         synchronized (currentHandlerRegistry) {
-            if (!currentHandlerRegistry.containsKey(handler)) {
-                throw new SiemensHvacException("Internal error, try to unregister not registred handler: " + handler);
+            if (currentHandlerRegistry.containsKey(handler)) {
+                currentHandlerRegistry.remove(handler);
             }
-
-            currentHandlerRegistry.remove(handler);
         }
     }
 
