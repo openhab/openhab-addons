@@ -118,16 +118,16 @@ public class VehicleHandler extends BaseThingHandler {
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
     private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
-    private Map<String, UOMObserver> unitStorage = new HashMap<String, UOMObserver>();
-    Map<String, ChannelStateMap> eventStorage = new HashMap<String, ChannelStateMap>();
+    private Map<String, UOMObserver> unitStorage = new HashMap<>();
+    Map<String, ChannelStateMap> eventStorage = new HashMap<>();
 
     private int ignitionState = -1;
     private boolean chargingState = false;
     private int selectedChargeProgram = -1;
     private int activeTemperaturePoint = -1;
-    private Map<Integer, QuantityType<Temperature>> temperaturePointsStorage = new HashMap<Integer, QuantityType<Temperature>>();
+    private Map<Integer, QuantityType<Temperature>> temperaturePointsStorage = new HashMap<>();
     private JSONObject chargeGroupValueStorage = new JSONObject();
-    private Map<String, State> hvacGroupValueStorage = new HashMap<String, State>();
+    private Map<String, State> hvacGroupValueStorage = new HashMap<>();
     private String vehicleType = NOT_SET;
     Optional<AccountHandler> accountHandler = Optional.empty();
     Optional<VehicleConfiguration> config = Optional.empty();
@@ -753,11 +753,10 @@ public class VehicleHandler extends BaseThingHandler {
             VehicleAttributeStatus hvacTemperaturePointAttribute = atts.get("temperaturePoints");
             if (hvacTemperaturePointAttribute.hasTemperaturePointsValue()) {
                 TemperaturePointsValue tpValue = hvacTemperaturePointAttribute.getTemperaturePointsValue();
-                // List<VehicleEvents.TemperaturePoint> tpList = new ArrayList<VehicleEvents.TemperaturePoint>();
                 if (tpValue.getTemperaturePointsCount() > 0) {
                     List<VehicleEvents.TemperaturePoint> tPointList = tpValue.getTemperaturePointsList();
-                    List<CommandOption> commandOptions = new ArrayList<CommandOption>();
-                    List<StateOption> stateOptions = new ArrayList<StateOption>();
+                    List<CommandOption> commandOptions = new ArrayList<>();
+                    List<StateOption> stateOptions = new ArrayList<>();
                     tPointList.forEach(point -> {
                         String zoneName = point.getZone();
                         int zoneNumber = Utils.getZoneNumber(zoneName);
@@ -836,8 +835,8 @@ public class VehicleHandler extends BaseThingHandler {
                 ChargeProgramsValue cpv = atts.get("chargePrograms").getChargeProgramsValue();
                 if (cpv.getChargeProgramParametersCount() > 0) {
                     List<ChargeProgramParameters> chargeProgramParameters = cpv.getChargeProgramParametersList();
-                    List<CommandOption> commandOptions = new ArrayList<CommandOption>();
-                    List<StateOption> stateOptions = new ArrayList<StateOption>();
+                    List<CommandOption> commandOptions = new ArrayList<>();
+                    List<StateOption> stateOptions = new ArrayList<>();
                     synchronized (chargeGroupValueStorage) {
                         chargeGroupValueStorage.clear();
                         chargeProgramParameters.forEach(program -> {

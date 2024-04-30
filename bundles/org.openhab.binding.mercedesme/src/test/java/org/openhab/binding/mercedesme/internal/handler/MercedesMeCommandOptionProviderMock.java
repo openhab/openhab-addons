@@ -33,7 +33,7 @@ import org.openhab.core.types.CommandOption;
  */
 @NonNullByDefault
 public class MercedesMeCommandOptionProviderMock extends MercedesMeCommandOptionProvider {
-    public Map<String, List<CommandOption>> commands = new HashMap<String, List<CommandOption>>();
+    public Map<String, List<CommandOption>> commands = new HashMap<>();
 
     public MercedesMeCommandOptionProviderMock() {
         super(mock(EventPublisher.class), mock(ItemChannelLinkRegistry.class),

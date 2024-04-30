@@ -26,7 +26,7 @@ import org.openhab.core.thing.ChannelUID;
  */
 @NonNullByDefault
 public class MercedesMeDynamicStateDescriptionProviderMock<V> extends MercedesMeDynamicStateDescriptionProvider {
-    public Map<String, String> patternMap = new HashMap<String, String>();
+    public Map<String, String> patternMap = new HashMap<>();
 
     @Override
     public void setStatePattern(ChannelUID channelUID, String pattern) {

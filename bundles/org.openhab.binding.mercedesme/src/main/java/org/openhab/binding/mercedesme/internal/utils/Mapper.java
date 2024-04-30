@@ -54,7 +54,7 @@ public class Mapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(Mapper.class);
 
     public static final ChannelStateMap INVALID_MAP = new ChannelStateMap(EMPTY, EMPTY, UnDefType.UNDEF);
-    public static final Map<String, String[]> CHANNELS = new HashMap<String, String[]>();
+    public static final Map<String, String[]> CHANNELS = new HashMap<>();
     public static final String TIMESTAMP = "timestamp";
     public static final String VALUE = "value";
 

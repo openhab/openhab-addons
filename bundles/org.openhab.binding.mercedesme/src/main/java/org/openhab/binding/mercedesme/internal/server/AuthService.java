@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 public class AuthService {
     private static final AccessTokenResponse INVALID_TOKEN = new AccessTokenResponse();
     private static final int EXPIRATION_BUFFER = 5;
-    private static final Map<Integer, AuthService> AUTH_MAP = new HashMap<Integer, AuthService>();
+    private static final Map<Integer, AuthService> AUTH_MAP = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     AccessTokenRefreshListener listener;

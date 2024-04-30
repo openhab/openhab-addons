@@ -54,7 +54,7 @@ public class ProtoConverter {
 
     public static VEPUpdate json2Proto(String json, boolean fullUpdate) {
         JSONObject jsonObj = new JSONObject(json);
-        Map<String, VehicleAttributeStatus> updateMap = new HashMap<String, VehicleEvents.VehicleAttributeStatus>();
+        Map<String, VehicleAttributeStatus> updateMap = new HashMap<>();
         Iterator<String> keyIter = jsonObj.keys();
         while (keyIter.hasNext()) {
             String key = keyIter.next();

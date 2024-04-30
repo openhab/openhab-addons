@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AuthServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthServer.class);
-    private static final Map<Integer, AuthServer> SERVER_MAP = new HashMap<Integer, AuthServer>();
+    private static final Map<Integer, AuthServer> SERVER_MAP = new HashMap<>();
     private static final AccessTokenResponse INVALID_ACCESS_TOKEN = new AccessTokenResponse();
 
     private final HttpClient httpClient;

@@ -49,8 +49,8 @@ import org.openhab.core.types.TimeSeries;
 @NonNullByDefault
 public class ThingCallbackListener implements ThingHandlerCallback {
 
-    public Map<String, State> updatesReceived = new HashMap<String, State>();
-    public Map<String, Map<String, State>> updatesPerGroupMap = new HashMap<String, Map<String, State>>();
+    public Map<String, State> updatesReceived = new HashMap<>();
+    public Map<String, Map<String, State>> updatesPerGroupMap = new HashMap<>();
     public boolean linked = false;
     public Optional<ThingStatusInfo> status = Optional.empty();
 
@@ -72,7 +72,7 @@ public class ThingCallbackListener implements ThingHandlerCallback {
         Map<String, State> groupMap = updatesPerGroupMap.get(channelUID.getGroupId());
         String groupId = channelUID.getGroupId();
         if (groupMap == null && groupId != null) {
-            groupMap = new HashMap<String, State>();
+            groupMap = new HashMap<>();
             updatesPerGroupMap.put(groupId, groupMap);
         }
         groupMap.put(channelUID.toString(), state);

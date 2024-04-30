@@ -75,9 +75,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
     private final Storage<String> storage;
-    private final Map<String, VehicleHandler> activeVehicleHandlerMap = new HashMap<String, VehicleHandler>();
-    private final Map<String, VEPUpdate> vepUpdateMap = new HashMap<String, VEPUpdate>();
-    private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<String, Map<String, Object>>();
+    private final Map<String, VehicleHandler> activeVehicleHandlerMap = new HashMap<>();
+    private final Map<String, VEPUpdate> vepUpdateMap = new HashMap<>();
+    private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<>();
 
     private Optional<AuthServer> server = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
@@ -284,7 +284,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     public boolean distributeVepUpdates(Map<String, VEPUpdate> map) {
-        List<String> notFoundList = new ArrayList<String>();
+        List<String> notFoundList = new ArrayList<>();
         map.forEach((key, value) -> {
             VehicleHandler h = activeVehicleHandlerMap.get(key);
             if (h != null) {
@@ -330,7 +330,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     private Map<String, String> getStringCapabilities(String vin) {
         Map<String, Object> props = getCapabilities(vin);
-        Map<String, String> stringProps = new HashMap<String, String>();
+        Map<String, String> stringProps = new HashMap<>();
         props.forEach((key, value) -> {
             stringProps.put(key, value.toString());
         });
@@ -343,7 +343,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         if (m != null) {
             return m;
         }
-        Map<String, Object> featureMap = new HashMap<String, Object>();
+        Map<String, Object> featureMap = new HashMap<>();
         try {
             // add vehicle capabilities
             String capabilitiesUrl = Utils.getRestAPIServer(config.get().region)

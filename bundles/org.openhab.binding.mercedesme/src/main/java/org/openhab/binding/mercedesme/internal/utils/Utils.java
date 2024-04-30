@@ -98,8 +98,8 @@ public class Utils {
         }
     };
     public static final Gson GSON = new Gson();
-    public static final Map<String, Integer> ZONE_HASHMAP = new HashMap<String, Integer>();
-    public static final Map<String, Integer> PROGRAM_HASHMAP = new HashMap<String, Integer>();
+    public static final Map<String, Integer> ZONE_HASHMAP = new HashMap<>();
+    public static final Map<String, Integer> PROGRAM_HASHMAP = new HashMap<>();
 
     public static void initialize(TimeZoneProvider tzp, LocaleProvider lp) {
         timeZoneProvider = tzp;

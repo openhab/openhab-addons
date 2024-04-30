@@ -52,7 +52,7 @@ class StatusTests {
     @Test
     void testInvalidConfig() {
         BridgeImpl bi = new BridgeImpl(new ThingTypeUID("test", "account"), "MB");
-        Map<String, Object> config = new HashMap<String, Object>();
+        Map<String, Object> config = new HashMap<>();
         config.put("callbackIP", "999.999.999.999");
         config.put("callbackPort", "99999");
         bi.setConfiguration(new Configuration(config));
@@ -89,7 +89,7 @@ class StatusTests {
     @Test
     void testNoTokenStored() {
         BridgeImpl bi = new BridgeImpl(new ThingTypeUID("test", "account"), "MB");
-        Map<String, Object> config = new HashMap<String, Object>();
+        Map<String, Object> config = new HashMap<>();
         config.put("refreshInterval", Integer.MAX_VALUE);
         config.put("region", "row");
         config.put("email", "a@b.c");
@@ -118,7 +118,7 @@ class StatusTests {
     @Test
     void testTokenStored() {
         BridgeImpl bi = new BridgeImpl(new ThingTypeUID("test", "account"), "MB");
-        Map<String, Object> config = new HashMap<String, Object>();
+        Map<String, Object> config = new HashMap<>();
         config.put("refreshInterval", Integer.MAX_VALUE);
         config.put("region", "row");
         config.put("email", "a@b.c");
