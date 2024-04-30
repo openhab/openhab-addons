@@ -67,18 +67,14 @@ public class Mapper {
     public static void initialize(UnitProvider up) {
         // Configure Mapper default values
         Unit<Length> lengthUnit = up.getUnit(Length.class);
-        if (lengthUnit != null) {
-            if (ImperialUnits.FOOT.equals(lengthUnit)) {
-                defaultLengthUnit = ImperialUnits.MILE;
-                defaultSpeedUnit = ImperialUnits.MILES_PER_HOUR;
-                defaultPressureUnit = ImperialUnits.POUND_FORCE_SQUARE_INCH;
-                defaultVolumeUnit = ImperialUnits.GALLON_LIQUID_US;
-            }
+        if (ImperialUnits.FOOT.equals(lengthUnit)) {
+            defaultLengthUnit = ImperialUnits.MILE;
+            defaultSpeedUnit = ImperialUnits.MILES_PER_HOUR;
+            defaultPressureUnit = ImperialUnits.POUND_FORCE_SQUARE_INCH;
+            defaultVolumeUnit = ImperialUnits.GALLON_LIQUID_US;
         }
         Unit<Temperature> temperatureUnit = up.getUnit(Temperature.class);
-        if (temperatureUnit != null) {
-            defaultTemperatureUnit = temperatureUnit;
-        }
+        defaultTemperatureUnit = temperatureUnit;
     }
 
     public static ChannelStateMap getChannelStateMap(String key, VehicleAttributeStatus value) {
@@ -100,10 +96,11 @@ public class Mapper {
                     Unit<?> lengthUnit = defaultLengthUnit;
                     if (value.hasDistanceUnit()) {
                         observer = new UOMObserver(value.getDistanceUnit().toString());
-                        if (observer.getUnit().isEmpty()) {
-                            LOGGER.trace("No Unit found for {} - take default ", key);
+                        Unit<?> queryUnit = observer.getUnit();
+                        if (queryUnit != null) {
+                            lengthUnit = queryUnit;
                         } else {
-                            lengthUnit = observer.getUnit().get();
+                            LOGGER.trace("No Unit found for {} - take default ", key);
                         }
                     }
                     state = QuantityType.valueOf(Utils.getDouble(value), lengthUnit);
@@ -131,10 +128,11 @@ public class Mapper {
                     Unit<?> speedUnit = defaultSpeedUnit;
                     if (value.hasSpeedUnit()) {
                         observer = new UOMObserver(value.getSpeedUnit().toString());
-                        if (observer.getUnit().isEmpty()) {
-                            LOGGER.trace("No Unit found for {} - take default ", key);
+                        Unit<?> queryUnit = observer.getUnit();
+                        if (queryUnit != null) {
+                            lengthUnit = observer.getUnit();
                         } else {
-                            lengthUnit = observer.getUnit().get();
+                            LOGGER.trace("No Unit found for {} - take default ", key);
                         }
                     }
                     double speed = Utils.getDouble(value);
@@ -318,10 +316,11 @@ public class Mapper {
                     Unit<?> pressureUnit = defaultPressureUnit;
                     if (value.hasPressureUnit()) {
                         observer = new UOMObserver(value.getPressureUnit().toString());
-                        if (observer.getUnit().isEmpty()) {
-                            LOGGER.trace("No Unit found for {} - take default ", key);
+                        Unit<?> queryUnit = observer.getUnit();
+                        if (queryUnit != null) {
+                            pressureUnit = queryUnit;
                         } else {
-                            pressureUnit = observer.getUnit().get();
+                            LOGGER.trace("No Unit found for {} - take default ", key);
                         }
                     }
                     double pressure = Utils.getDouble(value);
@@ -332,6 +331,7 @@ public class Mapper {
             }
         }
         return INVALID_MAP;
+
     }
 
     private static State getContact(boolean b) {

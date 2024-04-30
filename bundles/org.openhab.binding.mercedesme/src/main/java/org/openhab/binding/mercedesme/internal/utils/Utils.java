@@ -155,7 +155,7 @@ public class Utils {
                         Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
                         while (addresses.hasMoreElements()) {
                             InetAddress address = addresses.nextElement();
-                            if (address != null && address instanceof Inet4Address) {
+                            if (address instanceof Inet4Address) {
                                 return address.getHostAddress();
                             }
                         }
@@ -323,7 +323,7 @@ public class Utils {
         return combined;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({ "unused", "null" })
     public static String proto2Json(VEPUpdate update, ThingTypeUID ttuid) {
         JSONObject protoJson = new JSONObject();
         Map<String, VehicleAttributeStatus> m = update.getAttributesMap();
@@ -546,7 +546,7 @@ public class Utils {
         return Math.sqrt(distance);
     }
 
-    public static List<CommandOption> getTemperatureOptions(Unit unit) {
+    public static List<CommandOption> getTemperatureOptions(Unit<?> unit) {
         if (ImperialUnits.FAHRENHEIT.equals(unit)) {
             if (FAHRENHEIT_COMMAND_OPTIONS.isEmpty()) {
                 FAHRENHEIT_COMMAND_OPTIONS.add(new CommandOption("60 °F", "60 °F"));

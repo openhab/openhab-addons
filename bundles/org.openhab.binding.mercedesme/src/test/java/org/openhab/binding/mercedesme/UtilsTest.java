@@ -57,12 +57,12 @@ class UtilsTest {
         UOMObserver obersver = new UOMObserver(UOMObserver.LENGTH_KM_UNIT);
         assertEquals("%.0f km", obersver.getPattern(Constants.GROUP_RANGE, ""), "Range km as int");
         assertEquals("%.1f km", obersver.getPattern(Constants.GROUP_TRIP, ""), "Trip km with one decimal");
-        assertEquals(Constants.KILOMETRE_UNIT, obersver.getUnit().get(), "Unit km");
+        assertEquals(Constants.KILOMETRE_UNIT, obersver.getUnit(), "Unit km");
 
         obersver = new UOMObserver(UOMObserver.LENGTH_MILES_UNIT);
         assertEquals("%.0f mi", obersver.getPattern(Constants.GROUP_RANGE, ""), "Range mi as int");
         assertEquals("%.1f mi", obersver.getPattern(Constants.GROUP_TRIP, ""), "Trip mi with one decimal");
-        assertEquals(ImperialUnits.MILE, obersver.getUnit().get(), "Unit mi");
+        assertEquals(ImperialUnits.MILE, obersver.getUnit(), "Unit mi");
     }
 
     @Test

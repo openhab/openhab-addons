@@ -49,6 +49,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -588,7 +589,8 @@ public class VehicleHandler extends BaseThingHandler {
         ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
         if (oldProtoMap != null) {
             String oldProto = ((StringType) oldProtoMap.getState()).toFullString();
-            Map combinedMap = Utils.combineMaps(new JSONObject(oldProto).toMap(), new JSONObject(newProto).toMap());
+            Map<?, ?> combinedMap = Utils.combineMaps(new JSONObject(oldProto).toMap(),
+                    new JSONObject(newProto).toMap());
             combinedProto = (new JSONObject(combinedMap)).toString();
         }
         // proto updates causing large printouts in openhab.log
@@ -621,7 +623,7 @@ public class VehicleHandler extends BaseThingHandler {
                     case "range-electric":
                         if (!Constants.COMBUSTION.equals(vehicleType)) {
                             ChannelStateMap radiusElectric = new ChannelStateMap("radius-electric", GROUP_RANGE,
-                                    guessRangeRadius((QuantityType<Length>) csm.getState()), csm.getUomObserver());
+                                    guessRangeRadius(csm.getState()), csm.getUomObserver());
                             updateChannel(radiusElectric);
                         } else {
                             block = true;
@@ -629,9 +631,8 @@ public class VehicleHandler extends BaseThingHandler {
                         break;
                     case "range-fuel":
                         if (!Constants.BEV.equals(vehicleType)) {
-                            QuantityType<Length> fuelRangeState = (QuantityType<Length>) csm.getState();
                             ChannelStateMap radiusFuel = new ChannelStateMap("radius-fuel", GROUP_RANGE,
-                                    guessRangeRadius(fuelRangeState), csm.getUomObserver());
+                                    guessRangeRadius(csm.getState()), csm.getUomObserver());
                             updateChannel(radiusFuel);
                         } else {
                             block = true;
@@ -639,9 +640,8 @@ public class VehicleHandler extends BaseThingHandler {
                         break;
                     case "range-hybrid":
                         if (Constants.HYBRID.equals(vehicleType)) {
-                            QuantityType<Length> hybridRangeState = (QuantityType<Length>) csm.getState();
                             ChannelStateMap radiusHybrid = new ChannelStateMap("radius-hybrid", GROUP_RANGE,
-                                    guessRangeRadius(hybridRangeState), csm.getUomObserver());
+                                    guessRangeRadius(csm.getState()), csm.getUomObserver());
                             updateChannel(radiusHybrid);
                         } else {
                             block = true;
@@ -725,15 +725,17 @@ public class VehicleHandler extends BaseThingHandler {
 
                 // calculate distance tp home
                 PointType homePoint = locationProvider.getLocation();
+                Unit<Length> lengthUnit = KILOMETRE_UNIT;
                 if (homePoint != null) {
                     double distance = Utils.distance(homePoint.getLatitude().doubleValue(), lat,
                             homePoint.getLongitude().doubleValue(), lon, 0.0, 0.0);
                     UOMObserver observer = new UOMObserver(UOMObserver.LENGTH_KM_UNIT);
                     if (Locale.US.getCountry().equals(Utils.getCountry())) {
                         observer = new UOMObserver(UOMObserver.LENGTH_MILES_UNIT);
+                        lengthUnit = ImperialUnits.MILE;
                     }
                     updateChannel(new ChannelStateMap("home-distance", Constants.GROUP_RANGE,
-                            QuantityType.valueOf(distance / 1000, observer.getUnit().get()), observer));
+                            QuantityType.valueOf(distance / 1000, lengthUnit), observer));
                 } else {
                     logger.trace("No home location found");
                 }
@@ -751,69 +753,74 @@ public class VehicleHandler extends BaseThingHandler {
          */
         if (atts.containsKey("temperaturePoints")) {
             VehicleAttributeStatus hvacTemperaturePointAttribute = atts.get("temperaturePoints");
-            if (hvacTemperaturePointAttribute.hasTemperaturePointsValue()) {
-                TemperaturePointsValue tpValue = hvacTemperaturePointAttribute.getTemperaturePointsValue();
-                if (tpValue.getTemperaturePointsCount() > 0) {
-                    List<VehicleEvents.TemperaturePoint> tPointList = tpValue.getTemperaturePointsList();
-                    List<CommandOption> commandOptions = new ArrayList<>();
-                    List<StateOption> stateOptions = new ArrayList<>();
-                    tPointList.forEach(point -> {
-                        String zoneName = point.getZone();
-                        int zoneNumber = Utils.getZoneNumber(zoneName);
-                        Unit<Temperature> temperatureUnit = Mapper.defaultTemperatureUnit;
-                        UOMObserver observer = null;
-                        if (hvacTemperaturePointAttribute.hasTemperatureUnit()) {
-                            observer = new UOMObserver(hvacTemperaturePointAttribute.getTemperatureUnit().toString());
-                            if (observer.getUnit().isEmpty()) {
-                                logger.trace("No Unit found for temperature - take default ");
-                            } else {
-                                temperatureUnit = (Unit<Temperature>) observer.getUnit().get();
-                            }
-                        }
-                        ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "temperature");
-                        mmcop.setCommandOptions(cuid, Utils.getTemperatureOptions(temperatureUnit));
-                        if (zoneNumber > 0) {
-                            if (activeTemperaturePoint == -1) {
-                                activeTemperaturePoint = zoneNumber;
-                            }
-                            double temperature = point.getTemperature();
-                            if (point.getTemperatureDisplayValue() != null) {
-                                if (point.getTemperatureDisplayValue().strip().length() > 0) {
-                                    try {
-                                        temperature = Double.valueOf(point.getTemperatureDisplayValue());
-                                    } catch (NumberFormatException nfe) {
-                                        logger.trace("Cannot transform Temperature Display Value {} into Double",
-                                                point.getTemperatureDisplayValue());
-                                    }
+            if (hvacTemperaturePointAttribute != null) {
+                if (hvacTemperaturePointAttribute.hasTemperaturePointsValue()) {
+                    TemperaturePointsValue tpValue = hvacTemperaturePointAttribute.getTemperaturePointsValue();
+                    if (tpValue.getTemperaturePointsCount() > 0) {
+                        List<VehicleEvents.TemperaturePoint> tPointList = tpValue.getTemperaturePointsList();
+                        List<CommandOption> commandOptions = new ArrayList<>();
+                        List<StateOption> stateOptions = new ArrayList<>();
+                        tPointList.forEach(point -> {
+                            String zoneName = point.getZone();
+                            int zoneNumber = Utils.getZoneNumber(zoneName);
+                            Unit<Temperature> temperatureUnit = Mapper.defaultTemperatureUnit;
+                            UOMObserver observer = null;
+                            if (hvacTemperaturePointAttribute.hasTemperatureUnit()) {
+                                observer = new UOMObserver(
+                                        hvacTemperaturePointAttribute.getTemperatureUnit().toString());
+                                Unit<?> observerUnit = observer.getUnit();
+                                if (observerUnit != null) {
+                                    temperatureUnit = observerUnit.asType(Temperature.class);
                                 }
                             }
-                            QuantityType<Temperature> temperatureState = QuantityType.valueOf(temperature,
-                                    temperatureUnit);
-                            temperaturePointsStorage.put(zoneNumber, temperatureState);
-                            if (activeTemperaturePoint == zoneNumber) {
-                                ChannelStateMap zoneCSM = new ChannelStateMap("zone", Constants.GROUP_HVAC,
-                                        new DecimalType(activeTemperaturePoint));
-                                updateChannel(zoneCSM);
-                                ChannelStateMap tempCSM = new ChannelStateMap(CHANNEL_TEMPERATURE, Constants.GROUP_HVAC,
-                                        temperatureState, observer);
-                                updateChannel(tempCSM);
+                            ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "temperature");
+                            mmcop.setCommandOptions(cuid, Utils.getTemperatureOptions(temperatureUnit));
+                            if (zoneNumber > 0) {
+                                if (activeTemperaturePoint == -1) {
+                                    activeTemperaturePoint = zoneNumber;
+                                }
+                                double temperature = point.getTemperature();
+                                if (point.getTemperatureDisplayValue() != null) {
+                                    if (point.getTemperatureDisplayValue().strip().length() > 0) {
+                                        try {
+                                            temperature = Double.valueOf(point.getTemperatureDisplayValue());
+                                        } catch (NumberFormatException nfe) {
+                                            logger.trace("Cannot transform Temperature Display Value {} into Double",
+                                                    point.getTemperatureDisplayValue());
+                                        }
+                                    }
+                                }
+                                QuantityType<Temperature> temperatureState = QuantityType.valueOf(temperature,
+                                        temperatureUnit);
+                                temperaturePointsStorage.put(zoneNumber, temperatureState);
+                                if (activeTemperaturePoint == zoneNumber) {
+                                    ChannelStateMap zoneCSM = new ChannelStateMap("zone", Constants.GROUP_HVAC,
+                                            new DecimalType(activeTemperaturePoint));
+                                    updateChannel(zoneCSM);
+                                    ChannelStateMap tempCSM = new ChannelStateMap(CHANNEL_TEMPERATURE,
+                                            Constants.GROUP_HVAC, temperatureState, observer);
+                                    updateChannel(tempCSM);
+                                }
+                            } else {
+                                logger.trace("No Integer mapping found for Temperature Zone {}", zoneName);
                             }
-                        } else {
-                            logger.trace("No Integer mapping found for Temperature Zone {}", zoneName);
-                        }
-                        commandOptions.add(new CommandOption(Integer.toString(zoneNumber), zoneName));
-                        stateOptions.add(new StateOption(Integer.toString(zoneNumber), zoneName));
-                    });
-                    ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "zone");
-                    mmcop.setCommandOptions(cuid, commandOptions);
-                    mmsop.setStateOptions(cuid, stateOptions);
+                            commandOptions.add(new CommandOption(Integer.toString(zoneNumber), zoneName));
+                            stateOptions.add(new StateOption(Integer.toString(zoneNumber), zoneName));
+                        });
+                        ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "zone");
+                        mmcop.setCommandOptions(cuid, commandOptions);
+                        mmsop.setStateOptions(cuid, stateOptions);
+                    } else {
+                        // don't set to undef - maybe partial update
+                        logger.trace("No TemperaturePoints found - list empty");
+                    }
                 } else {
                     // don't set to undef - maybe partial update
-                    logger.trace("No TemperaturePoints found - list empty");
+                    logger.trace("No TemperaturePointsValue found");
                 }
             } else {
                 // don't set to undef - maybe partial update
-                logger.trace("No TemperaturePointsValue found");
+                logger.trace("No TemperaturePoints found");
             }
         } else {
             // full update acknowledged - set to undef
@@ -831,8 +838,9 @@ public class VehicleHandler extends BaseThingHandler {
          */
         if (Constants.BEV.equals(thing.getThingTypeUID().getId())
                 || Constants.HYBRID.equals(thing.getThingTypeUID().getId())) {
-            if (atts.containsKey("chargePrograms")) {
-                ChargeProgramsValue cpv = atts.get("chargePrograms").getChargeProgramsValue();
+            VehicleAttributeStatus vas = atts.get("chargePrograms");
+            if (vas != null) {
+                ChargeProgramsValue cpv = vas.getChargeProgramsValue();
                 if (cpv.getChargeProgramParametersCount() > 0) {
                     List<ChargeProgramParameters> chargeProgramParameters = cpv.getChargeProgramParametersList();
                     List<CommandOption> commandOptions = new ArrayList<>();
@@ -857,8 +865,9 @@ public class VehicleHandler extends BaseThingHandler {
                     mmcop.setCommandOptions(cuid, commandOptions);
                     mmsop.setStateOptions(cuid, stateOptions);
 
-                    if (atts.containsKey("selectedChargeProgram")) {
-                        selectedChargeProgram = (int) atts.get("selectedChargeProgram").getIntValue();
+                    vas = atts.get("selectedChargeProgram");
+                    if (vas != null) {
+                        selectedChargeProgram = (int) vas.getIntValue();
                         ChargeProgramParameters cpp = cpv.getChargeProgramParameters(selectedChargeProgram);
                         ChannelStateMap programMap = new ChannelStateMap("program", GROUP_CHARGE,
                                 DecimalType.valueOf(Integer.toString(selectedChargeProgram)));
@@ -901,9 +910,12 @@ public class VehicleHandler extends BaseThingHandler {
      * @param s
      * @return mapping from air-line distance to "real road" distance
      */
-    public static State guessRangeRadius(QuantityType<Length> s) {
-        double radius = s.intValue() * 0.8;
-        return QuantityType.valueOf(Math.round(radius), s.getUnit());
+    public static State guessRangeRadius(State state) {
+        if (state instanceof QuantityType<?> qt) {
+            double radius = qt.intValue() * 0.8;
+            return QuantityType.valueOf(Math.round(radius), qt.getUnit());
+        }
+        return QuantityType.valueOf(-1, Units.ONE);
     }
 
     protected void updateChannel(ChannelStateMap csm) {

@@ -14,7 +14,6 @@ package org.openhab.binding.mercedesme.internal.utils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.measure.Unit;
 
@@ -113,13 +112,9 @@ public class UOMObserver {
         return label;
     }
 
-    public Optional<Unit<?>> getUnit() {
-        Unit<?> u = UNIT_MAP.get(label);
-        if (u != null) {
-            return Optional.of(u);
-        } else {
-            return Optional.empty();
-        }
+    @Nullable
+    public Unit<?> getUnit() {
+        return UNIT_MAP.get(label);
     }
 
     @Nullable
