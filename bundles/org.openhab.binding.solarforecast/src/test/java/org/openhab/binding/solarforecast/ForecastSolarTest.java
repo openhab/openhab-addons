@@ -125,11 +125,11 @@ class ForecastSolarTest {
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
         ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
         QuantityType<Energy> actual = QuantityType.valueOf(0, Units.KILOWATT_HOUR);
-        State st = Utils.getEnergyState(fo.getActualEnergyValue(queryDateTime));
+        QuantityType<Energy> st = Utils.getEnergyState(fo.getActualEnergyValue(queryDateTime));
         assertTrue(st instanceof QuantityType);
-        actual = actual.add((QuantityType<Energy>) st);
+        actual = actual.add(st);
         assertEquals(49.431, actual.floatValue(), TOLERANCE, "Current Production");
-        actual = actual.add((QuantityType<Energy>) st);
+        actual = actual.add(st);
         assertEquals(98.862, actual.floatValue(), TOLERANCE, "Doubled Current Production");
     }
 
@@ -142,28 +142,36 @@ class ForecastSolarTest {
             double d = fo.getActualEnergyValue(query);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(INVALID_RANGE_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(INVALID_RANGE_INDICATOR),
                     "Expected: " + INVALID_RANGE_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getRemainingProduction(query);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(NO_GORECAST_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(NO_GORECAST_INDICATOR),
                     "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getDayTotal(query.toLocalDate());
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(NO_GORECAST_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(NO_GORECAST_INDICATOR),
                     "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getDayTotal(query.plusDays(1).toLocalDate());
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(NO_GORECAST_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(NO_GORECAST_INDICATOR),
                     "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
         }
 
@@ -175,28 +183,36 @@ class ForecastSolarTest {
             double d = fo.getActualEnergyValue(query);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(TOO_EARLY_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(TOO_EARLY_INDICATOR),
                     "Expected: " + TOO_EARLY_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getRemainingProduction(query);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(DAY_MISSING_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(DAY_MISSING_INDICATOR),
                     "Expected: " + DAY_MISSING_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getActualPowerValue(query);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(TOO_EARLY_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(TOO_EARLY_INDICATOR),
                     "Expected: " + TOO_EARLY_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getDayTotal(query.toLocalDate());
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(DAY_MISSING_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(DAY_MISSING_INDICATOR),
                     "Expected: " + DAY_MISSING_INDICATOR + " Received: " + sfe.getMessage());
         }
 
@@ -213,28 +229,36 @@ class ForecastSolarTest {
             double d = fo.getActualEnergyValue(query);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(TOO_LATE_INDICATOR),
                     "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getRemainingProduction(query);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(DAY_MISSING_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(DAY_MISSING_INDICATOR),
                     "Expected: " + DAY_MISSING_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getActualPowerValue(query);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(TOO_LATE_INDICATOR),
                     "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getDayTotal(query.toLocalDate());
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(DAY_MISSING_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(DAY_MISSING_INDICATOR),
                     "Expected: " + DAY_MISSING_INDICATOR + " Received: " + sfe.getMessage());
         }
 
@@ -280,7 +304,9 @@ class ForecastSolarTest {
             fo.getEnergy(queryDateTime.toInstant(), queryDateTime.plusDays(2).toInstant());
             fail("Too early exception missing");
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains("not available"), "not available expected: " + sfe.getMessage());
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains("not available"), "not available expected: " + sfe.getMessage());
         }
         try {
             fo.getDay(queryDateTime.toLocalDate(), "optimistic");
@@ -313,7 +339,7 @@ class ForecastSolarTest {
         powerSeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
-            assertEquals("kW", ((QuantityType<Power>) s).getUnit().toString());
+            assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
         });
 
         TimeSeries energySeries = fo.getEnergyTimeSeries(QueryMode.Average);
@@ -321,7 +347,7 @@ class ForecastSolarTest {
         energySeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
-            assertEquals("kWh", ((QuantityType<Energy>) s).getUnit().toString());
+            assertEquals("kWh", ((QuantityType<?>) s).getUnit().toString());
         });
     }
 

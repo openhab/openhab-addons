@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigDescription;
@@ -118,7 +117,7 @@ public class CallbackMock implements ThingHandlerCallback {
     }
 
     @Override
-    public List<@NonNull ChannelBuilder> createChannelBuilders(ChannelGroupUID channelGroupUID,
+    public List<ChannelBuilder> createChannelBuilders(ChannelGroupUID channelGroupUID,
             ChannelGroupTypeUID channelGroupTypeUID) {
         return List.of();
     }

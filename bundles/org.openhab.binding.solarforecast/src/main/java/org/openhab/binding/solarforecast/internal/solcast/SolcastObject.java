@@ -163,9 +163,11 @@ public class SolcastObject implements SolarForecast {
         Entry<ZonedDateTime, Double> nextEntry = dtm.higherEntry(iterationDateTime);
         if (nextEntry == null) {
             throwOutOfRangeException(query.toInstant());
+            return -1;
         }
         double forecastValue = 0;
         double previousEstimate = 0;
+
         while (nextEntry.getKey().isBefore(query) || nextEntry.getKey().isEqual(query)) {
             // value are reported in PT30M = 30 minutes interval with kw value
             // for kw/h it's half the value

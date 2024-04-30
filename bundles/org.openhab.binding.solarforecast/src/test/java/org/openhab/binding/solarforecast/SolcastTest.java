@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.measure.quantity.Power;
+import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
@@ -264,7 +264,9 @@ class SolcastTest {
             double d = scfo.getActualEnergyValue(now, QueryMode.Average);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(TOO_LATE_INDICATOR),
                     "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
         }
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
@@ -285,7 +287,9 @@ class SolcastTest {
             double d = scfo.getActualEnergyValue(now, QueryMode.Average);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(TOO_LATE_INDICATOR),
                     "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
         }
 
@@ -300,8 +304,8 @@ class SolcastTest {
         double totalEnergy = 0;
         ZonedDateTime start = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
         for (int i = 0; i < 6; i++) {
-            QuantityType qt = scfo.getDay(start.toLocalDate().plusDays(i));
-            QuantityType eqt = scfo.getEnergy(start.plusDays(i).toInstant(), start.plusDays(i + 1).toInstant());
+            QuantityType<Energy> qt = scfo.getDay(start.toLocalDate().plusDays(i));
+            QuantityType<Energy> eqt = scfo.getEnergy(start.plusDays(i).toInstant(), start.plusDays(i + 1).toInstant());
 
             // check if energy calculation fits to daily query
             assertEquals(qt.doubleValue(), eqt.doubleValue(), TOLERANCE, "Total " + i + " days forecast");
@@ -365,7 +369,9 @@ class SolcastTest {
             scfo.getPower(past);
             fail("Exception expected");
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(TOO_LATE_INDICATOR),
                     "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
         }
     }
@@ -379,7 +385,9 @@ class SolcastTest {
             double d = scfo.getActualEnergyValue(now, QueryMode.Average);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(TOO_LATE_INDICATOR),
                     "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
         }
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
@@ -388,14 +396,18 @@ class SolcastTest {
             double d = scfo.getActualEnergyValue(now, QueryMode.Average);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(TOO_LATE_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(TOO_LATE_INDICATOR),
                     "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = scfo.getDayTotal(now.toLocalDate(), QueryMode.Average);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
-            assertTrue(sfe.getMessage().contains(DAY_MISSING_INDICATOR),
+            String message = sfe.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(DAY_MISSING_INDICATOR),
                     "Expected: " + DAY_MISSING_INDICATOR + " Received: " + sfe.getMessage());
         }
     }
@@ -474,6 +486,7 @@ class SolcastTest {
         String utcTimeString = "2022-07-17T19:30:00.0000000Z";
         SolcastObject so = new SolcastObject("sc-test", TIMEZONEPROVIDER);
         ZonedDateTime zdt = so.getZdtFromUTC(utcTimeString);
+        assertNotNull(zdt);
         assertEquals("2022-07-17T21:30+02:00[Europe/Berlin]", zdt.toString(), "ZonedDateTime");
         LocalDateTime ldt = zdt.toLocalDateTime();
         assertEquals("2022-07-17T21:30", ldt.toString(), "LocalDateTime");
@@ -490,33 +503,45 @@ class SolcastTest {
         sco.join(content);
 
         TimeSeries powerSeries = sco.getPowerTimeSeries(QueryMode.Average);
-        List<QuantityType<Power>> estimateL = new ArrayList<>();
+        List<QuantityType<?>> estimateL = new ArrayList<>();
         assertEquals(672, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
-            assertEquals("kW", ((QuantityType<Power>) s).getUnit().toString());
-            estimateL.add((QuantityType<Power>) entry.state());
+            assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
+            if (s instanceof QuantityType<?> qt) {
+                estimateL.add(qt);
+            } else {
+                fail();
+            }
         });
 
         TimeSeries powerSeries10 = sco.getPowerTimeSeries(QueryMode.Pessimistic);
-        List<QuantityType<Power>> estimate10 = new ArrayList<>();
+        List<QuantityType<?>> estimate10 = new ArrayList<>();
         assertEquals(672, powerSeries10.size());
         powerSeries10.getStates().forEachOrdered(entry -> {
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
-            assertEquals("kW", ((QuantityType<Power>) s).getUnit().toString());
-            estimate10.add((QuantityType<Power>) entry.state());
+            assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
+            if (s instanceof QuantityType<?> qt) {
+                estimate10.add(qt);
+            } else {
+                fail();
+            }
         });
 
         TimeSeries powerSeries90 = sco.getPowerTimeSeries(QueryMode.Optimistic);
-        List<QuantityType<Power>> estimate90 = new ArrayList<>();
+        List<QuantityType<?>> estimate90 = new ArrayList<>();
         assertEquals(672, powerSeries90.size());
         powerSeries90.getStates().forEachOrdered(entry -> {
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
-            assertEquals("kW", ((QuantityType<Power>) s).getUnit().toString());
-            estimate90.add((QuantityType<Power>) entry.state());
+            assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
+            if (s instanceof QuantityType<?> qt) {
+                estimate90.add(qt);
+            } else {
+                fail();
+            }
         });
 
         for (int i = 0; i < estimateL.size(); i++) {
@@ -536,33 +561,45 @@ class SolcastTest {
         sco.join(content);
 
         TimeSeries energySeries = sco.getEnergyTimeSeries(QueryMode.Average);
-        List<QuantityType<Power>> estimateL = new ArrayList<>();
+        List<QuantityType<?>> estimateL = new ArrayList<>();
         assertEquals(672, energySeries.size()); // 18 values each day for 2 days
         energySeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
-            assertEquals("kWh", ((QuantityType<Power>) s).getUnit().toString());
-            estimateL.add((QuantityType<Power>) entry.state());
+            assertEquals("kWh", ((QuantityType<?>) s).getUnit().toString());
+            if (s instanceof QuantityType<?> qt) {
+                estimateL.add(qt);
+            } else {
+                fail();
+            }
         });
 
         TimeSeries energySeries10 = sco.getEnergyTimeSeries(QueryMode.Pessimistic);
-        List<QuantityType<Power>> estimate10 = new ArrayList<>();
+        List<QuantityType<?>> estimate10 = new ArrayList<>();
         assertEquals(672, energySeries10.size()); // 18 values each day for 2 days
         energySeries10.getStates().forEachOrdered(entry -> {
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
-            assertEquals("kWh", ((QuantityType<Power>) s).getUnit().toString());
-            estimate10.add((QuantityType<Power>) entry.state());
+            assertEquals("kWh", ((QuantityType<?>) s).getUnit().toString());
+            if (s instanceof QuantityType<?> qt) {
+                estimate10.add(qt);
+            } else {
+                fail();
+            }
         });
 
         TimeSeries energySeries90 = sco.getEnergyTimeSeries(QueryMode.Optimistic);
-        List<QuantityType<Power>> estimate90 = new ArrayList<>();
+        List<QuantityType<?>> estimate90 = new ArrayList<>();
         assertEquals(672, energySeries90.size()); // 18 values each day for 2 days
         energySeries90.getStates().forEachOrdered(entry -> {
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
-            assertEquals("kWh", ((QuantityType<Power>) s).getUnit().toString());
-            estimate90.add((QuantityType<Power>) entry.state());
+            assertEquals("kWh", ((QuantityType<?>) s).getUnit().toString());
+            if (s instanceof QuantityType<?> qt) {
+                estimate90.add(qt);
+            } else {
+                fail();
+            }
         });
 
         for (int i = 0; i < estimateL.size(); i++) {
