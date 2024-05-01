@@ -464,6 +464,7 @@ public class AirqHandler extends BaseThingHandler {
             processType(decObj, "co", "co", "pair");
             processType(decObj, "co2", "co2", "pairPPM");
             processType(decObj, "dewpt", "dewpt", "pair");
+            processType(decObj, "h2s", "h2s", "pair");
             processType(decObj, "humidity", "humidityRelative", "pair");
             processType(decObj, "humidity_abs", "humidityAbsolute", "pair");
             processType(decObj, "no2", "no2", "pair");

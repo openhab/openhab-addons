@@ -24,6 +24,7 @@
 			<channel id="dHdt" typeId="dhdt"/>
 			<channel id="dewpt" typeId="dewpt"/>
 			<channel id="doorEvent" typeId="door"/>
+			<channel id="h2s" typeId="h2s"/>
 			<channel id="health" typeId="health"/>
 			<channel id="humidityRelative" typeId="humidity"/>
 			<channel id="humidityAbsolute" typeId="humidity_abs"/>
@@ -53,6 +54,7 @@
 			<channel id="co_maxerr" typeId="co_maxerr"/>
 			<channel id="co2_maxerr" typeId="co2_maxerr"/>
 			<channel id="dewpt_maxerr" typeId="dewpt_maxerr"/>
+			<channel id="h2s_maxerr" typeId="h2s_maxerr"/>
 			<channel id="humidityRelative_maxerr" typeId="humidity_maxerr"/>
 			<channel id="humidityAbsolute_maxerr" typeId="humidity_abs_maxerr"/>
 			<channel id="no2_maxerr" typeId="no2_maxerr"/>
@@ -115,6 +117,7 @@
 			<property name="sensorList">Unknown sensor list</property>
 			<property name="sensorInfo">No info about sensors</property>
 			<property name="industry">No industry info</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -214,6 +217,12 @@
 		<item-type>Number</item-type>
 		<label>Door Event (exp)</label>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="h2s" advanced="false">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Hydrogen Sulfide (H₂S)</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="health" advanced="false">
@@ -376,6 +385,12 @@
 	<channel-type id="dewpt_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error Dew Point</label>
+		<state readOnly="true" pattern="± %.2f %%"></state>
+	</channel-type>
+
+	<channel-type id="h2s_maxerr" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Max. Error H₂S Conc.</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
