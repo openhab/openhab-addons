@@ -61,11 +61,11 @@ public class Utils {
     }
 
     public static boolean isBeforeOrEqual(Instant query, Instant reference) {
-        return query.isBefore(reference) || query.equals(reference);
+        return !query.isAfter(reference);
     }
 
     public static boolean isAfterOrEqual(Instant query, Instant reference) {
-        return query.isAfter(reference) || query.equals(reference);
+        return !query.isBefore(reference);
     }
 
     public static Instant getCommonStartTime(List<SolarForecast> forecastObjects) {

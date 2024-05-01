@@ -84,7 +84,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             if (handler != null) {
                 if (handler instanceof SolcastBridgeHandler sbh) {
                     bridgeHandler = Optional.of(sbh);
-                    forecast = Optional.of(new SolcastObject(thing.getUID().getAsString(), bridgeHandler.get()));
+                    forecast = Optional.of(new SolcastObject(thing.getUID().getAsString(), sbh));
                     sbh.addPlane(this);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
