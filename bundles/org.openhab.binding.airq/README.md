@@ -59,6 +59,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | dHdt                      | Number               |    | Change of Humidity                                                  |
 | dewpt                     | Number:Temperature   |    | Dew Point                                                           |
 | doorEvent                 | Number               |    | Door Event (experimental, might not work reliably)                  |
+| h2s                       | Number:Density       |    | Hydrogen sulfide (H₂S)                                              |
 | health                    | Number:Dimensionless |    | Health Index (0 to 1000, -200 for gas alarm, -800 for fire alarm)   |
 | humidityRelative          | Number:Dimensionless |    | Humidity in percent                                                 |
 | humidityAbsolute          | Number               |    | Absolute Humidity                                                   |
@@ -69,7 +70,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | performance               | Number:Dimensionless |    | Performance Index (0 to 1000)                                       |
 | fineDustConc01            | Number               |    | Fine Dust concentration >1 µm                                       |
 | fineDustConc02_5          | Number               |    | Fine Dust concentration >2.5 µm                                     |
-| fineDustConc10            | Number               |    | Fine Dust concentration >10 µm             fni                      |
+| fineDustConc10            | Number               |    | Fine Dust concentration >10 µm                                      |
 | pressure                  | Number:Pressure      |    | Pressure                                                            |
 | so2                       | Number               |    | SO₂ concentration                                                   |
 | sound                     | Number:Dimensionless |    | Noise                                                               |

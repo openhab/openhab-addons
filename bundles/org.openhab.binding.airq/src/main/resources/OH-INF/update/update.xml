@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="airq:airq">
+		<instruction-set targetVersion="1">
+			<add-channel id="h2s">
+				<type>airq:h2s</type>
+				<label>Hydrogen Sulfide (H₂S)</label>
+			</add-channel>
+			<add-channel id="h2s_maxerr">
+				<type>airq:h2s_maxerr</type>
+				<label>Max. Error H₂S Conc.</label>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>
