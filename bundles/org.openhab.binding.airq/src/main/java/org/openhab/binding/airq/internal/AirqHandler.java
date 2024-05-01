@@ -488,8 +488,10 @@ public class AirqHandler extends BaseThingHandler {
             processType(decObj, "dCO2dt", "dCO2dt", "number");
             processType(decObj, "dHdt", "dHdt", "number");
             processType(decObj, "door_event", "doorEvent", "number");
+            processType(decObj, "health", "healthIndex", "index");
             processType(decObj, "health", "health", "number");
             processType(decObj, "measuretime", "measureTime", "number");
+            processType(decObj, "performance", "performanceIndex", "index");
             processType(decObj, "performance", "performance", "number");
             processType(decObj, "timestamp", "timestamp", "datetime");
             processType(decObj, "uptime", "uptime", "numberTimePeriod");
@@ -625,6 +627,10 @@ public class AirqHandler extends BaseThingHandler {
                             pairDB.getValue(), Units.DECIBEL);
                     updateState(channelName, new QuantityType<>(pairDB.getValue(), Units.DECIBEL));
                     updateState(channelName + "_maxerr", new DecimalType(pairDB.getMaxdev()));
+                    break;
+                case "index":
+                    double rawValue = Double.parseDouble(dec.get(airqName).toString());
+                    updateState(channelName, new QuantityType<>(rawValue / 10, Units.PERCENT));
                     break;
                 case "datetime":
                     Long timest = Long.valueOf(dec.get(airqName).toString());
