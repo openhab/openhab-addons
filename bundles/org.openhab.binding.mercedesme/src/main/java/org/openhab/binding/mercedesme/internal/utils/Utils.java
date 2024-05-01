@@ -133,7 +133,7 @@ public class Utils {
     }
 
     public static synchronized void addPort(int portNr) {
-        if (PORTS.contains(portNr)) {
+        if (PORTS.contains(portNr) && portNr != 99999) {
             LOGGER.warn("Port {} already occupied", portNr);
         }
         PORTS.add(portNr);
