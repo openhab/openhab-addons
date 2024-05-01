@@ -166,7 +166,7 @@
 	<channel-type id="teslapowerwall-degradation">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Degradation</label>
-		<description>Current battery degradation %</description>
+		<description>Current battery degradation %, based on 13.5kW full capacity</description>
 		<state pattern="%.1f %%"/>
 	</channel-type>
 

@@ -144,9 +144,13 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
             if (systemStatus != null) {
                 updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_FULL_PACK_ENERGY,
                         new QuantityType<>(systemStatus.full_pack_energy, Units.WATT_HOUR));
-                updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_DEGRADATION,
-                        new QuantityType<>((13500 - systemStatus.full_pack_energy) / 13500 * 100, Units.PERCENT));
-
+                if (systemStatus.full_pack_energy < 13500) {
+                    updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_DEGRADATION,
+                            new QuantityType<>((13500 - systemStatus.full_pack_energy) / 13500 * 100, Units.PERCENT));
+                } else {
+                    updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_DEGRADATION,
+                            new QuantityType<>(0, Units.PERCENT));
+                }
             }
             if (meterAggregates != null) {
                 updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_INSTPOWER,
