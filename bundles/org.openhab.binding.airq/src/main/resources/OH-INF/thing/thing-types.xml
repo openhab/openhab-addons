@@ -117,6 +117,7 @@
 			<property name="sensorList">Unknown sensor list</property>
 			<property name="sensorInfo">No info about sensors</property>
 			<property name="industry">No industry info</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -384,6 +385,12 @@
 	<channel-type id="dewpt_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error Dew Point</label>
+		<state readOnly="true" pattern="± %.2f %%"></state>
+	</channel-type>
+
+	<channel-type id="h2s_maxerr" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Max. Error H₂S Conc.</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
