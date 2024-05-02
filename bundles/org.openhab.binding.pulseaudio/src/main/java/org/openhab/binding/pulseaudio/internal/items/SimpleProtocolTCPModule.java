@@ -10,23 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal.api.dto;
+package org.openhab.binding.pulseaudio.internal.items;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link Snapshot} holds data related to a snapshot.
+ * Represents a simple protocol tcp module instance
  *
- * @author Gaël L'hopital - Initial contribution
- *
+ * @author Miguel Álvarez Díez - Initial contribution
  */
-
 @NonNullByDefault
-public class Snapshot {
-    private @Nullable String url;
+public class SimpleProtocolTCPModule extends Module {
+    private final int port;
 
-    public @Nullable String getUrl() {
-        return url;
+    public SimpleProtocolTCPModule(int id, String name, int port, @Nullable String arguments) {
+        super(id, name, arguments);
+        this.port = port;
+    }
+
+    public int getPort() {
+        return port;
     }
 }

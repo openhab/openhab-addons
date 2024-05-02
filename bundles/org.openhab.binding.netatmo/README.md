@@ -528,7 +528,7 @@ Warnings:
 | status         | monitoring           | Switch       | Read-write | State of the camera (video surveillance on/off)                                                                                             |
 | status         | sd-card              | String       | Read-only  | State of the SD card                                                                                                                        |
 | status         | alim                 | String       | Read-only  | State of the power connector                                                                                                                |
-| live           | picture              | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
+| live           | picture (**)         | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
 | live           | local-picture-url    | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
 | live           | vpn-picture-url      | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
 | live           | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openhab server and camera are located on the same lan.                          |
@@ -547,6 +547,7 @@ Warnings:
 | last-event     | person-id            | String       | Read-only  | Id of the person the event is about (if any)                                                                                                |
 
 (*) This channel is configurable : low, poor, high.
+(**) This channel handles the REFRESH command for on demand update.
 
 **Supported channels for the Presence Camera thing:**
 
