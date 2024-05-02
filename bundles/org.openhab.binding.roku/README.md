@@ -142,7 +142,8 @@ sitemap roku label="Roku" {
     Frame label="My Roku" {
         Selection item=Player_ActiveApp icon="screen"
         Text item=Player_ActiveAppName
-        // Selection item=Player_Button icon="screen"
+        // This Selection is deprecated in favor of the Buttongrid element below
+        Selection item=Player_Button icon="screen"
         Default item=Player_Control
         Text item=Player_PlayMode
         Text item=Player_TimeElapsed icon="time"

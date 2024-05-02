@@ -103,7 +103,8 @@ sitemap benq label="BenQ Projector" {
         Selection    item=benqAspectRatio label="Aspect Ratio"
         Switch       item=benqFreeze label="Freeze"
         Switch       item=benqBlank  label="Blank Screen"
-        // Selection item=benqDirect label="Direct Command"
+        // This Selection is deprecated in favor of the Buttongrid element below
+        Selection    item=benqDirect label="Direct Command"
         Text         item=benqLampTime
         Buttongrid   item=benqDirect label="Remote Control" staticIcon=screen buttons=[1:2:up="Up"=f7:arrowtriangle_up, 3:2:down="Down"=f7:arrowtriangle_down, 2:1:left="Left"=f7:arrowtriangle_left, 2:3:right="Right"=f7:arrowtriangle_right, 2:2:enter="Enter", 4:1:"menu=on"="Menu On", 4:2:"menu=off"="Menu Off", 4:3:"vol=+"="Volume +", 5:1:"mute=on"="Mute On", 5:2:"mute=off"="Mute Off", 5:3:"vol=-"="Volume -", 6:1:zoomO="Zoom Out", 6:2:zoomI="Zoom In", 6:3:auto="Zoom Auto"]
     }

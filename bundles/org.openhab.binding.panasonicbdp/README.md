@@ -109,7 +109,8 @@ panasonicbdp.sitemap:
 sitemap panasonicbdp label="Panasonic Blu-ray" {
     Frame label="Blu-ray Player" {
         Switch item=Player_Power
-        // Selection item=Player_Button icon="player"
+        // This Selection is deprecated in favor of the Buttongrid element below
+        Selection item=Player_Button icon="player"
         Default item=Player_Control
         Text item=Player_PlayerStatus
         Text item=Player_TimeElapsed icon="time"
