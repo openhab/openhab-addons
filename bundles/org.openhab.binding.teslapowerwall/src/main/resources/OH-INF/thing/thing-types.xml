@@ -83,7 +83,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Reserve</label>
 		<description>Current battery reserve %</description>
-		<state pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 	<channel-type id="teslapowerwall-grid_instpower">
 		<item-type>Number:Power</item-type>
