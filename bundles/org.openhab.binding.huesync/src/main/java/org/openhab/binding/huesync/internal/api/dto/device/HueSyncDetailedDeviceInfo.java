@@ -43,7 +43,7 @@ public class HueSyncDetailedDeviceInfo extends HueSyncDeviceInfo {
      * User readable version of the firmware the device can upgrade to. Item is set
      * to null when there is no update available.
      */
-    public int updatableFirmwareVersion;
+    public @Nullable String updatableFirmwareVersion;
     /**
      * 1 = regular;
      * 0 = off in powersave, passthrough or sync mode;

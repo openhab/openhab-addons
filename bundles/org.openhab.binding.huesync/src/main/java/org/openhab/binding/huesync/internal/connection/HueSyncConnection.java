@@ -116,9 +116,9 @@ public class HueSyncConnection {
     }
 
     protected void setAuthentication(String token) {
-        if (!token.isBlank()) {
-            this.unsetAuthentication();
+        this.unsetAuthentication();
 
+        if (!token.isBlank()) {
             this.authentication = new HueSyncAuthenticationResult(this.uri, token);
             this.httpClient.getAuthenticationStore().addAuthenticationResult(this.authentication);
         }
@@ -174,7 +174,7 @@ public class HueSyncConnection {
             case HttpStatus.OK_200:
                 return this.deserialize(response.getContentAsString(), type);
             case HttpStatus.BAD_REQUEST_400:
-                logger.info("registration in progress: no token received yet");
+                logger.trace("registration in progress: no token received yet");
                 break;
             case HttpStatus.UNAUTHORIZED_401:
                 logger.error("credentials missing or invalid");
@@ -229,9 +229,7 @@ public class HueSyncConnection {
     }
 
     public void updateConfig(HueSyncConfiguration config) {
-        if (!config.apiAccessToken.isBlank()) {
-            this.registrationId = config.registrationId;
-            this.setAuthentication(config.apiAccessToken);
-        }
+        this.registrationId = config.registrationId;
+        this.setAuthentication(config.apiAccessToken);
     }
 }

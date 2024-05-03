@@ -12,6 +12,9 @@
 			smart light that responds to and reflects the content you watch or listen to.
 		</description>
 
+		<channel-groups>
+			<channel-group id="device-information" typeId="device-information"></channel-group>
+		</channel-groups>
 
 		<properties>
 			<property name="vendor">Philips</property>
@@ -20,11 +23,15 @@
 		<representation-property>host</representation-property>
 
 		<config-description-ref uri="thing-type:huesync:thing"/>
-
 	</thing-type>
 
-	<channel-group-type id="deviceGroup">
-		<label>Device Information</label>
+	<channel-group-type id="device-information">
+		<label>Firmware</label>
+		<description>Information about the installed device firmaware and available updates.</description>
+		<category></category>
+		<channels>
+			<channel id="firmware" typeId="device-info-firmware"></channel>
+			<channel id="available-firmware" typeId="device-info-firmware-available"></channel>
+		</channels>
 	</channel-group-type>
-
 </thing:thing-descriptions>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="huesync"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!--
+		<xs:complexType name="itemType">
+		<xs:simpleContent>
+		<xs:extension base="xs:string">
+		<xs:attribute name="unitHint" type="xs:string" use="optional"/>
+		</xs:extension>
+		</xs:simpleContent>
+		</xs:complexType>
+	-->
+	<channel-type id="device-info-firmware">
+		<!--
+			Switch,
+			Rollershutter,
+			Contact,
+			String,
+			Number,
+			Dimmer,
+			DateTime,
+			Color,
+			Image,
+			Location,
+			Player,
+			Call.
+		-->
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<description>Installed firmware version</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="device-info-firmware-available">
+		<item-type>String</item-type>
+		<label>Latest Firmware Version</label>
+		<description>Latest available firmware version</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<!--
+		firmwareVersion Get string, version User readable version of the device firmware, starting with decimal major .minor .maintenance
+		format e.g. “1.12.3”
+		updatableFirmwareVersion Get string, version User readable version of the firmware the device can upgrade to. Item is set
+		to null when there is no update available.
+		buildNumber Get number, uint Build number of the firmware. Unique for every build with newer builds guaranteed a higher
+		number
+		than older.
+		updatableBuildNumber Get number, uint Build number that is available to update to. Item is set to null when there is no
+		update
+		available.
+		lastCheckedUpdate Get string, time UTC time when last check for update was performed.
+		wifiState Get string, enum uninitialized, disconnected, lan, wan
+	-->
+</thing:thing-descriptions>

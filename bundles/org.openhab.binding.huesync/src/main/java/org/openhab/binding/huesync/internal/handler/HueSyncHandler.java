@@ -36,12 +36,14 @@ import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTask;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 
 /**
@@ -83,9 +85,11 @@ public class HueSyncHandler extends BaseThingHandler {
     // #region private
     private void stopTask(@Nullable ScheduledFuture<?> task) {
         try {
-            if (task != null && !task.isDone()) {
-                task.cancel(true);
-            }
+            Optional.ofNullable(task).ifPresent((job) -> {
+                if (!job.isCancelled() && !job.isDone()) {
+                    job.cancel(true);
+                }
+            });
         } catch (Exception e) {
             // TODO: Handle exception ...
         } finally {
@@ -142,6 +146,15 @@ public class HueSyncHandler extends BaseThingHandler {
             this.updateStatus(ThingStatus.OFFLINE);
         } else {
             this.updateStatus(ThingStatus.ONLINE);
+
+            State firmwareState = new StringType(deviceState.firmwareVersion);
+            State firmwareAvailableState = new StringType(
+                    Optional.ofNullable(deviceState.updatableFirmwareVersion).isPresent()
+                            ? deviceState.updatableFirmwareVersion
+                            : deviceState.firmwareVersion);
+
+            this.updateState(HueSyncConstants.CHANNELS.DEVICE.INFORMATION.FIRMWARE, firmwareState);
+            this.updateState(HueSyncConstants.CHANNELS.DEVICE.INFORMATION.FIRMWARE_AVAILABLE, firmwareAvailableState);
         }
     }
 
@@ -196,10 +209,13 @@ public class HueSyncHandler extends BaseThingHandler {
     // #region Override
     @Override
     public void initialize() {
+        // TODO: Check if we need to handle enable/disable state ...
+
         updateStatus(ThingStatus.UNKNOWN);
 
-        // initialize is also called, if the thing configuration was updated
-        // TODO: Improve handling of configuration changes ...
+        this.stopTask(this.deviceRegistrationTask);
+        this.stopTask(this.deviceUpdateTask);
+
         this.config = getConfigAs(HueSyncConfiguration.class);
         this.connection.updateConfig(this.config);
 
@@ -234,30 +250,15 @@ public class HueSyncHandler extends BaseThingHandler {
         // TODO: Implementation ...
     }
 
-    /*
-     * TODO: Solve shutdown timing problem(s):
-     * 
-     * 2024-04-30 21:38:43.874 [ERROR] [sync.internal.handler.HueSyncHandler] - The service has been unregistered
-     * {org.openhab.core.io.net.http.TlsTrustManagerProvider}={service.id=494, service.bundleid=249,
-     * service.scope=singleton}
-     * 2024-04-30 21:38:43.875 [INFO ] [sync.internal.handler.HueSyncHandler] - Thing HueSyncBox-...
-     * (huesync:huesyncthing:HueSyncBox-...) disposed.
-     * 2024-04-30 21:38:53.085 [TRACE] [rnal.handler.tasks.HueSyncUpdateTask] - Status update query for Sync Box
-     * HSB1:...
-     * 2024-04-30 21:38:53.111 [TRACE] [sync.internal.handler.HueSyncHandler] - Current status: UNINITIALIZED
-     * 2024-04-30 21:38:53.113 [WARN ] [.core.thing.binding.BaseThingHandler] - Handler HueSyncHandler tried updating
-     * the thing status although the handler was already disposed.
-     */
-
     @Override
     public void dispose() {
         super.dispose();
 
         try {
-            this.connection.dispose();
-
             this.stopTask(deviceRegistrationTask);
             this.stopTask(deviceUpdateTask);
+
+            this.connection.dispose();
         } catch (Exception e) {
             this.logger.error("{}", e.getMessage());
         } finally {

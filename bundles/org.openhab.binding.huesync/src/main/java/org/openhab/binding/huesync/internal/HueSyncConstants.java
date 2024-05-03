@@ -28,6 +28,15 @@ public class HueSyncConstants {
         public static final String REGISTRATIONS = "registrations";
     }
 
+    public static class CHANNELS {
+        public static class DEVICE {
+            public static class INFORMATION {
+                public static final String FIRMWARE = "device-information#firmware";
+                public static final String FIRMWARE_AVAILABLE = "device-information#available-firmware";
+            }
+        }
+    }
+
     public static final String APPLICATION_NAME = "openHAB";
 
     /** Minimal API Version required. Only apiLevel >= 7 is supported. */
