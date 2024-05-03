@@ -155,7 +155,7 @@ String      TiVo_KeyboardStr    "Search String"
 ```perl
 sitemap tivo label="Tivo Central" {
     Frame label="Tivo" {
-        Text    item=TiVo_SetChannel          label="Current Channel [%s]"  icon="screen"
+        Text        item=TiVo_SetChannel      label="Current Channel [%s]"  icon="screen"
         Text        item=TiVo_SetChannelName  label="Channel Name"   icon="screen"
         Text        item=TiVo_Recording       label="Recording"      icon="screen"
         // Note the TiVo_IRCmd Switch elements are deprecated in favor of the Buttongrid element below
