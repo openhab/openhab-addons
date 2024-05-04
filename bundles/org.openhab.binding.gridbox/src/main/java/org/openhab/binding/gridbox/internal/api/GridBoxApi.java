@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
@@ -67,11 +68,15 @@ public class GridBoxApi {
         }
     }
 
-    private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final Duration TIMEOUT_DURATION = Duration.ofSeconds(5);
     private static final Gson GSON = new Gson();
 
     private final Logger logger = LoggerFactory.getLogger(GridBoxApi.class);
+    private final HttpClient httpClient;
+
+    public GridBoxApi(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
 
     /**
      * Fetch the ID Token required for the GridBox API calls by querying an OAuth request.
@@ -106,7 +111,7 @@ public class GridBoxApi {
                 .build();
         // @formatter:on
 
-        HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         String body = response.body();
         int status = response.statusCode();
         if (status != 200) {
@@ -170,7 +175,7 @@ public class GridBoxApi {
                 .build();
         // @formatter:on
 
-        HttpResponse<String> response = HTTP_CLIENT.send(gatewayRequest, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(gatewayRequest, HttpResponse.BodyHandlers.ofString());
         String body = response.body();
         int status = response.statusCode();
 
@@ -248,7 +253,7 @@ public class GridBoxApi {
                 .build();
         // @formatter:on
 
-        HttpResponse<String> response = HTTP_CLIENT.send(liveDataRequest, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = httpClient.send(liveDataRequest, HttpResponse.BodyHandlers.ofString());
         int status = response.statusCode();
         String body = response.body();
         if (status == 403) {
@@ -265,7 +270,14 @@ public class GridBoxApi {
             throw new GridBoxApiException("Live Data request returned an invalid response");
         }
 
-        JsonElement jsonObject = JsonParser.parseString(body);
+        JsonElement jsonObject;
+        try {
+            jsonObject = JsonParser.parseString(body);
+        } catch (JsonParseException e) {
+            logger.debug("Invalid response of live data request, could not parse JSON body");
+            logger.trace("JSON body: {}", body);
+            throw new GridBoxApiException("Live Data request returned an invalid response");
+        }
 
         logger.atTrace().log(() -> "Live data request returned body: {}".formatted(jsonObject));
 

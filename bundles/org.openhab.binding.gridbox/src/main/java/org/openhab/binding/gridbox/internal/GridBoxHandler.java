@@ -13,6 +13,7 @@
 package org.openhab.binding.gridbox.internal;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +48,7 @@ public class GridBoxHandler extends BaseThingHandler {
 
     private static final int CONNECTION_RETRY_PERIOD = 10;
 
-    private static final GridBoxApi API = new GridBoxApi();
+    private static final GridBoxApi API = new GridBoxApi(HttpClient.newHttpClient());
 
     private GridBoxConfiguration config = new GridBoxConfiguration();
 
