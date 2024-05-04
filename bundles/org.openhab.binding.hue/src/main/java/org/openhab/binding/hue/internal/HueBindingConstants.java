@@ -64,6 +64,10 @@ public class HueBindingConstants {
             THING_TYPE_TAP_SWITCH, THING_TYPE_PRESENCE_SENSOR, THING_TYPE_TEMPERATURE_SENSOR,
             THING_TYPE_LIGHT_LEVEL_SENSOR, THING_TYPE_GROUP);
 
+    public static final Set<ThingTypeUID> V1_LIGHT_THING_TYPE_UIDS = Set.of(THING_TYPE_COLOR_LIGHT,
+            THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT,
+            THING_TYPE_ON_OFF_LIGHT, THING_TYPE_ON_OFF_PLUG, THING_TYPE_DIMMABLE_PLUG);
+
     // List all channels
     public static final String CHANNEL_COLORTEMPERATURE = "color_temperature";
     public static final String CHANNEL_COLORTEMPERATURE_ABS = "color_temperature_abs";
