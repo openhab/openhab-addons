@@ -127,7 +127,7 @@ public class Settings {
         private String floatVolt;
         private String workState;
         private String loadMode;
-        private String sysWorkMode;
+        private int sysWorkMode;
         private String sn;
         private String genCoolingTime;
         private String genPeakShaving;
@@ -248,7 +248,7 @@ public class Settings {
         private String drmEnable;
         private String underFreq1Delay;
         private String underFreq2Delay;
-        private String energyMode;
+        private int energyMode;
         private String ampm;
         private String gridPeakShaving;
         private String fac;
@@ -274,7 +274,7 @@ public class Settings {
         private String timeSync;
         private String wattOverWgralFreq;
         private String sdBatteryCurrent;
-        private String peakAndVallery;
+        private int peakAndVallery;
         private String batteryEmptyVolt;
         private String batteryLowCap;
         private String underVolt2Delay;
@@ -420,6 +420,18 @@ public class Settings {
         return this.batteryPowerLimit;
     }
 
+    public Integer getPeakAndValley() {
+        return this.data.peakAndVallery;
+    }
+
+    public Integer getEnergyMode() {
+        return this.data.energyMode;
+    }
+
+    public Integer getSysWorkMode() {
+        return this.data.sysWorkMode;
+    }
+
     public void setIntervalGridTimerOn(Boolean state, int interval) {
         this.gridTimeron.set(interval - 1, state);
         return;
@@ -455,6 +467,18 @@ public class Settings {
     public void setIntervalBatteryPowerLimit(int state, int interval) {
         this.batteryPowerLimit.set(interval - 1, state);
         return;
+    }
+
+    public void setPeakAndValley(int state) {
+        this.data.peakAndVallery = state;
+    }
+
+    public void setEnergyMode(int state) {
+        this.data.energyMode = state;
+    }
+
+    public void setSysWorkMode(int state) {
+        this.data.sysWorkMode = state;
     }
 
     public String buildBody() {

@@ -76,7 +76,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
         if (command instanceof RefreshType) {
             refreshStateAndUpdate();
-        } else { // if (channelUID.getId().equals(SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE)) {}
+        } else {
             this.tempInverterChargeSettings = inverter.getBatteryChargeSettings();
             if (this.tempInverterChargeSettings == null) {
                 return;
@@ -231,18 +231,24 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                     this.tempInverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()),
                             6);
                     break;
+                // Inverter control
+                case CHANNEL_INVERTER_CONTROL_TIMER:
+                    this.tempInverterChargeSettings.setPeakAndValley(Integer.valueOf(command.toString()));
+                    break;
+                case CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN:
+                    this.tempInverterChargeSettings.setEnergyMode(Integer.valueOf(command.toString()));
+                    break;
+                case CHANNEL_INVERTER_CONTROL_WORK_MODE:
+                    this.tempInverterChargeSettings.setSysWorkMode(Integer.valueOf(command.toString()));
+                    break;
             }
-            // may need to detect something has changes rather than just always doing this?
 
             Optional<SunSynkAccountHandler> checkBridge = getSafeBridge();
             if (!checkBridge.isPresent()) {
                 logger.debug("Failed to find associated SunSynk Bridge.");
                 return;
             }
-            // SunSynkAccountHandler bridgeHandler = checkBridge.get();
-            // bridgeHandler.refreshAccount(); // Check account token
             this.batterySettingsUpdated = true; // true = update battery settings from API at next interval
-            // sendAPICommandToInverter(this.tempInverterChargeSettings); //inverter.getBatteryChargeSettings()
         }
     }
 
@@ -295,20 +301,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         this.batterySettingsUpdated = null;
         inverter = new SunSynkInverter(config);
         startAutomaticRefresh();
-
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-        //
-        // Logging to INFO should be avoided normally.
-        // See https://www.openhab.org/docs/developer/guidelines.html#f-logging
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     private Optional<SunSynkAccountHandler> getSafeBridge() {
@@ -378,7 +370,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         }
         updateProperty(Thing.PROPERTY_VENDOR, "SunSynk");
         updateProperty(Thing.PROPERTY_SERIAL_NUMBER, inverterChargeSettings.getsn());
-        // updateProperty(Thing.PROPERTY_FIRMWARE_VERSION, neatoState.getMeta().getFirmware());
 
         updateState(CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE,
                 OnOffType.from(inverterChargeSettings.getIntervalGridTimerOn().get(0)));
@@ -438,6 +429,10 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                 new DecimalType(inverterChargeSettings.getIntervalBatteryPowerLimit().get(4)));
         updateState(CHANNEL_BATTERY_INTERVAL_6_POWER_LIMIT,
                 new DecimalType(inverterChargeSettings.getIntervalBatteryPowerLimit().get(5)));
+
+        updateState(CHANNEL_INVERTER_CONTROL_TIMER, new DecimalType(inverterChargeSettings.getPeakAndValley()));
+        updateState(CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN, new DecimalType(inverterChargeSettings.getEnergyMode()));
+        updateState(CHANNEL_INVERTER_CONTROL_WORK_MODE, new DecimalType(inverterChargeSettings.getSysWorkMode()));
 
         Grid inverterGrid = inverter.getRealTimeGridStatus();
         if (inverterGrid == null) {
