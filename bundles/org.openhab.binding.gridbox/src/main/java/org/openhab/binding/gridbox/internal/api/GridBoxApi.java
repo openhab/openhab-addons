@@ -80,9 +80,9 @@ public class GridBoxApi {
      * @return The fetched ID Token. Will always be non-null, if no exception occurs.
      * @throws IOException see {@link HttpClient#send(HttpRequest, java.net.http.HttpResponse.BodyHandler)}
      * @throws InterruptedException see {@link HttpClient#send(HttpRequest, java.net.http.HttpResponse.BodyHandler)}
-     * @throws GridBoxApiAuthenticationException Thrown in case of an invalid response of the authorization query, either
-     *             if a status code not equal to 200 is returned or the ID Token cannot be parsed from the response
-     *             body
+     * @throws GridBoxApiAuthenticationException Thrown in case of an invalid response of the authorization query,
+     *             either if a status code not equal to 200 is returned or the ID Token cannot be parsed from the
+     *             response body
      */
     public String getIdToken(GridBoxConfiguration config)
             throws IOException, InterruptedException, GridBoxApiAuthenticationException {
