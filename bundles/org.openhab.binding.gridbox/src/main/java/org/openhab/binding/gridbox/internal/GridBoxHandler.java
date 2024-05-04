@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gridbox.internal.api.GridBoxApi;
-import org.openhab.binding.gridbox.internal.api.GridBoxApi.GridBoxApiAutheticationException;
+import org.openhab.binding.gridbox.internal.api.GridBoxApi.GridBoxApiAuthenticationException;
 import org.openhab.binding.gridbox.internal.api.GridBoxApi.GridBoxApiException;
 import org.openhab.binding.gridbox.internal.api.GridBoxApi.GridBoxApiSystemNotFoundException;
 import org.openhab.binding.gridbox.internal.model.BatterySummary;
@@ -50,6 +50,8 @@ public class GridBoxHandler extends BaseThingHandler {
     private static final GridBoxApi API = new GridBoxApi();
 
     private GridBoxConfiguration config = new GridBoxConfiguration();
+
+    private int reConnectAttempts;
 
     private @Nullable ScheduledFuture<?> updateScheduledFuture;
 
@@ -123,12 +125,14 @@ public class GridBoxHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(GridBoxConfiguration.class);
-        if (config.email == null) {
+        String email = config.email;
+        if (email == null || email.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.noemail");
             return;
         }
-        if (config.password == null) {
+        String password = config.password;
+        if (password == null || password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.nopassword");
             return;
@@ -150,16 +154,17 @@ public class GridBoxHandler extends BaseThingHandler {
                 config.systemId = API.getSystemId(config);
             }
             updateStatus(ThingStatus.ONLINE);
+            reConnectAttempts = 0;
 
             updateScheduledFuture = scheduler.scheduleWithFixedDelay(this::update, 0, config.refreshInterval,
                     TimeUnit.SECONDS);
-        } catch (GridBoxApiAutheticationException e) {
+        } catch (GridBoxApiAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.credentialsinvalid");
         } catch (IOException | InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@test/offline.communication-error.connectionlost");
-            scheduler.schedule(this::initialize, CONNECTION_RETRY_PERIOD, TimeUnit.SECONDS);
+            scheduler.schedule(this::initialize, getDelayUntilNextConnectionAttempt(), TimeUnit.SECONDS);
         } catch (GridBoxApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@test/offline.communication-error.initializeinvalid");
@@ -170,15 +175,16 @@ public class GridBoxHandler extends BaseThingHandler {
         try {
             API.retrieveLiveData(config, this::handleLiveDataResponse);
             updateStatus(ThingStatus.ONLINE);
-        } catch (GridBoxApiAutheticationException e) {
+            reConnectAttempts = 0;
+        } catch (GridBoxApiAuthenticationException e) {
             // maybe the authentication is no longer valid, so try to re-authenticate
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
                     "@test/offline.configuration-error.authenticationlost");
             stopUpdater();
             config.idToken = null;
             initializeApi();
         } catch (GridBoxApiSystemNotFoundException e) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
                     "@test/offline.configuration-error.systemidunknown");
             stopUpdater();
             config.systemId = null;
@@ -187,7 +193,7 @@ public class GridBoxHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@test/offline.communication-error.connectionlost");
             stopUpdater();
-            scheduler.schedule(this::initializeApi, CONNECTION_RETRY_PERIOD, TimeUnit.SECONDS);
+            scheduler.schedule(this::initializeApi, getDelayUntilNextConnectionAttempt(), TimeUnit.SECONDS);
         }
     }
 
@@ -197,6 +203,13 @@ public class GridBoxHandler extends BaseThingHandler {
             updateScheduledFuture.cancel(true);
             this.updateScheduledFuture = null;
         }
+    }
+
+    private long getDelayUntilNextConnectionAttempt() {
+        // progressively increase the time until the re-connect attempt by .5 times the refreshInterval
+        long delay = CONNECTION_RETRY_PERIOD + config.refreshInterval * reConnectAttempts / 2;
+        reConnectAttempts++;
+        return delay;
     }
 
     @Override

@@ -58,11 +58,11 @@ public class GridBoxApi {
         }
     }
 
-    public class GridBoxApiAutheticationException extends Exception {
+    public class GridBoxApiAuthenticationException extends Exception {
 
         private static final long serialVersionUID = 7626147923372849513L;
 
-        public GridBoxApiAutheticationException(String message) {
+        public GridBoxApiAuthenticationException(String message) {
             super(message);
         }
     }
@@ -80,12 +80,12 @@ public class GridBoxApi {
      * @return The fetched ID Token. Will always be non-null, if no exception occurs.
      * @throws IOException see {@link HttpClient#send(HttpRequest, java.net.http.HttpResponse.BodyHandler)}
      * @throws InterruptedException see {@link HttpClient#send(HttpRequest, java.net.http.HttpResponse.BodyHandler)}
-     * @throws GridBoxApiAutheticationException Thrown in case of an invalid response of the authorization query, either
+     * @throws GridBoxApiAuthenticationException Thrown in case of an invalid response of the authorization query, either
      *             if a status code not equal to 200 is returned or the ID Token cannot be parsed from the response
      *             body
      */
     public String getIdToken(GridBoxConfiguration config)
-            throws IOException, InterruptedException, GridBoxApiAutheticationException {
+            throws IOException, InterruptedException, GridBoxApiAuthenticationException {
         HttpRequest.BodyPublisher userPublisher = HttpRequest.BodyPublishers.ofString("""
                 {
                     "grant_type": "http://auth0.com/oauth/grant-type/password-realm",
@@ -112,7 +112,7 @@ public class GridBoxApi {
         if (status != 200) {
             logger.debug("Invalid response of authentication request, returned status: {}", status);
             logger.trace("Response body: {}", body);
-            throw new GridBoxApiAutheticationException("Authentication request returned an invalid response");
+            throw new GridBoxApiAuthenticationException("Authentication request returned an invalid response");
         }
 
         logger.atTrace().log(() -> "Authentication request returned body: {}".formatted(body));
@@ -122,7 +122,7 @@ public class GridBoxApi {
         if (idTokenValue.isEmpty()) {
             logger.debug("Invalid response of authentication request, returned status: {}", status);
             logger.trace("Response body: {}", body);
-            throw new GridBoxApiAutheticationException("Authentication request returned an invalid response");
+            throw new GridBoxApiAuthenticationException("Authentication request returned an invalid response");
         }
 
         return idTokenValue.get();
@@ -156,11 +156,11 @@ public class GridBoxApi {
      * @throws GridBoxApiException Thrown in case of an invalid response of the gateway query, either
      *             if a status code not equal to 200 or 403 is returned or the System ID cannot be parsed from the
      *             response body
-     * @throws GridBoxApiAutheticationException Thrown in case of an invalid response of the authorization query, if a
+     * @throws GridBoxApiAuthenticationException Thrown in case of an invalid response of the authorization query, if a
      *             status code equal to 403 is returned
      */
     public String getSystemId(GridBoxConfiguration config)
-            throws IOException, InterruptedException, GridBoxApiAutheticationException, GridBoxApiException {
+            throws IOException, InterruptedException, GridBoxApiAuthenticationException, GridBoxApiException {
         // @formatter:off
         HttpRequest gatewayRequest = HttpRequest.newBuilder(URI.create("https://api.gridx.de/gateways"))
                 .GET()
@@ -177,7 +177,7 @@ public class GridBoxApi {
         if (status == 403) {
             logger.debug("Gateway request returned access forbidden, returned status: {}", status);
             logger.trace("Response body: {}", body);
-            throw new GridBoxApiAutheticationException("Gateway request forbidden");
+            throw new GridBoxApiAuthenticationException("Gateway request forbidden");
         } else if (status != 200) {
             logger.debug("Invalid response of gateway request, returned status {}", status);
             logger.trace("Response body: {}", body);
@@ -233,11 +233,11 @@ public class GridBoxApi {
      *             parsed from the response body
      * @throws GridBoxApiSystemNotFoundException Thrown in case the query returned status code 404, representing a
      *             non-existing System ID
-     * @throws GridBoxApiAutheticationException Thrown in case of an invalid response of the authorization query if a
+     * @throws GridBoxApiAuthenticationException Thrown in case of an invalid response of the authorization query if a
      *             status code equal to 403 is returned
      */
     public void retrieveLiveData(GridBoxConfiguration config, Consumer<LiveData> responseHandler)
-            throws IOException, InterruptedException, GridBoxApiAutheticationException,
+            throws IOException, InterruptedException, GridBoxApiAuthenticationException,
             GridBoxApiSystemNotFoundException, GridBoxApiException {
         // @formatter:off
         HttpRequest liveDataRequest = HttpRequest
@@ -254,7 +254,7 @@ public class GridBoxApi {
         if (status == 403) {
             logger.debug("Live data request returned access forbidden, status {}", status);
             logger.trace("Response body: {}", body);
-            throw new GridBoxApiAutheticationException("Live Data request forbidden");
+            throw new GridBoxApiAuthenticationException("Live Data request forbidden");
         } else if (status == 404) {
             logger.debug("Invalid response of live data request, returned status {}", status);
             logger.trace("Response body: {}", body);
