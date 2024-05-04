@@ -14,7 +14,7 @@
 			<channel id="battery-nominal-capacity" typeId="system.electric-energy"/>
 			<channel id="battery-power" typeId="system.electric-power"/>
 			<channel id="battery-remaining-charge" typeId="system.electric-energy"/>
-			<channel id="battery-state-of-charge" typeId="stateOfCharge"/>
+			<channel id="battery-state-of-charge" typeId="state-of-charge"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="consumption" typeId="system.electric-power"/>
 			<channel id="direct-consumption" typeId="system.electric-power"/>
@@ -60,7 +60,7 @@
 		<state min="0" max="100" step="0.01" pattern="%.2f %" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="stateOfCharge">
+	<channel-type id="state-of-charge">
 		<item-type>Number</item-type>
 		<label>State of Charge</label>
 		<state min="0" max="100" step="1" readOnly="true"/>
