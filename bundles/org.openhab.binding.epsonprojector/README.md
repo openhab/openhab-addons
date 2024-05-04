@@ -164,7 +164,9 @@ sitemap epson label="Epson Projector"
         Switch     item=epsonMute    label="AV Mute"
         // Volume can be a Setpoint also
         Slider     item=epsonVolume  label="Volume" minValue=0 maxValue=100 step=1 icon="soundvolume"
+        // This Switch is deprecated in favor of the Buttongrid element below
         Switch     item=epsonKeyCode label="Navigation" icon="screen" mappings=["03"="Menu", "35"="˄", "36"="˅", "37"="<", "38"=">", "16"="Enter"]
+        Buttongrid item=epsonKeyCode label="Navigation" staticIcon=material:tv_remote buttons=[1:1:"03"="Menu", 1:2:"35"="Up"=f7:arrowtriangle_up, 3:2:"36"="Down"=f7:arrowtriangle_down, 2:1:"37"="Left"=f7:arrowtriangle_left, 2:3:"38"="Right"=f7:arrowtriangle_right, 2:2:"16"="Enter"]
     }
     Frame label="Adjust Image" {
         Setpoint   item=epsonBrightness         label="Brightness"
