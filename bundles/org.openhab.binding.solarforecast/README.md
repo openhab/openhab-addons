@@ -59,11 +59,16 @@ See [DateTime](#date-time) section for more information.
 |-----------------|---------|--------------------------------------------------------|-----------------|----------|----------|
 | resourceId      | text    | Resource Id of Solcast rooftop site                    | N/A             | yes      | no       |
 | refreshInterval | integer | Forecast Refresh Interval in minutes                   | 120             | yes      | no       |
+| refreshManual   | boolean | Manual Forecast Refresh                                | false           | no       | yes      |
 
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
 `refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
 If you have 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 calls per day.
+
+`refreshManual` gives full control of forecast update to the user if set to `true`.
+No update will be triggered by the binding so you need to take care updating after startup and taking throttling of API into account. 
+
 
 ## Solcast Channels
 

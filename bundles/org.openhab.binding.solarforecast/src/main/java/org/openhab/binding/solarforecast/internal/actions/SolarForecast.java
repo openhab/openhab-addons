@@ -86,6 +86,11 @@ public interface SolarForecast {
     Instant getForecastEnd();
 
     /**
+     * Set expiration date into past to force update
+     */
+    void triggerUpdate();
+
+    /**
      * Get TimeSeries for Power forecast
      *
      * @param mode QueryMode for optimistic, pessimistic or average estimation

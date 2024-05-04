@@ -84,7 +84,9 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             if (handler != null) {
                 if (handler instanceof SolcastBridgeHandler sbh) {
                     bridgeHandler = Optional.of(sbh);
-                    forecast = Optional.of(new SolcastObject(thing.getUID().getAsString(), sbh));
+                    Instant expiration = (configuration.refreshManual == true) ? Instant.MAX
+                            : Instant.now().minusSeconds(1);
+                    forecast = Optional.of(new SolcastObject(thing.getUID().getAsString(), expiration, sbh));
                     sbh.addPlane(this);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -146,55 +148,55 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         }
     }
 
-    private void updateForecast() {
-        bridgeHandler.ifPresent(bridge -> {
-            String forecastUrl = String.format(FORECAST_URL, configuration.resourceId);
-            String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.resourceId);
-            try {
-                // get actual estimate
-                Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
-                estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
-                ContentResponse crEstimate = estimateRequest.send();
-                if (crEstimate.getStatus() == 200) {
-                    SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(),
-                            crEstimate.getContentAsString(),
-                            Instant.now().plus(configuration.refreshInterval, ChronoUnit.MINUTES), bridge);
-
-                    // get forecast
-                    Request forecastRequest = httpClient.newRequest(forecastUrl);
-                    forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
-                    ContentResponse crForecast = forecastRequest.send();
-
-                    if (crForecast.getStatus() == 200) {
-                        localForecast.join(crForecast.getContentAsString());
-                        setForecast(localForecast);
-                        updateState(GROUP_RAW + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_JSON,
-                                StringType.valueOf(forecast.get().getRaw()));
-                        updateStatus(ThingStatus.ONLINE);
-                    } else {
-                        logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl, crForecast.getStatus());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/solarforecast.plane.status.http-status [\"" + crForecast.getStatus() + "\"]");
-                    }
-                } else {
-                    logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl, crEstimate.getStatus());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/solarforecast.plane.status.http-status [\"" + crEstimate.getStatus() + "\"]");
-                }
-            } catch (ExecutionException | TimeoutException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (InterruptedException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                Thread.currentThread().interrupt();
-            }
-        });
-    }
-
     protected synchronized SolcastObject fetchData() {
         bridgeHandler.ifPresent(bridge -> {
             forecast.ifPresent(forecastObject -> {
                 if (forecastObject.isExpired()) {
-                    updateForecast();
+                    logger.trace("Get new forecast {}", forecastObject.toString());
+                    String forecastUrl = String.format(FORECAST_URL, configuration.resourceId);
+                    String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.resourceId);
+                    try {
+                        // get actual estimate
+                        Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
+                        estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
+                        ContentResponse crEstimate = estimateRequest.send();
+                        if (crEstimate.getStatus() == 200) {
+                            Instant expiration = (configuration.refreshManual == true) ? Instant.MAX
+                                    : Instant.now().plus(configuration.refreshInterval, ChronoUnit.MINUTES);
+                            SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(),
+                                    crEstimate.getContentAsString(), expiration, bridge);
+
+                            // get forecast
+                            Request forecastRequest = httpClient.newRequest(forecastUrl);
+                            forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
+                            ContentResponse crForecast = forecastRequest.send();
+
+                            if (crForecast.getStatus() == 200) {
+                                localForecast.join(crForecast.getContentAsString());
+                                setForecast(localForecast);
+                                updateState(GROUP_RAW + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_JSON,
+                                        StringType.valueOf(forecast.get().getRaw()));
+                                updateStatus(ThingStatus.ONLINE);
+                            } else {
+                                logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl,
+                                        crForecast.getStatus());
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "@text/solarforecast.plane.status.http-status [\"" + crForecast.getStatus()
+                                                + "\"]");
+                            }
+                        } else {
+                            logger.debug("{} Call {} failed {}", thing.getLabel(), currentEstimateUrl,
+                                    crEstimate.getStatus());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "@text/solarforecast.plane.status.http-status [\"" + crEstimate.getStatus()
+                                            + "\"]");
+                        }
+                    } catch (ExecutionException | TimeoutException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    } catch (InterruptedException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        Thread.currentThread().interrupt();
+                    }
                 } else {
                     updateChannels(forecastObject);
                 }
