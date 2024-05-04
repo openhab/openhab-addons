@@ -88,7 +88,9 @@ public class SunSynkBindingConstants {
     public static final String CHANNEL_INVERTER_SOLAR_ENERGY_TOTAL = "Inverter-solar-energy-total";
     public static final String CHANNEL_INVERTER_SOLAR_POWER_NOW = "Inverter-solar-power-now";
 
-    // Need to do Solar RealTimeData
+    public static final String CHANNEL_INVERTER_CONTROL_TIMER = "Inverter-control-timer";
+    public static final String CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN = "Inverter-control-energy-pattern";
+    public static final String CHANNEL_INVERTER_CONTROL_WORK_MODE = "Inverter-control-work-mode";
 
     // Config data
     public static final String CONFIG_SECRET = "access_token";

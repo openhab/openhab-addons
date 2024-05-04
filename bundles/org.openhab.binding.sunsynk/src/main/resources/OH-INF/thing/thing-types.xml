@@ -103,6 +103,9 @@
 			<channel id="Inverter-solar-energy-today" typeId="system.electric-energy"/>
 			<channel id="Inverter-solar-energy-total" typeId="system.electric-energy"/>
 			<channel id="Inverter-solar-power-now" typeId="system.electric-current"/>
+			<channel id="Inverter-control-timer" typeId="control-timer"/>
+			<channel id="Inverter-control-energy-pattern" typeId="control-pattern"/>
+			<channel id="Inverter-control-work-mode" typeId="control-work-mode"/>
 		</channels>
 		<config-description>
 			<parameter name="sn" type="text" required="true">
@@ -205,13 +208,29 @@
 		<state min="0" max="100" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
-
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for SunSynk Binding</description>
+	<channel-type id="control-timer" advanced="true">
+		<item-type>Switch</item-type>
+		<label>System Mode Timer</label>
+		<description>Use the system mode timer to control battery charge discharge.</description>
+		<state readOnly="false" pattern="%s"/>
 	</channel-type>
+
+	<channel-type id="control-pattern" advanced="true">
+		<item-type>Number</item-type>
+		<label>System Mode Energy Pattern</label>
+		<description>'0' is Priority Battery and '1' is Priority Load.</description>
+		<state min="0" max="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="control-work-mode" advanced="true">
+		<item-type>Number</item-type>
+		<label>System Work Mode</label>
+		<description>'0' is Selling First; '1' is Zero-Export + Limted to Load and '2' is Limited to Home.</description>
+		<state min="0" max="2" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+
+
 
 	<!-- plant-status Channel Type -->
 	<channel-type id="plant-status">
