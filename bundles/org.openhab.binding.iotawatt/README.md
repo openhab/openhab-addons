@@ -20,9 +20,9 @@ It detects configured inputs and outputs and creates channels for them.
 
 ### IoTaWatt Thing Configuration
 
-| Name            | Type    | Description                          | Default | Required | Advanced |
-|-----------------|---------|--------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device | N/A     | yes      | no       |
+| Name            | Type    | Description                           | Default | Required | Advanced |
+|-----------------|---------|---------------------------------------|---------|----------|----------|
+| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
 | refreshInterval | integer | Interval the device is polled in sec. | 10      | no       | no       |
 
 ## Channels
