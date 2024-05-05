@@ -83,7 +83,7 @@ public class IoTaWattHandler extends BaseThingHandler implements DeviceHandlerCa
         ScheduledFuture<?> fetchDataJobLocal = this.fetchDataJob;
         if (fetchDataJobLocal != null) {
             fetchDataJobLocal.cancel(true);
-            fetchDataJob = null;
+            this.fetchDataJob = null;
         }
         super.dispose();
     }
