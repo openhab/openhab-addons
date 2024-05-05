@@ -73,7 +73,12 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private String refreshData() {
         try {
             logger.debug("Refreshing data for {}", host);
-
+            if (!coapStatus.isExpired()) {
+                final String res = coapStatus.getValue();
+                if (res != null) {
+                    return res;
+                }
+            }
             final CoapObserveRelation reuseObserve = this.observe;
             if (reuseObserve != null && !reuseObserve.isCanceled()) {
                 if (attempt < 2) {
@@ -124,7 +129,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             });
 
             logger.debug("Finished refreshdata for {}", host);
-            return processCoapResponse(uri, observe.getCurrent());
+            // return processCoapResponse(uri, observe.getCurrent());
 
         } catch (ConnectorException | IOException e) {
             logger.debug("Error while refreshing {}: {}", host, e.getMessage());
@@ -258,26 +263,26 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         CoapEndpoint endpoint = new CoapEndpoint.Builder().setNetworkConfig(netConfig).build();
         /*
          * MessageInterceptor interceptor = new MessageInterceptor() {
-         * 
+         *
          * @Override
          * public void sendResponse(@Nullable Response response) {
          * String content = response.getPayloadString();
          * System.out.println("-CO04----------");
          * System.out.println(content);
          * }
-         * 
+         *
          * @Override
          * public void sendRequest(@Nullable Request request) {
          * String content = request.getPayloadString();
          * System.out.println("-REQO04----------");
          * System.out.println(content);
          * }
-         * 
+         *
          * @Override
          * public void sendEmptyMessage(@Nullable EmptyMessage message) {
          * // TODO Auto-generated method stub
          * }
-         * 
+         *
          * @Override
          * public void receiveResponse(@Nullable Response response) {
          * String content = response.getPayloadString();
@@ -285,12 +290,12 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
          * System.out.println(content);
          * System.out.println(Utils.prettyPrint(response));
          * }
-         * 
+         *
          * @Override
          * public void receiveRequest(@Nullable Request request) {
          * // TODO Auto-generated method stub
          * }
-         * 
+         *
          * @Override
          * public void receiveEmptyMessage(@Nullable EmptyMessage message) {
          * // TODO Auto-generated method stub

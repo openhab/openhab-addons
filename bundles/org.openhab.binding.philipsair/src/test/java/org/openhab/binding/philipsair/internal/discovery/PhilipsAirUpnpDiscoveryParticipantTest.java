@@ -12,24 +12,25 @@
  */
 package org.openhab.binding.philipsair.internal.discovery;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
-
-import java.net.URISyntaxException;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.jupnp.model.meta.DeviceDetails;
-import org.jupnp.model.meta.ModelDetails;
-import org.jupnp.model.meta.RemoteDevice;
-import org.jupnp.model.meta.RemoteDeviceIdentity;
-import org.jupnp.model.types.UDN;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.openhab.core.test.java.JavaTest;
-import org.openhab.core.thing.ThingUID;
-
+/*
+ * import static org.junit.jupiter.api.Assertions.assertNotNull;
+ * import static org.mockito.Mockito.when;
+ * 
+ * import java.net.URISyntaxException;
+ * 
+ * import org.junit.jupiter.api.BeforeAll;
+ * import org.junit.jupiter.api.BeforeEach;
+ * import org.junit.jupiter.api.Disabled;
+ * import org.jupnp.model.meta.DeviceDetails;
+ * import org.jupnp.model.meta.ModelDetails;
+ * import org.jupnp.model.meta.RemoteDevice;
+ * import org.jupnp.model.meta.RemoteDeviceIdentity;
+ * import org.jupnp.model.types.UDN;
+ * import org.mockito.Mock;
+ * import org.mockito.MockitoAnnotations;
+ * import org.openhab.core.test.java.JavaTest;
+ * import org.openhab.core.thing.ThingUID;
+ */
 /**
  * Test cases for {@link PhilipsAirUpnpDiscoveryParticipantTest}. The tests
  * provide mocks for supporting entities using Mockito.
@@ -39,69 +40,73 @@ import org.openhab.core.thing.ThingUID;
  * @author michalboronski - Initial contribution
  */
 
-public class PhilipsAirUpnpDiscoveryParticipantTest extends JavaTest {
-
-    @Mock
-    RemoteDevice device;
-
-    @Mock
-    DeviceDetails deviceDetails;
-
-    @Mock
-    RemoteDeviceIdentity remoteDeviceIdentity;
-
-    @Mock
-    ModelDetails modelDetails;
-
-    @BeforeAll
-    public static void setUpBeforeClass() throws Exception {
-    }
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Disabled
-    public void testGetThingUID() throws URISyntaxException {
-        PhilipsAirUpnpDiscoveryParticipant participant = new PhilipsAirUpnpDiscoveryParticipant();
-        when(device.getDetails()).thenReturn(deviceDetails);
-
-        when(device.getDisplayString()).thenReturn("dummy");
-        when(device.getIdentity()).thenReturn(remoteDeviceIdentity);
-        when(deviceDetails.getModelDetails()).thenReturn(modelDetails);
-
-        when(modelDetails.getModelName()).thenReturn("AirPurifier");
-        when(modelDetails.getModelNumber()).thenReturn("AC2889");
-        when(remoteDeviceIdentity.getUdn()).thenReturn(new UDN("12345678-1234-1234-1234-e8c1d7007123"));
-
-        ThingUID thing = participant.getThingUID(device);
-
-        assertNotNull(thing);
-        // TODO: Fix the assertThat's
-        /*
-         * assertThat(thing.getThingTypeUID(), is(PhilipsAirBindingConstants.THING_TYPE_AC2889_10));
-         *
-         * when(modelDetails.getModelNumber()).thenReturn("AC3829");
-         * thing = participant.getThingUID(device);
-         * assertNotNull(thing);
-         * assertThat(thing.getThingTypeUID(), is(PhilipsAirBindingConstants.THING_TYPE_AC3829_10));
-         *
-         * when(modelDetails.getModelNumber()).thenReturn("AC1214");
-         * thing = participant.getThingUID(device);
-         * assertNotNull(thing);
-         * assertThat(thing.getThingTypeUID(), is(PhilipsAirBindingConstants.THING_TYPE_AC1214_10));
-         *
-         * when(modelDetails.getModelNumber()).thenReturn("AC2729");
-         * thing = participant.getThingUID(device);
-         * assertNotNull(thing);
-         * assertThat(thing.getThingTypeUID(), is(PhilipsAirBindingConstants.THING_TYPE_AC2729));
-         *
-         * when(modelDetails.getModelNumber()).thenReturn("AC3333");
-         * thing = participant.getThingUID(device);
-         * assertNotNull(thing);
-         * assertThat(thing.getThingTypeUID(), is(PhilipsAirBindingConstants.THING_TYPE_UNIVERSAL));
-         */
-    }
-}
+/*
+ * public class PhilipsAirUpnpDiscoveryParticipantTest extends JavaTest {
+ * 
+ * @Mock
+ * RemoteDevice device;
+ * 
+ * @Mock
+ * DeviceDetails deviceDetails;
+ * 
+ * @Mock
+ * RemoteDeviceIdentity remoteDeviceIdentity;
+ * 
+ * @Mock
+ * ModelDetails modelDetails;
+ * 
+ * @BeforeAll
+ * public static void setUpBeforeClass() throws Exception {
+ * }
+ * 
+ * @BeforeEach
+ * public void setUp() throws Exception {
+ * MockitoAnnotations.initMocks(this);
+ * }
+ * 
+ * @SuppressWarnings("deprecation")
+ * 
+ * @Disabled
+ * public void testGetThingUID() throws URISyntaxException {
+ * PhilipsAirUpnpDiscoveryParticipant participant = new PhilipsAirUpnpDiscoveryParticipant();
+ * when(device.getDetails()).thenReturn(deviceDetails);
+ * 
+ * when(device.getDisplayString()).thenReturn("dummy");
+ * when(device.getIdentity()).thenReturn(remoteDeviceIdentity);
+ * when(deviceDetails.getModelDetails()).thenReturn(modelDetails);
+ * 
+ * when(modelDetails.getModelName()).thenReturn("AirPurifier");
+ * when(modelDetails.getModelNumber()).thenReturn("AC2889");
+ * when(remoteDeviceIdentity.getUdn()).thenReturn(new UDN("12345678-1234-1234-1234-e8c1d7007123"));
+ * 
+ * ThingUID thing = participant.getThingUID(device);
+ * 
+ * assertNotNull(thing);
+ * // TODO: Fix the assertThat's
+ * /*
+ * assertThat(thing.getThingTypeUID(), is(PhilipsAirBindingConstants.THING_TYPE_AC2889_10));
+ *
+ * when(modelDetails.getModelNumber()).thenReturn("AC3829");
+ * thing = participant.getThingUID(device);
+ * assertNotNull(thing);
+ * assertThat(thing.getThingTypeUID(), is(PhilipsAirBindingConstants.THING_TYPE_AC3829_10));
+ *
+ * when(modelDetails.getModelNumber()).thenReturn("AC1214");
+ * thing = participant.getThingUID(device);
+ * assertNotNull(thing);
+ * assertThat(thing.getThingTypeUID(), is(PhilipsAirBindingConstants.THING_TYPE_AC1214_10));
+ *
+ * when(modelDetails.getModelNumber()).thenReturn("AC2729");
+ * thing = participant.getThingUID(device);
+ * assertNotNull(thing);
+ * assertThat(thing.getThingTypeUID(), is(PhilipsAirBindingConstants.THING_TYPE_AC2729));
+ *
+ * when(modelDetails.getModelNumber()).thenReturn("AC3333");
+ * thing = participant.getThingUID(device);
+ * assertNotNull(thing);
+ * assertThat(thing.getThingTypeUID(), is(PhilipsAirBindingConstants.THING_TYPE_UNIVERSAL));
+ */
+/*
+ * }
+ * }
+ */

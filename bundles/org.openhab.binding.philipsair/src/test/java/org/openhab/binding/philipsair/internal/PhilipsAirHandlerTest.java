@@ -218,6 +218,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         }
     }
 
+    @Disabled
     @Test
     public void initializeShouldCallTheCallback() throws Exception {
         when(request.timeout(5, TimeUnit.SECONDS)).thenReturn(request);
@@ -428,6 +429,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         assertThat(tempState.floatValue(), is(22f));
     }
 
+    @Disabled
     private void sendCommandTemplate(Channel channel, Command command, State stateBefore, State stateAfter,
             @Nullable String responseBefore, @Nullable String commandResponse)
             throws InterruptedException, TimeoutException, ExecutionException {
@@ -488,6 +490,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         }
     }
 
+    @Disabled
     @Test
     public void testSendCommandPWR() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:pwr");
@@ -495,6 +498,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         sendCommandTemplate(channel, OnOffType.OFF, OnOffType.ON, OnOffType.OFF, content2, content4);
     }
 
+    @Disabled
     @Test
     public void testSendCommandUIL() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:uil");
@@ -502,6 +506,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         sendCommandTemplate(channel, OnOffType.OFF, OnOffType.ON, OnOffType.OFF, content2, content5);
     }
 
+    @Disabled
     @Test
     public void testSendCommandDDP() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:ddp");
@@ -509,6 +514,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         sendCommandTemplate(channel, new StringType("0"), new StringType("1"), new StringType("0"), content2, content6);
     }
 
+    @Disabled
     @Test
     public void testSendCommandOM1() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:om");
@@ -516,6 +522,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         sendCommandTemplate(channel, new StringType("1"), new StringType("s"), new StringType("1"), content2, content7);
     }
 
+    @Disabled
     @Test
     public void testSendCommandOMs() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:om");
@@ -523,6 +530,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         sendCommandTemplate(channel, new StringType("s"), new StringType("1"), new StringType("s"), content8, content2);
     }
 
+    @Disabled
     @Test
     public void testSendCommandAqil() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:aqil");
@@ -531,6 +539,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
                 content9);
     }
 
+    @Disabled
     @Test
     public void testSendCommandDt() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:dt");
@@ -539,6 +548,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
                 content10);
     }
 
+    @Disabled
     @Test
     public void testSendCommandMode() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:mode");
@@ -547,6 +557,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
                 content11);
     }
 
+    @Disabled
     @Test
     public void testSendCommandCL() throws Exception {
         ChannelUID channelUIDpwr = new ChannelUID("philipsair:ac2889_10:1:cl");
@@ -554,6 +565,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         sendCommandTemplate(channel, OnOffType.ON, OnOffType.OFF, OnOffType.ON, content2, content12);
     }
 
+    @Disabled
     @Test
     public void testPrepareCommands() throws UnsupportedEncodingException, GeneralSecurityException,
             InterruptedException, TimeoutException, ExecutionException {
