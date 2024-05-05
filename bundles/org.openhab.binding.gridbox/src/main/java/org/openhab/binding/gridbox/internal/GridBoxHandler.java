@@ -48,6 +48,8 @@ public class GridBoxHandler extends BaseThingHandler {
 
     private static final int CONNECTION_RETRY_PERIOD = 10;
 
+    private static final int MAX_NUMBER_OF_RECONNECT_ATTEMPTS = 10;
+
     private static final GridBoxApi API = new GridBoxApi(HttpClient.newHttpClient());
 
     private GridBoxConfiguration config = new GridBoxConfiguration();
@@ -145,8 +147,6 @@ public class GridBoxHandler extends BaseThingHandler {
     }
 
     private void initializeApi() {
-        updateStatus(ThingStatus.UNKNOWN);
-
         try {
             config.idToken = API.getIdToken(config);
 
@@ -155,7 +155,6 @@ public class GridBoxHandler extends BaseThingHandler {
                 config.systemId = API.getSystemId(config);
             }
             updateStatus(ThingStatus.ONLINE);
-            reConnectAttempts = 0;
 
             updateScheduledFuture = scheduler.scheduleWithFixedDelay(this::update, 0, config.refreshInterval,
                     TimeUnit.SECONDS);
@@ -163,9 +162,7 @@ public class GridBoxHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.credentialsinvalid");
         } catch (IOException | InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@test/offline.communication-error.connectionlost");
-            scheduler.schedule(this::initialize, getDelayUntilNextConnectionAttempt(), TimeUnit.SECONDS);
+            updateStatusAndTryToReconnect();
         } catch (GridBoxApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@test/offline.communication-error.initializeinvalid");
@@ -191,10 +188,8 @@ public class GridBoxHandler extends BaseThingHandler {
             config.systemId = null;
             initializeApi();
         } catch (IOException | InterruptedException | GridBoxApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@test/offline.communication-error.connectionlost");
             stopUpdater();
-            scheduler.schedule(this::initializeApi, getDelayUntilNextConnectionAttempt(), TimeUnit.SECONDS);
+            updateStatusAndTryToReconnect();
         }
     }
 
@@ -203,6 +198,17 @@ public class GridBoxHandler extends BaseThingHandler {
         if (updateScheduledFuture != null) {
             updateScheduledFuture.cancel(true);
             this.updateScheduledFuture = null;
+        }
+    }
+
+    private void updateStatusAndTryToReconnect() {
+        if (reConnectAttempts > MAX_NUMBER_OF_RECONNECT_ATTEMPTS) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@test/offline.communication-error.connectionfinallylost");
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@test/offline.communication-error.connectionlost");
+            scheduler.schedule(this::initialize, getDelayUntilNextConnectionAttempt(), TimeUnit.SECONDS);
         }
     }
 
