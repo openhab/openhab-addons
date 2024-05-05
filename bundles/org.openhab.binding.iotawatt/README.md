@@ -39,9 +39,9 @@ It detects configured inputs and outputs and creates channels for them.
 | Power Consumption   | Number:Power             | RO         | The current power consumption   |
 | Phase               | Number:Dimensionless     | RO         | The current phase               |
 
-## Example configuration
+## Example Configuration
 
-### Thing with channels
+### Thing with Channels
 
 ```java
 Thing iotawatt:iotawatt:iotawatt1 "IoTaWatt 1" [ hostname="192.168.1.10" ] {

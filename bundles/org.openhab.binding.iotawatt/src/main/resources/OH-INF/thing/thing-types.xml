@@ -57,7 +57,7 @@
 	</channel-type>
 	<channel-type id="reactive-power-hour">
 		<item-type>Number:Energy</item-type>
-		<label>Reactive Power</label>
+		<label>Reactive Power Hour</label>
 		<description>The current reactive power hour.</description>
 		<state pattern="%.2f VARh" readOnly="true"/>
 	</channel-type>
