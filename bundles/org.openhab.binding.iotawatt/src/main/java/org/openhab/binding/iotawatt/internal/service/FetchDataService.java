@@ -102,12 +102,8 @@ public class FetchDataService {
     }
 
     private void updateChannels(StatusResponse statusResponse) {
-        if (statusResponse.inputs() != null) {
-            updateInputs(statusResponse.inputs());
-        }
-        if (statusResponse.outputs() != null) {
-            updateOutputs(statusResponse.outputs());
-        }
+        Optional.ofNullable(statusResponse.inputs()).ifPresent(this::updateInputs);
+        Optional.ofNullable(statusResponse.outputs()).ifPresent(this::updateOutputs);
     }
 
     private void updateInputs(List<StatusResponse.Input> inputs) {
