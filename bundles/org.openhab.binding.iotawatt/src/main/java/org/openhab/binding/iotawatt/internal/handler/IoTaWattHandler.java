@@ -48,6 +48,13 @@ public class IoTaWattHandler extends BaseThingHandler implements DeviceHandlerCa
     private final FetchDataService fetchDataService;
     private @Nullable ScheduledFuture<?> fetchDataJob;
 
+    /**
+     * Creates an IoTaWattHandler
+     * 
+     * @param thing The Thing of the IoTaWattHandler
+     * @param ioTaWattClientProvider The IoTaWattClientProvider to use
+     * @param fetchDataServiceProvider The FetchDataServiceProvider to use to fetch data
+     */
     public IoTaWattHandler(Thing thing, IoTaWattClientProvider ioTaWattClientProvider,
             FetchDataServiceProvider fetchDataServiceProvider) {
         super(thing);

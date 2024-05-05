@@ -41,10 +41,20 @@ public class IoTaWattClient {
 
     private final Logger logger = LoggerFactory.getLogger(IoTaWattClient.class);
 
+    /**
+     * The hostname the IoTaWattClient connects to
+     */
     public final String hostname;
     private final HttpClient httpClient;
     private final Gson gson;
 
+    /**
+     * Creates an IoTaWattClient
+     * 
+     * @param hostname The hostname of the IoTaWatt device to connect to
+     * @param httpClient The HttpClient to use
+     * @param gson The Gson decoder to use
+     */
     public IoTaWattClient(String hostname, HttpClient httpClient, Gson gson) {
         this.httpClient = httpClient;
         this.hostname = hostname;
@@ -54,6 +64,12 @@ public class IoTaWattClient {
     /**
      * Fetch the current status from the device.
      * The errors are handled by the caller to update the Thing status accordingly.
+     * 
+     * @throws ExecutionException When sending the request fails
+     * @throws InterruptedException When sending the request is interrupted
+     * @throws TimeoutException When the request times out
+     * @throws URISyntaxException When the URI is wrong
+     * @return The optional StatusResponse fetched from the device
      */
     public Optional<StatusResponse> fetchStatus()
             throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {

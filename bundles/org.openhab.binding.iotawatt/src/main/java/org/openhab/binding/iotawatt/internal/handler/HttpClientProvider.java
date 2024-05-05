@@ -23,7 +23,9 @@ import org.eclipse.jetty.client.HttpClient;
 @NonNullByDefault
 public interface HttpClientProvider {
     /**
-     * get the insecure http client (ignores SSL errors)
+     * Get the insecure http client (ignores SSL errors)
+     * 
+     * @return The provided HttpClient
      */
     HttpClient getInsecureClient();
 }

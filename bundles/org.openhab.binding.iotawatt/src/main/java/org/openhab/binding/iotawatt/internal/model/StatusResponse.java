@@ -26,11 +26,28 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public record StatusResponse(@Nullable List<Input> inputs, @Nullable List<Output> outputs) {
+    /**
+     * Represents the inputs of IoTaWatt
+     * 
+     * @param channel The channel ID
+     * @param vrms Current VRMS
+     * @param hz Current frequency
+     * @param phase Current phase
+     * @param watts Current watts
+     * @param pf Current power factor
+     */
     public record Input(int channel, @Nullable @SerializedName("Vrms") Float vrms,
             @Nullable @SerializedName("Hz") Float hz, @Nullable Float phase,
             @Nullable @SerializedName("Watts") Float watts, @Nullable @SerializedName("Pf") Float pf) {
     }
 
+    /**
+     * Represents the outputs of IoTaWatt
+     * 
+     * @param name Name of the output
+     * @param units Unit of the output
+     * @param value Current value of the output
+     */
     public record Output(String name, String units, Float value) {
     }
 }

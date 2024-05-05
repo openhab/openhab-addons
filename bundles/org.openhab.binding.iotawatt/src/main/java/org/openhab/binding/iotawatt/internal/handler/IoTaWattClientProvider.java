@@ -24,6 +24,9 @@ import org.openhab.binding.iotawatt.internal.client.IoTaWattClient;
 public interface IoTaWattClientProvider {
     /**
      * get the client to talk to IoTaWatt
+     * 
+     * @param hostname The hostname of the IoTaWatt device
+     * @return The provided IoTaWattClient
      */
     IoTaWattClient getIoTaWattClient(String hostname);
 }

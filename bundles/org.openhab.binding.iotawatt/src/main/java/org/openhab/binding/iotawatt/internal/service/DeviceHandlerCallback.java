@@ -29,32 +29,48 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public interface DeviceHandlerCallback {
     /**
-     * @see org.openhab.core.thing.binding.BaseThingHandler#updateStatus(ThingStatus)
+     * Updates the status of the thing. The detail of the status will be 'NONE'.
+     *
+     * @param status the status
      */
     void updateStatus(ThingStatus status);
 
     /**
-     * @see org.openhab.core.thing.binding.BaseThingHandler#updateStatus(ThingStatus)
+     * Updates the status of the thing.
+     *
+     * @param status the status
+     * @param statusDetail the detail of the status
      */
     void updateStatus(ThingStatus status, ThingStatusDetail statusDetail);
 
     /**
-     * @see org.openhab.core.thing.binding.BaseThingHandler#updateStatus(ThingStatus, ThingStatusDetail, String)
+     * Updates the status of the thing.
+     *
+     * @param status the status
+     * @param statusDetail the detail of the status
+     * @param description the description of the status
      */
     void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
 
     /**
-     * @see org.openhab.core.thing.binding.BaseThingHandler#updateState(ChannelUID, State)
+     *
+     * Updates the state of the thing.
+     *
+     * @param channelUID unique id of the channel, which was updated
+     * @param state new state
      */
     void updateState(ChannelUID channelUID, State state);
 
     /**
-     * @see org.openhab.core.thing.binding.BaseThingHandler#getThing().getId()
+     * @return The ThingUID of the Thing
      */
     ThingUID getThingUID();
 
     /**
      * Adds the channel to the Thing if the channel does not yet exist.
+     * 
+     * @param channelUID The ChannelUID of the channel to add
+     * @param ioTaWattChannelType The IoTaWattChannelType of the channel to add
      */
     void addChannelIfNotExists(ChannelUID channelUID, IoTaWattChannelType ioTaWattChannelType);
 }

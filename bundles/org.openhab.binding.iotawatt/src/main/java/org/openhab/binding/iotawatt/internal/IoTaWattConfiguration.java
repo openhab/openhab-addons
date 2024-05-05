@@ -21,11 +21,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class IoTaWattConfiguration {
+    /**
+     * The default refresh interval of the IoTaWatt device
+     */
     public static final int REFRESH_INTERVAL_DEFAULT = 10;
 
     /**
      * Configuration parameters
      */
     public String hostname = "";
+    /**
+     * The refresh interval of the IoTaWatt device
+     */
     public int refreshIntervalInSeconds = REFRESH_INTERVAL_DEFAULT;
 }

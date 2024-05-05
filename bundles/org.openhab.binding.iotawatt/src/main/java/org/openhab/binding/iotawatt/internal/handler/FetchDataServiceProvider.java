@@ -24,7 +24,10 @@ import org.openhab.binding.iotawatt.internal.service.FetchDataService;
 @NonNullByDefault
 public interface FetchDataServiceProvider {
     /**
-     * get the service to handle data fetching.
+     * Get the service to handle data fetching.
+     *
+     * @param deviceHandlerCallback The DeviceHandlerCallback to assign to the FetchDataService
+     * @return The provided FetchDataService
      */
     FetchDataService getFetchDataService(DeviceHandlerCallback deviceHandlerCallback);
 }

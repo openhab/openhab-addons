@@ -54,6 +54,9 @@ public class IoTaWattHandlerFactory extends BaseThingHandlerFactory
     private final HttpClient insecureClient;
     private final Gson gson = new Gson();
 
+    /**
+     * Creates a IoTaWattHandlerFactory
+     */
     public IoTaWattHandlerFactory() {
         this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
         try {

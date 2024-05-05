@@ -23,8 +23,13 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class IoTaWattBindingConstants {
+    /**
+     * The binding ID of the IoTaWatt binding
+     */
     public static final String BINDING_ID = "iotawatt";
 
-    // List of all Thing Type UIDs
+    /**
+     * The list of all Thing Type UIDs
+     */
     public static final ThingTypeUID THING_TYPE_IOTAWATT = new ThingTypeUID(BINDING_ID, "iotawatt");
 }

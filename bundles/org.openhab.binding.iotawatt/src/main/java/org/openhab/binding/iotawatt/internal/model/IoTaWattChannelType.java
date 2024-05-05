@@ -24,14 +24,41 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public enum IoTaWattChannelType {
-    AMPS("amps", "amps", "Number:power", Units.AMPERE), // CURRENT
+    /**
+     * Electrical current
+     */
+    AMPS("amps", "amps", "Number:power", Units.AMPERE),
+    /**
+     * AC Frequency
+     */
     FREQUENCY("frequency", "frequency", "Number:Frequency", Units.HERTZ),
+    /**
+     * Power Factor
+     */
     POWER_FACTOR("power-factor", "power-factor", "Number:Dimensionless", Units.ONE),
+    /**
+     * Apparent Power
+     */
     APPARENT_POWER("apparent-power", "apparent-power", "Number:power", Units.VOLT_AMPERE),
+    /**
+     * Reactive Power
+     */
     REACTIVE_POWER("reactive-power", "reactive-power", "Number:power", Units.VAR),
+    /**
+     * Reactive Power Hour
+     */
     REACTIVE_POWER_HOUR("reactive-power-hour", "reactive-power-hour", "Number:Energy", Units.VAR_HOUR),
+    /**
+     * Voltage
+     */
     VOLTAGE("voltage", "voltage", "Number:ElectricPotential", Units.VOLT),
-    WATTS("watts", "watts", "Number:Power", Units.WATT), // ACTIVE_POWER
+    /**
+     * Watt, Active Power
+     */
+    WATTS("watts", "watts", "Number:Power", Units.WATT),
+    /**
+     * Phase
+     */
     PHASE("phase", "phase", "Number:Dimensionless", Units.ONE);
 
     /**
@@ -51,6 +78,14 @@ public enum IoTaWattChannelType {
      */
     public final Unit<?> unit;
 
+    /**
+     * Creates an IoTaWattChannelType
+     * 
+     * @param typeId The TypeId
+     * @param channelIdSuffix The suffix of the channelId
+     * @param acceptedItemType The acceptedItemType
+     * @param unit The unit of the channel
+     */
     IoTaWattChannelType(String typeId, String channelIdSuffix, String acceptedItemType, Unit<?> unit) {
         this.acceptedItemType = acceptedItemType;
         this.typeId = typeId;
@@ -58,6 +93,12 @@ public enum IoTaWattChannelType {
         this.unit = unit;
     }
 
+    /**
+     * Gets an IoTaWattChannelType
+     * 
+     * @param value The units to get an IoTaWattChannelType from
+     * @return The IoTaWattChannelType
+     */
     public static IoTaWattChannelType fromOutputUnits(String value) {
         return switch (value) {
             case "Amps" -> IoTaWattChannelType.AMPS;

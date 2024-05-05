@@ -46,10 +46,20 @@ public class FetchDataService {
     private final DeviceHandlerCallback thingHandler;
     private @Nullable IoTaWattClient ioTaWattClient;
 
+    /**
+     * Creates a FetchDataService.
+     * 
+     * @param thingHandler The ThingHandler used for callbacks
+     */
     public FetchDataService(DeviceHandlerCallback thingHandler) {
         this.thingHandler = thingHandler;
     }
 
+    /**
+     * Setter for the IoTaWattClient
+     * 
+     * @param ioTaWattClient The IoTaWattClient to use
+     */
     public void setIoTaWattClient(IoTaWattClient ioTaWattClient) {
         this.ioTaWattClient = ioTaWattClient;
     }
