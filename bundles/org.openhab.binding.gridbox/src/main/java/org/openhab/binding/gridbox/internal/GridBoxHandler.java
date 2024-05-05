@@ -165,7 +165,7 @@ public class GridBoxHandler extends BaseThingHandler {
             updateStatusAndTryToReconnect();
         } catch (GridBoxApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@test/offline.communication-error.initializeinvalid");
+                    "@text/offline.communication-error.initializeinvalid");
         }
     }
 
@@ -177,13 +177,13 @@ public class GridBoxHandler extends BaseThingHandler {
         } catch (GridBoxApiAuthenticationException e) {
             // maybe the authentication is no longer valid, so try to re-authenticate
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
-                    "@test/offline.configuration-error.authenticationlost");
+                    "@text/offline.configuration-error.authenticationlost");
             stopUpdater();
             config.idToken = null;
             initializeApi();
         } catch (GridBoxApiSystemNotFoundException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
-                    "@test/offline.configuration-error.systemidunknown");
+                    "@text/offline.configuration-error.systemidunknown");
             stopUpdater();
             config.systemId = null;
             initializeApi();
@@ -204,10 +204,10 @@ public class GridBoxHandler extends BaseThingHandler {
     private void updateStatusAndTryToReconnect() {
         if (reConnectAttempts > MAX_NUMBER_OF_RECONNECT_ATTEMPTS) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@test/offline.communication-error.connectionfinallylost");
+                    "@text/offline.communication-error.connectionfinallylost");
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@test/offline.communication-error.connectionlost");
+                    "@text/offline.communication-error.connectionlost");
             scheduler.schedule(this::initialize, getDelayUntilNextConnectionAttempt(), TimeUnit.SECONDS);
         }
     }
