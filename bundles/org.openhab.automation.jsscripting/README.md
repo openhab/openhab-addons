@@ -333,7 +333,7 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
 
 - Item : `object`
   - .rawItem ⇒ `HostItem`
-  - .history ⇒ [`ItemHistory`](#itemhistory)
+  - .persistence ⇒ [`ItemPersistence`](#itempersistence)
   - .semantics ⇒ [`ItemSemantics`](https://openhab.github.io/openhab-js/items.ItemSemantics.html)
   - .type ⇒ `string`
   - .name ⇒ `string`
@@ -433,63 +433,84 @@ items.replaceItem({
 
 See [openhab-js : ItemConfig](https://openhab.github.io/openhab-js/global.html#ItemConfig) for full API documentation.
 
-#### `ItemHistory`
+#### `ItemPersistence`
 
-Calling `Item.history` returns an `ItemHistory` object with the following functions:
+Calling `Item.history` returns an `ItemPersistence` object with the following functions:
 
-- ItemHistory :`object`
-  - .averageBetween(begin, end, serviceId) ⇒ `number | null`
-  - .averageSince(timestamp, serviceId) ⇒ `number | null`
-  - .changedBetween(begin, end, serviceId) ⇒ `boolean`
+- ItemPersistence :`object`
+  - .averageSince(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .averageUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .averageBetween(begin, end, serviceId) ⇒ `PersistedState | null`
   - .changedSince(timestamp, serviceId) ⇒ `boolean`
-  - .deltaBetween(begin, end, serviceId) ⇒ `number | null`
-  - .deltaSince(timestamp, serviceId) ⇒ `number | null`
-  - .deviationBetween(begin, end, serviceId) ⇒ `number | null`
-  - .deviationSince(timestamp, serviceId) ⇒ `number | null`
-  - .evolutionRateBetween(begin, end, serviceId) ⇒ `number | null`
+  - .changedUntil(timestamp, serviceId) ⇒ `boolean`
+  - .changedBetween(begin, end, serviceId) ⇒ `boolean`
+  - .countSince(timestamp, serviceId) ⇒ `number`
+  - .countUntil(timestamp, serviceId) ⇒ `number`
+  - .countBetween(begin, end, serviceId) ⇒ `number`
+  - .countStateChangesSince(timestamp, serviceId) ⇒ `number`
+  - .countStateChangesUntil(timestamp, serviceId) ⇒ `number`
+  - .countStateChangesBetween(begin, end, serviceId) ⇒ `number`
+  - .deltaSince(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .deltaUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .deltaBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+  - .deviationSince(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .deviationUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .deviationBetween(begin, end, serviceId) ⇒ `PersistedState | null`
   - .evolutionRateSince(timestamp, serviceId) ⇒ `number | null`
-  - .getAllStatesBetween(begin, end, serviceId)  ⇒ `Array[HistoricItem]`
-  - .getAllStatesSince(timestamp, serviceId)  ⇒ `Array[HistoricItem]`
-  - .historicState(timestamp, serviceId) ⇒ `HistoricItem | null`
+  - .evolutionRateUntil(timestamp, serviceId) ⇒ `number | null`
+  - .evolutionRateBetween(begin, end, serviceId) ⇒ `number | null`
+  - .getAllStatesSince(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
+  - .getAllStatesUntil(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
+  - .getAllStatesBetween(begin, end, serviceId)  ⇒ `Array[PersistedItem]`
   - .lastUpdate(serviceId) ⇒ `ZonedDateTime | null`
-  - .latestState(serviceId) ⇒ `string | null`
-  - .maximumBetween(begin, end, serviceId) ⇒ `HistoricItem | null`
-  - .maximumSince(timestamp,serviceId) ⇒ `HistoricItem | null`
-  - .minimumSince(begin, end, serviceId) ⇒ `HistoricItem | null`
-  - .minimumSince(timestamp, serviceId) ⇒ `HistoricItem | null`
+  - .nextUpdate(serviceId)  ⇒ `ZonedDateTime | null`
+  - .maximumSince(timestamp,serviceId) ⇒ `PersistedItem | null`
+  - .maximumUntil(timestamp,serviceId) ⇒ `PersistedItem | null`
+  - .maximumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
+  - .minimumSince(timestamp, serviceId) ⇒ `PersistedItem | null`
+  - .minimumUntil(timestamp, serviceId) ⇒ `PersistedItem | null`
+  - .minimumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
   - .persist(serviceId): Tells the persistence service to store the current Item state, which is then done asynchronously.
-    **Warning:** This has the side effect, that if the Item state changes shortly after `.persist` has been called, the new Item state will be persisted. See [JSDoc](https://openhab.github.io/openhab-js/items.ItemHistory.html#persist) for a possible work-around.
-  - .previousState(skipEqual, serviceId) ⇒ `HistoricItem | null`
-  - .sumBetween(begin, end, serviceId) ⇒ `number | null`
-  - .sumSince(timestamp, serviceId) ⇒ `number | null`
-  - .updatedBetween(begin, end, serviceId) ⇒ `boolean`
+    **Warning:** This has the side effect, that if the Item state changes shortly after `.persist` has been called, the new Item state will be persisted. See [JSDoc](https://openhab.github.io/openhab-js/items.ItemPersistence.html#persist) for a possible work-around.
+  - .persistedState(timestamp, serviceId) ⇒ `PersistedItem | null`
+  - .previousState(skipEqual, serviceId) ⇒ `PersistedItem | null`
+  - .nextState(skipEqual, serviceId) ⇒ `PersistedItem | null`
+  - .sumSince(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .sumUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .sumBetween(begin, end, serviceId) ⇒ `PersistedState | null`
   - .updatedSince(timestamp, serviceId) ⇒ `boolean`
-  - .varianceBetween(begin, end, serviceId) ⇒ `number | null`
-  - .varianceSince(timestamp, serviceId) ⇒ `number | null`
+  - .updatedUntil(timestamp, serviceId) ⇒ `boolean`
+  - .updatedBetween(begin, end, serviceId) ⇒ `boolean`
+  - .varianceSince(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .varianceUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+  - .varianceBetween(begin, end, serviceId) ⇒ `PersistedState | null`
 
 Note: `serviceId` is optional, if omitted, the default persistence service will be used.
 
 ```javascript
 var yesterday = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
 var item = items.KitchenDimmer;
-console.log('KitchenDimmer averageSince', item.history.averageSince(yesterday));
+console.log('KitchenDimmer averageSince', item.persistence.averageSince(yesterday));
 ```
 
-The `HistoricItem` object contains the following properties, representing Item state and the respective timestamp:
+The `PersistedState` object contains the following properties, representing Item state:
 
 - `state`: State as string
 - `numericState`: State as number, if state can be represented as number, or `null` if that's not the case
 - `quantityState`: Item state as [`Quantity`](#quantity) or `null` if state is not Quantity-compatible
 - `rawState`: State as Java `State` object
+
+The `PersistedItem` object extends `PersistedState` with the following properties, representing Item state and the respective timestamp:
+
 - `timestamp`: Timestamp as [`time.ZonedDateTime`](#time)
 
 ```javascript
 var midnight = time.toZDT('00:00');
-var historic = items.KitchenDimmer.history.maximumSince(midnight);
+var historic = items.KitchenDimmer.persistence.maximumSince(midnight);
 console.log('KitchenDimmer maximum was ', historic.state, ' at ', historic.timestamp);
 ```
 
-See [openhab-js : ItemHistory](https://openhab.github.io/openhab-js/items.ItemHistory.html) for full API documentation.
+See [openhab-js : ItemPersistence](https://openhab.github.io/openhab-js/items.ItemPersistence.html) for full API documentation.
 
 ### Things
 
@@ -559,7 +580,8 @@ These include several methods to convert between color types like HSB, RGB, sRGB
 
 See [openhab-js : actions.Ephemeris](https://openhab.github.io/openhab-js/actions.html#.Ephemeris) for complete documentation.
 
-Ephemeris is a way to determine what type of day today or a number of days before or after today is. For example, a way to determine if today is a weekend, a bank holiday, someone’s birthday, trash day, etc.
+Ephemeris is a way to determine what type of day today or a number of days before or after today is.
+For example, a way to determine if today is a weekend, a public holiday, someone’s birthday, trash day, etc.
 
 Additional information can be found on the  [Ephemeris Actions Docs](https://www.openhab.org/docs/configuration/actions.html#ephemeris) as well as the [Ephemeris JavaDoc](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/ephemeris).
 
@@ -708,7 +730,7 @@ When a script is unloaded and its cache is cleared, all timers (see [`createTime
 
 The shared cache is shared across all rules and scripts, it can therefore be accessed from any automation language.
 The access to every key is tracked and the key is removed when all scripts that ever accessed that key are unloaded.
-If that key stored a timer, the timer is cancelled.
+If that key stored a timer, the timer will be cancelled.
 
 See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for full API documentation.
 
@@ -758,7 +780,7 @@ Examples:
 var now = time.ZonedDateTime.now();
 var yesterday = time.ZonedDateTime.now().minusHours(24);
 var item = items.Kitchen;
-console.log("averageSince", item.history.averageSince(yesterday));
+console.log("averageSince", item.persistence.averageSince(yesterday));
 ```
 
 ```javascript
@@ -772,10 +794,10 @@ See [JS-Joda](https://js-joda.github.io/js-joda/) for more examples and complete
 Occasionally, one will need to parse a non-supported date time string or generate one from a ZonedDateTime.
 To do this you will use [JS-Joda DateTimeFormatter and potentially your Locale](https://js-joda.github.io/js-joda/manual/formatting.html).
 However, shipping all the locales with the openhab-js library would lead to an unacceptable large size.
-Therefore if you attempt to use the `DateTimeFormatter` and receive an error saying it cannot find your locale, you will need to manually install your locale and import it into your rule.
+Therefore, if you attempt to use the `DateTimeFormatter` and receive an error saying it cannot find your locale, you will need to manually install your locale and import it into your rule.
 
 [JS-Joda Locales](https://github.com/js-joda/js-joda/tree/master/packages/locale#use-prebuilt-locale-packages) includes a list of all the supported locales.
-Each loacle consists of a two letter language indicator followed by a "-" and a two letter dialect indicator: e.g. "EN-US".
+Each locale consists of a two letter language indicator followed by a "-" and a two letter dialect indicator: e.g. "EN-US".
 Installing a locale can be done through the command `npm install @js-joda/locale_de-de` from the *$OPENHAB_CONF/automation/js* folder.
 
 To import and use a local into your rule you need to require it and create a `DateTimeFormatter` that uses it:
@@ -932,7 +954,7 @@ The argument `value` can be a Quantity-compatible `Item`, a string, a `Quantity`
 `value` strings have the `$amount $unit` format and must follow these rules:
 
 - `$amount` is required with a number provided as string
-- `$unit` is optional (unitless quantities are possible) and can have a prefix like `m` (milli) or `M` (mega)
+- `$unit` is optional (unit-less quantities are possible) and can have a prefix like `m` (milli) or `M` (mega)
 - `$unit` does not allow whitespaces.
 - `$unit` does allow superscript, e.g. `²` instead of `^2`.
 - `$unit` requires the `*` between two units to be present, although you usually omit it (which is mathematically seen allowed, but openHAB needs the `*`).
