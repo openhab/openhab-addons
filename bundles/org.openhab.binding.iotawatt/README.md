@@ -5,11 +5,10 @@ This binding integrates [IoTaWatt™ Open WiFi Electric Power Monitor](https://i
 Limitations of this version:
 
 - No authentication support
-- Support of IoTaWatt's `Input` and `Output` channels.
 
 ## Supported Things
 
-IoTaWatt binding supports one Thing called `iotawatt`.
+The IoTaWatt binding supports one Thing called `iotawatt` and IoTaWatt's `Input` and `Output` channels.
 
 ## Discovery
 
