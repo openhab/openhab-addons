@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>IoTaWatt Binding</name>
 	<description>This is the binding for IoTaWatt.</description>
+	<connection>local</connection>
 
 </addon:addon>

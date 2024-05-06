@@ -74,8 +74,8 @@ public class IoTaWattHandler extends BaseThingHandler implements DeviceHandlerCa
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        fetchDataJob = scheduler.scheduleWithFixedDelay(fetchDataService::pollDevice, 0, config.refreshIntervalInSeconds,
-                TimeUnit.SECONDS);
+        fetchDataJob = scheduler.scheduleWithFixedDelay(fetchDataService::pollDevice, 0,
+                config.refreshIntervalInSeconds, TimeUnit.SECONDS);
     }
 
     @Override
