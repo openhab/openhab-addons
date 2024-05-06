@@ -64,6 +64,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link SmartThingsApiService} is responsible for handling the Smartthings cloud interface
@@ -139,6 +140,7 @@ public class SmartThingsApiService implements SamsungTvService {
     class TvValues {
         class MediaInputSource {
             ValuesList supportedInputSources;
+            ValuesListMap supportedInputSourcesMap;
             Values inputSource;
         }
 
@@ -155,6 +157,25 @@ public class SmartThingsApiService implements SamsungTvService {
         class ValuesList {
             String[] value;
             String timestamp;
+        }
+
+        class ValuesListMap {
+            InputList[] value;
+            String timestamp;
+
+            public String[] getInputList() {
+                return Optional.ofNullable(value).map(a -> Arrays.stream(a).map(b -> b.getId()).toArray(String[]::new))
+                        .orElse(new String[0]);
+            }
+        }
+
+        class InputList {
+            public String id;
+            String name;
+
+            public String getId() {
+                return Optional.ofNullable(id).orElse("");
+            }
         }
 
         class Items {
@@ -187,6 +208,7 @@ public class SmartThingsApiService implements SamsungTvService {
             String message;
         }
 
+        @SerializedName(value = "samsungvd.mediaInputSource", alternate = { "mediaInputSource" })
         MediaInputSource mediaInputSource;
         TvChannel tvChannel;
         Items[] items;
@@ -202,6 +224,11 @@ public class SmartThingsApiService implements SamsungTvService {
 
         public String[] getSources() {
             return Optional.ofNullable(mediaInputSource).map(a -> a.supportedInputSources).map(a -> a.value)
+                    .orElseGet(() -> getSourcesFromMap());
+        }
+
+        public String[] getSourcesFromMap() {
+            return Optional.ofNullable(mediaInputSource).map(a -> a.supportedInputSourcesMap).map(a -> a.getInputList())
                     .orElse(new String[0]);
         }
 
@@ -218,9 +245,9 @@ public class SmartThingsApiService implements SamsungTvService {
                     .findFirst().orElse(-1);
         }
 
-        public int getTvChannel() {
+        public Number getTvChannel() {
             return Optional.ofNullable(tvChannel).map(a -> a.tvChannel).map(a -> a.value).filter(i -> !i.isBlank())
-                    .map(Integer::parseInt).orElse(-1);
+                    .map(j -> parseTVChannel(j)).orElse(-1f);
         }
 
         public String getTvChannelName() {
@@ -388,9 +415,9 @@ public class SmartThingsApiService implements SamsungTvService {
         }
 
         public boolean getCapabilityAttribute(String capability, String attribute) {
-            return Optional.ofNullable(deviceEvent).map(a -> a.getCapability()).filter(a -> capability.equals(a))
+            return Optional.ofNullable(deviceEvent).map(a -> a.getCapability()).filter(a -> a.equals(capability))
                     .isPresent()
-                    && Optional.ofNullable(deviceEvent).map(a -> a.getAttribute()).filter(a -> attribute.equals(a))
+                    && Optional.ofNullable(deviceEvent).map(a -> a.getAttribute()).filter(a -> a.equals(attribute))
                             .isPresent();
         }
 
@@ -402,7 +429,8 @@ public class SmartThingsApiService implements SamsungTvService {
         }
 
         public String getInputSource() {
-            if (getCapabilityAttribute("mediaInputSource", "inputSource")) {
+            if (getCapabilityAttribute("mediaInputSource", "inputSource")
+                    || getCapabilityAttribute("samsungvd.mediaInputSource", "inputSource")) {
                 return Optional.ofNullable(deviceEvent).map(a -> a.getValue()).orElse("");
             }
             return "";
@@ -427,10 +455,10 @@ public class SmartThingsApiService implements SamsungTvService {
                     .filter(i -> t.getSources()[i].equals(getInputSource())).findFirst().orElse(-1)).orElse(-1);
         }
 
-        public int getTvChannel() {
+        public Number getTvChannel() {
             if (getCapabilityAttribute("tvChannel", "tvChannel")) {
                 return Optional.ofNullable(deviceEvent).map(a -> a.getValue()).filter(i -> !i.isBlank())
-                        .map(Integer::parseInt).orElse(-1);
+                        .map(j -> parseTVChannel(j)).orElse(-1f);
             }
             return -1;
         }
@@ -441,6 +469,16 @@ public class SmartThingsApiService implements SamsungTvService {
             }
             return "";
         }
+    }
+
+    public Number parseTVChannel(String channel) {
+        try {
+            return Optional.ofNullable(channel)
+                    .map(a -> a.replaceAll("\\D+", ".").replaceFirst("^\\D*((\\d+\\.\\d+)|(\\d+)).*", "$1"))
+                    .map(Float::parseFloat).orElse(-1f);
+        } catch (NumberFormatException ignore) {
+        }
+        return -1;
     }
 
     public void updateTV() {
@@ -477,6 +515,7 @@ public class SmartThingsApiService implements SamsungTvService {
         if (!response.isPresent()) {
             throw new IOException("No Data");
         }
+        response.ifPresent(r -> logger.trace("{}: Got response: {}", host, r));
         response.filter(r -> !r.startsWith("{")).ifPresent(r -> logger.debug("{}: Got response: {}", host, r));
         return response;
     }
@@ -578,7 +617,9 @@ public class SmartThingsApiService implements SamsungTvService {
             subscription = smartthingsSubscription();
             logger.trace("{}: SSE got subscription ID: {}", host,
                     subscription.map(a -> a.getSubscriptionId()).orElse("None"));
-            receiveSSEEvents();
+            if (!subscription.map(a -> a.getSubscriptionId()).orElse("").isBlank()) {
+                receiveSSEEvents();
+            }
         }
     }
 
@@ -757,8 +798,8 @@ public class SmartThingsApiService implements SamsungTvService {
                                 logger.info("{}: SSE Got input source ID: {}", host, sourceId);
                                 updateState(SOURCE_ID, sourceId);
                             }
-                            int tvChannel = d.getTvChannel();
-                            if (tvChannel != -1) {
+                            Number tvChannel = d.getTvChannel();
+                            if (tvChannel.intValue() != -1) {
                                 logger.info("{}: SSE Got TV Channel: {}", host, tvChannel);
                                 updateState(CHANNEL, tvChannel);
                                 String tvChannelName = d.getTvChannelName();
@@ -903,7 +944,7 @@ public class SmartThingsApiService implements SamsungTvService {
                         break;
                     case SOURCE_NAME:
                         if (command instanceof StringType) {
-                            if (t.getSourcesString().contains(command.toString())) {
+                            if (t.getSourcesString().contains(command.toString()) || t.getSourcesString().isBlank()) {
                                 result = setSourceName(command.toString());
                             } else {
                                 logger.warn("{}: Invalid source Name: {}, acceptable: {}", host, command,
@@ -928,8 +969,7 @@ public class SmartThingsApiService implements SamsungTvService {
             switch (channel) {
                 case CHANNEL:
                 case SOURCE_ID:
-                    // some weirdness here DecimalType((Integer) value) stopped working for some reason
-                    handler.valueReceived(channel, new DecimalType(((Integer) value).toString()));
+                    handler.valueReceived(channel, new DecimalType((Number) value));
                     break;
                 default:
                     handler.valueReceived(channel, new StringType((String) value));

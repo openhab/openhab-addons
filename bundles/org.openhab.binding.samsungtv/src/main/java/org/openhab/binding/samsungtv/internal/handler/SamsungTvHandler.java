@@ -97,6 +97,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     public String host = "";
     private String modelName = "";
+    public int artApiVersion = 0;
 
     /* Samsung TV services */
     private final Set<SamsungTvService> services = new CopyOnWriteArraySet<>();
@@ -314,6 +315,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         if (properties.getFrameTVSupport() && year >= 22) {
             logger.warn("{}: Art Mode is NOT SUPPORTED on Frame TV's after 2021 model year", host);
             setArtMode2022(true);
+            artApiVersion = 1;
         }
         setArtModeSupported(properties.getFrameTVSupport() && year < 22);
         logger.debug("{}: Updated artModeSupported: {} PowerState: {}({}) artMode2022: {}", host, getArtModeSupported(),
@@ -464,16 +466,11 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     private void startPolling() {
         int interval = configuration.getRefreshInterval();
         int delay = configuration.isWebsocketProtocol() ? 10000 : 0;
-        pollingJob.ifPresentOrElse(job -> {
-            if (job.isCancelled()) {
-                pollingJob = Optional
-                        .of(scheduler.scheduleWithFixedDelay(this::poll, delay, interval, TimeUnit.MILLISECONDS));
-            } // else - scheduler is already running!
-        }, () -> {
+        if (pollingJob.map(job -> (job.isCancelled())).orElse(true)) {
             logger.debug("{}: Start refresh task, interval={}", host, interval);
             pollingJob = Optional
                     .of(scheduler.scheduleWithFixedDelay(this::poll, delay, interval, TimeUnit.MILLISECONDS));
-        });
+        }
     }
 
     private void stopPolling() {
@@ -487,6 +484,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         stopPolling();
         wolTask.cancel();
         setArtMode2022(false);
+        setArtModeSupported(false);
+        artApiVersion = 0;
         stopServices();
         services.clear();
         upnpService.getRegistry().removeListener(this);
@@ -495,7 +494,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     private synchronized void stopServices() {
         stopPolling();
         if (!services.isEmpty()) {
-            if (getArtMode2022()) {
+            if (isFrame2022()) {
                 logger.debug("{}: Shutdown all Samsung services except RemoteControllerService", host);
                 services.stream().forEach(a -> stopService(a));
             } else {
@@ -706,11 +705,13 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     private synchronized void stopService(SamsungTvService service) {
-        service.stop();
-        if (getArtMode2022() && service.getServiceName().equals(RemoteControllerService.SERVICE_NAME)) {
+        // if (getArtMode2022() && service.getServiceName().equals(RemoteControllerService.SERVICE_NAME)) {
+        if (isFrame2022() && service.getServiceName().equals(RemoteControllerService.SERVICE_NAME)) {
             // don't stop the remoteController service on 2022 frame TV's
+            logger.debug("{}: not stopping: {}", host, service.getServiceName());
             return;
         }
+        service.stop();
         services.remove(service);
     }
 
@@ -761,6 +762,10 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
     @Override
     public void afterShutdown() {
+    }
+
+    public boolean isFrame2022() {
+        return getArtMode2022() || (getArtModeSupported() && artApiVersion >= 1);
     }
 
     public void setOffline() {

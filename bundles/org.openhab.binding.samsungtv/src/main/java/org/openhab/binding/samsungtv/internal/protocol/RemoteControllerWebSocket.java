@@ -178,7 +178,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
 
         this.samsungTvAppWatchService = new SamsungTvAppWatchService(host, this);
 
-        SslContextFactory sslContextFactory = new SslContextFactory( /* trustall= */ true);
+        SslContextFactory sslContextFactory = new SslContextFactory.Client( /* trustall= */ true);
         /* remove extra filters added by jetty on cipher suites */
         sslContextFactory.setExcludeCipherSuites();
         client = webSocketFactory.createWebSocketClient("samsungtv", sslContextFactory);
@@ -225,7 +225,6 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         String encodedAppName = Utils.b64encode(appName);
 
         String protocol = PROTOCOL_SECUREWEBSOCKET.equals(callback.handler.configuration.getProtocol()) ? "wss" : "ws";
-
         try {
             String token = callback.handler.configuration.getWebsocketToken();
             if ("wss".equals(protocol) && token.isBlank()) {

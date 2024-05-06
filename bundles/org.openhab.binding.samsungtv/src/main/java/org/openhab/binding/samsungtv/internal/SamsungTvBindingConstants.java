@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SamsungTvBinding} class defines common constants, which are used
+ * The {@link SamsungTvBindingConstants} class defines common constants, which are used
  * across the whole binding.
  *
  * @author Pauli Anttila - Initial contribution

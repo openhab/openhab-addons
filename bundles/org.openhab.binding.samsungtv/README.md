@@ -49,19 +49,19 @@ The TV's are discovered through UPnP protocol in the local network and all devic
 ## Binding Configuration
 
 Basic operation does not require any special configuration.  
-For >2019 TV's, the app workaround uses a built in list of known app ID's. You can add to this list by editing the `misc/samsungtv.applist` file in the openhab config directory.  
+For >2019 TV's, the app workaround uses a built in list of known app ID's. You can add to this list by editing the `misc/samsungtv.applist` file in the openHAB config directory.  
 To enable Smartthings polling, you have to add a Smartthings Personal Access token (PAT) to the Thing configuration.  
 
 ## Thing Configuration
 
-The Samsung TV Thing requires the host name and port address as a configuration value in order for the binding to know how to access it.  
-Samsung TV's publish several UPnP devices and the hostname is used to recognize those UPnP devices.  
-Port address is used for remote control emulation protocol.  
+The Samsung TV Thing requires the host name and port address as a configuration value in order for the binding to know how to access it.
+Samsung TV's publish several UPnP devices and the hostname is used to recognize those UPnP devices.
+Port address is used for remote control emulation protocol.
 Additionally, a refresh interval can be configured in milliseconds to specify how often TV resources are polled. Default is 1000 ms.  
 
 E.g.
 
-```
+```java
 Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, macAddress="78:bd:bc:9f:12:34", refreshInterval=1000 ]
 ```
 
@@ -69,10 +69,10 @@ Different ports are used on different models. It may be 55000, 8001 or 8002.
 
 If you have a <2016 TV, the interface will be *Legacy*, and the port is likely 55000.  
 If you have a >2016 TV, the interface will be either *websocket* on port 8001, or *websocketsecure* on port 8002.  
-If your TV surrports *websocketsecure*, you **MUST** use it, otherwise the `keyCode` channel will not work, and as a lot of internal logic relies on that channel, you will find many things do not work (`power` for example).  
+If your TV supports *websocketsecure*, you **MUST** use it, otherwise the `keyCode` channel will not work, and as a lot of internal logic relies on that channel, you will find many things do not work (`power` for example).  
 
 In order for the binding to control your TV, you will be asked to accept the remote connection (from openHAB) on your TV. You have 30 seconds to accept the connection. If you fail to accept it, then most channels will not work.  
-Once you have accepted the connection, the returned token is stored in the binding, so you don't have to repeat this every time OH is restarted.  
+Once you have accepted the connection, the returned token is stored in the binding, so you don't have to repeat this every time openHAB is restarted.  
 
 If the connection has been refused, or you don't have your TV configured to allow remote connections, the binding will not work. If you are having problems, check the settings on your TV, sometimes a family member denies the popup (because they don't know what it is), and after that nothing will work.  
 You can set the connection to `Allow` on the TV, or delete the openHAB entry, and try the connection again.
@@ -80,7 +80,7 @@ You can set the connection to `Allow` on the TV, or delete the openHAB entry, an
 The binding will try to automatically discover the correct protocol for your TV, so **don't change it** unless you know it is wrong.
 
 Under `advanced`, you can enter a Smartthings PAT, and Device Id. This enables more channels via the Smartthings cloud. This is only for TV's that support Smartthings. No hub is required. The binding will attempt to discover the device ID for your TV automatically, you can enter it manually if automatic detection fails.  
-Also under `advanced`, you have the ability to turn on *"Subscribe to UPNP events"*. This is off by default. This option reduces (but does not eliminate) the polling of UPNP services. You can enable it if you want to test it out. If you disable this setting (after testing), you should power cycle your TV to remove the old subscriptions.
+Also under `advanced`, you have the ability to turn on *"Subscribe to UPnP events"*. This is off by default. This option reduces (but does not eliminate) the polling of UPnP services. You can enable it if you want to test it out. If you disable this setting (after testing), you should power cycle your TV to remove the old subscriptions.
 
 ## General info
 
@@ -104,40 +104,9 @@ They also do not reflect the actual capabilities of your TV, just what that meth
 
 You should get `volume` and `mute` channels working at the minnimum. Other channels may or may not work, depending on your TV and the binding configuration.
 
-### Separating the Samsung logging into its own file
-
-To separate all the Samsung logging information into a separate file, please edit the file `userdata/etc/log4j2.xml` as follows:
-
-1. Add an logger appender definition (including the log file name)
-2. Add a logger definition referencing the appender defined in step 1
-
-Example for logging all DEBUG logs into a separate file `samsungtv.log` under the standard log folder
-
-```
-<Appenders>
-...
-    <!-- SamsungTV binding appender -->
-    <RollingFile fileName="${sys:openhab.logdir}/samsungtv.log" filePattern="${sys:openhab.logdir}/samsungtv-%d{yyyyMMdd-HHmmss}.log" name="SAMSUNGTV">
-        <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5.5p] [%-36.36c] - %m%n"/>
-        <Policies>
-            <OnStartupTriggeringPolicy/>
-            <SizeBasedTriggeringPolicy size="16 MB"/>
-        </Policies>
-    </RollingFile>
-</Appenders>
-<Loggers>
-...
-    <Logger additivity="false" level="DEBUG" name="org.openhab.binding.samsungtv">
-        <AppenderRef ref="SAMSUNGTV"/>
-    </Logger>
-</Loggers>
-```
-
-If you have problems with the binding, set the log level to `TRACE` (in place of `DEBUG`) and post a message with a TRACE log covering 30 seconds before the issue and 30 seconds after (please don't send me a log with one line that you think is relevant in it, I can't tell much from this). 
-
 ## Troubleshooting
 
-For the binding to function properly it is very important that your network config allows the machine running openHAB to receive UPNP multicast traffic.  
+For the binding to function properly it is very important that your network config allows the machine running openHAB to receive UPnP multicast traffic.  
 Multicast traffic is not propogated between different subnets, or VLANS, unless you specifically configure your router to do this. Many switches have IGMP Snooping enabled by default, which filters out multicast traffic.  
 If you want to check the communication between the machine and the TV is working, you can try the following:
 
@@ -159,7 +128,7 @@ If you want to check the communication between the machine and the TV is working
 
 ### What you should see
 
-You may see some messages (this is a good thing, it means you are receiving UPNP traffic).
+You may see some messages (this is a good thing, it means you are receiving UPnP traffic).
 
 Now turn your TV ON (with the remote control).
 
@@ -181,7 +150,7 @@ Where the ip address in `LOCATION` is the ip address of your TV, and the `USN` v
 
 If you now turn your TV off, you will see similar messages, but with `NTS: ssdp:byebye`. This is how the binding detects that your TV has turned OFF.
 
-Try this several times over a period of 30 minutes after you have discovered the TV and added the binding. This is because when you discover the binding, a UPNP `M-SEARCH` packet is broadcast, which will enable mulicast traffic, but your network (router or switches) can eventually start filtering out multicast traffic, leading to unrealiable behaviour.  
+Try this several times over a period of 30 minutes after you have discovered the TV and added the binding. This is because when you discover the binding, a UPnP `M-SEARCH` packet is broadcast, which will enable mulicast traffic, but your network (router or switches) can eventually start filtering out multicast traffic, leading to unrealiable behaviour.  
 If you see these messages, then basic communications is working, and you should be able to turn your TV Off (and on later TV's) ON, and have the status reported correctly.
 
 ### Multiple network interfaces
@@ -232,7 +201,7 @@ There are several other common issues that you can check for:
 
 you can configure the Thing and/or channels/items in text files. The Text configuration for the Thing is like this:
 
-```
+```java
 Thing samsungtv:tv:family_room "Samsung The Frame 55" [ hostName="192.168.100.73", port=8002, macAddress="10:2d:42:01:6d:17", refreshInterval=1000, protocol="SecureWebSocket", webSocketToken="16225986", smartThingsApiKey="cae5ac2a-6770-4fa4-a531-4d4e415872be", smartThingsDeviceId="996ff19f-d12b-4c5d-1989-6768a7ad6271", subscription=true ]
 ```
 
@@ -271,7 +240,7 @@ TVs support the following channels:
 
 E.g.
 
-```
+```java
 Group   gLivingRoomTV    "Living room TV" <screen>
 Dimmer  TV_Volume        "Volume"         <soundvolume>        (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:volume" }
 Switch  TV_Mute          "Mute"           <soundvolume_mute>   (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:mute" }
@@ -666,4 +635,4 @@ You can now link the `sourceName`, `sourceId`, `channel` and `channelName` chann
 
 ## UPnP Subscriptions
 
-UPNP Subscriptions are supported. This is an experimental feature which reduces the polling of UPNP services (off by default).
+UPnP Subscriptions are supported. This is an experimental feature which reduces the polling of UPnP services (off by default).

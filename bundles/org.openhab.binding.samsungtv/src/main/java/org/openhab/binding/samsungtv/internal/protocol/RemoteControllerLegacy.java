@@ -85,7 +85,6 @@ public class RemoteControllerLegacy extends RemoteController {
      *
      * @throws RemoteControllerException
      */
-    @SuppressWarnings("null")
     public void openConnection() throws RemoteControllerException {
         if (isConnected()) {
             return;
@@ -95,7 +94,11 @@ public class RemoteControllerLegacy extends RemoteController {
         Socket localsocket = new Socket();
         socket = localsocket;
         try {
-            socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
+            if (socket != null) {
+                socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
+            } else {
+                throw new IOException("no Socket");
+            }
         } catch (IOException e) {
             logger.debug("{}: Cannot connect to Legacy Remote Controller: {}", host, e.getMessage());
             throw new RemoteControllerException("Connection failed", e);
@@ -194,7 +197,6 @@ public class RemoteControllerLegacy extends RemoteController {
      * Close connection to Samsung TV.
      *
      */
-    @SuppressWarnings("null")
     public void closeConnection() {
         try {
             if (socket != null) {
@@ -269,7 +271,6 @@ public class RemoteControllerLegacy extends RemoteController {
         sendKey(key);
     }
 
-    @SuppressWarnings("null")
     public boolean isConnected() {
         return socket != null && !socket.isClosed() && socket.isConnected();
     }

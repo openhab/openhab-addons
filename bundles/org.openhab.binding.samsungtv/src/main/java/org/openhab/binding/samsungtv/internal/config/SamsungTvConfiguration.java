@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Nick Waterton - added Smartthings, subscription, refactoring
  */
 
-@SuppressWarnings("null")
 @NonNullByDefault({})
 public class SamsungTvConfiguration {
     public static final String PROTOCOL = "protocol";

@@ -66,6 +66,8 @@ public class WakeOnLanUtility {
                     COMMAND = "arp %s";
                 } else if (checkIfLinuxCommandExists("arping")) { // typically OH provided docker image
                     COMMAND = "arping -r -c 1 -C 1 %s";
+                } else {
+                    LOGGER.warn("{}: arping not installed", host);
                 }
             }
         } else {
@@ -118,13 +120,12 @@ public class WakeOnLanUtility {
      *
      * @macAddress MAC address to send WOL package to
      */
-    @SuppressWarnings("null")
     public static void sendWOLPacket(String macAddress) {
         byte[] bytes = getWOLPackage(macAddress);
 
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
+            while (interfaces != null && interfaces.hasMoreElements()) {
                 NetworkInterface networkInterface = interfaces.nextElement();
                 if (networkInterface.isLoopback() || !networkInterface.isUp()) {
                     continue; // Do not want to use the loopback or down interface.
