@@ -336,16 +336,16 @@ public class RemoteControllerService implements SamsungTvService {
                 break;
 
             case ART_BRIGHTNESS:
-                if (command instanceof DecimalType) {
-                    int value = ((DecimalType) command).intValue();
+                if (command instanceof DecimalType decimalCommand) {
+                    int value = decimalCommand.intValue();
                     remoteController.getArtmodeStatus("set_brightness", String.valueOf(value / 10));
                     result = true;
                 }
                 break;
 
             case ART_COLOR_TEMPERATURE:
-                if (command instanceof DecimalType) {
-                    int value = Math.max(-5, Math.min(((DecimalType) command).intValue(), 5));
+                if (command instanceof DecimalType decimalCommand) {
+                    int value = Math.max(-5, Math.min(decimalCommand.intValue(), 5));
                     remoteController.getArtmodeStatus("set_color_temperature", String.valueOf(value));
                     result = true;
                 }
@@ -405,8 +405,8 @@ public class RemoteControllerService implements SamsungTvService {
                 break;
 
             case CHANNEL:
-                if (command instanceof DecimalType) {
-                    KeyCode[] codes = String.valueOf(((DecimalType) command).intValue()).chars()
+                if (command instanceof DecimalType decimalCommand) {
+                    KeyCode[] codes = String.valueOf(decimalCommand.intValue()).chars()
                             .mapToObj(c -> KeyCode.valueOf("KEY_" + String.valueOf((char) c))).toArray(KeyCode[]::new);
                     List<Object> commands = new ArrayList<>(Arrays.asList(codes));
                     commands.add(KeyCode.KEY_ENTER);

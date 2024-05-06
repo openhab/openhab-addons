@@ -392,7 +392,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     public void channelLinked(ChannelUID channelUID) {
         logger.trace("{}: channelLinked: {}", host, channelUID);
         if (POWER.equals(channelUID.getId())) {
-            valueReceived(POWER, getPowerState() ? OnOffType.ON : OnOffType.OFF);
+            valueReceived(POWER, OnOffType.from(getPowerState()));
         }
         services.stream().forEach(a -> a.clearCache());
         if (Arrays.asList(ART_COLOR_TEMPERATURE, ART_IMAGE).contains(channelUID.getId())) {
@@ -521,7 +521,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                     // if TV is registered to SmartThings it wakes up regularly (every 5 minutes or so), even if it's in
                     // standby, so check the power state locally to see if it's actually on
                     fetchPowerState();
-                    valueReceived(POWER, getPowerState() ? OnOffType.ON : OnOffType.OFF);
+                    valueReceived(POWER, OnOffType.from(getPowerState()));
                 } else {
                     valueReceived(POWER, OnOffType.ON);
                 }
