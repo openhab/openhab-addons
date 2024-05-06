@@ -44,7 +44,7 @@
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="apparent-power">
-		<item-type>Number:power</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Apparent Power</label>
 		<description>The current apparent power.</description>
 		<state pattern="%.2f VA" readOnly="true"/>
