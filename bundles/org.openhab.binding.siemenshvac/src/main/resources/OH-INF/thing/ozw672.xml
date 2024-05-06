@@ -24,6 +24,7 @@
 				<default>Administrator</default>
 			</parameter>
 			<parameter name="userPassword" type="text">
+				<context>password</context>
 				<description>User password of the Siemens Hvac gateway</description>
 				<required>false</required>
 				<label>User Password</label>

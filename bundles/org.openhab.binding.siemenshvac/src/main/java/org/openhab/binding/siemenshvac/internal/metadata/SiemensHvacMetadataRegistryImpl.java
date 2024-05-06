@@ -779,7 +779,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             }
         } catch (Exception e) {
             logger.error("siemensHvac:ResolveDpt:Error during reading user info: {}", e.getLocalizedMessage());
-            throw new SiemensHvacException("Error durring reading user info", e);
+            throw new SiemensHvacException("Error during reading user info", e);
             // Reset sessionId so we redone _auth on error
         }
     }

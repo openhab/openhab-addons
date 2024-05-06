@@ -54,10 +54,10 @@ public class RadioTypeConverter extends AbstractTypeConverter {
 
         if (command instanceof DecimalType decimalValue) {
             valUpdate = decimalValue.toString();
-        } else if (command instanceof OnOffType onOffType) {
-            if (onOffType.equals(OnOffType.OFF)) {
+        } else if (command instanceof OnOffType onOffValue) {
+            if (onOffValue.equals(OnOffType.OFF)) {
                 valUpdate = 0;
-            } else if (onOffType.equals(OnOffType.ON)) {
+            } else if (onOffValue.equals(OnOffType.ON)) {
                 valUpdate = 1;
             }
         }
@@ -77,14 +77,16 @@ public class RadioTypeConverter extends AbstractTypeConverter {
 
         StateDescription sd = tp.getState();
 
-        List<StateOption> options = sd.getOptions();
-        StateOption offOpt = options.get(0);
-        StateOption onOpt = options.get(1);
+        if (sd != null) {
+            List<StateOption> options = sd.getOptions();
+            StateOption offOpt = options.get(0);
+            StateOption onOpt = options.get(1);
 
-        if (onOpt.getLabel().equals(valueSt)) {
-            updateVal = new DecimalType(onOpt.getValue());
-        } else if (offOpt.getLabel().equals(valueSt)) {
-            updateVal = new DecimalType(offOpt.getValue());
+            if (valueSt.equals(onOpt.getLabel())) {
+                updateVal = new DecimalType(onOpt.getValue());
+            } else if (valueSt.equals(offOpt.getLabel())) {
+                updateVal = new DecimalType(offOpt.getValue());
+            }
         }
 
         return updateVal;

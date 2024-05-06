@@ -22,10 +22,7 @@ import org.openhab.binding.siemenshvac.internal.converter.TypeConverter;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDevice;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataMenu;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -103,10 +100,9 @@ public class UidUtils {
         }
 
         result = result.replace(" mon", "");
-        result = result.replace(" yue", "");
+        result = result.replace(" tue", "");
         result = result.replace(" wed", "");
         result = result.replace(" thu", "");
-        result = result.replace(" tue", "");
         result = result.replace(" fri", "");
         result = result.replace(" sat", "");
         result = result.replace(" sun", "");
@@ -157,7 +153,7 @@ public class UidUtils {
     /**
      * Generates the ChannelTypeUID for the given datapoint with deviceType, channelNumber and datapointName.
      */
-    public static ChannelTypeUID generateChannelTypeUID(SiemensHvacMetadataDataPoint dpt) throws Exception {
+    public static ChannelTypeUID generateChannelTypeUID(SiemensHvacMetadataDataPoint dpt) throws SiemensHvacException {
 
         String type = dpt.getDptType();
         String shortDesc = dpt.getShortDescEn();
@@ -169,13 +165,13 @@ public class UidUtils {
                 result = tp.getChannelType(dpt.getWriteAccess());
             }
         } catch (ConverterTypeException ex) {
-            throw new SiemensHvacException(String.format("Can't find convertor for type: %s", type), ex);
+            throw new SiemensHvacException(String.format("Can't find converter for type: %s", type), ex);
         }
 
         return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, result);
     }
 
-    public static ChannelTypeUID generateChannelTypeUID2(SiemensHvacMetadataDataPoint dpt) throws Exception {
+    public static ChannelTypeUID generateChannelTypeUID2(SiemensHvacMetadataDataPoint dpt) throws SiemensHvacException {
         String type = dpt.getDptType();
         String shortDesc = dpt.getShortDescEn();
         String result = normalizeDescriptor(shortDesc);
@@ -194,24 +190,9 @@ public class UidUtils {
     }
 
     /**
-     * Generates the ThingUID for the given device in the given bridge.
-     */
-    public static ThingUID generateThingUID(Bridge bridge) {
-        ThingTypeUID thingTypeUID = generateThingTypeUID("");
-        return new ThingUID(thingTypeUID, bridge.getUID(), "");
-    }
-
-    /**
-     * Generates the ChannelUID for the given datapoint with channelNumber and datapointName.
-     */
-    public static ChannelUID generateChannelUID(ThingUID thingUID) {
-        return new ChannelUID(thingUID, "");
-    }
-
-    /**
      * Generates the ChannelTypeUID for the given datapoint with deviceType and channelNumber.
      */
     public static ChannelGroupTypeUID generateChannelGroupTypeUID(SiemensHvacMetadataMenu menu) {
-        return new ChannelGroupTypeUID(SiemensHvacBindingConstants.BINDING_ID, String.format("%s", menu.getId()));
+        return new ChannelGroupTypeUID(SiemensHvacBindingConstants.BINDING_ID, String.valueOf(menu.getId()));
     }
 }

@@ -18,7 +18,7 @@ package org.openhab.binding.siemenshvac.internal.converter;
  * @author Laurent Arnal - Initial contribution
  */
 public class ConverterTypeException extends ConverterException {
-    private static final long serialVersionUID = 7114173349077221055L;
+    private static final long serialVersionUID = 2546248551752214152L;
 
     public ConverterTypeException(String message) {
         super(message);

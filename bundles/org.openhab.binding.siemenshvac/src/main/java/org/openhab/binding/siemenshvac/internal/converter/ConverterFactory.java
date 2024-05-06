@@ -32,6 +32,7 @@ import org.openhab.core.i18n.TimeZoneProvider;
  *
  * @author Laurent Arnal - Initial contribution
  */
+
 public class ConverterFactory {
     private static Map<String, TypeConverter> converterCache = new HashMap<>();
 

@@ -15,10 +15,10 @@ package org.openhab.binding.siemenshvac.internal.converter;
 /**
  * Exception if something goes wrong when converting values between openHAB and the binding.
  *
- * @author Gerhard Riegler - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class ConverterException extends Exception {
-    private static final long serialVersionUID = 78045670450002L;
+    private static final long serialVersionUID = 42567425458545L;
 
     public ConverterException(String message) {
         super(message);

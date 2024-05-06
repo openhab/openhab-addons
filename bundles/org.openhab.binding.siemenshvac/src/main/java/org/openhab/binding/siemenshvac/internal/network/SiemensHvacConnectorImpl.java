@@ -62,10 +62,10 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     private final Logger logger = LoggerFactory.getLogger(SiemensHvacConnectorImpl.class);
 
-    private Map<SiemensHvacRequestHandler, SiemensHvacRequestHandler> currentHandlerRegistry = new ConcurrentHashMap<SiemensHvacRequestHandler, SiemensHvacRequestHandler>();
-    private Map<SiemensHvacRequestHandler, SiemensHvacRequestHandler> handlerInErrorRegistry = new ConcurrentHashMap<SiemensHvacRequestHandler, SiemensHvacRequestHandler>();
+    private Map<SiemensHvacRequestHandler, SiemensHvacRequestHandler> currentHandlerRegistry = new ConcurrentHashMap<>();
+    private Map<SiemensHvacRequestHandler, SiemensHvacRequestHandler> handlerInErrorRegistry = new ConcurrentHashMap<>();
 
-    private Map<String, Boolean> oldSessionId = new HashMap<String, Boolean>();
+    private Map<String, Boolean> oldSessionId = new HashMap<>();
 
     private final Gson gson;
     private final Gson gsonWithAdapter;
@@ -154,7 +154,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     public void onError(@Nullable Request request, @Nullable SiemensHvacRequestHandler reqHandler,
             SiemensHvacRequestListener.ErrorSource errorSource, boolean mayRetry) throws Exception {
         if (reqHandler == null || request == null) {
-            throw new SiemensHvacException("internalError : onError call with reqHandler == null");
+            throw new SiemensHvacException("internalError: onError call with reqHandler == null");
         }
 
         boolean doRetry = mayRetry;
