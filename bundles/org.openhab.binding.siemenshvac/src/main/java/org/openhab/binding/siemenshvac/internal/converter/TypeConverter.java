@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Type;
 
@@ -22,11 +24,13 @@ import com.google.gson.JsonObject;
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 public interface TypeConverter {
 
     /**
      * Converts an openHAB type to a SiemensHVac value.
      */
+    @Nullable
     Object convertToBinding(Type type, ChannelType tp) throws ConverterException;
 
     /**

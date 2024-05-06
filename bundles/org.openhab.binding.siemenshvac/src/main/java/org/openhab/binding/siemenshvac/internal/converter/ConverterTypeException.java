@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception if converting between two types is not possible due wrong item type or command.
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 public class ConverterTypeException extends ConverterException {
     private static final long serialVersionUID = 2546248551752214152L;
 

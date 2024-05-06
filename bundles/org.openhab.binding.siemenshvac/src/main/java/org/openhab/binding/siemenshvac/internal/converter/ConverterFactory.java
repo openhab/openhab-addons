@@ -15,6 +15,7 @@ package org.openhab.binding.siemenshvac.internal.converter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.type.CalendarTypeConverter;
 import org.openhab.binding.siemenshvac.internal.converter.type.CheckboxTypeConverter;
@@ -33,6 +34,7 @@ import org.openhab.core.i18n.TimeZoneProvider;
  * @author Laurent Arnal - Initial contribution
  */
 
+@NonNullByDefault
 public class ConverterFactory {
     private static Map<String, TypeConverter> converterCache = new HashMap<>();
 
@@ -57,7 +59,6 @@ public class ConverterFactory {
      * Returns the converter for an itemType.
      */
     public static TypeConverter getConverter(String itemType) throws ConverterTypeException {
-
         TypeConverter converter = converterCache.get(itemType);
         if (converter == null) {
             throw new ConverterTypeException("Can't find a converter for type '" + itemType + "'");

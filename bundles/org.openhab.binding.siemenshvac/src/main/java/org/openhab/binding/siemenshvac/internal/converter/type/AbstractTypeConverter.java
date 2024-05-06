@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter.type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterTypeException;
 import org.openhab.binding.siemenshvac.internal.converter.TypeConverter;
@@ -30,12 +32,12 @@ import com.google.gson.JsonObject;
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractTypeConverter implements TypeConverter {
     private final Logger logger = LoggerFactory.getLogger(AbstractTypeConverter.class);
 
     @Override
-    public Object convertToBinding(Type type, ChannelType tp) throws ConverterException {
-
+    public @Nullable Object convertToBinding(Type type, ChannelType tp) throws ConverterException {
         if (type == UnDefType.NULL) {
             return null;
         } else if (type.getClass().isEnum()) {
@@ -51,7 +53,6 @@ public abstract class AbstractTypeConverter implements TypeConverter {
 
     @Override
     public Type convertFromBinding(JsonObject dp, ChannelType tp) throws ConverterException {
-
         String type = null;
         JsonElement value = null;
 
@@ -86,7 +87,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     /**
      * Converts an openHAB command to a SiemensHvacValue value.
      */
-    protected Object commandToBinding(Command command, ChannelType tp) throws ConverterException {
+    protected @Nullable Object commandToBinding(Command command, ChannelType tp) throws ConverterException {
         throw new ConverterException("Unsupported command " + command.getClass().getSimpleName() + " for "
                 + this.getClass().getSimpleName());
     }
@@ -99,7 +100,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     /**
      * Converts the type to a datapoint value.
      */
-    protected abstract Object toBinding(Type type, ChannelType tp) throws ConverterException;
+    protected abstract @Nullable Object toBinding(Type type, ChannelType tp) throws ConverterException;
 
     /**
      * Returns true, if the conversion from the binding to openHAB is possible.

@@ -154,7 +154,6 @@ public class UidUtils {
      * Generates the ChannelTypeUID for the given datapoint with deviceType, channelNumber and datapointName.
      */
     public static ChannelTypeUID generateChannelTypeUID(SiemensHvacMetadataDataPoint dpt) throws SiemensHvacException {
-
         String type = dpt.getDptType();
         String shortDesc = dpt.getShortDescEn();
         String result = normalizeDescriptor(shortDesc);

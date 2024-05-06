@@ -243,12 +243,11 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             }
 
             try {
-                TypeConverter converter = ConverterFactory.getConverter(typer);
-                State state = (State) converter.convertFromBinding(subResult, tp);
-                if (state != null) {
+                if (typer != null) {
+                    TypeConverter converter = ConverterFactory.getConverter(typer);
+
+                    State state = (State) converter.convertFromBinding(subResult, tp);
                     updateState(updateKey, state);
-                } else {
-                    logger.debug("Failed to get converted state from datapoint '{}'", dp);
                 }
             } catch (ConverterTypeException ex) {
                 logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());

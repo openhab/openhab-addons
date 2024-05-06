@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception if something goes wrong when converting values between openHAB and the binding.
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 public class ConverterException extends Exception {
     private static final long serialVersionUID = 42567425458545L;
 

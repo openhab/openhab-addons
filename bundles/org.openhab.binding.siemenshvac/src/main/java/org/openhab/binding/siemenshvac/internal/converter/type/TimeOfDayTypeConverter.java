@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter.type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.core.library.types.DecimalType;
@@ -25,6 +27,7 @@ import com.google.gson.JsonElement;
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 public class TimeOfDayTypeConverter extends AbstractTypeConverter {
     @Override
     protected boolean toBindingValidation(Type type) {
@@ -32,7 +35,7 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected Object toBinding(Type type, ChannelType tp) throws ConverterException {
+    protected @Nullable Object toBinding(Type type, ChannelType tp) throws ConverterException {
         Object valUpdate = null;
 
         if (type instanceof DecimalType decimalValue) {
