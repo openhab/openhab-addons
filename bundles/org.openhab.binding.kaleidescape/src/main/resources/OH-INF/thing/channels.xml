@@ -800,10 +800,11 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="sendcmd">
+	<channel-type id="sendcmd" advanced="true">
 		<item-type>String</item-type>
 		<label>Send Command</label>
 		<description>Send a command to the component</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>

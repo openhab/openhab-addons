@@ -188,7 +188,7 @@ String z1_Ui_HighlightedSelection "Highlighted Selection: [%s]" { channel="kalei
 String z1_Ui_UserDefinedEvent "User Defined Event: [%s]" { channel="kaleidescape:player:myzone1:ui#user_defined_event" }
 String z1_Ui_UserInput "User Input: [%s]" { channel="kaleidescape:player:myzone1:ui#user_input" }
 String z1_Ui_UserInputPrompt "User Input Prompt[%s]" { channel="kaleidescape:player:myzone1:ui#user_input_prompt" }
-String z1_Ui_Sendcmd "Send Command" { channel="kaleidescape:player:myzone1:ui#sendcmd", autoupdate="false" }
+String z1_Ui_Sendcmd "Send Command" { channel="kaleidescape:player:myzone1:ui#sendcmd" }
 
 // Music Channels (not available on Alto or Strato)
 Player z1_Music_Control "Music Control" { channel="kaleidescape:player:myzone1:music#control" }
