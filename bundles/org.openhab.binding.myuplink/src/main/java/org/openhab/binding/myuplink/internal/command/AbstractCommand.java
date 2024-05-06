@@ -193,7 +193,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         JsonObject jsonObject = transform(json);
         if (jsonObject != null) {
             logger.debug("[{}] success", getClass().getSimpleName());
-            handler.updateChannelStatus(transformer.transform(jsonObject));
+            handler.updateChannelStatus(transformer.transform(jsonObject, getChannelGroup()));
             processResult(jsonObject);
         }
     }
@@ -298,6 +298,13 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         requestToPrepare.method(HttpMethod.GET);
         return requestToPrepare;
     }
+
+    /**
+     * concrete implementation has to provide the channel group.
+     *
+     * @return
+     */
+    protected abstract String getChannelGroup();
 
     /**
      * concrete implementation has to provide the URL

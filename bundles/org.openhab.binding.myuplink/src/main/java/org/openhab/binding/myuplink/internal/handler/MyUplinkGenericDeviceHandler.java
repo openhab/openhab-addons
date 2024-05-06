@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myuplink.internal.AtomicReferenceTrait;
 import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.binding.myuplink.internal.command.MyUplinkCommand;
+import org.openhab.binding.myuplink.internal.command.account.GetSystems;
 import org.openhab.binding.myuplink.internal.command.device.GetPoints;
 import org.openhab.binding.myuplink.internal.config.MyUplinkConfiguration;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
@@ -38,6 +39,8 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -63,48 +66,57 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
 
     @Override
     public void initialize() {
-        logger.debug("About to initialize Charger");
-        logger.debug("Easee Charger initialized with id: {}", getId());
+        logger.debug("About to initialize myUplink Generic Device");
+        logger.debug("myUplink Generic Device initialized with id: {}", getDeviceId());
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
         startPolling();
-
-        // TODO: define command to update properties -> GetSystems?
-        // enqueueCommand(new Charger(this, getId(), this::updatePropertiesAndOnlineStatus));
     }
 
-    public String getId() {
+    public String getDeviceId() {
         return getConfig().get(THING_CONFIG_ID).toString();
     }
 
-    private void updatePropertiesAndOnlineStatus(CommunicationStatus status, JsonObject charger) {
-        // TODO: check this
+    private void updatePropertiesAndOnlineStatus(CommunicationStatus status, JsonObject systemsJson) {
+        JsonObject deviceFound = extractDevice(systemsJson);
 
-        // updateOnlineStatus(status, charger);
-        // Map<String, String> properties = editProperties();
+        if (deviceFound != null) {
+            Map<String, String> properties = editProperties();
+            String currentFwVersion = Utils.getAsString(deviceFound, JSON_KEY_CURRENT_FW_VERSION);
+            properties.put(THING_CONFIG_CURRENT_FW_VERSION,
+                    currentFwVersion != null ? currentFwVersion : GENERIC_NO_VAL);
+            updateProperties(properties);
 
-        // String backPlateId = Utils.getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE), JSON_KEY_GENERIC_ID);
-        // String masterBackPlateId = Utils.getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE),
-        // JSON_KEY_MASTER_BACK_PLATE_ID);
-        // if (backPlateId != null && masterBackPlateId != null) {
-        // if (backPlateId.equals(masterBackPlateId)) {
-        // properties.put(THING_CONFIG_IS_MASTER, GENERIC_YES);
-        // } else {
-        // properties.put(THING_CONFIG_IS_MASTER, GENERIC_NO);
-        // }
-        // properties.put(THING_CONFIG_BACK_PLATE_ID, backPlateId);
-        // properties.put(THING_CONFIG_MASTER_BACK_PLATE_ID, masterBackPlateId);
-        // }
-        // String chargerName = Utils.getAsString(charger, JSON_KEY_GENERIC_NAME);
-        // if (chargerName != null) {
-        // properties.put(JSON_KEY_GENERIC_NAME, chargerName);
-        // }
-        // String circuitId = Utils.getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE), JSON_KEY_CIRCUIT_ID);
-        // if (circuitId != null) {
-        // properties.put(JSON_KEY_CIRCUIT_ID, circuitId);
-        // }
+            String connectionStatus = Utils.getAsString(deviceFound, JSON_KEY_CONNECTION_STATE);
+            if (connectionStatus != null && connectionStatus.equals(JSON_VAL_CONNECTION_CONNECTED)) {
+                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            } else {
+                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, STATUS_NO_CONNECTION);
+            }
+        } else {
+            super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_DEVICE_NOT_FOUND);
+        }
+    }
 
-        // updateProperties(properties);
+    private final @Nullable JsonObject extractDevice(JsonObject systemsJson) {
+        JsonArray systems = systemsJson.getAsJsonArray(JSON_KEY_SYSTEMS);
+        if (systems != null && !systems.isEmpty()) {
+            for (JsonElement systemJson : systems) {
+                JsonObject system = systemJson.getAsJsonObject();
+                JsonArray devices = system.getAsJsonArray(JSON_KEY_DEVICES);
+                if (devices != null && !devices.isEmpty()) {
+                    for (JsonElement deviceJson : devices) {
+                        JsonObject device = deviceJson.getAsJsonObject();
+                        String deviceId = Utils.getAsString(device, JSON_KEY_GENERIC_ID);
+                        if (deviceId.equals(getDeviceId())) {
+                            return device;
+                        }
+
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -116,16 +128,17 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
     }
 
     /**
-     * Poll the Easee Cloud API one time.
+     * Poll the myUplink Cloud API one time.
      */
     void pollingRun() {
         String deviceId = getConfig().get(THING_CONFIG_ID).toString();
         logger.debug("polling device data for {}", deviceId);
 
-        // proceed if charger is online
+        // proceed if device is online
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             enqueueCommand(new GetPoints(this, deviceId, this::updateOnlineStatus));
         }
+        enqueueCommand(new GetSystems(this, this::updatePropertiesAndOnlineStatus));
     }
 
     /**

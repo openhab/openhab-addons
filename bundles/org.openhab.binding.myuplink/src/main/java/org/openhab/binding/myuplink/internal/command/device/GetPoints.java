@@ -39,4 +39,10 @@ public class GetPoints extends AbstractCommand {
     protected String getURL() {
         return url;
     }
+
+    @Override
+    protected String getChannelGroup() {
+        // TODO: change this?!
+        return CHANNEL_GROUP_NONE;
+    }
 }

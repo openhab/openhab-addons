@@ -8,4 +8,9 @@
 		<description>Cloud connection to a myUplink account.</description>
 		<config-description-ref uri="thing-type:myuplink:account"/>
 	</bridge-type>
+	<thing-type id="genericDevice">
+		<label>myUplink Generic Device</label>
+		<description>Cloud connection to a myUplink device.</description>
+		<config-description-ref uri="thing-type:myuplink:genericDevice"/>
+	</thing-type>
 </thing:thing-descriptions>

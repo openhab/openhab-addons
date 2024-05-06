@@ -54,17 +54,17 @@ public class GenericResponseTransformer {
         // TODO: this.customResponseTransformer = new CustomResponseTransformer(channelProvider);
     }
 
-    public Map<Channel, State> transform(JsonObject jsonData) {
+    public Map<Channel, State> transform(JsonObject jsonData, String group) {
         Map<Channel, State> result = new HashMap<>(20);
 
         for (String channelId : jsonData.keySet()) {
             String value = Utils.getAsString(jsonData, channelId);
 
-            Channel channel = channelProvider.getChannel(channelId);
+            Channel channel = channelProvider.getChannel(group, channelId);
             if (channel == null) {
-                // As we have a generic response mapper it ould happen that a subset of key/values in the response
+                // As we have a generic response mapper it could happen that a subset of key/values in the response
                 // cannot be mapped to openhab channels.
-                logger.debug("Channel not found: {}", channelId);
+                logger.debug("Channel not found: {}#{}", group, channelId);
             } else {
                 logger.debug("mapping value '{}' to channel {}", value, channel.getUID().getId());
                 String channelType = channel.getAcceptedItemType();
@@ -89,15 +89,8 @@ public class GenericResponseTransformer {
                                         MetricPrefix.KILO(Units.WATT_HOUR)));
                                 break;
                             case CHANNEL_TYPE_POWER:
-                                if (channelTypeId.equals(CHANNEL_TYPENAME_RSSI)) {
-                                    // explicit type long is needed in case of integer/long values otherwise automatic
-                                    // transformation to a decimal type is applied.
-                                    result.put(channel,
-                                            new QuantityType<>(Long.parseLong(value), Units.DECIBEL_MILLIWATTS));
-                                } else {
-                                    result.put(channel, new QuantityType<>(Double.parseDouble(value),
-                                            MetricPrefix.KILO(Units.WATT)));
-                                }
+                                result.put(channel,
+                                        new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT)));
                                 break;
                             case CHANNEL_TYPE_DATE:
                                 result.put(channel, new DateTimeType(Utils.parseDate(value)));

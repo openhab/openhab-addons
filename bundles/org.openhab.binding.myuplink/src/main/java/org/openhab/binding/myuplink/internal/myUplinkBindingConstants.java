@@ -60,7 +60,6 @@ public class MyUplinkBindingConstants {
     public static final String CHANNEL_TYPEPREFIX_RW = "rw";
 
     public static final String CHANNEL_TYPENAME_INTEGER = "type-integer";
-    public static final String CHANNEL_TYPENAME_RSSI = "type-rssi";
 
     // Channels with specific handling
     // TODO: add content
@@ -73,10 +72,14 @@ public class MyUplinkBindingConstants {
     public static final String JSON_KEY_PRODUCT = "product";
     public static final String JSON_KEY_SERIAL = "serialNumber";
     public static final String JSON_KEY_NAME = "name";
+    public static final String JSON_KEY_CURRENT_FW_VERSION = "currentFwVersion";
+    public static final String JSON_KEY_CONNECTION_STATE = "connectionState";
 
     public static final String JSON_KEY_AUTH_ACCESS_TOKEN = "access_token";
     public static final String JSON_KEY_AUTH_EXPIRES_IN = "expires_in";
     // TODO: add content
+
+    public static final String JSON_VAL_CONNECTION_CONNECTED = "Connected";
 
     // Write Commands
     // TODO: add content
@@ -115,12 +118,16 @@ public class MyUplinkBindingConstants {
     public static final String STATUS_WAITING_FOR_LOGIN = "@text/status.waiting.for.login";
     public static final String STATUS_NO_VALID_DATA = "@text/status.no.valid.data";
     public static final String STATUS_NO_CONNECTION = "@text/status.no.connection";
+    public static final String STATUS_DEVICE_NOT_FOUND = "@text/status.device.not.found";
 
     // other
     public static final long POLLING_INITIAL_DELAY = 1;
 
-    public static final String THING_CONFIG_ID = "id";
+    public static final String GENERIC_NO_VAL = "---";
+
+    public static final String THING_CONFIG_ID = "deviceId";
     public static final String THING_CONFIG_SERIAL = "serial";
+    public static final String THING_CONFIG_CURRENT_FW_VERSION = "currentFwVersion";
 
     public static final Instant OUTDATED_DATE = Instant.EPOCH;
 
