@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.siemenshvac.internal.type;
 
-import java.text.Normalizer;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterFactory;
@@ -25,6 +23,8 @@ import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataMenu
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for generating some UIDs.
@@ -33,6 +33,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class UidUtils {
+    private static final Logger logger = LoggerFactory.getLogger(UidUtils.class);
+
     /**
      * The methods remove specific local character (like 'é'/'ê','â') so we have a correctly formated UID from a
      * localize item label
@@ -43,23 +45,7 @@ public class UidUtils {
     public static String sanetizeId(String label) {
         String result = label;
 
-        if (!Normalizer.isNormalized(label, Normalizer.Form.NFKD)) {
-            result = Normalizer.normalize(label, Normalizer.Form.NFKD);
-            result = result.replaceAll("\\p{M}", "");
-        }
-
-        result = result.replace(' ', '_');
-        result = result.replace(':', '_');
-        result = result.replace('.', '_');
-        result = result.replace('\'', '_');
-        result = result.replace('(', '_');
-        result = result.replace(')', '_');
-        result = result.replace('&', '_');
-        result = result.replace('/', '_');
-        result = result.replace('°', '_');
-        result = result.replace('+', '_');
-
-        return result;
+        return result.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase();
     }
 
     /**
@@ -165,24 +151,6 @@ public class UidUtils {
             }
         } catch (ConverterTypeException ex) {
             throw new SiemensHvacException(String.format("Can't find converter for type: %s", type), ex);
-        }
-
-        return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, result);
-    }
-
-    public static ChannelTypeUID generateChannelTypeUID2(SiemensHvacMetadataDataPoint dpt) throws SiemensHvacException {
-        String type = dpt.getDptType();
-        String shortDesc = dpt.getShortDescEn();
-        String result = normalizeDescriptor(shortDesc);
-
-        if ("DateTime".equals(type)) {
-            result = "datetime";
-        } else if ("String".equals(type)) {
-            result = "string";
-        } else if ("TimeOfDay".equals(type)) {
-            result = "datetime";
-        } else if ("Scheduler".equals(type)) {
-            result = "datetime";
         }
 
         return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, result);
