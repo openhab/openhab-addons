@@ -148,7 +148,7 @@ String      TiVo_KeyboardStr    "Search String"
 
 - The item `TiVo_SetChannelName` depends upon a valid `tivo.map` file to translate channel numbers to channel names. The openHAB **MAP** transformation service must also be installed.
 - A simulated remote control widget is available using the Buttongrid sitemap element described below.
-- A more advanced simulated remote can be also be implemented as described here: (<https://community.openhab.org/t/bogob-big-ol-grid-o-buttons-is-this-even-possible-yes-yes-it-is/115343>).
+- A more advanced simulated remote can also be implemented as described here: (<https://community.openhab.org/t/bogob-big-ol-grid-o-buttons-is-this-even-possible-yes-yes-it-is/115343>).
 
 ### tivo.sitemap
 
