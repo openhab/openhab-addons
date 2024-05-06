@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.siemenshvac.internal.type;
 
+import java.text.Normalizer;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterFactory;
@@ -23,8 +25,6 @@ import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataMenu
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for generating some UIDs.
@@ -33,8 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class UidUtils {
-    private static final Logger logger = LoggerFactory.getLogger(UidUtils.class);
-
     /**
      * The methods remove specific local character (like 'é'/'ê','â') so we have a correctly formated UID from a
      * localize item label
@@ -45,7 +43,23 @@ public class UidUtils {
     public static String sanetizeId(String label) {
         String result = label;
 
-        return result.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase();
+        if (!Normalizer.isNormalized(label, Normalizer.Form.NFKD)) {
+            result = Normalizer.normalize(label, Normalizer.Form.NFKD);
+            result = result.replaceAll("\\p{M}", "");
+        }
+
+        result = result.replace(' ', '_');
+        result = result.replace(':', '_');
+        result = result.replace('.', '_');
+        result = result.replace('\'', '_');
+        result = result.replace('(', '_');
+        result = result.replace(')', '_');
+        result = result.replace('&', '_');
+        result = result.replace('/', '_');
+        result = result.replace('°', '_');
+        result = result.replace('+', '_');
+
+        return result;
     }
 
     /**
