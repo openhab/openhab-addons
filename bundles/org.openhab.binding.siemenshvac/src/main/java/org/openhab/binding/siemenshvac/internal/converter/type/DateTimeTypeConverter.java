@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter.type;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -67,26 +70,36 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
         if ("----".equals(value.getAsString())) {
             return new DateTimeType();
         } else {
-            String[] formats = { "EEEE, d. MMMM yyyy hh:mm", "d. MMMM yyyy hh:mm", "d. MMMM" };
+            String[] formats = { "EEEE, d. LLLL yyyy HH:mm[:ss]", "d. LLLL yyyy HH:mm[:ss]", "d. LLLL yyyy",
+                    "d. LLLL" };
 
             for (int i = 0; i < formats.length; i++) {
                 try {
-                    SimpleDateFormat dtf = new SimpleDateFormat(formats[i]); // first example
-                    ZonedDateTime zdt = dtf.parse(value.getAsString()).toInstant()
-                            .atZone(this.timeZoneProvider.getTimeZone());
+                    DateTimeFormatterBuilder formatterBuilder = new DateTimeFormatterBuilder().parseCaseInsensitive()
+                            .appendPattern(formats[i]).parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+                            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0);
 
-                    if (i == 2) {
-                        zdt = zdt.withYear(2024);
+                    if (i == 3) {
+                        formatterBuilder = formatterBuilder.parseDefaulting(ChronoField.YEAR,
+                                ZonedDateTime.now().getYear());
                     }
 
+                    LocalDateTime parsedDate = LocalDateTime.parse(value.getAsString(),
+                            formatterBuilder.toFormatter(Locale.FRENCH));
+
+                    ZonedDateTime zdt = parsedDate.atZone(this.timeZoneProvider.getTimeZone());
+
                     return new DateTimeType(zdt);
-                } catch (ParseException ex) {
+                } catch (DateTimeParseException ex) {
+                    if (i == formats.length - 1) {
+                        throw new ConverterException("Can't parse the date for :" + value);
+                    }
                 }
             }
-            // logger.debug("Error decoding date: {}", value.getAsString());
         }
 
-        return new DateTimeType();
+        return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
     }
 
     @Override

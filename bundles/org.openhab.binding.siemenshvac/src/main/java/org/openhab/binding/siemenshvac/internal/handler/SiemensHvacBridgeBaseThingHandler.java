@@ -70,8 +70,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
-                "Waiting bridge initialization, reading metadata in background");
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/offline.waiting-bridge-initialization");
 
         SiemensHvacBridgeConfig lcConfig = getConfigAs(SiemensHvacBridgeConfig.class);
         String baseUrl = null;
@@ -79,7 +78,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
         baseUrl = lcConfig.baseUrl;
 
         if (baseUrl.isEmpty()) {
-            logger.debug("baseUrl is mandatory on configuration !");
+            logger.debug("@text/thing-handler.msg.baseUrlMandatory");
             return;
         }
 
@@ -125,7 +124,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
             updateStatus(ThingStatus.ONLINE);
         } catch (SiemensHvacException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Error occurs during gateway initialization: %s", ex.getMessage()));
+                    String.format("@text/thing-handler.msg.errorGatewayInit", ex.getMessage()));
         }
     }
 

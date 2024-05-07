@@ -19,6 +19,7 @@ import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Type;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.JsonElement;
 
@@ -51,9 +52,9 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected DecimalType fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
+    protected Type fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
         if ("----".equals(value.getAsString())) {
-            return new DecimalType(0);
+            return UnDefType.UNDEF;
         } else {
             return new DecimalType(value.getAsInt());
         }
