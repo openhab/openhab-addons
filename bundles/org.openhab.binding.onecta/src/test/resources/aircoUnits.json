@@ -18,7 +18,7 @@
         },
         "errorCode": {
           "settable": false,
-          "value": ""
+          "value": "foutje"
         },
         "firmwareVersion": {
           "settable": false,
@@ -29,6 +29,14 @@
           "value": true
         },
         "isInErrorState": {
+          "settable": false,
+          "value": false
+        },
+        "isInWarningState": {
+          "settable": false,
+          "value": true
+        },
+        "isInInstallerState": {
           "settable": false,
           "value": false
         },
@@ -89,9 +97,9 @@
               "unit": "kWh",
               "heating": {
                 "d": [
-                  0,
-                  0,
-                  0,
+                  1,
+                  2,
+                  3,
                   0,
                   0,
                   0,
@@ -115,9 +123,9 @@
                   0
                 ],
                 "w": [
-                  0,
-                  0,
-                  0,
+                  4,
+                  5,
+                  6,
                   0,
                   0,
                   0,
@@ -132,6 +140,10 @@
                 ],
                 "m": [
                   0,
+                  2,
+                  3,
+                  4,
+                  5,
                   0,
                   0,
                   0,
@@ -143,12 +155,8 @@
                   0,
                   0,
                   0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
+                  1.2,
+                  5.9,
                   0,
                   0,
                   0,
@@ -891,6 +899,44 @@
             "off"
           ],
           "value": "on"
+        },
+        "sensoryData": {
+          "ref": "#sensoryData",
+          "settable": false,
+          "value": {
+            "deltaD": {
+              "settable": false,
+              "value": 9,
+              "minValue": 0,
+              "maxValue": 11,
+              "stepValue": 1,
+              "unit": "°C"
+            },
+            "fanMotorRotationSpeed": {
+              "settable": false,
+              "value": 1234,
+              "minValue": 0,
+              "maxValue": 2550,
+              "stepValue": 10,
+              "unit": "rpm"
+            },
+            "heatExchangerTemperature": {
+              "settable": false,
+              "value": 14,
+              "minValue": -32,
+              "maxValue": 95.5,
+              "stepValue": 0.5,
+              "unit": "°C"
+            },
+            "suctionTemperature": {
+              "settable": false,
+              "value": 21,
+              "minValue": -32,
+              "maxValue": 95.5,
+              "stepValue": 0.5,
+              "unit": "°C"
+            }
+          }
         }
       },
       {
