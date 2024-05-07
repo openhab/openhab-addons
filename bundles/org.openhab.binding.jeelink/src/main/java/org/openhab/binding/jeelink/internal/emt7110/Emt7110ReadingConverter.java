@@ -36,24 +36,6 @@ public class Emt7110ReadingConverter implements JeeLinkReadingConverter<Emt7110R
         if (inputLine != null) {
             Matcher matcher = READING_P.matcher(inputLine);
             if (matcher.matches()) {
-                // Format
-                // OK EMT7110 84 81 8 237 0 13 0 2 1 6 1 -> ID 5451 228,5V 13mA 2W 2,62kWh
-                // OK EMT7110 84 162 8 207 0 76 0 7 0 0 1
-                // OK EMT7110 ID ID VV VV AA AA WW WW KW KW Flags
-                // | | | | | | | | | | |
-                // | | | | | | | | | | `--- AccumulatedPower * 100 LSB
-                // | | | | | | | | | `------ AccumulatedPower * 100 MSB
-                // | | | | | | | | `--- Power (W) LSB
-                // | | | | | | | `------ Power (W) MSB
-                // | | | | | | `--- Current (mA) LSB
-                // | | | | | `------ Current (mA) MSB
-                // | | | | `--- Voltage (V) * 10 LSB
-                // | | | `----- Voltage (V) * 10 MSB
-                // | | `--- ID
-                // | `------- ID
-                // `--- fix "EMT7110"
-                // logger.trace("Creating reading from: {}", inputLine);
-
                 String id = matcher.group(1) + matcher.group(2);
                 float voltage = (Integer.parseInt(matcher.group(3)) * 256 + Integer.parseInt(matcher.group(4))) / 10f;
                 float current = (Integer.parseInt(matcher.group(5)) * 256 + Integer.parseInt(matcher.group(6)));

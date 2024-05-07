@@ -93,6 +93,7 @@ public class Emt7110SensorHandler extends JeeLinkSensorHandler<Emt7110Reading> {
     }
 
     private synchronized void cancelRetry() {
+        ScheduledFuture<?> retry = this.retry;
         if (retry != null) {
             retry.cancel(true);
             retry = null;
