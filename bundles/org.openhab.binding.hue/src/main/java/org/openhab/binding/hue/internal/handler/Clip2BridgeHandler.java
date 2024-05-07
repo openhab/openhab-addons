@@ -344,10 +344,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     /**
      * Get the v1 legacy Hue thing (if any) which has a Bridge having the same IP address as this, and an ID that
      * matches the given parameter.
-     * <p>
-     * Note: API v1 'hue:bridge:[light]:123' and 'hue:bridge:[sensor]:123' things are both candidates to migrate to an
-     * API v2 'hue:bridge-api2:device:123' thing. So to prevent ambiguity, this returns an empty result if a legacy
-     * sensor is found having the same OH thing Id as an existing legacy light.
      *
      * @param targetIdV1 the idV1 attribute to match.
      * @return Optional result containing the legacy thing (if found).
@@ -370,21 +366,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         }
 
         ThingUID legacyBridgeUID = legacyBridge.get().getUID();
-        List<Thing> legacyThings = thingRegistry.getAll().stream()
+        return thingRegistry.getAll().stream()
                 .filter(thing -> legacyBridgeUID.equals(thing.getBridgeUID())
                         && V1_THING_TYPE_UIDS.contains(thing.getThingTypeUID()))
-                .toList();
-
-        Optional<Thing> foundThing = legacyThings.stream().filter(
-                thing -> thing.getConfiguration().get(config) instanceof String id && targetIdV1.endsWith("/" + id))
+                .filter(thing -> thing.getConfiguration().get(config) instanceof String id
+                        && targetIdV1.endsWith("/" + id))
                 .findFirst();
-
-        if (SENSOR_ID.equals(config) && foundThing.isPresent()) {
-            String foundThingId = foundThing.get().getUID().getId();
-            return legacyThings.stream().filter(thing -> V1_LIGHT_THING_TYPE_UIDS.contains(thing.getThingTypeUID()))
-                    .anyMatch(thing -> foundThingId.equals(thing.getUID().getId())) ? Optional.empty() : foundThing;
-        }
-        return foundThing;
     }
 
     /**
