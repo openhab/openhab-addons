@@ -4,23 +4,20 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="pv-state-channel">
-		<item-type>Boolean</item-type>
+		<item-type>Contact</item-type>
 		<label>PV Modulation Active</label>
 		<description>State of PV-Modulation</description>
 	</channel-type>
 	<channel-type id="pv-power-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Watt</item-type>
 		<label>PV Power</label>
-		<description></description>
 	</channel-type>
 	<channel-type id="pv-target-temperature-heating-channel">
-		<item-type>Number</item-type>
-		<label>PV Target temperature heating</label>
-		<description></description>
+		<item-type>Number:Temperature</item-type>
+		<label>PV Temp Heating</label>
 	</channel-type>
 	<channel-type id="pv-target-temperature-drinkingwater-channel">
-		<item-type>Number</item-type>
-		<label>PV Target temperature drinking water</label>
-		<description></description>
+		<item-type>Number:Temperature</item-type>
+		<label>PV Temp Drinkingwater</label>
 	</channel-type>
 </thing:thing-descriptions>

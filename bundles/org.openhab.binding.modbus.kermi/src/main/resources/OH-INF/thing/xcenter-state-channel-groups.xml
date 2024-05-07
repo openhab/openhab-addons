@@ -7,7 +7,6 @@
 		<label>Status</label>
 		<description>Basic Information and State of your Kermi Heatpump X-Center</description>
 		<channels>
-			<channel id="global-state" typeId="global-state-channel"/>
 			<channel id="global-state-id" typeId="global-state-id-channel"/>
 		</channels>
 	</channel-group-type>

@@ -24,7 +24,6 @@ import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.EL
 import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.EXIT_TEMPERATURE_CHANNEL;
 import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.FLOW_SPEED_CHANNEL;
 import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.FLOW_TEMPERATURE_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.GLOBAL_STATE_CHANNEL;
 import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.GLOBAL_STATE_ID_CHANNEL;
 import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.INCOMING_TEMPERATURE_CHANNEL;
 import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.POWER_CHANNEL;
@@ -146,7 +145,7 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
     private ChannelUID electricPowerCoolingChannel;
 
     // Global State
-    private ChannelUID globalStateChannel;
+    // private ChannelUID globalStateChannel;
     private ChannelUID globalStateIdChannel;
 
     // Alarm State
@@ -163,7 +162,6 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
     private ChannelUID pvTargetTemperatureHeatingChannel; // READ-WRITE
     private ChannelUID pvTargetTemperatureDrinkingWaterChannel; // READ-WRITE
 
-    // private final ArrayList<E3DCWallboxThingHandler> listeners = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(KermiXcenterThingHandler.class);
 
     private final Parser alarmParser = new Parser(Data.DataType.ALARM_STATE);
@@ -204,7 +202,7 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
         super(thing);
 
         // STATE
-        globalStateChannel = channelUID(thing, STATE_GROUP, GLOBAL_STATE_CHANNEL);
+        // globalStateChannel = channelUID(thing, STATE_GROUP, GLOBAL_STATE_CHANNEL);
         globalStateIdChannel = channelUID(thing, STATE_GROUP, GLOBAL_STATE_ID_CHANNEL);
 
         alarmStateChannel = channelUID(thing, ALARM_GROUP, ALARM_STATE_CHANNEL);
@@ -592,7 +590,7 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
         Optional<Data> dtoOpt = stateParser.parse(Data.DataType.STATE);
         if (dtoOpt.isPresent()) {
             StateDTO dto = (StateDTO) dtoOpt.get();
-            updateState(globalStateChannel, dto.globalState);
+            // updateState(globalStateChannel, dto.globalState);
             updateState(globalStateIdChannel, dto.globalStateId);
         } else {
             logger.debug("Unable to get {} from provider {}", Data.DataType.STATE, stateParser.toString());
@@ -608,7 +606,7 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
         }
     }
 
-    private void handleWorkHoursResult(AsyncModbusReadResult result) {
+    void handleWorkHoursResult(AsyncModbusReadResult result) {
         workHoursParser.handle(result);
         Optional<Data> dtoOpt = workHoursParser.parse(Data.DataType.WORK_HOURS);
         if (dtoOpt.isPresent()) {

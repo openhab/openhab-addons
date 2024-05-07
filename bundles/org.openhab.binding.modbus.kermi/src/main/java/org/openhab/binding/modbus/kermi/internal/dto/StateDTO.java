@@ -15,7 +15,6 @@ package org.openhab.binding.modbus.kermi.internal.dto;
 import org.openhab.binding.modbus.kermi.internal.modbus.Data;
 import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.StringType;
 
 /**
  * The {@link StateDTO} Data object for Kermi Xcenter
@@ -24,35 +23,10 @@ import org.openhab.core.library.types.StringType;
  */
 public class StateDTO implements Data {
 
-    public StringType globalState;
     public DecimalType globalStateId;
 
-    // State definitions
-    public static final StringType STATE_STANDBY = StringType.valueOf("Standby");
-    public static final StringType STATE_ALARM = StringType.valueOf("Alarm");
-    public static final StringType STATE_TWE = StringType.valueOf("TWE");
-    public static final StringType STATE_KUEHLEN = StringType.valueOf("Kuehlen");
-    public static final StringType STATE_HEIZEN = StringType.valueOf("Heizen");
-    public static final StringType STATE_ABTAUUNG = StringType.valueOf("Abtauung");
-    public static final StringType STATE_VORBEREITUNG = StringType.valueOf("Vorbereitung");
-    public static final StringType STATE_BLOCKIERT = StringType.valueOf("Blockiert");
-    public static final StringType STATE_EVU_SPERRE = StringType.valueOf("EVU Sperre");
-    public static final StringType STATE_NICHT_VERFUEGBAR = StringType.valueOf("Nicht verfuegbar");
-    public static final StringType STATE_UNKOWN = StringType.valueOf("Status unknown");
-    public static final StringType[] STATE_ARRAY = new StringType[] { STATE_STANDBY, STATE_ALARM, STATE_TWE,
-            STATE_KUEHLEN, STATE_HEIZEN, STATE_ABTAUUNG, STATE_VORBEREITUNG, STATE_BLOCKIERT, STATE_EVU_SPERRE,
-            STATE_NICHT_VERFUEGBAR };
-
     public StateDTO(byte[] bArray) {
-
         int status = ModbusBitUtilities.extractBit(bArray, 0);
-
         globalStateId = new DecimalType(status);
-
-        if (status >= 0 && status < 10) {
-            globalState = STATE_ARRAY[status];
-        } else {
-            globalState = STATE_UNKOWN;
-        }
     }
 }

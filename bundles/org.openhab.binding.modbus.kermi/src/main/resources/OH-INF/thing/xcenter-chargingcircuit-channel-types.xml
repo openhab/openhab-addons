@@ -4,18 +4,21 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="flow-temperature-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Flow temperature</label>
 		<description>B16 - Vorlauftemperatur WP</description>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="return-temperature-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Return temperature</label>
 		<description>B17 - Rücklauftemperatur WP</description>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="flow-speed-channel">
-		<item-type>Number</item-type>
-		<label>Flow speed </label>
-		<description>P13 - Durchfluss WP</description>
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Flow speed</label>
+		<description>P13 - Durchfluss WP in l/min</description>
+		<state pattern="%.1f %uni%"/>
 	</channel-type>
 </thing:thing-descriptions>

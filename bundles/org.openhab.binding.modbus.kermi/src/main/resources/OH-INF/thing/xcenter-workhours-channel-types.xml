@@ -4,18 +4,21 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="workhours-fan-channel">
-		<item-type>Number</item-type>
-		<label>Fan workhours</label>
+		<item-type>Number:Time</item-type>
+		<label>Fan Workhours</label>
 		<description>Work hours of the fan</description>
+		<state pattern="%d h"/>
 	</channel-type>
 	<channel-type id="workhours-storage-loading-pump-channel">
-		<item-type>Number</item-type>
-		<label>StorageLoadingPump workhours</label>
+		<item-type>Number:Time</item-type>
+		<label>StorageLoadingPump Workhours</label>
 		<description>Work hours of the storage loading pump</description>
+		<state pattern="%d h"/>
 	</channel-type>
 	<channel-type id="workhours-compressor-channel">
-		<item-type>Number</item-type>
-		<label>Compressor workhours</label>
+		<item-type>Number:Time</item-type>
+		<label>Compressor Workhours</label>
 		<description>Work hours of the compressor</description>
+		<state pattern="%d h"/>
 	</channel-type>
 </thing:thing-descriptions>
