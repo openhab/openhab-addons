@@ -52,7 +52,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class MyUplinkGenericDeviceHandler extends BaseThingHandler
-        implements MyUplinkThingHandler, AtomicReferenceTrait {
+        implements MyUplinkDynamicThingHandler, AtomicReferenceTrait {
     private final Logger logger = LoggerFactory.getLogger(MyUplinkGenericDeviceHandler.class);
 
     /**

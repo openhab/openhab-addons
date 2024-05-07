@@ -87,9 +87,9 @@
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="type-speed-percent">
+	<channel-type id="type-percent">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Unnamed Speed</label>
+		<label>Unnamed Percentage</label>
 		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>

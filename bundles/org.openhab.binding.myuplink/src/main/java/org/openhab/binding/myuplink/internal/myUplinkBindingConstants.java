@@ -61,7 +61,10 @@ public class MyUplinkBindingConstants {
 
     public static final String CHANNEL_TYPENAME_DEFAULT = "type-number-scale10";
     public static final String CHANNEL_TYPENAME_ENERGY = "type-energy";
+    public static final String CHANNEL_TYPENAME_PRESSURE = "type-pressure";
+    public static final String CHANNEL_TYPENAME_PERCENT = "type-percent";
     public static final String CHANNEL_TYPENAME_TEMPERATURE = "type-temperature";
+    public static final String CHANNEL_TYPENAME_FREQUENCY = "type-frequency-unscaled";
 
     // Channels with specific handling
     // TODO: add content
@@ -86,7 +89,10 @@ public class MyUplinkBindingConstants {
 
     public static final String JSON_VAL_CONNECTION_CONNECTED = "Connected";
     public static final String JSON_VAL_UNIT_ENERGY = "kWh";
+    public static final String JSON_VAL_UNIT_PRESSURE = "bar";
+    public static final String JSON_VAL_UNIT_PERCENT = "%";
     public static final String JSON_VAL_UNIT_TEMPERATURE = "°C";
+    public static final String JSON_VAL_UNIT_FREQUENCY = "Hz";
 
     // Write Commands
     // TODO: add content
