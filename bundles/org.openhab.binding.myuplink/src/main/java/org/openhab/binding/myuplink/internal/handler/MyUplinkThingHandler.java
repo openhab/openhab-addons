@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.myuplink.internal.handler;
 
-import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.CHANNEL_TYPEPREFIX_RW;
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.SUPPORTED_CHANNEL_GROUPS;
 
 import java.util.Map;
 
@@ -39,7 +40,7 @@ import org.slf4j.Logger;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public interface MyUplinkThingHandler extends ThingHandler, ChannelProvider {
+public interface MyUplinkThingHandler extends ThingHandler, DynamicChannelProvider {
 
     /**
      * just to avoid usage of static loggers.
@@ -55,6 +56,25 @@ public interface MyUplinkThingHandler extends ThingHandler, ChannelProvider {
      */
     default void updateChannelStatus(Map<Channel, State> values) {
         getLogger().debug("updateChannelStatus not implemented/supported by this thing type");
+    }
+
+    /**
+     * method to add channels dynamically. used to support all types of nibe devices out of the box.
+     *
+     * @param channel to be added to the thing
+     */
+    @Override
+    default void addDynamicChannel(Channel channel) {
+        getLogger().debug("addDynamicChannel not implemented/supported by this thing type");
+    }
+
+    /**
+     * creates a valid ChannelUID for the corresponding thing.
+     */
+    @Override
+    default ChannelUID createChannelUID(String id) {
+        ThingUID thingUID = getThing().getUID();
+        return new ChannelUID(thingUID, id);
     }
 
     /**
@@ -137,26 +157,5 @@ public interface MyUplinkThingHandler extends ThingHandler, ChannelProvider {
             channelUID = new ChannelUID(thingUID, channelId);
         }
         return getThing().getChannel(channelUID);
-    }
-
-    // TODO: check if still needed
-    /**
-     * determines the channel for a given unique channelId. Will check all groups and return first match.
-     *
-     * @param groupId groupId of the channel
-     * @param channelId channelId of the channel
-     */
-    @Override
-    default @Nullable Channel getChannel(String uniqueChannelId) {
-        Channel channel = getThing().getChannel(uniqueChannelId);
-        if (channel == null) {
-            for (String groupId : SUPPORTED_CHANNEL_GROUPS) {
-                channel = getChannel(groupId, uniqueChannelId);
-                if (channel != null) {
-                    break;
-                }
-            }
-        }
-        return channel;
     }
 }

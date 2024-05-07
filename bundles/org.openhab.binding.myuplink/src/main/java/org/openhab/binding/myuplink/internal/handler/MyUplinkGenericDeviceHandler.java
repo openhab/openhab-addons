@@ -34,6 +34,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -161,7 +162,7 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
      * @param jsonObject json respone result
      */
     protected final void updateOnlineStatus(CommunicationStatus status, JsonObject jsonObject) {
-        String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR);
+        String msg = null; // TODO: Utils.getAsString(jsonObject, JSON_KEY_ERROR);
         if (msg == null || msg.isBlank()) {
             msg = status.getMessage();
         }
@@ -186,6 +187,16 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
     }
 
     /**
+     * adds a channel.
+     */
+    @Override
+    public void addDynamicChannel(Channel channel) {
+        ThingBuilder thingBuilder = editThing();
+        thingBuilder.withChannel(channel);
+        updateThing(thingBuilder.build());
+    }
+
+    /**
      * will update all channels provided in the map
      */
     @Override
@@ -199,7 +210,7 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
                     logger.debug("Channel is to be updated: {}: {}", channel.getUID().getAsString(), value);
                     updateState(channel.getUID(), value);
                 } else {
-                    logger.debug("Value is null or not provided by Easee Cloud (channel: {})",
+                    logger.debug("Value is null or not provided by myUplink Cloud (channel: {})",
                             channel.getUID().getAsString());
                     updateState(channel.getUID(), UnDefType.UNDEF);
                 }

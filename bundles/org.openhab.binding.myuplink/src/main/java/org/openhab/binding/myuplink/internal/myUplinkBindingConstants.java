@@ -59,13 +59,18 @@ public class MyUplinkBindingConstants {
 
     public static final String CHANNEL_TYPEPREFIX_RW = "rw";
 
-    public static final String CHANNEL_TYPENAME_INTEGER = "type-integer";
+    public static final String CHANNEL_TYPENAME_DEFAULT = "type-number-scale10";
+    public static final String CHANNEL_TYPENAME_ENERGY = "type-energy";
+    public static final String CHANNEL_TYPENAME_TEMPERATURE = "type-temperature";
 
     // Channels with specific handling
     // TODO: add content
 
     // JSON Keys
-    public static final String JSON_KEY_ERROR = "error";
+    public static final String JSON_KEY_ROOT_DATA = "data";
+    public static final String JSON_KEY_CHANNEL_LABEL = "parameterName";
+    public static final String JSON_KEY_CHANNEL_UNIT = "parameterUnit";
+    public static final String JSON_KEY_CHANNEL_SCALE = "scaleValue";
     public static final String JSON_KEY_SYSTEMS = "systems";
     public static final String JSON_KEY_DEVICES = "devices";
     public static final String JSON_KEY_GENERIC_ID = "id";
@@ -80,6 +85,8 @@ public class MyUplinkBindingConstants {
     // TODO: add content
 
     public static final String JSON_VAL_CONNECTION_CONNECTED = "Connected";
+    public static final String JSON_VAL_UNIT_ENERGY = "kWh";
+    public static final String JSON_VAL_UNIT_TEMPERATURE = "°C";
 
     // Write Commands
     // TODO: add content
