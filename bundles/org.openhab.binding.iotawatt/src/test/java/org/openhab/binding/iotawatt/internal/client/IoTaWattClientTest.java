@@ -35,6 +35,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -68,6 +69,7 @@ class IoTaWattClientTest {
         when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
         ContentResponse contentResponse = mock(ContentResponse.class);
         when(request.send()).thenReturn(contentResponse);
+        when(contentResponse.getStatus()).thenReturn(HttpStatus.OK_200);
         when(contentResponse.getContentAsString()).thenReturn(readFile(DEVICE_STATUS_RESPONSE_FILE));
 
         // when
@@ -109,7 +111,7 @@ class IoTaWattClientTest {
         ContentResponse contentResponse = mock(ContentResponse.class);
         when(request.send()).thenReturn(contentResponse);
         when(contentResponse.getContentAsString()).thenReturn("{}");
-        final StatusResponse statusResponse = new StatusResponse(null, null);
+        when(contentResponse.getStatus()).thenReturn(HttpStatus.OK_200);
 
         // when
         Optional<StatusResponse> resultOptional = client.fetchStatus();
@@ -119,6 +121,23 @@ class IoTaWattClientTest {
         StatusResponse result = resultOptional.get();
         assertNull(result.inputs());
         assertNull(result.outputs());
+    }
+
+    @Test
+    void fetchStatus_whenNot200Response_throwsException()
+            throws ThingStatusOfflineException, ExecutionException, InterruptedException, TimeoutException {
+        // given
+        final IoTaWattClient client = new IoTaWattClient("hostname", 10, httpClient, gson);
+        Request request = mock(Request.class);
+        when(httpClient.newRequest(any(URI.class))).thenReturn(request);
+        when(request.method(any(HttpMethod.class))).thenReturn(request);
+        when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
+        ContentResponse contentResponse = mock(ContentResponse.class);
+        when(request.send()).thenReturn(contentResponse);
+        when(contentResponse.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
+
+        // when/then
+        assertThrows(ThingStatusOfflineException.class, client::fetchStatus);
     }
 
     private String readFile(String filename) throws IOException {

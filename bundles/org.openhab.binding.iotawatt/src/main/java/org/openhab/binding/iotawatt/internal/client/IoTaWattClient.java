@@ -26,6 +26,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.iotawatt.internal.exception.ThingStatusOfflineException;
 import org.openhab.binding.iotawatt.internal.model.StatusResponse;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -80,6 +81,10 @@ public class IoTaWattClient {
             final Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(requestTimeout,
                     TimeUnit.SECONDS);
             final ContentResponse response = request.send();
+            if (response.getStatus() != HttpStatus.OK_200) {
+                throw new ThingStatusOfflineException(ThingStatusDetail.COMMUNICATION_ERROR,
+                        "HttpStatus " + response.getStatus());
+            }
             final String content = response.getContentAsString();
             @Nullable
             final StatusResponse statusResponse = gson.fromJson(content, StatusResponse.class);
