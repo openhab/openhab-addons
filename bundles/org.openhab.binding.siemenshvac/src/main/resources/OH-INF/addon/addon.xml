@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon:addon id="siemenshvac" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+<addon:addon id="siemenshvac" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
@@ -12,22 +12,4 @@
 	<service-id>String</service-id>
 	<config-description>
 	</config-description>
-
-	<discovery-methods>
-		<discovery-method>
-			<service-type>upnp</service-type>
-			<match-properties>
-				<!--
-					<match-property>
-					<name>modelName</name>
-					<regex>Philips hue bridge 2015</regex>
-					</match-property>
-				-->
-				<match-property>
-					<name>manufacturer</name>
-					<regex>Signify</regex>
-				</match-property>
-			</match-properties>
-		</discovery-method>
-	</discovery-methods>
 </addon:addon>
