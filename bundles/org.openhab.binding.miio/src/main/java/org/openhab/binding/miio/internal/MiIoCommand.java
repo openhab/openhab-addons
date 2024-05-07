@@ -79,6 +79,7 @@ public enum MiIoCommand {
     SET_MODE("set_custom_mode"),
     GET_MODE("get_custom_mode"),
     SET_WATERBOX_MODE("set_water_box_custom_mode"),
+    SET_MOP_MODE("set_mop_mode"),
 
     TIMERZONE_SET("set_timezone"),
     TIMERZONE_GET("get_timezone"),

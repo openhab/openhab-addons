@@ -35,6 +35,7 @@ import org.mapdb.DBMaker;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.items.Item;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
@@ -43,6 +44,7 @@ import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -60,7 +62,8 @@ import com.google.gson.GsonBuilder;
  * @author Martin Kühl - Port to 3.x
  */
 @NonNullByDefault
-@Component(service = { PersistenceService.class, QueryablePersistenceService.class })
+@Component(service = { PersistenceService.class, QueryablePersistenceService.class }, property = Constants.SERVICE_PID
+        + "=org.openhab.mapdb")
 public class MapDbPersistenceService implements QueryablePersistenceService {
 
     private static final String SERVICE_ID = "mapdb";
@@ -80,8 +83,8 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     private @NonNullByDefault({}) DB db;
     private @NonNullByDefault({}) Map<String, String> map;
 
-    private transient Gson mapper = new GsonBuilder().registerTypeHierarchyAdapter(State.class, new StateTypeAdapter())
-            .create();
+    private transient Gson mapper = new GsonBuilder().setDateFormat(DateTimeType.DATE_PATTERN_JSON_COMPAT)
+            .registerTypeHierarchyAdapter(State.class, new StateTypeAdapter()).create();
 
     @Activate
     public void activate() {

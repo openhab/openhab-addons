@@ -40,6 +40,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class ChannelTypeUtils {
+    private static final int DEFAULT_TIMEOUT_MS = 30000;
 
     public static @Nullable QuantityType<?> commandToQuantity(Command command, MeasureClass measureClass) {
         Measure measureDef = measureClass.measureDefinition;
@@ -90,7 +91,8 @@ public class ChannelTypeUtils {
 
     public static State toRawType(@Nullable String pictureUrl) {
         if (pictureUrl != null) {
-            RawType picture = HttpUtil.downloadImage(pictureUrl);
+            // Retrieving local picture can be quite long then extend the timeout.
+            RawType picture = HttpUtil.downloadImage(pictureUrl, DEFAULT_TIMEOUT_MS);
             if (picture != null) {
                 return picture;
             }

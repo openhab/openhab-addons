@@ -26,6 +26,7 @@ public interface VelbusPacketListener {
      * This method is called whenever the state of the given relay has changed.
      *
      * @param packet The bytes of the received packet.
+     * @return false if handler is disposed, otherwise true.
      */
-    void onPacketReceived(byte[] packet);
+    boolean onPacketReceived(byte[] packet);
 }

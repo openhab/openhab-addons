@@ -45,7 +45,6 @@ import tuwien.auto.calimero.dptxlator.DPT;
 import tuwien.auto.calimero.dptxlator.DPTXlator;
 import tuwien.auto.calimero.dptxlator.DPTXlator1BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator2ByteFloat;
-import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
 import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
@@ -259,14 +258,6 @@ public class ValueEncoder {
                     default:
                         return "1 " + valueDPT.getUpperValue();
                 }
-            case "7":
-                if (DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getID().equals(dptId)
-                        || DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getID().equals(dptId)) {
-                    return bigDecimal.divide(BigDecimal.valueOf(1000)).stripTrailingZeros().toPlainString().replace('.',
-                            ((DecimalFormat) DecimalFormat.getInstance()).getDecimalFormatSymbols()
-                                    .getDecimalSeparator());
-                }
-                return bigDecimal.stripTrailingZeros().toPlainString();
             case "18":
                 int intVal = bigDecimal.intValue();
                 if (intVal > 63) {
