@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="exit-temperature-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Exit temperature</label>
+		<label>Exit Temperature</label>
 		<description>B14 - Energiequelle Austrittstemperatur</description>
 	</channel-type>
 	<channel-type id="incoming-temperature-channel">

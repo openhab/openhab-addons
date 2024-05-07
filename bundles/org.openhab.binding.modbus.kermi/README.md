@@ -97,10 +97,9 @@ They are grouped into 7 channel-groups:
 
 #### Status
 
-| Channel                | Type   | Description                                                                                  |
-|------------------------|--------|----------------------------------------------------------------------------------------------|
-| Global State           | String | State of heat pump as String taken from Kermi Documentation (german wording)                 |
-| Global State as Number | Number | State of heat pump as Number, better for checking / integration as the State as String above |
+| Channel         | Type   | Description                                                          |
+|-----------------|--------|----------------------------------------------------------------------|
+| Global State ID | Number | State of heat pump as Number, displayed as readable State-Text in UI |
 
 Possible states:
 
@@ -181,14 +180,18 @@ Possible states:
 ### Persistence
 
 You can / should persist some items you want to track, maybe you track your power consumption with another device (PV-System or 'smart' electricity meter), so you can compare these values.
-As these values are long-running ones, maybe you should invest a little amount of time using influx as persistance (additionally to your existing). Influx DB is the best storage for long terms and uses very small space for its data. Please read the documentation for better understanding how it works.
+As these values are long-running ones, maybe you should invest a little amount of time using influx as persistance (additionally to your existing). 
+Influx DB is the best storage for long terms and uses very small space for its data. Please read the documentation for better understanding how it works.
 
-Simple: Install influxDB (>2.x) on a system within your network and enter your configuration settings in openhab using the influxdb-binding. As you do not track that mass of data you can use a raspberry pi with and SSD attaches to it (do NOT use an SD-card as database-storage). 
+Simple: Install influxDB (>2.x) on a system within your network and enter your configuration settings in openhab using the influxdb-binding. 
+As you do not track that mass of data you can use a raspberry pi with and SSD attaches to it (do NOT use an SD-card as database-storage). 
 
 ### Visualization
 
-As many other users I like and use the Grafana approach (in combination with influxdb). See here for more information [InfluxDB & Grafana Tutorial](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761)
+As many other users I like and use the Grafana approach (in combination with influxdb). 
+See here for more information [InfluxDB & Grafana Tutorial](https://community.openhab.org/t/influxdb-grafana-persistence-and-graphing/13761)
 
 ### Credits
 
-Credits goes to Bernd Weymann (Author of E3DC-Modbus-Binding). I used its basic structure / code and handling of Modbus Messages for this binding. Thanks.
+Credits goes to Bernd Weymann (Author of E3DC-Modbus-Binding). 
+I used its basic structure / code and handling of Modbus Messages for this binding. Thanks.

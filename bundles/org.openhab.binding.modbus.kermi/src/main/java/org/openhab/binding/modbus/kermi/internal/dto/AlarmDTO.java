@@ -29,6 +29,6 @@ public class AlarmDTO implements Data {
 
     public AlarmDTO(byte[] bArray) {
         int status = ModbusBitUtilities.extractBit(bArray, ALARM_REG_SIZE);
-        alarmIsActive = status == 0 ? OnOffType.OFF : OnOffType.ON;
+        alarmIsActive = OnOffType.from(status != 0);
     }
 }
