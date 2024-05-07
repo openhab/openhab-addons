@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.ToNumberPolicy;
 
@@ -163,7 +164,8 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     @Override
     public void onContent(@Nullable Response response, @Nullable ByteBuffer content) {
         super.onContent(response, content);
-        logger.debug("[{}] received content, length: {}", getClass().getSimpleName(), getContentAsString().length());
+        logger.debug("[{}] received content, length: {}, encoding: {}", getClass().getSimpleName(),
+                getContentAsString().length(), this.getEncoding());
     }
 
     /**
@@ -212,7 +214,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
             processResult(jsonObject);
         } else {
             logger.info("command failed, url: {} - code: {} - result: {}", getURL(),
-                    getCommunicationStatus().getHttpCode(), jsonObject.get(JSON_KEY_ERROR));
+                    getCommunicationStatus().getHttpCode(), jsonObject.toString());
         }
 
         if (retryOnFailure == RetryOnFailure.YES && retries++ < MAX_RETRIES) {
@@ -229,7 +231,16 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     protected @Nullable JsonObject transform(@Nullable String json) {
         if (json != null) {
             try {
-                return gson.fromJson(json, JsonObject.class);
+
+                JsonElement jsonElement = gson.fromJson(json, JsonElement.class);
+                JsonObject jsonObject;
+                if (jsonElement instanceof JsonObject) {
+                    jsonObject = jsonElement.getAsJsonObject();
+                } else {
+                    jsonObject = new JsonObject();
+                    jsonObject.add(JSON_KEY_ROOT_DATA, jsonElement);
+                }
+                return jsonObject;
             } catch (Exception ex) {
                 logger.debug("[{}] JSON could not be parsed: {}\nError: {}", getClass().getSimpleName(), json,
                         ex.getMessage());
@@ -252,6 +263,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
 
         // we want to receive json only, so explicitely set this!
         request.header(HttpHeader.ACCEPT, "application/json");
+        request.header(HttpHeader.ACCEPT_ENCODING, StandardCharsets.UTF_8.name());
 
         // this should be the default for myUplink Cloud API
         request.followRedirects(false);

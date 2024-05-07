@@ -78,6 +78,18 @@ public final class Utils {
     // }
 
     /**
+     * get element as JsonArray.
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
+    public static @Nullable JsonArray getAsJsonArray(@Nullable JsonObject jsonObject, String key) {
+        JsonElement element = jsonObject == null ? null : jsonObject.get(key);
+        return (element instanceof JsonArray) ? element.getAsJsonArray() : null;
+    }
+
+    /**
      * get element as String.
      *
      * @param jsonObject

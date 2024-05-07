@@ -13,8 +13,8 @@
 package org.openhab.binding.myuplink.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 
 /**
  * this interface provides all methods which deal with channels
@@ -22,8 +22,9 @@ import org.openhab.core.thing.Channel;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public interface ChannelProvider {
+public interface DynamicChannelProvider extends ChannelProvider {
 
-    @Nullable
-    Channel getChannel(String groupId, String channelId);
+    void addDynamicChannel(Channel channel);
+
+    ChannelUID createChannelUID(String id);
 }
