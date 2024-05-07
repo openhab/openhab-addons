@@ -366,9 +366,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         }
 
         ThingUID legacyBridgeUID = legacyBridge.get().getUID();
-        return thingRegistry.getAll().stream()
+        return thingRegistry.getAll().stream() //
                 .filter(thing -> legacyBridgeUID.equals(thing.getBridgeUID())
-                        && V1_THING_TYPE_UIDS.contains(thing.getThingTypeUID()))
+                        && V1_THING_TYPE_UIDS.contains(thing.getThingTypeUID())) //
                 .filter(thing -> thing.getConfiguration().get(config) instanceof String id
                         && targetIdV1.endsWith("/" + id))
                 .findFirst();
