@@ -27,6 +27,7 @@
 				<default>10</default>
 				<advanced>false</advanced>
 			</parameter>
+			<!-- run mvn i18n:generate-default-translations when updating the params -->
 		</config-description>
 	</thing-type>
 
