@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.iotawatt.internal.service;
 
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.iotawatt.internal.client.IoTaWattClient;
+import org.openhab.binding.iotawatt.internal.exception.ThingStatusOfflineException;
 import org.openhab.binding.iotawatt.internal.model.IoTaWattChannelType;
 import org.openhab.binding.iotawatt.internal.model.StatusResponse;
 import org.openhab.core.library.types.QuantityType;
@@ -83,22 +80,9 @@ public class FetchDataService {
             } else {
                 thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
-        } catch (InterruptedException e) {
-            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY);
-        } catch (TimeoutException e) {
-            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-        } catch (URISyntaxException e) {
-            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, getErrorMessage(e));
-        } catch (ExecutionException e) {
-            logger.debug("Error on getting data from IoTaWatt {}", nonNullClient.hostname);
-            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, getErrorMessage(e));
+        } catch (ThingStatusOfflineException e) {
+            thingHandler.updateStatus(ThingStatus.OFFLINE, e.thingStatusDetail, e.description);
         }
-    }
-
-    @Nullable
-    private String getErrorMessage(Throwable t) {
-        final Throwable cause = t.getCause();
-        return Objects.requireNonNullElse(cause, t).getMessage();
     }
 
     private void updateChannels(StatusResponse statusResponse) {

@@ -13,18 +13,14 @@
 package org.openhab.binding.iotawatt.internal.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.iotawatt.internal.service.FetchDataService.INPUT_CHANNEL_ID_PREFIX;
 import static org.openhab.binding.iotawatt.internal.service.FetchDataService.OUTPUT_CHANNEL_ID_PREFIX;
 
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 import javax.measure.Unit;
@@ -40,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.iotawatt.internal.IoTaWattBindingConstants;
 import org.openhab.binding.iotawatt.internal.client.IoTaWattClient;
+import org.openhab.binding.iotawatt.internal.exception.ThingStatusOfflineException;
 import org.openhab.binding.iotawatt.internal.model.StatusResponse;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -68,8 +65,7 @@ class FetchDataServiceTest {
     private final ThingUID thingUID = new ThingUID(IoTaWattBindingConstants.BINDING_ID, "d231dea2e4");
 
     @Test
-    void pollDevice_whenAllSupportedInputTypes_updateAllChannels()
-            throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
+    void pollDevice_whenAllSupportedInputTypes_updateAllChannels() throws ThingStatusOfflineException {
         // given
         service.setIoTaWattClient(ioTaWattClient);
         final Float voltageRms = 259.1f;
@@ -103,8 +99,7 @@ class FetchDataServiceTest {
     }
 
     @Test
-    void pollDevice_whenAllSupportedOutputTypes_updateAllChannels()
-            throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
+    void pollDevice_whenAllSupportedOutputTypes_updateAllChannels() throws ThingStatusOfflineException {
         // given
         service.setIoTaWattClient(ioTaWattClient);
         when(deviceHandlerCallback.getThingUID()).thenReturn(thingUID);
@@ -142,7 +137,7 @@ class FetchDataServiceTest {
 
     @Test
     void pollDevice_whenResponseWithNoChannels_updateStatusToOnlineAndDoNotUpdateChannels()
-            throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+            throws ThingStatusOfflineException {
         // given
         service.setIoTaWattClient(ioTaWattClient);
         when(ioTaWattClient.fetchStatus()).thenReturn(Optional.empty());
@@ -156,15 +151,12 @@ class FetchDataServiceTest {
     }
 
     @Test
-    void pollDevice_whenExceptionWithCase_useCauseMessage()
-            throws URISyntaxException, ExecutionException, InterruptedException, TimeoutException {
+    void pollDevice_whenExceptionWithCase_useCauseMessage() throws ThingStatusOfflineException {
         // given
         final String exceptionMessage = "test message";
         service.setIoTaWattClient(ioTaWattClient);
-        final Throwable exception = mock(URISyntaxException.class);
-        final Throwable cause = mock(Exception.class);
-        when(cause.getMessage()).thenReturn(exceptionMessage);
-        when(exception.getCause()).thenReturn(cause);
+        final Throwable exception = new ThingStatusOfflineException(ThingStatusDetail.CONFIGURATION_ERROR,
+                exceptionMessage);
         when(ioTaWattClient.fetchStatus()).thenThrow(exception);
 
         // when
@@ -190,8 +182,7 @@ class FetchDataServiceTest {
     }
 
     @Test
-    void pollDevice_whenNotInitialised_fail()
-            throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
+    void pollDevice_whenNotInitialised_fail() throws ThingStatusOfflineException {
         // given
         service.setIoTaWattClient(ioTaWattClient);
         final StatusResponse statusResponse = new StatusResponse(List.of(), List.of());
@@ -207,35 +198,32 @@ class FetchDataServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideParamsForThrowCases")
-    void pollDevice_whenApiRequestThrowsInterruptedException_updateStatusAccordingly(Class<Throwable> throwableClass,
-            ThingStatusDetail thingStatusDetail, boolean withErrorMessage)
-            throws ExecutionException, InterruptedException, TimeoutException, URISyntaxException {
+    void pollDevice_whenApiRequestThrowsInterruptedException_updateStatusAccordingly(
+            ThingStatusOfflineException thingStatusOfflineException) throws ThingStatusOfflineException {
         // given
         final String errorMessage = "Error message";
         service.setIoTaWattClient(ioTaWattClient);
-        final Throwable thrownThrowable = mock(throwableClass);
-        if (withErrorMessage) {
-            when(thrownThrowable.getMessage()).thenReturn(errorMessage);
-        }
-        when(ioTaWattClient.fetchStatus()).thenThrow(thrownThrowable);
+        when(ioTaWattClient.fetchStatus()).thenThrow(thingStatusOfflineException);
 
         // when
         service.pollDevice();
 
         // then
-        if (withErrorMessage) {
-            verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, thingStatusDetail, errorMessage);
+        if (thingStatusOfflineException.description != null) {
+            verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE,
+                    thingStatusOfflineException.thingStatusDetail, errorMessage);
         } else {
-            verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, thingStatusDetail);
+            verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE,
+                    thingStatusOfflineException.thingStatusDetail, null);
         }
         verify(deviceHandlerCallback, never()).updateState(any(), any());
     }
 
     private static Stream<Arguments> provideParamsForThrowCases() {
-        return Stream.of(Arguments.of(InterruptedException.class, ThingStatusDetail.NOT_YET_READY, false),
-                Arguments.of(TimeoutException.class, ThingStatusDetail.COMMUNICATION_ERROR, false),
-                Arguments.of(URISyntaxException.class, ThingStatusDetail.CONFIGURATION_ERROR, true),
-                Arguments.of(ExecutionException.class, ThingStatusDetail.NONE, true));
+        return Stream.of(Arguments.of(new ThingStatusOfflineException(ThingStatusDetail.NOT_YET_READY)),
+                Arguments.of(new ThingStatusOfflineException(ThingStatusDetail.COMMUNICATION_ERROR)),
+                Arguments.of(new ThingStatusOfflineException(ThingStatusDetail.CONFIGURATION_ERROR, "Error message")),
+                Arguments.of(new ThingStatusOfflineException(ThingStatusDetail.NONE, "Error message")));
     }
 
     private ChannelUID createInputChannelUID(String channelNumberStr, String channelName) {
