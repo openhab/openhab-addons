@@ -1,13 +1,10 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.jeelink.internal.emt7110;
@@ -16,8 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openhab.binding.jeelink.internal.JeeLinkReadingConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handler for a EMT7110 energy Sensor thing.
@@ -27,8 +22,6 @@ import org.slf4j.LoggerFactory;
 public class Emt7110ReadingConverter implements JeeLinkReadingConverter<Emt7110Reading> {
     private static final Pattern READING_P = Pattern.compile(
             "OK EMT7110\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)");
-
-    private final Logger logger = LoggerFactory.getLogger(Emt7110ReadingConverter.class);
 
     @Override
     public Emt7110Reading createReading(String inputLine) {

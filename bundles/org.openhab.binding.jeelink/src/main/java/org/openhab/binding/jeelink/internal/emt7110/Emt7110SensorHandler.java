@@ -1,26 +1,18 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.jeelink.internal.emt7110;
 
 import static org.openhab.binding.jeelink.internal.JeeLinkBindingConstants.*;
 
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.openhab.binding.jeelink.internal.JeeLinkHandler;
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -36,11 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Emt7110SensorHandler extends JeeLinkSensorHandler<Emt7110Reading> {
     private final Logger logger = LoggerFactory.getLogger(Emt7110SensorHandler.class);
-    private OnOffType state;
-    private JeeLinkHandler bridge;
-    private final AtomicInteger channel = new AtomicInteger(-1);
-
-    private ScheduledFuture<?> retry;
 
     public Emt7110SensorHandler(Thing thing, String sensorType) {
         super(thing, sensorType);
@@ -55,15 +42,12 @@ public class Emt7110SensorHandler extends JeeLinkSensorHandler<Emt7110Reading> {
     public void initialize() {
         super.initialize();
 
-        bridge = (JeeLinkHandler) getBridge().getHandler();
-
         logger.debug("initilized handler for thing {} ({})}", getThing().getLabel(), getThing().getUID().getId());
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        cancelRetry();
     }
 
     @Override
@@ -90,13 +74,5 @@ public class Emt7110SensorHandler extends JeeLinkSensorHandler<Emt7110Reading> {
             public void dispose() {
             }
         };
-    }
-
-    private void cancelRetry() {
-        ScheduledFuture<?> retry = this.retry;
-        if (retry != null) {
-            retry.cancel(true);
-            retry = null;
-        }
     }
 }
