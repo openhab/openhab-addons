@@ -24,7 +24,7 @@ import org.openhab.core.thing.binding.BridgeHandler;
 public interface MyUplinkBridgeHandler extends BridgeHandler, MyUplinkThingHandler {
 
     /**
-     * starts discovery of wallboxes and circuits
+     * starts discovery of Nibe devices
      */
     void startDiscovery();
 }

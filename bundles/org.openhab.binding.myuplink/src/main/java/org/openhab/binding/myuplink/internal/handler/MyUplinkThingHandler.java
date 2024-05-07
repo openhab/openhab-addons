@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.myuplink.internal.handler;
 
-import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.CHANNEL_TYPEPREFIX_RW;
-import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.SUPPORTED_CHANNEL_GROUPS;
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
 import java.util.Map;
 
@@ -40,7 +39,7 @@ import org.slf4j.Logger;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public interface MyUplinkThingHandler extends ThingHandler, DynamicChannelProvider {
+public interface MyUplinkThingHandler extends ThingHandler, ChannelProvider {
 
     /**
      * just to avoid usage of static loggers.
@@ -56,25 +55,6 @@ public interface MyUplinkThingHandler extends ThingHandler, DynamicChannelProvid
      */
     default void updateChannelStatus(Map<Channel, State> values) {
         getLogger().debug("updateChannelStatus not implemented/supported by this thing type");
-    }
-
-    /**
-     * method to add channels dynamically. used to support all types of nibe devices out of the box.
-     *
-     * @param channel to be added to the thing
-     */
-    @Override
-    default void addDynamicChannel(Channel channel) {
-        getLogger().debug("addDynamicChannel not implemented/supported by this thing type");
-    }
-
-    /**
-     * creates a valid ChannelUID for the corresponding thing.
-     */
-    @Override
-    default ChannelUID createChannelUID(String id) {
-        ThingUID thingUID = getThing().getUID();
-        return new ChannelUID(thingUID, id);
     }
 
     /**
