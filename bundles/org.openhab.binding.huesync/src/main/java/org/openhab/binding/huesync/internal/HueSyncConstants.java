@@ -31,8 +31,8 @@ public class HueSyncConstants {
     public static class CHANNELS {
         public static class DEVICE {
             public static class INFORMATION {
-                public static final String FIRMWARE = "device-information#firmware";
-                public static final String FIRMWARE_AVAILABLE = "device-information#available-firmware";
+                public static final String FIRMWARE = "device-firmware#firmware";
+                public static final String FIRMWARE_AVAILABLE = "device-firmware#available-firmware";
             }
         }
     }

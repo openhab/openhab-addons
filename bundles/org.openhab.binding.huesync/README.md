@@ -39,7 +39,6 @@ $ avahi-browse --resolve _huesync._tcp
 
 </details>
 
-
 ## Thing Configuration
 
 To enable the binding to communicate with the device, a registration is required. 
@@ -47,29 +46,33 @@ Once the registration process is completed, the acquired token will authorize th
 After initial discovery and thing creation the device will stay offline.
 To complete the authentication you need to pressed the registration button on the sync box for 3 seconds.
 
-
 _Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
 _This should be mainly about its mandatory and optional configuration parameters._
 
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-### `sample` Thing Configuration
+### Thing Configuration `huesyncthing`
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name                 | Type    | Description                       | Default | Required | Advanced |
+| -------------------- | ------- | --------------------------------- | ------- | -------- | -------- |
+| host                 | text    | IP address of the device          | N/A     | yes      | no       |
+| port                 | integer | Port of the HDMI Sync Box.        | 443     | yes      | yes      |
+| registrationId       | text    | Application Registration Id       | N/A     | no       | yes      |
+| apiAccessToken       | text    | API Access Token                  | N/A     | no       | yes      |
+| statusUpdateInterval | integer | Status Update Interval in seconds | 10      | yes      | yes      |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+### Channel Group `device-firmware`
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+#### Firmware
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+Information about the installed device firmware and available updates.
+
+| Channel            | Type   | Read/Write | Description                       |
+| ------------------ | ------ | ---------- | --------------------------------- |
+| firmware           | String | R          | Installed firmware version        |
+| available-firmware | String | R          | Latest available firmware version |
 
 ## Full Example
 

@@ -42,6 +42,7 @@
 			<label>Status Update Interval</label>
 			<description>Seconds between fetching values from the Hue Sync Box.</description>
 			<advanced>true</advanced>
+			<required>true</required>
 			<default>10</default>
 			<unitLabel>Seconds</unitLabel>
 		</parameter>

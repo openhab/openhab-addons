@@ -13,7 +13,7 @@
 		</description>
 
 		<channel-groups>
-			<channel-group id="device-information" typeId="device-information"></channel-group>
+			<channel-group id="device-firmware" typeId="device-firmware"></channel-group>
 		</channel-groups>
 
 		<properties>
@@ -25,7 +25,7 @@
 		<config-description-ref uri="thing-type:huesync:thing"/>
 	</thing-type>
 
-	<channel-group-type id="device-information">
+	<channel-group-type id="device-firmware">
 		<label>Firmware</label>
 		<description>Information about the installed device firmaware and available updates.</description>
 		<category></category>

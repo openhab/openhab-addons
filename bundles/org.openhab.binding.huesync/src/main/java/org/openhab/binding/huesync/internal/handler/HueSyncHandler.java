@@ -153,6 +153,9 @@ public class HueSyncHandler extends BaseThingHandler {
                             ? deviceState.updatableFirmwareVersion
                             : deviceState.firmwareVersion);
 
+            setProperty(Thing.PROPERTY_FIRMWARE_VERSION, deviceState.firmwareVersion);
+            setProperty(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", deviceState.apiLevel));
+
             this.updateState(HueSyncConstants.CHANNELS.DEVICE.INFORMATION.FIRMWARE, firmwareState);
             this.updateState(HueSyncConstants.CHANNELS.DEVICE.INFORMATION.FIRMWARE_AVAILABLE, firmwareAvailableState);
         }
@@ -165,7 +168,7 @@ public class HueSyncHandler extends BaseThingHandler {
         if (id.isPresent() && token.isPresent()) {
             this.stopTask(deviceRegistrationTask);
 
-            addProperty(HueSyncConstants.REGISTRATION_ID, id.get());
+            setProperty(HueSyncConstants.REGISTRATION_ID, id.get());
 
             Configuration configuration = this.editConfiguration();
             configuration.put(HueSyncConstants.REGISTRATION_ID, id.get());
@@ -194,14 +197,25 @@ public class HueSyncHandler extends BaseThingHandler {
         }
     }
 
-    private void addProperty(String key, @Nullable String value) {
+    private void setProperty(String key, @Nullable String value) {
         if (value != null) {
             Map<String, String> properties = this.editProperties();
 
-            properties.put(key, value);
-
-            this.updateProperties(properties);
+            if (properties.containsKey(key)) {
+                @Nullable
+                String currentValue = properties.get(key);
+                if (!(value.equals(currentValue))) {
+                    saveProperty(key, value, properties);
+                }
+            } else {
+                saveProperty(key, value, properties);
+            }
         }
+    }
+
+    private void saveProperty(String key, String value, Map<String, String> properties) {
+        properties.put(key, value);
+        this.updateProperties(properties);
     }
 
     // #endregion
@@ -224,12 +238,12 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.deviceInfo = this.connection.getDeviceInfo();
 
                 Optional.ofNullable(this.deviceInfo).ifPresent((info) -> {
-                    addProperty(Thing.PROPERTY_SERIAL_NUMBER, info.uniqueId);
-                    addProperty(Thing.PROPERTY_MODEL_ID, info.deviceType);
-                    addProperty(Thing.PROPERTY_FIRMWARE_VERSION, info.firmwareVersion);
+                    setProperty(Thing.PROPERTY_SERIAL_NUMBER, info.uniqueId);
+                    setProperty(Thing.PROPERTY_MODEL_ID, info.deviceType);
 
-                    addProperty(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", info.apiLevel));
-                    addProperty(HueSyncHandler.PROPERTY_NETWORK_STATE, info.wifiState);
+                    setProperty(Thing.PROPERTY_FIRMWARE_VERSION, info.firmwareVersion);
+                    setProperty(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", info.apiLevel));
+                    // setProperty(HueSyncHandler.PROPERTY_NETWORK_STATE, info.wifiState);
                     try {
                         this.checkCompatibility();
                         this.startBackgroundTasks();
