@@ -25,13 +25,21 @@ public class IoTaWattConfiguration {
      * The default refresh interval of the IoTaWatt device
      */
     public static final int REFRESH_INTERVAL_DEFAULT = 10;
+    /**
+     * The default of the request timeout
+     */
+    public static final long REQUEST_TIMEOUT_DEFAULT = 10;
 
     /**
      * Configuration parameters
      */
     public String hostname = "";
     /**
-     * The refresh interval of the IoTaWatt device
+     * The request timeout in seconds when fetching data from the IoTaWatt device
      */
-    public int refreshIntervalInSeconds = REFRESH_INTERVAL_DEFAULT;
+    public long requestTimeout = REQUEST_TIMEOUT_DEFAULT;
+    /**
+     * The refresh interval of the IoTaWatt device in seconds
+     */
+    public int refreshInterval = REFRESH_INTERVAL_DEFAULT;
 }

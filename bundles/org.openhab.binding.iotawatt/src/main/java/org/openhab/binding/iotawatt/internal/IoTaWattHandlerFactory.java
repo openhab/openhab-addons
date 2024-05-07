@@ -90,8 +90,8 @@ public class IoTaWattHandlerFactory extends BaseThingHandlerFactory
     }
 
     @Override
-    public IoTaWattClient getIoTaWattClient(String hostname) {
-        return new IoTaWattClient(hostname, insecureClient, gson);
+    public IoTaWattClient getIoTaWattClient(String hostname, long requestTimeout) {
+        return new IoTaWattClient(hostname, requestTimeout, insecureClient, gson);
     }
 
     @Override

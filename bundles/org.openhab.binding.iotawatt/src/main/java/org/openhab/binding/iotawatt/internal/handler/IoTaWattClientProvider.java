@@ -28,5 +28,5 @@ public interface IoTaWattClientProvider {
      * @param hostname The hostname of the IoTaWatt device
      * @return The provided IoTaWattClient
      */
-    IoTaWattClient getIoTaWattClient(String hostname);
+    IoTaWattClient getIoTaWattClient(String hostname, long requestTimeout);
 }

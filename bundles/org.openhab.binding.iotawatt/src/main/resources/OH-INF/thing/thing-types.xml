@@ -21,6 +21,12 @@
 				<default>10</default>
 				<advanced>false</advanced>
 			</parameter>
+			<parameter name="requestTimeout" type="integer" unit="s" min="1">
+				<label>Request timeout</label>
+				<description>The request timeout to call the device in sec.</description>
+				<default>10</default>
+				<advanced>false</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 

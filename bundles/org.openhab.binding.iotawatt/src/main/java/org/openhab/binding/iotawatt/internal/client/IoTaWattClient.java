@@ -49,6 +49,7 @@ public class IoTaWattClient {
      * The hostname the IoTaWattClient connects to
      */
     public final String hostname;
+    private final long requestTimeout;
     private final HttpClient httpClient;
     private final Gson gson;
 
@@ -59,8 +60,9 @@ public class IoTaWattClient {
      * @param httpClient The HttpClient to use
      * @param gson The Gson decoder to use
      */
-    public IoTaWattClient(String hostname, HttpClient httpClient, Gson gson) {
+    public IoTaWattClient(String hostname, long requestTimeout, HttpClient httpClient, Gson gson) {
         this.httpClient = httpClient;
+        this.requestTimeout = requestTimeout;
         this.hostname = hostname;
         this.gson = gson;
     }
@@ -75,7 +77,8 @@ public class IoTaWattClient {
     public Optional<StatusResponse> fetchStatus() throws ThingStatusOfflineException {
         try {
             final URI uri = new URI(String.format(REQUEST_URL, hostname));
-            final Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(10, TimeUnit.SECONDS);
+            final Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(requestTimeout,
+                    TimeUnit.SECONDS);
             final ContentResponse response = request.send();
             final String content = response.getContentAsString();
             @Nullable

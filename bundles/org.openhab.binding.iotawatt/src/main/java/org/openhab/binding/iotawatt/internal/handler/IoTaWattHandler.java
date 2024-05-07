@@ -69,13 +69,14 @@ public class IoTaWattHandler extends BaseThingHandler implements DeviceHandlerCa
     @Override
     public void initialize() {
         final IoTaWattConfiguration config = getConfigAs(IoTaWattConfiguration.class);
-        final IoTaWattClient ioTaWattClient = ioTaWattClientProvider.getIoTaWattClient(config.hostname);
+        final IoTaWattClient ioTaWattClient = ioTaWattClientProvider.getIoTaWattClient(config.hostname,
+                config.requestTimeout);
         fetchDataService.setIoTaWattClient(ioTaWattClient);
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        fetchDataJob = scheduler.scheduleWithFixedDelay(fetchDataService::pollDevice, 0,
-                config.refreshIntervalInSeconds, TimeUnit.SECONDS);
+        fetchDataJob = scheduler.scheduleWithFixedDelay(fetchDataService::pollDevice, 0, config.refreshInterval,
+                TimeUnit.SECONDS);
     }
 
     @Override

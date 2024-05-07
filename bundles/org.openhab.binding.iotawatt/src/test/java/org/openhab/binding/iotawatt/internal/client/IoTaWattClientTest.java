@@ -61,7 +61,7 @@ class IoTaWattClientTest {
     void fetchStatus_whenValidJson_returnObject() throws ThingStatusOfflineException, IOException, ExecutionException,
             InterruptedException, TimeoutException {
         // given
-        final IoTaWattClient client = new IoTaWattClient("hostname", httpClient, gson);
+        final IoTaWattClient client = new IoTaWattClient("hostname", 10, httpClient, gson);
         Request request = mock(Request.class);
         when(httpClient.newRequest(any(URI.class))).thenReturn(request);
         when(request.method(any(HttpMethod.class))).thenReturn(request);
@@ -91,7 +91,7 @@ class IoTaWattClientTest {
     @Test
     void fetchStatus_whenWrongHost_throwException() {
         // given
-        final IoTaWattClient client = new IoTaWattClient(" ", httpClient, mock(Gson.class));
+        final IoTaWattClient client = new IoTaWattClient(" ", 10, httpClient, mock(Gson.class));
 
         // when
         assertThrows(ThingStatusOfflineException.class, client::fetchStatus);
@@ -101,7 +101,7 @@ class IoTaWattClientTest {
     void fetchStatus_whenInputsAndOutputsEmpty_returnEmpty()
             throws ThingStatusOfflineException, ExecutionException, InterruptedException, TimeoutException {
         // given
-        final IoTaWattClient client = new IoTaWattClient("hostname", httpClient, gson);
+        final IoTaWattClient client = new IoTaWattClient("hostname", 10, httpClient, gson);
         Request request = mock(Request.class);
         when(httpClient.newRequest(any(URI.class))).thenReturn(request);
         when(request.method(any(HttpMethod.class))).thenReturn(request);
