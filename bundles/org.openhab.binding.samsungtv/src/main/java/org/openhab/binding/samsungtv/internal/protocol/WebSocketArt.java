@@ -482,7 +482,7 @@ class WebSocketArt extends WebSocketBase {
                     break;
                 case "image_added":
                     if (!data.getCategoryId().isBlank()) {
-                        logger.info("{}: Image added: {}, category: {}", host, data.getContentId(),
+                        logger.debug("{}: Image added: {}, category: {}", host, data.getContentId(),
                                 data.getCategoryId());
                     }
                     break;

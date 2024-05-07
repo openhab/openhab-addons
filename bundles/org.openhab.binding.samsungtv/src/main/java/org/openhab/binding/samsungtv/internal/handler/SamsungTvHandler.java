@@ -352,7 +352,6 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     public boolean handleCommand(String channel, Command command, int ms) {
-        logger.info("{}: Scheduling future command {}: {} in {}ms", host, channel, command, ms);
         scheduler.schedule(() -> {
             handleCommand(channel, command);
         }, ms, TimeUnit.MILLISECONDS);
@@ -446,8 +445,8 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
         logger.debug("{}: Initializing Samsung TV handler for uid '{}'", host, getThing().getUID());
         if (host.isBlank()) {
-            logger.error("{}: host ip address or name is blank", host);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "host ip address or name is blank");
             return;
         }
 

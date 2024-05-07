@@ -67,13 +67,13 @@ class WolSend {
             if (OnOffType.ON.equals(command)) {
                 macAddress = handler.configuration.getMacAddress();
                 if (macAddress.isBlank()) {
-                    logger.warn("{}: Cannot send WOL packet, MAC address invalid: {}", host, macAddress);
+                    logger.debug("{}: Cannot send WOL packet, MAC address invalid: {}", host, macAddress);
                     return false;
                 }
                 this.channel = channel;
                 this.command = command;
                 if (channel.equals(ART_MODE) && !handler.getArtModeSupported()) {
-                    logger.warn("{}: artMode is not yet detected on this TV - sending WOL anyway", host);
+                    logger.debug("{}: artMode is not yet detected on this TV - sending WOL anyway", host);
                 }
                 startWoljob();
                 return true;
@@ -104,13 +104,13 @@ class WolSend {
 
     public synchronized void cancel() {
         wolJob.ifPresent(job -> {
-            logger.info("{}: cancelling WOL Job", host);
+            logger.debug("{}: cancelling WOL Job", host);
             job.cancel(true);
         });
     }
 
     private void sendWOL() {
-        logger.info("{}: Send WOL packet to {}", host, macAddress);
+        logger.debug("{}: Send WOL packet to {}", host, macAddress);
 
         // send max 10 WOL packets with 100ms intervals
         for (int i = 0; i < WOL_PACKET_RETRY_COUNT; i++) {
@@ -135,10 +135,10 @@ class WolSend {
         // after RemoteService up again to ensure state is properly set
         Optional<SamsungTvService> service = handler.findServiceInstance(RemoteControllerService.SERVICE_NAME);
         service.ifPresent(s -> {
-            logger.info("{}: RemoteControllerService found after {} attempts", host, wolCount);
+            logger.debug("{}: RemoteControllerService found after {} attempts", host, wolCount);
             // do not resend command if artMode command as TV wakes up in artMode
             if (!channel.equals(ART_MODE)) {
-                logger.info("{}: resend command {} to channel {} in 2 seconds...", host, command, channel);
+                logger.debug("{}: resend command {} to channel {} in 2 seconds...", host, command, channel);
                 // send in 2 seconds to allow time for connection to re-establish
                 sendCommand((RemoteControllerService) s);
             }

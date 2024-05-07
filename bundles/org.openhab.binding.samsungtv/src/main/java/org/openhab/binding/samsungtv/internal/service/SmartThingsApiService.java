@@ -114,7 +114,6 @@ public class SmartThingsApiService implements SamsungTvService {
         this.host = host;
         this.apiKey = handler.configuration.getSmartThingsApiKey();
         this.deviceId = handler.configuration.getSmartThingsDeviceId();
-        logger.debug("{}: Creating a Samsung TV Smartthings Api service", host);
     }
 
     @Override
@@ -136,7 +135,6 @@ public class SmartThingsApiService implements SamsungTvService {
 
     // Description of tvValues
     @NonNullByDefault({})
-    // @SuppressWarnings("unused")
     class TvValues {
         class MediaInputSource {
             ValuesList supportedInputSources;
@@ -380,7 +378,6 @@ public class SmartThingsApiService implements SamsungTvService {
                 return Optional.ofNullable(valueType).orElse("");
             }
 
-            @SuppressWarnings("unchecked")
             public List<?> getValuesAsList() throws JsonSyntaxException {
                 if ("array".equals(getValueType())) {
                     JsonArray resultArray = Optional.ofNullable((JsonArray) value.getAsJsonArray())
@@ -735,7 +732,7 @@ public class SmartThingsApiService implements SamsungTvService {
                 handlerWrapper.ifPresent(h -> {
                     client.sendAsync(request, h);
                 });
-                logger.info("{}: SSE job {}", host, checkResponseCode() ? "Started" : "Failed");
+                logger.debug("{}: SSE job {}", host, checkResponseCode() ? "Started" : "Failed");
             } catch (URISyntaxException e) {
                 logger.warn("{}: SSE URI Exception: {}", host, e.getMessage());
             }
@@ -763,7 +760,6 @@ public class SmartThingsApiService implements SamsungTvService {
         return properties;
     }
 
-    @SuppressWarnings("null")
     synchronized void processSSEEvent(Optional<byte[]> bytes) {
         bytes.ifPresent(b -> {
             Map<String, String> properties = bytesToMap(b);
@@ -779,7 +775,6 @@ public class SmartThingsApiService implements SamsungTvService {
                     }
                     break;
                 case "DEVICE_EVENT":
-                    // logger.trace("{}: SSE Processing: {}", host, event);
                     try {
                         // decode json here
                         Optional<STSSEData> data = Optional.ofNullable(new Gson().fromJson(rawData, STSSEData.class));
@@ -787,28 +782,27 @@ public class SmartThingsApiService implements SamsungTvService {
                             d.setTvInfo(tvInfo);
                             String[] inputList = d.getInputSourceList();
                             if (inputList.length > 0) {
-                                logger.info("{}: SSE Got input source list: {}", host, Arrays.asList(inputList));
+                                logger.trace("{}: SSE Got input source list: {}", host, Arrays.asList(inputList));
                                 tvInfo.ifPresent(a -> a.updateSupportedInputSources(inputList));
                             }
                             String inputSource = d.getInputSource();
                             if (!inputSource.isBlank()) {
-                                logger.info("{}: SSE Got input source: {}", host, inputSource);
                                 updateState(SOURCE_NAME, inputSource);
                                 int sourceId = d.getInputSourceId();
-                                logger.info("{}: SSE Got input source ID: {}", host, sourceId);
+                                logger.trace("{}: SSE Got input source: {} ID: {}", host, inputSource, sourceId);
                                 updateState(SOURCE_ID, sourceId);
                             }
                             Number tvChannel = d.getTvChannel();
                             if (tvChannel.intValue() != -1) {
-                                logger.info("{}: SSE Got TV Channel: {}", host, tvChannel);
                                 updateState(CHANNEL, tvChannel);
                                 String tvChannelName = d.getTvChannelName();
-                                logger.info("{}: SSE Got TV Channel Name: {}", host, tvChannelName);
+                                logger.trace("{}: SSE Got TV Channel Name: {} Channel: {}", host, tvChannelName,
+                                        tvChannel);
                                 updateState(CHANNEL_NAME, tvChannelName);
                             }
                             String Power = d.getSwitch();
                             if (!Power.isBlank()) {
-                                logger.info("{}: SSE Got TV Power: {}", host, Power);
+                                logger.debug("{}: SSE Got TV Power: {}", host, Power);
                                 if ("on".equals(Power)) {
                                     // handler.putOnline(); // ignore on event for now
                                 } else {
@@ -830,7 +824,7 @@ public class SmartThingsApiService implements SamsungTvService {
 
     private boolean updateDeviceID(TvValues.Items item) {
         this.deviceId = item.getDeviceId();
-        logger.info("{}: found {} device, adding device id {}", host, item.getName(), deviceId);
+        logger.debug("{}: found {} device, adding device id {}", host, item.getName(), deviceId);
         handler.putConfig(SMARTTHINGS_DEVICEID, deviceId);
         prevUpdate = 0;
         return true;
@@ -846,14 +840,14 @@ public class SmartThingsApiService implements SamsungTvService {
                     switch (t.getItems().length) {
                         case 0:
                         case 1:
-                            logger.info("{}: No devices found - please add your TV to the Smartthings app", host);
+                            logger.warn("{}: No devices found - please add your TV to the Smartthings app", host);
                             break;
                         case 2:
                             found = Arrays.asList(t.getItems()).stream().filter(a -> "Samsung TV".equals(a.getName()))
                                     .map(a -> updateDeviceID(a)).findFirst().orElse(false);
                             break;
                         default:
-                            logger.info("{}: No device Id selected, please enter one of the following:", host);
+                            logger.warn("{}: No device Id selected, please enter one of the following:", host);
                             Arrays.asList(t.getItems()).stream().forEach(a -> logger.info("{}: '{}' : {}({})", host,
                                     a.getDeviceId(), a.getName(), a.getLabel()));
                     }
@@ -932,8 +926,8 @@ public class SmartThingsApiService implements SamsungTvService {
 
                 switch (channel) {
                     case SOURCE_ID:
-                        if (command instanceof DecimalType) {
-                            int val = ((DecimalType) command).intValue();
+                        if (command instanceof DecimalType commandAsDecimalType) {
+                            int val = commandAsDecimalType.intValue();
                             if (val >= 0 && val < t.getSources().length) {
                                 result = setSourceName(t.getSources()[val]);
                             } else {

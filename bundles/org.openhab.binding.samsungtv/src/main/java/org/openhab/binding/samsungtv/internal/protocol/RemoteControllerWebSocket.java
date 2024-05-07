@@ -348,8 +348,8 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
      * @param key Key code to send.
      */
     public void sendKey(Object key) {
-        if (key instanceof KeyCode) {
-            sendKey((KeyCode) key, Action.CLICK);
+        if (key instanceof KeyCode keyAsKeyCode) {
+            sendKey(keyAsKeyCode, Action.CLICK);
         } else if (key instanceof String) {
             sendKey((String) key);
         }
@@ -358,16 +358,12 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     public void sendKey(String value) {
         try {
             if (value.startsWith("{")) {
-                logger.debug("{}: Try to send Mouse move: {}", host, value);
                 sendKeyData(value, Action.MOVE);
             } else if ("LeftClick".equals(value) || "RightClick".equals(value)) {
-                logger.debug("{}: Try to send Mouse Click: {}", host, value);
                 sendKeyData(value, Action.MOUSECLICK);
             } else if (value.isEmpty()) {
-                logger.debug("{}: Try to send InputEnd", host);
                 sendKeyData("", Action.END);
             } else {
-                logger.debug("{}: Try to send Text: {}", host, value);
                 sendKeyData(value, Action.TEXT);
             }
         } catch (RemoteControllerException e) {
@@ -376,7 +372,6 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     }
 
     public void sendKey(KeyCode key, Action action) {
-        logger.debug("{}: Try to send command: {}, {}", host, key, action);
         try {
             sendKeyData(key, action);
         } catch (RemoteControllerException e) {
@@ -399,6 +394,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     }
 
     private void sendKeyData(Object key, Action action) throws RemoteControllerException {
+        logger.debug("{}: Try to send Key: {}, Action: {}", host, key, action);
         webSocketRemote.sendKeyData(action.toString(), key.toString());
     }
 
