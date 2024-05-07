@@ -48,10 +48,4 @@ public class Emt7110ReadingConverter implements JeeLinkReadingConverter<Emt7110R
 
         return null;
     }
-    /*
-     * public static void main(String[] args){
-     * Emt7110ReadingConverter emt = new Emt7110ReadingConverter();
-     * emt.createReading("OK EMT7110 84 81 9 91 0 72 0 2 1 6 1");
-     * }
-     */
 }
