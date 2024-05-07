@@ -14,17 +14,13 @@ package org.openhab.binding.airgradient.internal.handler;
 
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.*;
 
-import javax.measure.Unit;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.config.AirGradientLocationConfiguration;
 import org.openhab.binding.airgradient.internal.model.Measure;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -34,7 +30,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,46 +134,14 @@ public class AirGradientLocationHandler extends BaseThingHandler {
         return locationConfig.location;
     }
 
-    public void setMeasurment(String locationId, Measure measure) {
-        updateProperty(PROPERTY_FIRMWARE_VERSION, measure.firmwareVersion);
-        updateProperty(PROPERTY_NAME, measure.locationName);
-        updateProperty(PROPERTY_SERIAL_NO, measure.serialno);
-
-        updateMeasurement(CHANNEL_ATMP, toQuantityType(measure.atmp, SIUnits.CELSIUS));
-        updateMeasurement(CHANNEL_PM_003_COUNT, toQuantityType(measure.pm003Count, Units.ONE));
-        updateMeasurement(CHANNEL_PM_01, toQuantityType(measure.pm01, Units.MICROGRAM_PER_CUBICMETRE));
-        updateMeasurement(CHANNEL_PM_02, toQuantityType(measure.pm02, Units.MICROGRAM_PER_CUBICMETRE));
-        updateMeasurement(CHANNEL_PM_10, toQuantityType(measure.pm10, Units.MICROGRAM_PER_CUBICMETRE));
-        updateMeasurement(CHANNEL_RHUM, toQuantityType(measure.rhum, Units.PERCENT));
-        updateMeasurement(CHANNEL_UPLOADS_SINCE_BOOT, toQuantityType(measure.boot, Units.ONE));
-
-        Double rco2 = measure.rco2;
-        if (rco2 != null) {
-            updateMeasurement(CHANNEL_RCO2, toQuantityType(rco2.longValue(), Units.PARTS_PER_MILLION));
+    public void setMeasurment(Measure measure) {
+        updateProperties(MeasureHelper.createProperties(measure));
+        Map<String, State> states = MeasureHelper.createStates(measure);
+        for (Map.Entry<String, State> entry : states.entrySet()) {
+            if (isLinked(entry.getKey())) {
+                updateState(entry.getKey(), entry.getValue());
+            }
         }
-
-        Double tvoc = measure.tvoc;
-        if (tvoc != null) {
-            updateMeasurement(CHANNEL_TVOC, toQuantityType(tvoc.longValue(), Units.PARTS_PER_BILLION));
-        }
-
-        updateMeasurement(CHANNEL_WIFI, toQuantityType(measure.wifi, Units.DECIBEL_MILLIWATTS));
-        updateMeasurement(CHANNEL_LEDS_MODE, toStringType(measure.ledMode));
-    }
-
-    private void updateMeasurement(String channelName, State state) {
-        ChannelUID channelUid = new ChannelUID(thing.getUID(), channelName);
-        if (isLinked(channelUid)) {
-            updateState(channelName, state);
-        }
-    }
-
-    private static State toQuantityType(@Nullable Number value, Unit<?> unit) {
-        return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
-    }
-
-    private static State toStringType(@Nullable String value) {
-        return value == null ? UnDefType.NULL : StringType.valueOf(value);
     }
 
     /**

@@ -82,7 +82,7 @@ public class AirGradientLocationHandlerTest {
     @Test
     public void testSetMeasure() {
         sut.setCallback(callbackMock);
-        sut.setMeasurment("test123", TEST_MEASURE);
+        sut.setMeasurment(TEST_MEASURE);
 
         verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_WIFI),
                 new QuantityType<>("-59 dBm"));

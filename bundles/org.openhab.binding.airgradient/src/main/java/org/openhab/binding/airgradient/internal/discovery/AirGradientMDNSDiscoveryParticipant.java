@@ -17,6 +17,7 @@ import static org.openhab.binding.airgradient.internal.AirGradientBindingConstan
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CONFIG_API_TOKEN;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CURRENT_MEASURES_LOCAL_PATH;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.DEFAULT_POLL_INTERVAL_LOCAL;
+import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_MODEL;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.THING_TYPE_API;
 
 import java.util.HashMap;
@@ -85,10 +86,11 @@ public class AirGradientMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
         String hostName = urls[0] + CURRENT_MEASURES_LOCAL_PATH;
         String model = si.getPropertyString(MDNS_PROPERTY_MODEL);
 
-        Map<String, Object> properties = new HashMap<>(1);
+        Map<String, Object> properties = new HashMap<>(4);
         properties.put(CONFIG_API_TOKEN, "");
         properties.put(CONFIG_API_HOST_NAME, hostName);
         properties.put(CONFIG_API_REFRESH_INTERVAL, DEFAULT_POLL_INTERVAL_LOCAL.getSeconds());
+        properties.put(PROPERTY_MODEL, model);
 
         ThingUID thingUID = getThingUID(si);
         if (thingUID == null) {

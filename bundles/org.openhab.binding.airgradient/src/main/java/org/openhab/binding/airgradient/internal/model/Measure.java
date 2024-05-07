@@ -79,6 +79,22 @@ public class Measure {
         return "";
     }
 
+    public @Nullable String getModel() {
+        // model from cloud API
+        String m = model;
+        if (m != null) {
+            return m;
+        }
+
+        // model from local API
+        m = fwMode;
+        if (m != null) {
+            return m;
+        }
+
+        return null;
+    }
+
     @Nullable
     public String locationId;
 
@@ -144,4 +160,10 @@ public class Measure {
 
     @Nullable
     public Long boot; // Number of times sensor has uploaded data since last reboot
+
+    @Nullable
+    public String fwMode; // Model of sensor from local API
+
+    @Nullable
+    public String model; // Model of sensor from cloud API
 }

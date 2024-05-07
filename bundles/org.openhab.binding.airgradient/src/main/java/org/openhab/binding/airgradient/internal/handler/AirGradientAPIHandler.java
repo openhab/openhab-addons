@@ -125,7 +125,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
                     @Nullable
                     Measure measure = measureMap.get(locationId);
                     if (measure != null) {
-                        handler.setMeasurment(locationId, measure);
+                        handler.setMeasurment(measure);
                     } else {
                         logger.debug("Could not find measures for location {}", locationId);
                     }

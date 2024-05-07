@@ -59,6 +59,7 @@
 			<property name="name"/>
 			<property name="firmwareVersion"/>
 			<property name="serialNo"/>
+			<property name="model"/>
 		</properties>
 		<representation-property>location</representation-property>
 

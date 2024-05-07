@@ -15,6 +15,7 @@ package org.openhab.binding.airgradient.internal.discovery;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.BACKGROUND_DISCOVERY;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CONFIG_LOCATION;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_FIRMWARE_VERSION;
+import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_MODEL;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_NAME;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_SERIAL_NO;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.SEARCH_TIME;
@@ -103,6 +104,10 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
                 properties.put(PROPERTY_NAME, name);
                 properties.put(PROPERTY_FIRMWARE_VERSION, measure.getFirmwareVersion());
                 properties.put(PROPERTY_SERIAL_NO, measure.getSerialNo());
+                String model = measure.getModel();
+                if (model != null) {
+                    properties.put(PROPERTY_MODEL, model);
+                }
                 properties.put(CONFIG_LOCATION, id);
 
                 ThingUID thingUID = new ThingUID(THING_TYPE_LOCATION, bridgeUid, id);
