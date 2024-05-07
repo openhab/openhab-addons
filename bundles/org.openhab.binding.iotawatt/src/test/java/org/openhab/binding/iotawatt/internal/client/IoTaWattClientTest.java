@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -63,6 +65,7 @@ class IoTaWattClientTest {
         Request request = mock(Request.class);
         when(httpClient.newRequest(any(URI.class))).thenReturn(request);
         when(request.method(any(HttpMethod.class))).thenReturn(request);
+        when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
         ContentResponse contentResponse = mock(ContentResponse.class);
         when(request.send()).thenReturn(contentResponse);
         when(contentResponse.getContentAsString()).thenReturn(readFile(DEVICE_STATUS_RESPONSE_FILE));
@@ -102,6 +105,7 @@ class IoTaWattClientTest {
         Request request = mock(Request.class);
         when(httpClient.newRequest(any(URI.class))).thenReturn(request);
         when(request.method(any(HttpMethod.class))).thenReturn(request);
+        when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
         ContentResponse contentResponse = mock(ContentResponse.class);
         when(request.send()).thenReturn(contentResponse);
         when(contentResponse.getContentAsString()).thenReturn("{}");

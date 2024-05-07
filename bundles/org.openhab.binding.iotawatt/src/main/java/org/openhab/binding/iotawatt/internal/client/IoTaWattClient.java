@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -74,7 +75,7 @@ public class IoTaWattClient {
     public Optional<StatusResponse> fetchStatus() throws ThingStatusOfflineException {
         try {
             final URI uri = new URI(String.format(REQUEST_URL, hostname));
-            final Request request = httpClient.newRequest(uri).method(HttpMethod.GET);
+            final Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(10, TimeUnit.SECONDS);
             final ContentResponse response = request.send();
             final String content = response.getContentAsString();
             @Nullable
