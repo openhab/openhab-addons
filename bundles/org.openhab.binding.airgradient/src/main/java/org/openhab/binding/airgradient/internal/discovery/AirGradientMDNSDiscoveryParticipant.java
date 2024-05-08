@@ -17,7 +17,6 @@ import static org.openhab.binding.airgradient.internal.AirGradientBindingConstan
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CONFIG_API_TOKEN;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CURRENT_MEASURES_LOCAL_PATH;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.DEFAULT_POLL_INTERVAL_LOCAL;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_MODEL;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.THING_TYPE_LOCAL;
 
 import java.util.HashMap;
@@ -31,6 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;

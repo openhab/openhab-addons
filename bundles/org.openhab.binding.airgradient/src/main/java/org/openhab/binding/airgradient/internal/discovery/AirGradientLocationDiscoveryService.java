@@ -14,10 +14,7 @@ package org.openhab.binding.airgradient.internal.discovery;
 
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.BACKGROUND_DISCOVERY;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CONFIG_LOCATION;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_FIRMWARE_VERSION;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_MODEL;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_NAME;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_SERIAL_NO;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.SEARCH_TIME;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.THING_TYPE_LOCATION;
 
@@ -36,6 +33,7 @@ import org.openhab.binding.airgradient.internal.model.Measure;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -102,7 +100,7 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
             if (!registeredLocationIds.contains(id)) {
                 Map<String, Object> properties = new HashMap<>(5);
                 properties.put(PROPERTY_NAME, name);
-                properties.put(PROPERTY_FIRMWARE_VERSION, measure.getFirmwareVersion());
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, measure.getFirmwareVersion());
                 properties.put(Thing.PROPERTY_SERIAL_NUMBER, measure.getSerialNo());
                 String model = measure.getModel();
                 if (model != null) {

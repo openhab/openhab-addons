@@ -14,7 +14,6 @@ package org.openhab.binding.airgradient.internal.handler;
 
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_CALIBRATION;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_LEDS_MODE;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_SERIAL_NO;
 
 import java.util.List;
 import java.util.Map;
@@ -161,7 +160,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
      * @return serial number of this sensor.
      */
     public String getSerialNo() {
-        String serialNo = thing.getProperties().get(PROPERTY_SERIAL_NO);
+        String serialNo = thing.getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
         if (serialNo == null) {
             serialNo = "";
         }

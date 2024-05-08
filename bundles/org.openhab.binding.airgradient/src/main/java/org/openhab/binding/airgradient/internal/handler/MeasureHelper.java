@@ -23,10 +23,7 @@ import static org.openhab.binding.airgradient.internal.AirGradientBindingConstan
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_TVOC;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_UPLOADS_SINCE_BOOT;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_WIFI;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_FIRMWARE_VERSION;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_MODEL;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_NAME;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_SERIAL_NO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +37,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -55,7 +53,7 @@ public class MeasureHelper {
         Map<String, String> properties = new HashMap<>(4);
         String firmwareVersion = measure.firmwareVersion;
         if (firmwareVersion != null) {
-            properties.put(PROPERTY_FIRMWARE_VERSION, firmwareVersion);
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
         }
 
         String locationName = measure.locationName;
@@ -65,12 +63,12 @@ public class MeasureHelper {
 
         String serialNo = measure.serialno;
         if (serialNo != null) {
-            properties.put(PROPERTY_SERIAL_NO, serialNo);
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNo);
         }
 
         String model = measure.getModel();
         if (model != null) {
-            properties.put(PROPERTY_MODEL, model);
+            properties.put(Thing.PROPERTY_MODEL_ID, model);
         }
 
         return properties;

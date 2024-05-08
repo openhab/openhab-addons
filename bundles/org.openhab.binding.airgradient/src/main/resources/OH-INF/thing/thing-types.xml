@@ -55,8 +55,8 @@
 		<properties>
 			<property name="name"/>
 			<property name="firmwareVersion"/>
-			<property name="serialNo"/>
-			<property name="model"/>
+			<property name="serialNumber"/>
+			<property name="modelId"/>
 		</properties>
 		<representation-property>serialNo</representation-property>
 
@@ -104,8 +104,8 @@
 		<properties>
 			<property name="name"/>
 			<property name="firmwareVersion"/>
-			<property name="serialNo"/>
-			<property name="model"/>
+			<property name="serialNumber"/>
+			<property name="modelId"/>
 		</properties>
 		<representation-property>location</representation-property>
 

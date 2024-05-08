@@ -150,7 +150,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
      * @return serial number of this sensor.
      */
     private String getSerialNo() {
-        String serialNo = thing.getProperties().get(PROPERTY_SERIAL_NO);
+        String serialNo = thing.getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
         if (serialNo == null) {
             serialNo = "";
         }

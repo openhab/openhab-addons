@@ -49,9 +49,6 @@ public class AirGradientBindingConstants {
 
     // List of all properties
     public static final String PROPERTY_NAME = "name";
-    public static final String PROPERTY_FIRMWARE_VERSION = "firmwareVersion";
-    public static final String PROPERTY_SERIAL_NO = "serialNo";
-    public static final String PROPERTY_MODEL = "model";
 
     // All configurations
     public static final String CONFIG_LOCATION = "location";
