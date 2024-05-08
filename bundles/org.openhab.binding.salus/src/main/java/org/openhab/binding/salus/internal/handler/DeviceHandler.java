@@ -43,6 +43,8 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -56,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class DeviceHandler extends BaseThingHandler {
+public class DeviceHandler extends BaseThingHandler implements SalusDeviceHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private final Logger logger;
     @NonNullByDefault({})
@@ -225,6 +227,11 @@ public class DeviceHandler extends BaseThingHandler {
             logger.warn("Does not know how to handle command `{}` ({}) on channel `{}`!", command,
                     command.getClass().getSimpleName(), channelUID);
         }
+    }
+
+    @Override
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
     }
 
     private void handleRefreshCommand(ChannelUID channelUID) {

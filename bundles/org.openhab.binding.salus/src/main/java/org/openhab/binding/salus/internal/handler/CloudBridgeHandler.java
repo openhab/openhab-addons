@@ -138,21 +138,27 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             }
             List<Thing> things = bridge.getThings();
             for (Thing thing : things) {
-                try {
-                    if (!thing.isEnabled()) {
-                        logger.debug("Thing {} is disabled, refresh cancelled", thing.getUID());
-                        continue;
-                    }
+                if (!thing.isEnabled()) {
+                    logger.debug("Thing {} is disabled, refresh cancelled", thing.getUID());
+                    continue;
+                }
 
-                    @Nullable
-                    ThingHandler handler = thing.getHandler();
-                    if (handler == null) {
-                        logger.debug("No handler for thing {} refresh cancelled", thing.getUID());
-                        continue;
-                    }
-                    thing.getChannels().forEach(channel -> handler.handleCommand(channel.getUID(), REFRESH));
+                @Nullable
+                ThingHandler handler = thing.getHandler();
+                if (handler == null) {
+                    logger.debug("No handler for thing {} refresh cancelled", thing.getUID());
+                    continue;
+                }
+                if (!(handler instanceof SalusDeviceHandler salusDeviceHandler)) {
+                    logger.debug("No handler for thing {} refresh cancelled", thing.getUID());
+                    continue;
+                }
+                try {
+                    thing.getChannels().forEach(channel -> salusDeviceHandler.handleCommand(channel.getUID(), REFRESH));
                 } catch (RuntimeException ex) {
                     logger.warn("Cannot refresh thing {} from CloudBridgeHandler", thing.getUID(), ex);
+                    salusDeviceHandler.updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                            "@text/cloud-bridge-handler.initialize.cannot-refresh-thing [\"" + ex.getMessage() + "\"]");
                 }
             }
 
