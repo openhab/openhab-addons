@@ -103,7 +103,7 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
                 Map<String, Object> properties = new HashMap<>(5);
                 properties.put(PROPERTY_NAME, name);
                 properties.put(PROPERTY_FIRMWARE_VERSION, measure.getFirmwareVersion());
-                properties.put(PROPERTY_SERIAL_NO, measure.getSerialNo());
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, measure.getSerialNo());
                 String model = measure.getModel();
                 if (model != null) {
                     properties.put(PROPERTY_MODEL, model);
