@@ -100,7 +100,7 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
             }
 
             if (!registeredLocationIds.contains(id)) {
-                Map<String, Object> properties = new HashMap<>(4);
+                Map<String, Object> properties = new HashMap<>(5);
                 properties.put(PROPERTY_NAME, name);
                 properties.put(PROPERTY_FIRMWARE_VERSION, measure.getFirmwareVersion());
                 properties.put(PROPERTY_SERIAL_NO, measure.getSerialNo());
