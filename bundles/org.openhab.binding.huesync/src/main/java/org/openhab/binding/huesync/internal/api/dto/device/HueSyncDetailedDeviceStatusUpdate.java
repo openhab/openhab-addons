@@ -13,10 +13,9 @@
 package org.openhab.binding.huesync.internal.api.dto.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * HDMI Sync Box Device Information DTO - Wifi connection information
+ * HDMI Sync Box Device Information DTO - Automatic Firmware update
  * 
  * @author Patrik Gfeller - Initial Contribution
  * 
@@ -25,15 +24,17 @@ import org.eclipse.jdt.annotation.Nullable;
  *      HDMI Sync Box API</a>
  */
 @NonNullByDefault
-public class HueSyncDetailedDeviceInfoWifi {
-    /** Wifi SSID */
-    public @Nullable String ssid;
+public class HueSyncDetailedDeviceStatusUpdate {
     /**
-     * 0 = not connected;
-     * 1 = weak;
-     * 2 = fair;
-     * 3 = good;
-     * 4 = excellent
+     * Sync Box checks daily for a firmware update. If true, an available update
+     * will automatically be installed. This will be postponed if Sync Box is
+     * passing through content to the TV and being used.
      */
-    public int strength;
+    public boolean autoUpdateEnabled;
+    /**
+     * TC hour when the automatic update will check and execute, values 0 – 23.
+     * Default is 10. Ideally this value should be set to 3AM according to user’s
+     * timezone.
+     */
+    public int autoUpdateTime;
 }

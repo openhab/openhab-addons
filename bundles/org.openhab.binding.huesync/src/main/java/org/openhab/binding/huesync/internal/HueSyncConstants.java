@@ -26,6 +26,7 @@ public class HueSyncConstants {
     public static class ENDPOINTS {
         public static final String DEVICE = "device";
         public static final String REGISTRATIONS = "registrations";
+        public static final String HDMI = "hdmi";
     }
 
     public static class CHANNELS {

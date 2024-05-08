@@ -25,13 +25,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDeviceInfo;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDeviceStatus;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceStatus;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncApiException;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncRegistrationTask;
+import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateInfo;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTask;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.config.core.Configuration;
@@ -55,14 +56,14 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public class HueSyncHandler extends BaseThingHandler {
     private static final String PROPERTY_API_VERSION = "apiVersion";
-    private static final String PROPERTY_NETWORK_STATE = "networkState";
+    // private static final String PROPERTY_NETWORK_STATE = "networkState";
 
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncHandler.class);
 
     private @Nullable ScheduledFuture<HueSyncRegistrationTask> deviceRegistrationTask;
     private @Nullable ScheduledFuture<HueSyncUpdateTask> deviceUpdateTask;
 
-    private @Nullable HueSyncDeviceInfo deviceInfo;
+    private @Nullable HueSyncDeviceStatus deviceInfo;
 
     private HueSyncDeviceConnection connection;
     private HueSyncConfiguration config;
@@ -105,7 +106,7 @@ public class HueSyncHandler extends BaseThingHandler {
     private void startBackgroundTasks() {
         Optional.ofNullable(this.deviceInfo).ifPresent((device) -> {
             Runnable statusUpdateTask = new HueSyncUpdateTask(this.connection, device,
-                    (deviceStatus) -> this.updateDeviceStatus(deviceStatus));
+                    (deviceStatus) -> this.updateStatus(deviceStatus));
 
             if (this.connection.isRegistered()) {
                 this.logger.debug("Device {} {}:{} is already registered", device.name, device.deviceType,
@@ -137,24 +138,27 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.config.statusUpdateInterval);
     }
 
-    private void updateDeviceStatus(@Nullable HueSyncDetailedDeviceInfo deviceState) {
+    private void updateStatus(@Nullable HueSyncUpdateInfo update) {
         ThingStatus currentStatus = this.thing.getStatus();
 
         logger.trace("Current status: {}", currentStatus);
 
-        if (deviceState == null) {
+        @SuppressWarnings("null")
+        HueSyncDetailedDeviceStatus deviceStatus = update.deviceStatus;
+
+        if (deviceStatus == null) {
             this.updateStatus(ThingStatus.OFFLINE);
         } else {
             this.updateStatus(ThingStatus.ONLINE);
 
-            State firmwareState = new StringType(deviceState.firmwareVersion);
+            State firmwareState = new StringType(deviceStatus.firmwareVersion);
             State firmwareAvailableState = new StringType(
-                    Optional.ofNullable(deviceState.updatableFirmwareVersion).isPresent()
-                            ? deviceState.updatableFirmwareVersion
-                            : deviceState.firmwareVersion);
+                    Optional.ofNullable(deviceStatus.updatableFirmwareVersion).isPresent()
+                            ? deviceStatus.updatableFirmwareVersion
+                            : deviceStatus.firmwareVersion);
 
-            setProperty(Thing.PROPERTY_FIRMWARE_VERSION, deviceState.firmwareVersion);
-            setProperty(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", deviceState.apiLevel));
+            setProperty(Thing.PROPERTY_FIRMWARE_VERSION, deviceStatus.firmwareVersion);
+            setProperty(HueSyncHandler.PROPERTY_API_VERSION, String.format("%d", deviceStatus.apiLevel));
 
             this.updateState(HueSyncConstants.CHANNELS.DEVICE.INFORMATION.FIRMWARE, firmwareState);
             this.updateState(HueSyncConstants.CHANNELS.DEVICE.INFORMATION.FIRMWARE_AVAILABLE, firmwareAvailableState);
@@ -172,11 +176,11 @@ public class HueSyncHandler extends BaseThingHandler {
 
             Configuration configuration = this.editConfiguration();
             configuration.put(HueSyncConstants.REGISTRATION_ID, id.get());
-            configuration.put(HueSyncConstants.REGISTRATION_ID, token.get());
+            configuration.put(HueSyncConstants.API_TOKEN, token.get());
             this.updateConfiguration(configuration);
 
             String deviceName = "⚠️ unknown device ⚠️";
-            Optional<HueSyncDeviceInfo> deviceInfo = Optional.ofNullable(this.deviceInfo);
+            Optional<HueSyncDeviceStatus> deviceInfo = Optional.ofNullable(this.deviceInfo);
 
             if (deviceInfo.isPresent()) {
                 deviceName = Optional.ofNullable(deviceInfo.get().name).orElse(deviceName);
@@ -188,7 +192,7 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private void checkCompatibility() throws HueSyncApiException {
         try {
-            HueSyncDeviceInfo info = Optional.ofNullable(this.deviceInfo).orElseThrow();
+            HueSyncDeviceStatus info = Optional.ofNullable(this.deviceInfo).orElseThrow();
             if (info.apiLevel < HueSyncConstants.MINIMAL_API_VERSION) {
                 throw new HueSyncApiException("@text/api.minimal-version", this.logger);
             }

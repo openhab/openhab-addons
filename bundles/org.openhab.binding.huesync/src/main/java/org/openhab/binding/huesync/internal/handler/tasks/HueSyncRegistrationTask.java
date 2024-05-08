@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceStatus;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
@@ -33,12 +33,12 @@ public class HueSyncRegistrationTask implements Runnable {
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncRegistrationTask.class);
 
     private HueSyncDeviceConnection connection;
-    private HueSyncDeviceInfo deviceInfo;
+    private HueSyncDeviceStatus deviceInfo;
 
     private Consumer<HueSyncRegistration> action;
     private Supplier<ThingStatus> status;
 
-    public HueSyncRegistrationTask(HueSyncDeviceConnection connection, HueSyncDeviceInfo deviceInfo,
+    public HueSyncRegistrationTask(HueSyncDeviceConnection connection, HueSyncDeviceStatus deviceInfo,
             Supplier<ThingStatus> status, Consumer<HueSyncRegistration> action) {
 
         this.connection = connection;

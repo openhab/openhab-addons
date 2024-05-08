@@ -16,8 +16,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDeviceInfo;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceStatus;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.slf4j.Logger;
@@ -33,12 +32,12 @@ public class HueSyncUpdateTask implements Runnable {
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncUpdateTask.class);
 
     private HueSyncDeviceConnection connection;
-    private HueSyncDeviceInfo deviceInfo;
+    private HueSyncDeviceStatus deviceInfo;
 
-    private Consumer<@Nullable HueSyncDetailedDeviceInfo> action;
+    private Consumer<@Nullable HueSyncUpdateInfo> action;
 
-    public HueSyncUpdateTask(HueSyncDeviceConnection connection, HueSyncDeviceInfo deviceInfo,
-            Consumer<@Nullable HueSyncDetailedDeviceInfo> action) {
+    public HueSyncUpdateTask(HueSyncDeviceConnection connection, HueSyncDeviceStatus deviceInfo,
+            Consumer<@Nullable HueSyncUpdateInfo> action) {
 
         this.connection = connection;
         this.deviceInfo = deviceInfo;
@@ -52,9 +51,11 @@ public class HueSyncUpdateTask implements Runnable {
             this.logger.trace("Status update query for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
                     this.deviceInfo.uniqueId);
 
-            HueSyncDetailedDeviceInfo deviceStatus = this.connection.getDetailedDeviceInfo();
+            HueSyncUpdateInfo updateInfo = new HueSyncUpdateInfo();
+            updateInfo.deviceStatus = this.connection.getDetailedDeviceInfo();
+            updateInfo.hdmiStatus = this.connection.getHdmiInfo();
 
-            this.action.accept(deviceStatus);
+            this.action.accept(updateInfo);
 
         } catch (Exception e) {
             this.logger.debug("{}", e.getMessage());

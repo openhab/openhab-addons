@@ -23,8 +23,9 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
 import org.openhab.binding.huesync.internal.HueSyncConstants.ENDPOINTS;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDeviceInfo;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceInfo;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDetailedDeviceStatus;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceStatus;
+import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmiStatus;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequest;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
@@ -49,15 +50,23 @@ public class HueSyncDeviceConnection {
         this.connection = new HueSyncConnection(httpClient, host, port);
     }
 
-    public @Nullable HueSyncDeviceInfo getDeviceInfo() {
+    public @Nullable HueSyncDeviceStatus getDeviceInfo() {
         return this.connection.isRegistered()
-                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.DEVICE, "", HueSyncDetailedDeviceInfo.class)
-                : this.connection.executeGetRequest(ENDPOINTS.DEVICE, HueSyncDeviceInfo.class);
+                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.DEVICE, "",
+                        HueSyncDetailedDeviceStatus.class)
+                : this.connection.executeGetRequest(ENDPOINTS.DEVICE, HueSyncDeviceStatus.class);
     }
 
-    public @Nullable HueSyncDetailedDeviceInfo getDetailedDeviceInfo() {
+    public @Nullable HueSyncDetailedDeviceStatus getDetailedDeviceInfo() {
         return this.connection.isRegistered()
-                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.DEVICE, "", HueSyncDetailedDeviceInfo.class)
+                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.DEVICE, "",
+                        HueSyncDetailedDeviceStatus.class)
+                : null;
+    }
+
+    public @Nullable HueSyncHdmiStatus getHdmiInfo() {
+        return this.connection.isRegistered()
+                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.HDMI, "", HueSyncHdmiStatus.class)
                 : null;
     }
 

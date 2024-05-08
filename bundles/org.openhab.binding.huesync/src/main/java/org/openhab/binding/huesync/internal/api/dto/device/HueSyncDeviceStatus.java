@@ -26,7 +26,7 @@ import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfoCapabilitie
  *      HDMI Sync Box API</a>
  */
 @NonNullByDefault
-public class HueSyncDeviceInfo {
+public class HueSyncDeviceStatus {
     /** Friendly name of the device */
     public @Nullable String name;
     /** Device Type identifier */
