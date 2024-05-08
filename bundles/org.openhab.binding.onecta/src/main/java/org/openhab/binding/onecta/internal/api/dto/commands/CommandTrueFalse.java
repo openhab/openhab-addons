@@ -9,6 +9,6 @@ public class CommandTrueFalse {
     public boolean value;
 
     public CommandTrueFalse(Enums.OnOff value) {
-        this.value = value.getValue().equals(Enums.OnOff.ON);
+        this.value = value.equals(Enums.OnOff.ON);
     }
 }

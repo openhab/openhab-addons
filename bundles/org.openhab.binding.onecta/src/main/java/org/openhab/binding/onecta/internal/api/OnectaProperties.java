@@ -53,10 +53,6 @@ public class OnectaProperties {
         return String.format(BASE_URL, unitId);
     }
 
-    public static String getUrlOnOffTest(String unitId, String managementPointType) {
-        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType, COMMAND_ONOFF);
-    }
-
     public static String getUrlOnOff(String unitId, Enums.ManagementPoint managementPointType) {
         return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType.getValue(), COMMAND_ONOFF);
     }
@@ -80,7 +76,7 @@ public class OnectaProperties {
     }
 
     public static CommandFloat getTargetTemperaturCommand(float value) {
-        return new CommandFloat(value, null);
+        return new CommandFloat(value);
     }
 
     public static CommandString getOperationModeCommand(Enums.OperationMode operationMode) {

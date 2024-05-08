@@ -159,7 +159,7 @@ public class DataTransportService {
     }
 
     public void setPowerOnOff(Enums.OnOff value) {
-        onectaConnectionClient.setPowerOnOff(unitId, getEmbeddedId(), value);
+        onectaConnectionClient.setPowerOnOff(unitId, managementPointType, value);
     }
 
     public void setPowerFulModeOnOff(Enums.OnOff value) {
