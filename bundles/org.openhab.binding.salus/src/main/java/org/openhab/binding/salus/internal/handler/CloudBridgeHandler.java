@@ -151,14 +151,14 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                         continue;
                     }
                     thing.getChannels().forEach(channel -> handler.handleCommand(channel.getUID(), REFRESH));
-                } catch (Exception ex) {
+                } catch (RuntimeException ex) {
                     logger.warn("Cannot refresh thing {} from CloudBridgeHandler", thing.getUID(), ex);
                 }
             }
 
             // all things were updated,
             updateStatus(ONLINE);
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             logger.warn("Cannot refresh devices from CloudBridgeHandler", ex);
         }
     }
