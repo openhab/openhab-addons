@@ -68,6 +68,10 @@ If you have 25 free calls per day, each plane needs 2 calls per update a refresh
 
 `refreshManual` gives full control of forecast update to the user if set to `true`.
 No update will be triggered by the binding so you need to take care updating after startup and taking throttling of API into account. 
+See [manual update rule example](#solcast-manual-update) to update Solcast forecast data 
+
+- after startup
+- every 2 hours only during suntime using Astro Binding  
 
 
 ## Solcast Channels
@@ -359,3 +363,33 @@ rule "Solcast Actions"
         logInfo("SF Tests","Optimist energy {}",energyOptimistic)
 end
 ```
+
+### Solcast manual update
+
+```java
+rule "EMS PV Daylight End"
+    when
+        Channel "astro:sun:local:daylight#event" triggered END
+    then
+        EMS_PV_Suntime.postUpdate(OFF)           
+end
+
+rule "EMS PV Daylight Start"
+    when
+        Channel "astro:sun:local:daylight#event" triggered START
+    then
+        EMS_PV_Suntime.postUpdate(ON)           
+end
+
+rule "Solacast Updates"
+    when 
+        Thing "solarforecast:sc-plane:b5d1177801" changed to INITIALIZING or // Thing status changed to INITIALIZING
+        Time cron "0 30 0/2 ? * * *" // every 2 hours at minute 30 
+    then
+        if(EMS_PV_Suntime.state == ON) {
+            val solarforecastActions = getActions("solarforecast","solarforecast:sc-plane:b5d1177801")
+            solarforecastActions.triggerUpdate
+        } // reject updates during night
+end
+```
+
