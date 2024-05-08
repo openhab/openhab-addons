@@ -13,20 +13,22 @@
 package org.openhab.binding.iotawatt.internal.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.iotawatt.internal.client.IoTaWattClient;
-import org.openhab.binding.iotawatt.internal.exception.ThingStatusOfflineException;
+import org.openhab.binding.iotawatt.internal.client.IoTaWattClientCommunicationException;
+import org.openhab.binding.iotawatt.internal.client.IoTaWattClientConfigurationException;
+import org.openhab.binding.iotawatt.internal.client.IoTaWattClientException;
+import org.openhab.binding.iotawatt.internal.client.IoTaWattClientInterruptedException;
 import org.openhab.binding.iotawatt.internal.model.IoTaWattChannelType;
 import org.openhab.binding.iotawatt.internal.model.StatusResponse;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Fetches data from IoTaWatt and updates the channels accordingly.
@@ -37,8 +39,6 @@ import org.slf4j.LoggerFactory;
 public class FetchDataService {
     static final String INPUT_CHANNEL_ID_PREFIX = "input_";
     static final String OUTPUT_CHANNEL_ID_PREFIX = "output_";
-
-    private final Logger logger = LoggerFactory.getLogger(FetchDataService.class);
 
     private final DeviceHandlerCallback thingHandler;
     private @Nullable IoTaWattClient ioTaWattClient;
@@ -80,9 +80,21 @@ public class FetchDataService {
             } else {
                 thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
-        } catch (ThingStatusOfflineException e) {
-            thingHandler.updateStatus(ThingStatus.OFFLINE, e.thingStatusDetail, e.description);
+        } catch (IoTaWattClientInterruptedException e) {
+            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY);
+        } catch (IoTaWattClientCommunicationException e) {
+            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        } catch (IoTaWattClientConfigurationException e) {
+            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, getErrorMessage(e));
+        } catch (IoTaWattClientException e) {
+            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, getErrorMessage(e));
         }
+    }
+
+    @Nullable
+    private String getErrorMessage(Throwable t) {
+        final Throwable cause = t.getCause();
+        return Objects.requireNonNullElse(cause, t).getMessage();
     }
 
     private void updateChannels(StatusResponse statusResponse) {

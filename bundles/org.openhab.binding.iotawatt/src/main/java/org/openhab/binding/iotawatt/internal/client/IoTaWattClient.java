@@ -14,7 +14,6 @@ package org.openhab.binding.iotawatt.internal.client;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -27,9 +26,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.iotawatt.internal.exception.ThingStatusOfflineException;
 import org.openhab.binding.iotawatt.internal.model.StatusResponse;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,19 +68,22 @@ public class IoTaWattClient {
     /**
      * Fetch the current status from the device.
      * The errors are handled by the caller to update the Thing status accordingly.
-     * 
-     * @throws ThingStatusOfflineException Thrown when ThingStatus needs to be set to offline
+     *
+     * @throws IoTaWattClientCommunicationException On communication errors
+     * @throws IoTaWattClientInterruptedException When sending the request is interrupted
+     * @throws IoTaWattClientConfigurationException When the URI is wrong
+     * @throws IoTaWattClientException When an unknown error occurs
      * @return The optional StatusResponse fetched from the device
      */
-    public Optional<StatusResponse> fetchStatus() throws ThingStatusOfflineException {
+    public Optional<StatusResponse> fetchStatus() throws IoTaWattClientCommunicationException,
+            IoTaWattClientInterruptedException, IoTaWattClientException, IoTaWattClientConfigurationException {
         try {
             final URI uri = new URI(String.format(REQUEST_URL, hostname));
             final Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(requestTimeout,
                     TimeUnit.SECONDS);
             final ContentResponse response = request.send();
             if (response.getStatus() != HttpStatus.OK_200) {
-                throw new ThingStatusOfflineException(ThingStatusDetail.COMMUNICATION_ERROR,
-                        "HttpStatus " + response.getStatus());
+                throw new IoTaWattClientCommunicationException("HttpStatus " + response.getStatus());
             }
             final String content = response.getContentAsString();
             @Nullable
@@ -98,20 +98,14 @@ public class IoTaWattClient {
             // noinspection ConstantConditions
             return Optional.ofNullable(statusResponse);
         } catch (InterruptedException e) {
-            throw new ThingStatusOfflineException(ThingStatusDetail.NOT_YET_READY);
+            throw new IoTaWattClientInterruptedException();
         } catch (TimeoutException e) {
-            throw new ThingStatusOfflineException(ThingStatusDetail.COMMUNICATION_ERROR);
+            throw new IoTaWattClientCommunicationException();
         } catch (URISyntaxException e) {
-            throw new ThingStatusOfflineException(ThingStatusDetail.CONFIGURATION_ERROR, getErrorMessage(e));
+            throw new IoTaWattClientConfigurationException(e);
         } catch (ExecutionException e) {
             logger.debug("Error on getting data from IoTaWatt {}", hostname);
-            throw new ThingStatusOfflineException(ThingStatusDetail.NONE, getErrorMessage(e));
+            throw new IoTaWattClientException();
         }
-    }
-
-    @Nullable
-    private String getErrorMessage(Throwable t) {
-        final Throwable cause = t.getCause();
-        return Objects.requireNonNullElse(cause, t).getMessage();
     }
 }

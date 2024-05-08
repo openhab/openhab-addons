@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -38,9 +39,11 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openhab.binding.iotawatt.internal.exception.ThingStatusOfflineException;
 import org.openhab.binding.iotawatt.internal.model.StatusResponse;
 
 import com.google.gson.Gson;
@@ -59,8 +62,9 @@ class IoTaWattClientTest {
     private final Gson gson = new Gson();
 
     @Test
-    void fetchStatus_whenValidJson_returnObject() throws ThingStatusOfflineException, IOException, ExecutionException,
-            InterruptedException, TimeoutException {
+    void fetchStatus_whenValidJson_returnObject() throws IOException, ExecutionException, InterruptedException,
+            TimeoutException, IoTaWattClientInterruptedException, IoTaWattClientCommunicationException,
+            IoTaWattClientConfigurationException, IoTaWattClientException {
         // given
         final IoTaWattClient client = new IoTaWattClient("hostname", 10, httpClient, gson);
         Request request = mock(Request.class);
@@ -96,12 +100,13 @@ class IoTaWattClientTest {
         final IoTaWattClient client = new IoTaWattClient(" ", 10, httpClient, mock(Gson.class));
 
         // when
-        assertThrows(ThingStatusOfflineException.class, client::fetchStatus);
+        assertThrows(IoTaWattClientConfigurationException.class, client::fetchStatus);
     }
 
     @Test
     void fetchStatus_whenInputsAndOutputsEmpty_returnEmpty()
-            throws ThingStatusOfflineException, ExecutionException, InterruptedException, TimeoutException {
+            throws ExecutionException, InterruptedException, TimeoutException, IoTaWattClientInterruptedException,
+            IoTaWattClientCommunicationException, IoTaWattClientConfigurationException, IoTaWattClientException {
         // given
         final IoTaWattClient client = new IoTaWattClient("hostname", 10, httpClient, gson);
         Request request = mock(Request.class);
@@ -125,7 +130,7 @@ class IoTaWattClientTest {
 
     @Test
     void fetchStatus_whenNot200Response_throwsException()
-            throws ThingStatusOfflineException, ExecutionException, InterruptedException, TimeoutException {
+            throws ExecutionException, InterruptedException, TimeoutException {
         // given
         final IoTaWattClient client = new IoTaWattClient("hostname", 10, httpClient, gson);
         Request request = mock(Request.class);
@@ -137,7 +142,29 @@ class IoTaWattClientTest {
         when(contentResponse.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
 
         // when/then
-        assertThrows(ThingStatusOfflineException.class, client::fetchStatus);
+        assertThrows(IoTaWattClientCommunicationException.class, client::fetchStatus);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideParamsForThrowCases")
+    void fetchStatus_whenExceptions_throwsCustomException(Class<Throwable> thrownException,
+            Class<Throwable> expectedException) throws ExecutionException, InterruptedException, TimeoutException {
+        // given
+        final IoTaWattClient client = new IoTaWattClient("hostname", 10, httpClient, gson);
+        Request request = mock(Request.class);
+        when(httpClient.newRequest(any(URI.class))).thenReturn(request);
+        when(request.method(any(HttpMethod.class))).thenReturn(request);
+        when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
+        when(request.send()).thenThrow(thrownException);
+
+        // when/then
+        assertThrows(expectedException, client::fetchStatus);
+    }
+
+    private static Stream<Arguments> provideParamsForThrowCases() {
+        return Stream.of(Arguments.of(InterruptedException.class, IoTaWattClientInterruptedException.class),
+                Arguments.of(TimeoutException.class, IoTaWattClientCommunicationException.class),
+                Arguments.of(ExecutionException.class, IoTaWattClientException.class));
     }
 
     private String readFile(String filename) throws IOException {
