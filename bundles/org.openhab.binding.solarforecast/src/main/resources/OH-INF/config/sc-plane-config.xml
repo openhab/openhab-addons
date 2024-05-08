@@ -14,11 +14,11 @@
 			<description>Data refresh rate of forecast data in minutes</description>
 			<default>120</default>
 		</parameter>
-        <parameter name="refreshManual" type="boolean">
-            <label>Manual Forecast Refresh</label>
-            <description>Forecast update only triggered via rule action by user. Overwrites refreshInterval configuration</description>
-            <advanced>true</advanced>
-            <default>false</default>
-        </parameter>
+		<parameter name="refreshManual" type="boolean">
+			<label>Manual Forecast Refresh</label>
+			<description>Forecast update only triggered via rule action by user. Overwrites refreshInterval configuration</description>
+			<advanced>true</advanced>
+			<default>false</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

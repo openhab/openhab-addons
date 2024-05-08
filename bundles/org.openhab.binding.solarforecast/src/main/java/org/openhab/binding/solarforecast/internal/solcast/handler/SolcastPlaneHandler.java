@@ -84,8 +84,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             if (handler != null) {
                 if (handler instanceof SolcastBridgeHandler sbh) {
                     bridgeHandler = Optional.of(sbh);
-                    Instant expiration = (configuration.refreshManual == true) ? Instant.MAX
-                            : Instant.now().minusSeconds(1);
+                    Instant expiration = (configuration.refreshManual) ? Instant.MAX : Instant.now().minusSeconds(1);
                     forecast = Optional.of(new SolcastObject(thing.getUID().getAsString(), expiration, sbh));
                     sbh.addPlane(this);
                 } else {
@@ -161,7 +160,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
                         ContentResponse crEstimate = estimateRequest.send();
                         if (crEstimate.getStatus() == 200) {
-                            Instant expiration = (configuration.refreshManual == true) ? Instant.MAX
+                            Instant expiration = (configuration.refreshManual) ? Instant.MAX
                                     : Instant.now().plus(configuration.refreshInterval, ChronoUnit.MINUTES);
                             SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(),
                                     crEstimate.getContentAsString(), expiration, bridge);
