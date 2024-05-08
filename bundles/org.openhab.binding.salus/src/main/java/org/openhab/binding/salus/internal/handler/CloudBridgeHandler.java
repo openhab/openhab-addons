@@ -40,7 +40,7 @@ import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
 import org.openhab.binding.salus.internal.rest.Error;
 import org.openhab.binding.salus.internal.rest.GsonMapper;
-import org.openhab.binding.salus.internal.rest.JettyHttpClient;
+import org.openhab.binding.salus.internal.rest.HttpClient;
 import org.openhab.binding.salus.internal.rest.RestClient;
 import org.openhab.binding.salus.internal.rest.RetryHttpClient;
 import org.openhab.binding.salus.internal.rest.SalusApi;
@@ -84,7 +84,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/cloud-bridge-handler.initialize.username-pass-not-valid");
             return;
         }
-        RestClient httpClient = new JettyHttpClient(httpClientFactory.getCommonHttpClient());
+        RestClient httpClient = new HttpClient(httpClientFactory.getCommonHttpClient());
         if (config.getMaxHttpRetries() > 0) {
             httpClient = new RetryHttpClient(httpClient, config.getMaxHttpRetries());
         }

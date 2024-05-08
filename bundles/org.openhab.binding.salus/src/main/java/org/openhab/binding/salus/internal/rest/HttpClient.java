@@ -20,7 +20,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -29,12 +28,12 @@ import org.eclipse.jetty.client.util.StringContentProvider;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class JettyHttpClient implements RestClient {
+public class HttpClient implements RestClient {
     private static final int TIMEOUT = 10;
     private static final int IDLE_TIMEOUT = TIMEOUT;
-    private final HttpClient client;
+    private final org.eclipse.jetty.client.HttpClient client;
 
-    public JettyHttpClient(HttpClient client) {
+    public HttpClient(org.eclipse.jetty.client.HttpClient client) {
         this.client = requireNonNull(client, "client");
         if (this.client.isStopped()) {
             throw new IllegalStateException("HttpClient is stopped");
