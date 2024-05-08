@@ -106,7 +106,7 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
                 properties.put(Thing.PROPERTY_SERIAL_NUMBER, measure.getSerialNo());
                 String model = measure.getModel();
                 if (model != null) {
-                    properties.put(PROPERTY_MODEL, model);
+                    properties.put(Thing.PROPERTY_MODEL_ID, model);
                 }
                 properties.put(CONFIG_LOCATION, id);
 
