@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.samsungtv.internal.handler;
+package org.openhab.binding.samsungtv.internal;
 
 import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.*;
 
@@ -19,7 +19,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.samsungtv.internal.WakeOnLanUtility;
+import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
 import org.openhab.binding.samsungtv.internal.service.RemoteControllerService;
 import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.openhab.core.library.types.OnOffType;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Nick Waterton - Initial contribution
  */
 @NonNullByDefault
-class WolSend {
+public class WolSend {
 
     private static final int WOL_PACKET_RETRY_COUNT = 10;
     private static final int WOL_SERVICE_CHECK_COUNT = 30;
@@ -122,6 +122,7 @@ class WolSend {
 
     private void sendCommand(RemoteControllerService service) {
         // send command in 2 seconds to allow time for connection to re-establish
+        logger.debug("{}: resend command {} to channel {} in 2 seconds...", host, command, channel);
         handler.getScheduler().schedule(() -> {
             service.handleCommand(channel, command);
         }, 2000, TimeUnit.MILLISECONDS);
@@ -138,8 +139,6 @@ class WolSend {
             logger.debug("{}: RemoteControllerService found after {} attempts", host, wolCount);
             // do not resend command if artMode command as TV wakes up in artMode
             if (!channel.equals(ART_MODE)) {
-                logger.debug("{}: resend command {} to channel {} in 2 seconds...", host, command, channel);
-                // send in 2 seconds to allow time for connection to re-establish
                 sendCommand((RemoteControllerService) s);
             }
             cancel();

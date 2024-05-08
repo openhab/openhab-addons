@@ -194,8 +194,8 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
                 }
                 break;
             case COLOR_TEMPERATURE:
-                if (command instanceof DecimalType) {
-                    int newValue = Math.max(0, Math.min(((DecimalType) command).intValue(), 4));
+                if (command instanceof DecimalType commandAsDecimalType) {
+                    int newValue = Math.max(0, Math.min(commandAsDecimalType.intValue(), 4));
                     result = sendCommand("SetColorTemperature", Integer.toString(newValue));
                 }
                 break;
@@ -295,7 +295,6 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
             inputsMap.put("Channel", "Master");
         }
         inputsMap.putAll(inputs);
-        @SuppressWarnings("null")
         Map<String, String> result = service.invokeAction(this, SERVICE_RENDERING_CONTROL, actionId, inputsMap);
         if (!subscription) {
             result.keySet().stream().forEach(a -> onValueReceived(a, result.get(a), SERVICE_RENDERING_CONTROL));
@@ -312,8 +311,8 @@ public class MediaRendererService implements UpnpIOParticipant, SamsungTvService
     }
 
     private String cmdToString(Command command) {
-        if (command instanceof DecimalType) {
-            return Integer.toString(((DecimalType) command).intValue());
+        if (command instanceof DecimalType commandAsDecimalType) {
+            return Integer.toString(commandAsDecimalType.intValue());
         }
         if (command instanceof OnOffType) {
             return Boolean.toString(command.equals(OnOffType.ON));

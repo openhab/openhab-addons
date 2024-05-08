@@ -17,7 +17,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration class for {@link SamsungTvHandler}.
+ * Configuration class for {@link org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler}.
  *
  * @author Pauli Anttila - Initial contribution
  * @author Arjan Mels - Added MAC Address

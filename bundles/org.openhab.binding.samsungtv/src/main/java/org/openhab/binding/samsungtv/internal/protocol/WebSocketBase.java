@@ -17,7 +17,6 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -77,15 +76,22 @@ class WebSocketBase extends WebSocketAdapter {
     }
 
     void reconnect() {
-        if (sessionFuture.isPresent() && count++ < 4) {
-            uri.ifPresent(u -> {
-                try {
-                    logger.debug("{}: Reconnecting : {} try: {}", host, className, count);
-                    connect(u);
-                } catch (RemoteControllerException e) {
-                    logger.warn("{} Reconnect Failed {} : {}", host, className, e.getMessage());
-                }
-            });
+        if (!isConnected()) {
+            if (sessionFuture.isPresent() && count++ < 4) {
+                uri.ifPresent(u -> {
+                    try {
+                        logger.debug("{}: Reconnecting : {} try: {}", host, className, count);
+                        remoteControllerWebSocket.callback.handler.getScheduler().schedule(() -> {
+                            reconnect();
+                        }, 2000, TimeUnit.MILLISECONDS);
+                        connect(u);
+                    } catch (RemoteControllerException e) {
+                        logger.warn("{} Reconnect Failed {} : {}", host, className, e.getMessage());
+                    }
+                });
+            } else {
+                count = 0;
+            }
         }
     }
 
@@ -98,7 +104,6 @@ class WebSocketBase extends WebSocketAdapter {
         this.uri = Optional.of(uri);
         try {
             sessionFuture = Optional.of(remoteControllerWebSocket.client.connect(this, uri));
-            // logger.trace("{}: Connecting session Future: {}", host, sessionFuture.get());
         } catch (IOException | IllegalStateException e) {
             throw new RemoteControllerException(e);
         }
@@ -116,19 +121,15 @@ class WebSocketBase extends WebSocketAdapter {
             logger.trace("{}: {} Buffer Size set to {} Mb", host, className,
                     Math.round((bufferSize / 1048576.0) * 100.0) / 100.0);
             // avoid 5 minute idle timeout
-            @Nullable
-            ScheduledExecutorService scheduler = remoteControllerWebSocket.callback.getScheduler();
-            if (scheduler != null) {
-                scheduler.scheduleWithFixedDelay(() -> {
-                    try {
-                        String data = "Ping";
-                        ByteBuffer payload = ByteBuffer.wrap(data.getBytes());
-                        session.getRemote().sendPing(payload);
-                    } catch (IOException e) {
-                        logger.warn("{} problem starting periodic Ping {} : {}", host, className, e.getMessage());
-                    }
-                }, 4, 4, TimeUnit.MINUTES);
-            }
+            remoteControllerWebSocket.callback.handler.getScheduler().scheduleWithFixedDelay(() -> {
+                try {
+                    String data = "Ping";
+                    ByteBuffer payload = ByteBuffer.wrap(data.getBytes());
+                    session.getRemote().sendPing(payload);
+                } catch (IOException e) {
+                    logger.warn("{} problem starting periodic Ping {} : {}", host, className, e.getMessage());
+                }
+            }, 4, 4, TimeUnit.MINUTES);
         }
         super.onWebSocketConnect(session);
         count = 0;

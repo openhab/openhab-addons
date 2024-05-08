@@ -163,7 +163,7 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
      * @param port TCP port of the remote controller protocol.
      * @param appName Application name used to send key codes.
      * @param uniqueId Unique Id used to send key codes.
-     * @param RemoteControllerService callback
+     * @param callback RemoteControllerService callback
      * @throws RemoteControllerException
      */
     public RemoteControllerWebSocket(String host, int port, String appName, String uniqueId,

@@ -781,7 +781,7 @@ class WebSocketArt extends WebSocketBase {
             if (contentInfo.getSecured()) {
                 if (sslsocketfactory != null) {
                     logger.trace("{}: thumbnail SSL socket connecting", host);
-                    socket = (SSLSocket) sslsocketfactory.createSocket(contentInfo.getIp(), contentInfo.getPort());
+                    socket = sslsocketfactory.createSocket(contentInfo.getIp(), contentInfo.getPort());
                 } else {
                     logger.debug("{}: sslsocketfactory is null", host);
                     return;
@@ -826,7 +826,7 @@ class WebSocketArt extends WebSocketBase {
             valueReceived(ART_IMAGE, new RawType(image, ftype));
         } catch (Exception e) {
             if (logger.isTraceEnabled()) {
-                logger.warn("{}: Error extracting thumbnail: ", host, e);
+                logger.trace("{}: Error extracting thumbnail: ", host, e);
             } else {
                 logger.warn("{}: Error extracting thumbnail {}", host, e.getMessage());
             }

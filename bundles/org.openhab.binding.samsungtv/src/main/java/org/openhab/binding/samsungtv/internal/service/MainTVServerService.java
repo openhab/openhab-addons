@@ -277,7 +277,6 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     protected synchronized Map<String, String> updateResourceState(String actionId, Map<String, String> inputs) {
-        @SuppressWarnings("null")
         Map<String, String> result = Optional.of(service)
                 .map(a -> a.invokeAction(this, SERVICE_MAIN_AGENT, actionId, inputs)).filter(a -> !a.isEmpty())
                 .orElse(Map.of("Result", "Command Failed"));
@@ -384,7 +383,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
                     }
                     break;
                 case "PowerOFF":
-                    logger.info("{}: TV has Powered Off", host);
+                    logger.debug("{}: TV has Powered Off", host);
                     handler.setOffline();
                     break;
                 case "MajorCh":

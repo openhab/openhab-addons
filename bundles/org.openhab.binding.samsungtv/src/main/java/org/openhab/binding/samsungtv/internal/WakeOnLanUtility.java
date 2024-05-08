@@ -48,7 +48,6 @@ public class WakeOnLanUtility {
     /**
      * Get os command to find MAC address
      *
-     * @param hostName Host Name (or IP address) of host to retrieve command for
      * @return os COMMAND
      */
     public static String getCommand() {

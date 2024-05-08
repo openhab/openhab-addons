@@ -148,16 +148,16 @@ public class RemoteControllerService implements SamsungTvService {
     @Override
     public void stop() {
         try {
-            if (getArtMode2022()) {
-                artMode = false;
-            } else {
-                remoteController.close();
-            }
+            remoteController.close();
         } catch (RemoteControllerException ignore) {
             // ignore error
         }
     }
 
+    /**
+     * Clears the UPnP cache, or reconnects a websocket if diconnected
+     * Here we reconnect the websocket
+     */
     @Override
     public void clearCache() {
         start();
@@ -174,10 +174,10 @@ public class RemoteControllerService implements SamsungTvService {
 
         boolean result = false;
         if (!checkConnection() && !SET_ART_MODE.equals(channel)) {
-            logger.warn("{}: RemoteController is not connected", host);
+            logger.debug("{}: RemoteController is not connected", host);
             if (getArtMode2022() && retryCount < 4) {
                 retryCount += 1;
-                logger.info("{}: Reconnecting RemoteController, retry: {}", host, retryCount);
+                logger.debug("{}: Reconnecting RemoteController, retry: {}", host, retryCount);
                 start();
                 return handler.handleCommand(channel, command, 3000);
             } else {
@@ -455,11 +455,11 @@ public class RemoteControllerService implements SamsungTvService {
         }
         for (int i = 0; i < keys.size(); i++) {
             Object key = keys.get(i);
-            if (key instanceof Integer) {
-                if ((int) key > 0) {
-                    delay += Math.max(0, (int) key - (2 * timingInMs));
+            if (key instanceof Integer keyAsInt) {
+                if (keyAsInt > 0) {
+                    delay += Math.max(0, keyAsInt - (2 * timingInMs));
                 } else {
-                    press = Math.max(timingInMs, Math.abs((int) key));
+                    press = Math.max(timingInMs, Math.abs(keyAsInt));
                     delay -= timingInMs;
                 }
                 continue;
@@ -473,8 +473,8 @@ public class RemoteControllerService implements SamsungTvService {
                 if (duration > 0) {
                     remoteController.sendKeyPress((KeyCode) key, duration);
                 } else {
-                    if (key instanceof String) {
-                        remoteController.sendKey((String) key);
+                    if (key instanceof String keyAsString) {
+                        remoteController.sendKey(keyAsString);
                     } else {
                         remoteController.sendKey((KeyCode) key);
                     }
@@ -525,14 +525,14 @@ public class RemoteControllerService implements SamsungTvService {
     public synchronized void updateArtMode(boolean artMode) {
         // manual update of power/art mode for >=2022 frame TV's
         if (this.artMode == artMode) {
-            logger.info("{}: Artmode setting is already: {}", host, artMode);
+            logger.debug("{}: Artmode setting is already: {}", host, artMode);
             return;
         }
         if (artMode) {
-            logger.info("{}: Setting power state OFF, Art Mode ON", host);
+            logger.debug("{}: Setting power state OFF, Art Mode ON", host);
             powerUpdated(false, true);
         } else {
-            logger.info("{}: Setting power state ON, Art Mode OFF", host);
+            logger.debug("{}: Setting power state ON, Art Mode OFF", host);
             powerUpdated(true, false);
         }
         if (this.artMode) {

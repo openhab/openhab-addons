@@ -39,6 +39,7 @@ import org.jupnp.registry.Registry;
 import org.jupnp.registry.RegistryListener;
 import org.openhab.binding.samsungtv.internal.Utils;
 import org.openhab.binding.samsungtv.internal.WakeOnLanUtility;
+import org.openhab.binding.samsungtv.internal.WolSend;
 import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerException;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerLegacy;
@@ -187,7 +188,6 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     /**
      * For Modern TVs get configuration, with 500 ms timeout
      *
-     * @return Optional<TVProperties>
      */
     public class FetchTVProperties implements Callable<Optional<TVProperties>> {
         public Optional<TVProperties> call() throws Exception {
@@ -211,7 +211,6 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
      *
      * @param ms int delay in milliseconds
      * @param retryCount int number of retries before giving up
-     *
      * @return TVProperties
      */
     public TVProperties fetchTVProperties(int ms, int retryCount) {
@@ -313,7 +312,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         setModelName(properties.getModelName());
         int year = Integer.parseInt(properties.getModel().substring(0, 2));
         if (properties.getFrameTVSupport() && year >= 22) {
-            logger.warn("{}: Art Mode is NOT SUPPORTED on Frame TV's after 2021 model year", host);
+            logger.warn("{}: Art Mode MAY NOT BE SUPPORTED on Frame TV's after 2021 model year", host);
             setArtMode2022(true);
             artApiVersion = 1;
         }
@@ -704,7 +703,6 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     }
 
     private synchronized void stopService(SamsungTvService service) {
-        // if (getArtMode2022() && service.getServiceName().equals(RemoteControllerService.SERVICE_NAME)) {
         if (isFrame2022() && service.getServiceName().equals(RemoteControllerService.SERVICE_NAME)) {
             // don't stop the remoteController service on 2022 frame TV's
             logger.debug("{}: not stopping: {}", host, service.getServiceName());

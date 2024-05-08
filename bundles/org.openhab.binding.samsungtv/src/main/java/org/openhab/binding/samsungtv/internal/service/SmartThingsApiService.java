@@ -49,6 +49,7 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
 import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -114,6 +115,7 @@ public class SmartThingsApiService implements SamsungTvService {
         this.host = host;
         this.apiKey = handler.configuration.getSmartThingsApiKey();
         this.deviceId = handler.configuration.getSmartThingsDeviceId();
+        logger.debug("{}: Creating a Samsung TV Smartthings Api service", host);
     }
 
     @Override
@@ -495,20 +497,17 @@ public class SmartThingsApiService implements SamsungTvService {
      * Currently rate limited to 350 requests/minute
      *
      * @param method the method "GET" or "POST"
-     *
-     * @param URI uri
-     *
+     * @param uri as a URI
      * @param content to POST (or null)
-     *
-     * @return String response
+     * @return response
      */
-    public Optional<String> sendUrl(String method, URI uri, @Nullable InputStream content) throws IOException {
+    public Optional<String> sendUrl(HttpMethod method, URI uri, @Nullable InputStream content) throws IOException {
         // need to add header "Authorization":"Bearer " + apiKey;
         Properties headers = new Properties();
         headers.put("Authorization", "Bearer " + this.apiKey);
         logger.trace("{}: Sending {}", host, uri.toURL().toString());
-        Optional<String> response = Optional.ofNullable(
-                HttpUtil.executeUrl(method, uri.toURL().toString(), headers, content, "application/json", TIMEOUT));
+        Optional<String> response = Optional.ofNullable(HttpUtil.executeUrl(method.toString(), uri.toURL().toString(),
+                headers, content, "application/json", TIMEOUT));
         if (!response.isPresent()) {
             throw new IOException("No Data");
         }
@@ -522,8 +521,7 @@ public class SmartThingsApiService implements SamsungTvService {
      * Currently rate limited to 350 requests/minute
      *
      * @param value the query to send
-     *
-     * @return Optional<TvValues>
+     * @return tvValues
      */
     public synchronized Optional<TvValues> fetchTVProperties(String value) {
         if (apiKey.isBlank()) {
@@ -533,7 +531,7 @@ public class SmartThingsApiService implements SamsungTvService {
         try {
             String api = API_ENDPOINT_V1 + ((deviceId.isBlank()) ? "" : "devices/") + deviceId + value;
             URI uri = new URI("https", null, SMARTTHINGS_URL, 443, api, null, null);
-            Optional<String> response = sendUrl("GET", uri, null);
+            Optional<String> response = sendUrl(HttpMethod.GET, uri, null);
             tvValues = response.map(r -> new Gson().fromJson(r, TvValues.class));
             if (!tvValues.isPresent()) {
                 throw new IOException("No Data - is DeviceID correct?");
@@ -555,11 +553,8 @@ public class SmartThingsApiService implements SamsungTvService {
      * Currently rate limited to 350 requests/minute
      *
      * @param capability eg mediaInputSource
-     *
      * @param command eg setInputSource
-     *
      * @param value from acceptible list eg HDMI1, digitalTv, AM etc
-     *
      * @return boolean true if successful
      */
     public synchronized boolean setTVProperties(String capability, String command, String value) {
@@ -573,7 +568,7 @@ public class SmartThingsApiService implements SamsungTvService {
             InputStream content = new ByteArrayInputStream(contentString.getBytes());
             String api = API_ENDPOINT_V1 + "devices/" + deviceId + COMMAND;
             URI uri = new URI("https", null, SMARTTHINGS_URL, 443, api, null, null);
-            response = sendUrl("POST", uri, content);
+            response = sendUrl(HttpMethod.POST, uri, content);
         } catch (JsonSyntaxException | URISyntaxException | IOException e) {
             logger.debug("{}: Send Command to Smartthings Cloud failed: {}", host, e.getMessage());
         }
@@ -582,9 +577,9 @@ public class SmartThingsApiService implements SamsungTvService {
 
     /**
      * Smartthings API Subscription
+     * Retrieves the Smartthings API Subscription from a remote service, performing an API call
      *
-     *
-     * @return Optional<STSubscription> stSub
+     * @return stSub
      */
     public synchronized Optional<STSubscription> smartthingsSubscription() {
         if (apiKey.isBlank() || deviceId.isBlank()) {
@@ -597,7 +592,7 @@ public class SmartThingsApiService implements SamsungTvService {
             logger.trace("{}: subscription: {}", host, contentString);
             InputStream subscriptionFilter = new ByteArrayInputStream(contentString.getBytes());
             URI uri = new URI("https", null, SMARTTHINGS_URL, 443, "/subscriptions", null, null);
-            Optional<String> response = sendUrl("POST", uri, subscriptionFilter);
+            Optional<String> response = sendUrl(HttpMethod.POST, uri, subscriptionFilter);
             stSub = response.map(r -> new Gson().fromJson(r, STSubscription.class));
             if (!stSub.isPresent()) {
                 throw new IOException("No Data - is DeviceID correct?");
