@@ -13,7 +13,7 @@
 package org.openhab.binding.salus.internal.handler;
 
 import static java.util.Collections.emptySortedSet;
-import static java.util.Objects.requireNonNullElse;
+import static java.util.Objects.*;
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
@@ -211,12 +211,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     public boolean setValueForProperty(String dsn, String propertyName, Object value) {
         try {
             @Nullable
-            SalusApi api = salusApi;
-            if (api == null) {
-                logger.warn("Cannot set value for property {} on device {} because salusClient is null", propertyName,
-                        dsn);
-                return false;
-            }
+            SalusApi api = requireNonNull(salusApi);
             logger.debug("Setting property {} on device {} to value {} using salusClient", propertyName, dsn, value);
             ApiResponse<Object> response = api.setValueForProperty(dsn, propertyName, value);
             if (response.failed()) {
