@@ -90,7 +90,7 @@ public class AirGradientMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
         properties.put(CONFIG_API_TOKEN, "");
         properties.put(CONFIG_API_HOST_NAME, hostName);
         properties.put(CONFIG_API_REFRESH_INTERVAL, DEFAULT_POLL_INTERVAL_LOCAL.getSeconds());
-        properties.put(PROPERTY_MODEL, model);
+        properties.put(Thing.PROPERTY_MODEL_ID, model);
 
         ThingUID thingUID = getThingUID(si);
         if (thingUID == null) {
