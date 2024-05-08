@@ -18,7 +18,7 @@ import static org.openhab.binding.airgradient.internal.AirGradientBindingConstan
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CURRENT_MEASURES_LOCAL_PATH;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.DEFAULT_POLL_INTERVAL_LOCAL;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_MODEL;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.THING_TYPE_API;
+import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.THING_TYPE_LOCAL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +65,7 @@ public class AirGradientMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(THING_TYPE_API);
+        return Set.of(THING_TYPE_LOCAL);
     }
 
     @Override
@@ -117,6 +117,6 @@ public class AirGradientMDNSDiscoveryParticipant implements MDNSDiscoveryPartici
             return null;
         }
 
-        return new ThingUID(THING_TYPE_API, serialNo);
+        return new ThingUID(THING_TYPE_LOCAL, serialNo);
     }
 }

@@ -4,9 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<!-- A connection to the Cloud API which can have several locations (sensors) connected -->
 	<bridge-type id="airgradient-api">
 		<label>AirGradient API</label>
-		<description>Connection to the AirGradient API</description>
+		<description>Connection to the AirGradient Cloud API</description>
 
 		<representation-property>token</representation-property>
 		<config-description>
@@ -31,14 +32,59 @@
 		</config-description>
 	</bridge-type>
 
-	<!-- Sample Thing Type -->
+	<!-- A sensor you communicate directly to over the local network -->
+	<thing-type id="airgradient-local">
+		<label>AirGradient Local Sensor</label>
+		<description>Direct network connection to a local AirGradient Sensor</description>
+
+		<channels>
+			<channel id="pm01" typeId="pm1"/>
+			<channel id="pm02" typeId="pm2"/>
+			<channel id="pm10" typeId="pm10"/>
+			<channel id="pm003-count" typeId="particle-count"/>
+			<channel id="atmp" typeId="system.outdoor-temperature"/>
+			<channel id="rhum" typeId="system.atmospheric-humidity"/>
+			<channel id="wifi" typeId="wifi"/>
+			<channel id="rco2" typeId="co2"/>
+			<channel id="tvoc" typeId="tvoc"/>
+			<channel id="leds" typeId="leds-mode"/>
+			<channel id="calibration" typeId="calibration"/>
+			<channel id="uploads-since-boot" typeId="uploads-since-boot"/>
+		</channels>
+
+		<properties>
+			<property name="name"/>
+			<property name="firmwareVersion"/>
+			<property name="serialNo"/>
+			<property name="model"/>
+		</properties>
+		<representation-property>serialNo</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<default>http://192.168.1.1:80/measures/current</default>
+				<description>Hostname or IP address of the API</description>
+				<advanced>false</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sensors are called locations in the Cloud API -->
 	<thing-type id="location">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="airgradient-api"/>
 		</supported-bridge-type-refs>
 
 		<label>AirGradient Location</label>
-		<description>AirGradient Location is where measurements are made</description>
+		<description>AirGradient Location for data from the AirGradient Cloud API</description>
 
 		<channels>
 			<channel id="pm01" typeId="pm1"/>

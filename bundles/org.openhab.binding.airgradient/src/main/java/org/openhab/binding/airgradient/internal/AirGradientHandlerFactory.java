@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.airgradient.internal.handler.AirGradientAPIHandler;
+import org.openhab.binding.airgradient.internal.handler.AirGradientLocalHandler;
 import org.openhab.binding.airgradient.internal.handler.AirGradientLocationHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -44,7 +45,8 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.airgradient", service = ThingHandlerFactory.class)
 public class AirGradientHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_API, THING_TYPE_LOCATION);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_API, THING_TYPE_LOCATION,
+            THING_TYPE_LOCAL);
 
     private final Logger logger = LoggerFactory.getLogger(AirGradientHandlerFactory.class);
     private final HttpClient httpClient;
@@ -73,6 +75,11 @@ public class AirGradientHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_LOCATION.equals(thingTypeUID)) {
             logger.debug("Creating Location Handler for {}", thingTypeUID);
             return new AirGradientLocationHandler(thing);
+        }
+
+        if (THING_TYPE_LOCAL.equals(thingTypeUID)) {
+            logger.debug("Creating Local Handler for {}", thingTypeUID);
+            return new AirGradientLocalHandler(thing, httpClient);
         }
 
         return null;

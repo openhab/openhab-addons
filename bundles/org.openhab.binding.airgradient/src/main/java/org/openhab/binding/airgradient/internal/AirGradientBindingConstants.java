@@ -30,6 +30,7 @@ public class AirGradientBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "airgradient-api");
+    public static final ThingTypeUID THING_TYPE_LOCAL = new ThingTypeUID(BINDING_ID, "airgradient-local");
     public static final ThingTypeUID THING_TYPE_LOCATION = new ThingTypeUID(BINDING_ID, "location");
 
     // List of all Channel ids
