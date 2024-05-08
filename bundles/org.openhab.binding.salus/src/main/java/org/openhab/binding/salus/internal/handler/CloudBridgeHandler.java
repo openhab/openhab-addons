@@ -166,6 +166,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             updateStatus(ONLINE);
         } catch (RuntimeException ex) {
             logger.warn("Cannot refresh devices from CloudBridgeHandler", ex);
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
         }
     }
 
