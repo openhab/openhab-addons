@@ -669,5 +669,4 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             }
         } // else - one status isn't received yet - wait until both Modbus polls returns either success or error
     }
-
 }
