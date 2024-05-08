@@ -189,7 +189,6 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
 
     private List<@Nullable PollTask> pollTasks = new ArrayList<>();
 
-    // private @Nullable PollTask testPoller;
     private @Nullable KermiConfiguration config;
 
     /**
@@ -202,9 +201,9 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
         super(thing);
 
         // STATE
-        // globalStateChannel = channelUID(thing, STATE_GROUP, GLOBAL_STATE_CHANNEL);
         globalStateIdChannel = channelUID(thing, STATE_GROUP, GLOBAL_STATE_ID_CHANNEL);
 
+        // ALARM
         alarmStateChannel = channelUID(thing, ALARM_GROUP, ALARM_STATE_CHANNEL);
 
         // Energy source
@@ -638,16 +637,6 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
                     localComms.unregisterRegularPoll(localPoller);
                 }
             }
-            /*
-             * PollTask localInfoPoller = statePoller;
-             * if (localInfoPoller != null) {
-             * localComms.unregisterRegularPoll(localInfoPoller);
-             * }
-             * PollTask localDataPoller = dataPoller;
-             * if (localDataPoller != null) {
-             * localComms.unregisterRegularPoll(localDataPoller);
-             * }
-             */
         }
         // Comms will be close()'d by endpoint thing handler
         comms = null;
@@ -681,15 +670,4 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
         } // else - one status isn't received yet - wait until both Modbus polls returns either success or error
     }
 
-    /*
-     * @Override
-     * public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-     * listeners.add((E3DCWallboxThingHandler) childHandler);
-     * }
-     *
-     * @Override
-     * public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-     * listeners.remove(childHandler);
-     * }
-     */
 }

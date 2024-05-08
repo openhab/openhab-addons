@@ -6,19 +6,19 @@
 	<channel-type id="flow-temperature-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Flow Temperature</label>
-		<description>B16 - Vorlauftemperatur WP</description>
+		<description>B16 - Flow Temperature</description>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="return-temperature-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Return Temperature</label>
-		<description>B17 - Rücklauftemperatur WP</description>
+		<description>B17 - Return Temperature</description>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="flow-speed-channel">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Flow Speed</label>
-		<description>P13 - Durchfluss WP in l/min</description>
-		<state pattern="%.1f %uni%"/>
+		<description>P13 - Flow speed in l/min</description>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -72,9 +72,6 @@ public class Parser {
         } else if (type.equals(DataType.ALARM_STATE)) {
             size = ALARM_REG_SIZE * 2;
             bArray = new byte[size];
-            // } else if (type.equals(DataType.DATA)) {
-            // size = XCENTER_DATA_REG_SIZE * 2;
-            // bArray = new byte[size];
         } else if (type.equals(DataType.PV)) {
             size = PV_MODULATION_REG_SIZE * 2;
             bArray = new byte[size];

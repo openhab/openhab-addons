@@ -9,15 +9,18 @@
 		<description>State of PV-Modulation</description>
 	</channel-type>
 	<channel-type id="pv-power-channel">
-		<item-type>Number:Watt</item-type>
+		<item-type>Number:Power</item-type>
 		<label>PV Power</label>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="pv-target-temperature-heating-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>PV Temp Heating</label>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="pv-target-temperature-drinkingwater-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>PV Temp Drinkingwater</label>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

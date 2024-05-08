@@ -6,16 +6,19 @@
 	<channel-type id="exit-temperature-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Exit Temperature</label>
-		<description>B14 - Energiequelle Austrittstemperatur</description>
+		<description>B14 - Exit Temperature Energy Source</description>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="incoming-temperature-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Incoming temperature</label>
-		<description>B15 - Energiequelle Eintrittstemperatur</description>
+		<description>B15 - Incoming Temperature Energy Source</description>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature-sensor-outside-channel">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Outside</label>
-		<description>BOT - Außentemperaturfühler</description>
+		<description>BOT - Sensor Outside Temperature</description>
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

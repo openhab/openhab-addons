@@ -31,7 +31,6 @@ public class KermiBindingConstants {
     public static final ThingTypeUID THING_TYPE_KERMI_XCENTER = new ThingTypeUID(BINDING_ID, "kermi-xcenter");
 
     // Channels for State
-    // public static final String GLOBAL_STATE_CHANNEL = "global-state";
     public static final String GLOBAL_STATE_ID_CHANNEL = "global-state-id";
 
     // Alarm State

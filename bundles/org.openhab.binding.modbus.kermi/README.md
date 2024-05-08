@@ -103,19 +103,15 @@ They are grouped into 7 channel-groups:
 
 Possible states:
 
-- Standby 
+- Standby
 - Alarm
-- TWE
-- Kuehlen
-- Heizen
-- Abtauung
-- Vorbereitung
-- Blockiert
-- EVU Sperre
-- Nicht verfuegbar  
-  
-
-- Status unknown (if no valid state is received)
+- DrinkingWater
+- Heating
+- Defrost
+- Preparing
+- Blocked
+- EVU Blocktime
+- Unavailable
 
 
 #### Energy-Source
