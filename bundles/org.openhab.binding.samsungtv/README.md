@@ -60,9 +60,6 @@ Also under `advanced`, you have the ability to turn on *"Subscribe to UPnP event
 
 For >2019 TV's, there is an app workaround, see [App Discovery](#app-discovery) for details.
 
-## General info
-
-
 ## Channels
 
 TVs support the following channels:
