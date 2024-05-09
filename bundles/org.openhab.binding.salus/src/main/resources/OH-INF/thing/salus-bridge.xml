@@ -28,7 +28,7 @@
 					authentication purposes.</description>
 			</parameter>
 			<parameter name="url" type="text" required="true">
-				<label>Salus base URL</label>
+				<label>Salus API URL</label>
 				<default>https://eu.salusconnect.io</default>
 				<advanced>true</advanced>
 				<context>url</context>
