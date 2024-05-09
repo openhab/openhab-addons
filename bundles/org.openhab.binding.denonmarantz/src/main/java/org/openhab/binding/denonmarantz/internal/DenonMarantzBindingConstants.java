@@ -30,6 +30,9 @@ public class DenonMarantzBindingConstants {
 
     public static final String BINDING_ID = "denonmarantz";
 
+    public static final String VENDOR_DENON = "Denon";
+    public static final String VENDOR_MARANTZ = "Marantz";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AVR = new ThingTypeUID(BINDING_ID, "avr");
 

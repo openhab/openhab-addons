@@ -40,6 +40,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
@@ -141,6 +142,9 @@ public class CameraCapability extends HomeSecurityThingCapability {
     public void handleCommand(String channelName, Command command) {
         if (command instanceof OnOffType && CHANNEL_MONITORING.equals(channelName)) {
             getSecurityCapability().ifPresent(cap -> cap.changeStatus(localUrl, OnOffType.ON.equals(command)));
+        } else if (command instanceof RefreshType && CHANNEL_LIVEPICTURE.equals(channelName)) {
+            handler.updateState(GROUP_CAM_LIVE, CHANNEL_LIVEPICTURE,
+                    toRawType(cameraHelper.getLivePictureURL(localUrl != null, true)));
         } else {
             super.handleCommand(channelName, command);
         }
@@ -163,7 +167,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
             HomeEvent event = cap.getDeviceLastEvent(handler.getId(), moduleType.apiName);
             if (event != null) {
                 result.add(event);
-                result.addAll(event.getSubevents());
+                result.addAll(event.getSubEvents());
             }
         });
         return result;

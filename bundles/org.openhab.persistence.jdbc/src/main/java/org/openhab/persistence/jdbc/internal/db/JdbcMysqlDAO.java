@@ -60,7 +60,10 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
      */
     private void initSqlTypes() {
         logger.debug("JDBC::initSqlTypes: Initialize the type array");
-        sqlTypes.put("STRINGITEM", "VARCHAR(21717)");// mysql using utf-8 max 65535/3 = 21845, using 21845-128 = 21717
+
+        // MySQL using utf8mb4 max 65535/4 = 16383, using 16383-128 = 16255
+        sqlTypes.put("IMAGEITEM", "VARCHAR(16255)");
+        sqlTypes.put("STRINGITEM", "VARCHAR(16255)");
     }
 
     /**
