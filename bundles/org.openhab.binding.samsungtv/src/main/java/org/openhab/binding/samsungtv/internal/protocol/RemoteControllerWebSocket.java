@@ -190,6 +190,9 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     }
 
     public boolean isConnected() {
+        if (callback.getArtModeSupported()) {
+            return webSocketRemote.isConnected() && webSocketArt.isConnected();
+        }
         return webSocketRemote.isConnected();
     }
 

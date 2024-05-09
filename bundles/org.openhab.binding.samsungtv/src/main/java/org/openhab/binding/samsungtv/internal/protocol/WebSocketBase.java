@@ -96,6 +96,7 @@ class WebSocketBase extends WebSocketAdapter {
     }
 
     void connect(URI uri) throws RemoteControllerException {
+        count = 0;
         if (isConnected() || sessionFuture.map(sf -> !sf.isDone()).orElse(false)) {
             logger.trace("{}: {} already connecting or connected", host, className);
             return;

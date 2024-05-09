@@ -4,43 +4,7 @@ This binding integrates the [Samsung TV's](https://www.samsung.com).
 
 ## Supported Things
 
-Remote control channels (eg power, keyCode):
-Samsung TV C (2010), D (2011), E (2012) and F (2013) models should be supported via the legacy interface.
-Samsung TV H (2014) and J (2015) are **NOT supported** - these TV's use a pin code for access, and encryption for commands.
-Samsung TV K (2016) and onwards are supported via websocket interface.
-
-Even if the remote control channels are not supported, the UPnP channels may still work.
- 
-Because Samsung does not publish any documentation about the TV's UPnP interface, there could be differences between different TV models, which could lead to mismatch problems.
-
-Tested TV models (but this table may be out of date):
-
-| Model          | State   | Notes                                                                                                                                                  |
-|----------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| KU6519         | PARTIAL | Supported channels: `volume`, `mute`, `power`,  `keyCode` (at least)                                                                                   |
-| LE40D579       | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power`                                     |
-| LE40C650       | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
-| UE40F6500      | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                                                                   |
-| UE40J6300AU    | PARTIAL | Supported channels: `volume`, `mute`, `sourceName`, `power`                                                                                            |
-| UE43MU6199     | PARTIAL | Supported channels: `volume`, `mute`, `power` (at least)                                                                                               |
-| UE46D5700      | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                                                                    |
-| UE46E5505      | OK      | Initial contribution is done by this model                                                                                                             |
-| UE46F6510SS    | PARTIAL | Supported channels: `volume`, `mute`, `channel` (at least)                                                                                             |
-| UE48J5670SU    | PARTIAL | Supported channels: `volume`, `sourceName`                                                                                                             |
-| UE50MU6179     | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode`, `channel`, `sourceApp`, `url`                                                                |
-| UE55LS003      | PARTIAL | Supported channels: `volume`, `mute`, `sourceApp`, `url`, `keyCode`, `power`, `artMode`                                                                |
-| UE58RU7179UXZG | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode` (at least)                                                                                    |
-| UN50J5200      | PARTIAL | Status is retrieved (confirmed `power`, `media title`). Operating device seems not working.                                                            |
-| UN46EH5300     | OK      | All channels except `programTitle` and `channelName` are working                                                                                       |
-| UE75MU6179     | PARTIAL | All channels except `brightness`, `contrast`, `colorTemperature` and `sharpness`                                                                       |
-| QN55LS03AAFXZC | PARTIAL | Supported channels: `volume`, `mute`, `keyCode`, `power`, `artMode`, `url`, `artImage`, `artLabel`, `artJson`, `artBrightness`,`artColorTemperature`   |
-| QN43LS03BAFXZC | PARTIAL | Supported channels: `volume`, `mute`, `keyCode`, `power`, `artMode`, `url`, `artImage`, `artLabel`, `artJson`, `artBrightness`,`artColorTemperature`   |
-
-If you enable the Smartthings interface, this adds back the `sourceName`, `sourceId`, `programTitle` and `channelName` channels on >2016 TV's
-Samsung removed the app API support in >2019 TV's, if your TV is >2019, see the section on [Apps](#apps).
-Samsung removed the art API support in >2021 TV's, if your TV is >2021, see the section on [setArtMode](#setArtMode) .
-
-**NOTE:** `brightness`, `contrast`, `colorTemperature` and `sharpness` channels only work on legacy interface TV's (<2016).
+There is one Thing per TV.
 
 ## Discovery
 
@@ -48,9 +12,21 @@ The TV's are discovered through UPnP protocol in the local network and all devic
 
 ## Binding Configuration
 
-Basic operation does not require any special configuration.  
-For >2019 TV's, the app workaround uses a built in list of known app ID's. You can add to this list by editing the `misc/samsungtv.applist` file in the openHAB config directory.  
-To enable Smartthings polling, you have to add a Smartthings Personal Access token (PAT) to the Thing configuration.  
+Basic operation does not require any special configuration. 
+
+The binding has the following configuration options, which can be set for "binding:samsungtv":
+
+| Parameter             | Name                      | Description                                                   | Required  |
+|-----------------------|---------------------------|---------------------------------------------------------------------------|
+| hostName              | Host Name                 | Network address of the Samsung TV                             | yes       |
+| port                  | TCP Port                  | TCP port of the Samsung TV                                    | no        |
+| macAddress            | MAC Address               | MAC Address of the Samsung TV                                 | no        |
+| refreshInterval       | Refresh Interval          | States how often a refresh shall occur in milliseconds        | no        |
+| protocol              | Remote Control Protocol   | The type of remote control protocol                           | yes       |
+| webSocketToken        | Websocket Token           | Security token for secure websocket connection                | no        |
+| subscription          | Subscribe to UPNP         | Reduces polling on UPNP devices                               | no        |
+| smartThingsApiKey     | Smartthings PAT           | Smartthings Personal Access Token                             | no        |
+| smartThingsDeviceId   | Smartthings Device ID     | Smartthings Device ID for this TV                             | no        |
 
 ## Thing Configuration
 
@@ -69,7 +45,7 @@ Different ports are used on different models. It may be 55000, 8001 or 8002.
 
 If you have a <2016 TV, the interface will be *Legacy*, and the port is likely 55000.  
 If you have a >2016 TV, the interface will be either *websocket* on port 8001, or *websocketsecure* on port 8002.  
-If your TV supports *websocketsecure*, you **MUST** use it, otherwise the `keyCode` channel will not work, and as a lot of internal logic relies on that channel, you will find many things do not work (`power` for example).  
+If your TV supports *websocketsecure*, you **MUST** use it, otherwise the `keyCode` and all dependent channels will not work.
 
 In order for the binding to control your TV, you will be asked to accept the remote connection (from openHAB) on your TV. You have 30 seconds to accept the connection. If you fail to accept it, then most channels will not work.  
 Once you have accepted the connection, the returned token is stored in the binding, so you don't have to repeat this every time openHAB is restarted.  
@@ -82,185 +58,46 @@ The binding will try to automatically discover the correct protocol for your TV,
 Under `advanced`, you can enter a Smartthings PAT, and Device Id. This enables more channels via the Smartthings cloud. This is only for TV's that support Smartthings. No hub is required. The binding will attempt to discover the device ID for your TV automatically, you can enter it manually if automatic detection fails.  
 Also under `advanced`, you have the ability to turn on *"Subscribe to UPnP events"*. This is off by default. This option reduces (but does not eliminate) the polling of UPnP services. You can enable it if you want to test it out. If you disable this setting (after testing), you should power cycle your TV to remove the old subscriptions.
 
+For >2019 TV's, there is an app workaround, see [App Discovery](#app-discovery) for details.
+
 ## General info
 
-Only channels that are linked are polled. Some channels are not polled at all. If you don't have any channels linked, you won't see any polling output in the log.  
-If you want to watch the polling in the log (to make sure everything is working), you have to set the logging level to `TRACE`. With `subscription` enabled, you may see reduced polling.   
-
-On legacy TV's, you may see an error like this:
-
-```
-2021-12-08 12:19:50.262 [DEBUG] [port.upnp.internal.UpnpIOServiceImpl] - Error reading SOAP response message. Can't transform message payload: org.jupnp.model.action.ActionException: The argument value is invalid. Invalid number of input or output arguments in XML message, expected 2 but found 1.
-```
-
-This is not an actual error, but is what is returned when a value is polled that does not yet exist, such as the URL for the TV browser, when the browser isn’t running. These messages are not new, and can be ignored. Enabling `subscription` will eliminate them.  
-
-Some channels do not work on some TV's. It depends on the age of your TV, and what kind of interface it has. Only link channels that work on your TV, polling channels that your TV doesn't have may cause errors, and other problems.
-
-If you see errors that say `no route to host` or similar things, it means your TV is off. The binding cannot discover, control or poll a TV that is off.
-
-The `getSupportedChannelNames` messages are not UPnP services, they are not actually services that are supported *by your TV* at all. They are the internal capabilities of whatever method is being used for communication (which could be direct port connection, UPnP or websocket). 
-They also do not reflect the actual capabilities of your TV, just what that method supports, on your TV, they may do nothing.
-
-You should get `volume` and `mute` channels working at the minnimum. Other channels may or may not work, depending on your TV and the binding configuration.
-
-## Troubleshooting
-
-For the binding to function properly it is very important that your network config allows the machine running openHAB to receive UPnP multicast traffic.  
-Multicast traffic is not propogated between different subnets, or VLANS, unless you specifically configure your router to do this. Many switches have IGMP Snooping enabled by default, which filters out multicast traffic.  
-If you want to check the communication between the machine and the TV is working, you can try the following:
-
-### Check if your Linux machine receives multicast traffic
-
-**With your TV OFF (ie totally off)**
-
-- Login to the Linux console of your openHAB machine.
-- make sure you have __netcat__ installed
-- Enter `netcat -ukl 1900` or `netcat -ukl -p 1900` depending on your version of Linux
-
-### Check if your Windows/Mac machine receives multicast traffic
-
-**With your TV OFF (ie totally off)**
-
-- Download Wireshark on your openHAB machine
-- Start and select the network interface which is connected to the same network as the TV
-- Filter for the multicast messages with the expression `udp.dstport == 1900 && data.text` if you have "Show data as text" enabled, otherwise just filter for `udp.dstport == 1900`
-
-### What you should see
-
-You may see some messages (this is a good thing, it means you are receiving UPnP traffic).
-
-Now turn your TV ON (with the remote control).
-
-You should see several messages like the following:
-
-```
-NOTIFY * HTTP/1.1
-HOST: 239.255.255.250:1900
-CACHE-CONTROL: max-age=1800
-DATE: Tue, 18 Jan 2022 17:07:18 GMT
-LOCATION: http://192.168.100.73:9197/dmr
-NT: urn:schemas-upnp-org:device:MediaRenderer:1
-NTS: ssdp:alive
-SERVER: SHP, UPnP/1.0, Samsung UPnP SDK/1.0
-USN: uuid:ea645e34-d3dd-4b9b-a246-e1947f8973d6::urn:schemas-upnp-org:device:MediaRenderer:1
-```
-
-Where the ip address in `LOCATION` is the ip address of your TV, and the `USN` varies. `MediaRenderer` is the most important service, as this is what the binding uses to detect if your TV is online/turned On or not.
-
-If you now turn your TV off, you will see similar messages, but with `NTS: ssdp:byebye`. This is how the binding detects that your TV has turned OFF.
-
-Try this several times over a period of 30 minutes after you have discovered the TV and added the binding. This is because when you discover the binding, a UPnP `M-SEARCH` packet is broadcast, which will enable mulicast traffic, but your network (router or switches) can eventually start filtering out multicast traffic, leading to unrealiable behaviour.  
-If you see these messages, then basic communications is working, and you should be able to turn your TV Off (and on later TV's) ON, and have the status reported correctly.
-
-### Multiple network interfaces
-
-If you have more than one network interface on your openHAB machine, you may have to change the `Network` setings in the openHAB control panel. Make sure the `Primary Address` is selected correctly (The same subnet as your TV is connected to).
-
-### I'm not seeing any messages, or not Reliably
-
-- Most likely your machine is not receiving multicast messages
-- Check your network config:
-    - Routers often block multicast - enable it.
-    - Make sure the openHAB machine and the TV are in the same subnet/VLAN.
-    - disable `IGMP Snooping` if it is enabled on your switches.
-    - enable/disable `Enable multicast enhancement (IGMPv3)` if you have it (sometimes this helps).
-    - Try to connect your openHAB machine or TV via Ethernet instead of WiFi (AP's can filter Multicasts).
-    - Make sure you don't have any firewall rules blocking multicast.
-    - if you are using a Docker container, ensure you use the `--net=host` setting, as Docker filters multicast broadcasts by default.
-
-### I see the messages, but something else is not working properly
-
-There are several other common issues that you can check for:
-
-- Your TV is not supported. H (2014) and J (2015) TV's are not supported, as they have an encrypted interface.
-- You are trying to discover a TV that is OFF (some TV's have a timeout, and turn off automatically).
-- Remote control is not enabled on your TV. You have to specifically enable IP control and WOL on the TV.
-- You have not accepted the request to allow remote control on your TV, or, you denied the request previously.
-- You have selected an invalid combination of protocol and port in the binding.
-    - The binding will attempt to auto configure the correct protocol and port on discovery, but you can change this later to an invalid configuration, eg:
-    - Protocol None is not valid
-    - Protocol Legacy will not work on >2016 TV's
-    - Protocol websocket only works with port 8001
-    - Protocol websocketsecure only works with port 8002. If your TV supports websocketsecure on port 8002, you *must* use it, or many things will not work.
-- The channel you are trying to use is not supported on your TV.
-    - Only some channels are supported on different TV's
-    - Some channels require additional configuration on >2016 TV's. eg `SmartThings` configuration, or Apps confguration.
-    - Some channels are read only on certain TV's
-- I can't turn my TV ON.
-    - Older TV's (<2016) do not support tuning ON
-    - WOL is not enabled on your TV (you have to specifically enable it)
-    - You have a soundbar connected to your TV and are connected using wired Ethernet.
-    - The MAC address in the binding configuratiion is blank/wrong.
-    - You have to wait up to 60 seconds after turning OFF, before you can turn back ON (This is a Samsung feature called "instant on")
-- My TV asks me to accept the connection every time I turn the TV on
-    - You have the TV set to "Always Ask" for external connections. You need to set it to "Only ask the First Time". To get to the Device Manager, press the home button on your TV remote and navigate to Settings → General → External Device Manager → Device Connect Manager and change the setting.
-    - You are using a text `.things` file entry for the TV `thing`, and you haven't entered the `webSocketToken` in the text file definition. The token is shown on the binding config page. See below.
-
-## Text Files
-
-you can configure the Thing and/or channels/items in text files. The Text configuration for the Thing is like this:
-
-```java
-Thing samsungtv:tv:family_room "Samsung The Frame 55" [ hostName="192.168.100.73", port=8002, macAddress="10:2d:42:01:6d:17", refreshInterval=1000, protocol="SecureWebSocket", webSocketToken="16225986", smartThingsApiKey="cae5ac2a-6770-4fa4-a531-4d4e415872be", smartThingsDeviceId="996ff19f-d12b-4c5d-1989-6768a7ad6271", subscription=true ]
-```
-
-Channels and items follow the usual conventions.
 
 ## Channels
 
 TVs support the following channels:
 
-| Channel Type ID     | Item Type | Description                                                                                             |
-|---------------------|-----------|---------------------------------------------------------------------------------------------------------|
-| volume              | Dimmer    | Volume level of the TV.                                                                                 |
-| mute                | Switch    | Mute state of the TV.                                                                                   |
-| brightness          | Dimmer    | Brightness of the TV picture.                                                                           |
-| contrast            | Dimmer    | Contrast of the TV picture.                                                                             |
-| sharpness           | Dimmer    | Sharpness of the TV picture.                                                                            |
-| colorTemperature    | Number    | Color temperature of the TV picture. Minimum value is 0 and maximum 4.                                  |
-| sourceName          | String    | Name of the current source.                                                                             |
-| sourceId            | Number    | Id of the current source.                                                                               |
-| channel             | Number    | Selected TV channel number.                                                                             |
-| programTitle        | String    | Program title of the current channel.                                                                   |
-| channelName         | String    | Name of the current TV channel.                                                                         |
-| url                 | String    | Start TV web browser and go the given web page.                                                         |
-| stopBrowser         | Switch    | Stop TV's web browser and go back to TV mode.                                                           |
-| keyCode             | String    | The key code channel emulates the infrared remote controller and allows to send virtual button presses. |
-| sourceApp           | String    | Currently active App.                                                                                   |
-| power               | Switch    | TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely.                         |
-| artMode             | Switch    | TV art mode for Samsung The Frame TV's.                                                                 |
-| setArtMode          | Switch    | Manual input for setting internal ArtMode tracking for Samsung The Frame TV's >2021.                    |
-| artImage            | Image     | The currently selected art (thumbnail)                                                                  |
-| artLabel            | String    | The currently selected art (label) - can also set the current art                                       |
-| artJson             | String    | Send/receive commands from the TV art websocket Channel                                                 |
-| artBrightness       | Dimmer    | ArtMode Brightness                                                                                      |
-| artColorTemperature | Number    | ArtMode Color temperature Minnimum value is -5 and maximum 5                                            |
-
-
-E.g.
-
-```java
-Group   gLivingRoomTV    "Living room TV" <screen>
-Dimmer  TV_Volume        "Volume"         <soundvolume>        (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:volume" }
-Switch  TV_Mute          "Mute"           <soundvolume_mute>   (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:mute" }
-String  TV_SourceName    "Source Name [%s]"                    (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:sourceName" }
-String  TV_SourceApp     "Source App [%s]"                     (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:sourceApp" }
-String  TV_ProgramTitle  "Program Title [%s]"                  (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:programTitle" }
-String  TV_ChannelName   "Channel Name [%s]"                   (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:channelName" }
-String  TV_KeyCode       "Key Code"                            (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:keyCode" }
-Switch  TV_Power         "Power [%s]"                          (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:power" }
-Switch  TV_ArtMode       "Art Mode [%s]"                       (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artMode" }
-Switch  TV_SetArtMode    "Set Art Mode [%s]"                   (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:setArtMode" }
-String  TV_ArtLabel      "Current Art [%s]"                    (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artLabel" }
-Image   TV_ArtImage      "Current Art"                         (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artImage" }
-String  TV_ArtJson       "Art Json [%s]"                       (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artJson" }
-Dimmer  TV_ArtBri        "Art Brightness [%d%%]"               (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artBrightness" }
-Number  TV_ArtCT         "Art CT [%d]"                         (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artColorTemperature" }
-```
+| Channel Type ID     | Item   | Access | Description                                                                                             |
+|                     | Type   | Mode   |                                                                                                         |
+|---------------------|--------|--------|---------------------------------------------------------------------------------------------------------|
+| volume              | Dimmer | RW     | Volume level of the TV.                                                                                 |
+| mute                | Switch | RW     | Mute state of the TV.                                                                                   |
+| brightness          | Dimmer | RW     | Brightness of the TV picture.                                                                           |
+| contrast            | Dimmer | RW     | Contrast of the TV picture.                                                                             |
+| sharpness           | Dimmer | RW     | Sharpness of the TV picture.                                                                            |
+| colorTemperature    | Number | RW     | Color temperature of the TV picture. Minimum value is 0 and maximum 4.                                  |
+| sourceName          | String | RW     | Name of the current source (eg HDMI1).                                                                  |
+| sourceId            | Number | RW     | Id of the current source.                                                                               |
+| channel             | Number | RW     | Selected TV channel number.                                                                             |
+| programTitle        | String | R      | Program title of the current channel.                                                                   |
+| channelName         | String | R      | Name of the current TV channel.                                                                         |
+| url                 | String | W      | Start TV web browser and go the given web page.                                                         |
+| stopBrowser         | Switch | W      | Stop TV's web browser and go back to TV mode.                                                           |
+| keyCode             | String | W      | The key code channel emulates the infrared remote controller and allows to send virtual button presses. |
+| sourceApp           | String | RW     | Currently active App.                                                                                   |
+| power               | Switch | RW     | TV power. Some of the Samsung TV models doesn't allow to set Power ON remotely.                         |
+| artMode             | Switch | RW     | TV art mode for Samsung The Frame TV's.                                                                 |
+| setArtMode          | Switch | W      | Manual input for setting internal ArtMode tracking for Samsung The Frame TV's >2021.                    |
+| artImage            | Image  | RW     | The currently selected art (thumbnail)                                                                  |
+| artLabel            | String | RW     | The currently selected art (label) - can also set the current art                                       |
+| artJson             | String | RW     | Send/receive commands from the TV art websocket Channel                                                 |
+| artBrightness       | Dimmer | RW     | ArtMode Brightness                                                                                      |
+| artColorTemperature | Number | RW     | ArtMode Color temperature Minnimum value is -5 and maximum 5                                            |
 
 **NOTE:** channels: brightness, contrast, sharpness, colorTemperature don't work on newer TV's.  
 **NOTE:** channels: sourceName, sourceId, programTitle, channelName and stopBrowser may need additional configuration. 
+
+Some channels do not work on some TV's. It depends on the age of your TV, and what kind of interface it has. Only link channels that work on your TV, polling channels that your TV doesn't have may cause errors, and other problems. see [Tested TV Models](#tested-tv-models).
 
 ### keyCode channel:
 
@@ -297,13 +134,13 @@ Send `"text"` to send the word text to the TV. Any text that you want to send ha
 
 Here is an example to fill in the URL if you launch the browser:
 
-```
+```java
 TV_keyCode.sendCommand("3000,{\"x\":0, \"y\":-430},1000,KEY_ENTER,2000,\"http://your_url_here\"")
 ```
 
 Another example:
 
-```
+```java
 TV_keyCode.sendCommand("{\"x\":0, \"y\":-430},1000,LeftClick")
 ```
 
@@ -321,7 +158,7 @@ The `sourceApp` channel will show `Internet` (if configured correctly) and sendi
 
 ### Power
 
-The power channel is available on all TV's. Depending on the age of your TV, you may not be able to send power ON commands (see WOL). It should represent the ON state of your TV though.
+The power channel is available on all TV's. Depending on the age of your TV, you may not be able to send power ON commands (see [WOL](#wol)). It should represent the ON state of your TV though.
 
 ## Frame TV's
 
@@ -339,9 +176,11 @@ To determine the ON/ART/OFF state of your TV, you have to read both `power` and 
 
 ### setArtMode:
 
+**NOTE** Samsung added back the art API in Firmware 1622 to >2021 Frame TV's. If you have this version of firmware or higher, don't use the `setArtMode` channel, as it is not neccessary.
+
 `setArtMode` is a Switch channel. Since Samsung removed the art api in 2022, the TV has no way of knowing if it is in art mode or playing a TV source. This switch is to allow you to manually tell the TV what mode it is in.  
 
-If ytou only use the binding to turn the TV on and off or to Standby, the binding will keep track of the TV state. If, however you use the remote to turn the TV on or off from art mode, the binding cannot detect this, and the power state will become invalid.  
+If you only use the binding to turn the TV on and off or to Standby, the binding will keep track of the TV state. If, however you use the remote to turn the TV on or off from art mode, the binding cannot detect this, and the power state will become invalid.  
 This input allows you to set the internal art mode state from an external source (say by monitoring the power usage of the TV, or by querying the ex-link port) - thus keeping the power state consistent.
 
 **NOTE:** If you don't have a >2021 Frame TV, don't use the `setArtMode` channel, it will confuse the power handling logic.
@@ -360,13 +199,13 @@ If you send a `RawType` image, then the image (jpg or png or some other common i
 
 The string representation of a `Rawtype` image is of the form `"data:image/png;base64,iVBORw0KGgoAAA........AAElFTkSuQmCC"` where the data is the base64 encoded binary data. the command would look like this:
 
-```
+```java
 TV_ArtLabel.sendCommand("data:image/png;base64,iVBORw0KGgoAAA........AAElFTkSuQmCC")
 ```
 
 here is an example `sitemap` entry:
 
-```
+```java
 Selection item=TV_ArtLabel mappings=["MY_F0061"="Large Bauble","MY_F0063"="Small Bauble","MY_F0062"="Presents","MY_F0060"="Single Bauble","MY_F0055"="Gold Bauble","MY_F0057"="Snowflake","MY_F0054"="Stag","MY_F0056"="Pine","MY_F0059"="Cabin","SAM-S4632"="Snowy Trees","SAM-S2607"="Icy Trees","SAM-S0109"="Whale"]                      
 ```
 
@@ -377,9 +216,10 @@ Selection item=TV_ArtLabel mappings=["MY_F0061"="Large Bauble","MY_F0063"="Small
 If you send a plain text command, the command is wrapped in the required formatting, and sent to the TV artChannel. you can use this feature to send any supported command to the TV, the response will be returned on the same channel.
 If you wrap the command with `{` `}`, then the whole string is treated as a json command, and sent as-is to the channel (basic required fields will be added).
 
-Currently known working commands are:
+Currently known working commands for 2021 and earlier TV's are:
 
 ```
+    get_api_version
     get_artmode_status
     set_artmode_status "value" on or off
     get_auto_rotation_status
@@ -402,16 +242,43 @@ Currently known working commands are:
     get_brightness_sensor_setting (and set) on or off in "value"
 ```
 
-Some of these commands are quite complex, so I don't reccomend using them eg `get_thumbnail` and `send_image`.
-Some are simple, so to get the list of art currently on your TV, just send:
+Currently known working commands for 2022 and later TV's are:
 
 ```
+    api_version
+    get_artmode_status
+    set_artmode_status "value" on or off
+    get_slideshow_status
+    set_slideshow_status "type" is "slideshow" pr 'shuffelslideshow", "value" is off or duration in minutes "category_id" is a string representing the category
+    get_device_info
+    get_content_list
+    get_current_artwork
+    get_thumbnail_list - downloads list of thumbnails in same format as uploaded
+    send_image - uploads image jpg/png etc
+    delete_image_list - list in "content_id"
+    select_image - selects image to display (display optional) image label in "content_id", "show" true or false
+    get_photo_filter_list
+    set_photo_filter
+    get_matte_list
+    set_matte
+    get_artmode_settings - returns the below values
+    set_motion_timer valid values: "off","5","15","30","60","120","240", send settiing in "value"
+    set_motion_sensitivity min 1 max 3 set in "value"
+    set_color_temperature min -5 max +5 set in "value"
+    set_brightness min 1 max 10 set in "value"
+    set_brightness_sensor_setting on or off in "value"
+```
+
+Some of these commands are quite complex, so I don't reccomend using them eg `get_thumbnail`, `get_thumbnail_list` and `send_image`.
+Some are simple, so to get the list of art currently on your TV, just send:
+
+```java
 TV_ArtJson.sendCommand("get_content_list")
 ```
 
 To set the current artwork, but not display it, you would send:
 
-```
+```java
 TV_ArtJson.sendCommand("{\"request\":\"select_image\", \"content_id\":\"MY_0009\",\"show\":false}")
 ```
 
@@ -426,7 +293,7 @@ You can change the brightness of the artwork (but automatic control is still ena
 
 There are only 10 levels of brighness, so you could use a `Setpoint` control for this channel in your `sitemap` - eg:
 
-```
+```java
 Slider item=TV_ArtBrightness visibility=[TV_ArtMode==ON]
 Setpoint item=TV_ArtBrightness minValue=0 maxValue=100 step=10 visibility=[TV_ArtMode==ON]
 ```
@@ -436,8 +303,41 @@ Setpoint item=TV_ArtBrightness minValue=0 maxValue=100 step=10 visibility=[TV_Ar
 `artColorTemperature` is a Number channel, it reports the "warmth" of the artwork from -5 to 5 (default 0). It's not polled, but is updated when artmode status is updated.  
 You can use a `Setpoint` contol for this item in your `sitemap` eg:
 
-```
+```java
 Setpoint item=TV_ArtColorTemperature minValue=-5 maxValue=5 step=1 visibility=[TV_ArtMode==ON]
+```
+
+## Full Example
+
+### samsungtv.things
+
+you can configure the Thing and/or channels/items in text files. The Text configuration for the Thing is like this:
+
+```java
+Thing samsungtv:tv:family_room "Samsung The Frame 55" [ hostName="192.168.100.73", port=8002, macAddress="10:2d:42:01:6d:17", refreshInterval=1000, protocol="SecureWebSocket", webSocketToken="16225986", smartThingsApiKey="cae5ac2a-6770-4fa4-a531-4d4e415872be", smartThingsDeviceId="996ff19f-d12b-4c5d-1989-6768a7ad6271", subscription=true ]
+```
+
+### samsungtv.items
+
+Channels and items follow the usual conventions.
+
+```java
+Group   gLivingRoomTV    "Living room TV" <screen>
+Dimmer  TV_Volume        "Volume"         <soundvolume>        (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:volume" }
+Switch  TV_Mute          "Mute"           <soundvolume_mute>   (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:mute" }
+String  TV_SourceName    "Source Name [%s]"                    (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:sourceName" }
+String  TV_SourceApp     "Source App [%s]"                     (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:sourceApp" }
+String  TV_ProgramTitle  "Program Title [%s]"                  (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:programTitle" }
+String  TV_ChannelName   "Channel Name [%s]"                   (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:channelName" }
+String  TV_KeyCode       "Key Code"                            (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:keyCode" }
+Switch  TV_Power         "Power [%s]"                          (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:power" }
+Switch  TV_ArtMode       "Art Mode [%s]"                       (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artMode" }
+Switch  TV_SetArtMode    "Set Art Mode [%s]"                   (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:setArtMode" }
+String  TV_ArtLabel      "Current Art [%s]"                    (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artLabel" }
+Image   TV_ArtImage      "Current Art"                         (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artImage" }
+String  TV_ArtJson       "Art Json [%s]"                       (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artJson" }
+Dimmer  TV_ArtBri        "Art Brightness [%d%%]"               (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artBrightness" }
+Number  TV_ArtCT         "Art CT [%d]"                         (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artColorTemperature" }
 ```
 
 ## WOL
@@ -460,27 +360,27 @@ You can launch an app, by sending its name or appID to the channel. if you send 
 
 Here is an example `sitemap` entry:
 
-```
+```java
 Switch item=TV_SourceApp mappings=["Netflix"="Netflix","Apple TV"="Apple TV","Disney+"="Disney+","Tubi"="Tubi","Internet"="Internet",""="Exit"]
 ```
 
 ### Frame TV
 
-On a <2022 Frame TV, you can start a slideshow by sending the slideshow type, followed by a duration (and optional category) eg:
+On a Frame TV, you can start a slideshow by sending the slideshow type, followed by a duration (and optional category) eg:
 
-```
+```java
 TV_SourceApp.sendCommand("shuffleslideshow,1440")
 ```
 
 or a sitemap entry:
 
-```
+```java
 Switch item=TV_SourceApp label="Slideshow" mappings=["shuffleslideshow,1440"="shuffle 1 day","suffleslideshow,3"="shuffle 3 mins","slideshow,1440"="slideshow 1 day","slideshow,off"="Off"]
 ```
 
 Sending `slideshow,off` turns the slideshow feature of the TV off.
 
-### Discovery
+### App Discovery
 
 Apps are automatically discovered on TV's >2015 and <2020 (or 2019 it's not clear when the API was removed).
 
@@ -507,7 +407,7 @@ If the app you need is not discovered, a file `samsungtv.cfg` will need to be be
 
 You need to edit the file `samsungtv.cfg`, and add in the name, appID, and type of the apps you have installed on your TV. Here is a sample for the contents of the `samsungtv.cfg` file:
 
-```
+```java
 # This file is for the samsungtv binding
 # It contains a list in json format of apps that can be run on the TV
 # It is provided for TV >2020 when the api that returns a list of installed apps was removed
@@ -636,3 +536,155 @@ You can now link the `sourceName`, `sourceId`, `channel` and `channelName` chann
 ## UPnP Subscriptions
 
 UPnP Subscriptions are supported. This is an experimental feature which reduces the polling of UPnP services (off by default).
+
+## Tested TV Models
+
+Remote control channels (eg power, keyCode):
+Samsung TV C (2010), D (2011), E (2012) and F (2013) models should be supported via the legacy interface.
+Samsung TV H (2014) and J (2015) are **NOT supported** - these TV's use a pin code for access, and encryption for commands.
+Samsung TV K (2016) and onwards are supported via websocket interface.
+
+Even if the remote control channels are not supported, the UPnP channels may still work.
+
+Art channels on all Frame TV's are supported.
+ 
+Because Samsung does not publish any documentation about the TV's UPnP interface, there could be differences between different TV models, which could lead to mismatch problems.
+
+Tested TV models (but this table may be out of date):
+
+| Model          | State   | Notes                                                                                                                                                  |
+|----------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| KU6519         | PARTIAL | Supported channels: `volume`, `mute`, `power`,  `keyCode` (at least)                                                                                   |
+| LE40D579       | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power`                                     |
+| LE40C650       | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
+| UE40F6500      | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                                                                   |
+| UE40J6300AU    | PARTIAL | Supported channels: `volume`, `mute`, `sourceName`, `power`                                                                                            |
+| UE43MU6199     | PARTIAL | Supported channels: `volume`, `mute`, `power` (at least)                                                                                               |
+| UE46D5700      | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                                                                    |
+| UE46E5505      | OK      | Initial contribution is done by this model                                                                                                             |
+| UE46F6510SS    | PARTIAL | Supported channels: `volume`, `mute`, `channel` (at least)                                                                                             |
+| UE48J5670SU    | PARTIAL | Supported channels: `volume`, `sourceName`                                                                                                             |
+| UE50MU6179     | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode`, `channel`, `sourceApp`, `url`                                                                |
+| UE55LS003      | PARTIAL | Supported channels: `volume`, `mute`, `sourceApp`, `url`, `keyCode`, `power`, `artMode`                                                                |
+| UE58RU7179UXZG | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode` (at least)                                                                                    |
+| UN50J5200      | PARTIAL | Status is retrieved (confirmed `power`, `media title`). Operating device seems not working.                                                            |
+| UN46EH5300     | OK      | All channels except `programTitle` and `channelName` are working                                                                                       |
+| UE75MU6179     | PARTIAL | All channels except `brightness`, `contrast`, `colorTemperature` and `sharpness`                                                                       |
+| QN55LS03AAFXZC | PARTIAL | Supported channels: `volume`, `mute`, `keyCode`, `power`, `artMode`, `url`, `artImage`, `artLabel`, `artJson`, `artBrightness`,`artColorTemperature`   |
+| QN43LS03BAFXZC | PARTIAL | Supported channels: `volume`, `mute`, `keyCode`, `power`, `artMode`, `url`, `artImage`, `artLabel`, `artJson`, `artBrightness`,`artColorTemperature`   |
+
+If you enable the Smartthings interface, this adds back the `sourceName`, `sourceId`, `programTitle` and `channelName` channels on >2016 TV's
+Samsung removed the app API support in >2019 TV's, if your TV is >2019, see the section on [Apps](#apps).
+Samsung removed the art API support in >2021 TV's, if your Frame TV is >2021, see the section on [setArtMode](#setartmode).
+Samsung re-introduced the art API in firmware 1622 for >2021 Frame TV's. if you have ths version, art channels will work correctly.
+
+**NOTE:** `brightness`, `contrast`, `colorTemperature` and `sharpness` channels only work on legacy interface TV's (<2016).
+
+## Troubleshooting
+
+On legacy TV's, you may see an error like this:
+
+```
+2021-12-08 12:19:50.262 [DEBUG] [port.upnp.internal.UpnpIOServiceImpl] - Error reading SOAP response message. Can't transform message payload: org.jupnp.model.action.ActionException: The argument value is invalid. Invalid number of input or output arguments in XML message, expected 2 but found 1.
+```
+
+This is not an actual error, but is what is returned when a value is polled that does not yet exist, such as the URL for the TV browser, when the browser isn’t running. These messages are not new, and can be ignored. Enabling `subscription` will eliminate them.  
+
+The `getSupportedChannelNames` messages are not UPnP services, they are not actually services that are supported *by your TV* at all. They are the internal capabilities of whatever method is being used for communication (which could be direct port connection, UPnP or websocket). 
+They also do not reflect the actual capabilities of your TV, just what that method supports, on your TV, they may do nothing.
+
+You should get `volume` and `mute` channels working at the minnimum. Other channels may or may not work, depending on your TV and the binding configuration.
+
+If you see errors that say `no route to host` or similar things, it means your TV is off. The binding cannot discover, control or poll a TV that is off.
+
+For the binding to function properly it is very important that your network config allows the machine running openHAB to receive UPnP multicast traffic.  
+Multicast traffic is not propogated between different subnets, or VLANS, unless you specifically configure your router to do this. Many switches have IGMP Snooping enabled by default, which filters out multicast traffic.  
+If you want to check the communication between the machine and the TV is working, you can try the following:
+
+### Check if your Linux machine receives multicast traffic
+
+**With your TV OFF (ie totally off)**
+
+- Login to the Linux console of your openHAB machine.
+- make sure you have __netcat__ installed
+- Enter `netcat -ukl 1900` or `netcat -ukl -p 1900` depending on your version of Linux
+
+### Check if your Windows/Mac machine receives multicast traffic
+
+**With your TV OFF (ie totally off)**
+
+- Download Wireshark on your openHAB machine
+- Start and select the network interface which is connected to the same network as the TV
+- Filter for the multicast messages with the expression `udp.dstport == 1900 && data.text` if you have "Show data as text" enabled, otherwise just filter for `udp.dstport == 1900`
+
+### What you should see
+
+You may see some messages (this is a good thing, it means you are receiving UPnP traffic).
+
+Now turn your TV ON (with the remote control).
+
+You should see several messages like the following:
+
+```
+NOTIFY * HTTP/1.1
+HOST: 239.255.255.250:1900
+CACHE-CONTROL: max-age=1800
+DATE: Tue, 18 Jan 2022 17:07:18 GMT
+LOCATION: http://192.168.100.73:9197/dmr
+NT: urn:schemas-upnp-org:device:MediaRenderer:1
+NTS: ssdp:alive
+SERVER: SHP, UPnP/1.0, Samsung UPnP SDK/1.0
+USN: uuid:ea645e34-d3dd-4b9b-a246-e1947f8973d6::urn:schemas-upnp-org:device:MediaRenderer:1
+```
+
+Where the ip address in `LOCATION` is the ip address of your TV, and the `USN` varies. `MediaRenderer` is the most important service, as this is what the binding uses to detect if your TV is online/turned On or not.
+
+If you now turn your TV off, you will see similar messages, but with `NTS: ssdp:byebye`. This is how the binding detects that your TV has turned OFF.
+
+Try this several times over a period of 30 minutes after you have discovered the TV and added the binding. This is because when you discover the binding, a UPnP `M-SEARCH` packet is broadcast, which will enable mulicast traffic, but your network (router or switches) can eventually start filtering out multicast traffic, leading to unrealiable behaviour.  
+If you see these messages, then basic communications is working, and you should be able to turn your TV Off (and on later TV's) ON, and have the status reported correctly.
+
+### Multiple network interfaces
+
+If you have more than one network interface on your openHAB machine, you may have to change the `Network` setings in the openHAB control panel. Make sure the `Primary Address` is selected correctly (The same subnet as your TV is connected to).
+
+### I'm not seeing any messages, or not Reliably
+
+- Most likely your machine is not receiving multicast messages
+- Check your network config:
+    - Routers often block multicast - enable it.
+    - Make sure the openHAB machine and the TV are in the same subnet/VLAN.
+    - disable `IGMP Snooping` if it is enabled on your switches.
+    - enable/disable `Enable multicast enhancement (IGMPv3)` if you have it (sometimes this helps).
+    - Try to connect your openHAB machine or TV via Ethernet instead of WiFi (AP's can filter Multicasts).
+    - Make sure you don't have any firewall rules blocking multicast.
+    - if you are using a Docker container, ensure you use the `--net=host` setting, as Docker filters multicast broadcasts by default.
+
+### I see the messages, but something else is not working properly
+
+There are several other common issues that you can check for:
+
+- Your TV is not supported. H (2014) and J (2015) TV's are not supported, as they have an encrypted interface.
+- You are trying to discover a TV that is OFF (some TV's have a timeout, and turn off automatically).
+- Remote control is not enabled on your TV. You have to specifically enable IP control and WOL on the TV.
+- You have not accepted the request to allow remote control on your TV, or, you denied the request previously.
+- You have selected an invalid combination of protocol and port in the binding.
+    - The binding will attempt to auto configure the correct protocol and port on discovery, but you can change this later to an invalid configuration, eg:
+    - Protocol None is not valid
+    - Protocol Legacy will not work on >2016 TV's
+    - Protocol websocket only works with port 8001
+    - Protocol websocketsecure only works with port 8002. If your TV supports websocketsecure on port 8002, you *must* use it, or many things will not work.
+- The channel you are trying to use is not supported on your TV.
+    - Only some channels are supported on different TV's
+    - Some channels require additional configuration on >2016 TV's. eg `SmartThings` configuration, or Apps confguration.
+    - Some channels are read only on certain TV's
+- I can't turn my TV ON.
+    - Older TV's (<2016) do not support tuning ON
+    - WOL is not enabled on your TV (you have to specifically enable it)
+    - You have a soundbar connected to your TV and are connected using wired Ethernet.
+    - The MAC address in the binding configuratiion is blank/wrong.
+    - You have to wait up to 60 seconds after turning OFF, before you can turn back ON (This is a Samsung feature called "instant on")
+- My TV asks me to accept the connection every time I turn the TV on
+    - You have the TV set to "Always Ask" for external connections. You need to set it to "Only ask the First Time". To get to the Device Manager, press the home button on your TV remote and navigate to Settings → General → External Device Manager → Device Connect Manager and change the setting.
+    - You are using a text `.things` file entry for the TV `thing`, and you haven't entered the `webSocketToken` in the text file definition. The token is shown on the binding config page. See [Binding Configuration](#binding-configuration).
+
