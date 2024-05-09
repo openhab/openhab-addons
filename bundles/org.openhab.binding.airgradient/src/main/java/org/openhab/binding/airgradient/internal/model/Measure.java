@@ -44,11 +44,7 @@ public class Measure {
      */
     public String getLocationName() {
         String name = locationName;
-        if (name != null) {
-            return name;
-        }
-
-        return "";
+        return (name != null) ? name : "";
     }
 
     /**

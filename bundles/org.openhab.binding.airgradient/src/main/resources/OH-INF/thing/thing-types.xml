@@ -58,7 +58,7 @@
 			<property name="serialNumber"/>
 			<property name="modelId"/>
 		</properties>
-		<representation-property>serialNo</representation-property>
+		<representation-property>serialNumber</representation-property>
 
 		<config-description>
 			<parameter name="hostname" type="text">

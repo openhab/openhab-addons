@@ -12,18 +12,7 @@
  */
 package org.openhab.binding.airgradient.internal.handler;
 
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_ATMP;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_LEDS_MODE;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_PM_003_COUNT;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_PM_01;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_PM_02;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_PM_10;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_RCO2;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_RHUM;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_TVOC;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_UPLOADS_SINCE_BOOT;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_WIFI;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.PROPERTY_NAME;
+import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
