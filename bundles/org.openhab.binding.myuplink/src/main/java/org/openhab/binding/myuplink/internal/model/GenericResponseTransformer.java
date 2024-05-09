@@ -14,6 +14,7 @@ package org.openhab.binding.myuplink.internal.model;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,8 +23,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.binding.myuplink.internal.handler.ChannelProvider;
 import org.openhab.binding.myuplink.internal.handler.DynamicChannelProvider;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +64,8 @@ public class GenericResponseTransformer {
 
             logger.debug(channelData.toString());
 
-            String value = Utils.getAsString(channelData.getAsJsonObject(), "value");
-            String channelId = Utils.getAsString(channelData.getAsJsonObject(), "parameterId");
+            var value = Utils.getAsString(channelData.getAsJsonObject(), "value");
+            var channelId = Utils.getAsString(channelData.getAsJsonObject(), "parameterId");
             channelId = channelId == null ? "" : channelId;
 
             Channel channel;
@@ -74,62 +80,78 @@ public class GenericResponseTransformer {
             } else {
                 logger.debug("mapping value '{}' to channel {}", value, channel.getUID().getId());
 
-                String channelType = channel.getAcceptedItemType();
-                // if (value == null || channelType == null) {
-                // result.put(channel, UnDefType.NULL);
-                // } else {
-                // try {
-                // String channelTypeId = Utils.getChannelTypeId(channel);
-                // switch (channelType) {
-                // case CHANNEL_TYPE_SWITCH:
-                // result.put(channel, OnOffType.from(Boolean.parseBoolean(value)));
-                // break;
-                // case CHANNEL_TYPE_VOLT:
-                // result.put(channel, new QuantityType<>(Double.parseDouble(value), Units.VOLT));
-                // break;
-                // case CHANNEL_TYPE_AMPERE:
-                // result.put(channel, new QuantityType<>(Double.parseDouble(value), Units.AMPERE));
-                // break;
-                // case CHANNEL_TYPE_KWH:
-                // result.put(channel, new QuantityType<>(Double.parseDouble(value),
-                // MetricPrefix.KILO(Units.WATT_HOUR)));
-                // break;
-                // case CHANNEL_TYPE_POWER:
-                // result.put(channel,
-                // new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT)));
-                // break;
-                // case CHANNEL_TYPE_DATE:
-                // result.put(channel, new DateTimeType(Utils.parseDate(value)));
-                // break;
-                // case CHANNEL_TYPE_STRING:
-                // result.put(channel, new StringType(value));
-                // break;
-                // case CHANNEL_TYPE_NUMBER:
-                // if (channelTypeId.contains(CHANNEL_TYPENAME_INTEGER)) {
-                // // explicit type long is needed in case of integer/long values otherwise automatic
-                // // transformation to a decimal type is applied.
-                // result.put(channel, new DecimalType(Long.parseLong(value)));
-                // } else {
-                // result.put(channel, new DecimalType(Double.parseDouble(value)));
-                // }
-                // break;
-                // default:
-                // logger.warn("no mapping implemented for channel type '{}'", channelType);
-                // }
+                if (value == null) {
+                    result.put(channel, UnDefType.NULL);
+                } else {
+                    try {
+                        var acceptedType = channel.getAcceptedItemType();
+                        acceptedType = acceptedType == null ? "" : acceptedType;
+                        var newState = switch (ChannelType.fromAcceptedType(acceptedType)) {
+                            case ENERGY ->
+                                new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT_HOUR));
+                            case PRESSURE -> new QuantityType<>(Double.parseDouble(value), Units.BAR);
+                            case PERCENT -> new QuantityType<>(Double.parseDouble(value), Units.PERCENT);
+                            case TEMPERATURE -> new QuantityType<>(Double.parseDouble(value), SIUnits.CELSIUS);
+                            case FREQUENCY -> new QuantityType<>(Double.parseDouble(value), Units.HERTZ);
+                            // case CHANNEL_TYPE_SWITCH -> OnOffType.from(Boolean.parseBoolean(value));
+                            default -> UnDefType.NULL;
+                        };
 
-                // // call the custom handler to handle specific / composite channels which do not map 1:1 to JSON
-                // // fields.
-                // // TODO: result.putAll(customResponseTransformer.transform(channel, value, jsonData));
+                        if (newState == UnDefType.NULL) {
+                            var channelTypeId = Utils.getChannelTypeId(channel);
+                            logger.warn("no mapping implemented for channel type '{}'", channelTypeId);
+                        } else {
+                            result.put(channel, newState);
+                        }
+                        // switch (channelType) {
+                        // case CHANNEL_TYPE_SWITCH:
+                        // result.put(channel, OnOffType.from(Boolean.parseBoolean(value)));
+                        // break;
+                        // case CHANNEL_TYPE_VOLT:
+                        // result.put(channel, new QuantityType<>(Double.parseDouble(value), Units.VOLT));
+                        // break;
+                        // case CHANNEL_TYPE_AMPERE:
+                        // result.put(channel, new QuantityType<>(Double.parseDouble(value), Units.AMPERE));
+                        // break;
+                        // case CHANNEL_TYPE_KWH:
+                        // result.put(channel, new QuantityType<>(Double.parseDouble(value),
+                        // MetricPrefix.KILO(Units.WATT_HOUR)));
+                        // break;
+                        // case CHANNEL_TYPE_POWER:
+                        // result.put(channel,
+                        // new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT)));
+                        // break;
+                        // case CHANNEL_TYPE_DATE:
+                        // result.put(channel, new DateTimeType(Utils.parseDate(value)));
+                        // break;
+                        // case CHANNEL_TYPE_STRING:
+                        // result.put(channel, new StringType(value));
+                        // break;
+                        // case CHANNEL_TYPE_NUMBER:
+                        // if (channelTypeId.contains(CHANNEL_TYPENAME_INTEGER)) {
+                        // // explicit type long is needed in case of integer/long values otherwise automatic
+                        // // transformation to a decimal type is applied.
+                        // result.put(channel, new DecimalType(Long.parseLong(value)));
+                        // } else {
+                        // result.put(channel, new DecimalType(Double.parseDouble(value)));
+                        // }
+                        // break;
+                        // default:
+                        // logger.warn("no mapping implemented for channel type '{}'", channelType);
+                        // }
 
-                // } catch (NumberFormatException | DateTimeParseException ex) {
-                // logger.warn("caught exception while parsing data for channel {} (value '{}'). Exception: {}",
-                // channel.getUID().getId(), value, ex.getMessage());
-                // }
-                // }
-                // }
+                        // // call the custom handler to handle specific / composite channels which do not map 1:1 to
+                        // JSON
+                        // // fields.
+                        // // TODO: result.putAll(customResponseTransformer.transform(channel, value, jsonData));
+
+                    } catch (NumberFormatException | DateTimeParseException ex) {
+                        logger.warn("caught exception while parsing data for channel {} (value '{}'). Exception: {}",
+                                channel.getUID().getId(), value, ex.getMessage());
+                    }
+                }
             }
         }
-
         return result;
     }
 }
