@@ -16,6 +16,7 @@ import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.myuplink.internal.Utils;
+import org.openhab.binding.myuplink.internal.model.ChannelType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingUID;
@@ -45,20 +46,13 @@ public interface MyUplinkDynamicThingHandler extends MyUplinkThingHandler, Dynam
             String unit = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_UNIT);
             unit = unit == null ? "" : unit;
 
-            String channelType = switch (unit) {
-                case JSON_VAL_UNIT_ENERGY -> CHANNEL_TYPENAME_ENERGY;
-                case JSON_VAL_UNIT_PRESSURE -> CHANNEL_TYPENAME_PRESSURE;
-                case JSON_VAL_UNIT_PERCENT -> CHANNEL_TYPENAME_PERCENT;
-                case JSON_VAL_UNIT_TEMPERATURE -> CHANNEL_TYPENAME_TEMPERATURE;
-                case JSON_VAL_UNIT_FREQUENCY -> CHANNEL_TYPENAME_FREQUENCY;
-                default -> CHANNEL_TYPENAME_DEFAULT;
-            };
+            ChannelType channelType = ChannelType.fromJsonUnit(unit);
 
             ThingUID thingUID = getThing().getUID();
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelType);
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelType.getTypeName());
             result = ChannelBuilder.create(channelUID).withLabel(label).withDescription(label).withType(channelTypeUID)
-                    .build();
+                    .withAcceptedItemType(channelType.getAcceptedType()).build();
 
             addDynamicChannel(result);
         }
