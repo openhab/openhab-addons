@@ -12,18 +12,23 @@
  */
 package org.openhab.binding.smaenergymeter.internal.configuration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link EnergyMeterConfig} class holds the configuration properties of the binding.
  *
  * @author Osman Basha - Initial contribution
  */
+@NonNullByDefault
 public class EnergyMeterConfig {
 
-    private String mcastGroup;
-    private Integer port;
-    private Integer pollingPeriod;
+    private @Nullable String mcastGroup;
+    private int port = 9522;
+    private int pollingPeriod = 30;
+    private @Nullable String serialNumber;
 
-    public String getMcastGroup() {
+    public @Nullable String getMcastGroup() {
         return mcastGroup;
     }
 
@@ -31,19 +36,27 @@ public class EnergyMeterConfig {
         this.mcastGroup = mcastGroup;
     }
 
-    public Integer getPort() {
+    public int getPort() {
         return port;
     }
 
-    public void setPort(Integer port) {
+    public void setPort(int port) {
         this.port = port;
     }
 
-    public Integer getPollingPeriod() {
+    public int getPollingPeriod() {
         return pollingPeriod;
     }
 
-    public void setPollingPeriod(Integer pollingPeriod) {
+    public void setPollingPeriod(int pollingPeriod) {
         this.pollingPeriod = pollingPeriod;
+    }
+
+    public @Nullable String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 }
