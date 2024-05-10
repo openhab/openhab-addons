@@ -48,7 +48,7 @@
 	<channel-type id="timedPercent">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Salt Output (%)</label>
-		<state min="0" max="100" step="1.0" pattern="%d %" readOnly="false"/>
+		<state min="0" max="100" step="1.0" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="scMode">
