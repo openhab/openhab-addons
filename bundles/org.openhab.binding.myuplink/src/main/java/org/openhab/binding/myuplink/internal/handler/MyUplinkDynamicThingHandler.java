@@ -46,7 +46,7 @@ public interface MyUplinkDynamicThingHandler extends MyUplinkThingHandler, Dynam
             var unit = Utils.getAsString(channelData, JSON_KEY_CHANNEL_UNIT);
             unit = unit == null ? "" : unit;
             var strVal = Utils.getAsString(channelData, JSON_KEY_CHANNEL_STR_VAL);
-            strVal = strVal == null ? "" : unit;
+            strVal = strVal == null ? "" : strVal;
 
             ChannelType channelType = ChannelType.fromJsonData(unit, strVal);
 
