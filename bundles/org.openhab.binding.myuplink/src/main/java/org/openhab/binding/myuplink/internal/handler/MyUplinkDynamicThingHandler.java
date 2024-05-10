@@ -41,12 +41,14 @@ public interface MyUplinkDynamicThingHandler extends MyUplinkThingHandler, Dynam
         Channel result = getChannel(CHANNEL_GROUP_NONE, channelId);
         if (result == null) {
 
-            String label = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_LABEL);
+            var label = Utils.getAsString(channelData, JSON_KEY_CHANNEL_LABEL);
             label = label == null ? "" : label;
-            String unit = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_UNIT);
+            var unit = Utils.getAsString(channelData, JSON_KEY_CHANNEL_UNIT);
             unit = unit == null ? "" : unit;
+            var strVal = Utils.getAsString(channelData, JSON_KEY_CHANNEL_STR_VAL);
+            strVal = strVal == null ? "" : unit;
 
-            ChannelType channelType = ChannelType.fromJsonUnit(unit);
+            ChannelType channelType = ChannelType.fromJsonData(unit, strVal);
 
             ThingUID thingUID = getThing().getUID();
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);

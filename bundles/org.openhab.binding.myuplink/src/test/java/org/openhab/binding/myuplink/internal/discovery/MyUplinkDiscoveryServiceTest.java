@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.myuplink.internal.discovery;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -34,38 +46,40 @@ public class MyUplinkDiscoveryServiceTest {
     @Spy
     private MyUplinkDiscoveryService discoveryService;
 
-    private final String emptyResponseString = "{\"page\":1,\"itemsPerPage\":100,\"numItems\":0,\"systems\":[]}";
+    private final String emptyResponseString = """
+            {"page":1,"itemsPerPage":100,"numItems":0,"systems":[]}
+              """;
     private JsonObject emptyResponse;
 
     private final String testResponseString = """
             {
-                \"page\": 0,
-                \"itemsPerPage\": 0,
-                \"numItems\": 0,
-                \"systems\": [
+                "page": 0,
+                "itemsPerPage": 0,
+                "numItems": 0,
+                "systems": [
                     {
-                        \"systemId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",
-                        \"name\": \"string\",
-                        \"securityLevel\": \"admin\",
-                        \"hasAlarm\": true,
-                        \"country\": \"string\",
-                        \"devices\": [
+                        "systemId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                        "name": "string",
+                        "securityLevel": "admin",
+                        "hasAlarm": true,
+                        "country": "string",
+                        "devices": [
                             {
-                                \"id\": \"Dev-1337\",
-                                \"connectionState\": \"Disconnected\",
-                                \"currentFwVersion\": \"string\",
-                                \"product\": {
-                                    \"serialNumber\": \"1337\",
-                                    \"name\": \"My Device 1337\"
+                                "id": "Dev-1337",
+                                "connectionState": "Disconnected",
+                                "currentFwVersion": "string",
+                                "product": {
+                                    "serialNumber": "1337",
+                                    "name": "My Device 1337"
                                 }
                             },
                             {
-                                \"id\": \"Dev-4712\",
-                                \"connectionState\": \"Disconnected\",
-                                \"currentFwVersion\": \"string\",
-                                \"product\": {
-                                    \"serialNumber\": \"4712\",
-                                    \"name\": \"My Device 4712\"
+                                "id": "Dev-4712",
+                                "connectionState": "Disconnected",
+                                "currentFwVersion": "string",
+                                "product": {
+                                    "serialNumber": "4712",
+                                    "name": "My Device 4712"
                                 }
                             }
                         ]
