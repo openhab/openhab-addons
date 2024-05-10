@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.binding.myuplink.internal.handler.ChannelProvider;
 import org.openhab.binding.myuplink.internal.handler.DynamicChannelProvider;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
@@ -64,8 +65,8 @@ public class GenericResponseTransformer {
 
             logger.debug(channelData.toString());
 
-            var value = Utils.getAsString(channelData.getAsJsonObject(), "value");
-            var channelId = Utils.getAsString(channelData.getAsJsonObject(), "parameterId");
+            var value = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_VALUE);
+            var channelId = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_ID);
             channelId = channelId == null ? "" : channelId;
 
             Channel channel;
@@ -84,21 +85,25 @@ public class GenericResponseTransformer {
                     result.put(channel, UnDefType.NULL);
                 } else {
                     try {
-                        var acceptedType = channel.getAcceptedItemType();
-                        acceptedType = acceptedType == null ? "" : acceptedType;
-                        var newState = switch (ChannelType.fromAcceptedType(acceptedType)) {
+                        var channelTypeId = Utils.getChannelTypeId(channel);
+                        var newState = switch (ChannelType.fromTypeName(channelTypeId)) {
                             case ENERGY ->
                                 new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT_HOUR));
                             case PRESSURE -> new QuantityType<>(Double.parseDouble(value), Units.BAR);
                             case PERCENT -> new QuantityType<>(Double.parseDouble(value), Units.PERCENT);
                             case TEMPERATURE -> new QuantityType<>(Double.parseDouble(value), SIUnits.CELSIUS);
                             case FREQUENCY -> new QuantityType<>(Double.parseDouble(value), Units.HERTZ);
+                            case FLOW ->
+                                new QuantityType<>(Double.parseDouble(value), Units.LITRE.divide(Units.MINUTE));
+                            case ELECTRIC_CURRENT -> new QuantityType<>(Double.parseDouble(value), Units.AMPERE);
+                            case TIME -> new QuantityType<>(Double.parseDouble(value), Units.HOUR);
+                            case INTEGER -> new DecimalType(Long.parseLong(value));
+                            case DOUBLE -> new DecimalType(Double.parseDouble(value));
                             // case CHANNEL_TYPE_SWITCH -> OnOffType.from(Boolean.parseBoolean(value));
                             default -> UnDefType.NULL;
                         };
 
                         if (newState == UnDefType.NULL) {
-                            var channelTypeId = Utils.getChannelTypeId(channel);
                             logger.warn("no mapping implemented for channel type '{}'", channelTypeId);
                         } else {
                             result.put(channel, newState);

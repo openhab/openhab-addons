@@ -54,6 +54,9 @@ public class MyUplinkBindingConstants {
 
     // JSON Keys
     public static final String JSON_KEY_ROOT_DATA = "data";
+    public static final String JSON_KEY_CHANNEL_STR_VAL = "strVal";
+    public static final String JSON_KEY_CHANNEL_VALUE = "value";
+    public static final String JSON_KEY_CHANNEL_ID = "parameterId";
     public static final String JSON_KEY_CHANNEL_LABEL = "parameterName";
     public static final String JSON_KEY_CHANNEL_UNIT = "parameterUnit";
     public static final String JSON_KEY_CHANNEL_SCALE = "scaleValue";
@@ -70,6 +73,7 @@ public class MyUplinkBindingConstants {
     public static final String JSON_KEY_AUTH_EXPIRES_IN = "expires_in";
 
     public static final String JSON_VAL_CONNECTION_CONNECTED = "Connected";
+    public static final String JSON_VAL_DECIMAL_SEPARATOR = ".";
 
     // Write Commands
     // TODO: add content

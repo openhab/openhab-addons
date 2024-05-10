@@ -4,22 +4,16 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="type-number-unscaled">
+	<channel-type id="type-number-integer">
 		<item-type>Number</item-type>
 		<label>Unnamed Number</label>
 		<state pattern="%d" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="type-number-scale10">
+	<channel-type id="type-number-double">
 		<item-type>Number</item-type>
 		<label>Unnamed Number (0.1)</label>
 		<state pattern="%.1f" readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="type-number-scale100">
-		<item-type>Number</item-type>
-		<label>Unnamed Number (0.01)</label>
-		<state pattern="%.2f" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="type-switch">
@@ -45,25 +39,13 @@
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="type-time-unscaled">
+	<channel-type id="type-time">
 		<item-type>Number:Time</item-type>
 		<label>Unnamed Time</label>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="type-time-scale10">
-		<item-type>Number:Time</item-type>
-		<label>Unnamed Time</label>
-		<state pattern="%.1f %unit%" readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="type-frequency-unscaled">
-		<item-type>Number:Frequency</item-type>
-		<label>Unnamed Frequency</label>
-		<state pattern="%d %unit%" readOnly="true">
-		</state>
-	</channel-type>
-	<channel-type id="type-frequency-scale10">
+	<channel-type id="type-frequency">
 		<item-type>Number:Frequency</item-type>
 		<label>Unnamed Frequency</label>
 		<state pattern="%d %unit%" readOnly="true">
