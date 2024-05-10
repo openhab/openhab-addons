@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.onecta.internal.api;
 
 import java.net.HttpCookie;
@@ -18,6 +30,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.onecta.internal.OnectaConfiguration;
+import org.openhab.binding.onecta.internal.OnectaDeviceConstants;
 import org.openhab.binding.onecta.internal.api.dto.authentication.*;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationForbiddenException;
@@ -27,7 +40,11 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
+/**
+ * The {@link OnectaSignInClient} class takes care off signing in to Onecta Cloud
+ *
+ * @author Alexander Drent - Initial contribution
+ */
 @NonNullByDefault
 public class OnectaSignInClient {
 
