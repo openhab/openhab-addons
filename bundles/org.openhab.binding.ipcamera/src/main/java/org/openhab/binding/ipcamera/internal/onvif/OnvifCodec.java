@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
@@ -46,6 +47,11 @@ public class OnvifCodec extends ChannelDuplexHandler {
             return;
         }
         try {
+            if (msg instanceof HttpResponse response) {
+                if (response.status().code() != 200) {
+                    logger.trace("ONVIF replied with code {} message is {}", response.status().code(), msg);
+                }
+            }
             if (msg instanceof HttpContent content) {
                 incomingMessage += content.content().toString(CharsetUtil.UTF_8);
             }
@@ -65,11 +71,11 @@ public class OnvifCodec extends ChannelDuplexHandler {
         }
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
-            logger.info("IdleStateEvent received: {}", e.state());
+            logger.debug("IdleStateEvent received: {}", e.state());
             onvifConnection.setIsConnected(false);
             ctx.close();
         } else {
-            logger.info("Other ONVIF netty channel event occurred: {}", evt);
+            logger.debug("ONVIF netty channel event occurred: {}", evt);
         }
     }
 
@@ -78,7 +84,7 @@ public class OnvifCodec extends ChannelDuplexHandler {
         if (ctx == null || cause == null) {
             return;
         }
-        logger.info("Exception on ONVIF connection: {}", cause.getMessage());
+        logger.debug("Exception on ONVIF connection: {}", cause.getMessage());
         ctx.close();
     }
 }

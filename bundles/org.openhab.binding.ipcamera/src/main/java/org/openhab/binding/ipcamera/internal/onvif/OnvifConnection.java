@@ -381,7 +381,7 @@ public class OnvifConnection {
                 }
             }
         } else {
-            logger.info("Unhandled ONVIF reply is: {}", message);
+            logger.trace("Unhandled ONVIF reply is: {}", message);
         }
     }
 
