@@ -170,6 +170,14 @@ A persistence configuration is required for this channel.
 Please note that the CO₂ emission channels only apply to Denmark.
 These channels will not be updated when the configured price area is not DK1 or DK2.
 
+#### Trigger Channels
+
+Advanced channel `event` can trigger the following events:
+
+| Event                | Description                    |
+|----------------------|--------------------------------|
+| DAY_AHEAD_AVAILABLE  | Day-ahead prices are available |
+
 ## Thing Actions
 
 Thing actions can be used to perform calculations as well as import prices directly into rules without relying on persistence.
@@ -556,6 +564,39 @@ logInfo("Spot price two hours from now", price.toString)
 var hourStart = time.toZDT().plusHours(2).truncatedTo(time.ChronoUnit.HOURS);
 var price = items.SpotPrice.history.historicState(hourStart).quantityState;
 console.log("Spot price two hours from now: " + price);
+```
+
+:::
+
+::::
+
+### Trigger Channel Example
+
+:::: tabs
+
+::: tab DSL
+
+```javascript
+rule "Day-ahead event"
+when
+    Channel 'energidataservice:service:energidataservice:electricity#event' triggered 'DAY_AHEAD_AVAILABLE'
+then
+    logInfo("Day-ahead", "Day-ahead prices for the next day are now available")
+end
+```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+rules.when()
+    .channel('energidataservice:service:energidataservice:electricity#event').triggered('DAY_AHEAD_AVAILABLE')
+    .then(event =>
+    {
+        console.log('Day-ahead prices for the next day are now available');
+    })
+    .build("Day-ahead event");
 ```
 
 :::

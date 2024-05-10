@@ -56,6 +56,7 @@ public class EnergiDataServiceBindingConstants {
             + ChannelUID.CHANNEL_GROUP_SEPARATOR + "co2-emission-prognosis";
     public static final String CHANNEL_CO2_EMISSION_REALTIME = CHANNEL_GROUP_ELECTRICITY
             + ChannelUID.CHANNEL_GROUP_SEPARATOR + "co2-emission-realtime";
+    public static final String CHANNEL_EVENT = CHANNEL_GROUP_ELECTRICITY + ChannelUID.CHANNEL_GROUP_SEPARATOR + "event";
 
     public static final Set<String> ELECTRICITY_CHANNELS = Set.of(CHANNEL_SPOT_PRICE, CHANNEL_GRID_TARIFF,
             CHANNEL_SYSTEM_TARIFF, CHANNEL_TRANSMISSION_GRID_TARIFF, CHANNEL_ELECTRICITY_TAX,
@@ -66,6 +67,9 @@ public class EnergiDataServiceBindingConstants {
     public static final String PROPERTY_TOTAL_CALLS = "totalCalls";
     public static final String PROPERTY_LAST_CALL = "lastCall";
     public static final String PROPERTY_NEXT_CALL = "nextCall";
+
+    // List of all events
+    public static final String EVENT_DAY_AHEAD_AVAILABLE = "DAY_AHEAD_AVAILABLE";
 
     // List of supported currencies
     public static final Currency CURRENCY_DKK = Currency.getInstance("DKK");

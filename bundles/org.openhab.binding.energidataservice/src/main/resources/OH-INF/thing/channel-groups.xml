@@ -40,6 +40,7 @@
 				<label>CO₂ Emission Realtime</label>
 				<description>Near up-to-date history for CO₂ emission from electricity consumed in Denmark in g/kWh.</description>
 			</channel>
+			<channel id="event" typeId="event"/>
 		</channels>
 	</channel-group-type>
 
