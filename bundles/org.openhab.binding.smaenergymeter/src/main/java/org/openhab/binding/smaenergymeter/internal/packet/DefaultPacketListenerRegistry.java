@@ -69,7 +69,7 @@ public class DefaultPacketListenerRegistry implements PacketListenerRegistry {
     }
 
     public ScheduledFuture<?> addTask(Runnable runnable, int intervalSec) {
-        return scheduler.scheduleAtFixedRate(runnable, 0, intervalSec, TimeUnit.SECONDS);
+        return scheduler.scheduleWithFixedDelay(runnable, 0, intervalSec, TimeUnit.SECONDS);
     }
 
     public void execute(ReceivingTask receivingTask) {
