@@ -97,7 +97,7 @@ public class GenericResponseTransformer {
                                 new QuantityType<>(Double.parseDouble(value), Units.LITRE.divide(Units.MINUTE));
                             case ELECTRIC_CURRENT -> new QuantityType<>(Double.parseDouble(value), Units.AMPERE);
                             case TIME -> new QuantityType<>(Double.parseDouble(value), Units.HOUR);
-                            case INTEGER -> new DecimalType(Long.parseLong(value));
+                            case INTEGER -> new DecimalType(Double.valueOf(value).longValue());
                             case DOUBLE -> new DecimalType(Double.parseDouble(value));
                             // case CHANNEL_TYPE_SWITCH -> OnOffType.from(Boolean.parseBoolean(value));
                             default -> UnDefType.NULL;
