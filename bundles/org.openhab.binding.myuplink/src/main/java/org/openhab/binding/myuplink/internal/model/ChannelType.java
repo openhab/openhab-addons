@@ -14,7 +14,7 @@ public enum ChannelType {
     FLOW("l/m", "type-flow", "Number:Dimensionless"),
     ELECTRIC_CURRENT("A", "type-electric-current", "Number:ElectricCurrent"),
     TIME("h", "type-time", "Number:Time"),
-    INTEGER("NUMBER", "type-number-double", "Number"),
+    INTEGER("NUMBER", "type-number-integer", "Number"),
     DOUBLE("NUMBER", "type-number-double", "Number");
 
     private final String jsonUnit;
