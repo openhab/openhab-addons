@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.myuplink.internal.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -20,28 +21,28 @@ public class ChannelTypeTest {
 
     @Test
     public void testFromJsonDataInteger() {
-        assertEquals(ChannelType.INTEGER, ChannelType.fromJsonData("", "55"));
-        assertEquals(ChannelType.INTEGER, ChannelType.fromJsonData("", "Off"));
+        assertThat(ChannelType.fromJsonData("", "55"), is(ChannelType.INTEGER));
+        assertThat(ChannelType.fromJsonData("", "Off"), is(ChannelType.INTEGER));
     }
 
     @Test
     public void testFromJsonDataDouble() {
-        assertEquals(ChannelType.DOUBLE, ChannelType.fromJsonData("", "5.5"));
-        assertEquals(ChannelType.DOUBLE, ChannelType.fromJsonData("", "160.3"));
+        assertThat(ChannelType.fromJsonData("", "5.5"), is(ChannelType.DOUBLE));
+        assertThat(ChannelType.fromJsonData("", "160.3"), is(ChannelType.DOUBLE));
     }
 
     @Test
     public void testFromJsonDataTemperature() {
-        assertEquals(ChannelType.TEMPERATURE, ChannelType.fromJsonData("°C", "xxx"));
+        assertThat(ChannelType.fromJsonData("°C", "xxx"), is(ChannelType.TEMPERATURE));
     }
 
     @Test
     public void testFromJsonDataEnergy() {
-        assertEquals(ChannelType.ENERGY, ChannelType.fromJsonData("kWh", "xxx"));
+        assertThat(ChannelType.fromJsonData("kWh", "xxx"), is(ChannelType.ENERGY));
     }
 
     @Test
     public void testFromJsonDataTime() {
-        assertEquals(ChannelType.TIME, ChannelType.fromJsonData("h", "xxx"));
+        assertThat(ChannelType.fromJsonData("h", "xxx"), is(ChannelType.TIME));
     }
 }
