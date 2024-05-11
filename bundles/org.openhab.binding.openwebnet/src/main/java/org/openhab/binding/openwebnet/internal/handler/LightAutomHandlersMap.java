@@ -67,8 +67,7 @@ public class LightAutomHandlersMap {
                 if (removed && oneHandler != null && oneHandler.equals(handler)) {
                     this.oneHandler = getFirst();
                 }
-                logger.debug("MAP - Removed handler {} from Area {}", handler.ownId,
-                        area);
+                logger.debug("MAP - Removed handler {} from Area {}", handler.ownId, area);
                 logger.debug("Map: {}", this.toString());
             }
         }

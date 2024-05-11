@@ -95,10 +95,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscov
      * Create and notify to Inbox a new DiscoveryResult based on WHERE,
      * OpenDeviceType and BaseOpenMessage
      *
-     * @param where      the discovered device's address (WHERE)
+     * @param where the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param baseMsg    the OWN message received that identified the device
-     *                   (optional)
+     * @param baseMsg the OWN message received that identified the device
+     *            (optional)
      */
     public void newDiscoveryResult(@Nullable Where where, OpenDeviceType deviceType,
             @Nullable BaseOpenMessage baseMsg) {
@@ -338,9 +338,9 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractThingHandlerDiscov
         thingLabel = thingLabel + " (WHERE=" + whereConfig + ")";
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                .withThingType(OpenWebNetBindingConstants.THING_TYPE_BUS_LIGHT_GROUP)
-                .withProperties(properties).withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_OWNID)
-                .withBridge(bridgeUID).withLabel(thingLabel).build();
+                .withThingType(OpenWebNetBindingConstants.THING_TYPE_BUS_LIGHT_GROUP).withProperties(properties)
+                .withRepresentationProperty(OpenWebNetBindingConstants.PROPERTY_OWNID).withBridge(bridgeUID)
+                .withLabel(thingLabel).build();
         thingDiscovered(discoveryResult);
     }
 
