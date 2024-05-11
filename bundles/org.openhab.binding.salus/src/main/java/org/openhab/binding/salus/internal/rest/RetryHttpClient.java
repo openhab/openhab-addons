@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.salus.internal.rest;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -38,12 +35,11 @@ public class RetryHttpClient implements RestClient {
     }
 
     @Override
-    public Response<@Nullable String> get(String url, @Nullable Header... headers)
-            throws ExecutionException, InterruptedException, TimeoutException {
+    public Response<@Nullable String> get(String url, @Nullable Header... headers) throws SalusApiException {
         for (int i = 0; i < maxRetries; i++) {
             try {
                 return restClient.get(url, headers);
-            } catch (RuntimeException | ExecutionException | InterruptedException | TimeoutException ex) {
+            } catch (SalusApiException ex) {
                 if (i < maxRetries - 1) {
                     logger.debug("Error while calling GET {}. Retrying {}/{}...", i + 1, maxRetries, url, ex);
                 } else {
@@ -56,11 +52,11 @@ public class RetryHttpClient implements RestClient {
 
     @Override
     public Response<@Nullable String> post(String url, Content content, @Nullable Header... headers)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws SalusApiException {
         for (int i = 0; i < maxRetries; i++) {
             try {
                 return restClient.post(url, content, headers);
-            } catch (RuntimeException | ExecutionException | InterruptedException | TimeoutException ex) {
+            } catch (SalusApiException ex) {
                 if (i < maxRetries - 1) {
                     logger.debug("Error while calling POST {}. Retrying {}/{}...", i + 1, maxRetries, url, ex);
                 } else {

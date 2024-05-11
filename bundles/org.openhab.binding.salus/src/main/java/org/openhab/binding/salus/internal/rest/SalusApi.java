@@ -19,8 +19,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,7 +66,7 @@ public class SalusApi {
     }
 
     private RestClient.Response<@Nullable String> get(String url, RestClient.Header header, int retryAttempt)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws SalusApiException {
         refreshAccessToken();
         var response = restClient.get(url, authHeader());
         if (response.statusCode() == 401) {
@@ -84,7 +82,7 @@ public class SalusApi {
     }
 
     private RestClient.Response<@Nullable String> post(String url, RestClient.Content content, RestClient.Header header,
-            int retryAttempt) throws ExecutionException, InterruptedException, TimeoutException {
+            int retryAttempt) throws SalusApiException {
         refreshAccessToken();
         var response = restClient.post(url, content, header);
         if (response.statusCode() == 401) {
@@ -105,13 +103,12 @@ public class SalusApi {
         return str;
     }
 
-    private RestClient.Response<@Nullable String> login(String username, char[] password)
-            throws ExecutionException, InterruptedException, TimeoutException {
+    private RestClient.Response<@Nullable String> login(String username, char[] password) throws SalusApiException {
         return login(username, password, 1);
     }
 
     private RestClient.Response<@Nullable String> login(String username, char[] password, int retryAttempt)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws SalusApiException {
         logger.debug("Login with username '{}', retryAttempt={}", username, retryAttempt);
         authToken = null;
         authTokenExpireTime = null;
@@ -144,15 +141,14 @@ public class SalusApi {
         return response;
     }
 
-    private void forceRefreshAccessToken() throws ExecutionException, InterruptedException, TimeoutException {
+    private void forceRefreshAccessToken() throws SalusApiException {
         logger.debug("Force refresh access token");
         authToken = null;
         authTokenExpireTime = null;
         refreshAccessToken();
     }
 
-    private RestClient.@Nullable Response<@Nullable String> refreshAccessToken()
-            throws ExecutionException, InterruptedException, TimeoutException {
+    private RestClient.@Nullable Response<@Nullable String> refreshAccessToken() throws SalusApiException {
         if (this.authToken == null || isExpiredToken()) {
             var response = login(username, password);
             if (response.statusCode() != 200) {
@@ -174,8 +170,7 @@ public class SalusApi {
         return baseUrl + url;
     }
 
-    public ApiResponse<SortedSet<Device>> findDevices()
-            throws ExecutionException, InterruptedException, TimeoutException {
+    public ApiResponse<SortedSet<Device>> findDevices() throws SalusApiException {
         var loginResponse = refreshAccessToken();
         if (loginResponse != null && loginResponse.statusCode() != 200) {
             return error(new Error(loginResponse.statusCode(), loginResponse.body()));
@@ -194,8 +189,7 @@ public class SalusApi {
         return new RestClient.Header("Authorization", "auth_token " + requireNonNull(authToken).accessToken());
     }
 
-    public ApiResponse<SortedSet<DeviceProperty<?>>> findDeviceProperties(String dsn)
-            throws ExecutionException, InterruptedException, TimeoutException {
+    public ApiResponse<SortedSet<DeviceProperty<?>>> findDeviceProperties(String dsn) throws SalusApiException {
         var loginResponse = refreshAccessToken();
         if (loginResponse != null && loginResponse.statusCode() != 200) {
             return error(new Error(loginResponse.statusCode(), loginResponse.body()));
@@ -211,7 +205,7 @@ public class SalusApi {
     }
 
     public ApiResponse<Object> setValueForProperty(String dsn, String propertyName, Object value)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws SalusApiException {
         var loginResponse = refreshAccessToken();
         if (loginResponse != null && loginResponse.statusCode() != 200) {
             return error(new Error(loginResponse.statusCode(), loginResponse.body()));

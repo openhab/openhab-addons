@@ -34,6 +34,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.SalusBindingConstants;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
+import org.openhab.binding.salus.internal.rest.SalusApiException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -283,7 +284,7 @@ public class DeviceHandler extends BaseThingHandler implements SalusDeviceHandle
         updateState(channelUID, state);
     }
 
-    private SortedSet<DeviceProperty<?>> findDeviceProperties() {
+    private SortedSet<DeviceProperty<?>> findDeviceProperties() throws SalusApiException {
         return this.cloudApi.findPropertiesForDevice(dsn);
     }
 

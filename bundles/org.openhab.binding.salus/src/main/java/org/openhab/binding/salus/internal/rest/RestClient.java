@@ -13,8 +13,6 @@
 package org.openhab.binding.salus.internal.rest;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,8 +30,7 @@ public interface RestClient {
      * @param headers to send
      * @return response from server
      */
-    Response<@Nullable String> get(String url, @Nullable Header... headers)
-            throws ExecutionException, InterruptedException, TimeoutException;
+    Response<@Nullable String> get(String url, @Nullable Header... headers) throws SalusApiException;
 
     /**
      * POST request to server
@@ -43,8 +40,7 @@ public interface RestClient {
      * @param content to send
      * @return response from server
      */
-    Response<@Nullable String> post(String url, Content content, @Nullable Header... headers)
-            throws ExecutionException, InterruptedException, TimeoutException;
+    Response<@Nullable String> post(String url, Content content, @Nullable Header... headers) throws SalusApiException;
 
     /**
      * Represents content with a body and a type.

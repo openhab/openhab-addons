@@ -18,6 +18,7 @@ import java.util.SortedSet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
+import org.openhab.binding.salus.internal.rest.SalusApiException;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -55,5 +56,5 @@ public interface CloudApi {
      * @param dsn of the device
      * @return all properties of the device
      */
-    SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn);
+    SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn) throws SalusApiException;
 }

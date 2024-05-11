@@ -26,10 +26,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,6 +42,7 @@ import org.openhab.binding.salus.internal.rest.HttpClient;
 import org.openhab.binding.salus.internal.rest.RestClient;
 import org.openhab.binding.salus.internal.rest.RetryHttpClient;
 import org.openhab.binding.salus.internal.rest.SalusApi;
+import org.openhab.binding.salus.internal.rest.SalusApiException;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -188,13 +187,12 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     }
 
     @Override
-    public SortedSet<@NonNull DeviceProperty<?>> findPropertiesForDevice(String dsn) {
+    public SortedSet<@NonNull DeviceProperty<?>> findPropertiesForDevice(String dsn) throws SalusApiException {
         return requireNonNullElse(devicePropertiesCache.get(dsn), emptySortedSet());
     }
 
     @Nullable
-    private SortedSet<DeviceProperty<?>> loadPropertiesForDevice(String dsn)
-            throws ExecutionException, InterruptedException, TimeoutException {
+    private SortedSet<DeviceProperty<?>> loadPropertiesForDevice(String dsn) throws SalusApiException {
         @Nullable
         SalusApi api = salusApi;
         if (api == null) {

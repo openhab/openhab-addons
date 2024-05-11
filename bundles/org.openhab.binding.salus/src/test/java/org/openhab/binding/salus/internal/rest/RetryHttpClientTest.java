@@ -21,7 +21,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -72,7 +71,7 @@ class RetryHttpClientTest {
 
     @Test
     @DisplayName("post method retries calling restClient.post up to maxRetries times until it succeeds")
-    void testPostMethodRetriesUntilSucceeds() throws ExecutionException, InterruptedException, TimeoutException {
+    void testPostMethodRetriesUntilSucceeds() throws SalusApiException {
         // Given
         int maxRetries = 4;
         var retryHttpClient = new RetryHttpClient(requireNonNull(restClient), maxRetries);
@@ -93,8 +92,7 @@ class RetryHttpClientTest {
 
     @Test
     @DisplayName("get method logs debug messages when it fails and retries")
-    public void testGetMethodLogsDebugMessagesWhenFailsAndRetries()
-            throws ExecutionException, InterruptedException, TimeoutException {
+    public void testGetMethodLogsDebugMessagesWhenFailsAndRetries() throws SalusApiException {
         // Given
         var maxRetries = 3;
         var retryHttpClient = new RetryHttpClient(requireNonNull(restClient), maxRetries);
@@ -109,8 +107,7 @@ class RetryHttpClientTest {
 
     @Test
     @DisplayName("post method logs debug messages when it fails and retries")
-    public void testPostMethodLogsDebugMessagesWhenFailsAndRetries()
-            throws ExecutionException, InterruptedException, TimeoutException {
+    public void testPostMethodLogsDebugMessagesWhenFailsAndRetries() throws SalusApiException {
         // Given
         int maxRetries = 3;
         var retryHttpClient = new RetryHttpClient(requireNonNull(restClient), maxRetries);

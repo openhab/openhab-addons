@@ -41,15 +41,14 @@ public class HttpClient implements RestClient {
     }
 
     @Override
-    public Response<@Nullable String> get(String url, @Nullable Header... headers)
-            throws ExecutionException, InterruptedException, TimeoutException {
+    public Response<@Nullable String> get(String url, @Nullable Header... headers) throws SalusApiException {
         var request = requireNonNull(client.newRequest(url));
         return execute(request, headers, url);
     }
 
     @Override
     public Response<@Nullable String> post(String url, @Nullable Content content, @Nullable Header... headers)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws SalusApiException {
         var request = requireNonNull(client.POST(url));
         if (content != null) {
             request.content(new StringContentProvider(content.body()), content.type());
@@ -59,7 +58,7 @@ public class HttpClient implements RestClient {
 
     @SuppressWarnings("ConstantValue")
     private Response<@Nullable String> execute(Request request, @Nullable Header[] headers, String url)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws SalusApiException {
         try {
             if (headers != null) {
                 for (var header : headers) {
@@ -75,7 +74,7 @@ public class HttpClient implements RestClient {
             request.idleTimeout(IDLE_TIMEOUT, SECONDS);
             var response = request.send();
             return new Response<>(response.getStatus(), response.getContentAsString());
-        } catch (RuntimeException ex) {
+        } catch (RuntimeException | TimeoutException | ExecutionException | InterruptedException ex) {
             Throwable cause = ex;
             while (cause != null) {
                 if (cause instanceof HttpResponseException hte) {
@@ -84,7 +83,7 @@ public class HttpClient implements RestClient {
                 }
                 cause = cause.getCause();
             }
-            throw ex;
+            throw new SalusApiException("Error while executing request to " + url, ex);
         }
     }
 }
