@@ -1,25 +1,23 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
+ * <p>
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.salus.internal.handler;
 
 import static java.util.Collections.emptySortedSet;
 import static java.util.Objects.*;
-import static java.util.concurrent.TimeUnit.MICROSECONDS;
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.*;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.thing.ThingStatusDetail.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.time.Duration;
@@ -121,7 +119,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                 // there is a connection with the cloud
                 updateStatus(ONLINE);
             }
-        } catch (Exception ex) {
+        } catch (SalusApiException ex) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR,
                     "@text/cloud-bridge-handler.initialize.cannot-connect-to-cloud [\"" + ex.getMessage() + "\"]");
         }
@@ -129,44 +127,28 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     private void refreshCloudDevices() {
         logger.debug("Refreshing devices from CloudBridgeHandler");
-
-        try {
-            if (!(thing instanceof Bridge bridge)) {
-                logger.debug("No bridge, refresh cancelled");
-                return;
-            }
-            List<Thing> things = bridge.getThings();
-            for (Thing thing : things) {
-                if (!thing.isEnabled()) {
-                    logger.debug("Thing {} is disabled, refresh cancelled", thing.getUID());
-                    continue;
-                }
-
-                @Nullable
-                ThingHandler handler = thing.getHandler();
-                if (handler == null) {
-                    logger.debug("No handler for thing {} refresh cancelled", thing.getUID());
-                    continue;
-                }
-                if (!(handler instanceof SalusDeviceHandler salusDeviceHandler)) {
-                    logger.debug("No handler for thing {} refresh cancelled", thing.getUID());
-                    continue;
-                }
-                try {
-                    thing.getChannels().forEach(channel -> salusDeviceHandler.handleCommand(channel.getUID(), REFRESH));
-                } catch (RuntimeException ex) {
-                    logger.warn("Cannot refresh thing {} from CloudBridgeHandler", thing.getUID(), ex);
-                    salusDeviceHandler.updateStatus(OFFLINE, COMMUNICATION_ERROR,
-                            "@text/cloud-bridge-handler.initialize.cannot-refresh-thing [\"" + ex.getMessage() + "\"]");
-                }
-            }
-
-            // all things were updated,
-            updateStatus(ONLINE);
-        } catch (RuntimeException ex) {
-            logger.warn("Cannot refresh devices from CloudBridgeHandler", ex);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
+        if (!(thing instanceof Bridge bridge)) {
+            logger.debug("No bridge, refresh cancelled");
+            return;
         }
+        List<Thing> things = bridge.getThings();
+        for (Thing thing : things) {
+            if (!thing.isEnabled()) {
+                logger.debug("Thing {} is disabled, refresh cancelled", thing.getUID());
+                continue;
+            }
+
+            @Nullable
+            ThingHandler handler = thing.getHandler();
+            if (handler == null) {
+                logger.debug("No handler for thing {} refresh cancelled", thing.getUID());
+                continue;
+            }
+            thing.getChannels().forEach(channel -> handler.handleCommand(channel.getUID(), REFRESH));
+        }
+
+        // all things were updated,
+        updateStatus(ONLINE);
     }
 
     @Override

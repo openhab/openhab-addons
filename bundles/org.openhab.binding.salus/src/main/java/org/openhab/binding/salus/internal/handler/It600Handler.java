@@ -38,15 +38,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -57,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class It600Handler extends BaseThingHandler implements SalusDeviceHandler {
+public class It600Handler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private static final Set<String> REQUIRED_CHANNELS = Set.of("ep_9:sIT600TH:LocalTemperature_x100",
             "ep_9:sIT600TH:HeatingSetpoint_x100", "ep_9:sIT600TH:SetHeatingSetpoint_x100", "ep_9:sIT600TH:HoldType",
@@ -144,11 +141,6 @@ public class It600Handler extends BaseThingHandler implements SalusDeviceHandler
             default:
                 logger.warn("Unknown channel `{}` for command `{}`", id, command);
         }
-    }
-
-    @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
     }
 
     private void handleCommandForTemperature(ChannelUID channelUID, Command command) {

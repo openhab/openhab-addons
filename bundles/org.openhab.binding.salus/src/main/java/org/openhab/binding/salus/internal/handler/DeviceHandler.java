@@ -12,6 +12,23 @@
  */
 package org.openhab.binding.salus.internal.handler;
 
+import static java.math.RoundingMode.HALF_EVEN;
+import static java.util.Objects.requireNonNull;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.BINDING_ID;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatusDetail.*;
+import static org.openhab.core.types.RefreshType.REFRESH;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.SortedSet;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.SalusBindingConstants;
@@ -26,8 +43,6 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -37,28 +52,11 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.SortedSet;
-
-import static java.math.RoundingMode.HALF_EVEN;
-import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.BINDING_ID;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatusDetail.*;
-import static org.openhab.core.types.RefreshType.REFRESH;
-
 /**
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class DeviceHandler extends BaseThingHandler implements SalusDeviceHandler {
+public class DeviceHandler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
     private final Logger logger;
     @NonNullByDefault({})
@@ -227,11 +225,6 @@ public class DeviceHandler extends BaseThingHandler implements SalusDeviceHandle
             logger.warn("Does not know how to handle command `{}` ({}) on channel `{}`!", command,
                     command.getClass().getSimpleName(), channelUID);
         }
-    }
-
-    @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
     }
 
     private void handleRefreshCommand(ChannelUID channelUID) {
