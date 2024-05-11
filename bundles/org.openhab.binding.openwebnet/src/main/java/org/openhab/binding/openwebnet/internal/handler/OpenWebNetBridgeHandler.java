@@ -16,7 +16,6 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -86,130 +85,6 @@ import org.slf4j.LoggerFactory;
 public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implements GatewayListener {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetBridgeHandler.class);
-
-    /**
-     * A map to store handlers for lights and automations. The map is organised by Area.
-     *
-     */
-    public class LightAutomHandlersMap {
-
-        private Map<Integer, Map<String, OpenWebNetThingHandler>> hndlrsMap;
-        private @Nullable OpenWebNetThingHandler oneHandler = null;
-
-        protected LightAutomHandlersMap() {
-            hndlrsMap = new ConcurrentHashMap<>();
-        }
-
-        protected void add(int area, OpenWebNetThingHandler handler) {
-            if (!hndlrsMap.containsKey(area)) {
-                hndlrsMap.put(area, new ConcurrentHashMap<>());
-            }
-            Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(Integer.valueOf(area));
-            final String handlerOwnId = handler.ownId;
-            if (areaHndlrs != null && handlerOwnId != null) {
-                areaHndlrs.put(handlerOwnId, handler);
-                if (oneHandler == null) {
-                    oneHandler = handler;
-                }
-                logger.debug("/////////////////////// +++++++++++++++ Added handler {} to Area {}", handlerOwnId, area);
-                logger.debug("/////////////////////// Map: {}", this.toString());
-            }
-        }
-
-        protected void remove(int area, OpenWebNetThingHandler handler) {
-            if (hndlrsMap.containsKey(area)) {
-                Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(Integer.valueOf(area));
-                if (areaHndlrs != null) {
-                    boolean removed = areaHndlrs.remove(handler.ownId, handler);
-                    OpenWebNetThingHandler oneHandler  = this.oneHandler;
-                    // if the removed handler was linked by oneHandler, find another one
-                    if (removed && oneHandler  != null && oneHandler.equals(handler)) {
-                        this.oneHandler = getFirst();
-                    }
-                    logger.debug("/////////////////////// ---------------- Removed handler {} from Area {}", handler.ownId,
-                            area);
-                    logger.debug("/////////////////////// Map: {}", this.toString());
-                }
-            }
-        }
-
-        protected @Nullable List<OpenWebNetThingHandler> getAreaHandlers(int area) {
-            Map<String, OpenWebNetThingHandler> areaHndlrs = hndlrsMap.get(area);
-            if (areaHndlrs != null) {
-                List<OpenWebNetThingHandler> list = new ArrayList<OpenWebNetThingHandler>(areaHndlrs.values());
-                return list;
-            } else {
-                return null;
-            }
-        }
-
-        protected @Nullable List<OpenWebNetThingHandler> getAllHandlers() {
-            List<OpenWebNetThingHandler> list = new ArrayList<OpenWebNetThingHandler>();
-            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
-                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
-                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
-                    OpenWebNetThingHandler hndlr = innerEntry.getValue();
-                    if (hndlr != null) {
-                        list.add(hndlr);
-                    }
-                }
-            }
-            return list;
-        }
-
-        protected boolean isEmpty() {
-            return oneHandler == null;
-        }
-
-        protected @Nullable OpenWebNetThingHandler getOne() {
-            if (oneHandler == null) {
-                oneHandler = getFirst();
-            }
-            return oneHandler;
-        }
-
-        private @Nullable OpenWebNetThingHandler getFirst() {
-            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
-                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
-                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
-                    OpenWebNetThingHandler thingHandler = innerEntry.getValue();
-                    if (thingHandler != null) {
-                        WhereLightAutom whereLightAutom = (WhereLightAutom) thingHandler.deviceWhere;
-                        if (whereLightAutom != null && whereLightAutom.isAPL()) {
-                            return thingHandler;
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        public String toString() {
-            String log = "\n/////////////////////// ^^^^^^^^^^^^ ---- LightAutomHandlersMap ----";
-            for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
-                log += "\n- Area: " + entry.getKey() + "\n   -";
-                Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
-                for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
-                    OpenWebNetThingHandler thingHandler = innerEntry.getValue();
-                    if (thingHandler != null) {
-                        log += " " + thingHandler.ownId;
-                    }
-                }
-            }
-            log += "\n# getAllHandlers: ";
-            List<OpenWebNetThingHandler> allHandlers = getAllHandlers();
-            if (allHandlers != null) {
-                for (OpenWebNetThingHandler singleHandler : allHandlers) {
-                    log += " " + singleHandler .ownId;
-                }
-            }
-            OpenWebNetThingHandler one = this.getOne();
-            log += "\n# getOne() = " + (one == null ? "null" : one.ownId);
-            log += "\n/////////////////////// vvvvvvvvvvvvvvvvvv";
-            return log;
-        }
-    }
 
     private static final int GATEWAY_ONLINE_TIMEOUT_SEC = 20; // Time to wait for the gateway to become connected
 
@@ -530,7 +405,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Register a device ThingHandler to this BridgHandler
      *
-     * @param ownId the device OpenWebNet id
+     * @param ownId        the device OpenWebNet id
      * @param thingHandler the thing handler to be registered
      */
     protected void registerDevice(String ownId, OpenWebNetThingHandler thingHandler) {
@@ -568,7 +443,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Adds a light handler to the light map for this bridge, grouped by Area
      *
-     * @param area the light area
+     * @param area         the light area
      * @param lightHandler the light handler to be added
      */
     protected void addLight(int area, OpenWebNetThingHandler lightHandler) {
@@ -585,7 +460,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Remove a light handler to the light map for this bridge
      *
-     * @param area the light area
+     * @param area         the light area
      * @param lightHandler the light handler to be removed
      */
     protected void removeLight(int area, OpenWebNetThingHandler lightHandler) {
@@ -878,7 +753,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Return a ownId string (=WHO.WHERE) from the device Where address and handler
      *
-     * @param where the Where address (to be normalized)
+     * @param where   the Where address (to be normalized)
      * @param handler the device handler
      * @return the ownId String
      */
@@ -890,7 +765,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Returns a ownId string (=WHO.WHERE) from a Who and Where address
      *
-     * @param who the Who
+     * @param who   the Who
      * @param where the Where address (to be normalized)
      * @return the ownId String
      */
@@ -920,7 +795,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Given a Who and a Where address, return a Thing id string
      *
-     * @param who the Who
+     * @param who   the Who
      * @param where the Where address
      * @return the thing Id string
      */
@@ -931,7 +806,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     /**
      * Normalize, based on Who, a Where address. Used to generate ownId and Thing id
      *
-     * @param who the Who
+     * @param who   the Who
      * @param where the Where address
      * @return the normalized address as String
      */
