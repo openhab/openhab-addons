@@ -86,7 +86,7 @@ public interface SolarForecast {
     Instant getForecastEnd();
 
     /**
-     * Set expiration date into past to force update
+     * Forces update in the next scheduling cycle
      */
     void triggerUpdate();
 
