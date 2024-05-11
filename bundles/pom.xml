@@ -46,6 +46,7 @@
     <!-- bindings -->
     <module>org.openhab.binding.adorne</module>
     <module>org.openhab.binding.ahawastecollection</module>
+    <module>org.openhab.binding.airgradient</module>
     <module>org.openhab.binding.airq</module>
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
@@ -146,7 +147,7 @@
     <module>org.openhab.binding.folderwatcher</module>
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.foobot</module>
-    <module>org.openhab.binding.freeathomesystem</module>
+    <module>org.openhab.binding.freeathome</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.freeboxos</module>
     <module>org.openhab.binding.freecurrency</module>

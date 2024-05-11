@@ -28,7 +28,7 @@ At the moment only the following models are supported:
 - TX-NR555
 - TX-NR575
 - TX-NR575E
-    TX-NR609
+- TX-NR609
 - TX-NR616
 - TX-NR626
 - TX-NR636
@@ -65,9 +65,9 @@ Moreover, if the openHAB auto-discovery is disabled, the Onkyo AVR auto-discover
 
 The binding has the following configuration options, which can be set for "binding:onkyo":
 
-| Parameter   | Name         | Description                                                              | Required |
-|-------------|--------------|--------------------------------------------------------------------------|----------|
-| callbackUrl | Callback URL | URL to use for playing notification sounds, e.g. <http://192.168.0.2:8080> | no       |
+| Parameter   | Name         | Description                                                                                     | Required |
+| ----------- | ------------ | ----------------------------------------------------------------------------------------------- | -------- |
+| callbackUrl | Callback URL | URL to use for playing notification sounds, e.g.[http://192.168.0.2:8080](http://192.168.0.2:8080) | no       |
 
 When an Onkyo receiver is used as an audio sink, the receiver connects to openHAB to get the audio stream.
 By default, the binding sends the URL for getting the audio stream based on the Primary Address (Network Settings configuration) and the openHAB HTTP port.
@@ -114,12 +114,12 @@ This can be necessary if your receiver uses a different scaling system than 0-10
 You can specify a decimal number that acts as the coefficient for scaling.
 See below for a few examples:
 
-| Value  | Description                                          | Value for 100%   |
-|--------|------------------------------------------------------|------------------|
-| 1      | Default, don't scale                                 |              100 |
-| 2      | For receivers that support 0.5 increments in volume  |              200 |
-| 0.8    | For receivers that go from 0-80                      |               80 |
-| 0.5    | For receivers that go from 0-50                      |               50 |
+| Value | Description                                         | Value for 100% |
+| ----- | --------------------------------------------------- | -------------- |
+| 1     | Default, don't scale                                | 100            |
+| 2     | For receivers that support 0.5 increments in volume | 200            |
+| 0.8   | For receivers that go from 0-80                     | 80             |
+| 0.5   | For receivers that go from 0-50                     | 50             |
 
 Note that this is applied after the volume limiting took place.
 
@@ -134,7 +134,7 @@ The binding will send value 200 for maximum volume to the receiver.
 The Onkyo AVR supports the following channels (some channels are model specific):
 
 | Channel Type ID           | Item Type | Description                                                                                                     |
-|---------------------------|-----------|-----------------------------------------------------------------------------------------------------------------|
+| ------------------------- | --------- | --------------------------------------------------------------------------------------------------------------- |
 | zone1#power               | Switch    | Power on/off your device                                                                                        |
 | zone1#mute                | Switch    | Mute/unmute zone 1                                                                                              |
 | zone1#input               | Number    | The input for zone 1                                                                                            |
@@ -153,6 +153,7 @@ The Onkyo AVR supports the following channels (some channels are model specific)
 | player#artist             | String    | Artist name of the current song (available if playing from Network or USB)                                      |
 | player#currentPlayingTime | String    | Current playing time of the current song (available if playing from Network or USB)                             |
 | player#listenmode         | Number    | Current listening mode e.g. Stereo, 5.1ch Surround, ...                                                         |
+| player#audysseyeq         | Number    | Current Audyseey EQ mode (e.g. OFF, Movie, Music)                                                               |
 | player#audioinfo          | String    | Current audio info (Refresh timer must be configured for updates)                                               |
 | player#playuri            | String    | Plays the URI provided to the channel                                                                           |
 | player#albumArt           | Image     | Image of the current album art of the current song                                                              |
@@ -245,6 +246,7 @@ String avrLrPlayer_Album              "Album [%s]"              <text>        { 
 String avrLrPlayer_Artist             "Artist [%s]"             <parents_2_5> { channel="onkyo:onkyoAVR:avr-livingroom:player#artist" }
 String avrLrPlayer_CurrentPlayingTime "CurrentPlayingTime [%s]" <clock>       { channel="onkyo:onkyoAVR:avr-livingroom:player#currentPlayingTime" }
 Number avrLrPlayer_Listenmode         "Listenmode [%d]"         <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#listenmode" }
+Number avrLrPlayer_AudysseyEQ         "AudysseeyEQ [%d]"        <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#audysseyeq" }
 String avrLrPlayer_PlayURI            "PlayURI [%s]"            <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#playuri" }
 Image  avrLrPlayer_AlbumArt           "AlbumArt [%s]"           <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#albumArt" }
 String avrLrPlayer_AlbumArtUrl        "AlbumArtURL [%s]"        <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#albumArtUrl" }
@@ -297,7 +299,9 @@ sitemap demo label="Onkyo AVR"
         Text      item=avrLrPlayer_Artist
         Text      item=avrLrPlayer_CurrentPlayingTime
         Selection item=avrLrPlayer_Listenmode mappings=[0=Stereo, 1=Direct, 2=Surround, 15=Mono, 31="Whole House", 66="THX Cinema"]
+        Selection item=avrLrPlayer_AudysseyEQ mappings=[0=Off, 1=Movie, 2=Music]
     }
+
     Frame label="NetMenu" {
         Text      item=avrLrNet_Title
         Selection item=avrLrNet_Control   mappings=[ Up='Up', Down='Down', Select='Select', Back='Back', PageUp='PageUp', PageDown='PageDow', Select0='Select0', Select1='Select1', Select2='Select2', Select3='Select3', Select4='Select4', Select5='Select5', Select6='Select6', Select7='Select7', Select8='Select8', Select9='Select9' ]
