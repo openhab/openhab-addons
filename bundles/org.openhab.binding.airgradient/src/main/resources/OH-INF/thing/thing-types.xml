@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="airgradient"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- A connection to the Cloud API which can have several locations (sensors) connected -->
+	<bridge-type id="airgradient-api">
+		<label>AirGradient API</label>
+		<description>Connection to the AirGradient Cloud API</description>
+
+		<representation-property>token</representation-property>
+		<config-description>
+			<parameter name="token" type="text" required="false">
+				<context>password</context>
+				<label>Token</label>
+				<description>Token to access the device</description>
+			</parameter>
+			<parameter name="hostname" type="text">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<default>https://api.airgradient.com/</default>
+				<description>Hostname or IP address of the API</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- A sensor you communicate directly to over the local network -->
+	<thing-type id="airgradient-local">
+		<label>AirGradient Local Sensor</label>
+		<description>Direct network connection to a local AirGradient Sensor</description>
+
+		<channels>
+			<channel id="pm01" typeId="pm1"/>
+			<channel id="pm02" typeId="pm2"/>
+			<channel id="pm10" typeId="pm10"/>
+			<channel id="pm003-count" typeId="particle-count"/>
+			<channel id="atmp" typeId="system.outdoor-temperature"/>
+			<channel id="rhum" typeId="system.atmospheric-humidity"/>
+			<channel id="wifi" typeId="wifi"/>
+			<channel id="rco2" typeId="co2"/>
+			<channel id="tvoc" typeId="tvoc"/>
+			<channel id="leds" typeId="leds-mode"/>
+			<channel id="calibration" typeId="calibration"/>
+			<channel id="uploads-since-boot" typeId="uploads-since-boot"/>
+		</channels>
+
+		<properties>
+			<property name="name"/>
+			<property name="firmwareVersion"/>
+			<property name="serialNumber"/>
+			<property name="modelId"/>
+		</properties>
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<default>http://192.168.1.1:80/measures/current</default>
+				<description>Hostname or IP address of the API</description>
+				<advanced>false</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sensors are called locations in the Cloud API -->
+	<thing-type id="location">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="airgradient-api"/>
+		</supported-bridge-type-refs>
+
+		<label>AirGradient Location</label>
+		<description>AirGradient Location for data from the AirGradient Cloud API</description>
+
+		<channels>
+			<channel id="pm01" typeId="pm1"/>
+			<channel id="pm02" typeId="pm2"/>
+			<channel id="pm10" typeId="pm10"/>
+			<channel id="pm003-count" typeId="particle-count"/>
+			<channel id="atmp" typeId="system.outdoor-temperature"/>
+			<channel id="rhum" typeId="system.atmospheric-humidity"/>
+			<channel id="wifi" typeId="wifi"/>
+			<channel id="rco2" typeId="co2"/>
+			<channel id="tvoc" typeId="tvoc"/>
+			<channel id="leds" typeId="leds-mode"/>
+			<channel id="calibration" typeId="calibration"/>
+			<channel id="uploads-since-boot" typeId="uploads-since-boot"/>
+		</channels>
+
+		<properties>
+			<property name="name"/>
+			<property name="firmwareVersion"/>
+			<property name="serialNumber"/>
+			<property name="modelId"/>
+		</properties>
+		<representation-property>location</representation-property>
+
+		<config-description>
+			<parameter name="location" type="text" required="true">
+				<label>Location ID</label>
+				<description>ID of the location</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="pm1">
+		<item-type>Number:Density</item-type>
+		<label>PM1</label>
+		<description>Particulate Matter 1 (0.001mm)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="pm2">
+		<item-type>Number:Density</item-type>
+		<label>PM2</label>
+		<description>Particulate Matter 2 (0.002mm)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="pm10">
+		<item-type>Number:Density</item-type>
+		<label>PM10</label>
+		<description>Particulate Matter 10 (0.01mm)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="particle-count">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Particle Count</label>
+		<description>Count of particles in 1 decilitre of air</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="wifi">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<description>Received signal strength indicator</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%d dBm"/>
+	</channel-type>
+
+	<channel-type id="co2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO2</label>
+		<description>CarbonDioxide</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="tvoc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>TVOC</label>
+		<description>Total Volatile Organic Compounds</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="uploads-since-boot">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Upload count</label>
+		<description>Number of uploads since last reboot (boot)</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="leds-mode">
+		<item-type>String</item-type>
+		<label>LEDs Mode</label>
+		<description>Mode for the LEDs</description>
+		<state readOnly="false">
+			<options>
+				<option value="default">default</option>
+				<option value="off">off</option>
+				<option value="pm">pm</option>
+				<option value="co2">co2</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="calibration">
+		<item-type>String</item-type>
+		<label>Calibration</label>
+		<description>Calibrate Sensors</description>
+		<command>
+			<options>
+				<option value="co2">co2</option>
+			</options>
+		</command>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -47,22 +47,24 @@ It will not impact channels, see [Electricity Tax](#electricity-tax) for further
 
 ### Channel Group `electricity`
 
-| Channel                  | Type               | Description                                                                    | Advanced |
-|--------------------------|--------------------|--------------------------------------------------------------------------------|----------|
-| spot-price               | Number:EnergyPrice | Spot price in DKK or EUR per kWh                                               | no       |
-| grid-tariff              | Number:EnergyPrice | Grid tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured | no       |
-| system-tariff            | Number:EnergyPrice | System tariff in DKK per kWh                                                   | no       |
-| transmission-grid-tariff | Number:EnergyPrice | Transmission grid tariff in DKK per kWh                                        | no       |
-| electricity-tax          | Number:EnergyPrice | Electricity tax in DKK per kWh                                                 | no       |
-| reduced-electricity-tax  | Number:EnergyPrice | Reduced electricity tax in DKK per kWh. For electric heating customers only    | no       |
+| Channel                  | Type                     | Description                                                                            |
+|--------------------------|--------------------------|----------------------------------------------------------------------------------------|
+| spot-price               | Number:EnergyPrice       | Spot price in DKK or EUR per kWh                                                       |
+| grid-tariff              | Number:EnergyPrice       | Grid tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured         |
+| system-tariff            | Number:EnergyPrice       | System tariff in DKK per kWh                                                           |
+| transmission-grid-tariff | Number:EnergyPrice       | Transmission grid tariff in DKK per kWh                                                | 
+| electricity-tax          | Number:EnergyPrice       | Electricity tax in DKK per kWh                                                         |
+| reduced-electricity-tax  | Number:EnergyPrice       | Reduced electricity tax in DKK per kWh. For electric heating customers only            |
+| co2-emission-prognosis   | Number:EmissionIntensity | Estimated prognosis for CO₂ emission following the day-ahead market in g/kWh           |
+| co2-emission-realtime    | Number:EmissionIntensity | Near up-to-date history for CO₂ emission from electricity consumed in Denmark in g/kWh |
 
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
 This has the following advantages:
 
-- Full customization possible: Freely choose the channels which should be included in the total.
-- An additional item containing the kWh fee from your electricity supplier can be added also.
-- Spot price can be configured in EUR while tariffs are in DKK.
+- Full customization possible: Freely choose the channels which should be included in the total (even between different bindings).
+- Spot price can be configured in EUR while tariffs are in DKK (and currency conversions are performed outside the binding).
+- An additional item containing the kWh fee from your electricity supplier can be added also (and it can be dynamic).
 
 If you want electricity tax included in your total price, please add either `electricity-tax` or `reduced-electricity-tax` to the group - depending on which one applies.
 See [Electricity Tax](#electricity-tax) for further information.
@@ -87,6 +89,19 @@ The binding offers support for persisting both historical and upcoming prices.
 The recommended persistence strategy is `forecast`, as it ensures a clean history without redundancy.
 Prices from the past 24 hours and all forthcoming prices will be stored.
 Any changes that impact published prices (e.g. selecting or deselecting VAT Profile) will result in the replacement of persisted prices within this period.
+
+##### Manually Persisting History
+
+During extended service interruptions, data unavailability, or openHAB downtime, historic prices may be absent from persistence.
+A console command is provided to fill gaps: `energidataservice update [SpotPrice|GridTariff|SystemTariff|TransmissionGridTariff|ElectricityTax|ReducedElectricitytax] <StartDate> [<EndDate>]`.
+
+Example:
+
+```shell
+energidataservice update spotprice 2024-04-12 2024-04-14
+```
+
+This can also be useful for retrospectively changing the [VAT profile](https://www.openhab.org/addons/transformations/vat/).
 
 #### Grid Tariff
 
@@ -140,6 +155,28 @@ This reduced rate is made available through channel `reduced-electricity-tax`.
 
 The binding cannot determine or manage rate variations as they depend on metering data.
 Usually `reduced-electricity-tax` is preferred when using electricity for heating.
+
+#### CO₂ Emissions
+
+Data for the CO₂ emission channels is published as time series with a resolution of 5 minutes.
+
+Channel `co2-emission-realtime` provides near up-to-date historic emission and is refreshed every 5 minutes.
+When the binding is started, or a new item is linked, or a linked item receives an update command, historic data for the last 24 hours is provided in addition to the current value.
+
+Channel `co2-emission-prognosis` provides estimated prognosis for future emissions and is refreshed every 15 minutes.
+Depending on the time of the day, an update of the prognosis may include estimates for more than 9 hours, but every update will have at least 9 hours into the future.
+A persistence configuration is required for this channel.
+
+Please note that the CO₂ emission channels only apply to Denmark.
+These channels will not be updated when the configured price area is not DK1 or DK2.
+
+#### Trigger Channels
+
+Advanced channel `event` can trigger the following events:
+
+| Event                | Description                    |
+|----------------------|--------------------------------|
+| DAY_AHEAD_AVAILABLE  | Day-ahead prices are available |
 
 ## Thing Actions
 
@@ -290,6 +327,7 @@ var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant()
 **Result:** Price as `BigDecimal`.
 
 This action calculates the price for using given amount of power in the period from `start` till `end`.
+Returns `null` if the calculation cannot be performed due to missing price data within the requested period.
 
 Example:
 
@@ -389,7 +427,9 @@ var priceMap = actions.getPrices("SpotPrice,GridTariff");
 logInfo("Current spot price + grid tariff excl. VAT", priceMap.get(hourStart).toString)
 
 var price = actions.calculatePrice(Instant.now, now.plusHours(1).toInstant, 150 | W)
-logInfo("Total price for using 150 W for the next hour", price.toString)
+if (price != null) {
+    logInfo("Total price for using 150 W for the next hour", price.toString)
+}
 
 val ArrayList<Duration> durationPhases = new ArrayList<Duration>()
 durationPhases.add(Duration.ofMinutes(37))
@@ -454,7 +494,9 @@ utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,GridTariff")).forEach((valu
 console.log("Current spot price + grid tariff excl. VAT: " + priceMap.get(hourStart.toString()));
 
 var price = edsActions.calculatePrice(time.Instant.now(), time.Instant.now().plusSeconds(3600), Quantity("150 W"));
-console.log("Total price for using 150 W for the next hour: " + price.toString());
+if (price !== null) {
+    console.log("Total price for using 150 W for the next hour: " + price.toString());
+}
 
 var durationPhases = [];
 durationPhases.push(time.Duration.ofMinutes(37));
@@ -522,6 +564,39 @@ logInfo("Spot price two hours from now", price.toString)
 var hourStart = time.toZDT().plusHours(2).truncatedTo(time.ChronoUnit.HOURS);
 var price = items.SpotPrice.history.historicState(hourStart).quantityState;
 console.log("Spot price two hours from now: " + price);
+```
+
+:::
+
+::::
+
+### Trigger Channel Example
+
+:::: tabs
+
+::: tab DSL
+
+```javascript
+rule "Day-ahead event"
+when
+    Channel 'energidataservice:service:energidataservice:electricity#event' triggered 'DAY_AHEAD_AVAILABLE'
+then
+    logInfo("Day-ahead", "Day-ahead prices for the next day are now available")
+end
+```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+rules.when()
+    .channel('energidataservice:service:energidataservice:electricity#event').triggered('DAY_AHEAD_AVAILABLE')
+    .then(event =>
+    {
+        console.log('Day-ahead prices for the next day are now available');
+    })
+    .build("Day-ahead event");
 ```
 
 :::

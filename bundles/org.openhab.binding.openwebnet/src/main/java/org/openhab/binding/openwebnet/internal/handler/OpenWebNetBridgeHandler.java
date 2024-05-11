@@ -29,9 +29,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.internal.actions.OpenWebNetBridgeActions;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetBusBridgeConfig;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetZigBeeBridgeConfig;
+import org.openhab.binding.openwebnet.internal.serial.SerialPortProviderAdapter;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -179,7 +181,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     "@text/offline.conf-error-no-serial-port");
             return null;
         } else {
-            return new USBGateway(serialPort);
+            USBGateway tmpUSBGateway = new USBGateway(serialPort);
+            tmpUSBGateway.setSerialPortProvider(new SerialPortProviderAdapter());
+            logger.debug("**** -SPI- ****  OpenWebNetBridgeHandler :: setSerialPortProvider to: {}",
+                    tmpUSBGateway.getSerialPortProvider());
+            return tmpUSBGateway;
         }
     }
 
@@ -266,9 +272,18 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         reconnecting = false;
     }
 
+    /**
+     * Return the OpenGateway linked to this BridgeHandler
+     *
+     * @return the linked OpenGateway
+     */
+    public @Nullable OpenGateway getGateway() {
+        return gateway;
+    }
+
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(OpenWebNetDeviceDiscoveryService.class);
+        return Set.of(OpenWebNetDeviceDiscoveryService.class, OpenWebNetBridgeActions.class);
     }
 
     /**

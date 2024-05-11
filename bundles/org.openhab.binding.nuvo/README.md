@@ -13,6 +13,7 @@ For users without a serial connector on the server side, you can use a USB to se
 
 If you are using the Nuvo MPS4 music server with your Grand Concerto or Essentia G, the binding can connect to the server's IP address on port 5006.
 Using the MPS4 connection will also allow for greater interaction with the keypads to include custom menus, custom favorite lists and album art display on the CTP-36 keypad.
+If using MCS v5.35 or later on the server, content that is playing on MPS4 sources will display the album art to that source's Image channel.
 
 You don't need to have your Grand Concerto or Essentia G whole house amplifier device directly connected to your openHAB server.
 You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on the LAN (serial over IP).
@@ -80,36 +81,37 @@ connection: &conNuvo
 
 The following channels are available:
 
-| Channel ID                           | Item Type   | Description                                                                                                                    |
-|--------------------------------------|-------------|--------------------------------------------------------------------------------------------------------------------------------|
-| system#alloff                        | Switch      | Turn all zones off simultaneously                                                                                              |
-| system#allmute                       | Switch      | Mute or unmute all zones simultaneously                                                                                        |
-| system#page                          | Switch      | Turn on or off the Page All Zones feature (while on the amplifier switches to source 6)                                        |
-| system#sendcmd                       | String      | Send a command to the amplifier                                                                                                |
-| system#buttonpress                   | String      | Indicates the zone number followed by a comma and the last button pressed or NuvoNet menu item selected on a keypad (ReadOnly) |
-| zoneN#power (where N= 1-20)          | Switch      | Turn the power for a zone on or off                                                                                            |
-| zoneN#source (where N= 1-20)         | Number      | Select the source input for a zone (1-6)                                                                                       |
-| zoneN#volume (where N= 1-20)         | Dimmer      | Control the volume for a zone (0-100%) [translates to 0-79]                                                                    |
-| zoneN#mute (where N= 1-20)           | Switch      | Mute or unmute a zone                                                                                                          |
-| zoneN#favorite (where N= 1-20)       | Number      | Select a preset Favorite for a zone (1-12). Also will display and can select any favorite specified in openHAB NuvoNet sources |
-| zoneN#control (where N= 1-20)        | Player      | Simulate pressing the transport control buttons on the keypad e.g. play/pause/next/previous                                    |
-| zoneN#treble (where N= 1-20)         | Number      | Adjust the treble control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                                |
-| zoneN#bass (where N= 1-20)           | Number      | Adjust the bass control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                                  |
-| zoneN#balance (where N= 1-20)        | Number      | Adjust the balance control for a zone (-18 to 18 [in increments of 2]) -18=left, 0=center, 18=right                            |
-| zoneN#loudness (where N= 1-20)       | Switch      | Turn on or off the loudness compensation setting for the zone                                                                  |
-| zoneN#dnd (where N= 1-20)            | Switch      | Turn on or off the Do Not Disturb for the zone (for when the amplifier's Page All Zones feature is activated)                  |
-| zoneN#lock (where N= 1-20)           | Contact     | Indicates if this zone is currently locked                                                                                     |
-| zoneN#party (where N= 1-20)          | Switch      | Turn on or off the party mode feature with this zone as the host                                                               |
-| sourceN#display_line1 (where N= 1-6) | String      | 1st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                        |
-| sourceN#display_line2 (where N= 1-6) | String      | 2nd line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                        |
-| sourceN#display_line3 (where N= 1-6) | String      | 3rd line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                        |
-| sourceN#display_line4 (where N= 1-6) | String      | 4th line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                        |
-| sourceN#play_mode (where N= 1-6)     | String      | The current playback mode of the source, ie: Playing, Paused, etc. (ReadOnly) See rules example for updating                   |
-| sourceN#track_length (where N= 1-6)  | Number:Time | The total running time of the current playing track (ReadOnly) See rules example for updating                                  |
-| sourceN#track_position (where N= 1-6)| Number:Time | The running time elapsed of the current playing track (ReadOnly) See rules example for updating                                |
-| sourceN#button_press (where N= 1-6)  | String      | Indicates the last button pressed on the keypad for a non NuvoNet source or openHAB NuvoNet source (ReadOnly)                  |
-| sourceN#art_url (where N= 1-6)       | String      | MPS4 Only! The URL of the Album Art JPG for this source that is displayed on a CTP-36. See _very advanced_ rules (SendOnly)    |
-| sourceN#album_art (where N= 1-6)     | Image       | The Album Art loaded from the art_url channel for display in a UI widget (ReadOnly)                                            |
+| Channel ID                           | Item Type   | Description                                                                                                                                               |
+|--------------------------------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| system#alloff                        | Switch      | Turn all zones off simultaneously (WriteOnly)                                                                                                             |
+| system#allmute                       | Switch      | Mute or unmute all zones simultaneously                                                                                                                   |
+| system#page                          | Switch      | Turn on or off the Page All Zones feature (while on the amplifier switches to source 6)                                                                   |
+| system#sendcmd                       | String      | Send a command to the amplifier (WriteOnly)                                                                                                               |
+| system#buttonpress                   | String      | Indicates the zone number followed by a comma and the last button pressed or NuvoNet menu item selected on a keypad (ReadOnly)                            |
+| zoneN#power (where N= 1-20)          | Switch      | Turn the power for a zone on or off                                                                                                                       |
+| zoneN#source (where N= 1-20)         | Number      | Select the source input for a zone (1-6)                                                                                                                  |
+| zoneN#volume (where N= 1-20)         | Dimmer      | Control the volume for a zone (0-100%) [translates to 0-79]                                                                                               |
+| zoneN#mute (where N= 1-20)           | Switch      | Mute or unmute a zone                                                                                                                                     |
+| zoneN#favorite (where N= 1-20)       | Number      | Select a preset Favorite for a zone (1-12). Also will display and can select any favorite specified in openHAB NuvoNet sources (WriteOnly)                |
+| zoneN#control (where N= 1-20)        | Player      | Simulate pressing the transport control buttons on the keypad e.g. play/pause/next/previous                                                               |
+| zoneN#treble (where N= 1-20)         | Number      | Adjust the treble control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                                                           |
+| zoneN#bass (where N= 1-20)           | Number      | Adjust the bass control for a zone (-18 to 18 [in increments of 2]) -18=none, 0=flat, 18=full                                                             |
+| zoneN#balance (where N= 1-20)        | Number      | Adjust the balance control for a zone (-18 to 18 [in increments of 2]) -18=left, 0=center, 18=right                                                       |
+| zoneN#loudness (where N= 1-20)       | Switch      | Turn on or off the loudness compensation setting for the zone                                                                                             |
+| zoneN#dnd (where N= 1-20)            | Switch      | Turn on or off the Do Not Disturb for the zone (for when the amplifier's Page All Zones feature is activated)                                             |
+| zoneN#lock (where N= 1-20)           | Contact     | Indicates if this zone is currently locked                                                                                                                |
+| zoneN#party (where N= 1-20)          | Switch      | Turn on or off the party mode feature with this zone as the host                                                                                          |
+| sourceN#display_line1 (where N= 1-6) | String      | 1st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                                                   |
+| sourceN#display_line2 (where N= 1-6) | String      | 2nd line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                                                   |
+| sourceN#display_line3 (where N= 1-6) | String      | 3rd line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                                                   |
+| sourceN#display_line4 (where N= 1-6) | String      | 4th line of text being displayed on the keypad. Can be updated for a non NuvoNet source                                                                   |
+| sourceN#play_mode (where N= 1-6)     | String      | The current playback mode of the source, ie: Playing, Paused, etc. (ReadOnly) See rules example for updating                                              |
+| sourceN#track_length (where N= 1-6)  | Number:Time | The total running time of the current playing track (ReadOnly) See rules example for updating                                                             |
+| sourceN#track_position (where N= 1-6)| Number:Time | The running time elapsed of the current playing track (ReadOnly) See rules example for updating                                                           |
+| sourceN#button_press (where N= 1-6)  | String      | Indicates the last button pressed on the keypad for a non NuvoNet source or openHAB NuvoNet source (ReadOnly)                                             |
+| sourceN#art_url (where N= 1-6)       | String      | MPS4 Only! The URL of the Album Art JPG for this source that is displayed on a CTP-36. See _very advanced_ rules (WriteOnly)                              |
+| sourceN#album_art (where N= 1-6)     | Image       | The Album Art loaded from an MPS4 source or from the art_url channel for display in a UI widget (ReadOnly)                                                |
+| sourceN#source_menu (where N= 1-6)   | String      | A selection containing the keypad custom menu defined by `menuXmlSrcN`. Selecting an option has the same effect as choosing it on the keypad. (WriteOnly) |
 
 ## Full Example
 
@@ -131,10 +133,10 @@ nuvo.items:
 
 ```java
 // system
-Switch nuvo_system_alloff "All Zones Off" { channel="nuvo:amplifier:myamp:system#alloff" }
+Switch nuvo_system_alloff "All Zones Off" { channel="nuvo:amplifier:myamp:system#alloff", autoupdate="false" }
 Switch nuvo_system_allmute "All Zones Mute" { channel="nuvo:amplifier:myamp:system#allmute" }
 Switch nuvo_system_page "Page All Zones" { channel="nuvo:amplifier:myamp:system#page" }
-String nuvo_system_sendcmd "Send Command" { channel="nuvo:amplifier:myamp:system#sendcmd" }
+String nuvo_system_sendcmd "Send Command" { channel="nuvo:amplifier:myamp:system#sendcmd", autoupdate="false" }
 String nuvo_system_buttonpress "Zone Button: [%s]" { channel="nuvo:amplifier:myamp:system#buttonpress" }
 
 // zones
@@ -142,7 +144,7 @@ Switch nuvo_z1_power "Power" { channel="nuvo:amplifier:myamp:zone1#power" }
 Number nuvo_z1_source "Source Input [%s]" { channel="nuvo:amplifier:myamp:zone1#source" }
 Dimmer nuvo_z1_volume "Volume [%d %%]" { channel="nuvo:amplifier:myamp:zone1#volume" }
 Switch nuvo_z1_mute "Mute" { channel="nuvo:amplifier:myamp:zone1#mute" }
-Number nuvo_z1_favorite "Favorite" { channel="nuvo:amplifier:myamp:zone1#favorite" }
+Number nuvo_z1_favorite "Favorite" { channel="nuvo:amplifier:myamp:zone1#favorite", autoupdate="false" }
 Player nuvo_z1_control "Control" { channel="nuvo:amplifier:myamp:zone1#control" }
 Number nuvo_z1_treble "Treble Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#treble" }
 Number nuvo_z1_bass "Bass Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#bass" }
@@ -163,8 +165,9 @@ String nuvo_s1_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s1_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source1#track_length" }
 Number:Time nuvo_s1_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source1#track_position" }
 String nuvo_s1_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source1#button_press" }
-// String nuvo_s1_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source1#art_url" }
+// String nuvo_s1_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source1#art_url", autoupdate="false" }
 // Image nuvo_s1_album_art { channel="nuvo:amplifier:myamp:source1#album_art" }
+// String nuvo_s1_source_menu { channel="nuvo:amplifier:myamp:source1#source_menu", autoupdate="false" }
 
 String nuvo_s2_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line1" }
 String nuvo_s2_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line2" }
@@ -174,8 +177,9 @@ String nuvo_s2_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s2_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source2#track_length" }
 Number:Time nuvo_s2_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source2#track_position" }
 String nuvo_s2_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source2#button_press" }
-// String nuvo_s2_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source2#art_url" }
+// String nuvo_s2_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source2#art_url", autoupdate="false" }
 // Image nuvo_s2_album_art { channel="nuvo:amplifier:myamp:source2#album_art" }
+// String nuvo_s2_source_menu { channel="nuvo:amplifier:myamp:source2#source_menu", autoupdate="false" }
 
 String nuvo_s3_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line1" }
 String nuvo_s3_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line2" }
@@ -185,8 +189,9 @@ String nuvo_s3_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s3_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source3#track_length" }
 Number:Time nuvo_s3_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source3#track_position" }
 String nuvo_s3_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source3#button_press" }
-// String nuvo_s3_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source3#art_url" }
+// String nuvo_s3_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source3#art_url", autoupdate="false" }
 // Image nuvo_s3_album_art { channel="nuvo:amplifier:myamp:source3#album_art" }
+// String nuvo_s3_source_menu { channel="nuvo:amplifier:myamp:source3#source_menu", autoupdate="false" }
 
 String nuvo_s4_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line1" }
 String nuvo_s4_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line2" }
@@ -196,8 +201,9 @@ String nuvo_s4_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s4_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source4#track_length" }
 Number:Time nuvo_s4_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source4#track_position" }
 String nuvo_s4_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source4#button_press" }
-// String nuvo_s4_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source4#art_url" }
+// String nuvo_s4_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source4#art_url", autoupdate="false" }
 // Image nuvo_s4_album_art { channel="nuvo:amplifier:myamp:source4#album_art" }
+// String nuvo_s4_source_menu { channel="nuvo:amplifier:myamp:source4#source_menu", autoupdate="false" }
 
 String nuvo_s5_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line1" }
 String nuvo_s5_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line2" }
@@ -207,8 +213,9 @@ String nuvo_s5_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s5_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source5#track_length" }
 Number:Time nuvo_s5_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source5#track_position" }
 String nuvo_s5_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source5#button_press" }
-// String nuvo_s5_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source5#art_url" }
+// String nuvo_s5_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source5#art_url", autoupdate="false" }
 // Image nuvo_s5_album_art { channel="nuvo:amplifier:myamp:source5#album_art" }
+// String nuvo_s5_source_menu { channel="nuvo:amplifier:myamp:source5#source_menu", autoupdate="false" }
 
 String nuvo_s6_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line1" }
 String nuvo_s6_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line2" }
@@ -218,8 +225,9 @@ String nuvo_s6_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s6_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source6#track_length" }
 Number:Time nuvo_s6_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source6#track_position" }
 String nuvo_s6_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source6#button_press" }
-// String nuvo_s6_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source6#art_url" }
+// String nuvo_s6_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source6#art_url", autoupdate="false" }
 // Image nuvo_s6_album_art { channel="nuvo:amplifier:myamp:source6#album_art" }
+// String nuvo_s6_source_menu { channel="nuvo:amplifier:myamp:source6#source_menu", autoupdate="false" }
 
 ```
 
@@ -241,6 +249,14 @@ sitemap nuvo label="Audio Control" {
         Switch item=nuvo_z1_mute visibility=[nuvo_z1_power==ON] icon="soundvolume_mute"
         Selection item=nuvo_z1_favorite visibility=[nuvo_z1_power==ON] icon="player"
         Default item=nuvo_z1_control visibility=[nuvo_z1_power==ON]
+
+        // MPS4 Only
+        // Selection item=nuvo_s1_source_menu visibility=[nuvo_z1_source=="1"]
+        // Selection item=nuvo_s2_source_menu visibility=[nuvo_z1_source=="2"]
+        // Selection item=nuvo_s3_source_menu visibility=[nuvo_z1_source=="3"]
+        // Selection item=nuvo_s4_source_menu visibility=[nuvo_z1_source=="4"]
+        // Selection item=nuvo_s5_source_menu visibility=[nuvo_z1_source=="5"]
+        // Selection item=nuvo_s6_source_menu visibility=[nuvo_z1_source=="6"]
 
         Text item=nuvo_s1_display_line1 visibility=[nuvo_z1_source=="1"] icon="zoom"
         Text item=nuvo_s1_display_line2 visibility=[nuvo_z1_source=="1"] icon="zoom"
@@ -306,6 +322,7 @@ sitemap nuvo label="Audio Control" {
         }
         Text item=nuvo_z1_lock label="Zone Locked: [%s]" icon="lock" visibility=[nuvo_z1_lock=="OPEN"]
 
+        // MPS4 Only
         // Image item=nuvo_s1_album_art visibility=[nuvo_z1_source=="1"]
         // Image item=nuvo_s2_album_art visibility=[nuvo_z1_source=="2"]
         // Image item=nuvo_s3_album_art visibility=[nuvo_z1_source=="3"]

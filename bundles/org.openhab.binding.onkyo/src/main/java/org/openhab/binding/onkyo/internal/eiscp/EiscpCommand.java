@@ -55,6 +55,10 @@ public enum EiscpCommand {
     LISTEN_MODE_SET("LMD", "%02X"),
     LISTEN_MODE("LMD", ""),
 
+    AUDYSSEYEQ_QUERY("ADY", "QSTN"),
+    AUDYSSEYEQ_SET("ADY", "%02X"),
+    AUDYSSEYEQ("ADY", ""),
+
     INFO_QUERY("NRI", "QSTN"),
     INFO("NRI", ""),
 

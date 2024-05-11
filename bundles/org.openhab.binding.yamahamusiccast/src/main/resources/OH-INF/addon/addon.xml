@@ -4,8 +4,24 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>Yamaha Musiccast Binding</name>
-	<description>This is the binding for Yamaha Musiccast</description>
+	<name>Yamaha MusicCast Binding</name>
+	<description>This is the binding for Yamaha MusicCast.</description>
 	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>.*Yamaha.*</regex>
+				</match-property>
+				<match-property>
+					<name>deviceType</name>
+					<regex>.*MediaRenderer.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>

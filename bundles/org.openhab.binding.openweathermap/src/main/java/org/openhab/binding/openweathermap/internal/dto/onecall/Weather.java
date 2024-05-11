@@ -13,12 +13,7 @@
 package org.openhab.binding.openweathermap.internal.dto.onecall;
 
 /**
- * Holds the data from the deserialised JSON response. Created using http://www.jsonschema2pojo.org/.
- * Settings:
- * Annotation Style: GSON
- * Use primitive types
- * Use double numbers
- * allow additional properties
+ * Holds the data from the <code>weather</code> object of the JSON response of the One Call APIs.
  *
  * @author Wolfgang Klimt - Initial contribution
  */
@@ -32,31 +27,15 @@ public class Weather {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getMain() {
         return main;
-    }
-
-    public void setMain(String main) {
-        this.main = main;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getIcon() {
         return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
     }
 }

@@ -149,7 +149,7 @@
 	</channel-type>
 
 	<channel-type id="humidityType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>The relative humidity in the mower in percent</description>
 		<state readOnly="true" pattern="%d %%"/>
