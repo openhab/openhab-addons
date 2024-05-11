@@ -317,7 +317,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     public void discovery(String vin) {
         if (activeVehicleHandlerMap.containsKey(vin)) {
             VehicleHandler vh = activeVehicleHandlerMap.get(vin);
-            if (vh.getThing().getProperties().size() == 0) {
+            if (vh.getThing().getProperties().isEmpty()) {
                 vh.getThing().setProperties(getStringCapabilities(vin));
             }
         } else {

@@ -46,12 +46,10 @@ import org.openhab.binding.mercedesme.internal.MercedesMeHandlerFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.CommandOption;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -463,15 +461,6 @@ public class Utils {
         }
     }
 
-    public static boolean boolFromState(@Nullable State s) {
-        if (s != null) {
-            if (OnOffType.ON.equals(s)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static int getInt(VehicleAttributeStatus value) {
         return Double.valueOf(getDouble(value)).intValue();
     }
@@ -492,8 +481,7 @@ public class Utils {
                 if (value.getDisplayValue() != null) {
                     if (value.getDisplayValue().strip().length() > 0) {
                         try {
-                            ret = Double.valueOf(value.getDisplayValue());
-                            return ret;
+                            return Double.valueOf(value.getDisplayValue());
                         } catch (NumberFormatException nfe) {
                             LOGGER.trace("Cannot transform Display Value {} into Double", value.getDisplayValue());
                         }

@@ -63,7 +63,7 @@ public class UOMObserver {
 
     private final Logger logger = LoggerFactory.getLogger(UOMObserver.class);
 
-    public UOMObserver(String l) {
+    public UOMObserver(String unitLabell) {
         if (PATTERN_MAP.isEmpty()) {
             PATTERN_MAP.put(LENGTH_KM_UNIT, "%.1f km");
             PATTERN_MAP.put(LENGTH_MILES_UNIT, "%.1f mi");
@@ -102,10 +102,10 @@ public class UOMObserver {
             UNIT_MAP.put(CONSUMPTION_LIQUID_100KM, Units.LITRE);
             UNIT_MAP.put(CONSUMPTION_LIQUID_MI, ImperialUnits.GALLON_LIQUID_US);
         }
-        if (!PATTERN_MAP.containsKey(l)) {
-            logger.trace("No mapping found for {}", l);
+        if (!PATTERN_MAP.containsKey(unitLabell)) {
+            logger.trace("No mapping found for {}", unitLabell);
         }
-        label = l;
+        label = unitLabell;
     }
 
     public String getLabel() {

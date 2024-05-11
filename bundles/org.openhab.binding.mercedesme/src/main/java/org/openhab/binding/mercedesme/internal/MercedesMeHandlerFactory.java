@@ -125,6 +125,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         super.deactivate(componentContext);
         if (discoveryServiceReg != null) {
             discoveryServiceReg.unregister();
+            discoveryServiceReg = null;
         }
         if (mdAdjuster != null) {
             mdAdjuster = null;
