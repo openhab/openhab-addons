@@ -64,7 +64,6 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
             try {
                 send(Lighting.requestStatus(deviceWhere.value()));
             } catch (OWNException e) {
-                logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }

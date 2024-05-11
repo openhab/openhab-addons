@@ -453,7 +453,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         LightAutomHandlersMap lm = lightsMap;
         if (lm != null) {
             lm.add(area, lightHandler);
-            logger.debug("/////////////////////// ^^^^^^^^^^^^ added APL {} to lightsMap", lightHandler.ownId);
+            logger.debug("Added APL {} to lightsMap", lightHandler.ownId);
         }
     }
 
@@ -467,7 +467,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         LightAutomHandlersMap lightsMap = this.lightsMap;
         if (lightsMap != null) {
             lightsMap.remove(area, lightHandler);
-            logger.debug("/////////////////////// ^^^^^^^^^^^^ removed APL {} from lightsMap", lightHandler.ownId);
+            logger.debug("Removed APL {} from lightsMap", lightHandler.ownId);
         }
     }
 
@@ -576,7 +576,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             if (whereLightAutom.isGeneral() || whereLightAutom.isArea()) {
                 LightAutomHandlersMap lightsMap = this.lightsMap;
                 if (lightsMap != null && !lightsMap.isEmpty()) {
-                    OpenWebNetLightingHandler lightingHandler = (OpenWebNetLightingHandler) lightsMap.getOne();
+                    OpenWebNetLightingHandler lightingHandler = (OpenWebNetLightingHandler) lightsMap.getOneHandler();
                     if (lightingHandler != null) {
                         lightingHandler.handleMultipleMessage(lmsg);
                     }

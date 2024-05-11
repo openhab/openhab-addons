@@ -52,7 +52,7 @@ public class LightAutomHandlersMap {
             if (oneHandler == null) {
                 oneHandler = handler;
             }
-            logger.debug("Added handler {} to Area {}", handlerOwnId, area);
+            logger.debug("MAP - Added handler {} to Area {}", handlerOwnId, area);
             logger.debug("Map: {}", this.toString());
         }
     }
@@ -67,7 +67,7 @@ public class LightAutomHandlersMap {
                 if (removed && oneHandler != null && oneHandler.equals(handler)) {
                     this.oneHandler = getFirst();
                 }
-                logger.debug("Removed handler {} from Area {}", handler.ownId,
+                logger.debug("MAP - Removed handler {} from Area {}", handler.ownId,
                         area);
                 logger.debug("Map: {}", this.toString());
             }
@@ -102,7 +102,7 @@ public class LightAutomHandlersMap {
         return oneHandler == null;
     }
 
-    protected @Nullable OpenWebNetThingHandler getOne() {
+    protected @Nullable OpenWebNetThingHandler getOneHandler() {
         if (oneHandler == null) {
             oneHandler = getFirst();
         }
@@ -127,28 +127,29 @@ public class LightAutomHandlersMap {
 
     @Override
     public String toString() {
-        String log = "\n---- LightAutomHandlersMap ----";
+        StringBuilder log = new StringBuilder();
+        log.append("\n---- LightAutomHandlersMap ----");
         for (Map.Entry<Integer, Map<String, OpenWebNetThingHandler>> entry : hndlrsMap.entrySet()) {
-            log += "\n- Area: " + entry.getKey() + "\n   -";
+            log.append("\n- Area: " + entry.getKey() + "\n   -");
             Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
             for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
                 OpenWebNetThingHandler thingHandler = innerEntry.getValue();
                 if (thingHandler != null) {
-                    log += " " + thingHandler.ownId;
+                    log.append(" " + thingHandler.ownId);
                 }
             }
         }
-        log += "\n# getAllHandlers: ";
+        log.append("\n# getAllHandlers: ");
         List<OpenWebNetThingHandler> allHandlers = getAllHandlers();
         if (allHandlers != null) {
             for (OpenWebNetThingHandler singleHandler : allHandlers) {
-                log += " " + singleHandler.ownId;
+                log.append(" " + singleHandler.ownId);
             }
         }
-        OpenWebNetThingHandler one = this.getOne();
-        log += "\n# getOne() = " + (one == null ? "null" : one.ownId);
-        log += "\n-------------------------------";
+        OpenWebNetThingHandler oneThingHandler = this.getOneHandler();
+        log.append("\n# getOneHandler() = " + (oneThingHandler == null ? "null" : oneThingHandler.ownId));
+        log.append("\n-------------------------------");
 
-        return log;
+        return log.toString();
     }
 }
