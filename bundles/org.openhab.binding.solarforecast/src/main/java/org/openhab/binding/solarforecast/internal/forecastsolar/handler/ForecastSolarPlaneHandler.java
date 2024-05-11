@@ -14,6 +14,8 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
+import java.net.http.HttpClient;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -23,7 +25,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.SolarForecastException;
@@ -44,15 +45,16 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.scene.web.HTMLEditorSkin.Command;
+
 /**
- * The {@link ForecastSolarPlaneHandler} is a non active handler instance. It will be triggered by the bridge.
+ * The {@link ForecastSolarPlaneHandler} is triggered by bridge to fetch solar forecast data if expired.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Calculate produced energy to adjust forecast
  */
 @NonNullByDefault
 public class ForecastSolarPlaneHandler extends BaseThingHandler implements SolarForecastProvider {
@@ -61,11 +63,12 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarPlaneHandler.class);
     private final HttpClient httpClient;
 
-    private Optional<ForecastSolarPlaneConfiguration> configuration = Optional.empty();
-    private Optional<ForecastSolarBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<PointType> location = Optional.empty();
-    private Optional<String> apiKey = Optional.empty();
-    private ForecastSolarObject forecast;
+
+    protected ForecastSolarPlaneConfiguration configuration = new ForecastSolarPlaneConfiguration();
+    protected Optional<ForecastSolarBridgeHandler> bridgeHandler = Optional.empty();
+    protected Optional<String> apiKey = Optional.empty();
+    protected ForecastSolarObject forecast;
 
     public ForecastSolarPlaneHandler(Thing thing, HttpClient hc) {
         super(thing);
@@ -80,8 +83,14 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     @Override
     public void initialize() {
-        ForecastSolarPlaneConfiguration c = getConfigAs(ForecastSolarPlaneConfiguration.class);
-        configuration = Optional.of(c);
+        doInitialize();
+        bridgeHandler.ifPresent(handler -> {
+            handler.addPlane(this);
+        });
+    }
+
+    protected boolean doInitialize() {
+        configuration = getConfigAs(ForecastSolarPlaneConfiguration.class);
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
@@ -90,7 +99,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                     bridgeHandler = Optional.of(fsbh);
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
                             "@text/solarforecast.plane.status.await-feedback");
-                    fsbh.addPlane(this);
+                    return true;
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.plane.status.wrong-handler" + " [\"" + handler + "\"]");
@@ -103,6 +112,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/solarforecast.plane.status.bridge-missing");
         }
+        return false;
     }
 
     @Override
@@ -135,20 +145,18 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         if (location.isPresent()) {
             if (forecast.isExpired()) {
                 String url = getBaseUrl() + "estimate/" + location.get().getLatitude() + SLASH
-                        + location.get().getLongitude() + SLASH + configuration.get().declination + SLASH
-                        + configuration.get().azimuth + SLASH + configuration.get().kwp + "?damping="
-                        + configuration.get().dampAM + "," + configuration.get().dampPM;
-                if (!SolarForecastBindingConstants.EMPTY.equals(configuration.get().horizon)) {
-                    url += "&horizon=" + configuration.get().horizon;
-                }
+                        + location.get().getLongitude() + SLASH + configuration.declination + SLASH
+                        + configuration.azimuth + SLASH + configuration.kwp + "?damping=" + configuration.dampAM + ","
+                        + configuration.dampPM + queryParameters();
+                logger.debug("Call {}", url);
                 try {
                     ContentResponse cr = httpClient.GET(url);
                     int responseStatus = cr.getStatus();
                     if (responseStatus == 200) {
                         try {
                             ForecastSolarObject localForecast = new ForecastSolarObject(thing.getUID().getAsString(),
-                                    cr.getContentAsString(),
-                                    Utils.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
+                                    cr.getContentAsString(), Instant.now(Utils.getClock())
+                                            .plus(configuration.refreshInterval, ChronoUnit.MINUTES));
                             updateStatus(ThingStatus.ONLINE);
                             updateState(CHANNEL_JSON, StringType.valueOf(cr.getContentAsString()));
                             setForecast(localForecast);
@@ -186,7 +194,15 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         return forecast;
     }
 
-    private void updateChannels(ForecastSolarObject f) {
+    protected String queryParameters() {
+        if (!SolarForecastBindingConstants.EMPTY.equals(configuration.horizon)) {
+            return "&horizon=" + configuration.horizon;
+        } else {
+            return EMPTY;
+        }
+    }
+
+    protected void updateChannels(ForecastSolarObject f) {
         ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
         double energyDay = f.getDayTotal(now.toLocalDate());
         double energyProduced = f.getActualEnergyValue(now);
@@ -218,6 +234,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     }
 
     protected synchronized void setForecast(ForecastSolarObject f) {
+        logger.trace("ForecastSolarPlaneHandler setForecast called with {}", f.getRaw());
         forecast = f;
         sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Average));
         sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Average));

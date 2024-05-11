@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.solarforecast.internal.utils;
 
+import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.KILOWATT_UNIT;
+
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
@@ -31,8 +35,9 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.types.TimeSeries.Entry;
-import org.slf4j.Logger;
+import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.QueryablePersistenceService;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -155,5 +160,84 @@ public class Utils {
 
     public static Instant now() {
         return Instant.now(clock);
+    }
+    
+    /**
+     * Check if an item has historic data in the persistence service
+     *
+     * @param item the item name to check
+     * @param service the persistence service to query
+     * @return true if there is historic data for the item, false otherwise
+     */
+    public static boolean checkPersistence(String item, QueryablePersistenceService service) {
+        FilterCriteria fc = new FilterCriteria();
+        fc.setBeginDate(ZonedDateTime.now().minusDays(1));
+        fc.setEndDate(ZonedDateTime.now());
+        fc.setItemName(item);
+        Iterable<HistoricItem> historicItems = service.query(fc);
+        return historicItems.iterator().hasNext();
+    }
+
+    /**
+     * Get the energy produced by the power item since the beginning of the current day
+     *
+     * @param powerItemName the name of the power item
+     * @param service the persistence service to query
+     * @return the total energy produced in kWh
+     */
+    @SuppressWarnings("unchecked")
+    public static double getEnergyTillNow(String powerItemName, QueryablePersistenceService service) {
+        long startCalculation = System.currentTimeMillis();
+        ZonedDateTime beginPeriodDT = ZonedDateTime.now(Utils.getClock()).truncatedTo(ChronoUnit.DAYS);
+        ZonedDateTime endPeriodDT = ZonedDateTime.now(Utils.getClock());
+        FilterCriteria fc = new FilterCriteria();
+        fc.setBeginDate(beginPeriodDT);
+        fc.setEndDate(endPeriodDT);
+        fc.setItemName(powerItemName);
+        Iterable<HistoricItem> historicItems = service.query(fc);
+        double total = 0;
+        double lastPowerValue = -1;
+        Instant lastTimeStamp = Instant.MAX;
+        for (HistoricItem historicItem : historicItems) {
+            State powerState = historicItem.getState();
+            if (powerState instanceof QuantityType<?> qs) {
+                QuantityType<Power> powerKWState = (QuantityType<Power>) qs.toInvertibleUnit(KILOWATT_UNIT);
+                if (powerKWState != null) {
+                    lastPowerValue = powerKWState.doubleValue();
+                } else {
+                    LOGGER.trace("Cannot convert Unit {} to {}", qs.getUnit(), KILOWATT_UNIT);
+                    return 0;
+                }
+            } else {
+                LOGGER.info("Power item {} has no unit. Skip Energy calculation!", powerItemName);
+                return 0;
+            }
+            ZonedDateTime stateTimestamp = historicItem.getTimestamp();
+            if (lastTimeStamp.isBefore(stateTimestamp.toInstant()) && lastPowerValue >= 0) {
+                total += calcuateKwh(lastTimeStamp, stateTimestamp.toInstant(), lastPowerValue);
+            } else {
+                LOGGER.info("Skip timestamp {}", stateTimestamp);
+            }
+            lastTimeStamp = stateTimestamp.toInstant();
+        }
+        if (lastTimeStamp.isBefore(endPeriodDT.toInstant()) && lastPowerValue >= 0) {
+            total += calcuateKwh(lastTimeStamp, endPeriodDT.toInstant(), lastPowerValue);
+        }
+        long calculationDuration = System.currentTimeMillis() - startCalculation;
+        LOGGER.trace("Total power till now in kWh {} took {} ms", total, calculationDuration);
+        return total;
+    }
+
+    /**
+     * Calculate the energy in kWh based on the power in kW and the duration between two instants.
+     *
+     * @param begin the start instant
+     * @param end the end instant
+     * @param power the power in kW
+     * @return the energy in kWh
+     */
+    private static double calcuateKwh(Instant begin, Instant end, double power) {
+        long durationSeconds = Duration.between(begin, end).getSeconds();
+        return power * durationSeconds / 3600;
     }
 }

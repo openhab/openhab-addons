@@ -66,7 +66,7 @@ class ForecastSolarTest {
     public static final String TOO_EARLY_INDICATOR = "too early";
     public static final String TOO_LATE_INDICATOR = "too late";
     public static final String INVALID_RANGE_INDICATOR = "invalid time range";
-    public static final String NO_GORECAST_INDICATOR = "No forecast data";
+    public static final String NO_FORECAST_INDICATOR = "No forecast data";
     public static final String DAY_MISSING_INDICATOR = "not available in forecast";
 
     @BeforeAll
@@ -172,8 +172,8 @@ class ForecastSolarTest {
         } catch (SolarForecastException sfe) {
             String message = sfe.getMessage();
             assertNotNull(message);
-            assertTrue(message.contains(NO_GORECAST_INDICATOR),
-                    "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
+            assertTrue(message.contains(NO_FORECAST_INDICATOR),
+                    "Expected: " + NO_FORECAST_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getDayTotal(query.toLocalDate());
@@ -181,8 +181,8 @@ class ForecastSolarTest {
         } catch (SolarForecastException sfe) {
             String message = sfe.getMessage();
             assertNotNull(message);
-            assertTrue(message.contains(NO_GORECAST_INDICATOR),
-                    "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
+            assertTrue(message.contains(NO_FORECAST_INDICATOR),
+                    "Expected: " + NO_FORECAST_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
             double d = fo.getDayTotal(query.plusDays(1).toLocalDate());
@@ -190,8 +190,8 @@ class ForecastSolarTest {
         } catch (SolarForecastException sfe) {
             String message = sfe.getMessage();
             assertNotNull(message);
-            assertTrue(message.contains(NO_GORECAST_INDICATOR),
-                    "Expected: " + NO_GORECAST_INDICATOR + " Received: " + sfe.getMessage());
+            assertTrue(message.contains(NO_FORECAST_INDICATOR),
+                    "Expected: " + NO_FORECAST_INDICATOR + " Received: " + sfe.getMessage());
         }
 
         // valid object - query date one day too early

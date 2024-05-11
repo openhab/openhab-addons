@@ -9,9 +9,10 @@
 			<bridge-type-ref id="fs-site"/>
 		</supported-bridge-type-refs>
 
-		<label>ForecastSolar PV Plane</label>
-		<description>One PV Plane of Multi Plane Bridge</description>
+		<label>Forecast Solar Plane</label>
+		<description>PV Plane attached to forecast solar public subscription site</description>
 		<semantic-equipment-tag>SolarPanel</semantic-equipment-tag>
+
 		<channels>
 			<channel id="power-estimate" typeId="power-estimate"/>
 			<channel id="energy-estimate" typeId="energy-estimate"/>

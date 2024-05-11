@@ -64,6 +64,12 @@
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="correction-factor">
+		<item-type>Number</item-type>
+		<label>Correction Factor</label>
+		<description>Factor of forecast correction. Less than one down correction, otherwise up correction.</description>
+		<state pattern="%.3f" readOnly="true"/>
+	</channel-type>
 	<channel-type id="json" advanced="true">
 		<item-type>String</item-type>
 		<label>Raw JSON Response</label>

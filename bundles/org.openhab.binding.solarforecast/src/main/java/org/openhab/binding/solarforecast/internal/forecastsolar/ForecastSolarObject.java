@@ -38,8 +38,6 @@ import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMod
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.TimeSeries;
-import org.openhab.core.types.TimeSeries.Policy;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -63,6 +61,7 @@ public class ForecastSolarObject implements SolarForecast {
     private Instant expirationDateTime;
     private Instant creationDateTime;
     private String identifier;
+    private double correctionFactor = 1;
 
     public ForecastSolarObject(String id) {
         expirationDateTime = Utils.now().minusSeconds(1);
@@ -212,6 +211,21 @@ public class ForecastSolarObject implements SolarForecast {
         return -1;
     }
 
+    /**
+     * Returns the timestamp of the first power value greater than zero.
+     * If no such value exists, returns Instant.MAX.
+     *
+     * @return Instant representing the first power timestamp or Instant.MAX if none found
+     */
+    public Instant getFirstPowerTimestamp() {
+        for (Entry<ZonedDateTime, Double> entry : wattMap.entrySet()) {
+            if (entry.getValue() > 0) {
+                return entry.getKey().toInstant();
+            }
+        }
+        return Instant.MAX;
+    }
+
     @Override
     public TimeSeries getPowerTimeSeries(QueryMode mode) {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
@@ -234,7 +248,12 @@ public class ForecastSolarObject implements SolarForecast {
         JSONObject wattsDay = resultJson.getJSONObject("watt_hours_day");
 
         if (wattsDay.has(queryDate.toString())) {
-            return wattsDay.getDouble(queryDate.toString()) / 1000.0;
+            // correction factor applies only for today, not for other forecasts
+            double forecastValue = wattsDay.getDouble(queryDate.toString()) / 1000.0;
+            if (LocalDate.now(Utils.getClock()).equals(queryDate)) {
+                forecastValue *= correctionFactor;
+            }
+            return forecastValue;
         } else {
             throw new SolarForecastException(this,
                     "Day " + queryDate + " not available in forecast. " + getTimeRange());
@@ -361,8 +380,27 @@ public class ForecastSolarObject implements SolarForecast {
         return identifier;
     }
 
-    @Override
-    public Instant getCreationInstant() {
-        return creationDateTime;
+    /**
+     * Sets the correction factor for the forecast from now on, not for past values. This is used to adjust the forecast
+     * based on actual production.
+     *
+     * @param factor The correction factor to apply.
+     */
+    public void setCorrectionFactor(double factor) {
+        correctionFactor = factor;
+        // ZonedDateTime startCorrection = ZonedDateTime.now(Utils.getClock());
+        ZonedDateTime startCorrection = ZonedDateTime.now(Utils.getClock()).toLocalDate().atStartOfDay(zone);
+        ZonedDateTime endCorrection = startCorrection.toLocalDate().plusDays(1).atStartOfDay(zone);
+
+        wattHourMap.forEach((timestamp, value) -> {
+            if (timestamp.isAfter(startCorrection) && timestamp.isBefore(endCorrection)) {
+                wattHourMap.put(timestamp, value * factor);
+            }
+        });
+        wattMap.forEach((timestamp, value) -> {
+            if (timestamp.isAfter(startCorrection) && timestamp.isBefore(endCorrection)) {
+                wattMap.put(timestamp, value * factor);
+            }
+        });
     }
 }

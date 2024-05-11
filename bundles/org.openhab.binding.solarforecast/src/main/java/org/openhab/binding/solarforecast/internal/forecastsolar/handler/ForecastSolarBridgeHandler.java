@@ -59,11 +59,12 @@ import org.openhab.core.types.TimeSeries.Policy;
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
     private static final int CALM_DOWN_TIME_MINUTES = 61;
 
-    private List<ForecastSolarPlaneHandler> planes = new ArrayList<>();
     private Optional<PointType> homeLocation;
     private Optional<ForecastSolarBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Instant calmDownEnd = Instant.MIN;
+
+    protected List<ForecastSolarPlaneHandler> planes = new ArrayList<>();
 
     public ForecastSolarBridgeHandler(Bridge bridge, Optional<PointType> location) {
         super(bridge);
@@ -131,16 +132,16 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     /**
      * Get data for all planes. Synchronized to protect plane list from being modified during update
      */
-    private synchronized void getData() {
+    protected synchronized boolean getData() {
         if (planes.isEmpty()) {
-            return;
+            return false;
         }
         if (calmDownEnd.isAfter(Utils.now())) {
             // wait until calm down time is expired
             long minutes = Duration.between(Utils.now(), calmDownEnd).toMinutes();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/solarforecast.site.status.calmdown [\"" + minutes + "\"]");
-            return;
+            return false;
         }
         boolean update = true;
         double energySum = 0;
@@ -167,6 +168,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
             updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(daySum));
             updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(powerSum));
         }
+        return update;
     }
 
     public synchronized void forecastUpdate() {
