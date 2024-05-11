@@ -1008,7 +1008,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 String saddr = addr.getHostAddress();
                 if (!ip.equals(saddr)) {
                     logger.debug("{}: hostname {} resolved to IP address {}", thingName, config.deviceIp, saddr);
-                    config.deviceIp = saddr + (port.isEmpty() ? ip : ip + ":" + port);
+                    config.deviceIp = saddr + (port.isEmpty() ? "" : ":" + port);
                 }
             } catch (UnknownHostException e) {
                 logger.debug("{}: Unable to resolve hostname {}", thingName, config.deviceIp);
