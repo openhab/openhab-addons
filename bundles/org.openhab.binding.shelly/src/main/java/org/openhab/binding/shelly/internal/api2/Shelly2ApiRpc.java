@@ -1099,7 +1099,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void setValveTemperature(int valveId, int value) throws ShellyApiException {
+    public void setValveTemperature(int valveId, double value) throws ShellyApiException {
         throw new ShellyApiException("API call not implemented");
     }
 
