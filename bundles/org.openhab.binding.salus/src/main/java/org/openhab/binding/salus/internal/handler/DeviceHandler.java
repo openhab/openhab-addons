@@ -1,34 +1,16 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- *
+ * <p>
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- *
+ * <p>
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- *
+ * <p>
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.salus.internal.handler;
-
-import static java.math.RoundingMode.HALF_EVEN;
-import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.BINDING_ID;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
-import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
-import static org.openhab.core.types.RefreshType.REFRESH;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -54,6 +36,23 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.SortedSet;
+
+import static java.math.RoundingMode.HALF_EVEN;
+import static java.util.Objects.requireNonNull;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.BINDING_ID;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatusDetail.*;
+import static org.openhab.core.types.RefreshType.REFRESH;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -250,8 +249,14 @@ public class DeviceHandler extends BaseThingHandler implements SalusDeviceHandle
             return;
         }
 
-        var propertyOptional = findDeviceProperties().stream().filter(property -> property.getName().equals(salusId))
-                .findFirst();
+        Optional<DeviceProperty<?>> propertyOptional;
+        try {
+            propertyOptional = findDeviceProperties().stream().filter(property -> property.getName().equals(salusId))
+                    .findFirst();
+        } catch (SalusApiException ex) {
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
+            return;
+        }
         if (propertyOptional.isEmpty()) {
             logger.warn("Property {} not found in response!", salusId);
             return;
