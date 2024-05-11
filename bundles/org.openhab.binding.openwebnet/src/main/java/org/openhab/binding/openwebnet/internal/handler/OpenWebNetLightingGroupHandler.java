@@ -59,10 +59,10 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
     @Override
     protected void requestChannelState(ChannelUID channel) {
         super.requestChannelState(channel);
-        Where w = deviceWhere;
-        if (w != null) {
+        Where deviceWhere = this.deviceWhere;
+        if (deviceWhere != null) {
             try {
-                send(Lighting.requestStatus(w.value()));
+                send(Lighting.requestStatus(deviceWhere.value()));
             } catch (OWNException e) {
                 logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -106,13 +106,13 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
      */
     private void handleSwitchCommand(ChannelUID channel, Command command) {
         logger.debug("handleSwitchCommand() (command={} - channel={})", command, channel);
-        Where w = deviceWhere;
-        if (command instanceof OnOffType && w != null) {
+        Where deviceWhere = this.deviceWhere;
+        if (command instanceof OnOffType && deviceWhere != null) {
             try {
                 if (OnOffType.ON.equals(command)) {
-                    send(Lighting.requestTurnOn(w.value()));
+                    send(Lighting.requestTurnOn(deviceWhere.value()));
                 } else if (OnOffType.OFF.equals(command)) {
-                    send(Lighting.requestTurnOff(w.value()));
+                    send(Lighting.requestTurnOff(deviceWhere.value()));
                 }
             } catch (OWNException e) {
                 logger.warn("Exception while processing command {}: {}", command, e.getMessage());
@@ -130,48 +130,48 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
     protected void handlePropagatedMessage(Lighting lmsg, @Nullable String oId) {
         logger.debug("handlePropagatedMessage({}) for thing: {}", lmsg, thing.getUID());
 
-        WhereLightAutom dw = (WhereLightAutom) deviceWhere;
-        if (dw != null && oId != null) {
+        WhereLightAutom deviceWhere = (WhereLightAutom) this.deviceWhere;
+        if (deviceWhere != null && oId != null) {
             int sizeBefore = listOn.size();
             if (!lmsg.isOff()) {
                 if (listOn.add(oId)) {
-                    logger.debug("/////////// ADDED {} to listOn for {}", oId, deviceWhere);
+                    logger.debug("ADDED {} to listOn for {}", oId, deviceWhere);
                 }
             } else {
                 if (listOn.remove(oId)) {
-                    logger.debug("/////////// REMOVED {} from listOn for {}", oId, dw);
+                    logger.debug("REMOVED {} from listOn for {}", oId, deviceWhere);
                 }
             }
-            logger.debug("/////////// listOn for {}: {}", dw, listOn);
+            logger.debug("listOn for {}: {}", deviceWhere, listOn);
 
             boolean listOnChanged = false;
 
             if (!listOn.isEmpty()) {
                 // some light still on
-                logger.debug("/////////// some light ON... switching group {} to ON", dw);
+                logger.debug("some light ON... switching group {} to ON", deviceWhere);
                 updateState(CHANNEL_SWITCH, OnOffType.ON);
                 listOnChanged = (sizeBefore == 0);
             } else {
                 // no light is ON anymore
-                logger.debug("/////////// all lights OFF ... switching group {} to OFF ", dw);
+                logger.debug("all lights OFF ... switching group {} to OFF ", deviceWhere);
                 updateState(CHANNEL_SWITCH, OnOffType.OFF);
                 listOnChanged = (sizeBefore > 0);
             }
-            if (listOnChanged && !dw.isGeneral()) {
+            if (listOnChanged && !deviceWhere.isGeneral()) {
                 // Area has changed state, propagate APL msg to GEN handler, if exists
-                OpenWebNetBridgeHandler brH = this.bridgeHandler;
-                if (brH != null) {
+                OpenWebNetBridgeHandler bridgeHandler = this.bridgeHandler;
+                if (bridgeHandler != null) {
                     String genOwnId = this.getManagedWho().value() + ".0";
-                    OpenWebNetLightingGroupHandler genHandler = (OpenWebNetLightingGroupHandler) brH
+                    OpenWebNetLightingGroupHandler genHandler = (OpenWebNetLightingGroupHandler) bridgeHandler
                             .getRegisteredDevice(genOwnId);
                     if (genHandler != null && this.ownId != null) {
-                        logger.debug("//////////////////// device {} is Propagating msg {} to GEN handler", dw, lmsg);
+                        logger.debug("device {} is Propagating msg {} to GEN handler", deviceWhere, lmsg);
                         genHandler.handlePropagatedMessage(lmsg, this.ownId);
                     }
                 }
             }
 
-            handleMessage(lmsg); // to to make handler come online when a light of its group comes online
+            handleMessage(lmsg); // to make handler come online when a light of its group comes online
         }
     }
 
@@ -200,9 +200,9 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
         Where w = deviceWhere;
         if (w != null) {
             int area = ((WhereLightAutom) w).getArea();
-            OpenWebNetBridgeHandler brH = this.bridgeHandler;
-            if (brH != null) {
-                brH.removeLight(area, this);
+            OpenWebNetBridgeHandler bridgeHandler = this.bridgeHandler;
+            if (bridgeHandler != null) {
+                bridgeHandler.removeLight(area, this);
             }
         }
         super.dispose();
