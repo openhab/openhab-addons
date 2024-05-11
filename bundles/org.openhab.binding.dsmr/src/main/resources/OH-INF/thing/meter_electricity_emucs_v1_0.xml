@@ -42,10 +42,10 @@
 			<channel id="emeter_instant_voltage_l3" typeId="instantVoltageL3Type"/>
 		</channels>
 
-        <properties>
+		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
-        
+
 		<config-description-ref uri="thing-type:dsmr:meterdescriptor"/>
 	</thing-type>
 </thing:thing-descriptions>

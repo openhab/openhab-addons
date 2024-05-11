@@ -10,7 +10,7 @@
 			</add-channel>
 			<add-channel id="emeter_maximum_demand_current_month">
 				<type>dsmr:actualDeliveryBelgiumType</type>
-                <label>Power Demand Current Month</label>
+				<label>Power Demand Current Month</label>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
