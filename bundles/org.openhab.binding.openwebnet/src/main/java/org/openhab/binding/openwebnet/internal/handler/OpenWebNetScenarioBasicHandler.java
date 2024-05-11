@@ -30,8 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetScenarioBasicHandler} is responsible for handling Basic
- * Scenario (WHO=0) messages.
+ * The {@link OpenWebNetScenarioBasicHandler} is responsible for handling Basic Scenario (WHO=0) messages.
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution

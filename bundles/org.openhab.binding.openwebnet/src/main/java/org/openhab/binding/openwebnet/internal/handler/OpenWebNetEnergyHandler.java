@@ -82,15 +82,11 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
             energyRefreshPeriod = 30;
         }
 
-        // In order to get data from the probe we must send a command over the bus, this
-        // could be done only when the
+        // In order to get data from the probe we must send a command over the bus, this could be done only when the
         // bridge is online.
-        // a) usual flow: binding is starting, the bridge isn't online (startup flow not
-        // yet completed) --> subscriber
-        // can't be started here, it will be started inside the bridgeStatusChanged
-        // event.
-        // b) thing's discovery: binding is up and running, the bridge is online -->
-        // subscriber must be started here
+        // a) usual flow: binding is starting, the bridge isn't online (startup flow not yet completed) --> subscriber
+        // can't be started here, it will be started inside the bridgeStatusChanged event.
+        // b) thing's discovery: binding is up and running, the bridge is online --> subscriber must be started here
         // otherwise data will be read only after a reboot.
 
         OpenWebNetBridgeHandler h = bridgeHandler;
@@ -246,8 +242,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates energy power state based on an EnergyManagement message received from
-     * the OWN network
+     * Updates energy power state based on an EnergyManagement message received from the OWN network
      *
      * @param msg the EnergyManagement message received
      */

@@ -38,12 +38,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetAuxiliaryHandler} is responsible for sending Auxiliary
- * (AUX) commands/messages to the bus
+ * The {@link OpenWebNetAuxiliaryHandler} is responsible for sending Auxiliary (AUX) commands/messages to the bus
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
- * NOTICE: Support for handling messages from the bus regarding alarm control
- * has to be implemented
+ * NOTICE: Support for handling messages from the bus regarding alarm control has to be implemented
  *
  * @author Giovanni Fabiani - Initial contribution
  *

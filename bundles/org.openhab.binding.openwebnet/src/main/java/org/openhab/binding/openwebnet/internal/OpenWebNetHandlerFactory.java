@@ -38,8 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetHandlerFactory} is responsible for creating thing
- * handlers.
+ * The {@link OpenWebNetHandlerFactory} is responsible for creating thing handlers.
  *
  * @author Massimo Valla - Initial contribution, updates
  * @author Andrea Conte - Energy management, Thermoregulation

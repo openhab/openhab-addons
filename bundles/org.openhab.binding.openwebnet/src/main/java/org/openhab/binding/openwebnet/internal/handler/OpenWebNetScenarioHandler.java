@@ -54,8 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetScenarioHandler} is responsible for handling CEN/CEN+
- * Scenarios messages and Dry Contact / IR
+ * The {@link OpenWebNetScenarioHandler} is responsible for handling CEN/CEN+ Scenarios messages and Dry Contact / IR
  * Interfaces messages.
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
@@ -217,8 +216,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
             return;
         }
         Channel ch = thing.getChannel(CHANNEL_SCENARIO_BUTTON + buttonNumber);
-        if (ch == null) { // we have found a new button for this device, let's add a new channel for the
-                          // button
+        if (ch == null) { // we have found a new button for this device, let's add a new channel for the button
             ThingBuilder thingBuilder = editThing();
             ch = buttonToChannel(buttonNumber);
             thingBuilder.withChannel(ch);
@@ -292,8 +290,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Construct a CEN/CEN+ virtual press message for this device given a
-     * pressString and button number
+     * Construct a CEN/CEN+ virtual press message for this device given a pressString and button number
      *
      * @param pressString one START_PRESS, SHORT_PRESS etc.
      * @param button number [0-31]
@@ -402,8 +399,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
             }
         } else {
             logger.debug("CEN/CEN+ channels are trigger channels and do not have state. Setting it ONLINE");
-            // put CEN/CEN+ scenario things to ONLINE automatically as they do not have
-            // state
+            // put CEN/CEN+ scenario things to ONLINE automatically as they do not have state
             ThingStatus ts = getThing().getStatus();
             if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
                 updateStatus(ThingStatus.ONLINE);
