@@ -496,16 +496,16 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                 if (OnOffType.OFF.equals(command) || PercentType.ZERO.equals(command)) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 0,\"channel\": "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 1}}}]");
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 0}}}]");
                 } else if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 1,\"channel\": "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 0}}}]");
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 2}}}]");
                 } else if (command instanceof PercentType percentCommand) {
                     int value = percentCommand.toBigDecimal().intValue();
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetWhiteLed" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\": \"SetWhiteLed\",\"param\": {\"WhiteLed\": {\"state\": 1,\"channel\": "
-                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 1,\"bright\": " + value
+                                    + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"mode\": 2,\"bright\": " + value
                                     + "}}}]");
                 }
         }
