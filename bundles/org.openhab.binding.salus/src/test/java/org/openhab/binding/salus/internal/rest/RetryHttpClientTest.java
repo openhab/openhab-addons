@@ -20,8 +20,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.concurrent.ExecutionException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
@@ -31,11 +29,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.salus.internal.rest.RestClient.Content;
 import org.openhab.binding.salus.internal.rest.RestClient.Header;
-import org.openhab.binding.salus.internal.rest.RestClient.Response;
 
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@SuppressWarnings("DataFlowIssue")
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 class RetryHttpClientTest {
@@ -45,7 +43,7 @@ class RetryHttpClientTest {
     String url = "https://example.com";
     Header header = new Header("Authorization", "Bearer token");
     Header[] headers = new Header[] { header };
-    Response<java.lang.@Nullable String> response = new Response<>(200, "Success");
+    String response = "Success";
     Content content = new Content("Request body");
 
     @Test
@@ -56,9 +54,9 @@ class RetryHttpClientTest {
         var retryHttpClient = new RetryHttpClient(requireNonNull(restClient), maxRetries);
 
         given(restClient.get(url, headers))//
-                .willThrow(new RuntimeException())//
-                .willThrow(new ExecutionException(new RuntimeException()))//
-                .willThrow(new InterruptedException())//
+                .willThrow(new SalusApiException("1")) //
+                .willThrow(new HttpSalusApiException(404, "2")) //
+                .willThrow(new SalusApiException("3")) //
                 .willReturn(response);
 
         // When
@@ -77,9 +75,9 @@ class RetryHttpClientTest {
         var retryHttpClient = new RetryHttpClient(requireNonNull(restClient), maxRetries);
 
         given(restClient.post(url, content, headers))//
-                .willThrow(new RuntimeException()) //
-                .willThrow(new ExecutionException(new RuntimeException())) //
-                .willThrow(new InterruptedException()) //
+                .willThrow(new SalusApiException("1")) //
+                .willThrow(new HttpSalusApiException(404, "2")) //
+                .willThrow(new SalusApiException("3")) //
                 .willReturn(response);
 
         // When

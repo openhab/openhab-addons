@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.handler.CloudApi;
 import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.rest.Device;
+import org.openhab.binding.salus.internal.rest.SalusApiException;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -56,8 +57,9 @@ public class CloudDiscovery extends AbstractDiscoveryService {
             var devices = cloudApi.findDevices();
             logger.debug("Found {} devices while scanning", devices.size());
             devices.stream().filter(Device::isConnected).forEach(this::addThing);
-        } catch (Exception e) {
+        } catch (SalusApiException e) {
             logger.warn("Error while scanning", e);
+            stopScan();
         }
     }
 

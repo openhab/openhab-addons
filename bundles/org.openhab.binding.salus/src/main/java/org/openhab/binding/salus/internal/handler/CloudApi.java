@@ -30,7 +30,7 @@ public interface CloudApi {
      * 
      * @return all devices from cloud
      */
-    SortedSet<Device> findDevices();
+    SortedSet<Device> findDevices() throws SalusApiException;
 
     /**
      * Find a device by DSN
@@ -38,7 +38,7 @@ public interface CloudApi {
      * @param dsn of the device to find
      * @return a device with given DSN (or empty if no found)
      */
-    Optional<Device> findDevice(String dsn);
+    Optional<Device> findDevice(String dsn) throws SalusApiException;
 
     /**
      * Sets value for a property
@@ -48,7 +48,7 @@ public interface CloudApi {
      * @param value value to set
      * @return if value was properly set
      */
-    boolean setValueForProperty(String dsn, String propertyName, Object value);
+    boolean setValueForProperty(String dsn, String propertyName, Object value) throws SalusApiException;
 
     /**
      * Finds all properties for a device

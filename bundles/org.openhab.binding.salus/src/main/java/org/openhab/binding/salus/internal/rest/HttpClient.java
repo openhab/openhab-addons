@@ -41,13 +41,13 @@ public class HttpClient implements RestClient {
     }
 
     @Override
-    public Response<@Nullable String> get(String url, @Nullable Header... headers) throws SalusApiException {
+    public @Nullable String get(String url, @Nullable Header... headers) throws SalusApiException {
         var request = requireNonNull(client.newRequest(url));
         return execute(request, headers, url);
     }
 
     @Override
-    public Response<@Nullable String> post(String url, @Nullable Content content, @Nullable Header... headers)
+    public @Nullable String post(String url, @Nullable Content content, @Nullable Header... headers)
             throws SalusApiException {
         var request = requireNonNull(client.POST(url));
         if (content != null) {
@@ -57,8 +57,7 @@ public class HttpClient implements RestClient {
     }
 
     @SuppressWarnings("ConstantValue")
-    private Response<@Nullable String> execute(Request request, @Nullable Header[] headers, String url)
-            throws SalusApiException {
+    private @Nullable String execute(Request request, @Nullable Header[] headers, String url) throws SalusApiException {
         try {
             if (headers != null) {
                 for (var header : headers) {
@@ -73,13 +72,17 @@ public class HttpClient implements RestClient {
             request.timeout(TIMEOUT, SECONDS);
             request.idleTimeout(IDLE_TIMEOUT, SECONDS);
             var response = request.send();
-            return new Response<>(response.getStatus(), response.getContentAsString());
+            var status = response.getStatus();
+            if (status < 200 || status >= 399) {
+                throw new HttpSalusApiException(status, response.getReason());
+            }
+            return response.getContentAsString();
         } catch (RuntimeException | TimeoutException | ExecutionException | InterruptedException ex) {
             Throwable cause = ex;
             while (cause != null) {
                 if (cause instanceof HttpResponseException hte) {
                     var response = hte.getResponse();
-                    return new Response<>(response.getStatus(), response.getReason());
+                    throw new HttpSalusApiException(response.getStatus(), response.getReason(), hte);
                 }
                 cause = cause.getCause();
             }

@@ -152,20 +152,6 @@ public class GsonMapper {
         }
     }
 
-    public Error parseError(RestClient.Response<@Nullable String> response) {
-        var map = tryParseBody(response.body(), MAP_TYPE_REFERENCE, Map.of());
-        if (!map.containsKey("error")) {
-            return new Error(response.statusCode(), "<ERROR>");
-        }
-        var errorValue = (String) map.get("error");
-        try {
-            return requireNonNull(gson.fromJson(errorValue, Error.class));
-        } catch (JsonSyntaxException e) {
-            logger.debug("Cannot parse Error from string:\n{}", errorValue);
-            return new Error(response.statusCode(), "<ERROR>");
-        }
-    }
-
     public List<DeviceProperty<?>> parseDeviceProperties(String json) {
         var deviceProperties = new ArrayList<DeviceProperty<?>>();
         var objects = tryParseBody(json, LIST_TYPE_REFERENCE, List.of());

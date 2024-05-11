@@ -13,7 +13,6 @@
 package org.openhab.binding.salus.internal.rest;
 
 import java.util.List;
-import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,7 +29,8 @@ public interface RestClient {
      * @param headers to send
      * @return response from server
      */
-    Response<@Nullable String> get(String url, @Nullable Header... headers) throws SalusApiException;
+    @Nullable
+    String get(String url, @Nullable Header... headers) throws SalusApiException;
 
     /**
      * POST request to server
@@ -40,7 +40,8 @@ public interface RestClient {
      * @param content to send
      * @return response from server
      */
-    Response<@Nullable String> post(String url, Content content, @Nullable Header... headers) throws SalusApiException;
+    @Nullable
+    String post(String url, Content content, @Nullable Header... headers) throws SalusApiException;
 
     /**
      * Represents content with a body and a type.
@@ -68,24 +69,6 @@ public interface RestClient {
          */
         public Header(String name, String value) {
             this(name, List.of(value));
-        }
-    }
-
-    /**
-     * Represents an HTTP response with a status code and a body.
-     *
-     * @param <T> The type of the response body.
-     */
-    record Response<T> (int statusCode, T body) {
-        /**
-         * Maps the response body to a new type using the provided mapper function.
-         *
-         * @param <Y> The target type.
-         * @param mapper The mapping function.
-         * @return A new Response with the mapped body.
-         */
-        public <Y> Response<Y> map(Function<T, Y> mapper) {
-            return new Response<>(statusCode, mapper.apply(body));
         }
     }
 }

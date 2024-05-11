@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.salus.internal.handler;
@@ -207,27 +207,32 @@ public class DeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            handleRefreshCommand(channelUID);
-        } else if (command instanceof OnOffType typedCommand) {
-            handleBoolCommand(channelUID, typedCommand == OnOffType.ON);
-        } else if (command instanceof UpDownType typedCommand) {
-            handleBoolCommand(channelUID, typedCommand == UpDownType.UP);
-        } else if (command instanceof OpenClosedType typedCommand) {
-            handleBoolCommand(channelUID, typedCommand == OpenClosedType.OPEN);
-        } else if (command instanceof PercentType typedCommand) {
-            handleDecimalCommand(channelUID, typedCommand.as(DecimalType.class));
-        } else if (command instanceof DecimalType typedCommand) {
-            handleDecimalCommand(channelUID, typedCommand);
-        } else if (command instanceof StringType typedCommand) {
-            handleStringCommand(channelUID, typedCommand);
-        } else {
-            logger.warn("Does not know how to handle command `{}` ({}) on channel `{}`!", command,
-                    command.getClass().getSimpleName(), channelUID);
+        try {
+            if (command instanceof RefreshType) {
+                handleRefreshCommand(channelUID);
+            } else if (command instanceof OnOffType typedCommand) {
+                handleBoolCommand(channelUID, typedCommand == OnOffType.ON);
+            } else if (command instanceof UpDownType typedCommand) {
+                handleBoolCommand(channelUID, typedCommand == UpDownType.UP);
+            } else if (command instanceof OpenClosedType typedCommand) {
+                handleBoolCommand(channelUID, typedCommand == OpenClosedType.OPEN);
+            } else if (command instanceof PercentType typedCommand) {
+                handleDecimalCommand(channelUID, typedCommand.as(DecimalType.class));
+            } else if (command instanceof DecimalType typedCommand) {
+                handleDecimalCommand(channelUID, typedCommand);
+            } else if (command instanceof StringType typedCommand) {
+                handleStringCommand(channelUID, typedCommand);
+            } else {
+                logger.warn("Does not know how to handle command `{}` ({}) on channel `{}`!", command,
+                        command.getClass().getSimpleName(), channelUID);
+            }
+        } catch (SalusApiException e) {
+            logger.debug("Error while handling command `{}` on channel `{}`", command, channelUID, e);
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
-    private void handleRefreshCommand(ChannelUID channelUID) {
+    private void handleRefreshCommand(ChannelUID channelUID) throws SalusApiException {
         var id = channelUID.getId();
         String salusId;
         boolean isX100;
@@ -242,14 +247,8 @@ public class DeviceHandler extends BaseThingHandler {
             return;
         }
 
-        Optional<DeviceProperty<?>> propertyOptional;
-        try {
-            propertyOptional = findDeviceProperties().stream().filter(property -> property.getName().equals(salusId))
-                    .findFirst();
-        } catch (SalusApiException ex) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
-            return;
-        }
+        Optional<DeviceProperty<?>> propertyOptional = findDeviceProperties().stream()
+                .filter(property -> property.getName().equals(salusId)).findFirst();
         if (propertyOptional.isEmpty()) {
             logger.warn("Property {} not found in response!", salusId);
             return;
@@ -286,7 +285,7 @@ public class DeviceHandler extends BaseThingHandler {
         return this.cloudApi.findPropertiesForDevice(dsn);
     }
 
-    private void handleBoolCommand(ChannelUID channelUID, boolean command) {
+    private void handleBoolCommand(ChannelUID channelUID, boolean command) throws SalusApiException {
         var id = channelUID.getId();
         String salusId;
         if (channelUidMap.containsKey(id)) {
@@ -299,7 +298,7 @@ public class DeviceHandler extends BaseThingHandler {
         handleCommand(channelUID, REFRESH);
     }
 
-    private void handleDecimalCommand(ChannelUID channelUID, @Nullable DecimalType command) {
+    private void handleDecimalCommand(ChannelUID channelUID, @Nullable DecimalType command) throws SalusApiException {
         if (command == null) {
             return;
         }
@@ -320,7 +319,7 @@ public class DeviceHandler extends BaseThingHandler {
         handleCommand(channelUID, REFRESH);
     }
 
-    private void handleStringCommand(ChannelUID channelUID, StringType command) {
+    private void handleStringCommand(ChannelUID channelUID, StringType command) throws SalusApiException {
         var id = channelUID.getId();
         String salusId;
         if (channelUidMap.containsKey(id)) {

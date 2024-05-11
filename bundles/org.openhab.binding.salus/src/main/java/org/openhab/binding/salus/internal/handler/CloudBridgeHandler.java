@@ -1,19 +1,18 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.salus.internal.handler;
 
-import static java.util.Collections.emptySortedSet;
-import static java.util.Objects.*;
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.*;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
@@ -27,14 +26,11 @@ import java.util.SortedSet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.SalusBindingConstants;
-import org.openhab.binding.salus.internal.rest.ApiResponse;
 import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
-import org.openhab.binding.salus.internal.rest.Error;
 import org.openhab.binding.salus.internal.rest.GsonMapper;
 import org.openhab.binding.salus.internal.rest.HttpClient;
 import org.openhab.binding.salus.internal.rest.RestClient;
@@ -97,7 +93,7 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         this.devicePropertiesCache = Caffeine.newBuilder().maximumSize(10_000)
                 .expireAfterWrite(Duration.ofSeconds(config.getPropertiesRefreshInterval()))
                 .refreshAfterWrite(Duration.ofSeconds(config.getPropertiesRefreshInterval()))
-                .build(this::loadPropertiesForDevice);
+                .build(this::findPropertiesForDevice);
         this.scheduledFuture = scheduledPool.scheduleWithFixedDelay(this::refreshCloudDevices,
                 config.getRefreshInterval() * 2, config.getRefreshInterval(), SECONDS);
 
@@ -107,18 +103,9 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
 
     private void tryConnectToCloud(SalusApi localSalusApi) {
         try {
-            ApiResponse<SortedSet<Device>> response = localSalusApi.findDevices();
-            if (response.failed()) {
-                @Nullable
-                Error error = response.error();
-                if (error == null) {
-                    error = new Error(500, "Unknown error");
-                }
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, error.code() + ": " + error.message());
-            } else {
-                // there is a connection with the cloud
-                updateStatus(ONLINE);
-            }
+            localSalusApi.findDevices();
+            // there is a connection with the cloud
+            updateStatus(ONLINE);
         } catch (SalusApiException ex) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR,
                     "@text/cloud-bridge-handler.initialize.cannot-connect-to-cloud [\"" + ex.getMessage() + "\"]");
@@ -169,57 +156,29 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     }
 
     @Override
-    public SortedSet<@NonNull DeviceProperty<?>> findPropertiesForDevice(String dsn) throws SalusApiException {
-        return requireNonNullElse(devicePropertiesCache.get(dsn), emptySortedSet());
-    }
-
-    @Nullable
-    private SortedSet<DeviceProperty<?>> loadPropertiesForDevice(String dsn) throws SalusApiException {
-        @Nullable
-        SalusApi api = salusApi;
-        if (api == null) {
-            logger.debug("Cannot find properties for device {} because salusClient is null", dsn);
-            return null;
-        }
+    public SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn) throws SalusApiException {
         logger.debug("Finding properties for device {} using salusClient", dsn);
-        ApiResponse<SortedSet<DeviceProperty<?>>> response = api.findDeviceProperties(dsn);
-        if (response.failed()) {
-            var error = response.error();
-            if (error == null) {
-                error = new Error(500, "Unknown error");
-            }
-            throw new RuntimeException("Cannot find properties for device " + dsn + " using salusClient\n"
-                    + error.code() + ": " + error.message());
-        }
-        return response.body();
+        return requireNonNull(salusApi).findDeviceProperties(dsn);
     }
 
     @Override
-    public boolean setValueForProperty(String dsn, String propertyName, Object value) {
+    public boolean setValueForProperty(String dsn, String propertyName, Object value) throws SalusApiException {
         try {
             @Nullable
             SalusApi api = requireNonNull(salusApi);
             logger.debug("Setting property {} on device {} to value {} using salusClient", propertyName, dsn, value);
-            ApiResponse<Object> response = api.setValueForProperty(dsn, propertyName, value);
-            if (response.failed()) {
-                logger.debug("Cannot set property {} on device {} to value {} using salusClient\n{}", propertyName, dsn,
-                        value, response.error());
-                devicePropertiesCache.invalidate(dsn);
-                return false;
-            }
-            @Nullable
-            Object setValue = response.body();
-            if (setValue != null && (!(setValue instanceof Boolean) && !(setValue instanceof String)
-                    && !(setValue instanceof Number))) {
+            Object setValue = api.setValueForProperty(dsn, propertyName, value);
+            if ((!(setValue instanceof Boolean) && !(setValue instanceof String) && !(setValue instanceof Number))) {
                 logger.warn(
                         "Cannot set value {} ({}) for property {} on device {} because it is not a Boolean, String, Long or Integer",
                         setValue, setValue.getClass().getSimpleName(), propertyName, dsn);
                 return false;
             }
-            Optional<DeviceProperty<?>> property = devicePropertiesCache.get(dsn).stream()
+            var properties = devicePropertiesCache.get(dsn);
+            Optional<DeviceProperty<?>> property = requireNonNull(properties).stream()
                     .filter(prop -> prop.getName().equals(propertyName)).findFirst();
             if (property.isEmpty()) {
-                String simpleName = setValue != null ? setValue.getClass().getSimpleName() : "<null>";
+                String simpleName = setValue.getClass().getSimpleName();
                 logger.warn(
                         "Cannot set value {} ({}) for property {} on device {} because it is not found in the cache. Invalidating cache",
                         setValue, simpleName, propertyName, dsn);
@@ -227,10 +186,6 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                 return false;
             }
             DeviceProperty<?> prop = property.get();
-            if (setValue == null) {
-                prop.setValue(null);
-                return true;
-            }
             if (setValue instanceof Boolean b && prop instanceof DeviceProperty.BooleanDeviceProperty boolProp) {
                 boolProp.setValue(b);
                 return true;
@@ -248,47 +203,19 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
                     "Cannot set value {} ({}) for property {} ({}) on device {} because value class does not match property class",
                     setValue, setValue.getClass().getSimpleName(), propertyName, prop.getClass().getSimpleName(), dsn);
             return false;
-        } catch (Exception ex) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR,
-                    "@text/cloud-bridge-handler.errors.http [\"" + ex.getLocalizedMessage() + "\"]");
+        } catch (SalusApiException ex) {
             devicePropertiesCache.invalidateAll();
-            return false;
+            throw ex;
         }
     }
 
     @Override
-    public SortedSet<Device> findDevices() {
-        try {
-            @Nullable
-            SalusApi api = this.salusApi;
-            if (api == null) {
-                logger.debug("Cannot find devices because salusClient is null");
-                return emptySortedSet();
-            }
-            logger.debug("Finding devices using salusClient");
-            ApiResponse<SortedSet<Device>> response = api.findDevices();
-            if (response.failed()) {
-                logger.warn("Cannot find devices using salusClient\n{}", response.error());
-                return emptySortedSet();
-            }
-
-            @Nullable
-            SortedSet<Device> body = response.body();
-            if (body == null) {
-                return emptySortedSet();
-            }
-
-            return body;
-        } catch (Exception ex) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR,
-                    "@text/cloud-bridge-handler.errors.http [\"" + ex.getLocalizedMessage() + "\"]");
-            // have to return something because we are not rethrowing exception
-            return emptySortedSet();
-        }
+    public SortedSet<Device> findDevices() throws SalusApiException {
+        return requireNonNull(this.salusApi).findDevices();
     }
 
     @Override
-    public Optional<Device> findDevice(String dsn) {
+    public Optional<Device> findDevice(String dsn) throws SalusApiException {
         return findDevices().stream().filter(device -> device.dsn().equals(dsn)).findFirst();
     }
 }

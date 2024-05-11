@@ -35,7 +35,7 @@ public class RetryHttpClient implements RestClient {
     }
 
     @Override
-    public Response<@Nullable String> get(String url, @Nullable Header... headers) throws SalusApiException {
+    public @Nullable String get(String url, @Nullable Header... headers) throws SalusApiException {
         for (int i = 0; i < maxRetries; i++) {
             try {
                 return restClient.get(url, headers);
@@ -51,8 +51,7 @@ public class RetryHttpClient implements RestClient {
     }
 
     @Override
-    public Response<@Nullable String> post(String url, Content content, @Nullable Header... headers)
-            throws SalusApiException {
+    public @Nullable String post(String url, Content content, @Nullable Header... headers) throws SalusApiException {
         for (int i = 0; i < maxRetries; i++) {
             try {
                 return restClient.post(url, content, headers);

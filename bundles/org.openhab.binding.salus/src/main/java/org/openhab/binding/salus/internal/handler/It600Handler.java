@@ -35,10 +35,10 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
+import org.openhab.binding.salus.internal.rest.SalusApiException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -108,12 +108,18 @@ public class It600Handler extends BaseThingHandler {
                 return;
             }
             // device is missing properties
-            var deviceProperties = findDeviceProperties().stream().map(DeviceProperty::getName).toList();
-            var result = new ArrayList<>(REQUIRED_CHANNELS);
-            result.removeAll(deviceProperties);
-            if (!result.isEmpty()) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/it600-handler.initialize.errors.missing-channels [\""
-                        + dsn + "\", \"" + String.join(", ", result) + "\"]");
+            try {
+                var deviceProperties = findDeviceProperties().stream().map(DeviceProperty::getName).toList();
+                var result = new ArrayList<>(REQUIRED_CHANNELS);
+                result.removeAll(deviceProperties);
+                if (!result.isEmpty()) {
+                    updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                            "@text/it600-handler.initialize.errors.missing-channels [\"" + dsn + "\", \""
+                                    + String.join(", ", result) + "\"]");
+                    return;
+                }
+            } catch (SalusApiException ex) {
+                updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
                 return;
             }
         } catch (Exception e) {
@@ -127,23 +133,28 @@ public class It600Handler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        var id = channelUID.getId();
-        switch (id) {
-            case TEMPERATURE:
-                handleCommandForTemperature(channelUID, command);
-                break;
-            case EXPECTED_TEMPERATURE:
-                handleCommandForExpectedTemperature(channelUID, command);
-                break;
-            case WORK_TYPE:
-                handleCommandForWorkType(channelUID, command);
-                break;
-            default:
-                logger.warn("Unknown channel `{}` for command `{}`", id, command);
+        try {
+            var id = channelUID.getId();
+            switch (id) {
+                case TEMPERATURE:
+                    handleCommandForTemperature(channelUID, command);
+                    break;
+                case EXPECTED_TEMPERATURE:
+                    handleCommandForExpectedTemperature(channelUID, command);
+                    break;
+                case WORK_TYPE:
+                    handleCommandForWorkType(channelUID, command);
+                    break;
+                default:
+                    logger.warn("Unknown channel `{}` for command `{}`", id, command);
+            }
+        } catch (SalusApiException e) {
+            logger.debug("Error while handling command `{}` on channel `{}`", command, channelUID, e);
+            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
-    private void handleCommandForTemperature(ChannelUID channelUID, Command command) {
+    private void handleCommandForTemperature(ChannelUID channelUID, Command command) throws SalusApiException {
         if (!(command instanceof RefreshType)) {
             // only refresh commands are supported for temp channel
             return;
@@ -158,7 +169,7 @@ public class It600Handler extends BaseThingHandler {
                 });
     }
 
-    private void handleCommandForExpectedTemperature(ChannelUID channelUID, Command command) {
+    private void handleCommandForExpectedTemperature(ChannelUID channelUID, Command command) throws SalusApiException {
         if (command instanceof RefreshType) {
             findLongProperty("ep_9:sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
                     .map(DeviceProperty.LongDeviceProperty::getValue).map(BigDecimal::new)
@@ -197,7 +208,7 @@ public class It600Handler extends BaseThingHandler {
                 command.getClass().getSimpleName(), channelUID);
     }
 
-    private void handleCommandForWorkType(ChannelUID channelUID, Command command) {
+    private void handleCommandForWorkType(ChannelUID channelUID, Command command) throws SalusApiException {
         if (command instanceof RefreshType) {
             findLongProperty("ep_9:sIT600TH:HoldType", "HoldType").map(DeviceProperty.LongDeviceProperty::getValue)
                     .map(value -> switch (value.intValue()) {
@@ -243,7 +254,8 @@ public class It600Handler extends BaseThingHandler {
                 command.getClass().getSimpleName(), channelUID);
     }
 
-    private Optional<DeviceProperty.LongDeviceProperty> findLongProperty(String name, String shortName) {
+    private Optional<DeviceProperty.LongDeviceProperty> findLongProperty(String name, String shortName)
+            throws SalusApiException {
         var deviceProperties = findDeviceProperties();
         var property = deviceProperties.stream().filter(p -> p.getName().equals(name))
                 .filter(DeviceProperty.LongDeviceProperty.class::isInstance)
@@ -259,12 +271,7 @@ public class It600Handler extends BaseThingHandler {
         return property;
     }
 
-    private SortedSet<DeviceProperty<?>> findDeviceProperties() {
-        try {
-            return this.cloudApi.findPropertiesForDevice(dsn);
-        } catch (Exception e) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
-            return new TreeSet<>();
-        }
+    private SortedSet<DeviceProperty<?>> findDeviceProperties() throws SalusApiException {
+        return this.cloudApi.findPropertiesForDevice(dsn);
     }
 }

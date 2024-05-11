@@ -13,7 +13,6 @@
 package org.openhab.binding.salus.internal.rest;
 
 import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.salus.internal.rest.ApiResponse.error;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -65,35 +64,37 @@ public class SalusApi {
         this(username, password, baseUrl, restClient, mapper, Clock.systemDefaultZone());
     }
 
-    private RestClient.Response<@Nullable String> get(String url, RestClient.Header header, int retryAttempt)
-            throws SalusApiException {
+    private @Nullable String get(String url, RestClient.Header header, int retryAttempt) throws SalusApiException {
         refreshAccessToken();
-        var response = restClient.get(url, authHeader());
-        if (response.statusCode() == 401) {
-            logger.debug("Refreshing access token");
-            if (retryAttempt <= MAX_RETRIES) {
-                forceRefreshAccessToken();
-                return get(url, header, retryAttempt + 1);
+        try {
+            return restClient.get(url, authHeader());
+        } catch (HttpSalusApiException ex) {
+            if (ex.getCode() == 401) {
+                if (retryAttempt <= MAX_RETRIES) {
+                    forceRefreshAccessToken();
+                    return get(url, header, retryAttempt + 1);
+                }
+                logger.debug("Could not refresh access token after {} retries", MAX_RETRIES);
             }
-            logger.debug("Could not refresh access token after {} retries", MAX_RETRIES);
-            return response;
+            throw ex;
         }
-        return response;
     }
 
-    private RestClient.Response<@Nullable String> post(String url, RestClient.Content content, RestClient.Header header,
-            int retryAttempt) throws SalusApiException {
+    private @Nullable String post(String url, RestClient.Content content, RestClient.Header header, int retryAttempt)
+            throws SalusApiException {
         refreshAccessToken();
-        var response = restClient.post(url, content, header);
-        if (response.statusCode() == 401) {
-            if (retryAttempt <= MAX_RETRIES) {
-                forceRefreshAccessToken();
-                return post(url, content, header, retryAttempt + 1);
+        try {
+            return restClient.post(url, content, header);
+        } catch (HttpSalusApiException ex) {
+            if (ex.getCode() == 401) {
+                if (retryAttempt <= MAX_RETRIES) {
+                    forceRefreshAccessToken();
+                    return post(url, content, header, retryAttempt + 1);
+                }
+                logger.debug("Could not refresh access token after {} retries", MAX_RETRIES);
             }
-            logger.debug("Could not refresh access token after {} retries", MAX_RETRIES);
-            return response;
+            throw ex;
         }
-        return response;
     }
 
     private static String removeTrailingSlash(String str) {
@@ -103,42 +104,38 @@ public class SalusApi {
         return str;
     }
 
-    private RestClient.Response<@Nullable String> login(String username, char[] password) throws SalusApiException {
-        return login(username, password, 1);
+    private void login(String username, char[] password) throws SalusApiException {
+        login(username, password, 1);
     }
 
-    private RestClient.Response<@Nullable String> login(String username, char[] password, int retryAttempt)
-            throws SalusApiException {
+    private void login(String username, char[] password, int retryAttempt) throws SalusApiException {
         logger.debug("Login with username '{}', retryAttempt={}", username, retryAttempt);
         authToken = null;
         authTokenExpireTime = null;
         var finalUrl = url("/users/sign_in.json");
         var inputBody = mapper.loginParam(username, password);
-        var response = restClient.post(finalUrl, new RestClient.Content(inputBody, "application/json"),
-                new RestClient.Header("Accept", "application/json"));
-        if (response.statusCode() == 401) {
-            if (retryAttempt < MAX_RETRIES) {
-                return login(username, password, retryAttempt + 1);
+        try {
+            var response = restClient.post(finalUrl, new RestClient.Content(inputBody, "application/json"),
+                    new RestClient.Header("Accept", "application/json"));
+            if (response == null) {
+                throw new HttpSalusApiException(401, "No response token from server");
             }
-            return response;
-        }
-        if (response.statusCode() == 403) {
-            if (retryAttempt < MAX_RETRIES) {
-                return login(username, password, retryAttempt + 1);
+            var token = authToken = mapper.authToken(response);
+            authTokenExpireTime = LocalDateTime.now(clock).plusSeconds(token.expiresIn())
+                    // this is to account that there is a delay between server setting `expires_in`
+                    // and client (OpenHAB) receiving it
+                    .minusSeconds(TOKEN_EXPIRE_TIME_ADJUSTMENT_SECONDS);
+            logger.debug("Correctly logged in for user {}, role={}, expires at {} ({} secs)", username, token.role(),
+                    authTokenExpireTime, token.expiresIn());
+        } catch (HttpSalusApiException ex) {
+            if (ex.getCode() == 401 || ex.getCode() == 403) {
+                if (retryAttempt < MAX_RETRIES) {
+                    login(username, password, retryAttempt + 1);
+                }
+                throw ex;
             }
-            return response;
+            throw ex;
         }
-        if (response.statusCode() != 200) {
-            return new RestClient.Response<@Nullable String>(response.statusCode(), response.body());
-        }
-        var token = authToken = mapper.authToken(requireNonNull(response.body()));
-        authTokenExpireTime = LocalDateTime.now(clock).plusSeconds(token.expiresIn())
-                // this is to account that there is a delay between server setting `expires_in`
-                // and client (OpenHAB) receiving it
-                .minusSeconds(TOKEN_EXPIRE_TIME_ADJUSTMENT_SECONDS);
-        logger.debug("Correctly logged in for user {}, role={}, expires at {} ({} secs)", username, token.role(),
-                authTokenExpireTime, token.expiresIn());
-        return response;
     }
 
     private void forceRefreshAccessToken() throws SalusApiException {
@@ -148,17 +145,17 @@ public class SalusApi {
         refreshAccessToken();
     }
 
-    private RestClient.@Nullable Response<@Nullable String> refreshAccessToken() throws SalusApiException {
+    private void refreshAccessToken() throws SalusApiException {
         if (this.authToken == null || isExpiredToken()) {
-            var response = login(username, password);
-            if (response.statusCode() != 200) {
-                logger.warn("Accesstoken could not be acquired, for user '{}', response={}", username, response);
+            try {
+                login(username, password);
+            } catch (SalusApiException ex) {
+                logger.warn("Accesstoken could not be acquired, for user '{}', response={}", username, ex.getMessage());
                 this.authToken = null;
                 this.authTokenExpireTime = null;
+                throw ex;
             }
-            return response;
         }
-        return null;
     }
 
     private boolean isExpiredToken() {
@@ -170,53 +167,31 @@ public class SalusApi {
         return baseUrl + url;
     }
 
-    public ApiResponse<SortedSet<Device>> findDevices() throws SalusApiException {
-        var loginResponse = refreshAccessToken();
-        if (loginResponse != null && loginResponse.statusCode() != 200) {
-            return error(new Error(loginResponse.statusCode(), loginResponse.body()));
-        }
+    public SortedSet<Device> findDevices() throws SalusApiException {
+        refreshAccessToken();
         var response = get(url("/apiv1/devices.json"), authHeader(), 1);
-        if (response.statusCode() != 200) {
-            // there was an error when querying endpoint
-            return error(mapper.parseError(response));
-        }
-
-        var devices = new TreeSet<>(mapper.parseDevices(requireNonNull(response.body())));
-        return ApiResponse.ok(devices);
+        return new TreeSet<>(mapper.parseDevices(requireNonNull(response)));
     }
 
     private RestClient.Header authHeader() {
         return new RestClient.Header("Authorization", "auth_token " + requireNonNull(authToken).accessToken());
     }
 
-    public ApiResponse<SortedSet<DeviceProperty<?>>> findDeviceProperties(String dsn) throws SalusApiException {
-        var loginResponse = refreshAccessToken();
-        if (loginResponse != null && loginResponse.statusCode() != 200) {
-            return error(new Error(loginResponse.statusCode(), loginResponse.body()));
-        }
+    public SortedSet<DeviceProperty<?>> findDeviceProperties(String dsn) throws SalusApiException {
+        refreshAccessToken();
         var response = get(url("/apiv1/dsns/" + dsn + "/properties.json"), authHeader(), 1);
-        if (response.statusCode() != 200) {
-            // there was an error when querying endpoint
-            return error(mapper.parseError(response));
+        if (response == null) {
+            throw new SalusApiException("No device properties for device %s".formatted(dsn));
         }
-
-        var deviceProperties = new TreeSet<>(mapper.parseDeviceProperties(requireNonNull(response.body())));
-        return ApiResponse.ok(deviceProperties);
+        return new TreeSet<>(mapper.parseDeviceProperties(response));
     }
 
-    public ApiResponse<Object> setValueForProperty(String dsn, String propertyName, Object value)
-            throws SalusApiException {
-        var loginResponse = refreshAccessToken();
-        if (loginResponse != null && loginResponse.statusCode() != 200) {
-            return error(new Error(loginResponse.statusCode(), loginResponse.body()));
-        }
+    public Object setValueForProperty(String dsn, String propertyName, Object value) throws SalusApiException {
+        refreshAccessToken();
         var finalUrl = url("/apiv1/dsns/" + dsn + "/properties/" + propertyName + "/datapoints.json");
         var json = mapper.datapointParam(value);
         var response = post(finalUrl, new RestClient.Content(json), authHeader(), 1);
-        if (response.statusCode() < 200 || response.statusCode() > 299) {
-            return error(mapper.parseError(response));
-        }
-        var datapointValue = response.map(mapper::datapointValue).body();
-        return datapointValue.map(ApiResponse::ok).orElseGet(() -> error(new Error(404, "No datapoint in return")));
+        var datapointValue = mapper.datapointValue(response);
+        return datapointValue.orElseThrow(() -> new HttpSalusApiException(404, "No datapoint in return"));
     }
 }

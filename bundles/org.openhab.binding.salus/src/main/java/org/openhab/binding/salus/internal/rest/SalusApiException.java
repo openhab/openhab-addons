@@ -25,4 +25,8 @@ public class SalusApiException extends RuntimeException {
     public SalusApiException(String msg, Exception e) {
         super(msg, e);
     }
+
+    public SalusApiException(String msg) {
+        super(msg);
+    }
 }
