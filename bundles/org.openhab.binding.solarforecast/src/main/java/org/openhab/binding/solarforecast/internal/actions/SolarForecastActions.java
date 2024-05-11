@@ -168,7 +168,7 @@ public class SolarForecastActions implements ThingActions {
                 forecast.triggerUpdate();
             });
         } else {
-            logger.trace("Handler missing - return invalid date MIN");
+            logger.trace("Handler missing");
         }
     }
 
