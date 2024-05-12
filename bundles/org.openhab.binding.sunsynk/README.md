@@ -50,7 +50,6 @@ The SunSynk Account requires the user e-mail address and password used to login 
 where \<gateway  serial\> and \<inverter serial\> are discovered from Sun Synk Connect
 
 ## Thing Configuration
-
 ### `sunsynkaccount` Bridge Thing Configuration
 
 | Name            | Type    | Description                                  | Default | Required | Advanced |
