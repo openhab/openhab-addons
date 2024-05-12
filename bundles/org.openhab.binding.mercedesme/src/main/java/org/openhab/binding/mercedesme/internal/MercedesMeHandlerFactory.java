@@ -64,7 +64,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     private final MercedesMeDiscoveryService discoveryService;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
-    private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
     private @Nullable ServiceRegistration<?> discoveryServiceReg;
     private @Nullable MercedesMeMetadataAdjuster mdAdjuster;
 
@@ -74,8 +73,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
     public MercedesMeHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
             final @Reference LocaleProvider lp, final @Reference LocationProvider locationP,
             final @Reference TimeZoneProvider tzp, final @Reference MercedesMeCommandOptionProvider cop,
-            final @Reference MercedesMeStateOptionProvider sop,
-            final @Reference MercedesMeDynamicStateDescriptionProvider dsdp, final @Reference UnitProvider up,
+            final @Reference MercedesMeStateOptionProvider sop, final @Reference UnitProvider up,
             final @Reference MetadataRegistry mdr, final @Reference ItemChannelLinkRegistry iclr) {
         this.storageService = storageService;
 
@@ -83,7 +81,6 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
         locationProvider = locationP;
         mmcop = cop;
         mmsop = sop;
-        mmdsdp = dsdp;
 
         Utils.initialize(tzp, lp);
         Mapper.initialize(up);
@@ -115,7 +112,7 @@ public class MercedesMeHandlerFactory extends BaseThingHandlerFactory {
             return new AccountHandler((Bridge) thing, discoveryService, httpClient, localeProvider, storageService);
         } else if (THING_TYPE_BEV.equals(thingTypeUID) || THING_TYPE_COMB.equals(thingTypeUID)
                 || THING_TYPE_HYBRID.equals(thingTypeUID)) {
-            return new VehicleHandler(thing, locationProvider, mmcop, mmsop, mmdsdp);
+            return new VehicleHandler(thing, locationProvider, mmcop, mmsop);
         }
         return null;
     }

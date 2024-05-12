@@ -113,11 +113,13 @@ public class AuthService {
 
         PINRequest pr = new PINRequest(config.email, locale.getCountry());
         req.header(HttpHeader.CONTENT_TYPE, "application/json");
+        logger.trace("{} payload {}", url, Utils.GSON.toJson(pr));
         req.content(new StringContentProvider(Utils.GSON.toJson(pr), "utf-8"));
 
         try {
             ContentResponse cr = req.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
             if (cr.getStatus() == 200) {
+                logger.trace("{} Request PIN fine {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
                 return pr.nonce;
             } else {
                 logger.trace("{} Failed to request pin {} {}", prefix(), cr.getStatus(), cr.getContentAsString());

@@ -22,16 +22,18 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.FileReader;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.MercedesMeCommandOptionProvider;
-import org.openhab.binding.mercedesme.internal.MercedesMeDynamicStateDescriptionProvider;
 import org.openhab.binding.mercedesme.internal.MercedesMeStateOptionProvider;
 import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.RefreshType;
 
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
@@ -50,8 +52,7 @@ class VehicleHandlerTest {
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -81,10 +82,11 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        MercedesMeDynamicStateDescriptionProviderMock<?> patternMock = new MercedesMeDynamicStateDescriptionProviderMock<>();
+        MercedesMeDynamicStateDescriptionProviderMock<?> patternMock = new MercedesMeDynamicStateDescriptionProviderMock<>(
+                mock(EventPublisher.class), mock(ItemChannelLinkRegistry.class),
+                mock(ChannelTypeI18nLocalizationService.class));
         MercedesMeCommandOptionProviderMock commandOptionMock = new MercedesMeCommandOptionProviderMock();
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
-                mock(MercedesMeStateOptionProvider.class), patternMock);
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock, patternMock);
 
         AccountHandlerMock ahm = new AccountHandlerMock();
         vh.accountHandler = Optional.of(ahm);
@@ -140,8 +142,7 @@ class VehicleHandlerTest {
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -174,8 +175,7 @@ class VehicleHandlerTest {
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -197,8 +197,7 @@ class VehicleHandlerTest {
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -220,8 +219,7 @@ class VehicleHandlerTest {
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -246,8 +244,7 @@ class VehicleHandlerTest {
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_HYBRID);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.HYBRID));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -278,8 +275,7 @@ class VehicleHandlerTest {
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_HYBRID);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", "hybrid"));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vehicleConfig.batteryCapacity = (float) 9.2;
@@ -309,8 +305,7 @@ class VehicleHandlerTest {
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -358,8 +353,7 @@ class VehicleHandlerTest {
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -384,8 +378,7 @@ class VehicleHandlerTest {
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class),
-                mock(MercedesMeDynamicStateDescriptionProvider.class));
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -416,9 +409,8 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
         AccountHandlerMock ahm = new AccountHandlerMock();
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
-
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(ahm);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
@@ -446,9 +438,8 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
         AccountHandlerMock ahm = new AccountHandlerMock();
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock,
-                mock(MercedesMeStateOptionProvider.class), mock(MercedesMeDynamicStateDescriptionProvider.class));
-
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
         vh.accountHandler = Optional.of(ahm);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);

@@ -12,15 +12,21 @@
  */
 package org.openhab.binding.mercedesme.internal;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.events.EventPublisher;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
+import org.openhab.core.types.StateOption;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Dynamic provider of state options while leaving other state description fields as original.
@@ -30,6 +36,8 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = { DynamicStateDescriptionProvider.class, MercedesMeStateOptionProvider.class })
 public class MercedesMeStateOptionProvider extends BaseDynamicStateDescriptionProvider {
+    private final Logger logger = LoggerFactory.getLogger(MercedesMeStateOptionProvider.class);
+
     @Activate
     public MercedesMeStateOptionProvider(final @Reference EventPublisher eventPublisher, //
             final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
@@ -37,5 +45,17 @@ public class MercedesMeStateOptionProvider extends BaseDynamicStateDescriptionPr
         this.eventPublisher = eventPublisher;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
+    }
+
+    @Override
+    public void setStateOptions(ChannelUID cuid, List<StateOption> options) {
+        super.setStateOptions(cuid, options);
+        logger.warn("{} state options {}", cuid.getAsString(), options);
+    }
+
+    @Override
+    public void setStatePattern(ChannelUID channelUID, String pattern) {
+        super.setStatePattern(channelUID, pattern);
+        logger.warn("{} pattern {}", channelUID.getAsString(), pattern);
     }
 }

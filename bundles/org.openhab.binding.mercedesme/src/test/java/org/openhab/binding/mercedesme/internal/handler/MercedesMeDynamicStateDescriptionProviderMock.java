@@ -16,8 +16,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mercedesme.internal.MercedesMeDynamicStateDescriptionProvider;
+import org.openhab.binding.mercedesme.internal.MercedesMeStateOptionProvider;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 
 /**
  * {@link MercedesMeDynamicStateDescriptionProviderMock} Mock to collect StatePattern settings
@@ -25,7 +28,13 @@ import org.openhab.core.thing.ChannelUID;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class MercedesMeDynamicStateDescriptionProviderMock<V> extends MercedesMeDynamicStateDescriptionProvider {
+public class MercedesMeDynamicStateDescriptionProviderMock<V> extends MercedesMeStateOptionProvider {
+    public MercedesMeDynamicStateDescriptionProviderMock(EventPublisher eventPublisher,
+            ItemChannelLinkRegistry itemChannelLinkRegistry,
+            ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
+        super(eventPublisher, itemChannelLinkRegistry, channelTypeI18nLocalizationService);
+    }
+
     public Map<String, String> patternMap = new HashMap<>();
 
     @Override

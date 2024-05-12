@@ -34,7 +34,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.MercedesMeCommandOptionProvider;
-import org.openhab.binding.mercedesme.internal.MercedesMeDynamicStateDescriptionProvider;
 import org.openhab.binding.mercedesme.internal.MercedesMeStateOptionProvider;
 import org.openhab.binding.mercedesme.internal.actions.VehicleActions;
 import org.openhab.binding.mercedesme.internal.config.VehicleConfiguration;
@@ -118,7 +117,6 @@ public class VehicleHandler extends BaseThingHandler {
     private final LocationProvider locationProvider;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
-    private final MercedesMeDynamicStateDescriptionProvider mmdsdp;
     private Map<String, UOMObserver> unitStorage = new HashMap<>();
     Map<String, ChannelStateMap> eventStorage = new HashMap<>();
 
@@ -134,13 +132,12 @@ public class VehicleHandler extends BaseThingHandler {
     Optional<VehicleConfiguration> config = Optional.empty();
 
     public VehicleHandler(Thing thing, LocationProvider lp, MercedesMeCommandOptionProvider cop,
-            MercedesMeStateOptionProvider sop, MercedesMeDynamicStateDescriptionProvider dsdp) {
+            MercedesMeStateOptionProvider sop) {
         super(thing);
         vehicleType = thing.getThingTypeUID().getId();
         locationProvider = lp;
         mmcop = cop;
         mmsop = sop;
-        mmdsdp = dsdp;
     }
 
     @Override
@@ -864,7 +861,6 @@ public class VehicleHandler extends BaseThingHandler {
                     ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_CHARGE, "program");
                     mmcop.setCommandOptions(cuid, commandOptions);
                     mmsop.setStateOptions(cuid, stateOptions);
-
                     vas = atts.get("selectedChargeProgram");
                     if (vas != null) {
                         selectedChargeProgram = (int) vas.getIntValue();
@@ -949,7 +945,7 @@ public class VehicleHandler extends BaseThingHandler {
             String pattern = deliveredObserver.getPattern(csm.getGroup(), csm.getChannel());
             if (pattern != null) {
                 if (pattern.startsWith("%") && change) {
-                    mmdsdp.setStatePattern(cuid, pattern);
+                    mmsop.setStatePattern(cuid, pattern);
                 } else {
                     handleComplexTripPattern(channel, pattern);
                 }
@@ -1026,8 +1022,8 @@ public class VehicleHandler extends BaseThingHandler {
         CommandType[] ctValues = CommandType.values();
         for (int i = 0; i < ctValues.length; i++) {
             if (!"UNRECOGNIZED".equals(ctValues[i].toString())) {
-                StateOption so = new StateOption(Integer.toString(ctValues[i].getNumber()), ctValues[i].toString());
-                commandTypeOptions.add(so);
+                StateOption co = new StateOption(Integer.toString(ctValues[i].getNumber()), ctValues[i].toString());
+                commandTypeOptions.add(co);
             }
         }
         mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_COMMAND, "cmd-name"), commandTypeOptions);
@@ -1036,7 +1032,6 @@ public class VehicleHandler extends BaseThingHandler {
         for (int j = 0; j < csValues.length; j++) {
             if (!"UNRECOGNIZED".equals(csValues[j].toString())) {
                 StateOption so = new StateOption(Integer.toString(csValues[j].getNumber()), csValues[j].toString());
-                commandTypeOptions.add(so);
                 commandStateOptions.add(so);
             }
         }
