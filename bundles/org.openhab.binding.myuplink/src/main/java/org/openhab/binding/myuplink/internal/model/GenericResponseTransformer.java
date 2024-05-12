@@ -63,7 +63,7 @@ public class GenericResponseTransformer {
 
         for (JsonElement channelData : Utils.getAsJsonArray(jsonData, JSON_KEY_ROOT_DATA)) {
 
-            logger.debug(channelData.toString());
+            logger.debug("received channel data: {}", channelData.toString());
 
             var value = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_VALUE);
             var channelId = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_ID);

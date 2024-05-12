@@ -14,11 +14,18 @@ package org.openhab.binding.myuplink.internal.command;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkThingHandler;
 import org.openhab.binding.myuplink.internal.model.ValidationException;
 
+/**
+ * base class for all commands that support paging. common logic should be implemented here
+ *
+ * @author Alexander Friese - initial contribution
+ */
+@NonNullByDefault
 public abstract class AbstractPagingCommand extends AbstractCommand {
 
     public AbstractPagingCommand(MyUplinkThingHandler handler, RetryOnFailure retryOnFailure,

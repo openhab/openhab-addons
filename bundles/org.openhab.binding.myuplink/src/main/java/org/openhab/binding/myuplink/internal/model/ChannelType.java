@@ -16,6 +16,11 @@ import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+/**
+ * Enum to map units to type names and internal data types.
+ *
+ * @author Alexander Friese - initial contribution
+ */
 @NonNullByDefault
 public enum ChannelType {
     ENERGY("kWh", "type-energy", "Number:Energy"),

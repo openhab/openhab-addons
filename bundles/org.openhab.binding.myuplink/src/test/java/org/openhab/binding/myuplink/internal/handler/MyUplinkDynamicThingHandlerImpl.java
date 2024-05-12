@@ -14,6 +14,7 @@ package org.openhab.binding.myuplink.internal.handler;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myuplink.internal.command.MyUplinkCommand;
 import org.openhab.binding.myuplink.internal.config.MyUplinkConfiguration;
@@ -24,6 +25,12 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.slf4j.Logger;
 
+/**
+ * test implementtion
+ *
+ * @author Alexander Friese - initial contribution
+ */
+@NonNullByDefault
 public class MyUplinkDynamicThingHandlerImpl implements MyUplinkDynamicThingHandler {
 
     final Thing thing;
