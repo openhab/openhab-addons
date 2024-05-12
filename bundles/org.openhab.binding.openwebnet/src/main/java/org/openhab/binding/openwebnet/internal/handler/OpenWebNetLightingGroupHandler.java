@@ -37,8 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetLightingGroupHandler} is responsible for handling
- * commands/messages for a Lighting OpenWebNet group.
+ * The {@link OpenWebNetLightingGroupHandler} is responsible for handling commands/messages for a Lighting OpenWebNet
+ * group.
  * It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution.
@@ -196,9 +196,8 @@ public class OpenWebNetLightingGroupHandler extends OpenWebNetThingHandler {
 
     @Override
     public void dispose() {
-        Where w = deviceWhere;
-        if (w != null) {
-            int area = ((WhereLightAutom) w).getArea();
+        if (this.deviceWhere instanceof WhereLightAutom whereLightAutom) {
+            int area = whereLightAutom.getArea();
             OpenWebNetBridgeHandler bridgeHandler = this.bridgeHandler;
             if (bridgeHandler != null) {
                 bridgeHandler.removeLight(area, this);

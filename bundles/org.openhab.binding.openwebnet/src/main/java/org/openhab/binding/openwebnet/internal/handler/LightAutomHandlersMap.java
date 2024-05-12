@@ -89,9 +89,7 @@ public class LightAutomHandlersMap {
             Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
             for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
                 OpenWebNetThingHandler hndlr = innerEntry.getValue();
-                if (hndlr != null) {
-                    list.add(hndlr);
-                }
+                list.add(hndlr);
             }
         }
         return list;
@@ -113,11 +111,9 @@ public class LightAutomHandlersMap {
             Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
             for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
                 OpenWebNetThingHandler thingHandler = innerEntry.getValue();
-                if (thingHandler != null) {
-                    WhereLightAutom whereLightAutom = (WhereLightAutom) thingHandler.deviceWhere;
-                    if (whereLightAutom != null && whereLightAutom.isAPL()) {
-                        return thingHandler;
-                    }
+                WhereLightAutom whereLightAutom = (WhereLightAutom) thingHandler.deviceWhere;
+                if (whereLightAutom != null && whereLightAutom.isAPL()) {
+                    return thingHandler;
                 }
             }
         }
@@ -133,9 +129,7 @@ public class LightAutomHandlersMap {
             Map<String, OpenWebNetThingHandler> innerMap = entry.getValue();
             for (Map.Entry<String, OpenWebNetThingHandler> innerEntry : innerMap.entrySet()) {
                 OpenWebNetThingHandler thingHandler = innerEntry.getValue();
-                if (thingHandler != null) {
-                    log.append(" " + thingHandler.ownId);
-                }
+                log.append(" " + thingHandler.ownId);
             }
         }
         log.append("\n# getAllHandlers: ");

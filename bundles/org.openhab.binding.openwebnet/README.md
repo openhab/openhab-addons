@@ -215,16 +215,15 @@ OPEN command to execute: *5*8#134##
 
 The `bus_light_group` Thing type represents a set of devices belonging to a room or group in the BUS system:
 
- - `bus_light_group` with `where="5"` will be associated to all lights configured in room 5 (A=`5`)
- - `bus_light_group` with `where="#4"` will be associated to all lights belonging to group 4 (G=`4`)
- - `bus_light_group` with `where="0"` will be associated to all lights in the system (General).
+- `bus_light_group` with `where="5"` will be associated to all lights configured in room 5 (A=`5`)
+- `bus_light_group` with `where="#4"` will be associated to all lights belonging to group 4 (G=`4`)
+- `bus_light_group` with `where="0"` will be associated to all lights in the system (General).
 
 It's not mandatory to define `bus_light_group` Things: however adding them is useful to send commands to a set of lights or to track state of a room/all lights when one of the members changes state.
 It's also not mandatory to define `bus_light_group` Things to track state of a light when a room/group/general ON/OFF command is sent on the BUS (the light state will be updated in any case).
 
 **NOTE 1**
 For a `bus_light_group` Thing to be updated properly, at least one light Thing belonging to that room/group must also be configured.
-
 
 ## Channels
 
