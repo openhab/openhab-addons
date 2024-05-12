@@ -14,12 +14,13 @@ package org.openhab.binding.myuplink.internal.handler;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.myuplink.internal.MyUplinkBindingConstants;
 import org.openhab.binding.myuplink.internal.model.ChannelType;
@@ -30,12 +31,17 @@ import org.openhab.core.thing.ThingUID;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+/**
+ * Unit Tests to verify behaviour of MyUplinkDynamicThingHandler implementation.
+ *
+ * @author Alexander Friese - initial contribution
+ */
+@NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 public class MyUplinkDynamicThingHandlerTest {
 
-    @Mock
-    private Thing thing;
-    private MyUplinkDynamicThingHandler handler;
+    private Thing thing = mock(Thing.class);
+    private MyUplinkDynamicThingHandler handler = new MyUplinkDynamicThingHandlerImpl(thing);
 
     private final String testChannelDataTemperature = """
             {"category":"NIBEF VVM 320 E","parameterId":"40121","parameterName":"Add. heat (BT63)","parameterUnit":"°C","writable":false,"timestamp":"2024-05-10T05:35:50+00:00","value":39.0,"strVal":"39Â°C","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[],"scaleValue":"0.1","zoneId":null}
@@ -44,7 +50,6 @@ public class MyUplinkDynamicThingHandlerTest {
     @BeforeEach
     public void initMock() {
         when(thing.getUID()).thenReturn(new ThingUID(MyUplinkBindingConstants.BINDING_ID, "test"));
-        handler = new MyUplinkDynamicThingHandlerImpl(thing);
     }
 
     @Test

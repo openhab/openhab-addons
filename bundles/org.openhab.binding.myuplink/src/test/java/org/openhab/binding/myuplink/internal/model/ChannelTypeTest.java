@@ -15,8 +15,15 @@ package org.openhab.binding.myuplink.internal.model;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit Tests to verify behaviour of ChannelType implementation.
+ *
+ * @author Alexander Friese - initial contribution
+ */
+@NonNullByDefault
 public class ChannelTypeTest {
 
     @Test

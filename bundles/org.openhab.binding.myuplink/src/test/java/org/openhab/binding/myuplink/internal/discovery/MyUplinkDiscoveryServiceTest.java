@@ -15,16 +15,16 @@ package org.openhab.binding.myuplink.internal.discovery;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkAccountHandler;
@@ -34,22 +34,26 @@ import org.openhab.core.thing.ThingUID;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * Unit Tests to verify behaviour of DiscoveryService implementation.
+ *
+ * @author Alexander Friese - initial contribution
+ */
+@NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 public class MyUplinkDiscoveryServiceTest {
 
-    @Mock
-    private MyUplinkAccountHandler bridgeHandler;
+    private MyUplinkAccountHandler bridgeHandler = mock(MyUplinkAccountHandler.class);
 
-    @Mock
-    private CommunicationStatus communicationStatus;
+    private CommunicationStatus communicationStatus = mock(CommunicationStatus.class);
 
-    @Spy
-    private MyUplinkDiscoveryService discoveryService;
+    private MyUplinkDiscoveryService discoveryService = spy(MyUplinkDiscoveryService.class);
 
     private final String emptyResponseString = """
             {"page":1,"itemsPerPage":100,"numItems":0,"systems":[]}
               """;
-    private JsonObject emptyResponse;
+
+    private JsonObject emptyResponse = new JsonObject();
 
     private final String testResponseString = """
             {
@@ -87,7 +91,8 @@ public class MyUplinkDiscoveryServiceTest {
                 ]
             }
             """;
-    private static JsonObject testResponse;
+
+    private static JsonObject testResponse = new JsonObject();
 
     @BeforeEach
     public void prepareTestData() {
