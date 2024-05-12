@@ -134,8 +134,10 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
             thing.getChannels().forEach(channel -> handler.handleCommand(channel.getUID(), REFRESH));
         }
 
-        // all things were updated,
-        updateStatus(ONLINE);
+        var local = salusApi;
+        if (local != null) {
+            tryConnectToCloud(local);
+        }
     }
 
     @Override
