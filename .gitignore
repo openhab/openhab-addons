@@ -31,3 +31,4 @@ pom.xml.versionsBackup
 .vim
 shell.nix
 tags
+/bundles/org.openhab.binding.sunsynk/PullRequests
