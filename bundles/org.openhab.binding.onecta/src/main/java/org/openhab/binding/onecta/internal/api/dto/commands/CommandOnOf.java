@@ -15,8 +15,8 @@ public class CommandOnOf {
         this.value = value.getValue();
     }
 
-    public CommandOnOf(String value, String path) {
-        this.value = value.toLowerCase();
+    public CommandOnOf(Enums.OnOff value, String path) {
+        this.value = value.getValue();
         this.path = path;
     }
 }
