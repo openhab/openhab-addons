@@ -61,7 +61,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         @Override
         public void run() {
             if (deviceDiscoveryService != null) {
-                deviceDiscoveryService.discoverDevices();
+                deviceDiscoveryService.startScan();
             }
         }
     };

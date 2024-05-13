@@ -1,6 +1,6 @@
 
   {
-    "_id": "1ce8c13f-5271-4343-ac9f-27346237426a",
+    "_id": "1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6",
     "type": "dx4",
     "deviceModel": "dx4",
     "isCloudConnectionUp": {
@@ -42,7 +42,7 @@
         },
         "macAddress": {
           "settable": false,
-          "value": "50:26:ef:9a:6a:3e"
+          "value": "11:22:33:44:55:66"
         },
         "modelInfo": {
           "settable": false,
@@ -54,7 +54,7 @@
         },
         "serialNumber": {
           "settable": false,
-          "value": "0000000008477530"
+          "value": "0000000001234567"
         },
         "ssid": {
           "settable": false,
@@ -878,7 +878,7 @@
         },
         "serialNumber": {
           "settable": false,
-          "value": "0J009473"
+          "value": "0J001234"
         },
         "eepromVersion": {
           "settable": false,
@@ -941,7 +941,7 @@
         },
         "serialNumber": {
           "settable": false,
-          "value": "J012740"
+          "value": "J012345"
         },
         "errorCode": {
           "settable": false,
@@ -967,5 +967,5 @@
     ],
     "embeddedId": "1003020",
     "timestamp": "2024-03-31T09:03:09.879Z",
-    "id": "1ce8c13f-5271-4343-ac9f-27346237426a"
+    "id": "1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6"
   }
