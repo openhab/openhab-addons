@@ -10,36 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Used to unmarshall {@code <list>} items of the {@code <functiondelete>} CommandRX.
+ * Used to unmarshall {@code <list>} items of the {@code <functionrename>} CommandRX.
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  */
 @XmlRootElement(name = "list")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class DeletedSourceList {
+public class RenameSourceList {
 
     private String name;
 
-    private String funcName;
-
-    private Integer use;
+    private String rename;
 
     public String getName() {
         return name;
     }
 
-    public String getFuncName() {
-        return funcName;
-    }
-
-    public Integer getUse() {
-        return use;
+    public String getRename() {
+        return rename;
     }
 }

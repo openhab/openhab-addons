@@ -10,15 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities;
+package org.openhab.binding.denonmarantz.internal.xml.dto;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openhab.binding.denonmarantz.internal.xml.entities.types.OnOffType;
-import org.openhab.binding.denonmarantz.internal.xml.entities.types.StringType;
-import org.openhab.binding.denonmarantz.internal.xml.entities.types.VolumeType;
+import org.openhab.binding.denonmarantz.internal.xml.dto.types.OnOffType;
+import org.openhab.binding.denonmarantz.internal.xml.dto.types.StringType;
+import org.openhab.binding.denonmarantz.internal.xml.dto.types.VolumeType;
 
 /**
  * Holds limited information about the secondary zones of the receiver

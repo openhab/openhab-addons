@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Response to a {@link CommandTx}
@@ -184,9 +187,9 @@ public class CommandRx {
         this.source = source;
     }
 
-    public String getText(String key) {
+    public @Nullable String getText(@NonNull String key) {
         for (Text text : texts) {
-            if (text.getId().equals(key)) {
+            if (key.equals(text.getId())) {
                 return text.getValue();
             }
         }

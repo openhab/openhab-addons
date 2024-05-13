@@ -10,38 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities;
+package org.openhab.binding.denonmarantz.internal.xml.dto;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.openhab.binding.denonmarantz.internal.xml.dto.types.OnOffType;
+
 /**
- * Contains information about a Denon/Marantz receiver.
+ * Holds information about the Main zone of the receiver
  *
  * @author Jeroen Idserda - Initial contribution
  */
-@XmlRootElement(name = "device_Info")
+@XmlRootElement(name = "item")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Deviceinfo {
+public class Main {
 
-    private Integer deviceZones;
+    private OnOffType power;
 
-    private String modelName;
-
-    public Integer getDeviceZones() {
-        return deviceZones;
+    public OnOffType getPower() {
+        return power;
     }
 
-    public void setDeviceZones(Integer deviceZones) {
-        this.deviceZones = deviceZones;
-    }
-
-    public String getModelName() {
-        return modelName;
-    }
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
+    public void setPower(OnOffType power) {
+        this.power = power;
     }
 }
