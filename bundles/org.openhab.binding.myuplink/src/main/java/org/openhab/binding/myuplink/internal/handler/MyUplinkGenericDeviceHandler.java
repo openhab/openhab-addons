@@ -33,6 +33,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.State;
@@ -52,7 +53,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class MyUplinkGenericDeviceHandler extends BaseThingHandler
-        implements MyUplinkDynamicThingHandler, AtomicReferenceTrait {
+        implements MyUplinkThingHandler, DynamicChannelProvider, AtomicReferenceTrait {
     private final Logger logger = LoggerFactory.getLogger(MyUplinkGenericDeviceHandler.class);
 
     /**
@@ -190,7 +191,7 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
      * adds a channel.
      */
     @Override
-    public void addDynamicChannel(Channel channel) {
+    public void registerChannel(Channel channel) {
         ThingBuilder thingBuilder = editThing();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
@@ -246,5 +247,10 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
     @Override
     public Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    public ThingUID getThingUid() {
+        return getThing().getUID();
     }
 }

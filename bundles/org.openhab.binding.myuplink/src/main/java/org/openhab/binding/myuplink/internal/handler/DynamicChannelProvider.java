@@ -14,8 +14,7 @@ package org.openhab.binding.myuplink.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.Channel;
-
-import com.google.gson.JsonObject;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * this interface provides all methods which deal with channels
@@ -23,7 +22,9 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public interface DynamicChannelProvider extends ChannelProvider {
+public interface DynamicChannelProvider {
 
-    Channel getOrCreateChannel(String channelId, JsonObject channelData);
+    void registerChannel(Channel channel);
+
+    ThingUID getThingUid();
 }
