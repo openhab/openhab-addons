@@ -59,19 +59,11 @@ public class OnectaGatewayHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
-        try {
-            updateStatus(ThingStatus.ONLINE);
-        } catch (Exception ex) {
-            // catch exceptions and handle it in your binding
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-        }
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(OnectaConfiguration.class);
-
         updateStatus(ThingStatus.ONLINE);
     }
 

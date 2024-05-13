@@ -119,19 +119,15 @@ public class OnectaIndoorUnitHandlerTest {
     public void refreshDeviceUndefTest() {
         when(dataTransServiceMock.isAvailable()).thenReturn(true);
 
-        lenient().when(dataTransServiceMock.getModelInfo()).thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getSoftwareVersion())
+        when(dataTransServiceMock.getModelInfo()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getSoftwareVersion()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getEepromVerion()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getDryKeepSetting()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getFanMotorRotationSpeed()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getDeltaD()).thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getHeatExchangerTemperature())
                 .thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getEepromVerion()).thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getDryKeepSetting())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getFanMotorRotationSpeed())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getDeltaD()).thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getHeatExchangerTemperature())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getSuctionTemperature())
-                .thenThrow(new RuntimeException("Simulating exception"));
+        when(dataTransServiceMock.getSuctionTemperature()).thenThrow(new RuntimeException("Simulating exception"));
 
         handler.refreshDevice();
 
