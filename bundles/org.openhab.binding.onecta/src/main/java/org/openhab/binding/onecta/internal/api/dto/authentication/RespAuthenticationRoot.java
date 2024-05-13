@@ -15,6 +15,7 @@ package org.openhab.binding.onecta.internal.api.dto.authentication;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
+
 /**
  * @author Alexander Drent - Initial contribution
  */
