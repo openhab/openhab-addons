@@ -129,7 +129,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         try {
             onectaConnectionClient.refreshUnitsData(getThing());
         } catch (DaikinCommunicationException e) {
-            logger.debug("DaikinCommunicationException: " + e.getMessage());
+            logger.debug("DaikinCommunicationException: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 

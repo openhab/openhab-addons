@@ -168,7 +168,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     }
 
     public void refreshDevice() {
-        logger.debug("refreshDevice :" + dataTransService.getUnitName());
+        logger.debug("refreshDevice : {}", dataTransService.getUnitName());
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {

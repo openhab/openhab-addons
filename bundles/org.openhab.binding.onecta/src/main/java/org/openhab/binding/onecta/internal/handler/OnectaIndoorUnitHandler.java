@@ -70,7 +70,7 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
     }
 
     public void refreshDevice() {
-        logger.debug("refreshIndoorUnit :" + dataTransService.getUnitName());
+        logger.debug("refreshIndoorUnit : {}", dataTransService.getUnitName());
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {

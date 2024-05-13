@@ -103,7 +103,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     }
 
     public void refreshDevice() {
-        logger.debug("refreshWatertank :" + dataTransService.getUnitName());
+        logger.debug("refreshWatertank : {}", dataTransService.getUnitName());
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {

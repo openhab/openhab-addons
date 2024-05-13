@@ -68,7 +68,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     }
 
     public void refreshDevice() {
-        logger.debug("refreshGateway :" + dataTransService.getUnitName());
+        logger.debug("refreshGateway : {}", dataTransService.getUnitName());
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {

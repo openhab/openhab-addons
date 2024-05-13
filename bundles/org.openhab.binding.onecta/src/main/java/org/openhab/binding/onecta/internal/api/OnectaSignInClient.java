@@ -115,7 +115,7 @@ public class OnectaSignInClient {
         HttpClient httpClient = onectaConfiguration.getHttpClient();
 
         try {
-            logger.info("Start logon to Daikin : " + userId);
+            logger.info("Start logon to Daikin : {}", userId);
             httpClient.setFollowRedirects(false);
             httpClient.getCookieStore().removeAll();
             // Step 1
@@ -275,15 +275,15 @@ public class OnectaSignInClient {
             logger.debug("Login successful");
 
         } catch (InterruptedException e) {
-            logger.warn("Login failed" + e.getMessage());
+            logger.warn("Login failed {}", e.getMessage());
         } catch (ExecutionException e) {
-            logger.warn("DaikinCommunicationException" + e.getMessage());
+            logger.warn("DaikinCommunicationException {}", e.getMessage());
             throw new DaikinCommunicationException("Connection error, See log for more info");
         } catch (TimeoutException e) {
-            logger.warn("TimeoutException" + e.getMessage());
+            logger.warn("TimeoutException {}", e.getMessage());
         } catch (DaikinCommunicationForbiddenException e) {
-            logger.warn("DaikinCommunicationForbiddenException" + e.getMessage());
-            throw new DaikinCommunicationForbiddenException(" " + e.getMessage());
+            logger.warn("DaikinCommunicationForbiddenException {}", e.getMessage());
+            throw new DaikinCommunicationForbiddenException(e.getMessage());
         } catch (DaikinCommunicationException e) {
             throw new RuntimeException(e);
         }
