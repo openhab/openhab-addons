@@ -23,6 +23,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(OnectaBridgeHandler.class);
     @Nullable
     private OnectaBridgeHandler bridgeHandler = null;
+    private final OnectaConnectionClient onectaConnectionClient = new OnectaConnectionClient();
 
     public DeviceDiscoveryService(OnectaBridgeHandler bridgeHandler) throws IllegalArgumentException {
         super(20);
@@ -40,7 +41,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
             return;
         }
         // Trigger no scan if offline
-        if (bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+        if (bridgeHandler.getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
 
@@ -49,8 +50,8 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
             Map<String, Object> properties;
             String unitId;
             String unitName;
-            OnectaConnectionClient.refreshUnitsData(bridgeHandler.getThing());
-            List<Unit> units = OnectaConnectionClient.getUnits().getAll();
+            onectaConnectionClient.refreshUnitsData(bridgeHandler.getThing());
+            List<Unit> units = onectaConnectionClient.getUnits().getAll();
             for (int i = 0; i < units.size(); i++) {
                 unitId = units.get(i).getId().toString();
                 unitName = units.get(i).findManagementPointsByType(CLIMATECONTROL).getNameValue();

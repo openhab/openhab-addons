@@ -46,6 +46,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private Units units = new Units();
+    private final OnectaConnectionClient onectaConnectionClient = new OnectaConnectionClient();
 
     public Units getUnits() {
         return units;
@@ -83,10 +84,10 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
             try {
                 String refreshToken = thing.getConfiguration().get(CHANNEL_REFRESH_TOKEN) == null ? ""
                         : thing.getConfiguration().get(CHANNEL_REFRESH_TOKEN).toString();
-                OnectaConnectionClient.startConnecton(thing.getConfiguration().get(CHANNEL_USERID).toString(),
+                onectaConnectionClient.startConnecton(thing.getConfiguration().get(CHANNEL_USERID).toString(),
                         thing.getConfiguration().get(CHANNEL_PASSWORD).toString(), refreshToken);
 
-                if (OnectaConnectionClient.isOnline()) {
+                if (onectaConnectionClient.isOnline()) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE);
@@ -115,10 +116,10 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
 
     private void pollDevices() {
         logger.debug("pollDevices.");
-        if (OnectaConnectionClient.isOnline()) {
+        if (onectaConnectionClient.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
 
-            getThing().getConfiguration().put(CHANNEL_REFRESH_TOKEN, OnectaConnectionClient.getRefreshToken());
+            getThing().getConfiguration().put(CHANNEL_REFRESH_TOKEN, onectaConnectionClient.getRefreshToken());
 
         } else {
             if (getThing().getStatus() != ThingStatus.OFFLINE) {
@@ -126,7 +127,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
             }
         }
         try {
-            OnectaConnectionClient.refreshUnitsData(getThing());
+            onectaConnectionClient.refreshUnitsData(getThing());
         } catch (DaikinCommunicationException e) {
             logger.debug("DaikinCommunicationException: " + e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
