@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.onecta.internal.exception;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
-@NonNullByDefault
 public class DaikinCommunicationForbiddenException extends DaikinCommunicationException {
 
     private static final long serialVersionUID = 1L;
