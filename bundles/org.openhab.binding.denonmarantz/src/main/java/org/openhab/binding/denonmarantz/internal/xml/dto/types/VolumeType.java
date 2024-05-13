@@ -10,30 +10,32 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.types;
+package org.openhab.binding.denonmarantz.internal.xml.dto.types;
+
+import java.math.BigDecimal;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.openhab.binding.denonmarantz.internal.xml.adapters.StringAdapter;
+import org.openhab.binding.denonmarantz.internal.xml.adapters.VolumeAdapter;
 
 /**
- * Contains a string value
+ * Contains a volume value (percentage)
  *
  * @author Jeroen Idserda - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class StringType {
+public class VolumeType {
 
-    @XmlJavaTypeAdapter(value = StringAdapter.class)
-    private String value;
+    @XmlJavaTypeAdapter(value = VolumeAdapter.class)
+    private BigDecimal value;
 
-    public String getValue() {
+    public BigDecimal getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(BigDecimal value) {
         this.value = value;
     }
 }

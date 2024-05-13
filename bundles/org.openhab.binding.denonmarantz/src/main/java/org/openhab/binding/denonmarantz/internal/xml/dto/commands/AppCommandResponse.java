@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Response to an {@link AppCommandRequest}, wraps a list of {@link CommandRx}
  *
@@ -27,6 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "rx")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class AppCommandResponse {
 
     @XmlElement(name = "cmd")

@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.UnsupportedCommandTypeException;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
@@ -34,6 +35,7 @@ import org.openhab.core.types.RefreshType;
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  */
+@NonNullByDefault
 public abstract class DenonMarantzConnector {
 
     private static final BigDecimal POINTFIVE = new BigDecimal("0.5");
@@ -46,6 +48,13 @@ public abstract class DenonMarantzConnector {
     public abstract void dispose();
 
     protected abstract void internalSendCommand(String command);
+
+    public DenonMarantzConnector(DenonMarantzConfiguration config, ScheduledExecutorService scheduler,
+            DenonMarantzState state) {
+        this.config = config;
+        this.scheduler = scheduler;
+        this.state = state;
+    }
 
     public void sendCustomCommand(Command command) throws UnsupportedCommandTypeException {
         String cmd;
