@@ -77,14 +77,14 @@ public class SensoryDataValue {
 
     public IconID getSensorData(Enums.SensorData sensorData) {
 
-        if (sensorData.getValue() == Enums.SensorData.ROOMTEMP.getValue()) {
+        if (sensorData.equals(Enums.SensorData.ROOMTEMP)) {
             return this.roomTemperature;
-        } else if (sensorData.getValue() == Enums.SensorData.ROOMHUMINITY.getValue()) {
+        } else if (sensorData.equals(Enums.SensorData.ROOMHUMINITY)) {
             return this.roomHumidity;
-        } else if (sensorData.getValue() == Enums.SensorData.OUTDOORTEMP.getValue()) {
+        } else if (sensorData.equals(Enums.SensorData.OUTDOORTEMP)) {
             return this.outdoorTemperature;
-        } else if (sensorData.getValue() == Enums.SensorData.OUTDOORTEMP.getValue()) {
-            return this.outdoorTemperature;
+        } else if (sensorData.equals(Enums.SensorData.LEAVINGWATERTEMP)) {
+            return this.leavingWaterTemperature;
         } else
             return null;
     }

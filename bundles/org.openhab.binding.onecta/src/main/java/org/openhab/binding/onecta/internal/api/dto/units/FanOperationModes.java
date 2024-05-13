@@ -33,15 +33,15 @@ public class FanOperationModes {
     private FanOnlyClass fanOnly;
 
     public FanOnlyClass getFanOperationMode(Enums.OperationMode operationMode) {
-        if (operationMode.getValue() == Enums.OperationMode.HEAT.getValue()) {
+        if (operationMode.equals(Enums.OperationMode.HEAT)) {
             return this.heating;
-        } else if (operationMode.getValue() == Enums.OperationMode.COLD.getValue()) {
+        } else if (operationMode.equals(Enums.OperationMode.COLD)) {
             return this.cooling;
-        } else if (operationMode.getValue() == Enums.OperationMode.AUTO.getValue()) {
+        } else if (operationMode.equals(Enums.OperationMode.AUTO)) {
             return this.auto;
-        } else if (operationMode.getValue() == Enums.OperationMode.FAN.getValue()) {
+        } else if (operationMode.equals(Enums.OperationMode.FAN)) {
             return this.fanOnly;
-        } else if (operationMode.getValue() == Enums.OperationMode.DEHUMIDIFIER.getValue()) {
+        } else if (operationMode.equals(Enums.OperationMode.DEHUMIDIFIER)) {
             return this.dry;
         } else
             return null;

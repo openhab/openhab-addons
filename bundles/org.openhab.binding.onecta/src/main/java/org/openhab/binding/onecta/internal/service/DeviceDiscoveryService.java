@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DeviceDiscoveryService extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(OnectaBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
     @Nullable
     private OnectaBridgeHandler bridgeHandler = null;
     private final OnectaConnectionClient onectaConnectionClient = new OnectaConnectionClient();

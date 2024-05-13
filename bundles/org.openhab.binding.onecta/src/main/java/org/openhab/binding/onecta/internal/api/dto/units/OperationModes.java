@@ -28,11 +28,11 @@ public class OperationModes {
     private OpertationMode auto;
 
     public OpertationMode getOperationMode(Enums.OperationMode operationMode) {
-        if (operationMode.getValue() == Enums.OperationMode.HEAT.getValue()) {
+        if (operationMode.equals(Enums.OperationMode.HEAT)) {
             return this.heating;
-        } else if (operationMode.getValue() == Enums.OperationMode.COLD.getValue()) {
+        } else if (operationMode.equals(Enums.OperationMode.COLD)) {
             return this.cooling;
-        } else if (operationMode.getValue() == Enums.OperationMode.AUTO.getValue()) {
+        } else if (operationMode.equals(Enums.OperationMode.AUTO)) {
             return this.auto;
         } else
             return null;
