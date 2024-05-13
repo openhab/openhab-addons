@@ -39,6 +39,7 @@ public class OnectaBridgeConstants {
     public static final String CHANNEL_LOGRAWDATA = "rawdataLogging";
     public static final String CHANNEL_STUBDATAFILE = "stubdataFile";
     public static final String CHANNEL_OPENHAB_HOST = "openhabHost";
+    public static final String CHANNEL_UNITID = "unitID";
 
     // List of all Bridge Thing Type UIDs
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE);
