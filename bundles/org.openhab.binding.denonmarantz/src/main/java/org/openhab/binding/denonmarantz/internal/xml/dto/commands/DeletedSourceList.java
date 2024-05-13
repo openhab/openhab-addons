@@ -10,30 +10,36 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities;
+package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openhab.binding.denonmarantz.internal.xml.entities.types.OnOffType;
-
 /**
- * Holds information about the Main zone of the receiver
+ * Used to unmarshall {@code <list>} items of the {@code <functiondelete>} CommandRX.
  *
- * @author Jeroen Idserda - Initial contribution
+ * @author Jan-Willem Veldhuis - Initial contribution
  */
-@XmlRootElement(name = "item")
+@XmlRootElement(name = "list")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Main {
+public class DeletedSourceList {
 
-    private OnOffType power;
+    private String name;
 
-    public OnOffType getPower() {
-        return power;
+    private String funcName;
+
+    private Integer use;
+
+    public String getName() {
+        return name;
     }
 
-    public void setPower(OnOffType power) {
-        this.power = power;
+    public String getFuncName() {
+        return funcName;
+    }
+
+    public Integer getUse() {
+        return use;
     }
 }

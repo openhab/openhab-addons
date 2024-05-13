@@ -10,30 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.dto.types;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.openhab.binding.denonmarantz.internal.xml.adapters.OnOffAdapter;
 
 /**
- * Used to unmarshall {@code <list>} items of the {@code <functionrename>} CommandRX.
+ * Contains an On/Off value in the form of a boolean
  *
- * @author Jan-Willem Veldhuis - Initial contribution
+ * @author Jeroen Idserda - Initial contribution
  */
-@XmlRootElement(name = "list")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class RenameSourceList {
+public class OnOffType {
 
-    private String name;
+    @XmlJavaTypeAdapter(OnOffAdapter.class)
+    private Boolean value;
 
-    private String rename;
-
-    public String getName() {
-        return name;
+    public Boolean getValue() {
+        return value;
     }
 
-    public String getRename() {
-        return rename;
+    public void setValue(Boolean value) {
+        this.value = value;
     }
 }
