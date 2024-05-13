@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onecta"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Daikin Onecta Account</label>
+		<description>This is the account for which your device(s) are registered at Diakin Onecta.</description>
+
+		<config-description>
+			<parameter name="userId" type="text" required="true">
+				<label>Userid</label>
+				<description>Onecta Userid (Email) </description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Onecta password</description>
+			</parameter>
+			<parameter name="refreshToken" type="text">
+				<label>Onecta Refresh token.</label>
+				<description>Onecta Refresh token is filled after succesfull login. This will be used instead of user/password</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="5">
+				<label>Refresh Interval.</label>
+				<description>Interval the device is polled in seconds.</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="rawdataLogging" type="boolean">
+				<label>Drop Raw-data</label>
+				<description>Drop Raw json-data into info logging</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="stubdataFile" type="text">
+				<label>Stub datafile</label>
+				<description>With the stub datafile conecta data input can be simulated. This is just for testing during
+					development.</description>
+				<default></default>
+			</parameter>
+
+			<parameter name="openhabHost" type="text">
+				<label>OpenHAB host</label>
+				<description>OpenHAB server URL. To access the api.</description>
+				<default>https://localhost:8080</default>
+			</parameter>
+
+			<parameter name="openhabApiToken" type="text">
+				<label>OpenHab API Token</label>
+				<description>OpenHAB API Token. You can manage all access tokens in your profile settings in the Main UI.</description>
+				<default></default>
+			</parameter>
+
+
+		</config-description>
+
+	</bridge-type>
+</thing:thing-descriptions>

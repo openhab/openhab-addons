@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onecta"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="gateway">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Diakin Onecta gateway</label>
+		<description>Diakin Onecta gateway</description>
+
+		<channel-groups>
+			<channel-group id="basic" typeId="basicGroupGateway"/>
+		</channel-groups>
+
+		<properties>
+			<property name="name"></property>
+		</properties>
+
+		<representation-property>unitID</representation-property>
+
+		<config-description>
+			<parameter name="unitID" type="text" required="true">
+				<label>Unit ID</label>
+				<description>Diakin unit</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="basicGroupGateway">
+		<label>Basic</label>
+		<description>BasicGroup related information</description>
+		<channels>
+			<channel id="daylightsavingtimeenabled" typeId="gw-daylight-saving-time-enabled"/>
+			<channel id="firmwareversion" typeId="gw-firmware-version"/>
+			<channel id="isfirmwareupdatesupported" typeId="gw-is-firmwareUpdateSupported"/>
+			<channel id="isinerrorstate" typeId="gw-is-in-error-state"/>
+			<channel id="ledenabled" typeId="gw-led-enabled"/>
+			<channel id="regioncode" typeId="gw-region-code"/>
+			<channel id="serialnumber" typeId="gw-serialnumber"/>
+			<channel id="ssid" typeId="gw-ssid"/>
+			<channel id="timezone" typeId="gw-time-zone"/>
+			<channel id="wificonnectionssid" typeId="gw-wifi-connection-ssid"/>
+			<channel id="wificonnectionpower" typeId="gw-wifi-connection-strength"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="gw-daylight-saving-time-enabled">
+		<item-type>Switch</item-type>
+		<label>Daylight saving time enabled</label>
+		<description>Daylight saving time enabled</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="gw-firmware-version">
+		<item-type>String</item-type>
+		<label>firmware-version</label>
+		<description>firmware-version</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gw-is-firmwareUpdateSupported">
+		<item-type>Switch</item-type>
+		<label>Is firmware update supported</label>
+		<description>Is firmware update supported</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gw-is-in-error-state">
+		<item-type>Switch</item-type>
+		<label>Is in error state</label>
+		<description>Is in error state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gw-led-enabled">
+		<item-type>Switch</item-type>
+		<label>Led enabled</label>
+		<description>Led enabled</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="gw-region-code">
+		<item-type>String</item-type>
+		<label>Region code</label>
+		<description>Region code</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gw-serialnumber">
+		<item-type>String</item-type>
+		<label>Serialnumber</label>
+		<description>Serialnumber</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gw-ssid">
+		<item-type>String</item-type>
+		<label>SSID</label>
+		<description>SSID</description>
+		<category>network</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gw-time-zone">
+		<item-type>String</item-type>
+		<label>Time zone</label>
+		<description>Time zone</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="gw-wifi-connection-ssid">
+		<item-type>String</item-type>
+		<label>WiFi Connection SSID</label>
+		<description>WiFi Connection SSID</description>
+		<category>network</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="gw-wifi-connection-strength">
+		<item-type>Number</item-type>
+
+		<label>Wifi connection strength</label>
+		<description>Wifi connection strength</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%.0fdB"/>
+	</channel-type>
+
+</thing:thing-descriptions>

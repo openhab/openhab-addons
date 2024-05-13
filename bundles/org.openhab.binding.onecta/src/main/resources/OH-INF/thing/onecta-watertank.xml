@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onecta"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="domesticHotWaterTank">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Diakin Onecta Domestic HotWater Tank</label>
+		<description>Diakin Onecta Domestic HotWater Tank</description>
+
+		<channel-groups>
+			<channel-group id="basic" typeId="basicGroupWaterTank"/>
+		</channel-groups>
+
+		<properties>
+			<property name="name"></property>
+		</properties>
+
+		<representation-property>unitID</representation-property>
+
+		<config-description>
+			<parameter name="unitID" type="text" required="true">
+				<label>Unit ID</label>
+				<description>Diakin unit</description>
+			</parameter>
+			<parameter name="refreshDelay" type="integer" unit="s" min="5">
+				<label>Refresh delay.</label>
+				<description>Channel refresh delay after update command in sec</description>
+				<default>15</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="basicGroupWaterTank">
+		<label>Basic</label>
+		<description>BasicGroup related information</description>
+		<channels>
+			<channel id="power" typeId="hwt-power"/>
+			<channel id="errorcode" typeId="hwt-errorcode"/>
+			<channel id="isholidaymodeactive" typeId="hwt-isholidaymodeactive"/>
+			<channel id="isinerrorstate" typeId="hwt-isinerrorstate"/>
+			<channel id="isinwarningstate" typeId="hwt-isinwarningstate"/>
+			<channel id="isininstallerstate" typeId="hwt-isininstallerstate"/>
+			<channel id="isinemergencystate" typeId="hwt-isinemergencystate"/>
+
+			<channel id="powerfulmode" typeId="hwt-powerfulmode"/>
+			<channel id="heatupmode" typeId="hwt-heatupmode"/>
+			<channel id="tanktemperature" typeId="hwt-tanktemperature"/>
+			<channel id="operationmode" typeId="hwt-operationmode"/>
+			<channel id="setpointmode" typeId="hwt-setpointmode"/>
+			<channel id="settemp" typeId="hwt-settemp"/>
+			<channel id="settempmin" typeId="hwt-settempmin"/>
+			<channel id="settempmax" typeId="hwt-settempmax"/>
+			<channel id="settempstep" typeId="hwt-settempstep"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="hwt-power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power for the AC unit</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="hwt-name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hwt-errorcode">
+		<item-type>String</item-type>
+		<label>Error code</label>
+		<description>Error code</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hwt-isholidaymodeactive">
+		<item-type>Switch</item-type>
+		<label>Is holiday mode active</label>
+		<description>Is holiday mode active</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hwt-isinerrorstate">
+		<item-type>Switch</item-type>
+		<label>Is in error state</label>
+		<description>Is in error state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hwt-isininstallerstate">
+		<item-type>Switch</item-type>
+		<label>Is in installer state</label>
+		<description>Is in installer state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hwt-isinemergencystate">
+		<item-type>Switch</item-type>
+		<label>Is in imergency state</label>
+		<description>Is in imergency state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hwt-isinwarningstate">
+		<item-type>Switch</item-type>
+		<label>Is in warning State</label>
+		<description>Is in warning State</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hwt-ispowerfulmodeactive">
+		<item-type>Switch</item-type>
+		<label>Is powerful mode active</label>
+		<description>Is powerful mode active</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+
+	<channel-type id="hwt-powerfulmode">
+		<item-type>Switch</item-type>
+		<label>Powerful mode</label>
+		<description>Powerful mode</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+
+	<channel-type id="hwt-heatupmode">
+		<item-type>String</item-type>
+		<label>Heatup mode</label>
+		<description>Heatup mode</description>
+		<state readOnly="true">
+			<options>
+				<option value="REHEATONLY">Reheat only</option>
+				<option value="SCHEDULEONLY">Schedule only</option>
+				<option value="REHEATSCHEDULE">Reheat schedule</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hwt-tanktemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Tank temperature</label>
+		<description>Tank temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hwt-operationmode">
+		<item-type>String</item-type>
+		<label>Operation mode</label>
+		<description>Operation mode</description>
+		<state readOnly="true">
+			<options>
+				<option value="HEAT">Heating</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hwt-setpointmode">
+		<item-type>String</item-type>
+		<label>Set point mode</label>
+		<description>Set point mode</description>
+		<state readOnly="true">
+			<options>
+				<option value="FIXED">Fixed</option>
+				<option value="WEATHERDEPENDENT">Weather dependent</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hwt-settemp">
+		<item-type>Number:Temperature</item-type>
+		<label>SetPoint</label>
+		<description>Thermostat temperature setpoint</description>
+		<category>Temperature</category>
+		<state pattern="%.1d %unit%"/>
+	</channel-type>
+
+	<channel-type id="hwt-settempmin">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Point Min value</label>
+		<description>The set point min temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="hwt-settempmax">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Point Max value</label>
+		<description>The set point max temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="hwt-settempstep">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Point value steps</label>
+		<description>The set point temperature value steps</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

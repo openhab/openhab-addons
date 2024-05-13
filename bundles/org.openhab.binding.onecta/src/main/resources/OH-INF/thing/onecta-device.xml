@@ -1,0 +1,1809 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="onecta"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Diakin Onecta device climateControl</label>
+		<description>Diakin Onecta device climateControl</description>
+
+		<channel-groups>
+			<channel-group id="basic" typeId="basicGroup"/>
+			<channel-group id="demandcontrol" typeId="demandcontrolGroup"/>
+			<channel-group id="consumptionDataCooling" typeId="consumptionDataCoolingGroup"/>
+			<channel-group id="consumptionDataHeating" typeId="consumptionDataHeatingGroup"/>
+
+			<channel-group id="extra" typeId="extraGroup"/>
+		</channel-groups>
+
+		<properties>
+			<property name="name"></property>
+		</properties>
+		<representation-property>unitID</representation-property>
+
+		<config-description>
+			<parameter name="unitID" type="text" required="true">
+				<label>Unit ID</label>
+				<description>Diakin unit</description>
+			</parameter>
+			<parameter name="refreshDelay" type="integer" unit="s" min="5">
+				<label>Refresh delay.</label>
+				<description>Channel refresh delay after update command in sec</description>
+				<default>15</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="basicGroup">
+		<label>Basic</label>
+		<description>BasicGroup related information</description>
+		<channels>
+			<channel id="power" typeId="acunit-power"/>
+			<channel id="settemp" typeId="acunit-settemp"/>
+			<channel id="settempmin" typeId="acunit-settempmin"/>
+			<channel id="settempmax" typeId="acunit-settempmax"/>
+			<channel id="settempstep" typeId="acunit-settempstep"/>
+			<channel id="indoortemp" typeId="acunit-indoortemp"/>
+			<channel id="outdoortemp" typeId="acunit-outdoortemp"/>
+			<channel id="leavingwatertemp" typeId="acunit-leavingWaterTemp"/>
+			<channel id="humidity" typeId="acunit-humidity"/>
+			<channel id="operationmode" typeId="acunit-operationmode"/>
+			<channel id="fanspeed" typeId="acunit-fan"/>
+			<channel id="fandirhor" typeId="acunit-fandirhor"/>
+			<channel id="fandirver" typeId="acunit-fandirver"/>
+			<channel id="fandir" typeId="acunit-fandir"/>
+			<channel id="economode" typeId="acunit-economode"/>
+			<channel id="streamer" typeId="acunit-streamer"/>
+			<channel id="powerfulmode" typeId="acunit-powerfulmode"/>
+			<channel id="holidaymode" typeId="acunit-holidaymode"/>
+			<channel id="targettemp" typeId="acunit-targetTemp"/>
+			<channel id="targettempmin" typeId="acunit-targetTempMin"/>
+			<channel id="targettempmax" typeId="acunit-targetTempMax"/>
+			<channel id="targettempstep" typeId="acunit-targetTempStep"/>
+			<channel id="setleavingwateroffset" typeId="acunit-setleavingWaterOffset"/>
+			<channel id="setleavingwatertemp" typeId="acunit-setleavingWaterTemp"/>
+
+			<channel id="timestamp" typeId="acunit-timestamp"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="demandcontrolGroup">
+		<label>Demandcontrol</label>
+		<description>Demandcontrol related information</description>
+		<channels>
+			<channel id="demandcontrol" typeId="acunit-demandcontrol"/>
+			<channel id="demandcontrolfixedvalue" typeId="acunit-demandcontrolfixedvalue"/>
+			<channel id="demandcontrolfixedstepvalue" typeId="acunit-demandcontrolfixedstepvalue"/>
+			<channel id="demandcontrolfixedminvalue" typeId="acunit-demandcontrolfixedminvalue"/>
+			<channel id="demandcontrolfixedmaxvalue" typeId="acunit-demandcontrolfixedmaxvalue"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="extraGroup">
+		<label>Extra</label>
+		<description>Extra special information</description>
+		<channels>
+			<channel id="rawdata" typeId="acunit-rawdata"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="consumptionDataCoolingGroup">
+		<label>Consumption data cooling</label>
+		<description>Consumption data cooling</description>
+		<channels>
+			<channel id="energycoolingday-0" typeId="acunit-energycoolingday-0"/>
+			<channel id="energycoolingday-1" typeId="acunit-energycoolingday-1"/>
+			<channel id="energycoolingday-2" typeId="acunit-energycoolingday-2"/>
+			<channel id="energycoolingday-3" typeId="acunit-energycoolingday-3"/>
+			<channel id="energycoolingday-4" typeId="acunit-energycoolingday-4"/>
+			<channel id="energycoolingday-5" typeId="acunit-energycoolingday-5"/>
+			<channel id="energycoolingday-6" typeId="acunit-energycoolingday-6"/>
+			<channel id="energycoolingday-7" typeId="acunit-energycoolingday-7"/>
+			<channel id="energycoolingday-8" typeId="acunit-energycoolingday-8"/>
+			<channel id="energycoolingday-9" typeId="acunit-energycoolingday-9"/>
+			<channel id="energycoolingday-10" typeId="acunit-energycoolingday-10"/>
+			<channel id="energycoolingday-11" typeId="acunit-energycoolingday-11"/>
+			<channel id="energycoolingday-12" typeId="acunit-energycoolingday-12"/>
+			<channel id="energycoolingday-13" typeId="acunit-energycoolingday-13"/>
+			<channel id="energycoolingday-14" typeId="acunit-energycoolingday-14"/>
+			<channel id="energycoolingday-15" typeId="acunit-energycoolingday-15"/>
+			<channel id="energycoolingday-16" typeId="acunit-energycoolingday-16"/>
+			<channel id="energycoolingday-17" typeId="acunit-energycoolingday-17"/>
+			<channel id="energycoolingday-18" typeId="acunit-energycoolingday-18"/>
+			<channel id="energycoolingday-19" typeId="acunit-energycoolingday-19"/>
+			<channel id="energycoolingday-20" typeId="acunit-energycoolingday-20"/>
+			<channel id="energycoolingday-21" typeId="acunit-energycoolingday-21"/>
+			<channel id="energycoolingday-22" typeId="acunit-energycoolingday-22"/>
+			<channel id="energycoolingday-23" typeId="acunit-energycoolingday-23"/>
+
+			<channel id="energycoolingweek-0" typeId="acunit-energycoolingweek-0"/>
+			<channel id="energycoolingweek-1" typeId="acunit-energycoolingweek-1"/>
+			<channel id="energycoolingweek-2" typeId="acunit-energycoolingweek-2"/>
+			<channel id="energycoolingweek-3" typeId="acunit-energycoolingweek-3"/>
+			<channel id="energycoolingweek-4" typeId="acunit-energycoolingweek-4"/>
+			<channel id="energycoolingweek-5" typeId="acunit-energycoolingweek-5"/>
+			<channel id="energycoolingweek-6" typeId="acunit-energycoolingweek-6"/>
+			<channel id="energycoolingweek-7" typeId="acunit-energycoolingweek-7"/>
+			<channel id="energycoolingweek-8" typeId="acunit-energycoolingweek-8"/>
+			<channel id="energycoolingweek-9" typeId="acunit-energycoolingweek-9"/>
+			<channel id="energycoolingweek-10" typeId="acunit-energycoolingweek-10"/>
+			<channel id="energycoolingweek-11" typeId="acunit-energycoolingweek-11"/>
+			<channel id="energycoolingweek-12" typeId="acunit-energycoolingweek-12"/>
+			<channel id="energycoolingweek-13" typeId="acunit-energycoolingweek-13"/>
+
+			<channel id="energycoolingmonth-0" typeId="acunit-energycoolingmonth-0"/>
+			<channel id="energycoolingmonth-1" typeId="acunit-energycoolingmonth-1"/>
+			<channel id="energycoolingmonth-2" typeId="acunit-energycoolingmonth-2"/>
+			<channel id="energycoolingmonth-3" typeId="acunit-energycoolingmonth-3"/>
+			<channel id="energycoolingmonth-4" typeId="acunit-energycoolingmonth-4"/>
+			<channel id="energycoolingmonth-5" typeId="acunit-energycoolingmonth-5"/>
+			<channel id="energycoolingmonth-6" typeId="acunit-energycoolingmonth-6"/>
+			<channel id="energycoolingmonth-7" typeId="acunit-energycoolingmonth-7"/>
+			<channel id="energycoolingmonth-8" typeId="acunit-energycoolingmonth-8"/>
+			<channel id="energycoolingmonth-9" typeId="acunit-energycoolingmonth-9"/>
+			<channel id="energycoolingmonth-10" typeId="acunit-energycoolingmonth-10"/>
+			<channel id="energycoolingmonth-11" typeId="acunit-energycoolingmonth-11"/>
+			<channel id="energycoolingmonth-12" typeId="acunit-energycoolingmonth-12"/>
+			<channel id="energycoolingmonth-13" typeId="acunit-energycoolingmonth-13"/>
+			<channel id="energycoolingmonth-14" typeId="acunit-energycoolingmonth-14"/>
+			<channel id="energycoolingmonth-15" typeId="acunit-energycoolingmonth-15"/>
+			<channel id="energycoolingmonth-16" typeId="acunit-energycoolingmonth-16"/>
+			<channel id="energycoolingmonth-17" typeId="acunit-energycoolingmonth-17"/>
+			<channel id="energycoolingmonth-18" typeId="acunit-energycoolingmonth-18"/>
+			<channel id="energycoolingmonth-19" typeId="acunit-energycoolingmonth-19"/>
+			<channel id="energycoolingmonth-20" typeId="acunit-energycoolingmonth-20"/>
+			<channel id="energycoolingmonth-21" typeId="acunit-energycoolingmonth-21"/>
+			<channel id="energycoolingmonth-22" typeId="acunit-energycoolingmonth-22"/>
+			<channel id="energycoolingmonth-23" typeId="acunit-energycoolingmonth-23"/>
+
+
+			<channel id="energycoolingcurrentday" typeId="acunit-energycoolingcurrentday"/>
+			<channel id="energycoolingcurrentyear" typeId="acunit-energycoolingcurrentyear"/>
+
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="consumptionDataHeatingGroup">
+		<label>Consumption data heating</label>
+		<description>Consumption data heating</description>
+		<channels>
+			<channel id="energyheatingday-0" typeId="acunit-energyheatingday-0"/>
+			<channel id="energyheatingday-1" typeId="acunit-energyheatingday-1"/>
+			<channel id="energyheatingday-2" typeId="acunit-energyheatingday-2"/>
+			<channel id="energyheatingday-3" typeId="acunit-energyheatingday-3"/>
+			<channel id="energyheatingday-4" typeId="acunit-energyheatingday-4"/>
+			<channel id="energyheatingday-5" typeId="acunit-energyheatingday-5"/>
+			<channel id="energyheatingday-6" typeId="acunit-energyheatingday-6"/>
+			<channel id="energyheatingday-7" typeId="acunit-energyheatingday-7"/>
+			<channel id="energyheatingday-8" typeId="acunit-energyheatingday-8"/>
+			<channel id="energyheatingday-9" typeId="acunit-energyheatingday-9"/>
+			<channel id="energyheatingday-10" typeId="acunit-energyheatingday-10"/>
+			<channel id="energyheatingday-11" typeId="acunit-energyheatingday-11"/>
+			<channel id="energyheatingday-12" typeId="acunit-energyheatingday-12"/>
+			<channel id="energyheatingday-13" typeId="acunit-energyheatingday-13"/>
+			<channel id="energyheatingday-14" typeId="acunit-energyheatingday-14"/>
+			<channel id="energyheatingday-15" typeId="acunit-energyheatingday-15"/>
+			<channel id="energyheatingday-16" typeId="acunit-energyheatingday-16"/>
+			<channel id="energyheatingday-17" typeId="acunit-energyheatingday-17"/>
+			<channel id="energyheatingday-18" typeId="acunit-energyheatingday-18"/>
+			<channel id="energyheatingday-19" typeId="acunit-energyheatingday-19"/>
+			<channel id="energyheatingday-20" typeId="acunit-energyheatingday-20"/>
+			<channel id="energyheatingday-21" typeId="acunit-energyheatingday-21"/>
+			<channel id="energyheatingday-22" typeId="acunit-energyheatingday-22"/>
+			<channel id="energyheatingday-23" typeId="acunit-energyheatingday-23"/>
+
+			<channel id="energyheatingweek-0" typeId="acunit-energyheatingweek-0"/>
+			<channel id="energyheatingweek-1" typeId="acunit-energyheatingweek-1"/>
+			<channel id="energyheatingweek-2" typeId="acunit-energyheatingweek-2"/>
+			<channel id="energyheatingweek-3" typeId="acunit-energyheatingweek-3"/>
+			<channel id="energyheatingweek-4" typeId="acunit-energyheatingweek-4"/>
+			<channel id="energyheatingweek-5" typeId="acunit-energyheatingweek-5"/>
+			<channel id="energyheatingweek-6" typeId="acunit-energyheatingweek-6"/>
+			<channel id="energyheatingweek-7" typeId="acunit-energyheatingweek-7"/>
+			<channel id="energyheatingweek-8" typeId="acunit-energyheatingweek-8"/>
+			<channel id="energyheatingweek-9" typeId="acunit-energyheatingweek-9"/>
+			<channel id="energyheatingweek-10" typeId="acunit-energyheatingweek-10"/>
+			<channel id="energyheatingweek-11" typeId="acunit-energyheatingweek-11"/>
+			<channel id="energyheatingweek-12" typeId="acunit-energyheatingweek-12"/>
+			<channel id="energyheatingweek-13" typeId="acunit-energyheatingweek-13"/>
+
+			<channel id="energyheatingmonth-0" typeId="acunit-energyheatingmonth-0"/>
+			<channel id="energyheatingmonth-1" typeId="acunit-energyheatingmonth-1"/>
+			<channel id="energyheatingmonth-2" typeId="acunit-energyheatingmonth-2"/>
+			<channel id="energyheatingmonth-3" typeId="acunit-energyheatingmonth-3"/>
+			<channel id="energyheatingmonth-4" typeId="acunit-energyheatingmonth-4"/>
+			<channel id="energyheatingmonth-5" typeId="acunit-energyheatingmonth-5"/>
+			<channel id="energyheatingmonth-6" typeId="acunit-energyheatingmonth-6"/>
+			<channel id="energyheatingmonth-7" typeId="acunit-energyheatingmonth-7"/>
+			<channel id="energyheatingmonth-8" typeId="acunit-energyheatingmonth-8"/>
+			<channel id="energyheatingmonth-9" typeId="acunit-energyheatingmonth-9"/>
+			<channel id="energyheatingmonth-10" typeId="acunit-energyheatingmonth-10"/>
+			<channel id="energyheatingmonth-11" typeId="acunit-energyheatingmonth-11"/>
+			<channel id="energyheatingmonth-12" typeId="acunit-energyheatingmonth-12"/>
+			<channel id="energyheatingmonth-13" typeId="acunit-energyheatingmonth-13"/>
+			<channel id="energyheatingmonth-14" typeId="acunit-energyheatingmonth-14"/>
+			<channel id="energyheatingmonth-15" typeId="acunit-energyheatingmonth-15"/>
+			<channel id="energyheatingmonth-16" typeId="acunit-energyheatingmonth-16"/>
+			<channel id="energyheatingmonth-17" typeId="acunit-energyheatingmonth-17"/>
+			<channel id="energyheatingmonth-18" typeId="acunit-energyheatingmonth-18"/>
+			<channel id="energyheatingmonth-19" typeId="acunit-energyheatingmonth-19"/>
+			<channel id="energyheatingmonth-20" typeId="acunit-energyheatingmonth-20"/>
+			<channel id="energyheatingmonth-21" typeId="acunit-energyheatingmonth-21"/>
+			<channel id="energyheatingmonth-22" typeId="acunit-energyheatingmonth-22"/>
+			<channel id="energyheatingmonth-23" typeId="acunit-energyheatingmonth-23"/>
+
+			<channel id="energyheatingcurrentday" typeId="acunit-energyheatingcurrentday"/>
+			<channel id="energyheatingcurrentyear" typeId="acunit-energyheatingcurrentyear"/>
+
+		</channels>
+	</channel-group-type>
+
+
+	<channel-type id="acunit-energyheatingmonth-0" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (00) January</label>
+		<description>The energy usage for heating last year January</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (01) February</label>
+		<description>The energy usage for heating last year February</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (02) March</label>
+		<description>The energy usage for heating last year March</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (03) April</label>
+		<description>The energy usage for heating last year April</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (04) May</label>
+		<description>The energy usage for heating last year May</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-5" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (05) June</label>
+		<description>The energy usage for heating last year June</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-6" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (06) July</label>
+		<description>The energy usage for heating last year July</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-7" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (07) August</label>
+		<description>The energy usage for heating last year August</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-8" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (08) September</label>
+		<description>The energy usage for heating last year September</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-9" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (09) October</label>
+		<description>The energy usage for heating last year October</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-10" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (10) November</label>
+		<description>The energy usage for heating last year November</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-11" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last year (11) December</label>
+		<description>The energy usage for heating last year December</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+
+	<channel-type id="acunit-energyheatingmonth-12" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (00) January</label>
+		<description>The energy usage for heating current year January</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-13" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (01) February</label>
+		<description>The energy usage for heating current year February</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-14" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (02) March</label>
+		<description>The energy usage for heating current year March</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-15" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (03) April</label>
+		<description>The energy usage for heating current year April</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-16" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (04) May</label>
+		<description>The energy usage for heating current year May</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-17" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (05) June</label>
+		<description>The energy usage for heating current year June</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-18" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (06) July</label>
+		<description>The energy usage for heating current year July</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-19" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (07) August</label>
+		<description>The energy usage for heating current year August</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-20" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (08) September</label>
+		<description>The energy usage for heating current year September</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-21" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (09) October</label>
+		<description>The energy usage for heating current year October</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-22" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (10) November</label>
+		<description>The energy usage for heating current year November</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingmonth-23" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current year (11) December</label>
+		<description>The energy usage for heating current year December</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatingcurrentday">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating current day total</label>
+		<description>The energy usage for heating current day total</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating current year total</label>
+		<description>The energy usage for heating current year total</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+
+
+	<channel-type id="acunit-energyheatingweek-0" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last week (0) Monday</label>
+		<description>The energy usage for heating last week Monday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last week (1) Tuesday</label>
+		<description>The energy usage for heating last week Tuesday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last week (2) Wednesday</label>
+		<description>The energy usage for heating last week Wednesday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last week (3) Thursday</label>
+		<description>The energy usage for heating last week Thursday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last week (4) Friday</label>
+		<description>The energy usage for heating last week Friday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-5" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last week (5) Saturday</label>
+		<description>The energy usage for heating last week Saturday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-6" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating last week (6) Sunday</label>
+		<description>The energy usage for heating last week Sunday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatingweek-7" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current week (0) Monday</label>
+		<description>The energy usage for heating current week Monday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-8" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current week (1) Tuesday</label>
+		<description>The energy usage for heating current week Tuesday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-9" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current week (2) Wednesday</label>
+		<description>The energy usage for heating current week Wednesday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-10" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current week (3) Thursday</label>
+		<description>The energy usage for heating current week Thursday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-11" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current week (4) Friday</label>
+		<description>The energy usage for heating current week Friday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-12" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current week (5) Saturday</label>
+		<description>The energy usage for heating current week Saturday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingweek-13" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating current week (6) Sunday</label>
+		<description>The energy usage for heating current week Sunday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+
+	<channel-type id="acunit-energyheatingday-0" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (00:00 - 02:00)</label>
+		<description>The energy usage for heating yesterday (00:00 - 02:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (02:00 - 04:00)</label>
+		<description>The energy usage for heating yesterday (02:00 - 04:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (04:00 - 06:00)</label>
+		<description>The energy usage for heating yesterday (04:00 - 06:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (06:00 - 08:00)</label>
+		<description>The energy usage for heating yesterday (06:00 - 08:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (08:00 - 10:00)</label>
+		<description>The energy usage for heating yesterday (08:00 - 10:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-5" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (10:00 - 12:00)</label>
+		<description>The energy usage for heating yesterday (10:00 - 12:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-6" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (12:00 - 14:00)</label>
+		<description>The energy usage for heating yesterday (12:00 - 14:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-7" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (14:00 - 16:00)</label>
+		<description>The energy usage for heating yesterday (14:00 - 16:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-8" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (16:00 - 18:00)</label>
+		<description>The energy usage for heating yesterday (16:00 - 18:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-9" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (18:00 - 20:00)</label>
+		<description>The energy usage for heating yesterday (18:00 - 20:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-10" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (20:00 - 22:00)</label>
+		<description>The energy usage for heating yesterday (20:00 - 22:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-11" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating yesterday (22:00 - 24:00)</label>
+		<description>The energy usage for heating yesterday (22:00 - 24:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-12" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (00:00 - 02:00)</label>
+		<description>The energy usage for heating today (00:00 - 02:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-13" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (02:00 - 04:00)</label>
+		<description>The energy usage for heating today (02:00 - 04:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-14" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (04:00 - 06:00)</label>
+		<description>The energy usage for heating today (04:00 - 06:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-15" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (06:00 - 08:00)</label>
+		<description>The energy usage for heating today (06:00 - 08:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-16" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (08:00 - 10:00)</label>
+		<description>The energy usage for heating today (08:00 - 10:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-17" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (10:00 - 12:00)</label>
+		<description>The energy usage for heating today (10:00 - 12:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-18" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (12:00 - 14:00)</label>
+		<description>The energy usage for heating today (12:00 - 14:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-19" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (14:00 - 16:00)</label>
+		<description>The energy usage for heating today (14:00 - 16:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-20" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (16:00 - 18:00)</label>
+		<description>The energy usage for heating today (16:00 - 18:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-21" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (18:00 - 20:00)</label>
+		<description>The energy usage for heating today (18:00 - 20:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-22" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (20:00 - 22:00)</label>
+		<description>The energy usage for heating today (20:00 - 22:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingday-23" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Today (22:00 - 24:00)</label>
+		<description>The energy usage for heating today (22:00 - 24:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatingthisweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating This Week</label>
+		<description>The energy usage for heating this week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatinglastweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Last Week</label>
+		<description>The energy usage for heating last week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatingcurrentyear-1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year January</label>
+		<description>The energy usage for heating this year January</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year February</label>
+		<description>The energy usage for heating this year February</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year March</label>
+		<description>The energy usage for heating this year March</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year April</label>
+		<description>The energy usage for heating this year April</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-5" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year May</label>
+		<description>The energy usage for heating this year May</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-6" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year June</label>
+		<description>The energy usage for heating this year June</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-7" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year July</label>
+		<description>The energy usage for heating this year July</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-8" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year August</label>
+		<description>The energy usage for heating this year August</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-9" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year September</label>
+		<description>The energy usage for heating this year September</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-10" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year October</label>
+		<description>The energy usage for heating this year October</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-11" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year November</label>
+		<description>The energy usage for heating this year November</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-12" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year December</label>
+		<description>The energy usage for heating this year December</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year January</label>
+		<description>The energy usage for heating this year January</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year February</label>
+		<description>The energy usage for heating this year February</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year March</label>
+		<description>The energy usage for heating this year March</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year April</label>
+		<description>The energy usage for heating this year April</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-5" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year May</label>
+		<description>The energy usage for heating this year May</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-6" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year June</label>
+		<description>The energy usage for heating this year June</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-7" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year July</label>
+		<description>The energy usage for heating this year July</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-8" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year August</label>
+		<description>The energy usage for heating this year August</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-9" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year September</label>
+		<description>The energy usage for heating this year September</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-10" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year October</label>
+		<description>The energy usage for heating this year October</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-11" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year November</label>
+		<description>The energy usage for heating this year November</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-12" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy heating Current Year December</label>
+		<description>The energy usage for heating this year December</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+
+	<channel-type id="acunit-energycoolingmonth-0" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (00) January</label>
+		<description>The energy usage for cooling last year January</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (01) February</label>
+		<description>The energy usage for cooling last year February</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (02) March</label>
+		<description>The energy usage for cooling last year March</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (03) April</label>
+		<description>The energy usage for cooling last year April</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (04) May</label>
+		<description>The energy usage for cooling last year May</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-5" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (05) June</label>
+		<description>The energy usage for cooling last year June</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-6" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (06) July</label>
+		<description>The energy usage for cooling last year July</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-7" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (07) August</label>
+		<description>The energy usage for cooling last year August</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-8" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (08) September</label>
+		<description>The energy usage for cooling last year September</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-9" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (09) October</label>
+		<description>The energy usage for cooling last year October</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-10" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (10) November</label>
+		<description>The energy usage for cooling last year November</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-11" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last year (11) December</label>
+		<description>The energy usage for cooling last year December</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+
+	<channel-type id="acunit-energycoolingmonth-12" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (00) January</label>
+		<description>The energy usage for cooling current year January</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-13" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (01) February</label>
+		<description>The energy usage for cooling current year February</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-14" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (02) March</label>
+		<description>The energy usage for cooling current year March</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-15" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (03) April</label>
+		<description>The energy usage for cooling current year April</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-16" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (04) May</label>
+		<description>The energy usage for cooling current year May</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-17" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (05) June</label>
+		<description>The energy usage for cooling current year June</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-18" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (06) July</label>
+		<description>The energy usage for cooling current year July</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-19" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (07) August</label>
+		<description>The energy usage for cooling current year August</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-20" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (08) September</label>
+		<description>The energy usage for cooling current year September</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-21" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (09) October</label>
+		<description>The energy usage for cooling current year October</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-22" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (10) November</label>
+		<description>The energy usage for cooling current year November</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingmonth-23" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year (11) December</label>
+		<description>The energy usage for cooling current year December</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolingcurrentday">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current day total</label>
+		<description>The energy usage for cooling current day total</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current year total</label>
+		<description>The energy usage for cooling current year total</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+
+
+	<channel-type id="acunit-energycoolingweek-0" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last week (0) Monday</label>
+		<description>The energy usage for cooling last week Monday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last week (1) Tuesday</label>
+		<description>The energy usage for cooling last week Tuesday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last week (2) Wednesday</label>
+		<description>The energy usage for cooling last week Wednesday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last week (3) Thursday</label>
+		<description>The energy usage for cooling last week Thursday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last week (4) Friday</label>
+		<description>The energy usage for cooling last week Friday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-5" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last week (5) Saturday</label>
+		<description>The energy usage for cooling last week Saturday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-6" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling last week (6) Sunday</label>
+		<description>The energy usage for cooling last week Sunday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolingweek-7" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current week (0) Monday</label>
+		<description>The energy usage for cooling current week Monday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-8" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current week (1) Tuesday</label>
+		<description>The energy usage for cooling current week Tuesday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-9" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current week (2) Wednesday</label>
+		<description>The energy usage for cooling current week Wednesday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-10" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current week (3) Thursday</label>
+		<description>The energy usage for cooling current week Thursday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-11" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current week (4) Friday</label>
+		<description>The energy usage for cooling current week Friday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-12" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current week (5) Saturday</label>
+		<description>The energy usage for cooling current week Saturday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingweek-13" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling current week (6) Sunday</label>
+		<description>The energy usage for cooling current week Sunday</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+
+	<channel-type id="acunit-energycoolingday-0" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (00:00 - 02:00)</label>
+		<description>The energy usage for cooling yesterday (00:00 - 02:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (02:00 - 04:00)</label>
+		<description>The energy usage for cooling yesterday (02:00 - 04:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (04:00 - 06:00)</label>
+		<description>The energy usage for cooling yesterday (04:00 - 06:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (06:00 - 08:00)</label>
+		<description>The energy usage for cooling yesterday (06:00 - 08:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (08:00 - 10:00)</label>
+		<description>The energy usage for cooling yesterday (08:00 - 10:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-5" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (10:00 - 12:00)</label>
+		<description>The energy usage for cooling yesterday (10:00 - 12:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-6" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (12:00 - 14:00)</label>
+		<description>The energy usage for cooling yesterday (12:00 - 14:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-7" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (14:00 - 16:00)</label>
+		<description>The energy usage for cooling yesterday (14:00 - 16:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-8" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (16:00 - 18:00)</label>
+		<description>The energy usage for cooling yesterday (16:00 - 18:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-9" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (18:00 - 20:00)</label>
+		<description>The energy usage for cooling yesterday (18:00 - 20:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-10" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (20:00 - 22:00)</label>
+		<description>The energy usage for cooling yesterday (20:00 - 22:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-11" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling yesterday (22:00 - 24:00)</label>
+		<description>The energy usage for cooling yesterday (22:00 - 24:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-12" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (00:00 - 02:00)</label>
+		<description>The energy usage for cooling today (00:00 - 02:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-13" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (02:00 - 04:00)</label>
+		<description>The energy usage for cooling today (02:00 - 04:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-14" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (04:00 - 06:00)</label>
+		<description>The energy usage for cooling today (04:00 - 06:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-15" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (06:00 - 08:00)</label>
+		<description>The energy usage for cooling today (06:00 - 08:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-16" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (08:00 - 10:00)</label>
+		<description>The energy usage for cooling today (08:00 - 10:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-17" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (10:00 - 12:00)</label>
+		<description>The energy usage for cooling today (10:00 - 12:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-18" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (12:00 - 14:00)</label>
+		<description>The energy usage for cooling today (12:00 - 14:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-19" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (14:00 - 16:00)</label>
+		<description>The energy usage for cooling today (14:00 - 16:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-20" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (16:00 - 18:00)</label>
+		<description>The energy usage for cooling today (16:00 - 18:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-21" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (18:00 - 20:00)</label>
+		<description>The energy usage for cooling today (18:00 - 20:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-22" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (20:00 - 22:00)</label>
+		<description>The energy usage for cooling today (20:00 - 22:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingday-23" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Today (22:00 - 24:00)</label>
+		<description>The energy usage for cooling today (22:00 - 24:00)</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolingthisweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling This Week</label>
+		<description>The energy usage for cooling this week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolinglastweek" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Last Week</label>
+		<description>The energy usage for cooling last week</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-energyheatingcurrentyear-1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year January</label>
+		<description>The energy usage for heating this year January</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year February</label>
+		<description>The energy usage for heating this year February</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year March</label>
+		<description>The energy usage for heating this year March</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year April</label>
+		<description>The energy usage for heating this year April</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-5" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year May</label>
+		<description>The energy usage for heating this year May</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-6" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year June</label>
+		<description>The energy usage for heating this year June</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-7" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year July</label>
+		<description>The energy usage for heating this year July</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-8" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year August</label>
+		<description>The energy usage for heating this year August</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-9" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year September</label>
+		<description>The energy usage for heating this year September</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-10" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year October</label>
+		<description>The energy usage for heating this year October</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-11" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year November</label>
+		<description>The energy usage for heating this year November</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energyheatingcurrentyear-12" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Heating Current Year December</label>
+		<description>The energy usage for heating this year December</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear-1" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year January</label>
+		<description>The energy usage for cooling this year January</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear-2" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year February</label>
+		<description>The energy usage for cooling this year February</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear-3" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year March</label>
+		<description>The energy usage for cooling this year March</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear-4" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year April</label>
+		<description>The energy usage for cooling this year April</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear-5" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year May</label>
+		<description>The energy usage for cooling this year May</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear-6" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year June</label>
+		<description>The energy usage for cooling this year June</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear-7" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year July</label>
+		<description>The energy usage for cooling this year July</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear-8" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year August</label>
+		<description>The energy usage for cooling this year August</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear-9" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year September</label>
+		<description>The energy usage for cooling this year September</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear-10" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year October</label>
+		<description>The energy usage for cooling this year October</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-energycoolingcurrentyear-11" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year November</label>
+		<description>The energy usage for cooling this year November</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-energycoolingcurrentyear-12" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Cooling Current Year December</label>
+		<description>The energy usage for cooling this year December</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power for the AC unit</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="acunit-economode">
+		<item-type>Switch</item-type>
+		<label>Ecomode</label>
+		<description>Set the unit to ecomode</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="acunit-settemp">
+		<item-type>Number:Temperature</item-type>
+		<label>SetPoint</label>
+		<description>Thermostat temperature setpoint</description>
+		<category>Temperature</category>
+		<state step="0.5" pattern="%.1d %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-settempmin">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Point Min value</label>
+		<description>The set point min temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-settempmax">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Point Max value</label>
+		<description>The set point max temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-settempstep">
+		<item-type>Number:Temperature</item-type>
+		<label>Set Point value steps</label>
+		<description>The set point temperature value steps</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-setleavingWaterOffset">
+		<item-type>Number:Temperature</item-type>
+		<label>SetPoint Leaving water offset.</label>
+		<description>SetPoint Leaving water offset.</description>
+		<category>Temperature</category>
+		<state step="1" pattern="%.0f %unit%" min="-100"/>
+	</channel-type>
+
+	<channel-type id="acunit-setleavingWaterTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>SetPoint Leaving water temperature</label>
+		<description>SetPoint Leaving water temperature</description>
+		<category>Temperature</category>
+		<state step="1" pattern="%.1d %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-targetTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperatur</label>
+		<description>The set point temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-targetTempMin">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature Min value</label>
+		<description>The target min temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-targetTempMax">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature Max value</label>
+		<description>The target max temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-targetTempStep">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature value step</label>
+		<description>The target temperature value step</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="acunit-timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp of unit</label>
+		<description>Timestamp of unit</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="acunit-indoortemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Indoor Temperature</label>
+		<description>The indoor temperature (readonly)</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="acunit-outdoortemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor Temperature</label>
+		<description>The outdoor temperature (readonly)</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="acunit-leavingWaterTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Leaving Water Temperature</label>
+		<description>The leaving water temperature (readonly)</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="acunit-humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Indoor Humidity</label>
+		<description>The indoor humidity as measured by the A/C unit (readonly)</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d%%"/>
+	</channel-type>
+
+	<channel-type id="acunit-operationmode">
+		<item-type>String</item-type>
+		<label>Operation mode</label>
+		<description>Current operationmode of the AC unit</description>
+		<state>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="DEHUMIDIFIER">Dehumidifier</option>
+				<option value="COLD">Cooling</option>
+				<option value="HEAT">Heating</option>
+				<option value="FAN">Fan only</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="acunit-fan">
+		<item-type>String</item-type>
+		<label>Fan Speed</label>
+		<description>Current fan speed setting of the AC unit</description>
+		<category>fan</category>
+		<state>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="SILENCE">Silence</option>
+				<option value="LEVEL_1">Level 1</option>
+				<option value="LEVEL_2">Level 2</option>
+				<option value="LEVEL_3">Level 3</option>
+				<option value="LEVEL_4">Level 4</option>
+				<option value="LEVEL_5">Level 5</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="acunit-rawdata" advanced="true">
+		<item-type>String</item-type>
+		<label>Raw Json data</label>
+		<description>Unit data as collected from Daikin Onecta (readonly)</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="acunit-fandirhor">
+		<item-type>String</item-type>
+		<label>Fan Swing Horizontal</label>
+		<description>Current fan horizontal swing setting of the AC unit</description>
+		<category>f7:arrow_right_arrow_left_circle</category>
+		<state>
+			<options>
+				<option value="STOPPED">Stopped</option>
+				<option value="SWING">Swing</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="acunit-fandirver">
+		<item-type>String</item-type>
+		<label>Fan Swing Vertical</label>
+		<description>Current fan vertical swing setting of the AC unit</description>
+		<category>f7:arrow_up_arrow_down_circle</category>
+		<state>
+			<options>
+				<option value="STOPPED">Stopped</option>
+				<option value="SWING">Swing</option>
+				<option value="WINDNICE">Windnice</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="acunit-fandir">
+		<item-type>String</item-type>
+		<label>Fan Swing</label>
+		<description>Current fan swing setting of the AC unit</description>
+		<category>f7:view_3d</category>
+		<state>
+			<options>
+				<option value="STOPPED">Stopped</option>
+				<option value="VERTICAL">Vertical</option>
+				<option value="VERTICAL_EXTRA">Vertical (Scanner)</option>
+				<option value="HORIZONTAL">Horizontal</option>
+				<option value="VERTICAL_AND_HORIZONTAL">Vertical and horizontal</option>
+				<option value="VERTICAL_AND_HORIZONTAL_EXTRA">Vertical and horizontal (Scanner)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="acunit-streamer">
+		<item-type>Switch</item-type>
+		<label>Streamer</label>
+		<description>Streamer Mode</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="acunit-powerfulmode">
+		<item-type>Switch</item-type>
+		<label>Powerful mode</label>
+		<description>Powerful mode</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="acunit-holidaymode">
+		<item-type>Switch</item-type>
+		<label>Holiday</label>
+		<description>Holiday Mode (Not updatable)</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="acunit-demandcontrol">
+		<item-type>String</item-type>
+		<label>Demand control</label>
+		<description>Demand control</description>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="AUTO">Auto</option>
+				<option value="FIXED">Fixed</option>
+				<option value="SCHEDULED">Scheduled</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="acunit-demandcontrolfixedvalue">
+		<item-type>Number</item-type>
+		<label>Demand Control fixed Value</label>
+		<description>Value of fixed demand control. Only available when Demand Control is set to FIXED</description>
+		<category>Demand Control</category>
+		<state pattern="%d %%"/>
+	</channel-type>
+	<channel-type id="acunit-demandcontrolfixedstepvalue">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Demand Control fixed Step value</label>
+		<description>Step value of fixed demand control (readonly)</description>
+		<category>Demand Control</category>
+		<state readOnly="true" pattern="%d "/>
+	</channel-type>
+	<channel-type id="acunit-demandcontrolfixedminvalue">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Demand Control fixed Min value</label>
+		<description>Min value of fixed demand control (readonly)</description>
+		<category>Demand Control</category>
+		<state readOnly="true" pattern="%d "/>
+	</channel-type>
+	<channel-type id="acunit-demandcontrolfixedmaxvalue">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Demand Control fixed Max value</label>
+		<description>Max value of fixed demand control (readonly)</description>
+		<category>Demand Control</category>
+		<state readOnly="true" pattern="%d "/>
+	</channel-type>
+
+</thing:thing-descriptions>
