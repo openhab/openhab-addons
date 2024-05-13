@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.onecta.internal.api.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,6 +23,9 @@ import org.openhab.binding.onecta.internal.exception.DaikinCommunicationExceptio
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * @author Alexander Drent - Initial contribution
+ */
 public class CommandsTest {
 
     final String UNITID = "1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6";

@@ -5,6 +5,9 @@ import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * @author Alexander Drent - Initial contribution
+ */
 public class OnectaPropertiesTest {
 
     final String UNITID = "1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6";
