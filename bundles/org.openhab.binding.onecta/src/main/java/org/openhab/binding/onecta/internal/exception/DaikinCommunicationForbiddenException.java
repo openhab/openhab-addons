@@ -15,10 +15,7 @@ package org.openhab.binding.onecta.internal.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Exception for when a 403 Forbidden error is received from the Daikin controller.
- *
- * @author Jimmy Tanagra - Initial contribution
- *
+ * @author Alexander Drent - Initial contribution
  */
 @NonNullByDefault
 public class DaikinCommunicationForbiddenException extends DaikinCommunicationException {
