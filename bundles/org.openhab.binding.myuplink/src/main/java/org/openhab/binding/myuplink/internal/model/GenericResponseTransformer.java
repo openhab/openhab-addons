@@ -29,6 +29,7 @@ import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -71,7 +72,8 @@ public class GenericResponseTransformer {
 
             Channel channel;
             if (dynamicChannelProvider != null) {
-                channel = dynamicChannelProvider.getOrCreateChannel(channelId, channelData.getAsJsonObject());
+                channel = getOrCreateChannel(dynamicChannelProvider.getThingUid(), channelId,
+                        channelData.getAsJsonObject());
             } else {
                 channel = channelProvider.getChannel(group, channelId);
             }
@@ -156,6 +158,15 @@ public class GenericResponseTransformer {
                     }
                 }
             }
+        }
+        return result;
+    }
+
+    private Channel getOrCreateChannel(ThingUID thingUID, String channelId, JsonObject channelData) {
+        Channel result = channelProvider.getChannel(CHANNEL_GROUP_NONE, channelId);
+        if (result == null) {
+            result = ChannelFactory.createChannel(thingUID, channelId, channelData);
+            dynamicChannelProvider.registerChannel(result);
         }
         return result;
     }
