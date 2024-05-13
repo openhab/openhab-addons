@@ -66,14 +66,13 @@ public class FetchDataService {
      * Handles error cases and updates the Thing accordingly.
      */
     public void pollDevice() {
-        final IoTaWattClient nonNullClient = ioTaWattClient;
-        if (nonNullClient == null) {
-            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
-            return;
-        }
+        Optional.ofNullable(ioTaWattClient).ifPresentOrElse(this::pollDevice,
+                () -> thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR));
+    }
 
+    private void pollDevice(IoTaWattClient client) {
         try {
-            final Optional<StatusResponse> statusResponse = nonNullClient.fetchStatus();
+            final Optional<StatusResponse> statusResponse = client.fetchStatus();
             if (statusResponse.isPresent()) {
                 thingHandler.updateStatus(ThingStatus.ONLINE);
                 updateChannels(statusResponse.get());
