@@ -164,8 +164,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.THERMOREGULATION.value().toString();
+    protected Who getManagedWho() {
+        return Who.THERMOREGULATION;
     }
 
     private void handleSetFanSpeed(Command command) {

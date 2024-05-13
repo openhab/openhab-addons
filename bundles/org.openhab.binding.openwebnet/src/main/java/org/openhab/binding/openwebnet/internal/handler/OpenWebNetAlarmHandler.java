@@ -272,8 +272,8 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.BURGLAR_ALARM.value().toString();
+    protected Who getManagedWho() {
+        return Who.BURGLAR_ALARM;
     }
 
     @Override

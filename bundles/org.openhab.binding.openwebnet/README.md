@@ -41,17 +41,17 @@ The following Things and OpenWebNet `WHOs` are supported:
 
 ### For MyHOME - BUS/SCS
 
-| Category                      |     WHO     |                       Thing Type IDs                       | Description                                                      | Status                                                                                                                                                                                                     |
-|-------------------------------|:-----------:|:----------------------------------------------------------:|------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Gateway Management            |    `13`     |                       `bus_gateway`                        | Any IP gateway supporting OpenWebNet protocol should work        | Successfully tested: F452, F453, F453AV,F454, F455, MyHOMEServer1, MyHOME_Screen10, MyHOME_Screen3,5, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202            |
-| Lighting                      |     `1`     |             `bus_on_off_switch`, `bus_dimmer`              | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)                                                                                           |
-| Automation                    |     `2`     |                      `bus_automation`                      | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2                                                                                                                                                                              |
-| Temperature Control           |     `4`     |  `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`   | Thermo zones management and temperature sensors (probes)         | Successfully tested: Thermostats H/LN4691, HS4692, KG4691; sensors (probes): L/N/NT4577 + 3455; Central Units 4-zones (models L/N/NT/HD/HC/HS4695) and 99-zones (model 3550). See [Channels - Thermo](#configuring-thermo) for more details |
-| Alarm                         |     `5`     |  `bus_alarm_system`, `bus_alarm_zone`                      | BUS Alarm system and zones                                       | Successfully tested: Burglar-alarm Unit 3486  |
-| Auxiliary (AUX)               |     `9`     |  `bus_aux`                                                 | AUX commands                                                     | Successfully tested: AUX configured for Burglar-alarm Unit 3486. **Only sending AUX commands is supported**    |
-| Basic, CEN & CEN+ Scenarios   | `0`, `15`, `25` | `bus_scenario_control`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ Scenarios events and virtual activation                 | Successfully tested: CEN/CEN+ scenario control: HC/HD/HS/L/N/NT4680 and basic scenario modules F420/IR3456 + L4680 (WHO=0)      |
-| Dry Contact and IR Interfaces |    `25`     |                    `bus_dry_contact_ir`                    | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610      |
-| Energy Management             |    `18`     |                     `bus_energy_meter`                     | Energy Management                                                | Successfully tested: F520, F521. Partially tested: F522, F523                               |
+| Category                      | WHO             | Thing Type IDs                                                                     | Description                                                      | Status                                                                                                                                                                                                                                      |
+|-------------------------------|-:-:-------------|-:-:--------------------------------------------------------------------------------|------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Gateway Management            | `13`            | `bus_gateway`                                                                      | Any IP gateway supporting OpenWebNet protocol should work        | Successfully tested: F452, F453, F453AV,F454, F455, MyHOMEServer1, MyHOME_Screen10, MyHOME_Screen3,5, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202                                             |
+| Lighting                      | `1`             | `bus_on_off_switch`, `bus_dimmer`, `bus_light_group`                               | BUS switches and dimmers and groups of them                      | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)                                                                                                                            |
+| Automation                    | `2`             | `bus_automation`                                                                   | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2                                                                                                                                                                                                               |
+| Temperature Control           | `4`             | `bus_thermo_zone`, `bus_thermo_sensor`, `bus_thermo_cu`                            | Thermo zones management and temperature sensors (probes)         | Successfully tested: Thermostats H/LN4691, HS4692, KG4691; sensors (probes): L/N/NT4577 + 3455; Central Units 4-zones (models L/N/NT/HD/HC/HS4695) and 99-zones (model 3550). See [Channels - Thermo](#configuring-thermo) for more details |
+| Alarm                         | `5`             | `bus_alarm_system`, `bus_alarm_zone`                                               | BUS Alarm system and zones                                       | Successfully tested: Burglar-alarm Unit 3486                                                                                                                                                                                                |
+| Auxiliary (AUX)               | `9`             | `bus_aux`                                                                          | AUX commands                                                     | Successfully tested: AUX configured for Burglar-alarm Unit 3486. **Only sending AUX commands is supported**                                                                                                                                 |
+| Basic, CEN & CEN+ Scenarios   | `0`, `15`, `25` | `bus_scenario_control`, `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | Basic and CEN/CEN+ Scenarios events and virtual activation       | Successfully tested: CEN/CEN+ scenario control: HC/HD/HS/L/N/NT4680 and basic scenario modules F420/IR3456 + L4680 (WHO=0)                                                                                                                  |
+| Dry Contact and IR Interfaces | `25`            | `bus_dry_contact_ir`                                                               | Dry Contacts and IR Interfaces                                   | Successfully tested: contact interfaces F428 and 3477; IR sensors: HC/HD/HS/L/N/NT4610                                                                                                                                                      |
+| Energy Management             | `18`            | `bus_energy_meter`                                                                 | Energy Management                                                | Successfully tested: F520, F521. Partially tested: F522, F523                                                                                                                                                                               |
 
 ### For MyHOME Radio - Zigbee
 
@@ -133,8 +133,9 @@ For any manually added device, you must configure:
 - the associated gateway Thing (`Parent Bridge` menu)
 - the `where` configuration parameter (`OpenWebNet Address`): this is the OpenWebNet address configured for the device in the BTicino/Legrand system. This address can be found either on the device itself (Physical configuration, using jumpers in case of BUS) or through the MyHOME_Suite software (Virtual configuration). The address can have several formats depending on the device/system:
   - example for MyHOME - BUS/SCS system:
-    - light device A=`2` (Area 2), PL=`4` (Light-point 4) --> `where="24"`
+    - light device A=`2` (room 2), PL=`4` (light-point 4) --> `where="24"`
     - light device A=`03`, PL=`11` on local bus `01` --> `where="0311#4#01"`
+    - lights in room 5 (A=`AMB`, PL=`5`) --> `where="5"`
     - scenario control module address `53` --> `where="53"`
     - CEN scenario A=`05`, PL=`12` --> `where="0512"`
     - CEN+ scenario `5`: add `2` before --> `where="25"`
@@ -210,22 +211,36 @@ Event: command OPEN = *9*1*5##
 OPEN command to execute: *5*8#134##
 ```
 
+#### Configuring Light Groups (Room/Group/General)
+
+The `bus_light_group` Thing type represents a set of devices belonging to a room or group in the BUS system:
+
+- `bus_light_group` with `where="5"` will be associated to all lights configured in room 5 (A=`5`)
+- `bus_light_group` with `where="#4"` will be associated to all lights belonging to group 4 (G=`4`)
+- `bus_light_group` with `where="0"` will be associated to all lights in the system (General).
+
+It's not mandatory to define `bus_light_group` Things: however adding them is useful to send commands to a set of lights or to track state of a room/all lights when one of the members changes state.
+It's also not mandatory to define `bus_light_group` Things to track state of a light when a room/group/general ON/OFF command is sent on the BUS (the light state will be updated in any case).
+
+**NOTE 1**
+For a `bus_light_group` Thing to be updated properly, at least one light Thing belonging to that room/group must also be configured.
+
 ## Channels
 
 ### Lighting, Automation, Basic/CEN/CEN+ Scenario Events, Dry Contact / IR Interfaces, Power and AUX channels
 
-| Channel Type ID (channel ID)            | Applies to Thing Type IDs                                     | Item Type     | Description                                                                                                   | Read/Write  |
-|-----------------------------------------|---------------------------------------------------------------|---------------|---------------------------------------------------------------------------------------------------------------|:-----------:|
-| `switch` or `switch_01`/`02` for Zigbee | `bus_on_off_switch`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device `ON` and `OFF`                                                                           |     R/W     |
-| `brightness`                            | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                         |     R/W     |
-| `shutter`                               | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))       |     R/W     |
-| `scenario`                              | `bus_scenario_control`                                        | String        | Trigger channel for Basic scenario events [see possible values](#scenario-channels)                           | R (TRIGGER) |
-| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`    | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#scenario-channels)                        | R (TRIGGER) |
-| `sensor`                                | `bus_dry_contact_ir`                                          | Switch        | If a Dry Contact Interface is `ON`/`OFF`, or if an IR Sensor is detecting movement (`ON`), or not  (`OFF`)    |      R      |
-| `power`                                 | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter                                                              |      R      |
-| `energyToday`                           | `bus_energy_meter`                                            | Number:Energy | Current day energy                                                                                            |      R      |
-| `energyThisMonth`                       | `bus_energy_meter`                                            | Number:Energy | Current month energy                                                                                          |      R      |
-| `aux`                                   | `bus_aux`                                                     | String        | Possible commands: `ON`, `OFF`, `TOGGLE`, `STOP`, `UP`, `DOWN`, `ENABLED`, `DISABLED`, `RESET_GEN`, `RESET_BI`, `RESET_TRI`. Only `ON` and `OFF` are supported for now |     R/W     |
+| Channel Type ID (channel ID)            | Applies to Thing Type IDs                                                        | Item Type     | Description                                                                                                                                                            | Read/Write  |
+|-----------------------------------------|----------------------------------------------------------------------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-:-:---------|
+| `switch` or `switch_01`/`02` for Zigbee | `bus_on_off_switch`, `bus_light_group`, `zb_on_off_switch`, `zb_on_off_switch2u` | Switch        | To switch the device (or group) `ON` and `OFF`                                                                                                                         | R/W         |
+| `brightness`                            | `bus_dimmer`, `zb_dimmer`                                                        | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                                                                                                                  | R/W         |
+| `shutter`                               | `bus_automation`                                                                 | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position))                                                                | R/W         |
+| `scenario`                              | `bus_scenario_control`                                                           | String        | Trigger channel for Basic scenario events [see possible values](#scenario-channels)                                                                                    | R (TRIGGER) |
+| `button#X`                              | `bus_cen_scenario_control`, `bus_cenplus_scenario_control`                       | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#scenario-channels)                                                                                 | R (TRIGGER) |
+| `sensor`                                | `bus_dry_contact_ir`                                                             | Switch        | If a Dry Contact Interface is `ON`/`OFF`, or if an IR Sensor is detecting movement (`ON`), or not  (`OFF`)                                                             | R           |
+| `power`                                 | `bus_energy_meter`                                                               | Number:Power  | The current active power usage from Energy Meter                                                                                                                       | R           |
+| `energyToday`                           | `bus_energy_meter`                                                               | Number:Energy | Current day energy                                                                                                                                                     | R           |
+| `energyThisMonth`                       | `bus_energy_meter`                                                               | Number:Energy | Current month energy                                                                                                                                                   | R           |
+| `aux`                                   | `bus_aux`                                                                        | String        | Possible commands: `ON`, `OFF`, `TOGGLE`, `STOP`, `UP`, `DOWN`, `ENABLED`, `DISABLED`, `RESET_GEN`, `RESET_BI`, `RESET_TRI`. Only `ON` and `OFF` are supported for now | R/W         |
 
 ### Alarm channels
 
@@ -375,6 +390,8 @@ MyHOME BUS/SCS gateway and Things configuration:
 
 ```java
 Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", passwd="abcde", port=20000, discoveryByActivation=false ] {
+      bus_light_group               ALL_lights           "All lights"               [ where="0" ]
+      bus_light_group               LR_room              "Living Room"              [ where="5" ]
       bus_on_off_switch             LR_switch            "Living Room Light"        [ where="51" ]
       bus_dimmer                    LR_dimmer            "Living Room Dimmer"       [ where="0311#4#01" ]
       bus_automation                LR_shutter           "Living Room Shutter"      [ where="93", shutterRun="20050"]
@@ -417,6 +434,8 @@ NOTE: lights, blinds and zones (thermostat) can be handled from personal assista
 In the following example some `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`) metadata were added as examples according to the [documentation for Google Assistant integration on openHAB](https://www.openhab.org/docs/ecosystem/google-assistant) and [the openHAB HomeKit Add-on documentation](https://www.openhab.org/addons/integrations/homekit/): see the specific openHAB documentation for updated configurations and more metadata options.
 
 ```java
+Switch              iALL_lights                 "All Lights"                                    { channel="openwebnet:bus_light_group:mybridge:ALL_lights:switch", ga="Light", homekit="Lighting" }
+Switch              iLR_room                    "Living Room"                                   { channel="openwebnet:bus_light_group:mybridge:LR_room:switch", ga="Light", homekit="Lighting" }
 Switch              iLR_switch                  "Light"                       (gLivingRoom)     { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light", homekit="Lighting" }
 Dimmer              iLR_dimmer                  "Dimmer [%.0f %%]"            (gLivingRoom)     { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness", ga="Light", homekit="Lighting" }
 
@@ -486,6 +505,8 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 {
     Frame label="Living Room"
     {
+          Default item=iALL_lights          icon="light"
+          Default item=iLR_room             icon="light"
           Default item=iLR_switch           icon="light"
           Default item=iLR_dimmer           icon="light"
           Default item=iLR_shutter

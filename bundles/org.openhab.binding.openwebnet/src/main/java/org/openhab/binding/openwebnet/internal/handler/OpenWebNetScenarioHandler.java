@@ -165,11 +165,11 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
+    protected Who getManagedWho() {
         if (isCENPlus || isDryContactIR) {
-            return Who.CEN_PLUS_SCENARIO_SCHEDULER.value().toString();
+            return Who.CEN_PLUS_SCENARIO_SCHEDULER;
         } else {
-            return Who.CEN_SCENARIO_SCHEDULER.value().toString();
+            return Who.CEN_SCENARIO_SCHEDULER;
         }
     }
 

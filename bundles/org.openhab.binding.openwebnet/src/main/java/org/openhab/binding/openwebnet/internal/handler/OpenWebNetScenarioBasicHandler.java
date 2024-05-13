@@ -48,8 +48,8 @@ public class OpenWebNetScenarioBasicHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.SCENARIO.value().toString();
+    protected Who getManagedWho() {
+        return Who.SCENARIO;
     }
 
     @Override
