@@ -84,7 +84,6 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
                     DiscoveryService.class.getName(), deviceDiscoveryService, new Hashtable<String, Object>()));
 
             return bridgeHandler;
-
         } else if (thingTypeUID.equals((DEVICE_THING_TYPE))) {
             return new OnectaDeviceHandler(thing);
         } else if (thingTypeUID.equals((GATEWAY_THING_TYPE))) {
