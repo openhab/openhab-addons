@@ -10,33 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.types;
+package org.openhab.binding.denonmarantz.internal.xml.dto.types;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.denonmarantz.internal.xml.adapters.OnOffAdapter;
+import org.openhab.binding.denonmarantz.internal.xml.adapters.StringAdapter;
 
 /**
- * Contains an On/Off value in the form of a boolean
+ * Contains a string value
  *
  * @author Jeroen Idserda - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@NonNullByDefault
-public class OnOffType {
+public class StringType {
 
-    @XmlJavaTypeAdapter(OnOffAdapter.class)
-    private @Nullable Boolean value;
+    @XmlJavaTypeAdapter(value = StringAdapter.class)
+    private String value;
 
-    public @Nullable Boolean getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(Boolean value) {
+    public void setValue(String value) {
         this.value = value;
     }
 }

@@ -16,7 +16,6 @@ import java.beans.Introspector;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -41,17 +40,14 @@ import org.eclipse.jetty.client.api.Result;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
 import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector;
-import org.openhab.binding.denonmarantz.internal.xml.entities.Deviceinfo;
-import org.openhab.binding.denonmarantz.internal.xml.entities.Main;
-import org.openhab.binding.denonmarantz.internal.xml.entities.ZoneStatus;
-import org.openhab.binding.denonmarantz.internal.xml.entities.ZoneStatusLite;
-import org.openhab.binding.denonmarantz.internal.xml.entities.commands.AppCommandRequest;
-import org.openhab.binding.denonmarantz.internal.xml.entities.commands.AppCommandResponse;
-import org.openhab.binding.denonmarantz.internal.xml.entities.commands.CommandRx;
-import org.openhab.binding.denonmarantz.internal.xml.entities.commands.CommandTx;
-import org.openhab.binding.denonmarantz.internal.xml.entities.types.OnOffType;
-import org.openhab.binding.denonmarantz.internal.xml.entities.types.StringType;
-import org.openhab.binding.denonmarantz.internal.xml.entities.types.VolumeType;
+import org.openhab.binding.denonmarantz.internal.xml.dto.Deviceinfo;
+import org.openhab.binding.denonmarantz.internal.xml.dto.Main;
+import org.openhab.binding.denonmarantz.internal.xml.dto.ZoneStatus;
+import org.openhab.binding.denonmarantz.internal.xml.dto.ZoneStatusLite;
+import org.openhab.binding.denonmarantz.internal.xml.dto.commands.AppCommandRequest;
+import org.openhab.binding.denonmarantz.internal.xml.dto.commands.AppCommandResponse;
+import org.openhab.binding.denonmarantz.internal.xml.dto.commands.CommandRx;
+import org.openhab.binding.denonmarantz.internal.xml.dto.commands.CommandTx;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,11 +192,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         Main statusMain = getDocument(url, Main.class);
         if (statusMain != null) {
-            OnOffType power = statusMain.getPower();
-            Boolean powerValue = power != null ? power.getValue() : null;
-            if (powerValue != null) {
-                state.setPower(powerValue);
-            }
+            state.setPower(statusMain.getPower().getValue());
         }
     }
 
@@ -210,29 +202,10 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         ZoneStatus mainZone = getDocument(url, ZoneStatus.class);
         if (mainZone != null) {
-            StringType inputFuncSelect = mainZone.getInputFuncSelect();
-            String inputFuncSelectValue = inputFuncSelect != null ? inputFuncSelect.getValue() : null;
-            if (inputFuncSelectValue != null) {
-                state.setInput(inputFuncSelectValue);
-            }
-
-            VolumeType masterVolume = mainZone.getMasterVolume();
-            BigDecimal masterVolumeValue = masterVolume != null ? masterVolume.getValue() : null;
-            if (masterVolumeValue != null) {
-                state.setMainVolume(masterVolumeValue);
-            }
-
-            OnOffType power = mainZone.getPower();
-            Boolean powerValue = power != null ? power.getValue() : null;
-            if (powerValue != null) {
-                state.setMainZonePower(powerValue);
-            }
-
-            OnOffType mute = mainZone.getMute();
-            Boolean muteValue = mute != null ? mute.getValue() : null;
-            if (muteValue != null) {
-                state.setMute(muteValue);
-            }
+            state.setInput(mainZone.getInputFuncSelect().getValue());
+            state.setMainVolume(mainZone.getMasterVolume().getValue());
+            state.setMainZonePower(mainZone.getPower().getValue());
+            state.setMute(mainZone.getMute().getValue());
 
             if (config.inputOptions == null) {
                 config.inputOptions = mainZone.getInputFuncList();
@@ -241,11 +214,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             if (mainZone.getSurrMode() == null) {
                 logger.debug("Unable to get the SURROUND_MODE. MainZone update may not be correct.");
             } else {
-                StringType surroundMode = mainZone.getSurrMode();
-                String surroundModeValue = surroundMode != null ? surroundMode.getValue() : null;
-                if (surroundModeValue != null) {
-                    state.setSurroundProgram(surroundModeValue);
-                }
+                state.setSurroundProgram(mainZone.getSurrMode().getValue());
             }
         }
     }
@@ -256,61 +225,25 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             logger.trace("Refreshing URL: {}", url);
             ZoneStatusLite zoneSecondary = getDocument(url, ZoneStatusLite.class);
             if (zoneSecondary != null) {
-                OnOffType power = zoneSecondary.getPower();
-                Boolean powerValue = power != null ? power.getValue() : null;
-
-                VolumeType masterVolume = zoneSecondary.getMasterVolume();
-                BigDecimal masterVolumeValue = masterVolume != null ? masterVolume.getValue() : null;
-
-                OnOffType mute = zoneSecondary.getMute();
-                Boolean muteValue = mute != null ? mute.getValue() : null;
-
-                StringType inputFuncSelect = zoneSecondary.getInputFuncSelect();
-                String inputFuncSelectValue = inputFuncSelect != null ? inputFuncSelect.getValue() : null;
-
                 switch (i) {
                     // maximum 2 secondary zones are supported
                     case 2:
-                        if (powerValue != null) {
-                            state.setZone2Power(powerValue);
-                        }
-                        if (masterVolumeValue != null) {
-                            state.setZone2Volume(masterVolumeValue);
-                        }
-                        if (muteValue != null) {
-                            state.setZone2Mute(muteValue);
-                        }
-                        if (inputFuncSelectValue != null) {
-                            state.setZone2Input(inputFuncSelectValue);
-                        }
+                        state.setZone2Power(zoneSecondary.getPower().getValue());
+                        state.setZone2Volume(zoneSecondary.getMasterVolume().getValue());
+                        state.setZone2Mute(zoneSecondary.getMute().getValue());
+                        state.setZone2Input(zoneSecondary.getInputFuncSelect().getValue());
                         break;
                     case 3:
-                        if (powerValue != null) {
-                            state.setZone3Power(powerValue);
-                        }
-                        if (masterVolumeValue != null) {
-                            state.setZone3Volume(masterVolumeValue);
-                        }
-                        if (muteValue != null) {
-                            state.setZone3Mute(muteValue);
-                        }
-                        if (inputFuncSelectValue != null) {
-                            state.setZone3Input(inputFuncSelectValue);
-                        }
+                        state.setZone3Power(zoneSecondary.getPower().getValue());
+                        state.setZone3Volume(zoneSecondary.getMasterVolume().getValue());
+                        state.setZone3Mute(zoneSecondary.getMute().getValue());
+                        state.setZone3Input(zoneSecondary.getInputFuncSelect().getValue());
                         break;
                     case 4:
-                        if (powerValue != null) {
-                            state.setZone4Power(powerValue);
-                        }
-                        if (masterVolumeValue != null) {
-                            state.setZone4Volume(masterVolumeValue);
-                        }
-                        if (muteValue != null) {
-                            state.setZone4Mute(muteValue);
-                        }
-                        if (inputFuncSelectValue != null) {
-                            state.setZone4Input(inputFuncSelectValue);
-                        }
+                        state.setZone4Power(zoneSecondary.getPower().getValue());
+                        state.setZone4Volume(zoneSecondary.getMasterVolume().getValue());
+                        state.setZone4Mute(zoneSecondary.getMute().getValue());
+                        state.setZone4Input(zoneSecondary.getInputFuncSelect().getValue());
                         break;
                 }
             }
@@ -348,10 +281,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         Deviceinfo deviceinfo = getDocument(url, Deviceinfo.class);
         if (deviceinfo != null) {
-            Integer deviceZones = deviceinfo.getDeviceZones();
-            if (deviceZones != null) {
-                config.setZoneCount(deviceZones);
-            }
+            config.setZoneCount(deviceinfo.getDeviceZones());
         }
 
         /**

@@ -10,33 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.types;
+package org.openhab.binding.denonmarantz.internal.xml.dto;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.denonmarantz.internal.xml.adapters.StringAdapter;
+import org.openhab.binding.denonmarantz.internal.xml.dto.types.OnOffType;
 
 /**
- * Contains a string value
+ * Holds information about the Main zone of the receiver
  *
  * @author Jeroen Idserda - Initial contribution
  */
+@XmlRootElement(name = "item")
 @XmlAccessorType(XmlAccessType.FIELD)
-@NonNullByDefault
-public class StringType {
+public class Main {
 
-    @XmlJavaTypeAdapter(value = StringAdapter.class)
-    private @Nullable String value;
+    private OnOffType power;
 
-    public @Nullable String getValue() {
-        return value;
+    public OnOffType getPower() {
+        return power;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setPower(OnOffType power) {
+        this.power = power;
     }
 }

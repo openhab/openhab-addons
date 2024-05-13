@@ -10,14 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Used to unmarshall {@code <list>} items of the {@code <functionrename>} CommandRX.
@@ -26,18 +23,17 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @XmlRootElement(name = "list")
 @XmlAccessorType(XmlAccessType.FIELD)
-@NonNullByDefault
 public class RenameSourceList {
 
-    private @Nullable String name;
+    private String name;
 
-    private @Nullable String rename;
+    private String rename;
 
-    public @Nullable String getName() {
+    public String getName() {
         return name;
     }
 
-    public @Nullable String getRename() {
+    public String getRename() {
         return rename;
     }
 }

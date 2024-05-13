@@ -10,42 +10,39 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities;
+package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Contains information about a Denon/Marantz receiver.
+ * Response to an {@link AppCommandRequest}, wraps a list of {@link CommandRx}
  *
  * @author Jeroen Idserda - Initial contribution
  */
-@XmlRootElement(name = "device_Info")
+@XmlRootElement(name = "rx")
 @XmlAccessorType(XmlAccessType.FIELD)
 @NonNullByDefault
-public class Deviceinfo {
+public class AppCommandResponse {
 
-    private @Nullable Integer deviceZones;
+    @XmlElement(name = "cmd")
+    private List<CommandRx> commands = new ArrayList<>();
 
-    private @Nullable String modelName;
-
-    public @Nullable Integer getDeviceZones() {
-        return deviceZones;
+    public AppCommandResponse() {
     }
 
-    public void setDeviceZones(Integer deviceZones) {
-        this.deviceZones = deviceZones;
+    public List<CommandRx> getCommands() {
+        return commands;
     }
 
-    public @Nullable String getModelName() {
-        return modelName;
-    }
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
+    public void setCommands(List<CommandRx> commands) {
+        this.commands = commands;
     }
 }

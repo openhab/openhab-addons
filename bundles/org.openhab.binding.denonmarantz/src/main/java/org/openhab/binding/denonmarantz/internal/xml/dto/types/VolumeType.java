@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.types;
+package org.openhab.binding.denonmarantz.internal.xml.dto.types;
 
 import java.math.BigDecimal;
 
@@ -18,8 +18,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.denonmarantz.internal.xml.adapters.VolumeAdapter;
 
 /**
@@ -28,13 +26,12 @@ import org.openhab.binding.denonmarantz.internal.xml.adapters.VolumeAdapter;
  * @author Jeroen Idserda - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@NonNullByDefault
 public class VolumeType {
 
     @XmlJavaTypeAdapter(value = VolumeAdapter.class)
-    private @Nullable BigDecimal value;
+    private BigDecimal value;
 
-    public @Nullable BigDecimal getValue() {
+    public BigDecimal getValue() {
         return value;
     }
 

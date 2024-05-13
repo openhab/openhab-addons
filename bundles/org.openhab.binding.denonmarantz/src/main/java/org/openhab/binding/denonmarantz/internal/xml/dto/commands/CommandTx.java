@@ -10,16 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Individual commands that can be sent to a Denon/Marantz receiver to request specific information.
@@ -28,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @XmlRootElement(name = "cmd")
 @XmlAccessorType(XmlAccessType.FIELD)
-@NonNullByDefault
 public class CommandTx {
 
     private static final String DEFAULT_ID = "1";
@@ -52,10 +48,10 @@ public class CommandTx {
     public static final CommandTx CMD_DELETED_SOURCE = of("GetDeletedSource");
 
     @XmlAttribute(name = "id")
-    private @Nullable String id;
+    private String id;
 
     @XmlValue
-    private @Nullable String value;
+    private String value;
 
     public CommandTx() {
     }
@@ -64,7 +60,7 @@ public class CommandTx {
         this.value = value;
     }
 
-    public @Nullable String getId() {
+    public String getId() {
         return id;
     }
 

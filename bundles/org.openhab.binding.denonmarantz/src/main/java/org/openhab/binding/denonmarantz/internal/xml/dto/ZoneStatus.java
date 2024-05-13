@@ -10,39 +10,46 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities;
+package org.openhab.binding.denonmarantz.internal.xml.dto;
+
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.denonmarantz.internal.xml.entities.types.OnOffType;
-import org.openhab.binding.denonmarantz.internal.xml.entities.types.StringType;
-import org.openhab.binding.denonmarantz.internal.xml.entities.types.VolumeType;
+import org.openhab.binding.denonmarantz.internal.xml.dto.types.OnOffType;
+import org.openhab.binding.denonmarantz.internal.xml.dto.types.StringType;
+import org.openhab.binding.denonmarantz.internal.xml.dto.types.VolumeType;
 
 /**
- * Holds limited information about the secondary zones of the receiver
+ * Holds information about the secondary zones of the receiver
  *
  * @author Jeroen Idserda - Initial contribution
  */
 @XmlRootElement(name = "item")
 @XmlAccessorType(XmlAccessType.FIELD)
-@NonNullByDefault
-public class ZoneStatusLite {
+public class ZoneStatus {
 
-    private @Nullable OnOffType power;
+    private OnOffType power;
 
-    private @Nullable StringType inputFuncSelect;
+    @XmlElementWrapper(name = "inputFuncList")
+    @XmlElement(name = "value")
+    private List<String> inputFunctions;
 
-    private @Nullable StringType volumeDisplay;
+    private StringType inputFuncSelect;
 
-    private @Nullable VolumeType masterVolume;
+    private StringType volumeDisplay;
 
-    private @Nullable OnOffType mute;
+    private StringType surrMode;
 
-    public @Nullable OnOffType getPower() {
+    private VolumeType masterVolume;
+
+    private OnOffType mute;
+
+    public OnOffType getPower() {
         return power;
     }
 
@@ -50,7 +57,7 @@ public class ZoneStatusLite {
         this.power = power;
     }
 
-    public @Nullable StringType getInputFuncSelect() {
+    public StringType getInputFuncSelect() {
         return inputFuncSelect;
     }
 
@@ -58,7 +65,7 @@ public class ZoneStatusLite {
         this.inputFuncSelect = inputFuncSelect;
     }
 
-    public @Nullable StringType getVolumeDisplay() {
+    public StringType getVolumeDisplay() {
         return volumeDisplay;
     }
 
@@ -66,7 +73,15 @@ public class ZoneStatusLite {
         this.volumeDisplay = volumeDisplay;
     }
 
-    public @Nullable VolumeType getMasterVolume() {
+    public StringType getSurrMode() {
+        return surrMode;
+    }
+
+    public void setSurrMode(StringType surrMode) {
+        this.surrMode = surrMode;
+    }
+
+    public VolumeType getMasterVolume() {
         return masterVolume;
     }
 
@@ -74,11 +89,15 @@ public class ZoneStatusLite {
         this.masterVolume = masterVolume;
     }
 
-    public @Nullable OnOffType getMute() {
+    public OnOffType getMute() {
         return mute;
     }
 
     public void setMute(OnOffType mute) {
         this.mute = mute;
+    }
+
+    public List<String> getInputFuncList() {
+        return this.inputFunctions;
     }
 }

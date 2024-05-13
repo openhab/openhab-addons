@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -31,52 +31,51 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @XmlRootElement(name = "cmd")
 @XmlAccessorType(XmlAccessType.FIELD)
-@NonNullByDefault
 public class CommandRx {
 
-    private @Nullable String zone1;
+    private String zone1;
 
-    private @Nullable String zone2;
+    private String zone2;
 
-    private @Nullable String zone3;
+    private String zone3;
 
-    private @Nullable String zone4;
+    private String zone4;
 
-    private @Nullable String volume;
+    private String volume;
 
-    private @Nullable String disptype;
+    private String disptype;
 
-    private @Nullable String dispvalue;
+    private String dispvalue;
 
-    private @Nullable String mute;
+    private String mute;
 
-    private @Nullable String type;
+    private String type;
 
     @XmlElement(name = "text")
     private List<Text> texts = new ArrayList<>();
 
     @XmlElementWrapper(name = "functionrename")
     @XmlElement(name = "list")
-    private @Nullable List<RenameSourceList> renameSourceLists;
+    private List<RenameSourceList> renameSourceLists;
 
     @XmlElementWrapper(name = "functiondelete")
     @XmlElement(name = "list")
-    private @Nullable List<DeletedSourceList> deletedSourceLists;
+    private List<DeletedSourceList> deletedSourceLists;
 
-    private @Nullable String playstatus;
+    private String playstatus;
 
-    private @Nullable String playcontents;
+    private String playcontents;
 
-    private @Nullable String repeat;
+    private String repeat;
 
-    private @Nullable String shuffle;
+    private String shuffle;
 
-    private @Nullable String source;
+    private String source;
 
     public CommandRx() {
     }
 
-    public @Nullable String getZone1() {
+    public String getZone1() {
         return zone1;
     }
 
@@ -84,7 +83,7 @@ public class CommandRx {
         this.zone1 = zone1;
     }
 
-    public @Nullable String getZone2() {
+    public String getZone2() {
         return zone2;
     }
 
@@ -92,7 +91,7 @@ public class CommandRx {
         this.zone2 = zone2;
     }
 
-    public @Nullable String getZone3() {
+    public String getZone3() {
         return zone3;
     }
 
@@ -100,7 +99,7 @@ public class CommandRx {
         this.zone3 = zone3;
     }
 
-    public @Nullable String getZone4() {
+    public String getZone4() {
         return zone4;
     }
 
@@ -108,7 +107,7 @@ public class CommandRx {
         this.zone4 = zone4;
     }
 
-    public @Nullable String getVolume() {
+    public String getVolume() {
         return volume;
     }
 
@@ -116,7 +115,7 @@ public class CommandRx {
         this.volume = volume;
     }
 
-    public @Nullable String getDisptype() {
+    public String getDisptype() {
         return disptype;
     }
 
@@ -124,7 +123,7 @@ public class CommandRx {
         this.disptype = disptype;
     }
 
-    public @Nullable String getDispvalue() {
+    public String getDispvalue() {
         return dispvalue;
     }
 
@@ -132,7 +131,7 @@ public class CommandRx {
         this.dispvalue = dispvalue;
     }
 
-    public @Nullable String getMute() {
+    public String getMute() {
         return mute;
     }
 
@@ -140,7 +139,7 @@ public class CommandRx {
         this.mute = mute;
     }
 
-    public @Nullable String getType() {
+    public String getType() {
         return type;
     }
 
@@ -148,7 +147,7 @@ public class CommandRx {
         this.type = type;
     }
 
-    public @Nullable String getPlaystatus() {
+    public String getPlaystatus() {
         return playstatus;
     }
 
@@ -156,7 +155,7 @@ public class CommandRx {
         this.playstatus = playstatus;
     }
 
-    public @Nullable String getPlaycontents() {
+    public String getPlaycontents() {
         return playcontents;
     }
 
@@ -164,7 +163,7 @@ public class CommandRx {
         this.playcontents = playcontents;
     }
 
-    public @Nullable String getRepeat() {
+    public String getRepeat() {
         return repeat;
     }
 
@@ -172,7 +171,7 @@ public class CommandRx {
         this.repeat = repeat;
     }
 
-    public @Nullable String getShuffle() {
+    public String getShuffle() {
         return shuffle;
     }
 
@@ -180,7 +179,7 @@ public class CommandRx {
         this.shuffle = shuffle;
     }
 
-    public @Nullable String getSource() {
+    public String getSource() {
         return source;
     }
 
@@ -188,7 +187,7 @@ public class CommandRx {
         this.source = source;
     }
 
-    public @Nullable String getText(String key) {
+    public @Nullable String getText(@NonNull String key) {
         for (Text text : texts) {
             if (key.equals(text.getId())) {
                 return text.getValue();
@@ -197,11 +196,11 @@ public class CommandRx {
         return null;
     }
 
-    public @Nullable List<RenameSourceList> getRenameSourceLists() {
+    public List<RenameSourceList> getRenameSourceLists() {
         return renameSourceLists;
     }
 
-    public @Nullable List<DeletedSourceList> getDeletedSourceLists() {
+    public List<DeletedSourceList> getDeletedSourceLists() {
         return deletedSourceLists;
     }
 }

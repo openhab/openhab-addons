@@ -10,16 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Holds text values with a certain id
@@ -28,19 +25,18 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @XmlRootElement(name = "text")
 @XmlAccessorType(XmlAccessType.FIELD)
-@NonNullByDefault
 public class Text {
 
     @XmlAttribute(name = "id")
-    private @Nullable String id;
+    private String id;
 
     @XmlValue
-    private @Nullable String value;
+    private String value;
 
     public Text() {
     }
 
-    public @Nullable String getId() {
+    public String getId() {
         return id;
     }
 
@@ -48,7 +44,7 @@ public class Text {
         this.id = id;
     }
 
-    public @Nullable String getValue() {
+    public String getValue() {
         return value;
     }
 

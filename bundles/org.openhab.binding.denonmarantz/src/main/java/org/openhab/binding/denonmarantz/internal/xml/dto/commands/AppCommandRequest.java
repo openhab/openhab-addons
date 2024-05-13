@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.denonmarantz.internal.xml.entities.commands;
+package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,26 +23,36 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Response to an {@link AppCommandRequest}, wraps a list of {@link CommandRx}
+ * Wrapper for a list of {@link CommandTx}
  *
  * @author Jeroen Idserda - Initial contribution
  */
-@XmlRootElement(name = "rx")
+@XmlRootElement(name = "tx")
 @XmlAccessorType(XmlAccessType.FIELD)
 @NonNullByDefault
-public class AppCommandResponse {
+public class AppCommandRequest {
 
     @XmlElement(name = "cmd")
-    private List<CommandRx> commands = new ArrayList<>();
+    private List<CommandTx> commands = new ArrayList<>();
 
-    public AppCommandResponse() {
+    public AppCommandRequest() {
     }
 
-    public List<CommandRx> getCommands() {
+    public List<CommandTx> getCommands() {
         return commands;
     }
 
-    public void setCommands(List<CommandRx> commands) {
+    public void setCommands(List<CommandTx> commands) {
         this.commands = commands;
+    }
+
+    public AppCommandRequest add(CommandTx command) {
+        commands.add(command);
+        return this;
+    }
+
+    public static AppCommandRequest of(CommandTx command) {
+        AppCommandRequest tx = new AppCommandRequest();
+        return tx.add(command);
     }
 }
