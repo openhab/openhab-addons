@@ -90,10 +90,10 @@ public class IoTaWattClient {
             final StatusResponse statusResponse = gson.fromJson(content, StatusResponse.class);
             logger.trace("statusResponse: {}", statusResponse);
             if (statusResponse.inputs() == null) {
-                logger.error("List of inputs in response from IoTaWatt is null on device {}.", hostname);
+                logger.warn("List of inputs in response from IoTaWatt is null on device {}.", hostname);
             }
             if (statusResponse.outputs() == null) {
-                logger.error("List of outputs in response from IoTaWatt is null on device {}.", hostname);
+                logger.warn("List of outputs in response from IoTaWatt is null on device {}.", hostname);
             }
             // noinspection ConstantConditions
             return Optional.ofNullable(statusResponse);
