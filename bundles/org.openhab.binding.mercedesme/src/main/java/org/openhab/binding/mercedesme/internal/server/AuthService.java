@@ -102,14 +102,34 @@ public class AuthService {
 
     /**
      *
-     * @return guid from request to create password in next step
+     * @return guid from request to create token in next step
      */
     public String requestPin() {
+        String configUrl = Utils.getAuthConfigURL(config.region);
+        String sessionId = UUID.randomUUID().toString();
+        Request configRequest = httpClient.newRequest(configUrl);
+        addBasicHeaders(configRequest);
+        configRequest.header("X-Trackingid", UUID.randomUUID().toString());
+        configRequest.header("X-Sessionid", sessionId);
+        try {
+            ContentResponse cr = configRequest.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
+            if (cr.getStatus() == 200) {
+                logger.trace("{} Config Request PIN fine {} {}", prefix(), cr.getStatus(), cr.getContentAsString());
+            } else {
+                logger.trace("{} Failed to request config for pin {} {}", prefix(), cr.getStatus(),
+                        cr.getContentAsString());
+                return Constants.NOT_SET;
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.trace("{} Failed to request config for pin {}", prefix(), e.getMessage());
+            return Constants.NOT_SET;
+        }
+
         String url = Utils.getAuthURL(config.region);
         Request req = httpClient.POST(url);
         addBasicHeaders(req);
         req.header("X-Trackingid", UUID.randomUUID().toString());
-        req.header("X-Sessionid", UUID.randomUUID().toString());
+        req.header("X-Sessionid", sessionId);
 
         PINRequest pr = new PINRequest(config.email, locale.getCountry());
         req.header(HttpHeader.CONTENT_TYPE, "application/json");

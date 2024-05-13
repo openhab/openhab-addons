@@ -256,6 +256,10 @@ public class Utils {
         }
     }
 
+    public static String getAuthConfigURL(String region) {
+        return getRestAPIServer(region) + "/v1/config";
+    }
+
     public static String getAuthURL(String region) {
         return getRestAPIServer(region) + "/v1/login";
     }
