@@ -1,16 +1,9 @@
 package org.openhab.binding.onecta.internal.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.Mockito.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.onecta.internal.api.dto.commands.CommandFloat;
-import org.openhab.binding.onecta.internal.api.dto.commands.CommandString;
-import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
 
 public class OnectaPropertiesTest {
 
@@ -18,7 +11,7 @@ public class OnectaPropertiesTest {
     final Enums.ManagementPoint MANAGEMENTPOINTTYPE = Enums.ManagementPoint.CLIMATECONTROL;
 
     @Test
-    public void startScanTest()  {
+    public void startScanTest() {
 
         assertEquals(
                 "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6",
@@ -40,82 +33,55 @@ public class OnectaPropertiesTest {
                 "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/targetTemperature",
                 OnectaProperties.getTargetTemperaturUrl(UNITID, MANAGEMENTPOINTTYPE.getValue()));
 
-        assertEquals(
-                20f,
-                OnectaProperties.getTargetTemperaturCommand(20f).value);
-        assertEquals(
-                null,
-                OnectaProperties.getTargetTemperaturCommand(20f).path);
+        assertEquals(20f, OnectaProperties.getTargetTemperaturCommand(20f).value);
+        assertEquals(null, OnectaProperties.getTargetTemperaturCommand(20f).path);
 
-        assertEquals(
-                "dry",
-                OnectaProperties.getOperationModeCommand(Enums.OperationMode.DEHUMIDIFIER).value);
-        assertEquals(
-                null,
-                OnectaProperties.getOperationModeCommand(Enums.OperationMode.DEHUMIDIFIER).path);
+        assertEquals("dry", OnectaProperties.getOperationModeCommand(Enums.OperationMode.DEHUMIDIFIER).value);
+        assertEquals(null, OnectaProperties.getOperationModeCommand(Enums.OperationMode.DEHUMIDIFIER).path);
 
         assertEquals(
                 "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/temperatureControl",
                 OnectaProperties.getTemperatureControlUrl(UNITID, MANAGEMENTPOINTTYPE.getValue()));
 
-        assertEquals(
-                20f,
-                OnectaProperties.getTemperatureRoomControlCommand(20f,Enums.OperationMode.COLD).value);
-        assertEquals(
-                "/operationModes/cooling/setpoints/roomTemperature",
-                OnectaProperties.getTemperatureRoomControlCommand(20f,Enums.OperationMode.COLD).path);
+        assertEquals(20f, OnectaProperties.getTemperatureRoomControlCommand(20f, Enums.OperationMode.COLD).value);
+        assertEquals("/operationModes/cooling/setpoints/roomTemperature",
+                OnectaProperties.getTemperatureRoomControlCommand(20f, Enums.OperationMode.COLD).path);
 
-        assertEquals(
-                20f,
-                OnectaProperties.getSetpointLeavingWaterOffsetCommand(20f,Enums.OperationMode.COLD).value);
-        assertEquals(
-                "/operationModes/cooling/setpoints/leavingWaterOffset",
-                OnectaProperties.getSetpointLeavingWaterOffsetCommand(20f,Enums.OperationMode.COLD).path);
+        assertEquals(20f, OnectaProperties.getSetpointLeavingWaterOffsetCommand(20f, Enums.OperationMode.COLD).value);
+        assertEquals("/operationModes/cooling/setpoints/leavingWaterOffset",
+                OnectaProperties.getSetpointLeavingWaterOffsetCommand(20f, Enums.OperationMode.COLD).path);
 
-        assertEquals(
-                20f,
-                OnectaProperties.getSetpointLeavingWaterTemperatureCommand(20f,Enums.OperationMode.HEAT).value);
-        assertEquals(
-                "/operationModes/heating/setpoints/leavingWaterTemperature",
-                OnectaProperties.getSetpointLeavingWaterTemperatureCommand(20f,Enums.OperationMode.HEAT).path);
+        assertEquals(20f,
+                OnectaProperties.getSetpointLeavingWaterTemperatureCommand(20f, Enums.OperationMode.HEAT).value);
+        assertEquals("/operationModes/heating/setpoints/leavingWaterTemperature",
+                OnectaProperties.getSetpointLeavingWaterTemperatureCommand(20f, Enums.OperationMode.HEAT).path);
 
-        assertEquals(
-                20f,
-                OnectaProperties.getTemperatureHotWaterControlCommand(20f,Enums.OperationMode.AUTO).value);
-        assertEquals(
-                "/operationModes/auto/setpoints/domesticHotWaterTemperature",
-                OnectaProperties.getTemperatureHotWaterControlCommand(20f,Enums.OperationMode.AUTO).path);
+        assertEquals(20f, OnectaProperties.getTemperatureHotWaterControlCommand(20f, Enums.OperationMode.AUTO).value);
+        assertEquals("/operationModes/auto/setpoints/domesticHotWaterTemperature",
+                OnectaProperties.getTemperatureHotWaterControlCommand(20f, Enums.OperationMode.AUTO).path);
 
         assertEquals(
                 "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/fanControl",
                 OnectaProperties.getTFanControlUrl(UNITID, MANAGEMENTPOINTTYPE.getValue()));
 
-        assertEquals(
-                "fixed",
+        assertEquals("fixed",
                 OnectaProperties.getTFanSpeedCurrentCommand(Enums.OperationMode.FAN, Enums.FanSpeed.LEVEL_1).value);
-        assertEquals(
-                "/operationModes/fanOnly/fanSpeed/currentMode",
+        assertEquals("/operationModes/fanOnly/fanSpeed/currentMode",
                 OnectaProperties.getTFanSpeedCurrentCommand(Enums.OperationMode.FAN, Enums.FanSpeed.LEVEL_1).path);
 
-        assertEquals(
-                1,
+        assertEquals(1,
                 OnectaProperties.getTFanSpeedFixedCommand(Enums.OperationMode.FAN, Enums.FanSpeed.LEVEL_1).value);
-        assertEquals(
-                "/operationModes/fanOnly/fanSpeed/modes/fixed",
+        assertEquals("/operationModes/fanOnly/fanSpeed/modes/fixed",
                 OnectaProperties.getTFanSpeedFixedCommand(Enums.OperationMode.FAN, Enums.FanSpeed.LEVEL_1).path);
 
-        assertEquals(
-                "stop",
-                OnectaProperties.getTFanDirectionHorCommand(Enums.OperationMode.FAN, Enums.FanMovementHor.STOPPED).value);
-        assertEquals(
-                "/operationModes/fanOnly/fanDirection/horizontal/currentMode",
-                OnectaProperties.getTFanDirectionHorCommand(Enums.OperationMode.FAN, Enums.FanMovementHor.STOPPED).path);
+        assertEquals("stop", OnectaProperties.getTFanDirectionHorCommand(Enums.OperationMode.FAN,
+                Enums.FanMovementHor.STOPPED).value);
+        assertEquals("/operationModes/fanOnly/fanDirection/horizontal/currentMode", OnectaProperties
+                .getTFanDirectionHorCommand(Enums.OperationMode.FAN, Enums.FanMovementHor.STOPPED).path);
 
-        assertEquals(
-                "swing",
+        assertEquals("swing",
                 OnectaProperties.getTFanDirectionVerCommand(Enums.OperationMode.FAN, Enums.FanMovementVer.SWING).value);
-        assertEquals(
-                "/operationModes/fanOnly/fanDirection/vertical/currentMode",
+        assertEquals("/operationModes/fanOnly/fanDirection/vertical/currentMode",
                 OnectaProperties.getTFanDirectionVerCommand(Enums.OperationMode.FAN, Enums.FanMovementVer.SWING).path);
 
         assertEquals(
@@ -130,18 +96,10 @@ public class OnectaPropertiesTest {
                 "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6/management-points/climateControl/characteristics/demandControl",
                 OnectaProperties.getTDemandControlUrl(UNITID, MANAGEMENTPOINTTYPE.getValue()));
 
-        assertEquals(
-                "scheduled",
-                OnectaProperties.getTDemandControlCommand(Enums.DemandControl.SCHEDULED).value);
-        assertEquals(
-                "/currentMode",
-                OnectaProperties.getTDemandControlCommand(Enums.DemandControl.SCHEDULED).path);
+        assertEquals("scheduled", OnectaProperties.getTDemandControlCommand(Enums.DemandControl.SCHEDULED).value);
+        assertEquals("/currentMode", OnectaProperties.getTDemandControlCommand(Enums.DemandControl.SCHEDULED).path);
 
-        assertEquals(
-                12,
-                OnectaProperties.getTDemandControlFixedValueCommand(12).value);
-        assertEquals(
-                "/modes/fixed",
-                OnectaProperties.getTDemandControlFixedValueCommand(12).path);
+        assertEquals(12, OnectaProperties.getTDemandControlFixedValueCommand(12).value);
+        assertEquals("/modes/fixed", OnectaProperties.getTDemandControlFixedValueCommand(12).path);
     }
 }
