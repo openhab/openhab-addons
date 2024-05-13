@@ -74,8 +74,7 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
         dataTransService.refreshUnit();
 
         if (dataTransService.isAvailable()) {
-
-            getThing().setProperty(PROPERTY_IDU_NAME, dataTransService.getModelInfo());
+            getThing().setProperty(PROPERTY_IDU_NAME, getModelInfo().toString());
 
             updateState(CHANNEL_IDU_MODELINFO, getModelInfo());
             updateState(CHANNEL_IDU_SOFTWAREVERSION, getSoftwareVerion());
@@ -85,7 +84,6 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
             updateState(CHANNEL_IDU_DELTAD, getDeltaD());
             updateState(CHANNEL_IDU_HEATEXCHANGETEMP, getHeatExchangerTemperature());
             updateState(CHANNEL_IDU_SUCTIONTEMP, getSuctionTemperature());
-
         } else {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, DOES_NOT_EXISTS);
             getThing().setProperty(PROPERTY_IDU_NAME, DOES_NOT_EXISTS);
