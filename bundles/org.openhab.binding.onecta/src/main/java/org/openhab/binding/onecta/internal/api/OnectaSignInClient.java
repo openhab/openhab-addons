@@ -61,6 +61,7 @@ public class OnectaSignInClient {
     private String password = "";
 
     private RespAuthenticationRoot respAuthenticationRoot = new RespAuthenticationRoot();
+    private OnectaConfiguration onectaConfiguration = new OnectaConfiguration();
 
     public String getToken() {
         return respAuthenticationRoot.getAuthenticationResult().getAccessToken();
@@ -96,7 +97,7 @@ public class OnectaSignInClient {
         this.userId = userId;
         this.password = password;
 
-        HttpClient httpClient = OnectaConfiguration.getHttpClient();
+        HttpClient httpClient = onectaConfiguration.getHttpClient();
 
         try {
             logger.info("Start logon to Daikin : " + userId);
@@ -275,7 +276,7 @@ public class OnectaSignInClient {
 
     public void fetchAccessToken() throws DaikinCommunicationException {
         logger.debug("Refresh token.");
-        HttpClient httpClient = OnectaConfiguration.getHttpClient();
+        HttpClient httpClient = onectaConfiguration.getHttpClient();
 
         respAuthenticationRoot = new RespAuthenticationRoot();
         ReqAuthenticationRoot reqAuthenticationRoot = new ReqAuthenticationRoot(OPENID_CLIENT_ID, this.refreshToken);

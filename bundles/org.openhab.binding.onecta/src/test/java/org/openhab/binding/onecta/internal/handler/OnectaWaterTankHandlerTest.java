@@ -24,6 +24,11 @@ import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.UnDefType;
 
+/**
+ *
+ * @author Alexander Drent - Initial contribution
+ *
+ */
 @ExtendWith(MockitoExtension.class)
 public class OnectaWaterTankHandlerTest {
 

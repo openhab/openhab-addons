@@ -35,6 +35,11 @@ import org.openhab.core.types.UnDefType;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+/**
+ *
+ * @author Alexander Drent - Initial contribution
+ *
+ */
 @ExtendWith(MockitoExtension.class)
 public class OnectaDeviceHandlerTest {
 
