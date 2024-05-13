@@ -125,7 +125,7 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.AUX.value().toString();
+    protected Who getManagedWho() {
+        return Who.AUX;
     }
 }

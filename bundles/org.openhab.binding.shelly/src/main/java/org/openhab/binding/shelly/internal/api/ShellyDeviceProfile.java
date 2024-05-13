@@ -197,8 +197,8 @@ public class ShellyDeviceProfile {
             return;
         }
 
-        isGen2 = isGeneration2(thingType);
         isBlu = isBluSeries(thingType); // e.g. SBBT for BLU Button
+        isGen2 = isGeneration2(thingType) || isBlu;
 
         String type = getString(device.type);
         isDimmer = type.equalsIgnoreCase(SHELLYDT_DIMMER) || type.equalsIgnoreCase(SHELLYDT_DIMMER2)
@@ -219,7 +219,7 @@ public class ShellyDeviceProfile {
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
         boolean isUNI = thingType.equals(THING_TYPE_SHELLYUNI_STR);
         isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR)
-                || thingType.equals(THING_TYPE_SHELLYBLUHT_STR);
+                || thingType.equals(THING_TYPE_SHELLYPLUSHTG3_STR) || thingType.equals(THING_TYPE_SHELLYBLUHT_STR);
         isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR) || thingType.equals(THING_TYPE_SHELLYDOORWIN2_STR)
                 || thingType.equals(THING_TYPE_SHELLYBLUDW_STR);
         isMotion = thingType.startsWith(THING_TYPE_SHELLYMOTION_STR)
@@ -405,7 +405,7 @@ public class ShellyDeviceProfile {
 
     public static boolean isGeneration2(String thingType) {
         return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || thingType.contains("mini")
-                || isBluSeries(thingType);
+                || (thingType.startsWith("shelly") && thingType.contains("g3")) || isBluSeries(thingType);
     }
 
     public static boolean isBluSeries(String thingType) {
