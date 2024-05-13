@@ -40,16 +40,16 @@ public class FetchDataService {
     static final String INPUT_CHANNEL_ID_PREFIX = "input_";
     static final String OUTPUT_CHANNEL_ID_PREFIX = "output_";
 
-    private final DeviceHandlerCallback thingHandler;
+    private final DeviceHandlerCallback deviceHandlerCallback;
     private @Nullable IoTaWattClient ioTaWattClient;
 
     /**
      * Creates a FetchDataService.
      * 
-     * @param thingHandler The ThingHandler used for callbacks
+     * @param deviceHandlerCallback The ThingHandler used for callbacks
      */
-    public FetchDataService(DeviceHandlerCallback thingHandler) {
-        this.thingHandler = thingHandler;
+    public FetchDataService(DeviceHandlerCallback deviceHandlerCallback) {
+        this.deviceHandlerCallback = deviceHandlerCallback;
     }
 
     /**
@@ -66,27 +66,28 @@ public class FetchDataService {
      * Handles error cases and updates the Thing accordingly.
      */
     public void pollDevice() {
-        Optional.ofNullable(ioTaWattClient).ifPresentOrElse(this::pollDevice,
-                () -> thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR));
+        Optional.ofNullable(ioTaWattClient).ifPresentOrElse(this::pollDevice, () -> deviceHandlerCallback
+                .updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR));
     }
 
     private void pollDevice(IoTaWattClient client) {
         try {
             final Optional<StatusResponse> statusResponse = client.fetchStatus();
             if (statusResponse.isPresent()) {
-                thingHandler.updateStatus(ThingStatus.ONLINE);
+                deviceHandlerCallback.updateStatus(ThingStatus.ONLINE);
                 updateChannels(statusResponse.get());
             } else {
-                thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (IoTaWattClientInterruptedException e) {
-            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY);
+            deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY);
         } catch (IoTaWattClientCommunicationException e) {
-            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         } catch (IoTaWattClientConfigurationException e) {
-            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, getErrorMessage(e));
+            deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    getErrorMessage(e));
         } catch (IoTaWattClientException e) {
-            thingHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, getErrorMessage(e));
+            deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, getErrorMessage(e));
         }
     }
 
@@ -115,12 +116,12 @@ public class FetchDataService {
     private void updateOutputs(List<StatusResponse.Output> outputs) {
         int index = 0;
         for (final StatusResponse.Output output : outputs) {
-            final ChannelUID channelUID = new ChannelUID(thingHandler.getThingUID(),
+            final ChannelUID channelUID = new ChannelUID(deviceHandlerCallback.getThingUID(),
                     OUTPUT_CHANNEL_ID_PREFIX + toTwoDigits(index++) + "#" + output.name());
             final Float value = output.value();
             final IoTaWattChannelType ioTaWattChannelType = IoTaWattChannelType.fromOutputUnits(output.units());
-            thingHandler.addChannelIfNotExists(channelUID, ioTaWattChannelType);
-            thingHandler.updateState(channelUID, new QuantityType<>(value, ioTaWattChannelType.unit));
+            deviceHandlerCallback.addChannelIfNotExists(channelUID, ioTaWattChannelType);
+            deviceHandlerCallback.updateState(channelUID, new QuantityType<>(value, ioTaWattChannelType.unit));
             // TODO removed channels are not in array anymore
         }
     }
@@ -129,14 +130,14 @@ public class FetchDataService {
             IoTaWattChannelType ioTaWattChannelType) {
         final ChannelUID channelUID = getInputChannelUID(channelNumber, ioTaWattChannelType);
         if (value != null) {
-            thingHandler.addChannelIfNotExists(channelUID, ioTaWattChannelType);
-            thingHandler.updateState(channelUID, new QuantityType<>(value, ioTaWattChannelType.unit));
+            deviceHandlerCallback.addChannelIfNotExists(channelUID, ioTaWattChannelType);
+            deviceHandlerCallback.updateState(channelUID, new QuantityType<>(value, ioTaWattChannelType.unit));
             // TODO removed channels are not in array anymore
         }
     }
 
     private ChannelUID getInputChannelUID(int channelNumber, IoTaWattChannelType ioTaWattChannelType) {
-        return new ChannelUID(thingHandler.getThingUID(),
+        return new ChannelUID(deviceHandlerCallback.getThingUID(),
                 INPUT_CHANNEL_ID_PREFIX + toTwoDigits(channelNumber) + "#" + ioTaWattChannelType.channelIdSuffix);
     }
 
