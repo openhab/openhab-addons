@@ -48,6 +48,7 @@ Thing iotawatt:iotawatt:iotawatt1 "IoTaWatt 1" [ hostname="192.168.1.10" ] {
  Channels:
   Type voltage      : input_00#voltage "Voltage"
   Type frequency    : input_00#frequency "AC Frequency"
+  Type phase        : input_00#phase "Phase"
   Type watts        : input_01#watts "Power Consumption"
   Type power-factor : input_01#power-factor "Power Factor"
   Type phase        : input_01#phase "Phase"
@@ -66,11 +67,12 @@ Thing iotawatt:iotawatt:iotawatt1 "IoTaWatt 1" [ hostname="192.168.1.10" ] {
 ### Items
 
 ```java
-Number input_watts "Watts"               { channel="iotawatt:iotawatt:iotawatt1:input_01#watts" }
 Number input_voltage "Voltage"           { channel="iotawatt:iotawatt:iotawatt1:input_00#voltage"  }
 Number input_frequency "AC Frequency"    { channel="iotawatt:iotawatt:iotawatt1:input_00#frequency"  }
+Number input_phase0 "Phase"               { channel="iotawatt:iotawatt:iotawatt1:input_00#phase" }
+Number input_watts "Watts"               { channel="iotawatt:iotawatt:iotawatt1:input_01#watts" }
 Number input_power_factor "Power Factor" { channel="iotawatt:iotawatt:iotawatt1:input_01#power-factor" }
-Number input_phase "Phase"               { channel="iotawatt:iotawatt:iotawatt1:input_01#phase" }
+Number input_phase1 "Phase"               { channel="iotawatt:iotawatt:iotawatt1:input_01#phase" }
 
 Number output_amps "Amps"                               { channel="iotawatt:iotawatt:iotawatt1:output_00#Input_1_amps" }
 Number output_frequency "Frequency"                     { channel="iotawatt:iotawatt:iotawatt1:output_01#Input_1_hz" }
