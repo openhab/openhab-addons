@@ -31,7 +31,7 @@ public class DataTransportService {
     }
 
     public Boolean isAvailable() {
-        return this.unit != null;
+        return this.unit != null && getManagementPoint(this.managementPointType) != null;
     }
 
     public ManagementPoint getManagementPoint(Enums.ManagementPoint managementPoint) {
