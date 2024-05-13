@@ -123,7 +123,7 @@ public class DataTransportService {
                 case "SWING_WINDNICE":
                     return Enums.FanMovement.VERTICAL_AND_HORIZONTAL_EXTRA;
                 default:
-                    throw new IllegalArgumentException("Invalid day of the week: ");
+                    throw new IllegalArgumentException("Invalid fan direc" + "tion: ");
             }
         } catch (Exception e) {
             return Enums.FanMovement.UNKNOWN;
