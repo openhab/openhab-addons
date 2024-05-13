@@ -18,6 +18,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Holds text values with a certain id
  *
@@ -25,18 +28,19 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlRootElement(name = "text")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class Text {
 
     @XmlAttribute(name = "id")
-    private String id;
+    private @Nullable String id;
 
     @XmlValue
-    private String value;
+    private @Nullable String value;
 
     public Text() {
     }
 
-    public String getId() {
+    public @Nullable String getId() {
         return id;
     }
 
@@ -44,7 +48,7 @@ public class Text {
         this.id = id;
     }
 
-    public String getValue() {
+    public @Nullable String getValue() {
         return value;
     }
 

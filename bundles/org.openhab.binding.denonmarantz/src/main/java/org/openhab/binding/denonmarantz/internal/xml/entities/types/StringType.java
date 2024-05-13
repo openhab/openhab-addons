@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.denonmarantz.internal.xml.adapters.StringAdapter;
 
 /**
@@ -24,12 +26,13 @@ import org.openhab.binding.denonmarantz.internal.xml.adapters.StringAdapter;
  * @author Jeroen Idserda - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class StringType {
 
     @XmlJavaTypeAdapter(value = StringAdapter.class)
-    private String value;
+    private @Nullable String value;
 
-    public String getValue() {
+    public @Nullable String getValue() {
         return value;
     }
 

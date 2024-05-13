@@ -16,6 +16,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Contains information about a Denon/Marantz receiver.
  *
@@ -23,13 +26,14 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "device_Info")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class Deviceinfo {
 
-    private Integer deviceZones;
+    private @Nullable Integer deviceZones;
 
-    private String modelName;
+    private @Nullable String modelName;
 
-    public Integer getDeviceZones() {
+    public @Nullable Integer getDeviceZones() {
         return deviceZones;
     }
 
@@ -37,7 +41,7 @@ public class Deviceinfo {
         this.deviceZones = deviceZones;
     }
 
-    public String getModelName() {
+    public @Nullable String getModelName() {
         return modelName;
     }
 

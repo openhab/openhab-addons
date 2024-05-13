@@ -16,6 +16,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Used to unmarshall {@code <list>} items of the {@code <functionrename>} CommandRX.
  *
@@ -23,17 +26,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "list")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class RenameSourceList {
 
-    private String name;
+    private @Nullable String name;
 
-    private String rename;
+    private @Nullable String rename;
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
-    public String getRename() {
+    public @Nullable String getRename() {
         return rename;
     }
 }

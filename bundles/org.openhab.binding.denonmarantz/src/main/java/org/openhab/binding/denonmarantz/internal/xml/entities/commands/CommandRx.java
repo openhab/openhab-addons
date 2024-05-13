@@ -21,6 +21,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Response to a {@link CommandTx}
  *
@@ -28,51 +31,52 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "cmd")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class CommandRx {
 
-    private String zone1;
+    private @Nullable String zone1;
 
-    private String zone2;
+    private @Nullable String zone2;
 
-    private String zone3;
+    private @Nullable String zone3;
 
-    private String zone4;
+    private @Nullable String zone4;
 
-    private String volume;
+    private @Nullable String volume;
 
-    private String disptype;
+    private @Nullable String disptype;
 
-    private String dispvalue;
+    private @Nullable String dispvalue;
 
-    private String mute;
+    private @Nullable String mute;
 
-    private String type;
+    private @Nullable String type;
 
     @XmlElement(name = "text")
     private List<Text> texts = new ArrayList<>();
 
     @XmlElementWrapper(name = "functionrename")
     @XmlElement(name = "list")
-    private List<RenameSourceList> renameSourceLists;
+    private @Nullable List<RenameSourceList> renameSourceLists;
 
     @XmlElementWrapper(name = "functiondelete")
     @XmlElement(name = "list")
-    private List<DeletedSourceList> deletedSourceLists;
+    private @Nullable List<DeletedSourceList> deletedSourceLists;
 
-    private String playstatus;
+    private @Nullable String playstatus;
 
-    private String playcontents;
+    private @Nullable String playcontents;
 
-    private String repeat;
+    private @Nullable String repeat;
 
-    private String shuffle;
+    private @Nullable String shuffle;
 
-    private String source;
+    private @Nullable String source;
 
     public CommandRx() {
     }
 
-    public String getZone1() {
+    public @Nullable String getZone1() {
         return zone1;
     }
 
@@ -80,7 +84,7 @@ public class CommandRx {
         this.zone1 = zone1;
     }
 
-    public String getZone2() {
+    public @Nullable String getZone2() {
         return zone2;
     }
 
@@ -88,7 +92,7 @@ public class CommandRx {
         this.zone2 = zone2;
     }
 
-    public String getZone3() {
+    public @Nullable String getZone3() {
         return zone3;
     }
 
@@ -96,7 +100,7 @@ public class CommandRx {
         this.zone3 = zone3;
     }
 
-    public String getZone4() {
+    public @Nullable String getZone4() {
         return zone4;
     }
 
@@ -104,7 +108,7 @@ public class CommandRx {
         this.zone4 = zone4;
     }
 
-    public String getVolume() {
+    public @Nullable String getVolume() {
         return volume;
     }
 
@@ -112,7 +116,7 @@ public class CommandRx {
         this.volume = volume;
     }
 
-    public String getDisptype() {
+    public @Nullable String getDisptype() {
         return disptype;
     }
 
@@ -120,7 +124,7 @@ public class CommandRx {
         this.disptype = disptype;
     }
 
-    public String getDispvalue() {
+    public @Nullable String getDispvalue() {
         return dispvalue;
     }
 
@@ -128,7 +132,7 @@ public class CommandRx {
         this.dispvalue = dispvalue;
     }
 
-    public String getMute() {
+    public @Nullable String getMute() {
         return mute;
     }
 
@@ -136,7 +140,7 @@ public class CommandRx {
         this.mute = mute;
     }
 
-    public String getType() {
+    public @Nullable String getType() {
         return type;
     }
 
@@ -144,7 +148,7 @@ public class CommandRx {
         this.type = type;
     }
 
-    public String getPlaystatus() {
+    public @Nullable String getPlaystatus() {
         return playstatus;
     }
 
@@ -152,7 +156,7 @@ public class CommandRx {
         this.playstatus = playstatus;
     }
 
-    public String getPlaycontents() {
+    public @Nullable String getPlaycontents() {
         return playcontents;
     }
 
@@ -160,7 +164,7 @@ public class CommandRx {
         this.playcontents = playcontents;
     }
 
-    public String getRepeat() {
+    public @Nullable String getRepeat() {
         return repeat;
     }
 
@@ -168,7 +172,7 @@ public class CommandRx {
         this.repeat = repeat;
     }
 
-    public String getShuffle() {
+    public @Nullable String getShuffle() {
         return shuffle;
     }
 
@@ -176,7 +180,7 @@ public class CommandRx {
         this.shuffle = shuffle;
     }
 
-    public String getSource() {
+    public @Nullable String getSource() {
         return source;
     }
 
@@ -184,20 +188,20 @@ public class CommandRx {
         this.source = source;
     }
 
-    public String getText(String key) {
+    public @Nullable String getText(String key) {
         for (Text text : texts) {
-            if (text.getId().equals(key)) {
+            if (key.equals(text.getId())) {
                 return text.getValue();
             }
         }
         return null;
     }
 
-    public List<RenameSourceList> getRenameSourceLists() {
+    public @Nullable List<RenameSourceList> getRenameSourceLists() {
         return renameSourceLists;
     }
 
-    public List<DeletedSourceList> getDeletedSourceLists() {
+    public @Nullable List<DeletedSourceList> getDeletedSourceLists() {
         return deletedSourceLists;
     }
 }

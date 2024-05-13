@@ -14,15 +14,19 @@ package org.openhab.binding.denonmarantz.internal.xml.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Adapter to clean up string values
  *
  * @author Jeroen Idserda - Initial contribution
  */
-public class StringAdapter extends XmlAdapter<String, String> {
+@NonNullByDefault
+public class StringAdapter extends XmlAdapter<@Nullable String, @Nullable String> {
 
     @Override
-    public String unmarshal(String v) throws Exception {
+    public @Nullable String unmarshal(@Nullable String v) throws Exception {
         String val = v;
         if (val != null) {
             return val.trim();
@@ -31,7 +35,7 @@ public class StringAdapter extends XmlAdapter<String, String> {
     }
 
     @Override
-    public String marshal(String v) throws Exception {
+    public @Nullable String marshal(@Nullable String v) throws Exception {
         return v;
     }
 }

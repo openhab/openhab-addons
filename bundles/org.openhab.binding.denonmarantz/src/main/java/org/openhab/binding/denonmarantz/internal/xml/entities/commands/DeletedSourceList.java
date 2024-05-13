@@ -16,6 +16,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Used to unmarshall {@code <list>} items of the {@code <functiondelete>} CommandRX.
  *
@@ -23,23 +26,24 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "list")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class DeletedSourceList {
 
-    private String name;
+    private @Nullable String name;
 
-    private String funcName;
+    private @Nullable String funcName;
 
-    private Integer use;
+    private @Nullable Integer use;
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
-    public String getFuncName() {
+    public @Nullable String getFuncName() {
         return funcName;
     }
 
-    public Integer getUse() {
+    public @Nullable Integer getUse() {
         return use;
     }
 }

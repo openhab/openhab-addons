@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.denonmarantz.internal.xml.entities.types.OnOffType;
 import org.openhab.binding.denonmarantz.internal.xml.entities.types.StringType;
 import org.openhab.binding.denonmarantz.internal.xml.entities.types.VolumeType;
@@ -27,19 +29,20 @@ import org.openhab.binding.denonmarantz.internal.xml.entities.types.VolumeType;
  */
 @XmlRootElement(name = "item")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class ZoneStatusLite {
 
-    private OnOffType power;
+    private @Nullable OnOffType power;
 
-    private StringType inputFuncSelect;
+    private @Nullable StringType inputFuncSelect;
 
-    private StringType volumeDisplay;
+    private @Nullable StringType volumeDisplay;
 
-    private VolumeType masterVolume;
+    private @Nullable VolumeType masterVolume;
 
-    private OnOffType mute;
+    private @Nullable OnOffType mute;
 
-    public OnOffType getPower() {
+    public @Nullable OnOffType getPower() {
         return power;
     }
 
@@ -47,7 +50,7 @@ public class ZoneStatusLite {
         this.power = power;
     }
 
-    public StringType getInputFuncSelect() {
+    public @Nullable StringType getInputFuncSelect() {
         return inputFuncSelect;
     }
 
@@ -55,7 +58,7 @@ public class ZoneStatusLite {
         this.inputFuncSelect = inputFuncSelect;
     }
 
-    public StringType getVolumeDisplay() {
+    public @Nullable StringType getVolumeDisplay() {
         return volumeDisplay;
     }
 
@@ -63,7 +66,7 @@ public class ZoneStatusLite {
         this.volumeDisplay = volumeDisplay;
     }
 
-    public VolumeType getMasterVolume() {
+    public @Nullable VolumeType getMasterVolume() {
         return masterVolume;
     }
 
@@ -71,7 +74,7 @@ public class ZoneStatusLite {
         this.masterVolume = masterVolume;
     }
 
-    public OnOffType getMute() {
+    public @Nullable OnOffType getMute() {
         return mute;
     }
 

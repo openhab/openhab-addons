@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.denonmarantz.internal.xml.adapters.OnOffAdapter;
 
 /**
@@ -24,12 +26,13 @@ import org.openhab.binding.denonmarantz.internal.xml.adapters.OnOffAdapter;
  * @author Jeroen Idserda - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class OnOffType {
 
     @XmlJavaTypeAdapter(OnOffAdapter.class)
-    private Boolean value;
+    private @Nullable Boolean value;
 
-    public Boolean getValue() {
+    public @Nullable Boolean getValue() {
         return value;
     }
 

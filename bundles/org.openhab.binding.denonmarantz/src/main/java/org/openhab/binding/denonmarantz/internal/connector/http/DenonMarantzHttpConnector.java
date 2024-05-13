@@ -16,6 +16,7 @@ import java.beans.Introspector;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +33,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.util.StreamReaderDelegate;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response;
@@ -47,6 +49,9 @@ import org.openhab.binding.denonmarantz.internal.xml.entities.commands.AppComman
 import org.openhab.binding.denonmarantz.internal.xml.entities.commands.AppCommandResponse;
 import org.openhab.binding.denonmarantz.internal.xml.entities.commands.CommandRx;
 import org.openhab.binding.denonmarantz.internal.xml.entities.commands.CommandTx;
+import org.openhab.binding.denonmarantz.internal.xml.entities.types.OnOffType;
+import org.openhab.binding.denonmarantz.internal.xml.entities.types.StringType;
+import org.openhab.binding.denonmarantz.internal.xml.entities.types.VolumeType;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +64,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeroen Idserda - Initial Contribution (1.x Binding)
  * @author Jan-Willem Veldhuis - Refactored for 2.x
  */
+@NonNullByDefault
 public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
     private Logger logger = LoggerFactory.getLogger(DenonMarantzHttpConnector.class);
@@ -88,13 +94,11 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
     private final HttpClient httpClient;
 
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     public DenonMarantzHttpConnector(DenonMarantzConfiguration config, DenonMarantzState state,
             ScheduledExecutorService scheduler, HttpClient httpClient) {
-        this.config = config;
-        this.scheduler = scheduler;
-        this.state = state;
+        super(config, scheduler, state);
         this.cmdUrl = String.format("http://%s:%d/goform/formiPhoneAppDirect.xml?", config.getHost(),
                 config.getHttpPort());
         this.statusUrl = String.format("http://%s:%d/goform/", config.getHost(), config.getHttpPort());
@@ -143,11 +147,13 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
     }
 
     private boolean isPolling() {
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         return pollingJob != null && !pollingJob.isCancelled();
     }
 
     private void stopPolling() {
-        if (isPolling()) {
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
             pollingJob.cancel(true);
             logger.debug("HTTP polling stopped.");
         }
@@ -166,7 +172,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
     @Override
     protected void internalSendCommand(String command) {
         logger.debug("Sending command '{}'", command);
-        if (command == null || command.isBlank()) {
+        if (command.isBlank()) {
             logger.warn("Trying to send empty command");
             return;
         }
@@ -176,8 +182,8 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).send(new Response.CompleteListener() {
             @Override
-            public void onComplete(Result result) {
-                if (result.getResponse().getStatus() != 200) {
+            public void onComplete(@Nullable Result result) {
+                if (result != null && result.getResponse().getStatus() != 200) {
                     logger.warn("Error {} while sending command", result.getResponse().getReason());
                 }
             }
@@ -190,7 +196,11 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         Main statusMain = getDocument(url, Main.class);
         if (statusMain != null) {
-            state.setPower(statusMain.getPower().getValue());
+            OnOffType power = statusMain.getPower();
+            Boolean powerValue = power != null ? power.getValue() : null;
+            if (powerValue != null) {
+                state.setPower(powerValue);
+            }
         }
     }
 
@@ -200,10 +210,29 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         ZoneStatus mainZone = getDocument(url, ZoneStatus.class);
         if (mainZone != null) {
-            state.setInput(mainZone.getInputFuncSelect().getValue());
-            state.setMainVolume(mainZone.getMasterVolume().getValue());
-            state.setMainZonePower(mainZone.getPower().getValue());
-            state.setMute(mainZone.getMute().getValue());
+            StringType inputFuncSelect = mainZone.getInputFuncSelect();
+            String inputFuncSelectValue = inputFuncSelect != null ? inputFuncSelect.getValue() : null;
+            if (inputFuncSelectValue != null) {
+                state.setInput(inputFuncSelectValue);
+            }
+
+            VolumeType masterVolume = mainZone.getMasterVolume();
+            BigDecimal masterVolumeValue = masterVolume != null ? masterVolume.getValue() : null;
+            if (masterVolumeValue != null) {
+                state.setMainVolume(masterVolumeValue);
+            }
+
+            OnOffType power = mainZone.getPower();
+            Boolean powerValue = power != null ? power.getValue() : null;
+            if (powerValue != null) {
+                state.setMainZonePower(powerValue);
+            }
+
+            OnOffType mute = mainZone.getMute();
+            Boolean muteValue = mute != null ? mute.getValue() : null;
+            if (muteValue != null) {
+                state.setMute(muteValue);
+            }
 
             if (config.inputOptions == null) {
                 config.inputOptions = mainZone.getInputFuncList();
@@ -212,7 +241,11 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             if (mainZone.getSurrMode() == null) {
                 logger.debug("Unable to get the SURROUND_MODE. MainZone update may not be correct.");
             } else {
-                state.setSurroundProgram(mainZone.getSurrMode().getValue());
+                StringType surroundMode = mainZone.getSurrMode();
+                String surroundModeValue = surroundMode != null ? surroundMode.getValue() : null;
+                if (surroundModeValue != null) {
+                    state.setSurroundProgram(surroundModeValue);
+                }
             }
         }
     }
@@ -223,25 +256,61 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             logger.trace("Refreshing URL: {}", url);
             ZoneStatusLite zoneSecondary = getDocument(url, ZoneStatusLite.class);
             if (zoneSecondary != null) {
+                OnOffType power = zoneSecondary.getPower();
+                Boolean powerValue = power != null ? power.getValue() : null;
+
+                VolumeType masterVolume = zoneSecondary.getMasterVolume();
+                BigDecimal masterVolumeValue = masterVolume != null ? masterVolume.getValue() : null;
+
+                OnOffType mute = zoneSecondary.getMute();
+                Boolean muteValue = mute != null ? mute.getValue() : null;
+
+                StringType inputFuncSelect = zoneSecondary.getInputFuncSelect();
+                String inputFuncSelectValue = inputFuncSelect != null ? inputFuncSelect.getValue() : null;
+
                 switch (i) {
                     // maximum 2 secondary zones are supported
                     case 2:
-                        state.setZone2Power(zoneSecondary.getPower().getValue());
-                        state.setZone2Volume(zoneSecondary.getMasterVolume().getValue());
-                        state.setZone2Mute(zoneSecondary.getMute().getValue());
-                        state.setZone2Input(zoneSecondary.getInputFuncSelect().getValue());
+                        if (powerValue != null) {
+                            state.setZone2Power(powerValue);
+                        }
+                        if (masterVolumeValue != null) {
+                            state.setZone2Volume(masterVolumeValue);
+                        }
+                        if (muteValue != null) {
+                            state.setZone2Mute(muteValue);
+                        }
+                        if (inputFuncSelectValue != null) {
+                            state.setZone2Input(inputFuncSelectValue);
+                        }
                         break;
                     case 3:
-                        state.setZone3Power(zoneSecondary.getPower().getValue());
-                        state.setZone3Volume(zoneSecondary.getMasterVolume().getValue());
-                        state.setZone3Mute(zoneSecondary.getMute().getValue());
-                        state.setZone3Input(zoneSecondary.getInputFuncSelect().getValue());
+                        if (powerValue != null) {
+                            state.setZone3Power(powerValue);
+                        }
+                        if (masterVolumeValue != null) {
+                            state.setZone3Volume(masterVolumeValue);
+                        }
+                        if (muteValue != null) {
+                            state.setZone3Mute(muteValue);
+                        }
+                        if (inputFuncSelectValue != null) {
+                            state.setZone3Input(inputFuncSelectValue);
+                        }
                         break;
                     case 4:
-                        state.setZone4Power(zoneSecondary.getPower().getValue());
-                        state.setZone4Volume(zoneSecondary.getMasterVolume().getValue());
-                        state.setZone4Mute(zoneSecondary.getMute().getValue());
-                        state.setZone4Input(zoneSecondary.getInputFuncSelect().getValue());
+                        if (powerValue != null) {
+                            state.setZone4Power(powerValue);
+                        }
+                        if (masterVolumeValue != null) {
+                            state.setZone4Volume(masterVolumeValue);
+                        }
+                        if (muteValue != null) {
+                            state.setZone4Mute(muteValue);
+                        }
+                        if (inputFuncSelectValue != null) {
+                            state.setZone4Input(inputFuncSelectValue);
+                        }
                         break;
                 }
             }
@@ -255,11 +324,21 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         AppCommandRequest request = AppCommandRequest.of(CommandTx.CMD_NET_STATUS);
         AppCommandResponse response = postDocument(url, AppCommandResponse.class, request);
 
-        if (response != null) {
-            CommandRx titleInfo = response.getCommands().get(0);
-            state.setNowPlayingArtist(titleInfo.getText("artist"));
-            state.setNowPlayingAlbum(titleInfo.getText("album"));
-            state.setNowPlayingTrack(titleInfo.getText("track"));
+        if (response == null) {
+            return;
+        }
+        CommandRx titleInfo = response.getCommands().get(0);
+        String artist = titleInfo.getText("artist");
+        if (artist != null) {
+            state.setNowPlayingArtist(artist);
+        }
+        String album = titleInfo.getText("album");
+        if (album != null) {
+            state.setNowPlayingAlbum(album);
+        }
+        String track = titleInfo.getText("track");
+        if (track != null) {
+            state.setNowPlayingTrack(track);
         }
     }
 
@@ -269,7 +348,10 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         Deviceinfo deviceinfo = getDocument(url, Deviceinfo.class);
         if (deviceinfo != null) {
-            config.setZoneCount(deviceinfo.getDeviceZones());
+            Integer deviceZones = deviceinfo.getDeviceZones();
+            if (deviceZones != null) {
+                config.setZoneCount(deviceZones);
+            }
         }
 
         /**

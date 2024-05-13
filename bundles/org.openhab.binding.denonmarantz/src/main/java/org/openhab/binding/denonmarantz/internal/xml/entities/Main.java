@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.denonmarantz.internal.xml.entities.types.OnOffType;
 
 /**
@@ -25,11 +27,12 @@ import org.openhab.binding.denonmarantz.internal.xml.entities.types.OnOffType;
  */
 @XmlRootElement(name = "item")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class Main {
 
-    private OnOffType power;
+    private @Nullable OnOffType power;
 
-    public OnOffType getPower() {
+    public @Nullable OnOffType getPower() {
         return power;
     }
 

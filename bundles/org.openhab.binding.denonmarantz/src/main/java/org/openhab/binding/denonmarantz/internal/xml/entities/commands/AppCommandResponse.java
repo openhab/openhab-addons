@@ -20,6 +20,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Response to an {@link AppCommandRequest}, wraps a list of {@link CommandRx}
  *
@@ -27,6 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "rx")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class AppCommandResponse {
 
     @XmlElement(name = "cmd")

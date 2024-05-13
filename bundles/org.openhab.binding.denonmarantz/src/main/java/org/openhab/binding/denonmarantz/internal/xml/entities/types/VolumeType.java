@@ -18,6 +18,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.denonmarantz.internal.xml.adapters.VolumeAdapter;
 
 /**
@@ -26,12 +28,13 @@ import org.openhab.binding.denonmarantz.internal.xml.adapters.VolumeAdapter;
  * @author Jeroen Idserda - Initial contribution
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class VolumeType {
 
     @XmlJavaTypeAdapter(value = VolumeAdapter.class)
-    private BigDecimal value;
+    private @Nullable BigDecimal value;
 
-    public BigDecimal getValue() {
+    public @Nullable BigDecimal getValue() {
         return value;
     }
 

@@ -18,6 +18,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Individual commands that can be sent to a Denon/Marantz receiver to request specific information.
  *
@@ -25,6 +28,7 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlRootElement(name = "cmd")
 @XmlAccessorType(XmlAccessType.FIELD)
+@NonNullByDefault
 public class CommandTx {
 
     private static final String DEFAULT_ID = "1";
@@ -48,10 +52,10 @@ public class CommandTx {
     public static final CommandTx CMD_DELETED_SOURCE = of("GetDeletedSource");
 
     @XmlAttribute(name = "id")
-    private String id;
+    private @Nullable String id;
 
     @XmlValue
-    private String value;
+    private @Nullable String value;
 
     public CommandTx() {
     }
@@ -60,7 +64,7 @@ public class CommandTx {
         this.value = value;
     }
 
-    public String getId() {
+    public @Nullable String getId() {
         return id;
     }
 
