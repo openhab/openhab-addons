@@ -60,8 +60,6 @@ public class OnectaSignInClient {
     private String userId = "";
     private String password = "";
 
-    // private HttpClient httpClient;
-
     private RespAuthenticationRoot respAuthenticationRoot = new RespAuthenticationRoot();
 
     public String getToken() {
