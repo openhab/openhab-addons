@@ -89,7 +89,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     private @Nullable SiemensHvacMetadata root = null;
     private @Nullable ArrayList<SiemensHvacMetadataDevice> devices = null;
 
-    private static final String JSON_DIR = OpenHAB.getUserDataFolder() + File.separatorChar + "jsondb";
+    private static final String JSON_DIR = OpenHAB.getUserDataFolder() + File.separatorChar + "siemenshvac";
 
     private @Nullable SiemensHvacThingTypeProvider thingTypeProvider;
     private @Nullable SiemensHvacChannelTypeProvider channelTypeProvider;
@@ -296,6 +296,13 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
 
         logger.trace("siemensHvac:Initialization():Begin_0001");
+
+        File folder = new File(JSON_DIR);
+
+        if (!folder.exists()) {
+            logger.debug("Creating directory {}", folder);
+            folder.mkdirs();
+        }
 
         logger.trace("siemensHvac:Initialization():ReadCache");
         loadMetaDataFromCache();
