@@ -29,11 +29,7 @@ public class SiemensHvacBindingConstants {
     public static final String CONFIG_DESCRIPTION_URI_CHANNEL = "channel-type:siemenshvac:config";
 
     // List of all Thing Type UIDs
-    // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_OZW672 = new ThingTypeUID(BINDING_ID, "ozw672");
-
-    // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
 
     public static final String IP_ADDRESS = "ipAddress";
     public static final String BASE_URL = "baseUrl";
@@ -41,13 +37,6 @@ public class SiemensHvacBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
     public static final String PROPERTY_VENDOR_NAME = "Siemens";
-
-    public static final String ITEM_TYPE_SWITCH = "Switch";
-    public static final String ITEM_TYPE_CONTACT = "Contact";
-    public static final String ITEM_TYPE_STRING = "String";
-    public static final String ITEM_TYPE_NUMBER = "Number";
-    public static final String ITEM_TYPE_ENUMERATION = "Number";
-    public static final String ITEM_TYPE_DATETIME = "DateTime";
 
     public static final String CONFIG_DESCRIPTION_URI_THING_PREFIX = "thing-type";
 
@@ -65,13 +54,9 @@ public class SiemensHvacBindingConstants {
     public static final String CATEGORY_THING_HVAC = "HVAC";
 
     public static final String CATEGORY_CHANNEL_WIDGETS_NUMBER = "Number";
-    public static final String CATEGORY_CHANNEL_WIDGETS_SLIDER = "Slider";
     public static final String CATEGORY_CHANNEL_WIDGETS_SWITCH = "Switch";
-    public static final String CATEGORY_CHANNEL_WIDGETS_TEXT = "Text";
-    public static final String CATEGORY_CHANNEL_WIDGETS_GROUP = "Group";
-
-    public static final String CATEGORY_CHANNEL_PROPS_TEMP = "Temperature";
-    public static final String CATEGORY_CHANNEL_PROPS_TIME = "Time";
+    public static final String CATEGORY_CHANNEL_WIDGETS_TEMP = "Temperature";
+    public static final String CATEGORY_CHANNEL_WIDGETS_TIME = "Time";
 
     public static final String CATEGORY_CHANNEL_CONTROL_HEATING = "Heating";
 }

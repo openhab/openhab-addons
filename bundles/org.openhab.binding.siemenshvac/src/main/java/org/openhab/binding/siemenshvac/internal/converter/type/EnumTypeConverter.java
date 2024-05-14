@@ -14,8 +14,8 @@ package org.openhab.binding.siemenshvac.internal.converter.type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Type;
@@ -62,7 +62,7 @@ public class EnumTypeConverter extends AbstractTypeConverter {
 
     @Override
     public String getItemType(boolean writeAccess) {
-        return SiemensHvacBindingConstants.ITEM_TYPE_ENUMERATION;
+        return CoreItemFactory.NUMBER;
     }
 
     @Override

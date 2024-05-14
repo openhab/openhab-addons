@@ -21,9 +21,9 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Type;
@@ -68,7 +68,7 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
     @Override
     protected DateTimeType fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
         if ("----".equals(value.getAsString())) {
-            return new DateTimeType();
+            return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
         } else {
             String[] formats = { "EEEE, d. LLLL yyyy HH:mm[:ss]", "d. LLLL yyyy HH:mm[:ss]", "d. LLLL yyyy",
                     "d. LLLL" };
@@ -82,7 +82,7 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
 
                     if (i == 3) {
                         formatterBuilder = formatterBuilder.parseDefaulting(ChronoField.YEAR,
-                                ZonedDateTime.now().getYear());
+                                ZonedDateTime.now(this.timeZoneProvider.getTimeZone()).getYear());
                     }
 
                     LocalDateTime parsedDate = LocalDateTime.parse(value.getAsString(),
@@ -93,7 +93,7 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
                     return new DateTimeType(zdt);
                 } catch (DateTimeParseException ex) {
                     if (i == formats.length - 1) {
-                        throw new ConverterException("Can't parse the date for :" + value);
+                        throw new ConverterException("Can't parse the date for:" + value);
                     }
                 }
             }
@@ -109,7 +109,7 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
 
     @Override
     public String getItemType(boolean writeAccess) {
-        return SiemensHvacBindingConstants.ITEM_TYPE_DATETIME;
+        return CoreItemFactory.DATETIME;
     }
 
     @Override

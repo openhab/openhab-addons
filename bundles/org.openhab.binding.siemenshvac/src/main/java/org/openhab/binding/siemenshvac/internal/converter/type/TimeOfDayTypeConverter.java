@@ -14,10 +14,11 @@ package org.openhab.binding.siemenshvac.internal.converter.type;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 
@@ -52,7 +53,7 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected Type fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
+    protected State fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
         if ("----".equals(value.getAsString())) {
             return UnDefType.UNDEF;
         } else {
@@ -67,7 +68,7 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
 
     @Override
     public String getItemType(boolean writeAccess) {
-        return SiemensHvacBindingConstants.ITEM_TYPE_NUMBER;
+        return CoreItemFactory.NUMBER;
     }
 
     @Override

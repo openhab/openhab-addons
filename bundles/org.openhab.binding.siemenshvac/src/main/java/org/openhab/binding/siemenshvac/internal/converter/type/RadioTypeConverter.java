@@ -16,15 +16,17 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.Type;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.JsonElement;
 
@@ -74,8 +76,8 @@ public class RadioTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected DecimalType fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
-        DecimalType updateVal = new DecimalType();
+    protected State fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
+        State updateVal = UnDefType.UNDEF;
         String valueSt = value.getAsString();
 
         StateDescription sd = tp.getState();
@@ -107,9 +109,9 @@ public class RadioTypeConverter extends AbstractTypeConverter {
     @Override
     public String getItemType(boolean writeAccess) {
         if (writeAccess) {
-            return SiemensHvacBindingConstants.ITEM_TYPE_SWITCH;
+            return CoreItemFactory.SWITCH;
         } else {
-            return SiemensHvacBindingConstants.ITEM_TYPE_CONTACT;
+            return CoreItemFactory.CONTACT;
         }
     }
 

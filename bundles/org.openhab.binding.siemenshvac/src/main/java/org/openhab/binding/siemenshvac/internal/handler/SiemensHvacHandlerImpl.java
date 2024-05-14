@@ -82,16 +82,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus status) {
-        super.updateStatus(status);
-    }
-
-    @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
-    }
-
-    @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
     }
 
@@ -139,7 +129,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             int previousRequestCount = lcHvacConnector.getRequestCount();
             int previousErrorCount = lcHvacConnector.getErrorCount();
 
-            logger.debug("readChannels :");
+            logger.debug("readChannels:");
             for (Channel channel : chList) {
                 readChannel(channel);
             }
@@ -164,11 +154,11 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 if (lcHvacConnector.getErrorSource() == ErrorSource.ErrorBridge) {
                     if (bridgeHandler != null) {
                         bridgeHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                String.format("Communication ErrorRate to gateway is too high : %f", errorRate));
+                                String.format("Communication ErrorRate to gateway is too high: %f", errorRate));
                     }
                 } else if (lcHvacConnector.getErrorSource() == ErrorSource.ErrorThings) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            String.format("Communication ErrorRate to thing is too high : %f", errorRate));
+                            String.format("Communication ErrorRate to thing is too high: %f", errorRate));
                 }
             } else {
                 updateStatus(ThingStatus.ONLINE);
@@ -246,7 +236,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 if (typer != null) {
                     TypeConverter converter = ConverterFactory.getConverter(typer);
 
-                    State state = (State) converter.convertFromBinding(subResult, tp);
+                    State state = converter.convertFromBinding(subResult, tp);
                     updateState(updateKey, state);
                 }
             } catch (ConverterTypeException ex) {
@@ -268,7 +258,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
         try {
             lockObj.lock();
 
-            logger.trace("Start read : {}", dp);
+            logger.trace("Start read: {}", dp);
             String request = "api/menutree/read_datapoint.json?Id=" + dp;
 
             logger.debug("siemensHvac:ReadDp:DoRequest(): {}", request);
@@ -285,7 +275,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                                 return;
                             }
 
-                            logger.trace("End read : {}", dp);
+                            logger.trace("End read: {}", dp);
 
                             if (response instanceof JsonObject jsonResponse) {
                                 decodeReadDp(jsonResponse, uid, dp, tp, type);
@@ -299,9 +289,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                     decodeReadDp(js, uid, dp, tp, type);
                 }
             }
-        } catch (Exception e) {
-            logger.debug("siemensHvac:ReadDp:Error during dp reading: {} ; {}", dp, e.getLocalizedMessage());
-            // Reset sessionId so we redone _auth on error
         } finally {
             logger.trace("End read: {}", dp);
             lockObj.unlock();
@@ -349,25 +336,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             } catch (ConverterException ex) {
                 logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
             }
-
-            /*
-             * if (dpVal instanceof PercentType percentValue) {
-             * valUpdate = percentValue.toString();
-             * } else if (dpVal instanceof DecimalType decimalValue) {
-             * valUpdate = decimalValue.toString();
-             * } else if (dpVal instanceof StringType stringValue) {
-             * valUpdate = stringValue.toString();
-             *
-             * if ("Enumeration".equals(type)) {
-             * String[] valuesUpdateDp = valUpdate.split(":");
-             * valUpdate = valuesUpdateDp[0];
-             * }
-             * }
-             */
-
-        } catch (Exception e) {
-            logger.debug("siemensHvac:ReadDp:Error during dp reading: {}: {}", dp, e.getLocalizedMessage());
-            // Reset sessionId so we redone _auth on error
         } finally {
             logger.debug("End write: {}", dp);
             lockObj.unlock();
@@ -415,7 +383,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 }
 
                 if (doMods) {
-                    result = new DecimalType("" + v1);
+                    result = new DecimalType(v1);
                 }
             }
         }

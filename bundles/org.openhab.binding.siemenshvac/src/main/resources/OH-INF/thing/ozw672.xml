@@ -42,7 +42,7 @@
 
 	<channel-type id="setpoint-heat-pump">
 		<item-type>Number:Temperature</item-type>
-		<label>Setpoint heat pump</label>
+		<label>Setpoint Heat Pump</label>
 		<description>Setpoint Heat Pump</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>

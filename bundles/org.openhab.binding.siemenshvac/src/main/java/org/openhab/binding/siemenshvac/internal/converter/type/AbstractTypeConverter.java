@@ -19,6 +19,7 @@ import org.openhab.binding.siemenshvac.internal.converter.ConverterTypeException
 import org.openhab.binding.siemenshvac.internal.converter.TypeConverter;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -52,7 +53,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     }
 
     @Override
-    public Type convertFromBinding(JsonObject dp, ChannelType tp) throws ConverterException {
+    public State convertFromBinding(JsonObject dp, ChannelType tp) throws ConverterException {
         String type = null;
         JsonElement value = null;
 
@@ -110,7 +111,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     /**
      * Converts the datapoint value to an openHAB type.
      */
-    protected abstract Type fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException;
+    protected abstract State fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException;
 
     /**
      * get underlying channel type to construct channel type UID

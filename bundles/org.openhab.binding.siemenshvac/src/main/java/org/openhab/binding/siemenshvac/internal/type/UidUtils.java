@@ -48,16 +48,7 @@ public class UidUtils {
             result = result.replaceAll("\\p{M}", "");
         }
 
-        result = result.replace(' ', '_');
-        result = result.replace(':', '_');
-        result = result.replace('.', '_');
-        result = result.replace('\'', '_');
-        result = result.replace('(', '_');
-        result = result.replace(')', '_');
-        result = result.replace('&', '_');
-        result = result.replace('/', '_');
-        result = result.replace('°', '_');
-        result = result.replace('+', '_');
+        result = result.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase();
 
         return result;
     }
@@ -69,10 +60,6 @@ public class UidUtils {
     public static ThingTypeUID generateThingTypeUID(SiemensHvacMetadataDevice device) {
         String type = sanetizeId(device.getType());
         return new ThingTypeUID(SiemensHvacBindingConstants.BINDING_ID, type);
-    }
-
-    public static ThingTypeUID generateThingTypeUID(String name) {
-        return new ThingTypeUID(SiemensHvacBindingConstants.BINDING_ID, name);
     }
 
     /**
@@ -129,7 +116,6 @@ public class UidUtils {
         result = result.replace('/', '-');
         result = result.replace(' ', '-');
         result = result.replace("+", "-");
-        result = result.replace("--", "-");
 
         result = result.replace("standard-tsp-hc", "time-switch-program-standard");
         result = result.replace("standard-tsp-4", "time-switch-program-standard");

@@ -78,7 +78,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
         baseUrl = lcConfig.baseUrl;
 
         if (baseUrl.isEmpty()) {
-            logger.debug("@text/thing-handler.msg.baseUrlMandatory");
+            logger.debug("@text/offline.error-gateway-init");
             return;
         }
 
@@ -124,7 +124,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
             updateStatus(ThingStatus.ONLINE);
         } catch (SiemensHvacException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("@text/thing-handler.msg.errorGatewayInit", ex.getMessage()));
+                    String.format("@text/offline.error-gateway-init", ex.getMessage()));
         }
     }
 

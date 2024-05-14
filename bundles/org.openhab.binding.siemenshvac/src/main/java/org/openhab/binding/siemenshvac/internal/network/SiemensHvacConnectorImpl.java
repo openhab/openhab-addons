@@ -15,6 +15,7 @@ package org.openhab.binding.siemenshvac.internal.network;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -135,7 +136,8 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     @Override
-    public void onComplete(@Nullable Request request, SiemensHvacRequestHandler reqHandler) throws Exception {
+    public void onComplete(@Nullable Request request, SiemensHvacRequestHandler reqHandler)
+            throws SiemensHvacException {
         unregisterRequestHandler(reqHandler);
     }
 
@@ -152,7 +154,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     @Override
     public void onError(@Nullable Request request, @Nullable SiemensHvacRequestHandler reqHandler,
-            SiemensHvacRequestListener.ErrorSource errorSource, boolean mayRetry) throws Exception {
+            SiemensHvacRequestListener.ErrorSource errorSource, boolean mayRetry) throws SiemensHvacException {
         if (reqHandler == null || request == null) {
             throw new SiemensHvacException("internalError: onError call with reqHandler == null");
         }
@@ -169,7 +171,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         }
 
         if (!doRetry) {
-            logger.info("unable to handle request, doRetry = false, cancel it");
+            logger.debug("unable to handle request, doRetry = false, cancel it");
             unregisterRequestHandler(reqHandler);
             registerHandlerError(reqHandler);
             errorCount++;
@@ -177,8 +179,12 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             return;
         }
 
-        // Wait one second before retrying the request to avoid flooding the gateway
-        Thread.sleep(1000);
+        try {
+            // Wait one second before retrying the request to avoid flooding the gateway
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            // We can silently ignore this one
+        }
 
         if (sessionIdHttp == null) {
             doAuth(true);
@@ -215,20 +221,17 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             if (retryRequest != null) {
                 executeRequest(retryRequest, reqHandler);
             }
-        } catch (
-
-        Exception ex) {
-            logger.debug("Error during gateway request:", ex);
-            throw ex;
+        } catch (URISyntaxException ex) {
+            throw new SiemensHvacException("Error during gateway request", ex);
         }
     }
 
-    private @Nullable ContentResponse executeRequest(final Request request) throws Exception {
+    private @Nullable ContentResponse executeRequest(final Request request) throws SiemensHvacException {
         return executeRequest(request, (SiemensHvacCallback) null);
     }
 
     private @Nullable ContentResponse executeRequest(final Request request, @Nullable SiemensHvacCallback callback)
-            throws Exception {
+            throws SiemensHvacException {
         requestCount++;
 
         // For asynchronous request, we create a RequestHandler that will enable us to follow request state
@@ -257,7 +260,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     private @Nullable ContentResponse executeRequest(final Request request,
-            @Nullable SiemensHvacRequestHandler requestHandler) throws Exception {
+            @Nullable SiemensHvacRequestHandler requestHandler) throws SiemensHvacException {
         // Give a high timeout because we queue a lot of async request,
         // so enqueued them will take some times ...
         request.timeout(timeout, TimeUnit.SECONDS);
@@ -323,80 +326,76 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
             logger.debug("siemensHvac:doAuth:connect()");
 
-            try {
-                ContentResponse response = executeRequest(request);
-                if (response != null) {
-                    int statusCode = response.getStatus();
+            ContentResponse response = executeRequest(request);
+            if (response != null) {
+                int statusCode = response.getStatus();
 
-                    if (statusCode == HttpStatus.OK_200) {
-                        String result = response.getContentAsString();
+                if (statusCode == HttpStatus.OK_200) {
+                    String result = response.getContentAsString();
 
-                        if (http) {
-                            CookieStore cookieStore = httpClient.getCookieStore();
-                            List<HttpCookie> cookies = cookieStore.getCookies();
+                    if (http) {
+                        CookieStore cookieStore = httpClient.getCookieStore();
+                        List<HttpCookie> cookies = cookieStore.getCookies();
 
-                            for (HttpCookie httpCookie : cookies) {
-                                if (httpCookie.getName().equals("SessionId")) {
-                                    sessionIdHttp = httpCookie.getValue();
-                                }
-
-                            }
-
-                            if (sessionIdHttp == null) {
-                                logger.debug("Session request auth was unsuccessful in _doAuth()");
-                            }
-                        } else {
-                            if (result != null) {
-                                JsonObject resultObj = getGson().fromJson(result, JsonObject.class);
-
-                                if (resultObj != null && resultObj.has("Result")) {
-                                    JsonElement resultVal = resultObj.get("Result");
-                                    JsonObject resultObj2 = resultVal.getAsJsonObject();
-
-                                    if (resultObj2.has("Success")) {
-                                        boolean successVal = resultObj2.get("Success").getAsBoolean();
-
-                                        if (successVal) {
-                                            if (resultObj.has("SessionId")) {
-                                                sessionId = resultObj.get("SessionId").getAsString();
-                                                logger.debug("Have new SessionId: {} ", sessionId);
-                                            }
-                                        }
-                                    }
-                                }
-
-                                logger.debug("siemensHvac:doAuth:decodeResponse:()");
-
-                                if (sessionId == null) {
-                                    throw new SiemensHvacException(
-                                            "Session request auth was unsuccessful in _doAuth(), please verify login parameters");
-                                }
-
+                        for (HttpCookie httpCookie : cookies) {
+                            if (httpCookie.getName().equals("SessionId")) {
+                                sessionIdHttp = httpCookie.getValue();
                             }
 
                         }
+
+                        if (sessionIdHttp == null) {
+                            logger.debug("Session request auth was unsuccessful in _doAuth()");
+                        }
+                    } else {
+                        if (result != null) {
+                            JsonObject resultObj = getGson().fromJson(result, JsonObject.class);
+
+                            if (resultObj != null && resultObj.has("Result")) {
+                                JsonElement resultVal = resultObj.get("Result");
+                                JsonObject resultObj2 = resultVal.getAsJsonObject();
+
+                                if (resultObj2.has("Success")) {
+                                    boolean successVal = resultObj2.get("Success").getAsBoolean();
+
+                                    if (successVal) {
+                                        if (resultObj.has("SessionId")) {
+                                            sessionId = resultObj.get("SessionId").getAsString();
+                                            logger.debug("Have new SessionId: {} ", sessionId);
+                                        }
+                                    }
+                                }
+                            }
+
+                            logger.debug("siemensHvac:doAuth:decodeResponse:()");
+
+                            if (sessionId == null) {
+                                throw new SiemensHvacException(
+                                        "Session request auth was unsuccessful in _doAuth(), please verify login parameters");
+                            }
+
+                        }
+
                     }
                 }
-
-                logger.trace("siemensHvac:doAuth:connect()");
-
-            } catch (Exception ex) {
-                logger.debug("siemensHvac:doAuth:error() {}", ex.getLocalizedMessage());
-                throw new SiemensHvacException("Error during authentification", ex);
             }
+
+            logger.trace("siemensHvac:doAuth:connect()");
         }
     }
 
     @Override
-    public @Nullable String doBasicRequest(String uri) throws Exception {
+    public @Nullable String doBasicRequest(String uri) throws SiemensHvacException {
         return doBasicRequest(uri, null);
     }
 
-    public @Nullable String doBasicRequestAsync(String uri, @Nullable SiemensHvacCallback callback) throws Exception {
+    public @Nullable String doBasicRequestAsync(String uri, @Nullable SiemensHvacCallback callback)
+            throws SiemensHvacException {
         return doBasicRequest(uri, callback);
     }
 
-    public @Nullable String doBasicRequest(String uri, @Nullable SiemensHvacCallback callback) throws Exception {
+    public @Nullable String doBasicRequest(String uri, @Nullable SiemensHvacCallback callback)
+            throws SiemensHvacException {
         if (sessionIdHttp == null) {
             doAuth(true);
         }
@@ -427,7 +426,11 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         cookie.setPath("/");
         cookie.setVersion(0);
 
-        c.add(new URI(baseUri), cookie);
+        try {
+            c.add(new URI(baseUri), cookie);
+        } catch (URISyntaxException ex) {
+            throw new SiemensHvacException(String.format("URI is not correctly formated: %s", baseUri), ex);
+        }
 
         logger.debug("Execute request: {}", uri);
         final Request request = httpClient.newRequest(baseUri + mUri);
@@ -438,9 +441,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
             int statusCode = response.getStatus();
 
             if (statusCode == HttpStatus.OK_200) {
-                String result = response.getContentAsString();
-
-                return result;
+                return response.getContentAsString();
             }
         }
 
@@ -474,7 +475,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
                 return null;
             }
-        } catch (Exception e) {
+        } catch (SiemensHvacException e) {
             logger.warn("siemensHvac:DoRequest:Exception by executing jsonRequest: {} ; {} ", req,
                     e.getLocalizedMessage());
         }
@@ -484,7 +485,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     @Override
     public void displayRequestStats() {
-        logger.debug("DisplayRequestStats : ");
+        logger.debug("DisplayRequestStats: ");
         logger.debug("    currentRuning   : {}", getCurrentHandlerRegistryCount());
         logger.debug("    errors          : {}", getHandlerInErrorRegistryCount());
     }
@@ -500,7 +501,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 allRequestDone = false;
                 int currentRequestCount = getCurrentHandlerRegistryCount();
 
-                logger.debug("WaitAllPendingRequest:waitAllRequestDone {} : {}", idx, currentRequestCount);
+                logger.debug("WaitAllPendingRequest:waitAllRequestDone {}: {}", idx, currentRequestCount);
 
                 if (currentRequestCount == 0) {
                     allRequestDone = true;
@@ -545,7 +546,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                 }
             }
 
-            logger.debug("check stale request::end : {}", staleRequest);
+            logger.debug("check stale request::end: {}", staleRequest);
         }
     }
 

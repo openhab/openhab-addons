@@ -30,6 +30,7 @@ import org.eclipse.jetty.client.api.Response.FailureListener;
 import org.eclipse.jetty.client.api.Response.SuccessListener;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -239,7 +240,7 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                 hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge, mayRetry);
                 return;
             }
-        } catch (Exception ex) {
+        } catch (SiemensHvacException ex) {
             logger.debug("An error occurred", ex);
         }
     }

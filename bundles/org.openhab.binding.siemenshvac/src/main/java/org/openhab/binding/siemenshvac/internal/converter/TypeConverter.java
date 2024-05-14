@@ -15,6 +15,7 @@ package org.openhab.binding.siemenshvac.internal.converter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonObject;
@@ -36,7 +37,7 @@ public interface TypeConverter {
     /**
      * Converts a siemensHvac value to an openHAB type.
      */
-    Type convertFromBinding(JsonObject dp, ChannelType tp) throws ConverterException;
+    State convertFromBinding(JsonObject dp, ChannelType tp) throws ConverterException;
 
     /**
      * get underlying channel type to construct channel type UID

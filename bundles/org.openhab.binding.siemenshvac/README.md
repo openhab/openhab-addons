@@ -28,8 +28,9 @@ With this binding, you will be able to:
 Support many different things as the thing type is handle by autodiscovery.
 
 Mainly, it will first discover the gateway.
-Currently test and support is the OZW672.x series.
-No test done with OZW772.x series, but it should work as well.
+Currently test was done with the OZW672.x series.
+No test was conduct using the OZW772.x series, but it should work as well.
+You can request support to the community forum is you encounter troubles with an untested device.
 
 After, it will discover thing inside your PAC, mainly main controller of type RVS...
 Only test in real condition with RVS41.813/327 but should work with all other type as the access interface is standard.
@@ -53,8 +54,6 @@ Parameter       | Required       | Default        | Description
 baseUrl         | yes            |                | The address of the OZW672 devices
 userName        | yes            | Administrator  | The user name to log into the OZW672
 userPass        | yes            |                | The user password to log into the OZW672
-
-## Thing Configuration
 
 ## Channels
 

@@ -112,10 +112,6 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
                 String addr = device.getAddr();
                 String serialNr = device.getSerialNr();
 
-                if (name.indexOf("OZW672") >= 0) {
-                    continue;
-                }
-
                 logger.debug("Find devices: {} / {} / {} / {}", name, type, addr, serialNr);
 
                 String typeSn = UidUtils.sanetizeId(type);
@@ -128,7 +124,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
 
                     if (thingUID != null) {
                         Map<String, Object> properties = new HashMap<>(4);
-                        properties.put("name", name);
+                        properties.put(Thing.PROPERTY_MODEL_ID, name);
                         properties.put("type", type);
                         properties.put("addr", addr);
                         properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNr);
@@ -153,6 +149,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof SiemensHvacBridgeBaseThingHandler siemensHvacBridgeHandler) {
             this.siemensHvacBridgeHandler = siemensHvacBridgeHandler;
+            this.siemensHvacBridgeHandler.registerDiscoveryListener(this);
         }
     }
 
