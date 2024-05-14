@@ -568,7 +568,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.freeathomesystem</artifactId>
+      <artifactId>org.openhab.binding.freeathome</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
