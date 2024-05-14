@@ -26,7 +26,9 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -188,9 +190,16 @@ public abstract class DenonMarantzConnector {
         Command dbCommand = command;
         if (dbCommand instanceof PercentType) {
             throw new UnsupportedCommandTypeException();
-        } else if (dbCommand instanceof DecimalType) {
+        } else if (dbCommand instanceof DecimalType decimalCommand) {
             // convert dB to 'normal' volume by adding the offset of 80
-            dbCommand = new DecimalType(((DecimalType) command).toBigDecimal().add(DB_OFFSET));
+            dbCommand = new DecimalType(decimalCommand.toBigDecimal().add(DB_OFFSET));
+        } else if (dbCommand instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> decibelCommand = quantityCommand.toUnit(Units.DECIBEL);
+            if (decibelCommand != null) {
+                dbCommand = new DecimalType(new BigDecimal(decibelCommand.doubleValue()).add(DB_OFFSET));
+            } else {
+                throw new UnsupportedCommandTypeException();
+            }
         }
         sendVolumeCommand(dbCommand, zone);
     }

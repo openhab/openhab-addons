@@ -29,6 +29,10 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>
@@ -138,11 +142,11 @@
 	</channel-type>
 
 	<channel-type id="volumeDB" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Volume (dB)</label>
 		<description>Set the volume level (dB). Same as [mainVolume - 80].</description>
 		<category>SoundVolume</category>
-		<state min="-80" max="18" step="0.5" pattern="%.1f dB"/>
+		<state min="-80" max="18" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="mute">
