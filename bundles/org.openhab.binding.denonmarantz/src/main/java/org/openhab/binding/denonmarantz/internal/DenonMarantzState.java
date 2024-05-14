@@ -16,10 +16,11 @@ import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
@@ -164,8 +165,8 @@ public class DenonMarantzState {
             this.mainVolume = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_MAIN_VOLUME, newVal);
             // update the main volume in dB too
-            State mainVolumeDB = this.mainVolumeDB = DecimalType
-                    .valueOf(volume.subtract(DenonMarantzBindingConstants.DB_OFFSET).toString());
+            State mainVolumeDB = this.mainVolumeDB = new QuantityType<>(
+                    volume.subtract(DenonMarantzBindingConstants.DB_OFFSET), Units.DECIBEL);
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_MAIN_VOLUME_DB, mainVolumeDB);
         }
     }
@@ -224,8 +225,8 @@ public class DenonMarantzState {
             this.zone2Volume = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_VOLUME, newVal);
             // update the volume in dB too
-            State zone2VolumeDB = this.zone2VolumeDB = DecimalType
-                    .valueOf(volume.subtract(DenonMarantzBindingConstants.DB_OFFSET).toString());
+            State zone2VolumeDB = this.zone2VolumeDB = new QuantityType<>(
+                    volume.subtract(DenonMarantzBindingConstants.DB_OFFSET), Units.DECIBEL);
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_VOLUME_DB, zone2VolumeDB);
         }
     }
@@ -260,8 +261,8 @@ public class DenonMarantzState {
             this.zone3Volume = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_VOLUME, newVal);
             // update the volume in dB too
-            State zone3VolumeDB = this.zone3VolumeDB = DecimalType
-                    .valueOf(volume.subtract(DenonMarantzBindingConstants.DB_OFFSET).toString());
+            State zone3VolumeDB = this.zone3VolumeDB = new QuantityType<>(
+                    volume.subtract(DenonMarantzBindingConstants.DB_OFFSET), Units.DECIBEL);
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_VOLUME_DB, zone3VolumeDB);
         }
     }
@@ -296,8 +297,8 @@ public class DenonMarantzState {
             this.zone4Volume = newVal;
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE4_VOLUME, newVal);
             // update the volume in dB too
-            State zone4VolumeDB = this.zone4VolumeDB = DecimalType
-                    .valueOf(volume.subtract(DenonMarantzBindingConstants.DB_OFFSET).toString());
+            State zone4VolumeDB = this.zone4VolumeDB = new QuantityType<>(
+                    volume.subtract(DenonMarantzBindingConstants.DB_OFFSET), Units.DECIBEL);
             handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE4_VOLUME_DB, zone4VolumeDB);
         }
     }
