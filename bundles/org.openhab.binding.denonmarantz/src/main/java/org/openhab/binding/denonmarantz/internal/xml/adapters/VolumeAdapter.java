@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Maps Denon volume values in db to percentage
+ * Maps Denon volume values in dB to percentage
  *
  * @author Jeroen Idserda - Initial contribution
  */
