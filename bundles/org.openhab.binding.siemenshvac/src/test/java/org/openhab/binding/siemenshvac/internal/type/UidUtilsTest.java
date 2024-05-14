@@ -25,8 +25,8 @@ public class UidUtilsTest {
 
     @Test
     public void testSanetizeId() throws Exception {
-        assertEquals(UidUtils.sanetizeId("Début heure été"), "Debut_heure_ete");
-        assertEquals(UidUtils.sanetizeId("App.Ambiance 1"), "App_Ambiance_1");
-        assertEquals(UidUtils.sanetizeId("Appareil d'ambiance P"), "Appareil_d_ambiance_P");
+        assertEquals(UidUtils.sanetizeId("Début heure été"), "debut_heure_ete");
+        assertEquals(UidUtils.sanetizeId("App.Ambiance 1"), "app_ambiance_1");
+        assertEquals(UidUtils.sanetizeId("Appareil d'ambiance P"), "appareil_d_ambiance_p");
     }
 }
