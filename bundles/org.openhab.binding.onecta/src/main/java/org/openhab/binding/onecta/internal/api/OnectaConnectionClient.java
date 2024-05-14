@@ -130,9 +130,9 @@ public class OnectaConnectionClient {
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
                     .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).send();
 
-            logger.debug("Request : {}", response.getRequest().getURI().toString());
-            logger.debug("Body    : {}", new Gson().toJson(body));
-            logger.debug("Resonse : {}", ((HttpContentResponse) response).getContentAsString());
+            logger.trace("Request : {}", response.getRequest().getURI().toString());
+            logger.trace("Body    : {}", new Gson().toJson(body));
+            logger.trace("Resonse : {}", ((HttpContentResponse) response).getContentAsString());
 
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401 && !refreshed) {
                 onectaSignInClient.fetchAccessToken();

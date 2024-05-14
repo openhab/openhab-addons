@@ -198,8 +198,7 @@ public class Enums {
             this.mode = value.split("_")[0];
             if (value.contains("_")) {
                 this.speed = Integer.parseInt(value.split("_")[1]);
-            }
-            else {
+            } else {
                 this.speed = 0;
             }
         }
