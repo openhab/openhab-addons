@@ -36,6 +36,33 @@ public class HueSyncConstants {
                 public static final String FIRMWARE_AVAILABLE = "device-firmware#available-firmware";
             }
         }
+
+        public static class HDMI {
+            public static class IN_1 {
+                public static final String NAME = "device-hdmi-in-1#name";
+                public static final String TYPE = "device-hdmi-in-1#type";
+            }
+
+            public static class IN_2 {
+                public static final String NAME = "device-hdmi-in-2#name";
+                public static final String TYPE = "device-hdmi-in-2#type";
+            }
+
+            public static class IN_3 {
+                public static final String NAME = "device-hdmi-in-3#name";
+                public static final String TYPE = "device-hdmi-in-3#type";
+            }
+
+            public static class IN_4 {
+                public static final String NAME = "device-hdmi-in-4#name";
+                public static final String TYPE = "device-hdmi-in-4#type";
+            }
+
+            public static class OUT {
+                public static final String NAME = "device-hdmi-out#name";
+                public static final String TYPE = "device-hdmi-out#type";
+            }
+        }
     }
 
     public static final String APPLICATION_NAME = "openHAB";

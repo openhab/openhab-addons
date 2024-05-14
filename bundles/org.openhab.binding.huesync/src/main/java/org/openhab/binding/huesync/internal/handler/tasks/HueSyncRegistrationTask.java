@@ -50,11 +50,16 @@ public class HueSyncRegistrationTask implements Runnable {
     @Override
     public void run() {
         try {
-            if (this.status.get() == ThingStatus.OFFLINE) {
-                HueSyncRegistration registration = this.connection.registerDevice(deviceInfo.uniqueId);
+            if (!this.connection.isRegistered()) {
+                this.logger.info("Starting device registration for {} {}:{}", this.deviceInfo.name,
+                        this.deviceInfo.deviceType, this.deviceInfo.uniqueId);
 
-                if (registration != null) {
-                    this.action.accept(registration);
+                if (this.status.get() == ThingStatus.OFFLINE) {
+                    HueSyncRegistration registration = this.connection.registerDevice(deviceInfo.uniqueId);
+
+                    if (registration != null) {
+                        this.action.accept(registration);
+                    }
                 }
             }
         } catch (Exception e) {

@@ -89,7 +89,33 @@ Example thing configuration goes here.
 ### Item Configuration
 
 ```java
-Example item configuration goes here.
+Group HueSyncBox "HueSyncBox" <f7:tv> ["NetworkAppliance"]
+
+Group HueSyncBox_Firmware "Firmware" <f7:info> (HueSyncBox) ["Sensor"]
+
+Group HueSyncBox_Inputs "Inputs" <receiver> (HueSyncBox) ["Receiver"]
+
+Group HueSyncBox_Input_1 "Input 1" <receiver> (HueSyncBox_Inputs) ["Receiver"]
+Group HueSyncBox_Input_2 "Input 2" <receiver> (HueSyncBox_Inputs) ["Receiver"]
+Group HueSyncBox_Input_3 "Input 3" <receiver> (HueSyncBox_Inputs) ["Receiver"]
+Group HueSyncBox_Input_4 "Input 4" <receiver> (HueSyncBox_Inputs) ["Receiver"]
+
+Group HueSyncBox_Output "Output" <screen> (HueSyncBox) ["Screen"]
+
+String HueSyncBox_Firmware_Version        "Firmware Version"        <f7:info> (HueSyncBox_Firmware) ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-firmware#firmware" }           
+String HueSyncBox_Latest_Firmware_Version "Latest Firmware Version" <f7:info> (HueSyncBox_Firmware) ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-firmware#available-firmware" } 
+
+String HueSyncBox_Device_hdmi_in1_Type    "Type - Input 1"   <f7:tag>     (HueSyncBox_Input_1) ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-hdmi-in-1#type" }              
+String HueSyncBox_Device_hdmi_in1_Name    "Name - Input 1"   <f7:textbox> (HueSyncBox_Input_1) ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-hdmi-in-1#name" }              
+String HueSyncBox_Device_hdmi_in2_Name    "Name - Input 2"   <f7:textbox> (HueSyncBox_Input_2) ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-hdmi-in-2#name" }              
+String HueSyncBox_Device_hdmi_in2_Type    "Type - Input 2"   <f7:tag>     (HueSyncBox_Input_2) ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-hdmi-in-2#type" }              
+String HueSyncBox_Device_hdmi_in3_Name    "Name - Input 3"   <f7:textbox> (HueSyncBox_Input_3) ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-hdmi-in-3#name" }              
+String HueSyncBox_Device_hdmi_in3_Type    "Type - Input 3"   <f7:tag>     (HueSyncBox_Input_3) ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-hdmi-in-3#type" }              
+String HueSyncBox_Device_hdmi_in4_Name    "Name - Input 4"   <f7:textbox> (HueSyncBox_Input_4) ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-hdmi-in-4#name" }              
+String HueSyncBox_Device_hdmi_in4_Type    "Type - Input 4"   <f7:tag>     (HueSyncBox_Input_4) ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-hdmi-in-4#type" }             
+
+String HueSyncBox_Device_hdmi_out_Name    "Name - Output"    <f7:textbox> (HueSyncBox_Output)  ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-hdmi-out#name" }               
+String HueSyncBox_Device_hdmi_out_Type    "Type - Output"    <f7:tag>     (HueSyncBox_Output)  ["Property"]  { channel="huesync:huesyncthing:HueSyncBox:device-hdmi-out#type" }               
 ```
 
 ### Sitemap Configuration

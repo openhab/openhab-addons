@@ -12,8 +12,17 @@
 			smart light that responds to and reflects the content you watch or listen to.
 		</description>
 
+		<category>NetworkAppliance</category>
+
 		<channel-groups>
 			<channel-group id="device-firmware" typeId="device-firmware"></channel-group>
+
+			<channel-group id="device-hdmi-in-1" typeId="device-hdmi-connection-in"></channel-group>
+			<channel-group id="device-hdmi-in-2" typeId="device-hdmi-connection-in"></channel-group>
+			<channel-group id="device-hdmi-in-3" typeId="device-hdmi-connection-in"></channel-group>
+			<channel-group id="device-hdmi-in-4" typeId="device-hdmi-connection-in"></channel-group>
+
+			<channel-group id="device-hdmi-out" typeId="device-hdmi-connection-out"></channel-group>
 		</channel-groups>
 
 		<properties>
@@ -28,10 +37,28 @@
 	<channel-group-type id="device-firmware">
 		<label>Firmware</label>
 		<description>Information about the installed device firmaware and available updates.</description>
-		<category></category>
+		<category>Group</category>
 		<channels>
 			<channel id="firmware" typeId="device-info-firmware"></channel>
 			<channel id="available-firmware" typeId="device-info-firmware-available"></channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="device-hdmi-connection-in">
+		<label>HDMI Input</label>
+		<description>HDMI connection</description>
+		<category>Receiver</category>
+		<channels>
+			<channel id="name" typeId="connection-name"></channel>
+			<channel id="type" typeId="connection-type"></channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="device-hdmi-connection-out">
+		<label>HDMI output</label>
+		<description>HDMI connection</description>
+		<category>Screen</category>
+		<channels>
+			<channel id="name" typeId="connection-name"></channel>
+			<channel id="type" typeId="connection-type"></channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

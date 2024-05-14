@@ -3,15 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<!--
-		<xs:complexType name="itemType">
-		<xs:simpleContent>
-		<xs:extension base="xs:string">
-		<xs:attribute name="unitHint" type="xs:string" use="optional"/>
-		</xs:extension>
-		</xs:simpleContent>
-		</xs:complexType>
-	-->
+
 	<channel-type id="device-info-firmware">
 		<!--
 			Switch,
@@ -40,18 +32,41 @@
 		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
-	<!--
-		firmwareVersion Get string, version User readable version of the device firmware, starting with decimal major .minor .maintenance
-		format e.g. “1.12.3”
-		updatableFirmwareVersion Get string, version User readable version of the firmware the device can upgrade to. Item is set
-		to null when there is no update available.
-		buildNumber Get number, uint Build number of the firmware. Unique for every build with newer builds guaranteed a higher
-		number
-		than older.
-		updatableBuildNumber Get number, uint Build number that is available to update to. Item is set to null when there is no
-		update
-		available.
-		lastCheckedUpdate Get string, time UTC time when last check for update was performed.
-		wifiState Get string, enum uninitialized, disconnected, lan, wan
-	-->
+
+	<channel-type id="connection-name">
+		<item-type>String</item-type>
+		<label>Friendly name</label>
+		<category>Text</category>
+	</channel-type>
+	<channel-type id="connection-type">
+		<item-type>String</item-type>
+		<label>Friendly type</label>
+		<category>Text</category>
+		<command>
+			<options>
+				<option value="generic"></option>
+				<option value="video"></option>
+				<option value="game"></option>
+				<option value="music"></option>
+				<option value="xbox"></option>
+				<option value="playstation"></option>
+				<option value="nintendoswitch"></option>
+				<option value="phone"></option>
+				<option value="desktop"></option>
+				<option value="laptop"></option>
+				<option value="appletv"></option>
+				<option value="roku"></option>
+				<option value="shield"></option>
+				<option value="chromecast"></option>
+				<option value="firetv"></option>
+				<option value="diskplayer"></option>
+				<option value="settopbox"></option>
+				<option value="satellite"></option>
+				<option value="avreceiver"></option>
+				<option value="soundbar"></option>
+				<option value="hdmiswitch"></option>
+			</options>
+		</command>
+	</channel-type>
+
 </thing:thing-descriptions>

@@ -48,15 +48,16 @@ public class HueSyncUpdateTask implements Runnable {
     @Override
     public void run() {
         try {
-            this.logger.trace("Status update query for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
-                    this.deviceInfo.uniqueId);
+            if (this.connection.isRegistered()) {
+                this.logger.trace("Status update query for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
+                        this.deviceInfo.uniqueId);
 
-            HueSyncUpdateInfo updateInfo = new HueSyncUpdateInfo();
-            updateInfo.deviceStatus = this.connection.getDetailedDeviceInfo();
-            updateInfo.hdmiStatus = this.connection.getHdmiInfo();
+                HueSyncUpdateInfo updateInfo = new HueSyncUpdateInfo();
+                updateInfo.deviceStatus = this.connection.getDetailedDeviceInfo();
+                updateInfo.hdmiStatus = this.connection.getHdmiInfo();
 
-            this.action.accept(updateInfo);
-
+                this.action.accept(updateInfo);
+            }
         } catch (Exception e) {
             this.logger.debug("{}", e.getMessage());
         }

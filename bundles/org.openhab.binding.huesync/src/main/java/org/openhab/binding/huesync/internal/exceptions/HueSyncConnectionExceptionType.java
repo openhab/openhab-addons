@@ -20,5 +20,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum HueSyncConnectionExceptionType {
-
+    GENERIC
 }
