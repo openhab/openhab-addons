@@ -159,14 +159,6 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void activate() {
-        final SiemensHvacBridgeBaseThingHandler handler = siemensHvacBridgeHandler;
-        if (handler != null) {
-            handler.registerDiscoveryListener(this);
-        }
-    }
-
-    @Override
     public void deactivate() {
     }
 }

@@ -34,8 +34,6 @@ public class SiemensHvacBindingConstants {
     public static final String IP_ADDRESS = "ipAddress";
     public static final String BASE_URL = "baseUrl";
 
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
-
     public static final String PROPERTY_VENDOR_NAME = "Siemens";
 
     public static final String CONFIG_DESCRIPTION_URI_THING_PREFIX = "thing-type";

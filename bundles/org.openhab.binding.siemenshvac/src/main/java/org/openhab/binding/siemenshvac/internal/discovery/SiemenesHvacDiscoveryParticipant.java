@@ -54,7 +54,7 @@ public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipan
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(SiemensHvacBindingConstants.THING_TYPE_BRIDGE);
+        return Set.of(SiemensHvacBindingConstants.THING_TYPE_OZW672);
     }
 
     @Override
