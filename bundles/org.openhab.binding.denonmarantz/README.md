@@ -44,10 +44,10 @@ The DenonMarantz AVR supports the following channels (some channels are model sp
 |---------------------------|---------------------------|-----------------------------------------------|
 | _General_                 |                           |                                               |
 |  general#power            | Switch (RW)               | Power on/off                                  |
-|  general#surroundProgram  | String (R)                | current surround program (e.g. STEREO)        |
-|  general#artist           | String (R)                | artist of current track                       |
-|  general#album            | String (R)                | album of current track                        |
-|  general#track            | String (R)                | title of current track                        |
+|  general#surroundProgram  | String (R)                | Current surround program (e.g. STEREO)        |
+|  general#artist           | String (R)                | Artist of current track                       |
+|  general#album            | String (R)                | Album of current track                        |
+|  general#track            | String (R)                | Title of current track                        |
 |  general#command          | String (W)                | Command to send to the AVR (for use in Rules) |
 | _Main zone_               |                           |                                               |
 |  mainZone#power           | Switch (RW)               | Main zone power on/off                        |
