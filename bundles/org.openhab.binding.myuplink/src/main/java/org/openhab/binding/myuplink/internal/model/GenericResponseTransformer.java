@@ -110,47 +110,10 @@ public class GenericResponseTransformer {
                         } else {
                             result.put(channel, newState);
                         }
-                        // switch (channelType) {
-                        // case CHANNEL_TYPE_SWITCH:
-                        // result.put(channel, OnOffType.from(Boolean.parseBoolean(value)));
-                        // break;
-                        // case CHANNEL_TYPE_VOLT:
-                        // result.put(channel, new QuantityType<>(Double.parseDouble(value), Units.VOLT));
-                        // break;
-                        // case CHANNEL_TYPE_AMPERE:
-                        // result.put(channel, new QuantityType<>(Double.parseDouble(value), Units.AMPERE));
-                        // break;
-                        // case CHANNEL_TYPE_KWH:
-                        // result.put(channel, new QuantityType<>(Double.parseDouble(value),
-                        // MetricPrefix.KILO(Units.WATT_HOUR)));
-                        // break;
-                        // case CHANNEL_TYPE_POWER:
-                        // result.put(channel,
-                        // new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT)));
-                        // break;
-                        // case CHANNEL_TYPE_DATE:
-                        // result.put(channel, new DateTimeType(Utils.parseDate(value)));
-                        // break;
-                        // case CHANNEL_TYPE_STRING:
-                        // result.put(channel, new StringType(value));
-                        // break;
-                        // case CHANNEL_TYPE_NUMBER:
-                        // if (channelTypeId.contains(CHANNEL_TYPENAME_INTEGER)) {
-                        // // explicit type long is needed in case of integer/long values otherwise automatic
-                        // // transformation to a decimal type is applied.
-                        // result.put(channel, new DecimalType(Long.parseLong(value)));
-                        // } else {
-                        // result.put(channel, new DecimalType(Double.parseDouble(value)));
-                        // }
-                        // break;
-                        // default:
-                        // logger.warn("no mapping implemented for channel type '{}'", channelType);
-                        // }
 
-                        // // call the custom handler to handle specific / composite channels which do not map 1:1 to
-                        // JSON
-                        // // fields.
-                        // // TODO: result.putAll(customResponseTransformer.transform(channel, value, jsonData));
+                        // call the custom handler to handle specific / composite channels which do not map 1:1 to JSON
+                        // fields.
+                        // TODO: result.putAll(customResponseTransformer.transform(channel, value, jsonData));
 
                     } catch (NumberFormatException | DateTimeParseException ex) {
                         logger.warn("caught exception while parsing data for channel {} (value '{}'). Exception: {}",

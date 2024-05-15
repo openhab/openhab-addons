@@ -42,7 +42,6 @@ public class GetPoints extends AbstractCommand {
 
     @Override
     protected String getChannelGroup() {
-        // TODO: change this?!
         return CHANNEL_GROUP_NONE;
     }
 }
