@@ -40,7 +40,7 @@ There are more parameters which all have defaults set.
 
 The DenonMarantz AVR supports the following channels (some channels are model specific):
 
-| Channel Type ID           | Item Type                 | Description                                   |
+| Channel ID                | Item Type                 | Description                                   |
 |---------------------------|---------------------------|-----------------------------------------------|
 | _General_                 |                           |                                               |
 |  general#power            | Switch (RW)               | Power on/off                                  |
