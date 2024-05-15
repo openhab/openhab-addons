@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -46,8 +47,6 @@ public final class Utils {
     private Utils() {
     }
 
-    // TODO: check which methods are needed, delete unused
-
     /**
      * parses a date string in api source format to ZonedDateTime which is used by Openhab.
      *
@@ -65,17 +64,17 @@ public final class Utils {
         return ZonedDateTime.parse(date, formatter);
     }
 
-    // /**
-    // * get element as JsonObject.
-    // *
-    // * @param jsonObject
-    // * @param key
-    // * @return
-    // */
-    // public static @Nullable JsonObject getAsJsonObject(@Nullable JsonObject jsonObject, String key) {
-    // JsonElement element = jsonObject == null ? null : jsonObject.get(key);
-    // return (element instanceof JsonObject) ? element.getAsJsonObject() : null;
-    // }
+    /**
+     * get element as JsonObject.
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
+    public static @Nullable JsonObject getAsJsonObject(@Nullable JsonObject jsonObject, String key) {
+        JsonElement element = jsonObject == null ? null : jsonObject.get(key);
+        return (element instanceof JsonObject) ? element.getAsJsonObject() : null;
+    }
 
     /**
      * get element as JsonArray.
@@ -121,17 +120,17 @@ public final class Utils {
         return (element instanceof JsonPrimitive) ? element.getAsInt() : 0;
     }
 
-    // /**
-    // * get element as boolean.
-    // *
-    // * @param jsonObject
-    // * @param key
-    // * @return
-    // */
-    // public static @Nullable Boolean getAsBool(@Nullable JsonObject jsonObject, String key) {
-    // JsonElement json = jsonObject == null ? null : jsonObject.get(key);
-    // return (json == null || json instanceof JsonNull) ? null : json.getAsBoolean();
-    // }
+    /**
+     * get element as boolean.
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
+    public static @Nullable Boolean getAsBool(@Nullable JsonObject jsonObject, String key) {
+        JsonElement json = jsonObject == null ? null : jsonObject.get(key);
+        return (json == null || json instanceof JsonNull) ? null : json.getAsBoolean();
+    }
 
     /**
      * retrieves typeID of a channel.

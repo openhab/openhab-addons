@@ -42,9 +42,6 @@ public class MyUplinkBindingConstants {
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_NONE = "";
-    // TODO: add content
-
-    public static final Set<String> SUPPORTED_CHANNEL_GROUPS = Set.of(CHANNEL_GROUP_NONE);
 
     // Channel types
     public static final String CHANNEL_TYPEPREFIX_RW = "rw";
@@ -82,7 +79,6 @@ public class MyUplinkBindingConstants {
     // TODO: add content
 
     // web request constants
-    // TODO: add content
     public static final long WEB_REQUEST_INITIAL_DELAY = 30;
     public static final long WEB_REQUEST_INTERVAL = 5;
     public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
@@ -103,8 +99,6 @@ public class MyUplinkBindingConstants {
     public static final String LOGIN_URL = API_BASE_URL + "/oauth/token";
     public static final String GET_SYSTEMS_URL = API_BASE_URL + "/v2/systems/me";
     public static final String GET_DEVICE_POINTS = API_BASE_URL + "/v2/devices/{deviceId}/points";
-
-    // TODO: add content
 
     // Status Keys
     public static final String STATUS_TOKEN_VALIDATED = "@text/status.token.validated";
