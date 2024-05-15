@@ -74,8 +74,8 @@ The DenonMarantz AVR supports the following channels (some channels are model sp
 |  zone4#mute               | Switch (RW)               | Zone 4 mute                                   |
 |  zone4#input              | String (RW)               | Zone 4 input                                  |
 
-(R) = read-only (no updates possible)
-(RW) = read-write
+(R) = read-only (no updates possible),
+(RW) = read-write,
 (W) = write-only (no feedback)
 
 ## Full Example
