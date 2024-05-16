@@ -83,9 +83,9 @@ public final class Utils {
      * @param key
      * @return
      */
-    public static @Nullable JsonArray getAsJsonArray(@Nullable JsonObject jsonObject, String key) {
+    public static JsonArray getAsJsonArray(@Nullable JsonObject jsonObject, String key) {
         JsonElement element = jsonObject == null ? null : jsonObject.get(key);
-        return (element instanceof JsonArray) ? element.getAsJsonArray() : null;
+        return (element instanceof JsonArray) ? element.getAsJsonArray() : new JsonArray();
     }
 
     /**
@@ -106,6 +106,19 @@ public final class Utils {
             }
         }
         return text;
+    }
+
+    /**
+     * null safe version of getAsString with default value.
+     *
+     * @param jsonObject
+     * @param key
+     * @param defaultVal
+     * @return
+     */
+    public static @Nullable String getAsString(@Nullable JsonObject jsonObject, String key, String defaultVal) {
+        String text = getAsString(jsonObject, key);
+        return text == null ? defaultVal : text;
     }
 
     /**
@@ -130,6 +143,18 @@ public final class Utils {
     public static @Nullable Boolean getAsBool(@Nullable JsonObject jsonObject, String key) {
         JsonElement json = jsonObject == null ? null : jsonObject.get(key);
         return (json == null || json instanceof JsonNull) ? null : json.getAsBoolean();
+    }
+
+    /**
+     * null safe version of getAsBool with default value.
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
+    public static @Nullable Boolean getAsBool(@Nullable JsonObject jsonObject, String key, Boolean defaultValue) {
+        Boolean result = getAsBool(jsonObject, key);
+        return result ? defaultValue : result;
     }
 
     /**

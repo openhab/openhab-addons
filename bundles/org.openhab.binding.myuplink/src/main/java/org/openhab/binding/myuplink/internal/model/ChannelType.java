@@ -15,6 +15,7 @@ package org.openhab.binding.myuplink.internal.model;
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Enum to map units to type names and internal data types.
@@ -31,17 +32,40 @@ public enum ChannelType {
     FLOW("l/m", "type-flow", "Number:Dimensionless"),
     ELECTRIC_CURRENT("A", "type-electric-current", "Number:ElectricCurrent"),
     TIME("h", "type-time", "Number:Time"),
-    INTEGER("NUMBER", "type-number-integer", "Number"),
-    DOUBLE("NUMBER", "type-number-double", "Number");
+    INTEGER(CHANNEL_TYPE_UNIT_NONE, "type-number-integer", "Number"),
+    DOUBLE(CHANNEL_TYPE_UNIT_NONE, "type-number-double", "Number"),
+    SWITCH(CHANNEL_TYPE_UNIT_NONE, "type-switch", "Switch"),
+    RW_SWITCH(CHANNEL_TYPE_UNIT_NONE, "rwtype-switch", "Switch");
 
     private final String jsonUnit;
     private final String typeName;
     private final String acceptedType;
+    private final boolean writable;
 
-    ChannelType(String jsonUnit, String typeName, String acceptedType) {
+    /**
+     * full constructor for both read-only and writable types.
+     *
+     * @param jsonUnit
+     * @param typeName
+     * @param acceptedType
+     * @param writable
+     */
+    ChannelType(String jsonUnit, String typeName, String acceptedType, boolean writable) {
         this.jsonUnit = jsonUnit;
         this.typeName = typeName;
         this.acceptedType = acceptedType;
+        this.writable = writable;
+    }
+
+    /**
+     * simplified constructor for readonly types.
+     *
+     * @param jsonUnit
+     * @param typeName
+     * @param acceptedType
+     */
+    ChannelType(String jsonUnit, String typeName, String acceptedType) {
+        this(jsonUnit, typeName, acceptedType, false);
     }
 
     /**
@@ -65,17 +89,21 @@ public enum ChannelType {
         return acceptedType;
     }
 
-    public static ChannelType fromJsonData(String jsonUnit, String jsonStrVal) {
+    /**
+     * @return the writable
+     */
+    public boolean isWritable() {
+        return writable;
+    }
+
+    @Nullable
+    public static ChannelType fromJsonData(String jsonUnit, boolean writable) {
         for (var channelType : ChannelType.values()) {
-            if (channelType.getJsonUnit().equals(jsonUnit)) {
+            if (channelType.getJsonUnit().equals(jsonUnit) && (channelType.isWritable() == writable)) {
                 return channelType;
             }
         }
-        if (jsonStrVal.contains(JSON_VAL_DECIMAL_SEPARATOR)) {
-            return DOUBLE;
-        } else {
-            return INTEGER;
-        }
+        return null;
     }
 
     public static ChannelType fromTypeName(String typeName) {
