@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -252,7 +252,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
 
     public abstract void updateChannelDynStateDescription() throws LGThinqApiException;
 
-    public abstract LGThinQApiClientService<C, S> getLgThinQAPIClientService();
+    public abstract LGThinQApiClientService<@NonNull C, @NonNull S> getLgThinQAPIClientService();
 
     protected void createDynSwitchChannel(String channelName, ChannelUID chanelUuid) {
         if (getCallback() == null) {

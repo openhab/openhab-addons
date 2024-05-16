@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQBridgeConfiguration;
 import org.openhab.binding.lgthinq.internal.api.TokenManager;
@@ -50,6 +51,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements LGThinQBridge {
 
     private Map<String, LGThinQAbstractDeviceHandler> lGDeviceRegister = new ConcurrentHashMap<>();
@@ -67,13 +69,13 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         }
     }
     private final Logger logger = LoggerFactory.getLogger(LGThinQBridgeHandler.class);
-    private LGThinQBridgeConfiguration lgthinqConfig;
+    private @Nullable LGThinQBridgeConfiguration lgthinqConfig;
     private TokenManager tokenManager;
-    private LGThinqDiscoveryService discoveryService;
-    private LGThinQGeneralApiClientService lgApiClient;
+    private @Nullable LGThinqDiscoveryService discoveryService;
+    private @Nullable LGThinQGeneralApiClientService lgApiClient;
     private @Nullable Future<?> initJob;
     private @Nullable ScheduledFuture<?> devicePollingJob;
-    private @NonNull HttpClientFactory httpClientFactory;
+    private final @NonNull HttpClientFactory httpClientFactory;
 
     public LGThinQBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
@@ -94,7 +96,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
      */
     abstract class PollingRunnable implements Runnable {
         protected final String bridgeName;
-        protected LGThinQBridgeConfiguration lgthinqConfig;
+        protected @Nullable LGThinQBridgeConfiguration lgthinqConfig;
 
         PollingRunnable(String bridgeName) {
             this.bridgeName = bridgeName;
@@ -167,17 +169,6 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         }
     }
 
-    /**
-     * Registry the OSGi services used by this Bridge.
-     * Eventually, the Discovery Service will be activated with this bridge as argument.
-     * 
-     * @return Services to be registered to OSGi.
-     */
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(LGThinqDiscoveryService.class);
-    }
-
     @Override
     public void registryListenerThing(LGThinQAbstractDeviceHandler thing) {
         if (lGDeviceRegister.get(thing.getDeviceId()) == null) {
@@ -193,11 +184,6 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
     @Override
     public void unRegistryListenerThing(LGThinQAbstractDeviceHandler thing) {
         lGDeviceRegister.remove(thing.getDeviceId());
-    }
-
-    @Override
-    public LGThinQAbstractDeviceHandler getThingByDeviceId(String deviceId) {
-        return lGDeviceRegister.get(deviceId);
     }
 
     private LGDevicePollingRunnable lgDevicePollingRunnable;
@@ -348,5 +334,24 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    public boolean unregisterDiscoveryListener() {
+        if (discoveryService != null) {
+            discoveryService = null;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Registry the OSGi services used by this Bridge.
+     * Eventually, the Discovery Service will be activated with this bridge as argument.
+     *
+     * @return Services to be registered to OSGi.
+     */
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(LGThinqDiscoveryService.class);
     }
 }
