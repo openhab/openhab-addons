@@ -8,4 +8,41 @@
 	<description>Controls the RadioThermostat model CT30, CT50 or CT80 via the built-in WIFI module</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>ip</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>type</name>
+					<value>ipMulticast</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>destIp</name>
+					<value>239.255.255.250</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>destPort</name>
+					<value>1900</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>request</name>
+					<value>0x54 0x59 0x50 0x45 0x3a 0x20 0x57 0x4d 0x2d 0x44 0x49 0x53 0x43 0x4f 0x56 0x45 0x52 0x0d 0x0a 0x56 0x45
+						0x52 0x53 0x49 0x4f 0x4e 0x3a 0x20 0x31 0x2e 0x30 0x0d 0x0a 0x0d 0x0a 0x73 0x65 0x72 0x76 0x69 0x63 0x65 0x73 0x3a
+						0x63 0x6f 0x6d 0x2e 0x6d 0x61 0x72 0x76 0x65 0x6c 0x6c 0x2e 0x77 0x6d 0x2e 0x73 0x79 0x73 0x74 0x65 0x6d 0x2a 0x0d
+						0x0a 0x0d 0x0a</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>timeoutMs</name>
+					<value>5000</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>response</name>
+					<regex>.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>
