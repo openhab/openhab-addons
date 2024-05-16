@@ -39,6 +39,18 @@ public class ChannelFactoryTest {
             {"category":"NIBEF VVM 320 E","parameterId":"40121","parameterName":"Add. heat (BT63)","parameterUnit":"°C","writable":false,"timestamp":"2024-05-10T05:35:50+00:00","value":39.0,"strVal":"39Â°C","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[],"scaleValue":"0.1","zoneId":null}
             """;
 
+    private final String testChannelEnumWritableSwitch = """
+            {"category":"NIBEF VVM 320 E","parameterId":"50004","parameterName":"Temporary lux","parameterUnit":"","writable":true,"timestamp":"2024-05-05T13:41:09+00:00","value":0.0,"strVal":"off","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[{"value":"0","text":"off","icon":""},{"value":"1","text":"on","icon":""}],"scaleValue":"1","zoneId":null}
+                """;
+
+    private final String testChannelEnumSwitch = """
+            {"category":"NIBEF VVM 320 E","parameterId":"49992","parameterName":"Pump: Heating medium (GP6)","parameterUnit":"","writable":false,"timestamp":"2024-05-05T13:41:09+00:00","value":0.0,"strVal":"Off","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[{"value":"0","text":"Off","icon":""},{"value":"1","text":"On","icon":""}],"scaleValue":"1","zoneId":null}
+                    """;
+
+    private final String testChannelEnumUnknown = """
+            {"category":"NIBEF VVM 320 E","parameterId":"99999","parameterName":"Unknown","parameterUnit":"","writable":false,"timestamp":"2024-05-05T13:41:09+00:00","value":0.0,"strVal":"wtf","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[{"value":"0","text":"wtf","icon":""},{"value":"1","text":"On","icon":""}],"scaleValue":"1","zoneId":null}
+                    """;
+
     @Test
     public void testFromJsonDataTemperature() {
         Gson gson = new Gson();
@@ -51,5 +63,42 @@ public class ChannelFactoryTest {
         assertThat(result.getUID().getId(), is(TEST_CHANNEL_ID));
         assertThat(result.getDescription(), is("Add. heat (BT63)"));
         assertThat(result.getLabel(), is("Add. heat (BT63)"));
+    }
+
+    @Test
+    public void testFromJsonDataEnumWritableSwitch() {
+        Gson gson = new Gson();
+        JsonObject json = gson.fromJson(testChannelEnumWritableSwitch, JsonObject.class);
+        json = json == null ? new JsonObject() : json;
+
+        Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
+        assertThat(result.getAcceptedItemType(), is(ChannelType.RW_SWITCH.getAcceptedType()));
+        assertThat(result.getUID().getThingUID(), is(TEST_THING_UID));
+        assertThat(result.getUID().getId(), is(TEST_CHANNEL_ID));
+        assertThat(result.getDescription(), is("Temporary lux"));
+        assertThat(result.getLabel(), is("Temporary lux"));
+    }
+
+    @Test
+    public void testFromJsonDataEnumSwitch() {
+        Gson gson = new Gson();
+        JsonObject json = gson.fromJson(testChannelEnumSwitch, JsonObject.class);
+        json = json == null ? new JsonObject() : json;
+
+        Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
+        assertThat(result.getAcceptedItemType(), is(ChannelType.SWITCH.getAcceptedType()));
+        assertThat(result.getUID().getThingUID(), is(TEST_THING_UID));
+        assertThat(result.getUID().getId(), is(TEST_CHANNEL_ID));
+        assertThat(result.getDescription(), is("Pump: Heating medium (GP6)"));
+        assertThat(result.getLabel(), is("Pump: Heating medium (GP6)"));
+    }
+    @Test
+    public void testFromJsonDataEnumUnknown() {
+        Gson gson = new Gson();
+        JsonObject json = gson.fromJson(testChannelEnumUnknown, JsonObject.class);
+        json = json == null ? new JsonObject() : json;
+
+        Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
+        assertThat(result.getAcceptedItemType(), is(ChannelType.DOUBLE.getAcceptedType()));
     }
 }

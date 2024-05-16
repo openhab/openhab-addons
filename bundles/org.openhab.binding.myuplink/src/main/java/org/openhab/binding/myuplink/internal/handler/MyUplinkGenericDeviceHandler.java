@@ -84,13 +84,12 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
 
         if (deviceFound != null) {
             Map<String, String> properties = editProperties();
-            String currentFwVersion = Utils.getAsString(deviceFound, JSON_KEY_CURRENT_FW_VERSION);
-            properties.put(THING_CONFIG_CURRENT_FW_VERSION,
-                    currentFwVersion != null ? currentFwVersion : GENERIC_NO_VAL);
+            String currentFwVersion = Utils.getAsString(deviceFound, JSON_KEY_CURRENT_FW_VERSION, GENERIC_NO_VAL);
+            properties.put(THING_CONFIG_CURRENT_FW_VERSION, currentFwVersion);
             updateProperties(properties);
 
-            String connectionStatus = Utils.getAsString(deviceFound, JSON_KEY_CONNECTION_STATE);
-            if (connectionStatus != null && connectionStatus.equals(JSON_VAL_CONNECTION_CONNECTED)) {
+            String connectionStatus = Utils.getAsString(deviceFound, JSON_KEY_CONNECTION_STATE, GENERIC_NO_VAL);
+            if (connectionStatus.equals(JSON_VAL_CONNECTION_CONNECTED)) {
                 super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             } else {
                 super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, STATUS_NO_CONNECTION);
@@ -109,7 +108,7 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
                 if (devices != null && !devices.isEmpty()) {
                     for (JsonElement deviceJson : devices) {
                         JsonObject device = deviceJson.getAsJsonObject();
-                        String deviceId = Utils.getAsString(device, JSON_KEY_GENERIC_ID);
+                        String deviceId = Utils.getAsString(device, JSON_KEY_GENERIC_ID, GENERIC_NO_VAL);
                         if (deviceId.equals(getDeviceId())) {
                             return device;
                         }

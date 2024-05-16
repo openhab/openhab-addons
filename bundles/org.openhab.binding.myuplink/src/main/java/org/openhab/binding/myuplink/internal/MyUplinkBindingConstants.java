@@ -44,7 +44,8 @@ public class MyUplinkBindingConstants {
     public static final String CHANNEL_GROUP_NONE = "";
 
     // Channel types
-    public static final String CHANNEL_TYPEPREFIX_RW = "rw";
+    public static final String CHANNEL_TYPE_UNIT_NONE = "NO_UNIT";
+    public static final String CHANNEL_TYPE_PREFIX_RW = "rw";
 
     // Channels with specific handling
     // TODO: add content
@@ -53,6 +54,8 @@ public class MyUplinkBindingConstants {
     public static final String JSON_KEY_ROOT_DATA = "data";
     public static final String JSON_KEY_CHANNEL_STR_VAL = "strVal";
     public static final String JSON_KEY_CHANNEL_VALUE = "value";
+    public static final String JSON_KEY_CHANNEL_WRITABLE = "writable";
+    public static final String JSON_KEY_CHANNEL_ENUM_VALUES = "enumValues";
     public static final String JSON_KEY_CHANNEL_ID = "parameterId";
     public static final String JSON_KEY_CHANNEL_LABEL = "parameterName";
     public static final String JSON_KEY_CHANNEL_UNIT = "parameterUnit";
@@ -68,6 +71,12 @@ public class MyUplinkBindingConstants {
 
     public static final String JSON_KEY_AUTH_ACCESS_TOKEN = "access_token";
     public static final String JSON_KEY_AUTH_EXPIRES_IN = "expires_in";
+
+    public static final String JSON_ENUM_KEY_TEXT = "text";
+    public static final String JSON_ENUM_ORD_0 = "0";
+    public static final String JSON_ENUM_ORD_1 = "1";
+    public static final String JSON_ENUM_VAL_ON = "on";
+    public static final String JSON_ENUM_VAL_OFF = "off";
 
     public static final String JSON_VAL_CONNECTION_CONNECTED = "Connected";
     public static final String JSON_VAL_DECIMAL_SEPARATOR = ".";

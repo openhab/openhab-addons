@@ -67,8 +67,7 @@ public class GenericResponseTransformer {
             logger.debug("received channel data: {}", channelData.toString());
 
             var value = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_VALUE);
-            var channelId = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_ID);
-            channelId = channelId == null ? "" : channelId;
+            var channelId = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_ID, GENERIC_NO_VAL);
 
             Channel channel;
             if (dynamicChannelProvider != null) {
