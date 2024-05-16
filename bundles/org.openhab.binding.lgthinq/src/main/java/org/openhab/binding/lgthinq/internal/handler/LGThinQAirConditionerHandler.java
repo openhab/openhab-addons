@@ -249,10 +249,6 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         }
     }
 
-    protected DeviceTypes getDeviceType() {
-        return DeviceTypes.AIR_CONDITIONER;
-    }
-
     @Override
     public void onDeviceAdded(LGDevice device) {
         // TODO - handle it. Think if it's needed

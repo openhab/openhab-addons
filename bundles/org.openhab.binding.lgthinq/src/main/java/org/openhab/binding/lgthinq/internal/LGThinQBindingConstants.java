@@ -260,7 +260,6 @@ public class LGThinQBindingConstants {
     public static final String WM_CHANNEL_COURSE_ID = "course";
     public static final String DR_CHANNEL_DRY_LEVEL_ID = "dry-level";
     public static final String WM_CHANNEL_SMART_COURSE_ID = "smart-course";
-    public static final String WM_CHANNEL_DOWNLOADED_COURSE_ID = "downloaded-course";
     public static final String WM_CHANNEL_TEMP_LEVEL_ID = "temperature-level";
     public static final String WM_CHANNEL_DOOR_LOCK_ID = "door-lock";
     public static final String DR_CHANNEL_CHILD_LOCK_ID = "child-lock";
