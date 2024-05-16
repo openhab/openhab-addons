@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapabilityFactoryV1;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapabilityFactoryV2;
+import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherCapabilityFactoryV2;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCapabilityFactoryV1;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCapabilityFactoryV2;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerCapabilityFactoryV1;
@@ -43,7 +44,8 @@ public class CapabilityFactory {
     private CapabilityFactory() {
         List<AbstractCapabilityFactory<?>> factories = Arrays.asList(new ACCapabilityFactoryV1(),
                 new ACCapabilityFactoryV2(), new FridgeCapabilityFactoryV1(), new FridgeCapabilityFactoryV2(),
-                new WasherDryerCapabilityFactoryV1(), new WasherDryerCapabilityFactoryV2());
+                new WasherDryerCapabilityFactoryV1(), new WasherDryerCapabilityFactoryV2(),
+                new WasherDryerCapabilityFactoryV1(), new DishWasherCapabilityFactoryV2());
         factories.forEach(f -> {
             f.getSupportedDeviceTypes().forEach(d -> {
                 Map<LGAPIVerion, AbstractCapabilityFactory<?>> versionMap = capabilityDeviceFactories.get(d);

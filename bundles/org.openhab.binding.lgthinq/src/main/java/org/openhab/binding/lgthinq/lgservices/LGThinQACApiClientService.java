@@ -42,6 +42,8 @@ public interface LGThinQACApiClientService extends LGThinQApiClientService<ACCap
 
     void turnEnergySavingMode(String bridgeName, String deviceId, String modeOnOff) throws LGThinqApiException;
 
+    void turnBellOnOff(String bridgeName, String deviceId, String modeOnOff) throws LGThinqApiException;
+
     ExtendedDeviceInfo getExtendedDeviceInfo(@NonNull String bridgeName, @NonNull String deviceId)
             throws LGThinqApiException;
 }

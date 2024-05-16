@@ -18,6 +18,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACSnapshotBuilder;
+import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherSnapshotBuilder;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeSnapshotBuilder;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerSnapshot;
@@ -53,6 +55,8 @@ public class SnapshotBuilderFactory {
                 result = new ACSnapshotBuilder();
             } else if (snapDef.equals(FridgeCanonicalSnapshot.class)) {
                 result = new FridgeSnapshotBuilder();
+            } else if (snapDef.equals(DishWasherSnapshot.class)) {
+                result = new DishWasherSnapshotBuilder();
             } else {
                 throw new IllegalStateException(
                         "Snapshot definition " + snapDef + " not supported by this Factory. It most likely a bug");

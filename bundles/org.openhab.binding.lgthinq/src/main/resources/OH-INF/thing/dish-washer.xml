@@ -14,7 +14,6 @@
 		<description>LG ThinQ Dish Washer</description>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="dw-dashboard"/>
-			<channel-group id="extended-information" typeId="dw-extended-information"/>
 		</channel-groups>
 		<config-description>
 			<parameter-group name="Settings">
@@ -51,24 +50,8 @@
 			<channel id="state" typeId="washer-state"/>
 			<channel id="process-state" typeId="washerdryer-process-state"/>
 			<channel id="course" typeId="washerdryer-course"/>
-			<channel id="temperature-level" typeId="washerdryer-temp-level"/>
 			<channel id="door-lock" typeId="washerdryer-door-lock"/>
 			<channel id="remain-time" typeId="washerdryer-remain-time"/>
-			<channel id="rinse" typeId="washer-rinse"/>
-			<channel id="spin" typeId="washer-spin"/>
-			<channel id="delay-time" typeId="washerdryer-delay-time"/>
-			<channel id="stand-by" typeId="washerdryer-stand-by"/>
-			<channel id="remote-start-flag" typeId="washerdryer-remote-start"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="ac-extended-information">
-		<label>More Information</label>
-		<description>Show more information about the device.</description>
-		<channels>
-			<channel id="extended_info_collector" typeId="extended_info_collector"/>
-			<channel id="current_power" typeId="current_power"/>
-			<channel id="remaining_filter" typeId="remaining_filter"/>
 		</channels>
 	</channel-group-type>
 

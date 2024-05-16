@@ -94,7 +94,7 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
     protected abstract List<LGAPIVerion> getSupportedAPIVersions();
 
     /**
-     * Return the feature definition, i.e, the defition of the device attributes that can be mapped to Channels.
+     * Return the feature definition, i.e, the definition of the device attributes that can be mapped to Channels.
      * The targetChannelId is needed if you intend to get the destination channelId for that feature, typically for
      * dynamic channels.
      *

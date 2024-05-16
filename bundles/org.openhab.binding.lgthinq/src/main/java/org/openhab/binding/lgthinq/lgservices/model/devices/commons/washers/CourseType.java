@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher;
+package org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

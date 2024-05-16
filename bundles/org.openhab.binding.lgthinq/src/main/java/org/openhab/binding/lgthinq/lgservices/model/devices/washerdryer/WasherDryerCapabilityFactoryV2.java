@@ -52,6 +52,12 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
     }
 
     @Override
+    protected boolean hasFeatInOptions(String featName, JsonNode monitoringValueNode) {
+        // there's no option node in V2
+        return false;
+    }
+
+    @Override
     protected FeatureDefinition newFeatureDefinition(String featureName, JsonNode featuresNode,
             @Nullable String targetChannelId, @Nullable String refChannelId) {
         JsonNode featureNode = featuresNode.path(featureName);

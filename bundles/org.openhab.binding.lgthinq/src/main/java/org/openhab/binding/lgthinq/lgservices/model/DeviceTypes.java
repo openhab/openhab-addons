@@ -27,6 +27,7 @@ public enum DeviceTypes {
     DRYER(202, "DR", "Dryer"),
     DRYER_TOWER(222, "DR", "Dryer"),
     REFRIGERATOR(101, "REF", "Fridge"),
+    DISH_WASHER(204, "DW", "DishWasher"),
     UNKNOWN(-1, "", "");
 
     private final int deviceTypeId;
@@ -58,6 +59,8 @@ public enum DeviceTypes {
                 return WASHING_TOWER;
             case 202:
                 return DRYER;
+            case 204:
+                return DISH_WASHER;
             case 222:
                 return DRYER_TOWER;
             case 101:
@@ -81,6 +84,8 @@ public enum DeviceTypes {
                 return WASHERDRYER_MACHINE;
             case "REF":
                 return REFRIGERATOR;
+            case "DW":
+                return DISH_WASHER;
             default:
                 return UNKNOWN;
         }

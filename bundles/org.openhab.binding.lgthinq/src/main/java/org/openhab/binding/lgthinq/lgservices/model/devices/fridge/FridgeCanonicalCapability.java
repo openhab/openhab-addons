@@ -43,11 +43,28 @@ public class FridgeCanonicalCapability extends AbstractCapability<FridgeCanonica
     private final Map<String, String> icePlusMap = new LinkedHashMap<String, String>();;
     private final Map<String, String> freshAirFilterMap = new LinkedHashMap<String, String>();;
     private final Map<String, String> waterFilterMap = new LinkedHashMap<String, String>();;
-    private final Map<String, String> expressModeMap = new LinkedHashMap<String, String>();;
+    private final Map<String, String> expressFreezeModeMap = new LinkedHashMap<String, String>();;
     private final Map<String, String> smartSavingMap = new LinkedHashMap<String, String>();;
     private final Map<String, String> activeSavingMap = new LinkedHashMap<String, String>();;
     private final Map<String, String> atLeastOneDoorOpenMap = new LinkedHashMap<>();
     private final Map<String, CommandDefinition> commandsDefinition = new LinkedHashMap<>();
+    private final Map<Object, Object> expressCoolModeMap = new LinkedHashMap<>();;
+    private boolean isExpressCoolModePresent = false;
+    private boolean isEcoFriendlyModePresent = false;
+
+    public void setExpressCoolModePresent(boolean expressCoolModePresent) {
+        isExpressCoolModePresent = expressCoolModePresent;
+    }
+
+    @Override
+    public boolean isEcoFriendlyModePresent() {
+        return isEcoFriendlyModePresent;
+    }
+
+    @Override
+    public void setEcoFriendlyModePresent(boolean isEcoFriendlyModePresent) {
+        this.isEcoFriendlyModePresent = isEcoFriendlyModePresent;
+    }
 
     public Map<String, String> getFridgeTempCMap() {
         return fridgeTempCMap;
@@ -86,8 +103,8 @@ public class FridgeCanonicalCapability extends AbstractCapability<FridgeCanonica
     }
 
     @Override
-    public Map<String, String> getExpressModeMap() {
-        return expressModeMap;
+    public Map<String, String> getExpressFreezeModeMap() {
+        return expressFreezeModeMap;
     }
 
     @Override
@@ -107,5 +124,10 @@ public class FridgeCanonicalCapability extends AbstractCapability<FridgeCanonica
 
     public Map<String, CommandDefinition> getCommandsDefinition() {
         return commandsDefinition;
+    }
+
+    @Override
+    public boolean isExpressCoolModePresent() {
+        return isExpressCoolModePresent;
     }
 }

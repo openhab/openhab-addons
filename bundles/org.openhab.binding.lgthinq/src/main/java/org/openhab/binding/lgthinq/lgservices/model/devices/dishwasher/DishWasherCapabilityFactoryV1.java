@@ -13,12 +13,10 @@
 package org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,22 +24,13 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * The {@link DishWasherCapabilityFactoryV1}
+ * The {@link DishWasherCapabilityFactoryV1} - Not implemented
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class DishWasherCapabilityFactoryV1 extends AbstractDishWasherCapabilityFactory {
+public abstract class DishWasherCapabilityFactoryV1 extends AbstractDishWasherCapabilityFactory {
     private static final Logger logger = LoggerFactory.getLogger(DishWasherCapabilityFactoryV1.class);
-
-    @Override
-    public DishWasherCapability create(JsonNode rootNode) throws LGThinqException {
-        DishWasherCapability cap = super.create(rootNode);
-        cap.setRemoteStartFeatName("RemoteStart");
-        cap.setChildLockFeatName("ChildLock");
-        cap.setDoorLockFeatName("DoorLock");
-        return cap;
-    }
 
     @Override
     protected String getStateFeatureNodeName() {
@@ -54,34 +43,8 @@ public class DishWasherCapabilityFactoryV1 extends AbstractDishWasherCapabilityF
     }
 
     @Override
-    protected String getPreStateFeatureNodeName() {
-        return "PreState";
-    }
-
-    @Override
-    protected String getRinseFeatureNodeName() {
-        return "RinseOption";
-    }
-
-    @Override
-    protected String getTemperatureFeatureNodeName() {
-        return "WaterTemp";
-    }
-
-    @Override
-    protected String getSpinFeatureNodeName() {
-        return "SpinSpeed";
-    }
-
-    @Override
-    protected String getSoilWashFeatureNodeName() {
-        return "Wash";
-    }
-
-    @Override
     protected String getDoorLockFeatureNodeName() {
-        // there is no dook lock node in V1.
-        return "DUMMY_DOOR_LOCK";
+        return "Door";
     }
 
     @Override
@@ -93,31 +56,6 @@ public class DishWasherCapabilityFactoryV1 extends AbstractDishWasherCapabilityF
     @Override
     protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) throws LGThinqApiException {
         return getCommandsDefinitionV1(rootNode);
-    }
-
-    @Override
-    protected String getCommandRemoteStartNodeName() {
-        return "OperationStart";
-    }
-
-    @Override
-    protected String getCommandStopNodeName() {
-        return "OperationStop";
-    }
-
-    @Override
-    protected String getCommandWakeUpNodeName() {
-        return "OperationWakeUp";
-    }
-
-    @Override
-    protected String getDefaultCourseIdNodeName() {
-        return "defaultCourseId";
-    }
-
-    @Override
-    protected String getDryLevelNodeName() {
-        return "DryLevel";
     }
 
     @Override
@@ -165,63 +103,6 @@ public class DishWasherCapabilityFactoryV1 extends AbstractDishWasherCapabilityF
     @Override
     public DishWasherCapability getCapabilityInstance() {
         return new DishWasherCapability();
-    }
-
-    @Override
-    /*
-     * Return the default Course ID.
-     * OBS:In the V1, the default course points to the ID of the course list that is the default.
-     */
-    protected String getDefaultCourse(JsonNode rootNode) {
-        return rootNode.path("Config").path("defaultCourseId").textValue();
-    }
-
-    @Override
-    protected String getRemoteFeatName() {
-        return "RemoteStart";
-    }
-
-    @Override
-    protected String getStandByFeatName() {
-        return "Standby";
-    }
-
-    @Override
-    protected String getConfigCourseType(JsonNode rootNode) {
-        if (rootNode.path(getMonitorValueNodeName()).path("APCourse").isMissingNode()) {
-            return "Course";
-        } else {
-            return "APCourse";
-        }
-    }
-
-    @Override
-    protected String getCourseNodeName(JsonNode rootNode) {
-        JsonNode refOptions = rootNode.path(getMonitorValueNodeName()).path(getConfigCourseType(rootNode))
-                .path("option");
-        if (refOptions.isArray()) {
-            AtomicReference<String> courseNodeName = new AtomicReference<>("");
-            for (JsonNode node : refOptions) {
-                return node.asText();
-            }
-        }
-        return "";
-    }
-
-    @Override
-    protected String getSmartCourseNodeName(JsonNode rootNode) {
-        return "SmartCourse";
-    }
-
-    @Override
-    protected String getConfigSmartCourseType(JsonNode rootNote) {
-        return "SmartCourse";
-    }
-
-    @Override
-    protected String getConfigDownloadCourseType(JsonNode rootNode) {
-        // just to ignore because there is no DownloadCourseType in V1
-        return "XXXXXXXXXXX";
     }
 
     @Override

@@ -45,6 +45,17 @@ public class FridgeCanonicalSnapshot extends AbstractFridgeSnapshot {
     private String freshAirFilterState = "";
 
     private String expressMode = "";
+    private String expressCoolMode = "";
+    private String ecoFriendlyMode = "";
+
+    @JsonProperty("ecoFriendly")
+    public String getEcoFriendlyMode() {
+        return ecoFriendlyMode;
+    }
+
+    public void setEcoFriendlyMode(String ecoFriendlyMode) {
+        this.ecoFriendlyMode = ecoFriendlyMode;
+    }
 
     @JsonProperty("expressMode")
     public String getExpressMode() {
@@ -150,5 +161,14 @@ public class FridgeCanonicalSnapshot extends AbstractFridgeSnapshot {
     @Override
     public void setOnline(boolean online) {
         this.online = online;
+    }
+
+    @JsonProperty("expressFridge")
+    public String getExpressCoolMode() {
+        return expressCoolMode;
+    }
+
+    public void setExpressCoolMode(String expressCoolMode) {
+        this.expressCoolMode = expressCoolMode;
     }
 }

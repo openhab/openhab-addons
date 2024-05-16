@@ -381,8 +381,20 @@
 
 	<channel-type id="fr-express-mode">
 		<item-type>String</item-type>
-		<label>Express Mode</label>
-		<description>Fridge Express Mode</description>
+		<label>Express Freeze</label>
+		<description>Express Freeze Mode</description>
+	</channel-type>
+
+	<channel-type id="fr-express-cool-mode">
+		<item-type>Switch</item-type>
+		<label>Express Cool</label>
+		<description>Express Cool</description>
+	</channel-type>
+
+	<channel-type id="fr-eco-friendly-mode">
+		<item-type>Switch</item-type>
+		<label>Vacation</label>
+		<description>Vacation Mode</description>
 	</channel-type>
 
 	<channel-type id="fr-ice-plus">

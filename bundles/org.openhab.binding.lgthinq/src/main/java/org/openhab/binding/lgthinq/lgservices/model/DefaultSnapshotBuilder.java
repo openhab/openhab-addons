@@ -231,7 +231,7 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
     }
 
     /**
-     * Return the value related to the bit-value definition. It's used in Waser/Dryer V1 snapshot parser.
+     * Return the value related to the bit-value definition. It's used in Washer/Dryer V1 snapshot parser.
      * It was here, in the parent, because maybe other devices need the same functionality. If not,
      * We can transfer these methods to the WasherDryer Snapshot Builder.
      * 

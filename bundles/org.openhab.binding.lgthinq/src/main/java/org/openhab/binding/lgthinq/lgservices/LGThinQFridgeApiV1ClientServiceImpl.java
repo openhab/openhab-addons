@@ -69,7 +69,7 @@ public class LGThinQFridgeApiV1ClientServiceImpl
             throws LGThinqApiException {
         assert snapCmdData != null;
         snapCmdData.put("TempRefrigerator", targetTemperatureIndex);
-        setTemperature(bridgeId, deviceId, fridgeCapability, snapCmdData);
+        setControlCommand(bridgeId, deviceId, fridgeCapability, snapCmdData);
     }
 
     @Override
@@ -78,10 +78,36 @@ public class LGThinQFridgeApiV1ClientServiceImpl
             throws LGThinqApiException {
         assert snapCmdData != null;
         snapCmdData.put("TempFreezer", targetTemperatureIndex);
-        setTemperature(bridgeId, deviceId, fridgeCapability, snapCmdData);
+        setControlCommand(bridgeId, deviceId, fridgeCapability, snapCmdData);
     }
 
-    private void setTemperature(String bridgeId, String deviceId, FridgeCapability fridgeCapability,
+    @Override
+    public void setExpressMode(String bridgeId, String deviceId, String expressModeIndex) throws LGThinqApiException {
+        throw new UnsupportedOperationException("V1 Fridge doesn't support ExpressMode feature. It mostly like a bug");
+    }
+
+    @Override
+    public void setExpressCoolMode(String bridgeId, String deviceId, boolean trueOnFalseOff)
+            throws LGThinqApiException {
+        throw new UnsupportedOperationException(
+                "V1 Fridge doesn't support ExpressCoolMode feature. It mostly like a bug");
+    }
+
+    @Override
+    public void setEcoFriendlyMode(String bridgeId, String deviceId, boolean trueOnFalseOff)
+            throws LGThinqApiException {
+        throw new UnsupportedOperationException(
+                "V1 Fridge doesn't support ExpressCoolMode feature. It mostly like a bug");
+    }
+
+    @Override
+    public void setIcePlus(String bridgeId, String deviceId, FridgeCapability fridgeCapability, boolean trueOnFalseOff,
+            Map<String, Object> snapCmdData) throws LGThinqApiException {
+        snapCmdData.put("IcePlus", trueOnFalseOff ? 1 : 0);
+        setControlCommand(bridgeId, deviceId, fridgeCapability, snapCmdData);
+    }
+
+    private void setControlCommand(String bridgeId, String deviceId, FridgeCapability fridgeCapability,
             @Nullable Map<String, Object> snapCmdData) throws LGThinqApiException {
         try {
             CommandDefinition cmdSetControlDef = fridgeCapability.getCommandsDefinition()

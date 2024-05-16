@@ -35,4 +35,13 @@ public interface LGThinQFridgeApiClientService
     void setFreezerTemperature(String bridgeId, String deviceId, FridgeCapability fridgeCapability,
             Integer targetTemperatureIndex, String tempUnit, @Nullable Map<String, Object> snapCmdData)
             throws LGThinqApiException;
+
+    void setExpressMode(String bridgeId, String deviceId, String expressModeIndex) throws LGThinqApiException;
+
+    void setExpressCoolMode(String bridgeId, String deviceId, boolean trueOnFalseOff) throws LGThinqApiException;
+
+    void setEcoFriendlyMode(String bridgeId, String deviceId, boolean trueOnFalseOff) throws LGThinqApiException;
+
+    void setIcePlus(String bridgeId, String deviceId, FridgeCapability fridgeCapability, boolean trueOnFalseOff,
+            Map<String, Object> snapCmdData) throws LGThinqApiException;
 }
