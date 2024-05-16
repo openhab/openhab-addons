@@ -316,7 +316,6 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                     lgThinqACApiClientService.turnCoolJetMode(getBridgeId(), getDeviceId(),
                             command == OnOffType.ON ? getCapabilities().getCoolJetModeCommandOn()
                                     : getCapabilities().getCoolJetModeCommandOff());
-                    lgThinqACApiClientService.turnBellOnOff(getBridgeId(), getDeviceId(), "1");
                 } else {
                     logger.warn("Received command different of OnOffType in CoolJet Mode Channel. Ignoring");
                 }
