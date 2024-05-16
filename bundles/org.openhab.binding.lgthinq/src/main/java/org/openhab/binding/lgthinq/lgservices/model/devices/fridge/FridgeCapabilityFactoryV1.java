@@ -87,7 +87,7 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
     }
 
     @Override
-    protected void loadExpressMode(JsonNode expressModeNode, Map<String, String> expressModeMap) {
+    protected void loadExpressFreezeMode(JsonNode expressFreezeModeNode, Map<String, String> expressFreezeModeMap) {
         // not supported
     }
 
@@ -130,6 +130,10 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
         return "TempRefrigerator_C";
     }
 
+    protected String getFridgeTempNodeName() {
+        return "TempRefrigerator";
+    }
+
     @Override
     protected String getFridgeTempFNodeName() {
         return "TempRefrigerator_F";
@@ -140,6 +144,10 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
         return "TempFreezer_C";
     }
 
+    protected String getFreezerTempNodeName() {
+        return "TempFreezer";
+    }
+
     @Override
     protected String getFreezerTempFNodeName() {
         return "TempFreezer_F";
@@ -148,6 +156,11 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
     @Override
     protected String getOptionsNodeName() {
         return "option";
+    }
+
+    @Override
+    protected String getEcoFriendlyNodeName() {
+        return "UNSUPPORTED";
     }
 
     protected String getTempUnitNodeName() {
@@ -186,5 +199,10 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
     @Override
     protected String getAtLeastOneDoorOpenNodeName() {
         return "DoorOpenState";
+    }
+
+    @Override
+    protected String getExpressCoolNodeName() {
+        return "UNSUPPORTED";
     }
 }

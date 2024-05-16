@@ -66,6 +66,43 @@ public class LGThinQFridgeApiV2ClientServiceImpl
         setTemperature("freezerTemp", bridgeId, deviceId, targetTemperatureIndex, tempUnit);
     }
 
+    @Override
+    public void setExpressMode(String bridgeId, String deviceId, String expressMode) throws LGThinqApiException {
+        sendSimpleDataSetListCommand(bridgeId, deviceId, "expressMode", expressMode);
+    }
+
+    private void sendSimpleDataSetListCommand(String bridgeId, String deviceId, String feature, String value)
+            throws LGThinqApiException {
+        ObjectNode dataSetList = JsonNodeFactory.instance.objectNode();
+        ObjectNode nodeData = dataSetList.putObject("dataSetList").putObject("refState");
+        nodeData.put(feature, value);
+        try {
+            RestResult result = sendCommand(bridgeId, deviceId, "control-sync", "basicCtrl", "Set", null, null,
+                    dataSetList);
+            handleGenericErrorResult(result);
+        } catch (Exception e) {
+            throw new LGThinqApiException("Error sending command", e);
+        }
+    }
+
+    @Override
+    public void setExpressCoolMode(String bridgeId, String deviceId, boolean trueOnFalseOff)
+            throws LGThinqApiException {
+        sendSimpleDataSetListCommand(bridgeId, deviceId, "expressFridge", trueOnFalseOff ? "ON" : "OFF");
+    }
+
+    @Override
+    public void setEcoFriendlyMode(String bridgeId, String deviceId, boolean trueOnFalseOff)
+            throws LGThinqApiException {
+        sendSimpleDataSetListCommand(bridgeId, deviceId, "ecoFriendly", trueOnFalseOff ? "ON" : "OFF");
+    }
+
+    @Override
+    public void setIcePlus(String bridgeId, String deviceId, FridgeCapability fridgeCapability, boolean trueOnFalseOff,
+            Map<String, Object> snapCmdData) throws LGThinqApiException {
+        throw new UnsupportedOperationException("V2 Fridge doesn't support IcePlus feature. It mostly like a bug");
+    }
+
     private void setTemperature(String tempFeature, String bridgeId, String deviceId, Integer targetTemperature,
             String tempUnit) throws LGThinqApiException {
         ObjectNode dataSetList = JsonNodeFactory.instance.objectNode();

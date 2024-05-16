@@ -15,6 +15,7 @@ package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.TEMP_UNIT_CELSIUS_SYMBOL;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.TEMP_UNIT_FAHRENHEIT_SYMBOL;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,15 @@ public abstract class AbstractFridgeCapabilityFactory extends AbstractCapability
 
     protected abstract void loadTempNode(JsonNode tempNode, Map<String, String> capMap, String unit);
 
+    private Map<String, String> convertCelsius2Fahrenheit(Map<String, String> celcius) {
+        Map<String, String> fMap = new HashMap<>();
+        celcius.forEach((k, v) -> {
+            int c = Integer.parseInt(v);
+            fMap.put(k, String.valueOf((c * 9 / 5) + 32));
+        });
+        return fMap;
+    }
+
     @Override
     public FridgeCapability create(JsonNode rootNode) throws LGThinqException {
         FridgeCapability frCap = super.create(rootNode);
@@ -50,10 +60,19 @@ public abstract class AbstractFridgeCapabilityFactory extends AbstractCapability
 
         JsonNode fridgeTempCNode = node.path(getMonitorValueNodeName()).path(getFridgeTempCNodeName())
                 .path(getOptionsNodeName());
+        // version 1.4 of refrigerators thinq1 doesn't contain temp. segregated in C and F.
+        if (fridgeTempCNode.isMissingNode()) {
+            fridgeTempCNode = node.path(getMonitorValueNodeName()).path(getFridgeTempNodeName())
+                    .path(getOptionsNodeName());
+        }
         JsonNode fridgeTempFNode = node.path(getMonitorValueNodeName()).path(getFridgeTempFNodeName())
                 .path(getOptionsNodeName());
         JsonNode freezerTempCNode = node.path(getMonitorValueNodeName()).path(getFreezerTempCNodeName())
                 .path(getOptionsNodeName());
+        if (freezerTempCNode.isMissingNode()) {
+            freezerTempCNode = node.path(getMonitorValueNodeName()).path(getFreezerTempNodeName())
+                    .path(getOptionsNodeName());
+        }
         JsonNode freezerTempFNode = node.path(getMonitorValueNodeName()).path(getFreezerTempFNodeName())
                 .path(getOptionsNodeName());
         JsonNode tempUnitNode = node.path(getMonitorValueNodeName()).path(getTempUnitNodeName())
@@ -72,16 +91,29 @@ public abstract class AbstractFridgeCapabilityFactory extends AbstractCapability
                 .path(getOptionsNodeName());
         JsonNode atLeastOneDoorOpenNode = node.path(getMonitorValueNodeName()).path(getAtLeastOneDoorOpenNodeName())
                 .path(getOptionsNodeName());
-
+        if (!node.path(getMonitorValueNodeName()).path(getExpressCoolNodeName()).isMissingNode()) {
+            frCap.setExpressCoolModePresent(true);
+        }
+        if (!node.path(getMonitorValueNodeName()).path(getEcoFriendlyNodeName()).isMissingNode()) {
+            frCap.setEcoFriendlyModePresent(true);
+        }
         loadTempNode(fridgeTempCNode, frCap.getFridgeTempCMap(), TEMP_UNIT_CELSIUS_SYMBOL);
-        loadTempNode(fridgeTempFNode, frCap.getFridgeTempFMap(), TEMP_UNIT_FAHRENHEIT_SYMBOL);
+        if (fridgeTempFNode.isMissingNode()) {
+            frCap.getFridgeTempFMap().putAll(convertCelsius2Fahrenheit(frCap.getFridgeTempCMap()));
+        } else {
+            loadTempNode(fridgeTempFNode, frCap.getFridgeTempFMap(), TEMP_UNIT_FAHRENHEIT_SYMBOL);
+        }
         loadTempNode(freezerTempCNode, frCap.getFreezerTempCMap(), TEMP_UNIT_CELSIUS_SYMBOL);
-        loadTempNode(freezerTempFNode, frCap.getFreezerTempFMap(), TEMP_UNIT_FAHRENHEIT_SYMBOL);
+        if (freezerTempFNode.isMissingNode()) {
+            frCap.getFreezerTempFMap().putAll(convertCelsius2Fahrenheit(frCap.getFreezerTempCMap()));
+        } else {
+            loadTempNode(freezerTempFNode, frCap.getFreezerTempFMap(), TEMP_UNIT_FAHRENHEIT_SYMBOL);
+        }
         loadTempUnitNode(tempUnitNode, frCap.getTempUnitMap());
         loadIcePlus(icePlusNode, frCap.getIcePlusMap());
         loadFreshAirFilter(freshAirFilterNode, frCap.getFreshAirFilterMap());
         loadWaterFilter(waterFilterNode, frCap.getWaterFilterMap());
-        loadExpressMode(expressModeNode, frCap.getExpressModeMap());
+        loadExpressFreezeMode(expressModeNode, frCap.getExpressFreezeModeMap());
         loadSmartSavingMode(smartSavingModeNode, frCap.getSmartSavingMap());
         loadActiveSaving(activeSavingNode, frCap.getActiveSavingMap());
         loadAtLeastOneDoorOpen(atLeastOneDoorOpenNode, frCap.getAtLeastOneDoorOpenMap());
@@ -98,7 +130,8 @@ public abstract class AbstractFridgeCapabilityFactory extends AbstractCapability
 
     protected abstract void loadWaterFilter(JsonNode waterFilterNode, Map<String, String> waterFilterMap);
 
-    protected abstract void loadExpressMode(JsonNode expressModeNode, Map<String, String> expressModeMap);
+    protected abstract void loadExpressFreezeMode(JsonNode expressFreezeModeNode,
+            Map<String, String> expressFreezeModeMap);
 
     protected abstract void loadSmartSavingMode(JsonNode smartSavingModeNode, Map<String, String> smartSavingModeMap);
 
@@ -116,9 +149,13 @@ public abstract class AbstractFridgeCapabilityFactory extends AbstractCapability
 
     protected abstract String getFridgeTempCNodeName();
 
+    protected abstract String getFridgeTempNodeName();
+
     protected abstract String getFridgeTempFNodeName();
 
     protected abstract String getFreezerTempCNodeName();
+
+    protected abstract String getFreezerTempNodeName();
 
     protected abstract String getFreezerTempFNodeName();
 
@@ -138,5 +175,9 @@ public abstract class AbstractFridgeCapabilityFactory extends AbstractCapability
 
     protected abstract String getAtLeastOneDoorOpenNodeName();
 
+    protected abstract String getExpressCoolNodeName();
+
     protected abstract String getOptionsNodeName();
+
+    protected abstract String getEcoFriendlyNodeName();
 }

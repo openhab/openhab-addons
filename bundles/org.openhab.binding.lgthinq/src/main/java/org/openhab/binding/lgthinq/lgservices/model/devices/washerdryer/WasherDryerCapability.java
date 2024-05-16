@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractCapability;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseDefinition;
 
 /**
  * The {@link WasherDryerCapability}

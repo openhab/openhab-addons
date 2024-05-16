@@ -31,6 +31,9 @@ import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
+import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseFunction;
+import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseType;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.*;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
@@ -290,6 +293,8 @@ public class LGThinQWasherDryerHandler
         if (THING_TYPE_WASHING_MACHINE.equals(getThing().getThingTypeUID())) {
             return DeviceTypes.WASHERDRYER_MACHINE;
         } else if (THING_TYPE_WASHING_TOWER.equals(getThing().getThingTypeUID())) {
+            return DeviceTypes.WASHING_TOWER;
+        } else if (THING_TYPE_DRYER.equals(getThing().getThingTypeUID())) {
             return DeviceTypes.WASHING_TOWER;
         } else {
             throw new IllegalArgumentException(

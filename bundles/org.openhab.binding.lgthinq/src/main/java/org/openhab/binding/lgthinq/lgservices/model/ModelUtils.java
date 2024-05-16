@@ -76,6 +76,8 @@ public class ModelUtils {
                     throw new IllegalStateException(
                             "Unexpected error. Can't find key node attributes to determine ACCapability API version.");
                 }
+            case DISH_WASHER:
+                return LGAPIVerion.V2_0;
             default:
                 throw new IllegalStateException("Unexpected capability. The type " + type + " was not implemented yet");
         }

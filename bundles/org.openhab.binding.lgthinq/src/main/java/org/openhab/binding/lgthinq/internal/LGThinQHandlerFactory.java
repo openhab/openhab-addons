@@ -94,6 +94,10 @@ public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_FRIDGE.equals(thingTypeUID)) {
             return new LGThinQFridgeHandler(thing, stateDescriptionProvider,
                     Objects.requireNonNull(itemChannelLinkRegistry), httpClientFactory);
+        } else if (THING_TYPE_DISHWASHER.equals(thingTypeUID)) {
+            return new LGThinQDishWasherHandler(thing, stateDescriptionProvider,
+                    Objects.requireNonNull(thinqChannelProvider), Objects.requireNonNull(thinqChannelGroupProvider),
+                    Objects.requireNonNull(itemChannelLinkRegistry), httpClientFactory);
         }
         logger.error("Thing not supported by this Factory: {}", thingTypeUID.getId());
         return null;
@@ -111,6 +115,8 @@ public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_DRYER.equals(thingTypeUID) || THING_TYPE_DRYER_TOWER.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         } else if (THING_TYPE_FRIDGE.equals(thingTypeUID)) {
+            return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+        } else if (THING_TYPE_DISHWASHER.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         }
         return null;

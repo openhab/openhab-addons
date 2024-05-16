@@ -139,6 +139,11 @@ public class LGThinQACApiV1ClientServiceImpl extends
         turnGenericMode(bridgeName, deviceId, "PowerSave", modeOnOff);
     }
 
+    @Override
+    public void turnBellOnOff(String bridgeName, String deviceId, String modeOnOff) throws LGThinqApiException {
+        turnGenericMode(bridgeName, deviceId, "SpkVolume", modeOnOff);
+    }
+
     protected void turnGenericMode(String bridgeName, String deviceId, String modeName, String modeOnOff)
             throws LGThinqApiException {
         try {

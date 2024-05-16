@@ -60,9 +60,11 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
             final Map<String, String> constantsMap) {
         featNode.fields().forEachRemaining(f -> {
             // for each node like ' "1": {"index" : 1, "label" : "7", "_comment" : ""} '
-            String translatedValue = constantsMap.get(f.getValue().path("label").asText());
-            translatedValue = translatedValue == null ? f.getValue().path("label").asText() : translatedValue;
-            capMap.put(f.getKey(), translatedValue);
+            if (!"IGNORE".equals(f.getKey())) {
+                String translatedValue = constantsMap.get(f.getValue().path("label").asText());
+                translatedValue = translatedValue == null ? f.getValue().path("label").asText() : translatedValue;
+                capMap.put(f.getKey(), translatedValue);
+            }
         });
     }
 
@@ -92,8 +94,8 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
     }
 
     @Override
-    protected void loadExpressMode(JsonNode expressModeNode, Map<String, String> expressModeMap) {
-        loadGenericFeatNode(expressModeNode, expressModeMap, CAP_FR_WATER_FILTER);
+    protected void loadExpressFreezeMode(JsonNode expressFreezeModeNode, Map<String, String> expressFreezeModeMap) {
+        loadGenericFeatNode(expressFreezeModeNode, expressFreezeModeMap, CAP_FR_EXPRESS_FREEZE_MODES);
     }
 
     @Override
@@ -121,6 +123,11 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
         return "fridgeTemp_C";
     }
 
+    protected String getFridgeTempNodeName() {
+        throw new UnsupportedOperationException(
+                "Refrigerator Thinq2 doesn't support FridgeTemp node. It most likely a bug");
+    }
+
     @Override
     protected String getFridgeTempFNodeName() {
         return "fridgeTemp_F";
@@ -129,6 +136,12 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
     @Override
     protected String getFreezerTempCNodeName() {
         return "freezerTemp_C";
+    }
+
+    @Override
+    protected String getFreezerTempNodeName() {
+        throw new UnsupportedOperationException(
+                "Refrigerator Thinq2 doesn't support FreezerTemp node. It most likely a bug");
     }
 
     @Override
@@ -175,7 +188,17 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
     }
 
     @Override
+    protected String getExpressCoolNodeName() {
+        return "expressFridge";
+    }
+
+    @Override
     protected String getOptionsNodeName() {
         return "valueMapping";
+    }
+
+    @Override
+    protected String getEcoFriendlyNodeName() {
+        return "ecoFriendly";
     }
 }

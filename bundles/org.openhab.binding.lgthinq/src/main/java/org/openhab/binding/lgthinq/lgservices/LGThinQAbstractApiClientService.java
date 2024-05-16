@@ -162,13 +162,13 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         if (resp.getStatusCode() != 200) {
             if (resp.getStatusCode() == 400) {
                 logger.warn("Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}",
-                        resp.getStatusCode(), resp.getJsonResponse());
+                        resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse()));
                 return Collections.emptyMap();
             }
             try {
                 if (resp.getStatusCode() == 400) {
                     logger.warn("Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}",
-                            resp.getStatusCode(), resp.getJsonResponse());
+                            resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse()));
                     return Collections.emptyMap();
                 }
                 respMap = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
@@ -430,6 +430,11 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         String jsonData = String.format(" { \"lgedmRoot\" : {" + "\"cmd\": \"Mon\"," + "\"cmdOpt\": \"Start\","
                 + "\"deviceId\": \"%s\"," + "\"workId\": \"%s\"" + "} }", deviceId, workerId);
         RestResult resp = RestUtils.postCall(httpClient, builder.build().toURL().toString(), headers, jsonData);
+        Map<String, Object> respMap = handleGenericErrorResult(resp);
+        if (respMap.isEmpty()) {
+            logger.debug(
+                    "Unexpected StartMonitor json null result. Possible causes: 1) you are monitoring the device in LG App at same time, 2) temporary problems in the server. Try again later");
+        }
         return Objects.requireNonNull((String) handleGenericErrorResult(resp).get("workId"),
                 "Unexpected StartMonitor json result. Node 'workId' not present");
     }

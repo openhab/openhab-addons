@@ -48,6 +48,21 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
     }
 
     @Override
+    protected boolean hasFeatInOptions(String featName, JsonNode monitoringValueNode) {
+        for (String optionNode : new String[] { "Option1", "Option2" }) {
+            JsonNode arrNode = monitoringValueNode.path(optionNode).path("option");
+            if (arrNode.isArray()) {
+                for (JsonNode v : arrNode) {
+                    if (v.asText().equals(featName)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
     protected String getStateFeatureNodeName() {
         return "State";
     }
@@ -84,8 +99,7 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
 
     @Override
     protected String getDoorLockFeatureNodeName() {
-        // there is no dook lock node in V1.
-        return "DUMMY_DOOR_LOCK";
+        return "DoorLock";
     }
 
     @Override

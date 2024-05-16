@@ -92,6 +92,11 @@ public class LGThinQACApiV2ClientServiceImpl extends
     }
 
     @Override
+    public void turnBellOnOff(String bridgeName, String deviceId, String modeOnOff) throws LGThinqApiException {
+        turnGenericMode(bridgeName, deviceId, "airState.bellSound.appControl", modeOnOff);
+    }
+
+    @Override
     public void changeOperationMode(String bridgeName, String deviceId, int newOpMode) throws LGThinqApiException {
         try {
             RestResult resp = sendBasicControlCommands(bridgeName, deviceId, "Set", "airState.opMode", newOpMode);

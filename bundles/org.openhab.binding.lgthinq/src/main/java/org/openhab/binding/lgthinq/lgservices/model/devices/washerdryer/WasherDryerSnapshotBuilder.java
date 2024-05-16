@@ -40,7 +40,10 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
         WasherDryerSnapshot snap = super.createFromBinary(binaryData, prot, capDef);
         snap.setRemoteStart(
                 bitValue(((WasherDryerCapability) capDef).getRemoteStartFeatName(), snap.getRawData(), capDef));
-        snap.setDoorLock(bitValue(((WasherDryerCapability) capDef).getDoorLockFeatName(), snap.getRawData(), capDef));
+        if (((WasherDryerCapability) capDef).hasDoorLook()) {
+            snap.setDoorLock(
+                    bitValue(((WasherDryerCapability) capDef).getDoorLockFeatName(), snap.getRawData(), capDef));
+        }
         snap.setChildLock(bitValue(((WasherDryerCapability) capDef).getChildLockFeatName(), snap.getRawData(), capDef));
         return snap;
     }

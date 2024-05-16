@@ -37,41 +37,14 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
     private boolean online;
     private String course = "";
     private String smartCourse = "";
-    private String downloadedCourse = "";
-    private String temperatureLevel = "";
     private String doorLock = "";
-    private String option1 = "";
-    private String option2 = "";
-    private String childLock = "";
     private Double remainingHour = 0.00;
     private Double remainingMinute = 0.00;
     private Double reserveHour = 0.00;
     private Double reserveMinute = 0.00;
 
-    private String remoteStart = "";
-    private boolean remoteStartEnabled = false;
-    private String standByStatus = "";
-
-    private String dryLevel = "";
-    private boolean standBy = false;
-    private String error = "";
-    private String rinse = "";
-    private String spin = "";
-
-    private String loadItem = "";
-
-    public String getLoadItem() {
-        return loadItem;
-    }
-
-    @JsonAlias({ "LoadItem" })
-    @JsonProperty("loadItemWasher")
-    public void setLoadItem(String loadItem) {
-        this.loadItem = loadItem;
-    }
-
-    @JsonAlias({ "Course", "courseFL24inchBaseTitan" })
-    @JsonProperty("courseFL24inchBaseTitan")
+    @JsonAlias({ "Course" })
+    @JsonProperty("course")
     public String getCourse() {
         return course;
     }
@@ -80,34 +53,14 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
         this.course = course;
     }
 
-    @JsonProperty("dryLevel")
-    @JsonAlias({ "DryLevel" })
-    public String getDryLevel() {
-        return dryLevel;
-    }
-
-    public void setDryLevel(String dryLevel) {
-        this.dryLevel = dryLevel;
-    }
-
-    @JsonProperty("processState")
-    @JsonAlias({ "ProcessState", "preState", "PreState" })
+    @JsonProperty("process")
+    @JsonAlias({ "Process" })
     public String getProcessState() {
         return processState;
     }
 
     public void setProcessState(String processState) {
         this.processState = processState;
-    }
-
-    @JsonProperty("error")
-    @JsonAlias({ "Error" })
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
     }
 
     @Override
@@ -131,25 +84,15 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
     }
 
     @JsonProperty("state")
-    @JsonAlias({ "state", "State" })
+    @JsonAlias({ "State" })
     public String getState() {
         return state;
     }
 
-    @JsonProperty("smartCourseFL24inchBaseTitan")
-    @JsonAlias({ "smartCourseFL24inchBaseTitan", "SmartCourse" })
+    @JsonProperty("smartCourse")
+    @JsonAlias({ "SmartCourse" })
     public String getSmartCourse() {
         return smartCourse;
-    }
-
-    @JsonProperty("downloadedCourseFL24inchBaseTitan")
-    @JsonAlias({ "downloadedCourseFLUpper25inchBaseUS" })
-    public String getDownloadedCourse() {
-        return downloadedCourse;
-    }
-
-    public void setDownloadedCourse(String downloadedCourse) {
-        this.downloadedCourse = downloadedCourse;
     }
 
     @JsonIgnore
@@ -163,7 +106,7 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
     }
 
     @JsonProperty("remainTimeHour")
-    @JsonAlias({ "remainTimeHour", "Remain_Time_H" })
+    @JsonAlias({ "Remain_Time_H" })
     public Double getRemainingHour() {
         return remainingHour;
     }
@@ -173,7 +116,7 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
     }
 
     @JsonProperty("remainTimeMinute")
-    @JsonAlias({ "remainTimeMinute", "Remain_Time_M" })
+    @JsonAlias({ "Remain_Time_M" })
     public Double getRemainingMinute() {
         return remainingMinute;
     }
@@ -183,7 +126,7 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
     }
 
     @JsonProperty("reserveTimeHour")
-    @JsonAlias({ "reserveTimeHour", "Reserve_Time_H" })
+    @JsonAlias({ "Reserve_Time_H" })
     public Double getReserveHour() {
         return reserveHour;
     }
@@ -193,7 +136,7 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
     }
 
     @JsonProperty("reserveTimeMinute")
-    @JsonAlias({ "reserveTimeMinute", "Reserve_Time_M" })
+    @JsonAlias({ "Reserve_Time_M" })
     public Double getReserveMinute() {
         return reserveMinute;
     }
@@ -206,34 +149,14 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
         this.smartCourse = smartCourse;
     }
 
-    @JsonProperty("temp")
-    @JsonAlias({ "WaterTemp" })
-    public String getTemperatureLevel() {
-        return temperatureLevel;
-    }
-
-    public void setTemperatureLevel(String temperatureLevel) {
-        this.temperatureLevel = temperatureLevel;
-    }
-
-    @JsonProperty("doorLock")
-    @JsonAlias({ "DoorLock", "DoorClose" })
+    @JsonProperty("door")
+    @JsonAlias({ "Door" })
     public String getDoorLock() {
         return doorLock;
     }
 
     public void setDoorLock(String doorLock) {
         this.doorLock = doorLock;
-    }
-
-    @JsonProperty("ChildLock")
-    @JsonAlias({ "childLock" })
-    public String getChildLock() {
-        return childLock;
-    }
-
-    public void setChildLock(String childLock) {
-        this.childLock = childLock;
     }
 
     public void setState(String state) {
@@ -243,76 +166,5 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
         } else {
             powerState = DevicePowerState.DV_POWER_ON;
         }
-    }
-
-    public boolean isRemoteStartEnabled() {
-        return remoteStartEnabled;
-    }
-
-    @JsonProperty("remoteStart")
-    @JsonAlias({ "RemoteStart" })
-    public String getRemoteStart() {
-        return remoteStart;
-    }
-
-    public void setRemoteStart(String remoteStart) {
-        this.remoteStart = remoteStart.contains("ON") || remoteStart.equals("1") ? "ON"
-                : (remoteStart.contains("OFF") || remoteStart.equals("0") ? "OFF" : remoteStart);
-        remoteStartEnabled = this.remoteStart.equals("ON");
-    }
-
-    @JsonProperty("standby")
-    @JsonAlias({ "Standby" })
-    public String getStandByStatus() {
-        return standByStatus;
-    }
-
-    public void setStandByStatus(String standByStatus) {
-        this.standByStatus = standByStatus.contains("ON") || standByStatus.equals("1") ? "ON"
-                : (standByStatus.contains("OFF") || standByStatus.equals("0") ? "OFF" : standByStatus);
-        ;
-        standBy = this.standByStatus.contains("ON");
-    }
-
-    public boolean isStandBy() {
-        return standBy;
-    }
-
-    @JsonProperty("rinse")
-    @JsonAlias({ "RinseOption" })
-    public String getRinse() {
-        return rinse;
-    }
-
-    public void setRinse(String rinse) {
-        this.rinse = rinse;
-    }
-
-    @JsonProperty("spin")
-    @JsonAlias({ "SpinSpeed" })
-    public String getSpin() {
-        return spin;
-    }
-
-    public void setSpin(String spin) {
-        this.spin = spin;
-    }
-
-    @JsonProperty("Option1")
-    public String getOption1() {
-        return option1;
-    }
-
-    public void setOption1(String option1) {
-        this.option1 = option1;
-    }
-
-    @JsonProperty("Option2")
-    public String getOption2() {
-        return option2;
-    }
-
-    public void setOption2(String option2) {
-        this.option2 = option2;
     }
 }

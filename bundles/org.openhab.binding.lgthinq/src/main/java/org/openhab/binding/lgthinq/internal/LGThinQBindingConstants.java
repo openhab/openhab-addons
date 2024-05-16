@@ -39,7 +39,8 @@ public class LGThinQBindingConstants {
     public static final String PROPERTY_VENDOR_NAME = "LG Thinq";
     public static final ThingTypeUID THING_TYPE_AIR_CONDITIONER = new ThingTypeUID(BINDING_ID,
             String.valueOf(DeviceTypes.AIR_CONDITIONER.deviceTypeId()));
-    public static final ThingTypeUID THING_TYPE_WASHING_MACHINE = new ThingTypeUID(BINDING_ID, "201");
+    public static final ThingTypeUID THING_TYPE_WASHING_MACHINE = new ThingTypeUID(BINDING_ID,
+            String.valueOf(DeviceTypes.WASHERDRYER_MACHINE.deviceTypeId()));
     public static final String WM_CHANNEL_REMOTE_START_GRP_ID = "remote-start-grp";
     public static final String CHANNEL_DASHBOARD_GRP_ID = "dashboard";
     public static final String CHANNEL_EXTENDED_INFO_GRP_ID = "extended-information";
@@ -56,9 +57,12 @@ public class LGThinQBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_FRIDGE = new ThingTypeUID(BINDING_ID,
             "" + DeviceTypes.REFRIGERATOR.deviceTypeId());
+
+    public static final ThingTypeUID THING_TYPE_DISHWASHER = new ThingTypeUID(BINDING_ID,
+            "" + DeviceTypes.DISH_WASHER.deviceTypeId());
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIR_CONDITIONER,
             THING_TYPE_WASHING_MACHINE, THING_TYPE_WASHING_TOWER, THING_TYPE_DRYER_TOWER, THING_TYPE_DRYER,
-            THING_TYPE_FRIDGE, THING_TYPE_BRIDGE, THING_TYPE_HEAT_PUMP);
+            THING_TYPE_FRIDGE, THING_TYPE_BRIDGE, THING_TYPE_HEAT_PUMP, THING_TYPE_DISHWASHER);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_AIR_CONDITIONER,
             THING_TYPE_WASHING_MACHINE, THING_TYPE_WASHING_TOWER, THING_TYPE_DRYER, THING_TYPE_DRYER_TOWER,
             THING_TYPE_HEAT_PUMP);
@@ -139,7 +143,9 @@ public class LGThinQBindingConstants {
     public static final String TEMP_UNIT_FAHRENHEIT_SYMBOL = "°F";
 
     public static final String FR_CHANNEL_ICE_PLUS = "fr-ice-plus";
-    public static final String FR_CHANNEL_EXPRESS_MODE = "fr-express-mode";
+    public static final String FR_CHANNEL_EXPRESS_FREEZE_MODE = "fr-express-mode";
+    public static final String FR_CHANNEL_EXPRESS_COOL_MODE = "fr-express-cool-mode";
+    public static final String FR_CHANNEL_VACATION_MODE = "fr-eco-friendly-mode";
     public static final String FR_CHANNEL_SMART_SAVING_MODE_V2 = "fr-smart-saving-mode";
     public static final String FR_CHANNEL_SMART_SAVING_SWITCH_V1 = "fr-smart-saving-switch";
     public static final String FR_CHANNEL_ACTIVE_SAVING = "fr-active-saving";
@@ -161,9 +167,8 @@ public class LGThinQBindingConstants {
     public static final Map<String, String> CAP_FR_LABEL_CLOSE_OPEN = Map.of("CLOSE", "Closed", "OPEN", "Open",
             "IGNORE", "Not Available");
 
-    public static final Map<String, String> CAP_FR_EXPRESS_MODES = Map.of("@CP_OFF_EN_W", "Express Mode Off",
-            "@CP_ON_EN_W", "Express Fridge/Freezer On", "@RE_MAIN_SPEED_FREEZE_TERM_W", "Rapid Freeze On");
-
+    public static final Map<String, String> CAP_FR_EXPRESS_FREEZE_MODES = Map.of("@CP_OFF_EN_W", "Express Mode Off",
+            "@CP_ON_EN_W", "Express Freeze On", "@RE_MAIN_SPEED_FREEZE_TERM_W", "Rapid Freeze On");
     public static final Map<String, String> CAP_FR_FRESH_AIR_FILTER_MAP = Map.ofEntries(/* v1 */ entry("1", "Off"),
             entry("2", "Auto Mode"), entry("3", "Power Mode"), entry("4", "Replace Filter"),
             /* v2 */ entry("OFF", "Off"), entry("AUTO", "Auto Mode"), entry("POWER", "Power Mode"),
@@ -341,5 +346,21 @@ public class LGThinQBindingConstants {
             CAP_WM_RINSE, "temp", CAP_WM_TEMPERATURE, "state", CAP_WDM_STATE);
 
     public static final String WM_COMMAND_REMOTE_START_V2 = "WMStart";
+    // ==============================================================================
+
+    // ====================== WASHING MACHINE CONSTANTS =============================
+    public static final String DW_SNAPSHOT_WASHER_DRYER_NODE_V2 = "dishwasher";
+    public static final Map<String, String> CAP_DW_DOOR_STATE = Map.of("@CP_OFF_EN_W", "Close", "@CP_ON_EN_W",
+            "Opened");
+    public static final Map<String, String> CAP_DW_PROCESS_STATE = Map.ofEntries(entry("@DW_STATE_INITIAL_W", "None"),
+            entry("@DW_STATE_RESERVE_W", "Reserved"), entry("@DW_STATE_RUNNING_W", "Running"),
+            entry("@DW_STATE_RINSING_W", "Rising"), entry("@DW_STATE_DRYING_W", "Drying"),
+            entry("@DW_STATE_COMPLETE_W", "Complete"), entry("@DW_STATE_NIGHTDRY_W", "Night Dry"),
+            entry("@DW_STATE_CANCEL_W", "Cancelled"));
+
+    public static final Map<String, String> CAP_DW_STATE = Map.ofEntries(entry("@DW_STATE_POWER_OFF_W", "Off"),
+            entry("@WM_STATE_INITIAL_W", "Initial"), entry("@DW_STATE_RUNNING_W", "Running"),
+            entry("@DW_STATE_PAUSE_W", "Paused"), entry("@DW_STATE_STANDBY_W", "Stand By"),
+            entry("@DW_STATE_COMPLETE_W", "Complete"), entry("@DW_STATE_POWER_FAIL_W", "Power Fail"));
     // ==============================================================================
 }

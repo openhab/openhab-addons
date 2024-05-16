@@ -61,6 +61,13 @@ public class LGThinQApiClientServiceFactory {
                 : new LGThinQWMApiV2ClientServiceImpl(httpClientFactory.getCommonHttpClient());
     }
 
+    public static LGThinQDishWasherApiClientService newDishWasherApiClientService(String lgPlatformType,
+            HttpClientFactory httpClientFactory) {
+        return lgPlatformType.equals(PLATFORM_TYPE_V1)
+                ? new LGThinQDishWasherApiV1ClientServiceImpl(httpClientFactory.getCommonHttpClient())
+                : new LGThinQDishWasherApiV2ClientServiceImpl(httpClientFactory.getCommonHttpClient());
+    }
+
     @NonNullByDefault
     public static final class LGThinQGeneralApiClientService
             extends LGThinQAbstractApiClientService<GenericCapability, AbstractSnapshotDefinition> {

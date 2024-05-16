@@ -26,15 +26,15 @@ import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 @NonNullByDefault
 public interface FridgeCapability extends CapabilityDefinition {
 
-    public Map<String, String> getFridgeTempCMap();
+    Map<String, String> getFridgeTempCMap();
 
-    public Map<String, String> getFridgeTempFMap();
+    Map<String, String> getFridgeTempFMap();
 
-    public Map<String, String> getFreezerTempCMap();
+    Map<String, String> getFreezerTempCMap();
 
-    public Map<String, String> getFreezerTempFMap();
+    Map<String, String> getFreezerTempFMap();
 
-    public Map<String, String> getTempUnitMap();
+    Map<String, String> getTempUnitMap();
 
     Map<String, String> getIcePlusMap();
 
@@ -42,7 +42,7 @@ public interface FridgeCapability extends CapabilityDefinition {
 
     Map<String, String> getWaterFilterMap();
 
-    Map<String, String> getExpressModeMap();
+    Map<String, String> getExpressFreezeModeMap();
 
     Map<String, String> getSmartSavingMap();
 
@@ -51,4 +51,12 @@ public interface FridgeCapability extends CapabilityDefinition {
     Map<String, String> getAtLeastOneDoorOpenMap();
 
     Map<String, CommandDefinition> getCommandsDefinition();
+
+    boolean isExpressCoolModePresent();
+
+    void setExpressCoolModePresent(boolean isPresent);
+
+    boolean isEcoFriendlyModePresent();
+
+    void setEcoFriendlyModePresent(boolean isPresent);
 }
