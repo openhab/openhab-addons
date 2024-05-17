@@ -67,6 +67,7 @@ public class ChannelFactoryTest {
 
         Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
         assertThat(result.getAcceptedItemType(), is(ChannelType.TEMPERATURE.getAcceptedType()));
+        assertThat(result.getChannelTypeUID().getId(), is("type-temperature"));
         assertThat(result.getUID().getThingUID(), is(TEST_THING_UID));
         assertThat(result.getUID().getId(), is(TEST_CHANNEL_ID));
         assertThat(result.getDescription(), is("Add. heat (BT63)"));
@@ -81,6 +82,7 @@ public class ChannelFactoryTest {
 
         Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
         assertThat(result.getAcceptedItemType(), is(ChannelType.RW_SWITCH.getAcceptedType()));
+        assertThat(result.getChannelTypeUID().getId(), is("rwtype-switch"));
         assertThat(result.getUID().getThingUID(), is(TEST_THING_UID));
         assertThat(result.getUID().getId(), is(TEST_CHANNEL_ID));
         assertThat(result.getDescription(), is("Temporary lux"));
@@ -95,6 +97,7 @@ public class ChannelFactoryTest {
 
         Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
         assertThat(result.getAcceptedItemType(), is(ChannelType.SWITCH.getAcceptedType()));
+        assertThat(result.getChannelTypeUID().getId(), is("type-switch"));
         assertThat(result.getUID().getThingUID(), is(TEST_THING_UID));
         assertThat(result.getUID().getId(), is(TEST_CHANNEL_ID));
         assertThat(result.getDescription(), is("Pump: Heating medium (GP6)"));
@@ -109,6 +112,7 @@ public class ChannelFactoryTest {
 
         Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
         assertThat(result.getAcceptedItemType(), is(ChannelType.DOUBLE.getAcceptedType()));
+        assertThat(result.getChannelTypeUID().getId(), is("type-number-double"));
     }
 
     @Test
@@ -119,6 +123,7 @@ public class ChannelFactoryTest {
 
         Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
         assertThat(result.getAcceptedItemType(), is(ChannelType.PRIORITY.getAcceptedType()));
+        assertThat(result.getChannelTypeUID().getId(), is("type-priority"));
     }
 
     @Test
@@ -129,5 +134,6 @@ public class ChannelFactoryTest {
 
         Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
         assertThat(result.getAcceptedItemType(), is(ChannelType.COMPRESSOR_STATUS.getAcceptedType()));
+        assertThat(result.getChannelTypeUID().getId(), is("type-comp-status"));
     }
 }

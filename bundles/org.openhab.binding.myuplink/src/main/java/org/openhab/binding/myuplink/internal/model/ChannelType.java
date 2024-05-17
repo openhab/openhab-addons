@@ -35,7 +35,7 @@ public enum ChannelType {
     INTEGER(CHANNEL_TYPE_UNIT_NONE, "type-number-integer", "Number"),
     DOUBLE(CHANNEL_TYPE_UNIT_NONE, "type-number-double", "Number"),
     SWITCH(CHANNEL_TYPE_UNIT_NONE, "type-switch", "Switch"),
-    RW_SWITCH(CHANNEL_TYPE_UNIT_NONE, "rwtype-switch", "Switch"),
+    RW_SWITCH(CHANNEL_TYPE_UNIT_NONE, "rwtype-switch", "Switch", true),
     PRIORITY(CHANNEL_TYPE_UNIT_NONE, "type-priority", "Number"),
     COMPRESSOR_STATUS(CHANNEL_TYPE_UNIT_NONE, "type-comp-status", "Number");
 

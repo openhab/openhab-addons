@@ -47,4 +47,14 @@ public class ChannelTypeTest {
     public void testFromJsonDataTime() {
         assertThat(ChannelType.fromJsonData("h", false), is(ChannelType.TIME));
     }
+
+    @Test
+    public void testFromRwTypeSwitch() {
+        assertThat(ChannelType.fromTypeName("rwtype-switch"), is(ChannelType.RW_SWITCH));
+    }
+
+    @Test
+    public void testFromTypeSwitch() {
+        assertThat(ChannelType.fromTypeName("type-switch"), is(ChannelType.SWITCH));
+    }
 }
