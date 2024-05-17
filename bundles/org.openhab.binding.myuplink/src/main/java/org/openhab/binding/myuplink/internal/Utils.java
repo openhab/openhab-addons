@@ -116,7 +116,7 @@ public final class Utils {
      * @param defaultVal
      * @return
      */
-    public static @Nullable String getAsString(@Nullable JsonObject jsonObject, String key, String defaultVal) {
+    public static String getAsString(@Nullable JsonObject jsonObject, String key, String defaultVal) {
         String text = getAsString(jsonObject, key);
         return text == null ? defaultVal : text;
     }
