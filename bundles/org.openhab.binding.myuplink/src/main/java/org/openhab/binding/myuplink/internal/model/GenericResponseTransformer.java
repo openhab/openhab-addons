@@ -24,6 +24,7 @@ import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.binding.myuplink.internal.handler.ChannelProvider;
 import org.openhab.binding.myuplink.internal.handler.DynamicChannelProvider;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
@@ -100,7 +101,11 @@ public class GenericResponseTransformer {
                             case TIME -> new QuantityType<>(Double.parseDouble(value), Units.HOUR);
                             case INTEGER -> new DecimalType(Double.valueOf(value).longValue());
                             case DOUBLE -> new DecimalType(Double.parseDouble(value));
-                            // case CHANNEL_TYPE_SWITCH -> OnOffType.from(Boolean.parseBoolean(value));
+                            case SWITCH -> OnOffType.from(Boolean.parseBoolean(value));
+                            case RW_SWITCH -> OnOffType.from(Boolean.parseBoolean(value));
+                            case PRIORITY -> new DecimalType(Double.valueOf(value).longValue());
+                            case COMPRESSOR_STATUS -> new DecimalType(Double.valueOf(value).longValue());
+
                             default -> UnDefType.NULL;
                         };
 

@@ -152,9 +152,9 @@ public final class Utils {
      * @param key
      * @return
      */
-    public static @Nullable Boolean getAsBool(@Nullable JsonObject jsonObject, String key, Boolean defaultValue) {
+    public static boolean getAsBool(@Nullable JsonObject jsonObject, String key, Boolean defaultValue) {
         Boolean result = getAsBool(jsonObject, key);
-        return result ? defaultValue : result;
+        return result == null ? defaultValue : result;
     }
 
     /**
