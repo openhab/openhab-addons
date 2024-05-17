@@ -13,6 +13,4 @@
   <artifactId>org.openhab.binding.sunsynk</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: SunSynk Binding</name>
-
-
 </project>
