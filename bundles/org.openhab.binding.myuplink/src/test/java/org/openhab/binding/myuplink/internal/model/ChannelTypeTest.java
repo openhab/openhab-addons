@@ -14,8 +14,7 @@ package org.openhab.binding.myuplink.internal.model;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.isNotNull;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -30,8 +29,8 @@ public class ChannelTypeTest {
 
     @Test
     public void testFromJsonDataNoUnit() {
-        assertThat(ChannelType.fromJsonData("", false), isNull(ChannelType.class));
-        assertThat(ChannelType.fromJsonData("", true), isNull(ChannelType.class));
+        assertNull(ChannelType.fromJsonData("", false));
+        assertNull(ChannelType.fromJsonData("", true));
     }
 
     @Test
