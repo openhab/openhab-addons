@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.sunsynk.internal.classes;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -22,15 +24,17 @@ import com.google.gson.annotations.SerializedName;
  * @author Lee Charlton - Initial contribution
  */
 
+@NonNullByDefault
+
 public class Inverter {
 
-    private String uid;
+    private String uid = "";
     @SerializedName("secret_key")
-    private String token;
-    private String serialNo;
-    private String gateSerialNo;
-    private String id;
-    private String alias;
+    private String token = "";
+    private String serialNo = "";
+    private String gateSerialNo = "";
+    private String id = "";
+    private String alias = "";
     private int refresh;
 
     public void setUID(String uid) {

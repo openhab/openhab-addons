@@ -14,6 +14,8 @@ package org.openhab.binding.sunsynk.internal.classes;
 
 import java.time.Instant;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link APIdata} is the internal class for a Sunsynk Connect
  * Account.
@@ -21,15 +23,17 @@ import java.time.Instant;
  * @author Lee Charlton - Initial contribution
  */
 
+@NonNullByDefault
+
 // "data":{"access_token":"xxxxxxx","token_type":"bearer","refresh_token":"xxxxxxxx","expires_in":258669,"scope":"all"},"success":true}
 public class APIdata {
 
-    public static String static_access_token;
-    private String access_token;
-    private String refresh_token;
-    private String token_type;
-    private Long expires_in;
-    private String scope;
+    public static String static_access_token = "";
+    private String access_token = "";
+    private String refresh_token = "";
+    private String token_type = "";
+    private Long expires_in = 0000L;
+    private String scope = "";
     private Long issued_at = Instant.now().getEpochSecond();
 
     public Long getExpiresIn() {

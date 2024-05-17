@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.sunsynk.internal.classes;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link Daytemps} is the internal class for Inverter temperature history information
@@ -22,29 +25,32 @@ import java.util.List;
  * @author Lee Charlton - Initial contribution
  */
 
+@NonNullByDefault
+
 public class Daytemps {
     private int code;
-    private String msg;
-    private Data data;
+    private String msg = "";
+    private boolean success;
+    private Data data = new Data();
     private String response_status = "okay";
     private double dc_temperature;
     private double ac_temperature;
 
     class Data {
-        private List<Infos> infos;
+        private List<Infos> infos = new ArrayList<Infos>();
     }
 
     class Infos {
-        private String unit;
-        List<Record> records;
-        private String id;
-        private String label;
+        private String unit = "";
+        List<Record> records = new ArrayList<Record>();
+        private String id = "";
+        private String label = "";
     }
 
     class Record {
-        private String time;
+        private String time = "";
         private double value;
-        private String updateTime;
+        private String updateTime = "";
     }
 
     public void getLastValue() {

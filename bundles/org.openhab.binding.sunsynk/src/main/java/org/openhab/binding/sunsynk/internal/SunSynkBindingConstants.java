@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.sunsynk.internal;
 
-//import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -21,19 +21,17 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Lee Charlton - Initial contribution
  */
-// @NonNullByDefault
+@NonNullByDefault
 public class SunSynkBindingConstants {
 
     private static final String BINDING_ID = "sunsynk";
 
     // List of all Thing Type UIDs
-    // public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
     public static final ThingTypeUID BRIDGE_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "sunsynkaccount");
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, "inverter");
     public static final ThingTypeUID THING_TYPE_PLANT = new ThingTypeUID(BINDING_ID, "plant");
 
     // List of all Channel ids
-    // public static final String COMMAND = "command";
     public static final String PLANT_STATUS = "plant-status";
 
     public static final String CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE = "interval-1-grid-charge";
@@ -92,7 +90,6 @@ public class SunSynkBindingConstants {
     public static final String CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN = "inverter-control-energy-pattern";
     public static final String CHANNEL_INVERTER_CONTROL_WORK_MODE = "inverter-control-work-mode";
 
-    // Config data
     public static final String CONFIG_SECRET = "access_token";
     public static final String CONFIG_GATE_SERIAL = "gsn";
     public static final String CONFIG_SERIAL = "sn";

@@ -13,15 +13,20 @@
 
 package org.openhab.binding.sunsynk.internal.classes;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * The {@link Settings} is the internal class for Inverter real time information
+ * The {@link RealTimeInData} is the internal class for Inverter real time information
  * from the SunSynk Account.
  * 
  * 
  * @author Lee Charlton - Initial contribution
  */
+
+@NonNullByDefault
 
 // {'code': 0, 'msg': 'Success', 'data': {'pac': 0, 'grid_tip_power': '--', 'pvIV': [...], 'mpptIV': [...], 'etoday':
 // 0.0, 'etotal': 0.0}, 'success': True}//
@@ -33,29 +38,30 @@ import java.util.List;
 public class RealTimeInData {
 
     private int code;
-    private String msg;
-    private Data data;
+    private String msg = "";
+    private boolean success;
+    private Data data = new Data();
     private double solar_power;
 
     class Data {
 
         private int pac;
-        private String grid_tip_power;
+        private String grid_tip_power = "";
         private double etoday;
         private double etotal;
-        private List<PVIV> pvIV;
-        private List<MPPTIV> mpptIV;
+        private List<PVIV> pvIV = new ArrayList<PVIV>();
+        private List<MPPTIV> mpptIV = new ArrayList<MPPTIV>();
     }
 
     private class PVIV {
-        private String id;
+        private String id = "";
         private int pvNo;
         private double vpv;
         private double ipv;
         private double ppv; // sum for all power
         private double todayPv;
-        private String sn;
-        private String time;
+        private String sn = "";
+        private String time = "";
     }
 
     class MPPTIV { // Empty; no solar panels
