@@ -75,8 +75,19 @@ public class MyUplinkBindingConstants {
     public static final String JSON_ENUM_KEY_TEXT = "text";
     public static final String JSON_ENUM_ORD_0 = "0";
     public static final String JSON_ENUM_ORD_1 = "1";
-    public static final String JSON_ENUM_VAL_ON = "on";
+    public static final String JSON_ENUM_ORD_10 = "10";
+    public static final String JSON_ENUM_ORD_20 = "20";
+    public static final String JSON_ENUM_ORD_30 = "30";
+    public static final String JSON_ENUM_ORD_40 = "40";
+    public static final String JSON_ENUM_ORD_60 = "60";
+    public static final String JSON_ENUM_ORD_100 = "100";
     public static final String JSON_ENUM_VAL_OFF = "off";
+    public static final String JSON_ENUM_VAL_ON = "on";
+    public static final String JSON_ENUM_VAL_HOT_WATER = "hot water";
+    public static final String JSON_ENUM_VAL_HEATING = "heating";
+    public static final String JSON_ENUM_VAL_POOL = "pool";
+    public static final String JSON_ENUM_VAL_STARTS = "starts";
+    public static final String JSON_ENUM_VAL_RUNS = "runs";
 
     public static final String JSON_VAL_CONNECTION_CONNECTED = "Connected";
     public static final String JSON_VAL_DECIMAL_SEPARATOR = ".";

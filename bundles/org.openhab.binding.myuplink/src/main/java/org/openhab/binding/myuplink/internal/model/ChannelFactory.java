@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -70,24 +69,47 @@ public class ChannelFactory {
     private static ChannelType determineEnumType(JsonArray enumValues, boolean writable) {
         boolean containsOffAt0 = false;
         boolean containsOnAt1 = false;
+        boolean containsOffAt10 = false;
+        boolean containsOffAt20 = false;
+        boolean containsHotWaterAt20 = false;
+        boolean containsHeatingAt30 = false;
+        boolean containsPoolAt40 = false;
+        boolean containsStartsAt40 = false;
+        boolean containsRunsAt60 = false;
 
         for (var element : enumValues) {
             var enumText = Utils.getAsString(element.getAsJsonObject(), JSON_ENUM_KEY_TEXT);
             var enumOrdinal = Utils.getAsString(element.getAsJsonObject(), JSON_KEY_CHANNEL_VALUE, GENERIC_NO_VAL);
 
             switch (enumText.toLowerCase()) {
-                case JSON_ENUM_VAL_OFF -> containsOffAt0 = enumOrdinal.equals(JSON_ENUM_ORD_0);
+                case JSON_ENUM_VAL_OFF -> {
+                    containsOffAt0 = enumOrdinal.equals(JSON_ENUM_ORD_0);
+                    containsOffAt10 = enumOrdinal.equals(JSON_ENUM_ORD_10);
+                    containsOffAt20 = enumOrdinal.equals(JSON_ENUM_ORD_20);
+                }
                 case JSON_ENUM_VAL_ON -> containsOnAt1 = enumOrdinal.equals(JSON_ENUM_ORD_1);
+                case JSON_ENUM_VAL_HOT_WATER -> containsHotWaterAt20 = enumOrdinal.equals(JSON_ENUM_ORD_20);
+                case JSON_ENUM_VAL_HEATING -> containsHeatingAt30 = enumOrdinal.equals(JSON_ENUM_ORD_30);
+                case JSON_ENUM_VAL_POOL -> containsPoolAt40 = enumOrdinal.equals(JSON_ENUM_ORD_40);
+                case JSON_ENUM_VAL_STARTS -> containsStartsAt40 = enumOrdinal.equals(JSON_ENUM_ORD_40);
+                case JSON_ENUM_VAL_RUNS -> containsRunsAt60 = enumOrdinal.equals(JSON_ENUM_ORD_60);
             }
         }
 
-        if (enumValues.size() == 2 && containsOnAt1 && containsOffAt0) {
+        if (enumValues.size() == 2 && containsOffAt0 && containsOnAt1) {
             if (writable) {
                 return ChannelType.RW_SWITCH;
             } else {
                 return ChannelType.SWITCH;
             }
+        } else if (enumValues.size() == 7 && containsOffAt10 && containsHotWaterAt20 && containsHeatingAt30
+                && containsPoolAt40) {
+            return ChannelType.PRIORITY;
+
+        } else if (enumValues.size() == 4 && containsOffAt20 && containsStartsAt40 && containsRunsAt60) {
+            return ChannelType.COMPRESSOR_STATUS;
         }
+
         LOGGER.info("could identify enum type with values: {}", enumValues.toString());
         return ChannelType.DOUBLE;
     }

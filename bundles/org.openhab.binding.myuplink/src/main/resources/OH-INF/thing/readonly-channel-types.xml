@@ -51,12 +51,6 @@
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="type-power">
-		<item-type>Number:Power</item-type>
-		<label>Unnamed Power</label>
-		<state pattern="%.2f %unit%" readOnly="true">
-		</state>
-	</channel-type>
 	<channel-type id="type-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Unnamed Energy</label>
@@ -75,29 +69,30 @@
 		<state pattern="%d %%" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="type-defrosting-state">
+	<channel-type id="type-priority">
 		<item-type>Number</item-type>
 		<label>Defrosting State</label>
 		<state readOnly="true">
 			<options>
-				<option value="0">No</option>
-				<option value="1">Active</option>
-				<option value="2">Passive</option>
+				<option value="10">Off</option>
+				<option value="20">Hot Water</option>
+				<option value="30">Heating</option>
+				<option value="40">Pool</option>
+				<option value="41">Pool 2</option>
+				<option value="50">Transfer</option>
+				<option value="60">Cooling</option>
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="type-hpac-state">
+	<channel-type id="type-comp-status">
 		<item-type>Number</item-type>
-		<label>HPAC State</label>
-		<state pattern="%d" readOnly="true">
+		<label>Defrosting State</label>
+		<state readOnly="true">
 			<options>
-				<option value="10">Off</option>
-				<option value="20">Wait</option>
-				<option value="30">Passive</option>
-				<option value="40">PassiveWait</option>
-				<option value="50">Active</option>
-				<option value="60">ActiveWait</option>
-				<option value="70">ActiveProtWait</option>
+				<option value="20">Off</option>
+				<option value="40">Starting</option>
+				<option value="60">Running</option>
+				<option value="100">Stopping</option>
 			</options>
 		</state>
 	</channel-type>
