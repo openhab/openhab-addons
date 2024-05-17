@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.sunsynk.internal.classes;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * The {@link Battery} is the internal class for attery information from the sunsynk Account.
+ * The {@link Battery} is the internal class for battery information from the sunsynk Account.
  * Currently only Lithium SunSynk batteries are known to work.
  * 
  * @author Lee Charlton - Initial contribution
  */
+
+@NonNullByDefault
 
 // {'time': None, 'etodayChg': '2.6', 'etodayDischg': '2.2', 'emonthChg': '17.6', 'emonthDischg': '10.0', 'eyearChg':
 // '593.0',
@@ -39,11 +43,12 @@ package org.openhab.binding.sunsynk.internal.classes;
 
 public class Battery {
     private int code;
-    private String msg;
-    private Data data;
+    private String msg = "";
+    private boolean success;
+    private Data data = new Data();
 
     class Data {
-        private String time;
+        private String time = "";
         private double etodayChg;
         private double etodayDischg;
         private double emonthChg;
@@ -72,18 +77,18 @@ public class Battery {
         private double maxDischargeCurrentLimit;
         private int bms1Version1;
         private int bms1Version2;
-        private String current2;
-        private String voltage2;
-        private String temp2;
-        private String soc2;
-        private String chargeVolt2;
-        private String dischargeVolt2;
-        private String chargeCurrentLimit2;
-        private String dischargeCurrentLimit2;
-        private String maxChargeCurrentLimit2;
-        private String maxDischargeCurrentLimit2;
-        private String bms2Version1;
-        private String bms2Version2;
+        private String current2 = "";
+        private String voltage2 = "";
+        private String temp2 = "";
+        private String soc2 = "";
+        private String chargeVolt2 = "";
+        private String dischargeVolt2 = "";
+        private String chargeCurrentLimit2 = "";
+        private String dischargeCurrentLimit2 = "";
+        private String maxChargeCurrentLimit2 = "";
+        private String maxDischargeCurrentLimit2 = "";
+        private String bms2Version1 = "";
+        private String bms2Version2 = "";
         private int status;
         private double batterySoc1;
         private double batteryCurrent1;
@@ -91,14 +96,14 @@ public class Battery {
         private double batteryPower1;
         private double batteryTemp1;
         private double batteryStatus2;
-        private String batterySoc2;
-        private String batteryCurrent2;
-        private String batteryVolt2;
-        private String batteryPower2;
-        private String batteryTemp2;
-        private String numberOfBatteries;
-        private String batt1Factory;
-        private String batt2Factory;
+        private String batterySoc2 = "";
+        private String batteryCurrent2 = "";
+        private String batteryVolt2 = "";
+        private String batteryPower2 = "";
+        private String batteryTemp2 = "";
+        private String numberOfBatteries = "";
+        private String batt1Factory = "";
+        private String batt2Factory = "";
     }
 
     public double getBatteryVoltage() {

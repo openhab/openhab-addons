@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.sunsynk.internal.classes;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Daytempsretun} is the internal class for Inverter temperature historyinformation
  * from the sunsynk Account.
@@ -20,9 +22,11 @@ package org.openhab.binding.sunsynk.internal.classes;
  * @author Lee Charlton - Initial contribution
  */
 
+@NonNullByDefault
+
 public class Daytempsreturn {
 
-    private String status;
+    private String status = "";
     public double dc;
     public double ac;
 

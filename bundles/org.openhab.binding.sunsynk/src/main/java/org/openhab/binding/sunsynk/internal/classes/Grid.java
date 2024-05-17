@@ -13,7 +13,10 @@
 
 package org.openhab.binding.sunsynk.internal.classes;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link Grid} is the internal class for Inverter real time grid information
@@ -22,6 +25,8 @@ import java.util.List;
  * 
  * @author Lee Charlton - Initial contribution
  */
+
+@NonNullByDefault
 
 // {'vip': [{...}], 'pac': 16, 'qac': 0, 'fac': 49.96, 'pf': 1.0, 'status': 1, 'etodayFrom': '0.5',
 // 'etodayTo': '0.0', 'etotalFrom': '1757.6', 'etotalTo': '253.7', 'limiterPowerArr': [16, 0], 'limiterTotalPower': 16}
@@ -39,15 +44,16 @@ import java.util.List;
 public class Grid {
 
     private int code;
-    private String msg;
-    private Data data;
+    private String msg = "";
+    private boolean success;
+    private Data data = new Data();
 
     private double power;
     private double voltage;
     private double current;
 
     class Data {
-        private List<VIP> vip;
+        private List<VIP> vip = new ArrayList<VIP>();
         private int pac;
         private int qac;
         private double fac;
@@ -58,7 +64,7 @@ public class Grid {
         private double etodayTo;
         private double etotalFrom;
         private double etotalTo;
-        private List<Integer> limiterPowerArr;
+        private List<Integer> limiterPowerArr = new ArrayList<Integer>();
         private int limiterTotalPowerArr;
 
         String content() {

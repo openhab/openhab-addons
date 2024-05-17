@@ -118,12 +118,9 @@ public class SunSynkInverter {
         return this.realTimeDataIn;
     }
 
-    // ------ SETTERS ------ //
-
-    // ------ RETRIEVERS ------//
     // ------ Battery charge settings ------ //
-    // https://api.sunsynk.net/api/v1/common/setting/2211229948/read
-    @SuppressWarnings("null")
+    // https://api.sunsynk.net/api/v1/common/setting/{inverter_sn}/read
+
     String getCommonSettings() throws IOException {
         // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/common/setting/" + this.sn + "/read"),
@@ -140,7 +137,7 @@ public class SunSynkInverter {
 
     // ------ Realtime Grid ------ //
     // https://api.sunsynk.net/api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
-    @SuppressWarnings("null")
+
     String getGridRealTime() throws IOException {
         // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/grid/" + this.sn + "/realtime?sn=") + this.sn,
@@ -157,7 +154,7 @@ public class SunSynkInverter {
 
     // ------ Realtime battery ------ //
     // https://api.sunsynk.net/api/v1/inverter/battery/{inverter_sn}/realtime?sn={inverter_sn}&lan
-    @SuppressWarnings("null")
+
     String getBatteryRealTime() throws IOException {
         // Get URL Respnse
         String response = apiGetMethod(
@@ -174,7 +171,7 @@ public class SunSynkInverter {
 
     // ------ Realtime acdc temperatures ------ //
     // https://api.sunsynk.net/api/v1/inverter/{inverter_sn}/output/day?lan=en&date={date}&column=dc_temp,igbt_temp
-    @SuppressWarnings("null")
+
     String getInverterACDCTemperatures() throws IOException {
         String date = getAPIFormatDate();
         // Get URL Respnse
@@ -193,14 +190,14 @@ public class SunSynkInverter {
 
     // ------ Realtime Input ------ //
     // https://api.sunsynk.net//api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
-    @SuppressWarnings("null")
+
     String getRealTimeIn() throws IOException { // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/" + this.sn + "/realtime/input"),
                 APIdata.static_access_token);
         if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
             return response;
         }
-        // JSON response -> realTime data Structure
+        // JSON response -> realTimeData Structure
         Gson gson = new Gson();
         this.realTimeDataIn = gson.fromJson(response, RealTimeInData.class);
         this.realTimeDataIn.sumPVIV();

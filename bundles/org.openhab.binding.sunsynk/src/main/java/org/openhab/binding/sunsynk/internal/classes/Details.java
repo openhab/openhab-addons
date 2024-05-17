@@ -15,19 +15,22 @@ package org.openhab.binding.sunsynk.internal.classes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * The {@link Client} is the internal class for Client information from the sunsynk Account.
+ * The {@link Details} is the internal class for Account detail information of the sunsynk Account.
  *
  * @author Lee Charlton - Initial contribution
  */
 
+@NonNullByDefault
+
 public class Details {
 
-    // public class AccountDetails{
     private int code;
-    private String msg;
+    private String msg = "";
     private boolean success;
-    private Inverterdata data;
+    private Inverterdata data = new Inverterdata();
 
     public Details() {
     }
@@ -66,30 +69,30 @@ public class Details {
         private int pageSize;
         private int pageNumber;
         private int total;
-        private List<InverterInfo> infos;
+        private List<InverterInfo> infos = new ArrayList<InverterInfo>();
 
         public List<InverterInfo> getInverters() {
             return this.infos;
         }
 
         class InverterInfo {
-            private String id; // could be an int type
-            private String sn;
-            private String alias;
-            private String gsn;
+            private int id;
+            private String sn = "";
+            private String alias = "";
+            private String gsn = "";
             private int status;
             private int type;
-            private String commTypeName;
-            private String custCode;
-            private Version version;
-            private String model;
-            private String equipMode;
+            private String commTypeName = "";
+            private String custCode = "";
+            private Version version = new Version();
+            private String model = "";
+            private String equipMode = "";
             private int pac;
             private double etoday;
             private double etotal;
-            private String updateAt;
+            private String updateAt = "";
             private int opened;
-            private Plant plant;
+            private Plant plant = new Plant();
 
             public String getgsn() {
                 return this.gsn;
@@ -104,7 +107,7 @@ public class Details {
             }
 
             public String getID() {
-                return id;
+                return String.valueOf(id);
             }
 
             public double getetoday() {
@@ -117,28 +120,28 @@ public class Details {
 
             class Plant {
                 private int id;
-                private String name;
+                private String name = "";
                 private int type;
-                private String master;
-                private String installer;
-                private String email;
-                private String phone;
-                private GatewayVO gatewayVO;
+                private String master = "";
+                private String installer = "";
+                private String email = "";
+                private String phone = "";
+                private GatewayVO gatewayVO = new GatewayVO();
                 private boolean sunsynkEquip;
                 private int protocolIdentifier;
                 private int equipType;
 
                 class GatewayVO {
-                    private String gsn;
+                    private String gsn = "";
                     private int status;
                 }
             }
 
             class Version {
-                private String masterVer;
-                private String softVer;
-                private String hardVer;
-                private String bmsVer;
+                private String masterVer = "";
+                private String softVer = "";
+                private String hardVer = "";
+                private String bmsVer = "";
             }
         }
     }

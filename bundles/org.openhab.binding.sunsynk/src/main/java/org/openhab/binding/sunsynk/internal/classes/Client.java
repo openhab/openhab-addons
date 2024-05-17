@@ -20,12 +20,15 @@ import java.util.Optional;
  * @author Lee Charlton - Initial contribution
  */
 
+// @NonNullByDefault
+
 public class Client {
 
     // {"code":0,"msg":"Success","data":{"access_token":"xxxxxxxxxxxxxxx","token_type":"bearer","refresh_token":"xxxxxxxxxxxxxxx","expires_in":258669,"scope":"all"},"success":true}
     private int code;
-    private String msg;
-    private APIdata data;
+    private String msg = "";
+    private boolean success;
+    private APIdata data = new APIdata();
 
     public Client() {
     }
@@ -67,6 +70,6 @@ public class Client {
 
     @Override
     public String toString() {
-        return "Content [code=" + code + ", msg=" + msg + ", data=" + data + "]";
+        return "Content [code=" + code + ", msg=" + msg + "sucess=" + success + ", data=" + data + "]";
     }
 }
