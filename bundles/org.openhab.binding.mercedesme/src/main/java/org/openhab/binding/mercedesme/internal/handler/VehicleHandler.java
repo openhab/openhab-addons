@@ -117,6 +117,9 @@ public class VehicleHandler extends BaseThingHandler {
     private final LocationProvider locationProvider;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
+    private final List<String> HVAC_SEAT_LIST = Arrays
+            .asList(new String[] { GROUP_HVAC + "#" + OH_CHANNEL_FRONT_LEFT, GROUP_HVAC + "#" + OH_CHANNEL_FRONT_RIGHT,
+                    GROUP_HVAC + "#" + OH_CHANNEL_REAR_LEFT, GROUP_HVAC + "#" + OH_CHANNEL_REAR_RIGHT });
     private Map<String, UOMObserver> unitStorage = new HashMap<>();
     Map<String, ChannelStateMap> eventStorage = new HashMap<>();
 
@@ -173,8 +176,8 @@ public class VehicleHandler extends BaseThingHandler {
          */
         logger.trace("Received command {} {} for {}", command.getClass(), command, channelUID);
         if (command instanceof RefreshType) {
-            if ("feature-capabilities".equals(channelUID.getIdWithoutGroup())
-                    || "command-capabilities".equals(channelUID.getIdWithoutGroup())) {
+            if (MB_KEY_FEATURE_CAPABILITIES.equals(channelUID.getIdWithoutGroup())
+                    || MB_KEY_COMMAND_CAPABILITIES.equals(channelUID.getIdWithoutGroup())) {
                 accountHandler.ifPresent(ah -> {
                     ah.getVehicleCapabilities(config.get().vin);
                 });
@@ -191,8 +194,8 @@ public class VehicleHandler extends BaseThingHandler {
             /**
              * Commands for Vehicle
              */
-            if ("ignition".equals(channelUID.getIdWithoutGroup())) {
-                String supported = thing.getProperties().get("commandEngineStart");
+            if (OH_CHANNEL_IGNITION.equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get(MB_KEY_COMMAND_ENGINE_START);
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.trace("Engine Start/Stop not supported");
                 } else {
@@ -216,8 +219,8 @@ public class VehicleHandler extends BaseThingHandler {
                         accountHandler.get().sendCommand(cm);
                     }
                 }
-            } else if ("windows".equals(channelUID.getIdWithoutGroup())) {
-                String supported = thing.getProperties().get("commandWindowsOpen");
+            } else if (OH_CHANNEL_WINDOWS.equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get(MB_KEY_COMMAND_WINDOWS_OPEN);
                 String pin = accountHandler.get().config.get().pin;
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.trace("Windows control not supported");
@@ -259,9 +262,9 @@ public class VehicleHandler extends BaseThingHandler {
                             break;
                     }
                 }
-            } else if ("lock".equals(channelUID.getIdWithoutGroup())) {
+            } else if (OH_CHANNEL_LOCK.equals(channelUID.getIdWithoutGroup())) {
                 String pin = accountHandler.get().config.get().pin;
-                String supported = thing.getProperties().get("commandDoorsLock");
+                String supported = thing.getProperties().get(MB_KEY_COMMAND_DOORS_LOCK);
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.trace("Door Lock not supported");
                 } else {
@@ -294,8 +297,8 @@ public class VehicleHandler extends BaseThingHandler {
             /**
              * Commands for HVAC
              */
-            if (CHANNEL_TEMPERATURE.equals(channelUID.getIdWithoutGroup())) {
-                String supported = thing.getProperties().get("commandZevPreconditionConfigure");
+            if (OH_CHANNEL_TEMPERATURE.equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get(MB_KEY_COMMAND_ZEV_PRECONDITION_CONFIGURE);
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.trace("Air Conditioning Temperature Setting not supported");
                 } else {
@@ -312,8 +315,8 @@ public class VehicleHandler extends BaseThingHandler {
                         accountHandler.get().sendCommand(cm);
                     }
                 }
-            } else if ("active".equals(channelUID.getIdWithoutGroup())) {
-                String supported = thing.getProperties().get("commandZevPreconditioningStart");
+            } else if (OH_CHANNEL_ACTIVE.equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get(MB_KEY_COMMAND_ZEV_PRECONDITIONING_START);
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.trace("Air Conditioning not supported");
                 } else {
@@ -335,16 +338,16 @@ public class VehicleHandler extends BaseThingHandler {
                         accountHandler.get().sendCommand(cm);
                     }
                 }
-            } else if ("front-left".equals(channelUID.getIdWithoutGroup())) {
+            } else if (OH_CHANNEL_FRONT_LEFT.equals(channelUID.getIdWithoutGroup())) {
                 configureSeats(channelUID, (State) command);
-            } else if ("front-right".equals(channelUID.getIdWithoutGroup())) {
+            } else if (OH_CHANNEL_FRONT_RIGHT.equals(channelUID.getIdWithoutGroup())) {
                 configureSeats(channelUID, (State) command);
-            } else if ("rear-left".equals(channelUID.getIdWithoutGroup())) {
+            } else if (OH_CHANNEL_REAR_LEFT.equals(channelUID.getIdWithoutGroup())) {
                 configureSeats(channelUID, (State) command);
-            } else if ("rear-right".equals(channelUID.getIdWithoutGroup())) {
+            } else if (OH_CHANNEL_REAR_RIGHT.equals(channelUID.getIdWithoutGroup())) {
                 configureSeats(channelUID, (State) command);
-            } else if ("aux-heat".equals(channelUID.getIdWithoutGroup())) {
-                String supported = thing.getProperties().get("featureAuxHeat");
+            } else if (OH_CHANNEL_AUX_HEAT.equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get(MB_KEY_FEATURE_AUX_HEAT);
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.trace("Auxiliary Heating not supported");
                 } else {
@@ -362,14 +365,14 @@ public class VehicleHandler extends BaseThingHandler {
                         accountHandler.get().sendCommand(cm);
                     }
                 }
-            } else if ("zone".equals(channelUID.getIdWithoutGroup())) {
+            } else if (OH_CHANNEL_ZONE.equals(channelUID.getIdWithoutGroup())) {
                 int zone = ((DecimalType) command).intValue();
                 if (temperaturePointsStorage.containsKey(zone)) {
-                    ChannelStateMap zoneMap = new ChannelStateMap("zone", GROUP_HVAC, (DecimalType) command);
+                    ChannelStateMap zoneMap = new ChannelStateMap(OH_CHANNEL_ZONE, GROUP_HVAC, (DecimalType) command);
                     updateChannel(zoneMap);
                     QuantityType<Temperature> selectedTemp = temperaturePointsStorage.get(zone);
                     if (selectedTemp != null) {
-                        ChannelStateMap tempCSM = new ChannelStateMap("temperature", GROUP_HVAC, selectedTemp);
+                        ChannelStateMap tempCSM = new ChannelStateMap(OH_CHANNEL_TEMPERATURE, GROUP_HVAC, selectedTemp);
                         updateChannel(tempCSM);
                     }
                 } else {
@@ -380,8 +383,8 @@ public class VehicleHandler extends BaseThingHandler {
             /**
              * Commands for Positioning
              */
-            if ("signal".equals(channelUID.getIdWithoutGroup())) {
-                String supported = thing.getProperties().get("commandSigposStart");
+            if (OH_CHANNEL_SIGNAL.equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get(MB_KEY_COMMAND_SIGPOS_START);
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.trace("Signal Position not supported");
                 } else {
@@ -417,12 +420,12 @@ public class VehicleHandler extends BaseThingHandler {
             synchronized (chargeGroupValueStorage) {
                 int maxSocToSelect = 80;
                 boolean autoUnlockToSelect = false;
-                String supported = thing.getProperties().get("commandChargeProgramConfigure");
+                String supported = thing.getProperties().get(MB_KEY_COMMAND_CHARGE_PROGRAM_CONFIGURE);
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.trace("Charge Program Configure not supported");
                 } else {
                     boolean sendCommand = false;
-                    if ("program".equals(channelUID.getIdWithoutGroup())) {
+                    if (OH_CHANNEL_PROGRAM.equals(channelUID.getIdWithoutGroup())) {
                         selectedChargeProgram = ((DecimalType) command).intValue();
                         if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
                             maxSocToSelect = chargeGroupValueStorage
@@ -431,19 +434,19 @@ public class VehicleHandler extends BaseThingHandler {
                             autoUnlockToSelect = chargeGroupValueStorage
                                     .getJSONObject(Integer.toString(selectedChargeProgram))
                                     .getBoolean(Constants.AUTO_UNLOCK_KEY);
-                            updateChannel(new ChannelStateMap("max-soc", GROUP_CHARGE,
+                            updateChannel(new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
                                     QuantityType.valueOf(maxSocToSelect, Units.PERCENT)));
-                            updateChannel(new ChannelStateMap("auto-unlock", GROUP_CHARGE,
+                            updateChannel(new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
                                     OnOffType.from(autoUnlockToSelect)));
                             sendCommand = true;
                         } else {
                             logger.trace("No charge program found for {}", selectedChargeProgram);
                         }
                     }
-                    if ("auto-unlock".equals(channelUID.getIdWithoutGroup())) {
+                    if (OH_CHANNEL_AUTO_UNLOCK.equals(channelUID.getIdWithoutGroup())) {
                         autoUnlockToSelect = ((OnOffType) command).equals(OnOffType.ON);
                         sendCommand = true;
-                    } else if ("max-soc".equals(channelUID.getIdWithoutGroup())) {
+                    } else if (OH_CHANNEL_MAX_SOC.equals(channelUID.getIdWithoutGroup())) {
                         maxSocToSelect = ((QuantityType<?>) command).intValue();
                         sendCommand = true;
                     } // else - nothing to be sent
@@ -464,8 +467,8 @@ public class VehicleHandler extends BaseThingHandler {
             /**
              * Commands for Windows
              */
-            if ("sunroof".equals(channelUID.getIdWithoutGroup())) {
-                String supported = thing.getProperties().get("commandSunroofOpen");
+            if (OH_CHANNEL_SUNROOF.equals(channelUID.getIdWithoutGroup())) {
+                String supported = thing.getProperties().get(MB_KEY_COMMAND_SUNROOF_OPEN);
                 String pin = accountHandler.get().config.get().pin;
                 if (Boolean.FALSE.toString().equals(supported)) {
                     logger.trace("Sunroof control not supported");
@@ -511,31 +514,29 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     private void configureSeats(ChannelUID channelUID, State command) {
-        String supported = thing.getProperties().get("commandZevPreconditionConfigureSeats");
+        String supported = thing.getProperties().get(MB_KEY_COMMAND_ZEV_PRECONDITION_CONFIGURE_SEATS);
         if (Boolean.FALSE.toString().equals(supported)) {
             logger.trace("Seat Conditioning not supported");
         } else {
             com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningConfigureSeats.Builder builder = ZEVPreconditioningConfigureSeats
                     .newBuilder();
 
-            List<String> seatList = Arrays.asList(
-                    new String[] { "hvac#front-left", "hvac#front-right", "hvac#rear-left", "hvac#rear-right" });
-            seatList.forEach(seat -> {
+            HVAC_SEAT_LIST.forEach(seat -> {
                 ChannelStateMap csm = eventStorage.get(seat);
                 if (csm != null) {
                     if (csm.getState() != UnDefType.UNDEF && !seat.equals(channelUID.getId())) {
                         OnOffType oot = (OnOffType) csm.getState();
                         switch (seat) {
-                            case "hvac#front-left":
+                            case GROUP_HVAC + "#" + OH_CHANNEL_FRONT_LEFT:
                                 builder.setFrontLeft(OnOffType.ON.equals(oot));
                                 break;
-                            case "hvac#front-right":
+                            case GROUP_HVAC + "#" + OH_CHANNEL_FRONT_RIGHT:
                                 builder.setFrontRight(OnOffType.ON.equals(oot));
                                 break;
-                            case "hvac#rear-left":
+                            case GROUP_HVAC + "#" + OH_CHANNEL_REAR_LEFT:
                                 builder.setRearLeft(OnOffType.ON.equals(oot));
                                 break;
-                            case "hvac#rear-right":
+                            case GROUP_HVAC + "#" + OH_CHANNEL_REAR_RIGHT:
                                 builder.setRearRight(OnOffType.ON.equals(oot));
                                 break;
                         }
@@ -554,11 +555,11 @@ public class VehicleHandler extends BaseThingHandler {
         Map<Long, AppTwinCommandStatus> updates = cmdUpdates.getUpdatesByPidMap();
         updates.forEach((key, value) -> {
             // Command name
-            ChannelStateMap csmCommand = new ChannelStateMap("cmd-name", GROUP_COMMAND,
+            ChannelStateMap csmCommand = new ChannelStateMap(OH_CHANNEL_CMD_NAME, GROUP_COMMAND,
                     new DecimalType(value.getType().getNumber()));
             updateChannel(csmCommand);
             // Command State
-            ChannelStateMap csmState = new ChannelStateMap("cmd-state", GROUP_COMMAND,
+            ChannelStateMap csmState = new ChannelStateMap(OH_CHANNEL_CMD_STATE, GROUP_COMMAND,
                     new DecimalType(value.getState().getNumber()));
             updateChannel(csmState);
             // Command Time
@@ -569,7 +570,7 @@ public class VehicleHandler extends BaseThingHandler {
             } else {
                 observer = new UOMObserver(UOMObserver.TIME_ROW);
             }
-            ChannelStateMap csmUpdated = new ChannelStateMap("cmd-last-update", GROUP_COMMAND, dtt, observer);
+            ChannelStateMap csmUpdated = new ChannelStateMap(OH_CHANNEL_CMD_LAST_UPDATE, GROUP_COMMAND, dtt, observer);
             updateChannel(csmUpdated);
         });
     }
@@ -582,7 +583,7 @@ public class VehicleHandler extends BaseThingHandler {
          */
         String newProto = Utils.proto2Json(data, thing.getThingTypeUID());
         String combinedProto = newProto;
-        ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, "proto-update");
+        ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, OH_CHANNEL_PROTO_UPDATE);
         ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
         if (oldProtoMap != null) {
             String oldProto = ((StringType) oldProtoMap.getState()).toFullString();
@@ -592,7 +593,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
         // proto updates causing large printouts in openhab.log
         // update channel in case of user connected this channel with an item
-        ChannelStateMap dataUpdateMap = new ChannelStateMap("proto-update", GROUP_VEHICLE,
+        ChannelStateMap dataUpdateMap = new ChannelStateMap(OH_CHANNEL_PROTO_UPDATE, GROUP_VEHICLE,
                 StringType.valueOf(combinedProto));
         updateChannel(dataUpdateMap);
 
@@ -617,52 +618,52 @@ public class VehicleHandler extends BaseThingHandler {
                 // handle range channels very specific regarding to vehicle type
                 boolean block = false;
                 switch (channel) {
-                    case "range-electric":
+                    case OH_CHANNEL_RANGE_ELECTRIC:
                         if (!Constants.COMBUSTION.equals(vehicleType)) {
-                            ChannelStateMap radiusElectric = new ChannelStateMap("radius-electric", GROUP_RANGE,
-                                    guessRangeRadius(csm.getState()), csm.getUomObserver());
+                            ChannelStateMap radiusElectric = new ChannelStateMap(OH_CHANNEL_RADIUS_ELECTRIC,
+                                    GROUP_RANGE, guessRangeRadius(csm.getState()), csm.getUomObserver());
                             updateChannel(radiusElectric);
                         } else {
                             block = true;
                         }
                         break;
-                    case "range-fuel":
+                    case OH_CHANNEL_RANGE_FUEL:
                         if (!Constants.BEV.equals(vehicleType)) {
-                            ChannelStateMap radiusFuel = new ChannelStateMap("radius-fuel", GROUP_RANGE,
+                            ChannelStateMap radiusFuel = new ChannelStateMap(OH_CHANNEL_RADIUS_FUEL, GROUP_RANGE,
                                     guessRangeRadius(csm.getState()), csm.getUomObserver());
                             updateChannel(radiusFuel);
                         } else {
                             block = true;
                         }
                         break;
-                    case "range-hybrid":
+                    case OH_CHANNEL_RANGE_HYBRID:
                         if (Constants.HYBRID.equals(vehicleType)) {
-                            ChannelStateMap radiusHybrid = new ChannelStateMap("radius-hybrid", GROUP_RANGE,
+                            ChannelStateMap radiusHybrid = new ChannelStateMap(OH_CHANNEL_RADIUS_HYBRID, GROUP_RANGE,
                                     guessRangeRadius(csm.getState()), csm.getUomObserver());
                             updateChannel(radiusHybrid);
                         } else {
                             block = true;
                         }
                         break;
-                    case "soc":
+                    case OH_CHANNEL_SOC:
                         if (!Constants.COMBUSTION.equals(vehicleType)) {
                             if (config.get().batteryCapacity > 0) {
                                 float socValue = ((QuantityType<?>) csm.getState()).floatValue();
                                 float batteryCapacity = config.get().batteryCapacity;
                                 float chargedValue = Math.round(socValue * 1000 * batteryCapacity / 1000) / (float) 100;
-                                ChannelStateMap charged = new ChannelStateMap("charged", GROUP_RANGE,
+                                ChannelStateMap charged = new ChannelStateMap(OH_CHANNEL_CHARGED, GROUP_RANGE,
                                         QuantityType.valueOf(chargedValue, Units.KILOWATT_HOUR));
                                 updateChannel(charged);
                                 float unchargedValue = Math.round((100 - socValue) * 1000 * batteryCapacity / 1000)
                                         / (float) 100;
-                                ChannelStateMap uncharged = new ChannelStateMap("uncharged", GROUP_RANGE,
+                                ChannelStateMap uncharged = new ChannelStateMap(OH_CHANNEL_UNCHARGED, GROUP_RANGE,
                                         QuantityType.valueOf(unchargedValue, Units.KILOWATT_HOUR));
                                 updateChannel(uncharged);
                             } else {
-                                ChannelStateMap charged = new ChannelStateMap("charged", GROUP_RANGE,
+                                ChannelStateMap charged = new ChannelStateMap(OH_CHANNEL_CHARGED, GROUP_RANGE,
                                         QuantityType.valueOf(0, Units.KILOWATT_HOUR));
                                 updateChannel(charged);
-                                ChannelStateMap uncharged = new ChannelStateMap("uncharged", GROUP_RANGE,
+                                ChannelStateMap uncharged = new ChannelStateMap(OH_CHANNEL_UNCHARGED, GROUP_RANGE,
                                         QuantityType.valueOf(0, Units.KILOWATT_HOUR));
                                 updateChannel(uncharged);
                             }
@@ -670,26 +671,26 @@ public class VehicleHandler extends BaseThingHandler {
                             block = true;
                         }
                         break;
-                    case "fuel-level":
+                    case OH_CHANNEL_FUEL_LEVEL:
                         if (!Constants.BEV.equals(vehicleType)) {
                             if (config.get().fuelCapacity > 0) {
                                 float fuelLevelValue = ((QuantityType<?>) csm.getState()).floatValue();
                                 float fuelCapacity = config.get().fuelCapacity;
                                 float litersInTank = Math.round(fuelLevelValue * 1000 * fuelCapacity / 1000)
                                         / (float) 100;
-                                ChannelStateMap tankFilled = new ChannelStateMap("tank-remain", GROUP_RANGE,
+                                ChannelStateMap tankFilled = new ChannelStateMap(OH_CHANNEL_TANK_REMAIN, GROUP_RANGE,
                                         QuantityType.valueOf(litersInTank, Mapper.defaultVolumeUnit));
                                 updateChannel(tankFilled);
                                 float litersFree = Math.round((100 - fuelLevelValue) * 1000 * fuelCapacity / 1000)
                                         / (float) 100;
-                                ChannelStateMap tankOpen = new ChannelStateMap("tank-open", GROUP_RANGE,
+                                ChannelStateMap tankOpen = new ChannelStateMap(OH_CHANNEL_TANK_OPEN, GROUP_RANGE,
                                         QuantityType.valueOf(litersFree, Mapper.defaultVolumeUnit));
                                 updateChannel(tankOpen);
                             } else {
-                                ChannelStateMap tankFilled = new ChannelStateMap("tank-remain", GROUP_RANGE,
+                                ChannelStateMap tankFilled = new ChannelStateMap(OH_CHANNEL_TANK_REMAIN, GROUP_RANGE,
                                         QuantityType.valueOf(0, Mapper.defaultVolumeUnit));
                                 updateChannel(tankFilled);
-                                ChannelStateMap tankOpen = new ChannelStateMap("tank-open", GROUP_RANGE,
+                                ChannelStateMap tankOpen = new ChannelStateMap(OH_CHANNEL_TANK_OPEN, GROUP_RANGE,
                                         QuantityType.valueOf(0, Mapper.defaultVolumeUnit));
                                 updateChannel(tankOpen);
                             }
@@ -697,9 +698,9 @@ public class VehicleHandler extends BaseThingHandler {
                             block = true;
                         }
                         break;
-                    case "coolant-fluid":
-                    case "engine":
-                    case "gas-flap":
+                    case OH_CHANNEL_COOLANT_FLUID:
+                    case OH_CHANNEL_ENGINE:
+                    case OH_CHANNEL_GAS_FLAP:
                         if (Constants.BEV.equals(vehicleType)) {
                             block = true;
                         }
@@ -713,14 +714,14 @@ public class VehicleHandler extends BaseThingHandler {
         /**
          * handle GPS
          */
-        if (atts.containsKey("positionLat") && atts.containsKey("positionLong")) {
-            double lat = Utils.getDouble(atts.get("positionLat"));
-            double lon = Utils.getDouble(atts.get("positionLong"));
+        if (atts.containsKey(MB_KEY_POSITION_LAT) && atts.containsKey(MB_KEY_POSITION_LONG)) {
+            double lat = Utils.getDouble(atts.get(MB_KEY_POSITION_LAT));
+            double lon = Utils.getDouble(atts.get(MB_KEY_POSITION_LONG));
             if (lat != -1 && lon != -1) {
                 PointType pt = new PointType(lat + "," + lon);
-                updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, pt));
+                updateChannel(new ChannelStateMap(OH_CHANNEL_GPS, Constants.GROUP_POSITION, pt));
 
-                // calculate distance tp home
+                // calculate distance to home
                 PointType homePoint = locationProvider.getLocation();
                 Unit<Length> lengthUnit = KILOMETRE_UNIT;
                 if (homePoint != null) {
@@ -731,7 +732,7 @@ public class VehicleHandler extends BaseThingHandler {
                         observer = new UOMObserver(UOMObserver.LENGTH_MILES_UNIT);
                         lengthUnit = ImperialUnits.MILE;
                     }
-                    updateChannel(new ChannelStateMap("home-distance", Constants.GROUP_RANGE,
+                    updateChannel(new ChannelStateMap(OH_CHANNEL_HOME_DISTANCE, Constants.GROUP_RANGE,
                             QuantityType.valueOf(distance / 1000, lengthUnit), observer));
                 } else {
                     logger.trace("No home location found");
@@ -740,7 +741,7 @@ public class VehicleHandler extends BaseThingHandler {
             } else {
                 if (fullUpdate) {
                     logger.trace("Either Latitude {} or Longitude {} attribute nil", lat, lon);
-                    updateChannel(new ChannelStateMap("gps", Constants.GROUP_POSITION, UnDefType.UNDEF));
+                    updateChannel(new ChannelStateMap(OH_CHANNEL_GPS, Constants.GROUP_POSITION, UnDefType.UNDEF));
                 }
             }
         }
@@ -748,8 +749,8 @@ public class VehicleHandler extends BaseThingHandler {
         /**
          * handle temperature point
          */
-        if (atts.containsKey("temperaturePoints")) {
-            VehicleAttributeStatus hvacTemperaturePointAttribute = atts.get("temperaturePoints");
+        if (atts.containsKey(MB_KEY_TEMPERATURE_POINTS)) {
+            VehicleAttributeStatus hvacTemperaturePointAttribute = atts.get(MB_KEY_TEMPERATURE_POINTS);
             if (hvacTemperaturePointAttribute != null) {
                 if (hvacTemperaturePointAttribute.hasTemperaturePointsValue()) {
                     TemperaturePointsValue tpValue = hvacTemperaturePointAttribute.getTemperaturePointsValue();
@@ -770,7 +771,7 @@ public class VehicleHandler extends BaseThingHandler {
                                     temperatureUnit = observerUnit.asType(Temperature.class);
                                 }
                             }
-                            ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "temperature");
+                            ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, OH_CHANNEL_TEMPERATURE);
                             mmcop.setCommandOptions(cuid, Utils.getTemperatureOptions(temperatureUnit));
                             if (zoneNumber > 0) {
                                 if (activeTemperaturePoint == -1) {
@@ -791,10 +792,10 @@ public class VehicleHandler extends BaseThingHandler {
                                         temperatureUnit);
                                 temperaturePointsStorage.put(zoneNumber, temperatureState);
                                 if (activeTemperaturePoint == zoneNumber) {
-                                    ChannelStateMap zoneCSM = new ChannelStateMap("zone", Constants.GROUP_HVAC,
+                                    ChannelStateMap zoneCSM = new ChannelStateMap(OH_CHANNEL_ZONE, Constants.GROUP_HVAC,
                                             new DecimalType(activeTemperaturePoint));
                                     updateChannel(zoneCSM);
-                                    ChannelStateMap tempCSM = new ChannelStateMap(CHANNEL_TEMPERATURE,
+                                    ChannelStateMap tempCSM = new ChannelStateMap(OH_CHANNEL_TEMPERATURE,
                                             Constants.GROUP_HVAC, temperatureState, observer);
                                     updateChannel(tempCSM);
                                 }
@@ -804,7 +805,7 @@ public class VehicleHandler extends BaseThingHandler {
                             commandOptions.add(new CommandOption(Integer.toString(zoneNumber), zoneName));
                             stateOptions.add(new StateOption(Integer.toString(zoneNumber), zoneName));
                         });
-                        ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, "zone");
+                        ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_HVAC, OH_CHANNEL_ZONE);
                         mmcop.setCommandOptions(cuid, commandOptions);
                         mmsop.setStateOptions(cuid, stateOptions);
                     } else {
@@ -822,10 +823,10 @@ public class VehicleHandler extends BaseThingHandler {
         } else {
             // full update acknowledged - set to undef
             if (fullUpdate) {
-                ChannelStateMap zoneMap = new ChannelStateMap("zone", Constants.GROUP_HVAC, UnDefType.UNDEF);
+                ChannelStateMap zoneMap = new ChannelStateMap(OH_CHANNEL_ZONE, Constants.GROUP_HVAC, UnDefType.UNDEF);
                 updateChannel(zoneMap);
                 QuantityType<Temperature> tempState = QuantityType.valueOf(-1, Mapper.defaultTemperatureUnit);
-                ChannelStateMap tempMap = new ChannelStateMap(CHANNEL_TEMPERATURE, Constants.GROUP_HVAC, tempState);
+                ChannelStateMap tempMap = new ChannelStateMap(OH_CHANNEL_TEMPERATURE, Constants.GROUP_HVAC, tempState);
                 updateChannel(tempMap);
             }
         }
@@ -835,7 +836,7 @@ public class VehicleHandler extends BaseThingHandler {
          */
         if (Constants.BEV.equals(thing.getThingTypeUID().getId())
                 || Constants.HYBRID.equals(thing.getThingTypeUID().getId())) {
-            VehicleAttributeStatus vas = atts.get("chargePrograms");
+            VehicleAttributeStatus vas = atts.get(MB_KEY_CHARGE_PROGRAMS);
             if (vas != null) {
                 ChargeProgramsValue cpv = vas.getChargeProgramsValue();
                 if (cpv.getChargeProgramParametersCount() > 0) {
@@ -858,20 +859,20 @@ public class VehicleHandler extends BaseThingHandler {
                             }
                         });
                     }
-                    ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_CHARGE, "program");
+                    ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_CHARGE, OH_CHANNEL_PROGRAM);
                     mmcop.setCommandOptions(cuid, commandOptions);
                     mmsop.setStateOptions(cuid, stateOptions);
-                    vas = atts.get("selectedChargeProgram");
+                    vas = atts.get(MB_KEY_SELECTED_CHARGE_PROGRAM);
                     if (vas != null) {
                         selectedChargeProgram = (int) vas.getIntValue();
                         ChargeProgramParameters cpp = cpv.getChargeProgramParameters(selectedChargeProgram);
-                        ChannelStateMap programMap = new ChannelStateMap("program", GROUP_CHARGE,
+                        ChannelStateMap programMap = new ChannelStateMap(OH_CHANNEL_PROGRAM, GROUP_CHARGE,
                                 DecimalType.valueOf(Integer.toString(selectedChargeProgram)));
                         updateChannel(programMap);
-                        ChannelStateMap maxSocMap = new ChannelStateMap("max-soc", GROUP_CHARGE,
+                        ChannelStateMap maxSocMap = new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
                                 QuantityType.valueOf((double) cpp.getMaxSoc(), Units.PERCENT));
                         updateChannel(maxSocMap);
-                        ChannelStateMap autoUnlockMap = new ChannelStateMap("auto-unlock", GROUP_CHARGE,
+                        ChannelStateMap autoUnlockMap = new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
                                 OnOffType.from(cpp.getAutoUnlock()));
                         updateChannel(autoUnlockMap);
                     }
@@ -923,8 +924,8 @@ public class VehicleHandler extends BaseThingHandler {
          * proto updates causing large printouts in openhab.log
          * only log in case of channel is connected to an item
          */
-        if ("proto-update".equals(csm.getChannel())) {
-            ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, "proto-update");
+        if (OH_CHANNEL_PROTO_UPDATE.equals(csm.getChannel())) {
+            ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, OH_CHANNEL_PROTO_UPDATE);
             if (!isLinked(protoUpdateChannelUID)) {
                 eventStorage.put(protoUpdateChannelUID.getId(), csm);
                 return;
@@ -957,14 +958,14 @@ public class VehicleHandler extends BaseThingHandler {
          * Check if Websocket shall be kept alive during charging or driving
          */
         if (!UnDefType.UNDEF.equals(csm.getState())) {
-            if (GROUP_VEHICLE.equals(csm.getGroup()) && "ignition".equals(csm.getChannel())) {
+            if (GROUP_VEHICLE.equals(csm.getGroup()) && OH_CHANNEL_IGNITION.equals(csm.getChannel())) {
                 ignitionState = ((DecimalType) csm.getState()).intValue();
-            } else if (GROUP_CHARGE.equals(csm.getGroup()) && "active".equals(csm.getChannel())) {
+            } else if (GROUP_CHARGE.equals(csm.getGroup()) && OH_CHANNEL_ACTIVE.equals(csm.getChannel())) {
                 chargingState = OnOffType.ON.equals((csm.getState()));
             }
         }
 
-        if ("zone".equals(channel) && !UnDefType.UNDEF.equals(csm.getState())) {
+        if (OH_CHANNEL_ZONE.equals(channel) && !UnDefType.UNDEF.equals(csm.getState())) {
             activeTemperaturePoint = ((DecimalType) csm.getState()).intValue();
         }
 
@@ -973,16 +974,17 @@ public class VehicleHandler extends BaseThingHandler {
 
     private void handleComplexTripPattern(String channel, String pattern) {
         switch (channel) {
-            case "cons-ev":
-            case "cons-ev-reset":
+            case OH_CHANNEL_CONS_EV:
+            case OH_CHANNEL_CONS_EV_RESET:
                 StringType consumptionUnitEv = StringType.valueOf(pattern);
-                ChannelStateMap csmEv = new ChannelStateMap("cons-ev-unit", GROUP_TRIP, consumptionUnitEv);
+                ChannelStateMap csmEv = new ChannelStateMap(OH_CHANNEL_CONS_EV_UNIT, GROUP_TRIP, consumptionUnitEv);
                 updateChannel(csmEv);
                 break;
-            case "cons-conv":
-            case "cons-conv-reset":
+            case OH_CHANNEL_CONS_CONV:
+            case OH_CHANNEL_CONS_CONV_RESET:
                 StringType consumptionUnitFuel = StringType.valueOf(pattern);
-                ChannelStateMap csmFuel = new ChannelStateMap("cons-conv-unit", GROUP_TRIP, consumptionUnitFuel);
+                ChannelStateMap csmFuel = new ChannelStateMap(OH_CHANNEL_CONS_CONV_UNIT, GROUP_TRIP,
+                        consumptionUnitFuel);
                 updateChannel(csmFuel);
                 break;
         }
@@ -1005,14 +1007,16 @@ public class VehicleHandler extends BaseThingHandler {
 
     public void setFeatureCapabilities(@Nullable String capa) {
         if (capa != null) {
-            ChannelStateMap csm = new ChannelStateMap("feature-capabilities", GROUP_VEHICLE, StringType.valueOf(capa));
+            ChannelStateMap csm = new ChannelStateMap(MB_KEY_FEATURE_CAPABILITIES, GROUP_VEHICLE,
+                    StringType.valueOf(capa));
             updateChannel(csm);
         }
     }
 
     public void setCommandCapabilities(@Nullable String capa) {
         if (capa != null) {
-            ChannelStateMap csm = new ChannelStateMap("command-capabilities", GROUP_VEHICLE, StringType.valueOf(capa));
+            ChannelStateMap csm = new ChannelStateMap(MB_KEY_COMMAND_CAPABILITIES, GROUP_VEHICLE,
+                    StringType.valueOf(capa));
             updateChannel(csm);
         }
     }
@@ -1021,21 +1025,21 @@ public class VehicleHandler extends BaseThingHandler {
         List<StateOption> commandTypeOptions = new ArrayList<>();
         CommandType[] ctValues = CommandType.values();
         for (int i = 0; i < ctValues.length; i++) {
-            if (!"UNRECOGNIZED".equals(ctValues[i].toString())) {
+            if (!UNRECOGNIZED.equals(ctValues[i].toString())) {
                 StateOption co = new StateOption(Integer.toString(ctValues[i].getNumber()), ctValues[i].toString());
                 commandTypeOptions.add(co);
             }
         }
-        mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_COMMAND, "cmd-name"), commandTypeOptions);
+        mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_COMMAND, OH_CHANNEL_CMD_NAME), commandTypeOptions);
         List<StateOption> commandStateOptions = new ArrayList<>();
         CommandState[] csValues = CommandState.values();
         for (int j = 0; j < csValues.length; j++) {
-            if (!"UNRECOGNIZED".equals(csValues[j].toString())) {
+            if (!UNRECOGNIZED.equals(csValues[j].toString())) {
                 StateOption so = new StateOption(Integer.toString(csValues[j].getNumber()), csValues[j].toString());
                 commandStateOptions.add(so);
             }
         }
-        mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_COMMAND, "cmd-state"), commandStateOptions);
+        mmsop.setStateOptions(new ChannelUID(thing.getUID(), GROUP_COMMAND, OH_CHANNEL_CMD_STATE), commandStateOptions);
     }
 
     /**
