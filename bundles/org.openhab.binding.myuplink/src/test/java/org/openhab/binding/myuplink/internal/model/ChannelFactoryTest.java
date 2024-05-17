@@ -41,15 +41,23 @@ public class ChannelFactoryTest {
 
     private final String testChannelEnumWritableSwitch = """
             {"category":"NIBEF VVM 320 E","parameterId":"50004","parameterName":"Temporary lux","parameterUnit":"","writable":true,"timestamp":"2024-05-05T13:41:09+00:00","value":0.0,"strVal":"off","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[{"value":"0","text":"off","icon":""},{"value":"1","text":"on","icon":""}],"scaleValue":"1","zoneId":null}
-                """;
+            """;
 
     private final String testChannelEnumSwitch = """
             {"category":"NIBEF VVM 320 E","parameterId":"49992","parameterName":"Pump: Heating medium (GP6)","parameterUnit":"","writable":false,"timestamp":"2024-05-05T13:41:09+00:00","value":0.0,"strVal":"Off","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[{"value":"0","text":"Off","icon":""},{"value":"1","text":"On","icon":""}],"scaleValue":"1","zoneId":null}
-                    """;
+            """;
 
     private final String testChannelEnumUnknown = """
             {"category":"NIBEF VVM 320 E","parameterId":"99999","parameterName":"Unknown","parameterUnit":"","writable":false,"timestamp":"2024-05-05T13:41:09+00:00","value":0.0,"strVal":"wtf","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[{"value":"0","text":"wtf","icon":""},{"value":"1","text":"On","icon":""}],"scaleValue":"1","zoneId":null}
-                    """;
+            """;
+
+    private final String testChannelEnumPriority = """
+            {"category":"NIBEF VVM 320 E","parameterId":"49994","parameterName":"Priority","parameterUnit":"","writable":false,"timestamp":"2024-05-10T03:31:23+00:00","value":10.0,"strVal":"Off","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[{"value":"10","text":"Off","icon":""},{"value":"20","text":"Hot water","icon":""},{"value":"30","text":"Heating","icon":""},{"value":"40","text":"Pool","icon":""},{"value":"41","text":"Pool 2","icon":""},{"value":"50","text":"TransÂ­fer","icon":""},{"value":"60","text":"Cooling","icon":""}],"scaleValue":"1","zoneId":null}
+            """;
+
+    private final String testChannelEnumCompressorStatus = """
+            {"category":"Slave 1 (EB101)","parameterId":"44064","parameterName":"Status compressor (EB101)","parameterUnit":"","writable":false,"timestamp":"2024-05-10T03:31:28+00:00","value":20.0,"strVal":"off","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[{"value":"20","text":"off","icon":""},{"value":"40","text":"starts","icon":""},{"value":"60","text":"runs","icon":""},{"value":"100","text":"stops","icon":""}],"scaleValue":"1","zoneId":null}
+            """;
 
     @Test
     public void testFromJsonDataTemperature() {
@@ -92,6 +100,7 @@ public class ChannelFactoryTest {
         assertThat(result.getDescription(), is("Pump: Heating medium (GP6)"));
         assertThat(result.getLabel(), is("Pump: Heating medium (GP6)"));
     }
+
     @Test
     public void testFromJsonDataEnumUnknown() {
         Gson gson = new Gson();
@@ -100,5 +109,25 @@ public class ChannelFactoryTest {
 
         Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
         assertThat(result.getAcceptedItemType(), is(ChannelType.DOUBLE.getAcceptedType()));
+    }
+
+    @Test
+    public void testFromJsonDataEnumPriority() {
+        Gson gson = new Gson();
+        JsonObject json = gson.fromJson(testChannelEnumPriority, JsonObject.class);
+        json = json == null ? new JsonObject() : json;
+
+        Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
+        assertThat(result.getAcceptedItemType(), is(ChannelType.PRIORITY.getAcceptedType()));
+    }
+
+    @Test
+    public void testFromJsonDataEnumCompressorStatus() {
+        Gson gson = new Gson();
+        JsonObject json = gson.fromJson(testChannelEnumCompressorStatus, JsonObject.class);
+        json = json == null ? new JsonObject() : json;
+
+        Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
+        assertThat(result.getAcceptedItemType(), is(ChannelType.COMPRESSOR_STATUS.getAcceptedType()));
     }
 }
