@@ -36,61 +36,61 @@ public class SunSynkBindingConstants {
     // public static final String COMMAND = "command";
     public static final String PLANT_STATUS = "plant-status";
 
-    public static final String CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE = "Interval-1-grid-charge";
-    public static final String CHANNEL_BATTERY_INTERVAL_2_GRID_CHARGE = "Interval-2-grid-charge";
-    public static final String CHANNEL_BATTERY_INTERVAL_3_GRID_CHARGE = "Interval-3-grid-charge";
-    public static final String CHANNEL_BATTERY_INTERVAL_4_GRID_CHARGE = "Interval-4-grid-charge";
-    public static final String CHANNEL_BATTERY_INTERVAL_5_GRID_CHARGE = "Interval-5-grid-charge";
-    public static final String CHANNEL_BATTERY_INTERVAL_6_GRID_CHARGE = "Interval-6-grid-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE = "interval-1-grid-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_2_GRID_CHARGE = "interval-2-grid-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_3_GRID_CHARGE = "interval-3-grid-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_4_GRID_CHARGE = "interval-4-grid-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_5_GRID_CHARGE = "interval-5-grid-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_6_GRID_CHARGE = "interval-6-grid-charge";
 
-    public static final String CHANNEL_BATTERY_INTERVAL_1_GEN_CHARGE = "Interval-1-gen-charge";
-    public static final String CHANNEL_BATTERY_INTERVAL_2_GEN_CHARGE = "Interval-2-gen-charge";
-    public static final String CHANNEL_BATTERY_INTERVAL_3_GEN_CHARGE = "Interval-3-gen-charge";
-    public static final String CHANNEL_BATTERY_INTERVAL_4_GEN_CHARGE = "Interval-4-gen-charge";
-    public static final String CHANNEL_BATTERY_INTERVAL_5_GEN_CHARGE = "Interval-5-gen-charge";
-    public static final String CHANNEL_BATTERY_INTERVAL_6_GEN_CHARGE = "Interval-6-gen-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_1_GEN_CHARGE = "interval-1-gen-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_2_GEN_CHARGE = "interval-2-gen-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_3_GEN_CHARGE = "interval-3-gen-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_4_GEN_CHARGE = "interval-4-gen-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_5_GEN_CHARGE = "interval-5-gen-charge";
+    public static final String CHANNEL_BATTERY_INTERVAL_6_GEN_CHARGE = "interval-6-gen-charge";
 
-    public static final String CHANNEL_BATTERY_INTERVAL_1_TIME = "Interval-1-grid-time";
-    public static final String CHANNEL_BATTERY_INTERVAL_2_TIME = "Interval-2-grid-time";
-    public static final String CHANNEL_BATTERY_INTERVAL_3_TIME = "Interval-3-grid-time";
-    public static final String CHANNEL_BATTERY_INTERVAL_4_TIME = "Interval-4-grid-time";
-    public static final String CHANNEL_BATTERY_INTERVAL_5_TIME = "Interval-5-grid-time";
-    public static final String CHANNEL_BATTERY_INTERVAL_6_TIME = "Interval-6-grid-time";
+    public static final String CHANNEL_BATTERY_INTERVAL_1_TIME = "interval-1-grid-time";
+    public static final String CHANNEL_BATTERY_INTERVAL_2_TIME = "interval-2-grid-time";
+    public static final String CHANNEL_BATTERY_INTERVAL_3_TIME = "interval-3-grid-time";
+    public static final String CHANNEL_BATTERY_INTERVAL_4_TIME = "interval-4-grid-time";
+    public static final String CHANNEL_BATTERY_INTERVAL_5_TIME = "interval-5-grid-time";
+    public static final String CHANNEL_BATTERY_INTERVAL_6_TIME = "interval-6-grid-time";
 
-    public static final String CHANNEL_BATTERY_INTERVAL_1_CAPACITY = "Interval-1-grid-capacity";
-    public static final String CHANNEL_BATTERY_INTERVAL_2_CAPACITY = "Interval-2-grid-capacity";
-    public static final String CHANNEL_BATTERY_INTERVAL_3_CAPACITY = "Interval-3-grid-capacity";
-    public static final String CHANNEL_BATTERY_INTERVAL_4_CAPACITY = "Interval-4-grid-capacity";
-    public static final String CHANNEL_BATTERY_INTERVAL_5_CAPACITY = "Interval-5-grid-capacity";
-    public static final String CHANNEL_BATTERY_INTERVAL_6_CAPACITY = "Interval-6-grid-capacity";
+    public static final String CHANNEL_BATTERY_INTERVAL_1_CAPACITY = "interval-1-grid-capacity";
+    public static final String CHANNEL_BATTERY_INTERVAL_2_CAPACITY = "interval-2-grid-capacity";
+    public static final String CHANNEL_BATTERY_INTERVAL_3_CAPACITY = "interval-3-grid-capacity";
+    public static final String CHANNEL_BATTERY_INTERVAL_4_CAPACITY = "interval-4-grid-capacity";
+    public static final String CHANNEL_BATTERY_INTERVAL_5_CAPACITY = "interval-5-grid-capacity";
+    public static final String CHANNEL_BATTERY_INTERVAL_6_CAPACITY = "interval-6-grid-capacity";
 
-    public static final String CHANNEL_BATTERY_INTERVAL_1_POWER_LIMIT = "Interval-1-grid-power-limit";
-    public static final String CHANNEL_BATTERY_INTERVAL_2_POWER_LIMIT = "Interval-2-grid-power-limit";
-    public static final String CHANNEL_BATTERY_INTERVAL_3_POWER_LIMIT = "Interval-3-grid-power-limit";
-    public static final String CHANNEL_BATTERY_INTERVAL_4_POWER_LIMIT = "Interval-4-grid-power-limit";
-    public static final String CHANNEL_BATTERY_INTERVAL_5_POWER_LIMIT = "Interval-5-grid-power-limit";
-    public static final String CHANNEL_BATTERY_INTERVAL_6_POWER_LIMIT = "Interval-6-grid-power-limit";
+    public static final String CHANNEL_BATTERY_INTERVAL_1_POWER_LIMIT = "interval-1-grid-power-limit";
+    public static final String CHANNEL_BATTERY_INTERVAL_2_POWER_LIMIT = "interval-2-grid-power-limit";
+    public static final String CHANNEL_BATTERY_INTERVAL_3_POWER_LIMIT = "interval-3-grid-power-limit";
+    public static final String CHANNEL_BATTERY_INTERVAL_4_POWER_LIMIT = "interval-4-grid-power-limit";
+    public static final String CHANNEL_BATTERY_INTERVAL_5_POWER_LIMIT = "interval-5-grid-power-limit";
+    public static final String CHANNEL_BATTERY_INTERVAL_6_POWER_LIMIT = "interval-6-grid-power-limit";
 
-    public static final String CHANNEL_INVERTER_GRID_POWER = "Inverter-grid-power";
-    public static final String CHANNEL_INVERTER_GRID_VOLTAGE = "Inverter-grid-voltage";
-    public static final String CHANNEL_INVERTER_GRID_CURRENT = "Inverter-grid-current";
+    public static final String CHANNEL_INVERTER_GRID_POWER = "inverter-grid-power";
+    public static final String CHANNEL_INVERTER_GRID_VOLTAGE = "inverter-grid-voltage";
+    public static final String CHANNEL_INVERTER_GRID_CURRENT = "inverter-grid-current";
 
-    public static final String CHANNEL_INVERTER_AC_TEMPERATURE = "Inverter-ac-temperature";
-    public static final String CHANNEL_INVERTER_DC_TEMPERATURE = "Inverter-dc-temperature";
+    public static final String CHANNEL_INVERTER_AC_TEMPERATURE = "inverter-ac-temperature";
+    public static final String CHANNEL_INVERTER_DC_TEMPERATURE = "inverter-dc-temperature";
 
-    public static final String CHANNEL_BATTERY_VOLTAGE = "Battery-grid-voltage";
-    public static final String CHANNEL_BATTERY_CURRENT = "Battery-grid-current";
-    public static final String CHANNEL_BATTERY_POWER = "Battery-grid-power";
-    public static final String CHANNEL_BATTERY_SOC = "Battery-SOC";
-    public static final String CHANNEL_BATTERY_TEMPERATURE = "Battery-temperature";
+    public static final String CHANNEL_BATTERY_VOLTAGE = "battery-grid-voltage";
+    public static final String CHANNEL_BATTERY_CURRENT = "battery-grid-current";
+    public static final String CHANNEL_BATTERY_POWER = "battery-grid-power";
+    public static final String CHANNEL_BATTERY_SOC = "battery-SOC";
+    public static final String CHANNEL_BATTERY_TEMPERATURE = "battery-temperature";
 
-    public static final String CHANNEL_INVERTER_SOLAR_ENERGY_TODAY = "Inverter-solar-energy-today";
-    public static final String CHANNEL_INVERTER_SOLAR_ENERGY_TOTAL = "Inverter-solar-energy-total";
-    public static final String CHANNEL_INVERTER_SOLAR_POWER_NOW = "Inverter-solar-power-now";
+    public static final String CHANNEL_INVERTER_SOLAR_ENERGY_TODAY = "inverter-solar-energy-today";
+    public static final String CHANNEL_INVERTER_SOLAR_ENERGY_TOTAL = "inverter-solar-energy-total";
+    public static final String CHANNEL_INVERTER_SOLAR_POWER_NOW = "inverter-solar-power-now";
 
-    public static final String CHANNEL_INVERTER_CONTROL_TIMER = "Inverter-control-timer";
-    public static final String CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN = "Inverter-control-energy-pattern";
-    public static final String CHANNEL_INVERTER_CONTROL_WORK_MODE = "Inverter-control-work-mode";
+    public static final String CHANNEL_INVERTER_CONTROL_TIMER = "inverter-control-timer";
+    public static final String CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN = "inverter-control-energy-pattern";
+    public static final String CHANNEL_INVERTER_CONTROL_WORK_MODE = "inverter-control-work-mode";
 
     // Config data
     public static final String CONFIG_SECRET = "access_token";

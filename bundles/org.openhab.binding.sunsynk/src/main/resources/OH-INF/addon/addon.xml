@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>SunSynk Binding</name>
 	<description>This is the binding for SunSynk Connect.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
