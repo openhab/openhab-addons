@@ -83,7 +83,10 @@ public class ChannelFactory {
      */
     private static ChannelType determineEnumType(JsonArray enumValues, boolean writable) {
         boolean containsOffAt0 = false;
+        boolean containsAlarmAt1 = false;
         boolean containsOnAt1 = false;
+        boolean containsBlockedAt4 = false;
+        boolean containsActiveAt6 = false;
         boolean containsOffAt10 = false;
         boolean containsOffAt20 = false;
         boolean containsHotWaterAt20 = false;
@@ -91,6 +94,9 @@ public class ChannelFactory {
         boolean containsPoolAt40 = false;
         boolean containsStartsAt40 = false;
         boolean containsRunsAt60 = false;
+
+
+
 
         for (var element : enumValues) {
             var enumText = Utils.getAsString(element.getAsJsonObject(), JSON_ENUM_KEY_TEXT);
@@ -102,7 +108,10 @@ public class ChannelFactory {
                     containsOffAt10 = enumOrdinal.equals(JSON_ENUM_ORD_10);
                     containsOffAt20 = enumOrdinal.equals(JSON_ENUM_ORD_20);
                 }
+                case JSON_ENUM_VAL_ALARM -> containsAlarmAt1 = enumOrdinal.equals(JSON_ENUM_ORD_1);
                 case JSON_ENUM_VAL_ON -> containsOnAt1 = enumOrdinal.equals(JSON_ENUM_ORD_1);
+                case JSON_ENUM_VAL_BLOCKED -> containsBlockedAt4 = enumOrdinal.equals(JSON_ENUM_ORD_4);
+                case JSON_ENUM_VAL_ACTIVE -> containsActiveAt6 = enumOrdinal.equals(JSON_ENUM_ORD_6);
                 case JSON_ENUM_VAL_HOT_WATER -> containsHotWaterAt20 = enumOrdinal.equals(JSON_ENUM_ORD_20);
                 case JSON_ENUM_VAL_HEATING -> containsHeatingAt30 = enumOrdinal.equals(JSON_ENUM_ORD_30);
                 case JSON_ENUM_VAL_POOL -> containsPoolAt40 = enumOrdinal.equals(JSON_ENUM_ORD_40);
@@ -123,6 +132,10 @@ public class ChannelFactory {
 
         } else if (enumValues.size() == 4 && containsOffAt20 && containsStartsAt40 && containsRunsAt60) {
             return ChannelType.COMPRESSOR_STATUS;
+
+        } else if (enumValues.size() == 7 && containsAlarmAt1 && containsBlockedAt4 && containsActiveAt6) {
+            return ChannelType.ADD_HEAT_STATUS;
+
         }
 
         LOGGER.info("could identify enum type with values: {}", enumValues.toString());

@@ -37,7 +37,9 @@ public enum ChannelType {
     SWITCH(CHANNEL_TYPE_UNIT_NONE, "type-switch", "Switch"),
     RW_SWITCH(CHANNEL_TYPE_UNIT_NONE, "rwtype-switch", "Switch", true),
     PRIORITY(CHANNEL_TYPE_UNIT_NONE, "type-priority", "Number"),
-    COMPRESSOR_STATUS(CHANNEL_TYPE_UNIT_NONE, "type-comp-status", "Number");
+    COMPRESSOR_STATUS(CHANNEL_TYPE_UNIT_NONE, "type-comp-status", "Number"),
+    ADD_HEAT_STATUS(CHANNEL_TYPE_UNIT_NONE, "type-add-heat-status", "Number");
+
 
     private final String jsonUnit;
     private final String typeName;

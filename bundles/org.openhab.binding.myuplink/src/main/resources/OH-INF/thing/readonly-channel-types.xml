@@ -71,7 +71,7 @@
 	</channel-type>
 	<channel-type id="type-priority">
 		<item-type>Number</item-type>
-		<label>Defrosting State</label>
+		<label>Priority</label>
 		<state readOnly="true">
 			<options>
 				<option value="10">Off</option>
@@ -86,13 +86,28 @@
 	</channel-type>
 	<channel-type id="type-comp-status">
 		<item-type>Number</item-type>
-		<label>Defrosting State</label>
+		<label>Compressor Status</label>
 		<state readOnly="true">
 			<options>
 				<option value="20">Off</option>
 				<option value="40">Starting</option>
 				<option value="60">Running</option>
 				<option value="100">Stopping</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="type-add-heat-status">
+		<item-type>Number</item-type>
+		<label>Int. Add. Heater Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Alarm</option>
+				<option value="1">Alarm</option>
+				<option value="2">Active</option>
+				<option value="3">Off</option>
+				<option value="4">Blocked</option>
+				<option value="5">Off</option>
+				<option value="6">Active</option>
 			</options>
 		</state>
 	</channel-type>
