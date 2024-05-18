@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="front-left-window-channel">
+	<channel-type id="front-left-window">
 		<item-type>Number</item-type>
 		<label>Window Front Left</label>
 		<state readOnly="true">
@@ -17,7 +17,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="front-right-window-channel">
+	<channel-type id="front-right-window">
 		<item-type>Number</item-type>
 		<label>Window Front Right </label>
 		<state readOnly="true">
@@ -31,7 +31,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="rear-left-window-channel">
+	<channel-type id="rear-left-window">
 		<item-type>Number</item-type>
 		<label>Window Rear Left</label>
 		<state readOnly="true">
@@ -45,7 +45,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="rear-right-window-channel">
+	<channel-type id="rear-right-window">
 		<item-type>Number</item-type>
 		<label>Window Rear Right</label>
 		<state readOnly="true">
@@ -59,22 +59,22 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="rear-right-blind-channel">
+	<channel-type id="rear-right-blind">
 		<item-type>Number</item-type>
 		<label>Window Blind Rear Right</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="rear-left-blind-channel">
+	<channel-type id="rear-left-blind">
 		<item-type>Number</item-type>
 		<label>Window Blind Rear Left</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="rear-blind-channel">
+	<channel-type id="rear-blind">
 		<item-type>Number</item-type>
 		<label>Window Blind Rear</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="flip-window-channel">
+	<channel-type id="flip-window">
 		<item-type>Number</item-type>
 		<label>Flip Window</label>
 		<state readOnly="true"/>

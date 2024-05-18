@@ -6,9 +6,9 @@
 	<channel-group-type id="command-values">
 		<label>Status of Last Command</label>
 		<channels>
-			<channel id="cmd-name" typeId="cmd-name-channel"/>
-			<channel id="cmd-state" typeId="cmd-state-channel"/>
-			<channel id="cmd-last-update" typeId="cmd-last-update-channel"/>
+			<channel id="cmd-name" typeId="cmd-name"/>
+			<channel id="cmd-state" typeId="cmd-state"/>
+			<channel id="cmd-last-update" typeId="cmd-last-update"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

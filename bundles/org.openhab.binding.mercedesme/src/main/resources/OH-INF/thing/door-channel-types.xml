@@ -3,37 +3,37 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="front-left-channel">
+	<channel-type id="front-left">
 		<item-type>Contact</item-type>
 		<label>Door Front Left</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="front-right-channel">
+	<channel-type id="front-right">
 		<item-type>Contact</item-type>
 		<label>Door Front Right</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="rear-left-channel">
+	<channel-type id="rear-left">
 		<item-type>Contact</item-type>
 		<label>Door Rear Left</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="rear-right-channel">
+	<channel-type id="rear-right">
 		<item-type>Contact</item-type>
 		<label>Door Rear Right</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="deck-lid-channel">
+	<channel-type id="deck-lid">
 		<item-type>Contact</item-type>
 		<label>Deck Lid</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="engine-hood-channel">
+	<channel-type id="engine-hood">
 		<item-type>Contact</item-type>
 		<label>Engine Hood</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="rooftop-channel">
+	<channel-type id="rooftop">
 		<item-type>Number</item-type>
 		<label>Roof top</label>
 		<state readOnly="true">
@@ -44,7 +44,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="sunroof-channel">
+	<channel-type id="sunroof">
 		<item-type>Number</item-type>
 		<label>Sun Roof</label>
 		<state>
@@ -67,12 +67,12 @@
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="sunroof-front-blind-channel">
+	<channel-type id="sunroof-front-blind">
 		<item-type>Number</item-type>
 		<label>Sun Roof Front Blind</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="sunroof-rear-blind-channel">
+	<channel-type id="sunroof-rear-blind">
 		<item-type>Number</item-type>
 		<label>Sun Roof Rear Blind</label>
 		<state readOnly="true"/>

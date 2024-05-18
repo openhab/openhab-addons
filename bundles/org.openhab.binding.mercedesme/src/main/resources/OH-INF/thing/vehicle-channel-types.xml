@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="lock-channel">
+	<channel-type id="lock">
 		<item-type>Number</item-type>
 		<label>Lock Status/Control</label>
 		<state>
@@ -20,7 +20,7 @@
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="windows-channel">
+	<channel-type id="windows">
 		<item-type>Number</item-type>
 		<label>Windows Status/Control</label>
 		<state>
@@ -39,7 +39,7 @@
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="door-status-channel">
+	<channel-type id="door-status">
 		<item-type>Number</item-type>
 		<label>Door Status</label>
 		<state readOnly="true">
@@ -49,7 +49,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="ignition-channel">
+	<channel-type id="ignition">
 		<item-type>Number</item-type>
 		<label>Ignition</label>
 		<state>
@@ -69,22 +69,22 @@
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="park-brake-channel">
+	<channel-type id="park-brake">
 		<item-type>Switch</item-type>
 		<label>Park Brake Active</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="feature-capabilities-channel" advanced="true">
+	<channel-type id="feature-capabilities" advanced="true">
 		<item-type>String</item-type>
 		<label>Feature Capabilities</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="command-capabilities-channel" advanced="true">
+	<channel-type id="command-capabilities" advanced="true">
 		<item-type>String</item-type>
 		<label>Command Capabilities</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="proto-update-channel" advanced="true">
+	<channel-type id="proto-update" advanced="true">
 		<item-type>String</item-type>
 		<label>Proto Data Update</label>
 		<state readOnly="true"/>

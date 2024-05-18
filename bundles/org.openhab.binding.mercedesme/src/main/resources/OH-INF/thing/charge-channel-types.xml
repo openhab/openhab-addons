@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="charge-flap-channel">
+	<channel-type id="charge-flap">
 		<item-type>Number</item-type>
 		<label>Charge Flap</label>
 		<description>Charge Flap Status</description>
@@ -14,7 +14,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="coupler-ac-channel">
+	<channel-type id="coupler-ac">
 		<item-type>Number</item-type>
 		<label>Charge Coupler AC</label>
 		<description>Coupler AC Status</description>
@@ -25,7 +25,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="coupler-dc-channel">
+	<channel-type id="coupler-dc">
 		<item-type>Number</item-type>
 		<label>Charge Coupler DC</label>
 		<description>Coupler DC Status</description>
@@ -36,7 +36,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="coupler-lock-channel">
+	<channel-type id="coupler-lock">
 		<item-type>Number</item-type>
 		<label>Charge Coupler Lock</label>
 		<description>Coupler Lock Status</description>
@@ -47,27 +47,27 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="active-channel">
+	<channel-type id="active">
 		<item-type>Switch</item-type>
 		<label>Charge Active</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="power-channel">
+	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Charge Power</label>
 		<state pattern="%.1f kW" readOnly="true"/>
 	</channel-type>
-	<channel-type id="program-channel">
+	<channel-type id="program">
 		<item-type>Number</item-type>
 		<label>Charge Program</label>
 		<description>Selected Charge Program</description>
 	</channel-type>
-	<channel-type id="end-time-channel">
+	<channel-type id="end-time">
 		<item-type>DateTime</item-type>
 		<label>Charge End Estimation</label>
 		<state pattern="%1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
-	<channel-type id="max-soc-channel">
+	<channel-type id="max-soc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Charge SoC Maximum</label>
 		<state pattern="%d %%"/>
@@ -82,7 +82,7 @@
 			</options>
 		</command>
 	</channel-type>
-	<channel-type id="auto-unlock-channel">
+	<channel-type id="auto-unlock">
 		<item-type>Switch</item-type>
 		<label>Coupler Auto Unlock</label>
 		<description>Auto unlock coupler after charging </description>

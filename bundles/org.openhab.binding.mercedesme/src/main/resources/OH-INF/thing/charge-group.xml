@@ -6,16 +6,16 @@
 	<channel-group-type id="charge-values">
 		<label>Charging Data</label>
 		<channels>
-			<channel id="charge-flap" typeId="charge-flap-channel"/>
-			<channel id="coupler-ac" typeId="coupler-ac-channel"/>
-			<channel id="coupler-dc" typeId="coupler-dc-channel"/>
-			<channel id="coupler-lock" typeId="coupler-lock-channel"/>
-			<channel id="active" typeId="active-channel"/>
-			<channel id="power" typeId="power-channel"/>
-			<channel id="end-time" typeId="end-time-channel"/>
-			<channel id="program" typeId="program-channel"/>
-			<channel id="max-soc" typeId="max-soc-channel"/>
-			<channel id="auto-unlock" typeId="auto-unlock-channel"/>
+			<channel id="charge-flap" typeId="charge-flap"/>
+			<channel id="coupler-ac" typeId="coupler-ac"/>
+			<channel id="coupler-dc" typeId="coupler-dc"/>
+			<channel id="coupler-lock" typeId="coupler-lock"/>
+			<channel id="active" typeId="active"/>
+			<channel id="power" typeId="power"/>
+			<channel id="end-time" typeId="end-time"/>
+			<channel id="program" typeId="program"/>
+			<channel id="max-soc" typeId="max-soc"/>
+			<channel id="auto-unlock" typeId="auto-unlock"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

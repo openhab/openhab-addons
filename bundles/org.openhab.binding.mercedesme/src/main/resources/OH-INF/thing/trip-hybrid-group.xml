@@ -6,18 +6,18 @@
 	<channel-group-type id="trip-hybrid-values">
 		<label>Last Trip Data</label>
 		<channels>
-			<channel id="distance" typeId="distance-channel"/>
-			<channel id="time" typeId="driven-time-channel"/>
-			<channel id="avg-speed" typeId="avg-speed-channel"/>
-			<channel id="cons-ev" typeId="consumption-ev-channel"/>
-			<channel id="cons-conv" typeId="consumption-conv-channel"/>
-			<channel id="distance-reset" typeId="distance-reset-channel"/>
-			<channel id="time-reset" typeId="driven-time-reset-channel"/>
-			<channel id="avg-speed-reset" typeId="avg-speed-reset-channel"/>
-			<channel id="cons-ev-reset" typeId="consumption-ev-reset-channel"/>
+			<channel id="distance" typeId="distance"/>
+			<channel id="time" typeId="driven-time"/>
+			<channel id="avg-speed" typeId="avg-speed"/>
+			<channel id="cons-ev" typeId="consumption-ev"/>
+			<channel id="cons-conv" typeId="consumption-conv"/>
+			<channel id="distance-reset" typeId="distance-reset"/>
+			<channel id="time-reset" typeId="driven-time-reset"/>
+			<channel id="avg-speed-reset" typeId="avg-speed-reset"/>
+			<channel id="cons-ev-reset" typeId="consumption-ev-reset"/>
 			<channel id="cons-conv-reset" typeId="consumption-conv-resetchannel"/>
-			<channel id="cons-ev-unit" typeId="consumption-ev-unit-channel"/>
-			<channel id="cons-conv-unit" typeId="consumption-conv-unit-channel"/>
+			<channel id="cons-ev-unit" typeId="consumption-ev-unit"/>
+			<channel id="cons-conv-unit" typeId="consumption-conv-unit"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

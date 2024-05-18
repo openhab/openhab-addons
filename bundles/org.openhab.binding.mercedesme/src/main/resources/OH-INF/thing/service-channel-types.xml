@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="starter-battery-channel">
+	<channel-type id="starter-battery">
 		<item-type>Number</item-type>
 		<label>Starter Battery Status</label>
 		<state readOnly="true">
@@ -14,38 +14,38 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="brake-fluid-channel">
+	<channel-type id="brake-fluid">
 		<item-type>Switch</item-type>
 		<label>Brake Fluid</label>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="brake-lining-wear-channel">
+	<channel-type id="brake-lining-wear">
 		<item-type>Switch</item-type>
 		<label>Brake Lining Wear</label>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="wash-water-channel">
+	<channel-type id="wash-water">
 		<item-type>Switch</item-type>
 		<label>Wash Water Low</label>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="coolant-fluid-channel">
+	<channel-type id="coolant-fluid">
 		<item-type>Switch</item-type>
 		<label>Coolant Fluid Low</label>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="engine-channel">
+	<channel-type id="engine">
 		<item-type>Switch</item-type>
 		<label>Engine Warning</label>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="tires-rdk-channel">
+	<channel-type id="tires-rdk">
 		<item-type>Number</item-type>
 		<label>Tire Pressure Warnings</label>
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="service-days-channel">
+	<channel-type id="service-days">
 		<item-type>Number</item-type>
 		<label>Service in Days</label>
 		<state readOnly="true">

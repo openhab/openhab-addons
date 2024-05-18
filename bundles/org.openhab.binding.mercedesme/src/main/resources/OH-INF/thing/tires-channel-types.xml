@@ -3,32 +3,32 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="pressure-front-right-channel">
+	<channel-type id="pressure-front-right">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Front Right</label>
 		<state pattern="%.1f bar" readOnly="true"/>
 	</channel-type>
-	<channel-type id="pressure-rear-right-channel">
+	<channel-type id="pressure-rear-right">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Rear Right</label>
 		<state pattern="%.1f bar" readOnly="true"/>
 	</channel-type>
-	<channel-type id="pressure-front-left-channel">
+	<channel-type id="pressure-front-left">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Front Left</label>
 		<state pattern="%.1f bar" readOnly="true"/>
 	</channel-type>
-	<channel-type id="pressure-rear-left-channel">
+	<channel-type id="pressure-rear-left">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Rear Left</label>
 		<state pattern="%.1f bar" readOnly="true"/>
 	</channel-type>
-	<channel-type id="sensor-available-channel">
+	<channel-type id="sensor-available">
 		<item-type>Number</item-type>
 		<label>Tire Sensor Available</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="marker-front-right-channel">
+	<channel-type id="marker-front-right">
 		<item-type>Number</item-type>
 		<label>Tire Warning Front Right</label>
 		<state readOnly="true">
@@ -41,7 +41,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="marker-rear-right-channel">
+	<channel-type id="marker-rear-right">
 		<item-type>Number</item-type>
 		<label>Tire Warning Rear Right</label>
 		<state readOnly="true">
@@ -54,7 +54,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="marker-front-left-channel">
+	<channel-type id="marker-front-left">
 		<item-type>Number</item-type>
 		<label>Tire Warning Front Left</label>
 		<state readOnly="true">
@@ -67,7 +67,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="marker-rear-left-channel">
+	<channel-type id="marker-rear-left">
 		<item-type>Number</item-type>
 		<label>Tire Warning Rear Left</label>
 		<state readOnly="true">
@@ -80,7 +80,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="last-update-channel">
+	<channel-type id="last-update">
 		<item-type>DateTime</item-type>
 		<label>Tire Update Time</label>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
