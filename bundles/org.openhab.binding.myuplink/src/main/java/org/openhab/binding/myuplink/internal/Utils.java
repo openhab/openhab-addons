@@ -190,21 +190,6 @@ public final class Utils {
     }
 
     /**
-     * retrieves the write API url suffix which is assigned to this channel.
-     *
-     * @param channel
-     * @return the url suffix
-     */
-    public static String getWriteCommand(Channel channel) {
-        String command = getPropertyOrParameter(channel, PARAMETER_NAME_WRITE_COMMAND);
-        if (command == null) {
-            throw new ConfigurationException(
-                    "channel (" + channel.getUID().getId() + ") does not have a write command configured");
-        }
-        return command;
-    }
-
-    /**
      * internal utiliy method which returns a property (if found) or a config parameter (if found) otherwise null
      *
      * @param channel

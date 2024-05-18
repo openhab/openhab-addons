@@ -22,10 +22,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myuplink.internal.AtomicReferenceTrait;
+import org.openhab.binding.myuplink.internal.MyUplinkBindingConstants;
 import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.binding.myuplink.internal.command.MyUplinkCommand;
 import org.openhab.binding.myuplink.internal.command.account.GetSystems;
 import org.openhab.binding.myuplink.internal.command.device.GetPoints;
+import org.openhab.binding.myuplink.internal.command.device.SetPoints;
 import org.openhab.binding.myuplink.internal.config.MyUplinkConfiguration;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
 import org.openhab.core.thing.Bridge;
@@ -36,6 +38,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -118,6 +121,12 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
             }
         }
         return null;
+    }
+
+    @Override
+    public MyUplinkCommand buildMyUplinkCommand(Command command, Channel channel) {
+        String deviceId = getConfig().get(MyUplinkBindingConstants.THING_CONFIG_ID).toString();
+        return new SetPoints(this, channel, command, deviceId, this::updateOnlineStatus);
     }
 
     /**

@@ -101,8 +101,8 @@ public class GenericResponseTransformer {
                             case TIME -> new QuantityType<>(Double.parseDouble(value), Units.HOUR);
                             case INTEGER -> new DecimalType(Double.valueOf(value).longValue());
                             case DOUBLE -> new DecimalType(Double.parseDouble(value));
-                            case SWITCH -> OnOffType.from(Boolean.parseBoolean(value));
-                            case RW_SWITCH -> OnOffType.from(Boolean.parseBoolean(value));
+                            case SWITCH -> convertToOnOffType(value);
+                            case RW_SWITCH -> convertToOnOffType(value);
                             case PRIORITY -> new DecimalType(Double.valueOf(value).longValue());
                             case COMPRESSOR_STATUS -> new DecimalType(Double.valueOf(value).longValue());
 
@@ -136,5 +136,13 @@ public class GenericResponseTransformer {
             dynamicChannelProvider.registerChannel(result);
         }
         return result;
+    }
+
+    private OnOffType convertToOnOffType(String value) {
+        return switch (value) {
+            case "1" -> OnOffType.ON;
+            case "1.0" -> OnOffType.ON;
+            default -> OnOffType.OFF;
+        };
     }
 }
