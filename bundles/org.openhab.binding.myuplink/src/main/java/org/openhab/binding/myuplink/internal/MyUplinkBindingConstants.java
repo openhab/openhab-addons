@@ -99,13 +99,14 @@ public class MyUplinkBindingConstants {
     // TODO: add content
 
     // web request constants
-    public static final long WEB_REQUEST_INITIAL_DELAY = 30;
+    public static final long WEB_REQUEST_INITIAL_DELAY = 10;
     public static final long WEB_REQUEST_INTERVAL = 5;
     public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
     public static final int WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES = 5;
     public static final int WEB_REQUEST_TOKEN_MAX_AGE_MINUTES = 45;
     public static final String WEB_REQUEST_PARAM_PAGE_KEY = "page";
     public static final String WEB_REQUEST_PARAM_PAGE_SIZE_KEY = "itemsPerPage";
+    public static final String WEB_REQUEST_PATCH_CONTENT_TYPE = "application/json-patch+json";
     public static final int WEB_REQUEST_PARAM_PAGE_SIZE_VALUE = 100;
     public static final String WEB_REQUEST_BEARER_TOKEN_PREFIX = "Bearer ";
     public static final String LOGIN_BASIC_AUTH_PREFIX = "Basic ";
@@ -119,6 +120,7 @@ public class MyUplinkBindingConstants {
     public static final String LOGIN_URL = API_BASE_URL + "/oauth/token";
     public static final String GET_SYSTEMS_URL = API_BASE_URL + "/v2/systems/me";
     public static final String GET_DEVICE_POINTS = API_BASE_URL + "/v2/devices/{deviceId}/points";
+    public static final String SET_DEVICE_POINTS = GET_DEVICE_POINTS;
 
     // Status Keys
     public static final String STATUS_TOKEN_VALIDATED = "@text/status.token.validated";
@@ -141,4 +143,5 @@ public class MyUplinkBindingConstants {
 
     public static final String PARAMETER_NAME_WRITE_COMMAND = "writeCommand";
     public static final String PARAMETER_NAME_VALIDATION_REGEXP = "validationExpression";
+    public static final String DEFAULT_VALIDATION_EXPRESSION = "[0-9]+";
 }

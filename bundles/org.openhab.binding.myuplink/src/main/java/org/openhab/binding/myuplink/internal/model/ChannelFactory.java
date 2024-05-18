@@ -14,6 +14,8 @@ package org.openhab.binding.myuplink.internal.model;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
+import java.util.HashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.core.thing.Channel;
@@ -60,12 +62,25 @@ public class ChannelFactory {
 
         ChannelUID channelUID = new ChannelUID(thingUID, channelId);
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelType.getTypeName());
-        Channel result = ChannelBuilder.create(channelUID).withLabel(label).withDescription(label)
-                .withType(channelTypeUID).withAcceptedItemType(channelType.getAcceptedType()).build();
+        ChannelBuilder builder = ChannelBuilder.create(channelUID).withLabel(label).withDescription(label)
+                .withType(channelTypeUID).withAcceptedItemType(channelType.getAcceptedType());
 
-        return result;
+        if (writable) {
+            var props = new HashMap<String, String>();
+            props.put(PARAMETER_NAME_VALIDATION_REGEXP, DEFAULT_VALIDATION_EXPRESSION);
+            builder.withProperties(props);
+        }
+
+        return builder.build();
     }
 
+    /**
+     * internal method to dertermine the enum type.
+     *
+     * @param enumValues enum data from myuplink API
+     * @param writable flag to determine writable capability
+     * @return
+     */
     private static ChannelType determineEnumType(JsonArray enumValues, boolean writable) {
         boolean containsOffAt0 = false;
         boolean containsOnAt1 = false;
