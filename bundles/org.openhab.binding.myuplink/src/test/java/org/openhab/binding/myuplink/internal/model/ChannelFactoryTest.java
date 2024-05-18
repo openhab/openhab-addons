@@ -59,6 +59,10 @@ public class ChannelFactoryTest {
             {"category":"Slave 1 (EB101)","parameterId":"44064","parameterName":"Status compressor (EB101)","parameterUnit":"","writable":false,"timestamp":"2024-05-10T03:31:28+00:00","value":20.0,"strVal":"off","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[{"value":"20","text":"off","icon":""},{"value":"40","text":"starts","icon":""},{"value":"60","text":"runs","icon":""},{"value":"100","text":"stops","icon":""}],"scaleValue":"1","zoneId":null}
             """;
 
+    private final String testChannelEnumAddHeatStatus = """
+            {"category":"NIBEF VVM 320 E","parameterId":"49993","parameterName":"Int elec add heat","parameterUnit":"","writable":false,"timestamp":"2024-05-05T13:41:27+00:00","value":4.0,"strVal":"Blocked","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[{"value":"0","text":"Alarm","icon":""},{"value":"1","text":"Alarm","icon":""},{"value":"2","text":"Active","icon":""},{"value":"3","text":"Off","icon":""},{"value":"4","text":"Blocked","icon":""},{"value":"5","text":"Off","icon":""},{"value":"6","text":"Active","icon":""}],"scaleValue":"1","zoneId":null}
+            """;
+
     @Test
     public void testFromJsonDataTemperature() {
         Gson gson = new Gson();
@@ -135,5 +139,16 @@ public class ChannelFactoryTest {
         Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
         assertThat(result.getAcceptedItemType(), is(ChannelType.COMPRESSOR_STATUS.getAcceptedType()));
         assertThat(result.getChannelTypeUID().getId(), is("type-comp-status"));
+    }
+
+    @Test
+    public void testFromJsonDataEnumAddHeatStatus() {
+        Gson gson = new Gson();
+        JsonObject json = gson.fromJson(testChannelEnumAddHeatStatus, JsonObject.class);
+        json = json == null ? new JsonObject() : json;
+
+        Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
+        assertThat(result.getAcceptedItemType(), is(ChannelType.ADD_HEAT_STATUS.getAcceptedType()));
+        assertThat(result.getChannelTypeUID().getId(), is("type-add-heat-status"));
     }
 }
