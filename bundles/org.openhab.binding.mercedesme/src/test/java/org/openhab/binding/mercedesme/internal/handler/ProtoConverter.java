@@ -68,7 +68,7 @@ public class ProtoConverter {
                         builder.setTimestampInMs(value.getLong(valueKey));
                         break;
                     case "timestamp":
-                        builder.setTimestamp(value.getLong(valueKey));
+                        builder.setTimestampInMs(value.getLong(valueKey) * 1000);
                         break;
                     case "bool_value":
                         builder.setBoolValue(value.getBoolean(valueKey));

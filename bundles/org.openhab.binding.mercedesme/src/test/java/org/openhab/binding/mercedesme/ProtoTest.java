@@ -48,12 +48,12 @@ class ProtoTest {
         try {
             FileInputStream fis = new FileInputStream("src/test/resources/proto-blob/EQA-Precond-Active.blob");
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(fis);
-            Map<String, VEPUpdate> updates = pm.getVepUpdates().getUpdates();
+            Map<String, VEPUpdate> updates = pm.getVepUpdates().getUpdatesMap();
             VEPUpdate vepUpdate = updates.get("REAL_VIN");
             VehicleAttributeStatus latStatus = VehicleAttributeStatus.newBuilder().setDoubleValue(1.23)
-                    .setTimestamp(1692957336).setTimestampInMs(1692957336).build();
+                    .setTimestampInMs(1692957336).build();
             VehicleAttributeStatus lonStatus = VehicleAttributeStatus.newBuilder().setDoubleValue(4.56)
-                    .setTimestamp(1692957336).setTimestampInMs(1692957336).build();
+                    .setTimestampInMs(1692957336).build();
             VEPUpdate vepUpdateAnon = VEPUpdate.newBuilder().mergeFrom(vepUpdate).setVin(VIN_ANON)
                     .putAttributes("positionLat", latStatus).putAttributes("positionLong", lonStatus).build();
             PushMessage pmAnon = PushMessage.newBuilder()

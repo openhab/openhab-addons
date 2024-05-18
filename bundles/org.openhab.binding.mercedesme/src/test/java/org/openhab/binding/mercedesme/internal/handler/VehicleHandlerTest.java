@@ -407,7 +407,6 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
@@ -436,7 +435,6 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        MercedesMeCommandOptionProvider commandOptionMock = new MercedesMeCommandOptionProviderMock();
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
