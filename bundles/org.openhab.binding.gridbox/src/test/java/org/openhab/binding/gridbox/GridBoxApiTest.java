@@ -206,6 +206,10 @@ public class GridBoxApiTest {
                 "totalConsumption": 581
             }
                         """;
+    private static final String EMPTY_LIVE_DATA_RESPONSE = """
+            {
+            }
+            """;
 
     @Mock
     @NonNullByDefault({})
@@ -313,6 +317,13 @@ public class GridBoxApiTest {
         api.retrieveLiveData(config, d -> {
             assertNotNull(d);
             assertEquals(311, d.getSelfConsumption());
+        });
+
+        // check that empty responses (all values zero) are ignored
+        prepareResponse(200, EMPTY_LIVE_DATA_RESPONSE);
+        api.retrieveLiveData(config, d -> {
+            // make sure that the responseHandler is not called
+            fail();
         });
 
         Consumer<LiveData> doNothing = d -> {

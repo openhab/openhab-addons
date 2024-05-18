@@ -30,6 +30,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class LiveData {
 
+    private static final double ZERO_THRESHOLD = 1e-15;
+
     @SerializedName("batteries")
     @Expose
     private List<Battery> batteries = new ArrayList<>();
@@ -359,6 +361,24 @@ public class LiveData {
 
     public void setTotalConsumption(long totalConsumption) {
         this.totalConsumption = totalConsumption;
+    }
+
+    public boolean allValuesZero() {
+        return isZero(consumption) && isZero(directConsumption) && isZero(directConsumptionEV)
+                && isZero(directConsumptionHeatPump) && isZero(directConsumptionHeater)
+                && isZero(directConsumptionHousehold) && isZero(directConsumptionRate) && isZero(grid)
+                && isZero(gridMeterReadingNegative) && isZero(gridMeterReadingPositive) && isZero(heatPump)
+                && isZero(l1CurtailmentPower) && isZero(l2CurtailmentPower) && isZero(l3CurtailmentPower)
+                && isZero(photovoltaic) && isZero(production) && isZero(selfConsumption) && isZero(selfConsumptionRate)
+                && isZero(selfSufficiencyRate) && isZero(selfSupply) && isZero(totalConsumption);
+    }
+
+    private boolean isZero(double value) {
+        return Math.abs(value) < ZERO_THRESHOLD;
+    }
+
+    private boolean isZero(long value) {
+        return value == 0;
     }
 
     @Override

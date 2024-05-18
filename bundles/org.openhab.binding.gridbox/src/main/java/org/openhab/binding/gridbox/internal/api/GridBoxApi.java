@@ -282,7 +282,7 @@ public class GridBoxApi {
         logger.atTrace().log(() -> "Live data request returned body: {}".formatted(jsonObject));
 
         LiveData liveData = GSON.fromJson(jsonObject, LiveData.class);
-        if (liveData != null) {
+        if (liveData != null && !liveData.allValuesZero()) {
             responseHandler.accept(liveData);
         }
     }
