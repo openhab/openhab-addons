@@ -50,6 +50,7 @@
 		<channels>
 			<channel id="name" typeId="connection-name"></channel>
 			<channel id="type" typeId="connection-type"></channel>
+			<channel id="status" typeId="connection-status"></channel>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="device-hdmi-connection-out">
@@ -59,6 +60,7 @@
 		<channels>
 			<channel id="name" typeId="connection-name"></channel>
 			<channel id="type" typeId="connection-type"></channel>
+			<channel id="status" typeId="connection-status"></channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

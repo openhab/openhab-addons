@@ -22,26 +22,41 @@
 		<item-type>String</item-type>
 		<label>Firmware Version</label>
 		<description>Installed firmware version</description>
-		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-info-firmware-available">
 		<item-type>String</item-type>
 		<label>Latest Firmware Version</label>
 		<description>Latest available firmware version</description>
-		<category>Text</category>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="connection-name">
 		<item-type>String</item-type>
 		<label>Friendly name</label>
-		<category>Text</category>
+		<state readOnly="true"></state>
 	</channel-type>
+
+	<!-- unplugged, plugged, linked, unknown -->
+	<channel-type id="connection-status">
+		<item-type>String</item-type>
+		<label>HDMI connection Status</label>
+		<description>Status of the HDMI input</description>
+		<state readOnly="true"></state>
+		<command>
+			<options>
+				<option value="unplugged"></option>
+				<option value="plugged"></option>
+				<option value="linked"></option>
+				<option value="unknown"></option>
+			</options>
+		</command>
+	</channel-type>
+
 	<channel-type id="connection-type">
 		<item-type>String</item-type>
 		<label>Friendly type</label>
-		<category>Text</category>
+		<state readOnly="true"></state>
 		<command>
 			<options>
 				<option value="generic"></option>
