@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="starter-battery-channel">
 		<item-type>Number</item-type>
-		<label>Starter Battery</label>
+		<label>Starter Battery Status</label>
 		<state readOnly="true">
 			<options>
 				<option value="0">Green</option>
@@ -26,7 +26,7 @@
 	</channel-type>
 	<channel-type id="wash-water-channel">
 		<item-type>Switch</item-type>
-		<label>Wash Water</label>
+		<label>Wash Water Low</label>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="coolant-fluid-channel">

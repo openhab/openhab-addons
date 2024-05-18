@@ -25,28 +25,60 @@
 	</channel-type>
 	<channel-type id="sensor-available-channel">
 		<item-type>Number</item-type>
-		<label>Tire Marker Sensor</label>
+		<label>Tire Sensor Available</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="marker-front-right-channel">
 		<item-type>Number</item-type>
-		<label>Tire Marker Front Right</label>
-		<state readOnly="true"/>
+		<label>Tire Warning Front Right</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No warning</option>
+				<option value="1">Soft warning</option>
+				<option value="2">Low warning</option>
+				<option value="3">Deflation</option>
+				<option value="4">Unknown warning</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="marker-rear-right-channel">
 		<item-type>Number</item-type>
-		<label>Tire Marker Rear Right</label>
-		<state readOnly="true"/>
+		<label>Tire Warning Rear Right</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No warning</option>
+				<option value="1">Soft warning</option>
+				<option value="2">Low warning</option>
+				<option value="3">Deflation</option>
+				<option value="4">Unknown warning</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="marker-front-left-channel">
 		<item-type>Number</item-type>
-		<label>Tire Marker Front Left</label>
-		<state readOnly="true"/>
+		<label>Tire Warning Front Left</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No warning</option>
+				<option value="1">Soft warning</option>
+				<option value="2">Low warning</option>
+				<option value="3">Deflation</option>
+				<option value="4">Unknown warning</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="marker-rear-left-channel">
 		<item-type>Number</item-type>
-		<label>Tire Marker Rear Left</label>
-		<state readOnly="true"/>
+		<label>Tire Warning Rear Left</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No warning</option>
+				<option value="1">Soft warning</option>
+				<option value="2">Low warning</option>
+				<option value="3">Deflation</option>
+				<option value="4">Unknown warning</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="last-update-channel">
 		<item-type>DateTime</item-type>

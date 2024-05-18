@@ -6,6 +6,7 @@
 	<channel-type id="charge-flap-channel">
 		<item-type>Number</item-type>
 		<label>Charge Flap</label>
+		<description>Charge Flap Status</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Open</option>
@@ -16,6 +17,7 @@
 	<channel-type id="coupler-ac-channel">
 		<item-type>Number</item-type>
 		<label>Charge Coupler AC</label>
+		<description>Coupler AC Status</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Plugged</option>
@@ -26,6 +28,7 @@
 	<channel-type id="coupler-dc-channel">
 		<item-type>Number</item-type>
 		<label>Charge Coupler DC</label>
+		<description>Coupler DC Status</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Plugged</option>
@@ -36,6 +39,7 @@
 	<channel-type id="coupler-lock-channel">
 		<item-type>Number</item-type>
 		<label>Charge Coupler Lock</label>
+		<description>Coupler Lock Status</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Locked</option>
@@ -56,6 +60,7 @@
 	<channel-type id="program-channel">
 		<item-type>Number</item-type>
 		<label>Charge Program</label>
+		<description>Selected Charge Program</description>
 	</channel-type>
 	<channel-type id="end-time-channel">
 		<item-type>DateTime</item-type>
@@ -80,5 +85,6 @@
 	<channel-type id="auto-unlock-channel">
 		<item-type>Switch</item-type>
 		<label>Coupler Auto Unlock</label>
+		<description>Auto unlock coupler after charging </description>
 	</channel-type>
 </thing:thing-descriptions>

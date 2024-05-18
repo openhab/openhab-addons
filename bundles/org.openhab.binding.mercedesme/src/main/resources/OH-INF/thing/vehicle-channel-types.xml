@@ -54,9 +54,11 @@
 		<label>Ignition</label>
 		<state>
 			<options>
-				<option value="0">Off</option>
-				<option value="2">Ready</option>
+				<option value="0">Lock</option>
+				<option value="1">Off</option>
+				<option value="2">Accessory</option>
 				<option value="4">On</option>
+				<option value="5">Start</option>
 			</options>
 		</state>
 		<command>
