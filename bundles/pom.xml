@@ -46,6 +46,7 @@
     <!-- bindings -->
     <module>org.openhab.binding.adorne</module>
     <module>org.openhab.binding.ahawastecollection</module>
+    <module>org.openhab.binding.airgradient</module>
     <module>org.openhab.binding.airq</module>
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
@@ -146,6 +147,7 @@
     <module>org.openhab.binding.folderwatcher</module>
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.foobot</module>
+    <module>org.openhab.binding.freeathome</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.freeboxos</module>
     <module>org.openhab.binding.freecurrency</module>
@@ -161,6 +163,7 @@
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
+    <module>org.openhab.binding.gridbox</module>
     <module>org.openhab.binding.groheondus</module>
     <module>org.openhab.binding.groupepsa</module>
     <module>org.openhab.binding.growatt</module>
@@ -249,6 +252,7 @@
     <module>org.openhab.binding.modbus.e3dc</module>
     <module>org.openhab.binding.modbus.sbc</module>
     <module>org.openhab.binding.modbus.studer</module>
+    <module>org.openhab.binding.modbus.sungrow</module>
     <module>org.openhab.binding.modbus.sunspec</module>
     <module>org.openhab.binding.modbus.stiebeleltron</module>
     <module>org.openhab.binding.modbus.helioseasycontrols</module>
@@ -322,6 +326,7 @@
     <module>org.openhab.binding.pushsafer</module>
     <module>org.openhab.binding.qbus</module>
     <module>org.openhab.binding.qolsysiq</module>
+    <module>org.openhab.binding.radiobrowser</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.revogi</module>
@@ -335,6 +340,7 @@
     <module>org.openhab.binding.rotel</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.sagercaster</module>
+    <module>org.openhab.binding.saicismart</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
     <module>org.openhab.binding.semsportal</module>
@@ -359,6 +365,7 @@
     <module>org.openhab.binding.sncf</module>
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
+    <module>org.openhab.binding.solarforecast</module>
     <module>org.openhab.binding.solarlog</module>
     <module>org.openhab.binding.solarmax</module>
     <module>org.openhab.binding.solarwatt</module>
@@ -449,6 +456,7 @@
     <module>org.openhab.voice.marytts</module>
     <module>org.openhab.voice.mimictts</module>
     <module>org.openhab.voice.picotts</module>
+    <module>org.openhab.voice.pipertts</module>
     <module>org.openhab.voice.pollytts</module>
     <module>org.openhab.voice.rustpotterks</module>
     <module>org.openhab.voice.voicerss</module>
@@ -613,7 +621,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.6.1</version>
         <executions>
           <execution>
             <id>embed-dependencies</id>

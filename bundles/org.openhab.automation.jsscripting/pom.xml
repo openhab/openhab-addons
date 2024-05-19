@@ -24,7 +24,7 @@
     </bnd.importpackage>
     <graal.version>22.0.0.2</graal.version> <!-- DO NOT UPGRADE: 22.0.0.2 is the latest version working on armv7l / OpenJDK 11.0.16 & armv7l / Zulu 17.0.5+8 -->
     <oh.version>${project.version}</oh.version>
-    <ohjs.version>openhab@4.8.1</ohjs.version>
+    <ohjs.version>openhab@5.0.0</ohjs.version>
   </properties>
 
   <build>
@@ -47,7 +47,7 @@
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>1.12.1</version>
+        <version>1.15.0</version>
         <configuration>
           <nodeVersion>v16.17.1</nodeVersion> <!-- DO NOT DOWNGRADE: NodeJS < 16 doesn't support Apple Silicon -->
           <workingDirectory>target/js</workingDirectory>

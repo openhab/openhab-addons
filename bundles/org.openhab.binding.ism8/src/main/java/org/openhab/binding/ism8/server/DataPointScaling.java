@@ -14,6 +14,7 @@ package org.openhab.binding.ism8.server;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.unit.Units;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class DataPointScaling extends DataPointBase<@Nullable Double> {
 
     public DataPointScaling(int id, String knxDataType, String description) {
         super(id, knxDataType, description);
-        this.setUnit("%");
+        this.setUnit(Units.PERCENT);
         this.outputFormat = "%.1f";
     }
 

@@ -10,7 +10,7 @@
 		<description>The user's tado home</description>
 
 		<channels>
-			<channel typeId="homePresence" id="homePresence"></channel>
+			<channel typeId="homePresence" id="homePresence"/>
 		</channels>
 
 		<config-description>
@@ -36,22 +36,25 @@
 		<description>A zone of a home</description>
 
 		<channels>
-			<channel typeId="currentTemperature" id="currentTemperature"></channel>
-			<channel typeId="humidity" id="humidity"></channel>
-			<channel typeId="heatingPower" id="heatingPower"></channel>
-			<channel typeId="acPower" id="acPower"></channel>
-			<channel typeId="fanspeed" id="fanspeed"></channel>
-			<channel typeId="fanLevel" id="fanLevel"></channel>
-			<channel typeId="swing" id="swing"></channel>
-			<channel typeId="horizontalSwing" id="horizontalSwing"></channel>
-			<channel typeId="verticalSwing" id="verticalSwing"></channel>
-			<channel typeId="light" id="light"></channel>
-			<channel typeId="hvacMode" id="hvacMode"></channel>
-			<channel typeId="targetTemperature" id="targetTemperature"></channel>
-			<channel typeId="operationMode" id="operationMode"></channel>
-			<channel typeId="overlayExpiry" id="overlayExpiry"></channel>
-			<channel typeId="timerDuration" id="timerDuration"></channel>
-			<channel typeId="openWindowDetected" id="openWindowDetected"></channel>
+			<channel typeId="currentTemperature" id="currentTemperature"/>
+			<channel typeId="system.atmospheric-humidity" id="humidity">
+				<label>Humidity</label>
+				<description>Current humidity in %</description>
+			</channel>
+			<channel typeId="heatingPower" id="heatingPower"/>
+			<channel typeId="acPower" id="acPower"/>
+			<channel typeId="fanspeed" id="fanspeed"/>
+			<channel typeId="fanLevel" id="fanLevel"/>
+			<channel typeId="swing" id="swing"/>
+			<channel typeId="horizontalSwing" id="horizontalSwing"/>
+			<channel typeId="verticalSwing" id="verticalSwing"/>
+			<channel typeId="light" id="light"/>
+			<channel typeId="hvacMode" id="hvacMode"/>
+			<channel typeId="targetTemperature" id="targetTemperature"/>
+			<channel typeId="operationMode" id="operationMode"/>
+			<channel typeId="overlayExpiry" id="overlayExpiry"/>
+			<channel typeId="timerDuration" id="timerDuration"/>
+			<channel typeId="openWindowDetected" id="openWindowDetected"/>
 			<channel typeId="system.low-battery" id="batteryLowAlarm">
 				<label>Battery Low Alarm</label>
 				<description>ON if one or more devices in the zone have a low battery</description>
@@ -60,6 +63,7 @@
 
 		<properties>
 			<property name="vendor">tado°</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>id</representation-property>
 
@@ -98,7 +102,7 @@
 		<description>Mobile device of a home</description>
 
 		<channels>
-			<channel typeId="atHome" id="atHome"></channel>
+			<channel typeId="atHome" id="atHome"/>
 		</channels>
 
 		<properties>
@@ -131,30 +135,22 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
-	</channel-type>
-
-	<channel-type id="humidity">
-		<item-type>Number</item-type>
-		<label>Humidity</label>
-		<description>Current humidity in %</description>
-		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f %%"></state>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="heatingPower">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Heating Power</label>
 		<description>Current heating power</description>
 		<category>Fire</category>
-		<state readOnly="true" pattern="%.0f %%"></state>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="hvacMode">
 		<item-type>String</item-type>
 		<label>HVAC Mode</label>
 		<description>Mode of the device (OFF, HEAT, COOL, DRY, FAN, AUTO - if supported)</description>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="OFF">Off</option>
 				<option value="HEAT">Heat</option>
@@ -171,7 +167,7 @@
 		<label>Target Temperature</label>
 		<description>Thermostat temperature setpoint</description>
 		<category>Temperature</category>
-		<state step="0.1" pattern="%.1f %unit%" readOnly="false"></state>
+		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="fanspeed">
@@ -179,7 +175,7 @@
 		<label>Fan Speed</label>
 		<description>AC fan speed (only if supported by AC)</description>
 		<category>Fan</category>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="LOW">Low</option>
 				<option value="MIDDLE">Middle</option>
@@ -208,7 +204,7 @@
 		<label>Fan Speed</label>
 		<description>AC fan level (only if supported by AC)</description>
 		<category>Fan</category>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="SILENT">SILENT</option>
 				<option value="LEVEL1">LEVEL1</option>
@@ -226,7 +222,7 @@
 		<label>Horizontal Swing</label>
 		<description>State of AC horizontal swing (only if supported by AC)</description>
 		<category>Flow</category>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="AUTO">AUTO</option>
 				<option value="LEFT">LEFT</option>
@@ -245,11 +241,11 @@
 		<label>Vertical Swing</label>
 		<description>State of AC vertical swing (only if supported by AC)</description>
 		<category>Flow</category>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="AUTO">AUTO</option>
 				<option value="UP">UP</option>
-				<option value="MID_UP">UP</option>
+				<option value="MID_UP">MID-UP</option>
 				<option value="MID">MID</option>
 				<option value="MID_DOWN">MID-DOWN</option>
 				<option value="DOWN">DOWN</option>
@@ -263,7 +259,7 @@
 		<item-type>String</item-type>
 		<label>Zone Operation Mode</label>
 		<description>Active operation mode (schedule, manual, timer or until next change)</description>
-		<state readOnly="false">
+		<state>
 			<options>
 				<option value="SCHEDULE">Schedule</option>
 				<option value="MANUAL">Manual</option>
@@ -278,7 +274,7 @@
 		<label>Timer Duration</label>
 		<description>Total duration of a timer</description>
 		<category>Time</category>
-		<state min="0" step="1" pattern="%d min" readOnly="false"></state>
+		<state min="0" step="1" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="overlayExpiry">
@@ -300,7 +296,7 @@
 		<label>Air-conditioning Power</label>
 		<description>Current power state of the air-conditioning</description>
 		<category>Climate</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="openWindowDetected">
@@ -308,7 +304,7 @@
 		<label>Open Window Detected</label>
 		<description>Indicates if an open window has been detected</description>
 		<category>Window</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

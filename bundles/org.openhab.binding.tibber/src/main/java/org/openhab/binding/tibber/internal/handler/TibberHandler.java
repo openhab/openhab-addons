@@ -566,6 +566,10 @@ public class TibberHandler extends BaseThingHandler {
                 if (myObject.has("accumulatedConsumption")) {
                     updateChannel(LIVE_ACCUMULATEDCONSUMPTION, myObject.get("accumulatedConsumption").toString());
                 }
+                if (myObject.has("accumulatedConsumptionLastHour")) {
+                    updateChannel(LIVE_ACCUMULATEDCONSUMPTION_THIS_HOUR,
+                            myObject.get("accumulatedConsumptionLastHour").toString());
+                }
                 if (myObject.has("accumulatedCost")) {
                     updateChannel(LIVE_ACCUMULATEDCOST, myObject.get("accumulatedCost").toString());
                 }
@@ -608,6 +612,10 @@ public class TibberHandler extends BaseThingHandler {
                 if (myObject.has("accumulatedProduction")) {
                     updateChannel(LIVE_ACCUMULATEDPRODUCTION, myObject.get("accumulatedProduction").toString());
                 }
+                if (myObject.has("accumulatedProductionLastHour")) {
+                    updateChannel(LIVE_ACCUMULATEDPRODUCTION_THIS_HOUR,
+                            myObject.get("accumulatedProductionLastHour").toString());
+                }
                 if (myObject.has("minPowerProduction")) {
                     updateChannel(LIVE_MINPOWERPRODUCTION, myObject.get("minPowerProduction").toString());
                 }
@@ -630,8 +638,8 @@ public class TibberHandler extends BaseThingHandler {
         public void startSubscription() {
             String query = "{\"id\":\"1\",\"type\":\"subscribe\",\"payload\":{\"variables\":{},\"extensions\":{},\"operationName\":null,\"query\":\"subscription {\\n liveMeasurement(homeId:\\\""
                     + tibberConfig.getHomeid()
-                    + "\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n lastMeterProduction\\n accumulatedConsumption\\n accumulatedCost\\n accumulatedReward\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
-                    + "voltagePhase1\\n voltagePhase2\\n voltagePhase3\\n currentL1\\n currentL2\\n currentL3\\n powerProduction\\n accumulatedProduction\\n minPowerProduction\\n maxPowerProduction\\n }\\n }\\n\"}}";
+                    + "\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n lastMeterProduction\\n accumulatedConsumption\\n accumulatedConsumptionLastHour\\n accumulatedCost\\n accumulatedReward\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
+                    + "voltagePhase1\\n voltagePhase2\\n voltagePhase3\\n currentL1\\n currentL2\\n currentL3\\n powerProduction\\n accumulatedProduction\\n accumulatedProductionLastHour\\n minPowerProduction\\n maxPowerProduction\\n }\\n }\\n\"}}";
             try {
                 TibberWebSocketListener socket = TibberHandler.this.socket;
                 if (socket != null) {

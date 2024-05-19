@@ -45,15 +45,18 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapHandler;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList.Shelly2APClient;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.api2.ShellyBluApi;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.discovery.ShellyBasicDiscoveryService;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
+import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -93,6 +96,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     protected final ShellyApiInterface api;
     private final HttpClient httpClient;
+    private final ShellyThingTable thingTable;
 
     private ShellyBindingConfiguration bindingConfig;
     protected ShellyThingConfiguration config = new ShellyThingConfiguration();
@@ -139,6 +143,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             final Shelly1CoapServer coapServer, final HttpClient httpClient) {
         super(thing);
 
+        this.thingTable = thingTable;
         this.thingName = getString(thing.getLabel());
         this.messages = translationProvider;
         this.cache = new ShellyChannelCache(this);
@@ -150,7 +155,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         Map<String, String> properties = thing.getProperties();
         String gen = getString(properties.get(PROPERTY_DEV_GEN));
         String thingType = getThingType();
-        gen2 = "2".equals(gen) || "3".equals(gen) || ShellyDeviceProfile.isGeneration2(thingType);
+        gen2 = !"1".equals(gen) || ShellyDeviceProfile.isGeneration2(thingType);
         blu = ShellyDeviceProfile.isBluSeries(thingType);
         this.api = !blu ? !gen2 ? new Shelly1HttpApi(thingName, this) : new Shelly2ApiRpc(thingName, thingTable, this)
                 : new ShellyBluApi(thingName, thingTable, this);
@@ -177,15 +182,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         initJob = scheduler.schedule(() -> {
             boolean start = true;
             try {
-                initializeThingConfig();
-                logger.debug("{}: Device config: Device address={}, HTTP user/password={}/{}, update interval={}",
-                        thingName, config.deviceAddress, config.userId.isEmpty() ? "<non>" : config.userId,
-                        config.password.isEmpty() ? "<none>" : "***", config.updateInterval);
-                logger.debug(
-                        "{}: Configured Events: Button: {}, Switch (on/off): {}, Push: {}, Roller: {}, Sensor: {}, CoIoT: {}, Enable AutoCoIoT: {}",
-                        thingName, config.eventsButton, config.eventsSwitch, config.eventsPush, config.eventsRoller,
-                        config.eventsSensorReport, config.eventsCoIoT, bindingConfig.autoCoIoT);
-                start = initializeThing();
+                if (initializeThingConfig()) {
+                    logger.debug("{}: Config: {}", thingName, config);
+                    start = initializeThing();
+                }
             } catch (ShellyApiException e) {
                 start = handleApiException(e);
             } catch (IllegalArgumentException e) {
@@ -253,6 +253,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (api.isInitialized()) {
             api.startScan();
         }
+
+        checkRangeExtender(profile);
     }
 
     /**
@@ -355,6 +357,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // update thing properties
         updateProperties(tmpPrf, tmpPrf.status);
         checkVersion(tmpPrf, tmpPrf.status);
+
+        // Check for Range Extender mode, add secondary device to Inbox
+        checkRangeExtender(tmpPrf);
 
         startCoap(config, tmpPrf);
         if (!gen2 && !blu) {
@@ -578,6 +583,21 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 logger.debug("{}: Enabling channel cache ({} updates / {}s)", thingName, skipUpdate,
                         cacheCount * UPDATE_STATUS_INTERVAL_SECONDS);
                 cache.enable();
+            }
+        }
+    }
+
+    private void checkRangeExtender(ShellyDeviceProfile prf) {
+        if (getBool(prf.settings.rangeExtender) && config.enableRangeExtender && prf.status.rangeExtender != null
+                && prf.status.rangeExtender.apClients != null) {
+            for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
+                String secondaryIp = config.deviceIp + ":" + client.mport.toString();
+                String name = "shellyplusrange-" + client.mac.replaceAll(":", "");
+                DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
+                        bindingConfig, httpClient, messages);
+                if (result != null) {
+                    thingTable.discoveredResult(result);
+                }
             }
         }
     }
@@ -955,7 +975,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     /**
      * Initialize the binding's thing configuration, calc update counts
      */
-    protected void initializeThingConfig() {
+    protected boolean initializeThingConfig() {
         thingType = getThing().getThingTypeUID().getId();
         final Map<String, String> properties = getThing().getProperties();
         thingName = getString(properties.get(PROPERTY_SERVICE_NAME));
@@ -970,18 +990,20 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (config.deviceAddress.isEmpty()) {
             logger.debug("{}: IP/MAC address for the device must not be empty", thingName); // may not set in .things
                                                                                             // file
-            return;
+            return false;
         }
 
         config.deviceAddress = config.deviceAddress.toLowerCase().replace(":", ""); // remove : from MAC address and
                                                                                     // convert to lower case
         if (!config.deviceIp.isEmpty()) {
             try {
-                InetAddress addr = InetAddress.getByName(config.deviceIp);
+                String ip = config.deviceIp.contains(":") ? substringBefore(config.deviceIp, ":") : config.deviceIp;
+                String port = config.deviceIp.contains(":") ? substringAfter(config.deviceIp, ":") : "";
+                InetAddress addr = InetAddress.getByName(ip);
                 String saddr = addr.getHostAddress();
-                if (!config.deviceIp.equals(saddr)) {
+                if (!ip.equals(saddr)) {
                     logger.debug("{}: hostname {} resolved to IP address {}", thingName, config.deviceIp, saddr);
-                    config.deviceIp = saddr;
+                    config.deviceIp = saddr + (port.isEmpty() ? ip : ip + ":" + port);
                 }
             } catch (UnknownHostException e) {
                 logger.debug("{}: Unable to resolve hostname {}", thingName, config.deviceIp);
@@ -994,7 +1016,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (config.localIp.startsWith("169.254")) {
             setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
                     config.localIp);
-            return;
+            return false;
         }
 
         if (!profile.isGen2 && config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
@@ -1028,6 +1050,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         skipCount = config.updateInterval / UPDATE_STATUS_INTERVAL_SECONDS;
         logger.trace("{}: updateInterval = {}s -> skipCount = {}", thingName, config.updateInterval, skipCount);
+        return true;
     }
 
     private void checkVersion(ShellyDeviceProfile prf, ShellySettingsStatus status) {
@@ -1123,6 +1146,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             properties.replace(PROPERTY_DEV_MODE, mode);
             updateProperties(properties);
             changeThingType(thingTypeUID, getConfig());
+        } else {
+            logger.debug("{}:  to {}", thingName, thingType);
+            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to change thing type to " + thingType);
         }
     }
 
@@ -1330,10 +1356,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     public void updateProperties(ShellyDeviceProfile profile, ShellySettingsStatus status) {
         Map<String, Object> properties = fillDeviceProperties(profile);
-        properties.put(PROPERTY_SERVICE_NAME, config.serviceName);
         String deviceName = getString(profile.settings.name);
         properties.put(PROPERTY_SERVICE_NAME, config.serviceName);
-        properties.put(PROPERTY_DEV_GEN, !profile.isGen2 ? "1" : "2");
         properties.put(PROPERTY_DEV_AUTH, getBool(profile.device.auth) ? "yes" : "no");
         if (!deviceName.isEmpty()) {
             properties.put(PROPERTY_DEV_NAME, deviceName);

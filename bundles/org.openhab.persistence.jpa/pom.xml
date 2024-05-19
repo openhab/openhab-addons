@@ -17,6 +17,8 @@
   <properties>
     <bnd.importpackage>!com.ibm.*,!com.sun.*,!oracle.*,!javax.interceptor.*,!javax.enterprise.*,!javax.rmi,!org.apache.bval.*,!net.sf.cglib.*,!org.apache.commons.beanutils.*,!org.apache.geronimo.*,!org.apache.avalon.*,!org.apache.log,!org.apache.tools.*,!org.apache.xerces.*,!org.jboss.*,!org.postgresql.*,!org.slf4j.impl,!weblogic.*,org.apache.derby.*;resolution:=optional</bnd.importpackage>
     <openjpa.version>3.2.2</openjpa.version>
+    <!-- workaround for Java 21 build, necessary until #16591 is merged -->
+    <maven.compiler.release>17</maven.compiler.release>
   </properties>
 
   <dependencies>

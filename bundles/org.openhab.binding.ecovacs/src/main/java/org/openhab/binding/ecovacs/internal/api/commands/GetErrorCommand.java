@@ -44,10 +44,8 @@ public class GetErrorCommand extends IotDeviceCommand<Optional<Integer>> {
             Gson gson) throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
             ErrorReport resp = jsonResponse.getResponsePayloadAs(gson, ErrorReport.class);
-            if (resp.errorCodes.isEmpty()) {
-                return Optional.empty();
-            }
-            return Optional.of(resp.errorCodes.get(0));
+            int responseCode = resp.errorCodes.isEmpty() ? 0 : resp.errorCodes.get(0);
+            return Optional.of(responseCode);
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
             return DeviceInfo.parseErrorInfo(payload);

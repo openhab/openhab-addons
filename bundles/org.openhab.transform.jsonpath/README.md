@@ -4,9 +4,7 @@ Extracts values from a JSON string using a [JsonPath](https://github.com/jayway/
 
 Given the following JSON string:
 
-```
-[{ "device": { "location": "Outside", "status": { "temperature": 23.2 }}}]
-```
+`[{ "device": { "location": "Outside", "status": { "temperature": 23.2 }}}]`
 
 The expression `$.device.location` extracts the string `Outside`.
 The JsonPath expression `$.device.status.temperature` extracts the string `23.2`.

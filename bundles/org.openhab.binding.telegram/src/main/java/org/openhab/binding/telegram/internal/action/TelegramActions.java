@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.AnswerCallbackQuery;
+import com.pengrad.telegrambot.request.DeleteMessage;
 import com.pengrad.telegrambot.request.EditMessageReplyMarkup;
 import com.pengrad.telegrambot.request.SendAnimation;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -205,7 +206,7 @@ public class TelegramActions implements ThingActions {
         return true;
     }
 
-    @RuleAction(label = "send a message", description = "Send a Telegram using the Telegram API.")
+    @RuleAction(label = "send a query", description = "Send a Telegram Query using the Telegram API.")
     public boolean sendTelegramQuery(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "replyId") @Nullable String replyId,
@@ -213,7 +214,7 @@ public class TelegramActions implements ThingActions {
         return sendTelegramGeneral(chatId, message, replyId, buttons);
     }
 
-    @RuleAction(label = "send a message", description = "Send a Telegram using the Telegram API.")
+    @RuleAction(label = "send a query", description = "Send a Telegram Query using the Telegram API.")
     public boolean sendTelegramQuery(@ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "replyId") @Nullable String replyId,
             @ActionInput(name = "buttons") @Nullable String... buttons) {
@@ -282,6 +283,39 @@ public class TelegramActions implements ThingActions {
         }
         return false;
     }
+
+    @RuleAction(label = "delete a query", description = "Delete a Query using the Telegram API.")
+    public boolean deleteTelegramQuery(@ActionInput(name = "replyId") @Nullable String replyId) {
+        if (replyId == null) {
+            logger.warn("deleteTelegramQuery() - replyId not passed!");
+            return false;
+        }
+        TelegramHandler localHandler = handler;
+        if (localHandler == null) {
+            logger.debug("deleteTelegramQuery() - localHandler is null!");
+            return false;
+        }
+
+        Integer messageId = 0;
+        BaseResponse response = null;
+
+        for (Long chatId : localHandler.getReceiverChatIds()) {
+            messageId = localHandler.removeMessageId(chatId, replyId);
+            if (messageId == null) {
+                logger.debug("deleteTelegramQuery() - messageId not found!");
+                return false;
+            }
+            DeleteMessage deleteMessage = new DeleteMessage(chatId, messageId);
+            response = localHandler.execute(deleteMessage);
+
+            if (response == null || response.errorCode() != 0) {
+                logger.debug("deleteTelegramQuery() - DeleteMessage execution not successful! Response: {}", response);
+                return false;
+            }
+        }
+
+        return true;
+    } // public boolean deleteTelegramQuery(String replyId)
 
     @RuleAction(label = "send a message", description = "Send a Telegram using the Telegram API.")
     public boolean sendTelegram(@ActionInput(name = "chatId") @Nullable Long chatId,
@@ -634,6 +668,14 @@ public class TelegramActions implements ThingActions {
 
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String replyId, @Nullable String message) {
         return ((TelegramActions) actions).sendTelegramAnswer(replyId, message);
+    }
+
+    public static boolean deleteTelegramQuery(ThingActions actions, @Nullable String replyId) {
+        if (actions instanceof TelegramActions telegramActions) {
+            return telegramActions.deleteTelegramQuery(replyId);
+        } else {
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
+        }
     }
 
     /* APIs with chatId parameter */

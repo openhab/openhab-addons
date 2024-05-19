@@ -67,7 +67,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Resource {
 
-    public static final double PERCENT_DELTA = 30f;
     public static final MathContext PERCENT_MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_UP);
 
     /**
@@ -124,7 +123,7 @@ public class Resource {
     /**
      * Check if <code>light</code> or <code>grouped_light</code> resource contains any
      * relevant fields to process according to its type.
-     * 
+     *
      * As an example, {@link #colorTemperature} is relevant for a <code>light</code>
      * resource because it's needed for updating the color-temperature channels.
      *
@@ -286,9 +285,7 @@ public class Resource {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
             try {
-                Gamut gamut = color.getGamut();
-                gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
-                HSBType hsb = ColorUtil.xyToHsb(color.getXY(), gamut);
+                HSBType hsb = ColorUtil.xyToHsb(color.getXY());
                 OnState on = this.on;
                 Dimming dimming = this.dimming;
                 double brightness = Objects.nonNull(on) && !on.isOn() ? 0
@@ -355,9 +352,7 @@ public class Resource {
         ColorXy color = this.color;
         if (Objects.nonNull(color)) {
             try {
-                Gamut gamut = color.getGamut();
-                gamut = Objects.nonNull(gamut) ? gamut : ColorUtil.DEFAULT_GAMUT;
-                HSBType hsb = ColorUtil.xyToHsb(color.getXY(), gamut);
+                HSBType hsb = ColorUtil.xyToHsb(color.getXY());
                 return new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.HUNDRED);
             } catch (DTOPresentButEmptyException e) {
                 return UnDefType.UNDEF; // indicates the DTO is present but its inner fields are missing
