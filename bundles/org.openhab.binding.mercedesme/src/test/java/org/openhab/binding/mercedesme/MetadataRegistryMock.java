@@ -19,14 +19,13 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
 
 /**
- * {@link MetadataRegistryMock} to retrieve and collect commands from {@link VehicleHandler}
+ * {@link MetadataRegistryMock} object for unit testing
  *
  * @author Bernd Weymann - Initial contribution
  */
