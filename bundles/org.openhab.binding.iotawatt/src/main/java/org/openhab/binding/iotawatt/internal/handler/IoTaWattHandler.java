@@ -46,6 +46,7 @@ import org.openhab.core.types.State;
 public class IoTaWattHandler extends BaseThingHandler implements DeviceHandlerCallback {
     private final IoTaWattClientProvider ioTaWattClientProvider;
     private final FetchDataService fetchDataService;
+    private @Nullable IoTaWattClient ioTaWattClient;
     private @Nullable ScheduledFuture<?> fetchDataJob;
 
     /**
@@ -76,7 +77,9 @@ public class IoTaWattHandler extends BaseThingHandler implements DeviceHandlerCa
 
         final IoTaWattClient ioTaWattClient = ioTaWattClientProvider.getIoTaWattClient(config.hostname,
                 config.requestTimeout);
+        ioTaWattClient.start();
         fetchDataService.setIoTaWattClient(ioTaWattClient);
+        this.ioTaWattClient = ioTaWattClient;
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -90,6 +93,10 @@ public class IoTaWattHandler extends BaseThingHandler implements DeviceHandlerCa
         if (fetchDataJobLocal != null) {
             fetchDataJobLocal.cancel(true);
             this.fetchDataJob = null;
+        }
+        if (this.ioTaWattClient != null) {
+            this.ioTaWattClient.stop();
+            this.ioTaWattClient = null;
         }
         super.dispose();
     }

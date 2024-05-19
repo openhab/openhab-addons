@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -159,6 +160,46 @@ class IoTaWattClientTest {
 
         // when/then
         assertThrows(expectedException, client::fetchStatus);
+    }
+
+    @Test
+    void start_whenSuccess_noException() {
+        // given
+        final IoTaWattClient client = new IoTaWattClient("hostname", 10, httpClient, gson);
+        // when
+        client.start();
+        // then
+        // doesn't throw an exception
+    }
+
+    @Test
+    void start_whenError_throwException() throws Exception {
+        // given
+        final IoTaWattClient client = new IoTaWattClient("hostname", 10, httpClient, gson);
+        doThrow(Exception.class).when(httpClient).start();
+        // when/then
+        assertThrows(IllegalStateException.class, client::start);
+    }
+
+    @Test
+    void stop_whenSuccess_noException() {
+        // given
+        final IoTaWattClient client = new IoTaWattClient("hostname", 10, httpClient, gson);
+        // when
+        client.stop();
+        // then
+        // doesn't throw an exception
+    }
+
+    @Test
+    void stop_whenError_noException() throws Exception {
+        // given
+        final IoTaWattClient client = new IoTaWattClient("hostname", 10, httpClient, gson);
+        doThrow(Exception.class).when(httpClient).stop();
+        // when
+        client.stop();
+        // then
+        // doesn't throw an exception
     }
 
     private static Stream<Arguments> provideParamsForThrowCases() {

@@ -59,13 +59,6 @@ public class IoTaWattHandlerFactory extends BaseThingHandlerFactory
      */
     public IoTaWattHandlerFactory() {
         this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
-        try {
-            this.insecureClient.start();
-        } catch (Exception e) {
-            // catching exception is necessary due to the signature of HttpClient.start()
-            logger.warn("Failed to start http client: {}", e.getMessage());
-            throw new IllegalStateException("Could not create HttpClient", e);
-        }
     }
 
     @Override

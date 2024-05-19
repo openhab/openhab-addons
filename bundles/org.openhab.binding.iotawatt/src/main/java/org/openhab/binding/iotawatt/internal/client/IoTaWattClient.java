@@ -65,6 +65,25 @@ public class IoTaWattClient {
         this.gson = gson;
     }
 
+    public void start() {
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            // catching exception is necessary due to the signature of HttpClient.start()
+            logger.warn("Failed to start http client: {}", e.getMessage());
+            throw new IllegalStateException("Could not create HttpClient", e);
+        }
+    }
+
+    public void stop() {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            // catching exception is necessary due to the signature of HttpClient.stop()
+            logger.warn("Failed to stop http client: {}", e.getMessage());
+        }
+    }
+
     /**
      * Fetch the current status from the device.
      * The errors are handled by the caller to update the Thing status accordingly.
