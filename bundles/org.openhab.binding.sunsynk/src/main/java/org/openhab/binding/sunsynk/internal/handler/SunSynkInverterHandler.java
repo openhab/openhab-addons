@@ -82,7 +82,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                 return;
             }
             switch (channelUID.getIdWithoutGroup()) {
-                // Grid Charge
+                // Grid charge
                 case CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE:
                     if (command.equals(OnOffType.ON)) {
                         this.tempInverterChargeSettings.setIntervalGridTimerOn(true, 1);
@@ -125,7 +125,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                         this.tempInverterChargeSettings.setIntervalGridTimerOn(false, 6);
                     }
                     break;
-                // Gen Charge
+                // Gen charge
                 case CHANNEL_BATTERY_INTERVAL_1_GEN_CHARGE:
                     if (command.equals(OnOffType.ON)) {
                         this.tempInverterChargeSettings.setIntervalGenTimerOn(true, 1);
@@ -168,7 +168,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                         this.tempInverterChargeSettings.setIntervalGenTimerOn(false, 6);
                     }
                     break;
-                // Interval Time
+                // Interval time
                 case CHANNEL_BATTERY_INTERVAL_1_TIME:
                     this.tempInverterChargeSettings.setIntervalTime(command.toString(), 1);
                     break;
@@ -206,7 +206,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                 case CHANNEL_BATTERY_INTERVAL_6_CAPACITY:
                     this.tempInverterChargeSettings.setIntervalBatteryCapacity(Integer.valueOf(command.toString()), 6);
                     break;
-                // Battery charing power limit
+                // Battery charging power limit
                 case CHANNEL_BATTERY_INTERVAL_1_POWER_LIMIT:
                     this.tempInverterChargeSettings.setIntervalBatteryPowerLimit(Integer.valueOf(command.toString()),
                             1);
@@ -255,7 +255,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     private void sendAPICommandToInverter(Settings inverterChargeSettings) {
         logger.debug("Ok - will handle command for CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE");
         SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
-        // Settings inverterChargeSettings = inverter.getBatteryChargeSettings();
         String body = inverterChargeSettings.buildBody();
         String token = inverterChargeSettings.getToken();
         String response = inverter.sendCommandToSunSynk(body, token);
@@ -286,7 +285,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     public void initialize() {
         // config = getConfigAs(Inverter.class);
         updateStatus(ThingStatus.UNKNOWN);
-        logger.debug("Will boot up the invert binding!");
+        logger.debug("Will boot up the inverter binding!");
         SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
         logger.debug("Inverter Config: {}", config);
 
