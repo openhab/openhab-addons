@@ -30,7 +30,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 
 public class Settings {
-    // false or true; sets grid charging interval on, send without quotes e.g. true
     private int code;
     private String msg = "";
     private boolean success;
@@ -55,14 +54,13 @@ public class Settings {
         private int time4On;
         private int time5On;
         private int time6On;
-        // 00:05 reslution; sets time interval of charging, send with quotes e.g. "01:05"
+        // 00:05 min reslution; sets time interval of charging, send with quotes e.g. "01:05"
         private String sellTime1 = "";
         private String sellTime2 = "";
         private String sellTime3 = "";
         private String sellTime4 = "";
         private String sellTime5 = "";
         private String sellTime6 = "";
-        //
         // false or true; sets gen charging interval on, send without quotes e.g. true
         private boolean genTime1on;
         private boolean genTime2on;
@@ -438,6 +436,10 @@ public class Settings {
         return this.data.sysWorkMode;
     }
 
+    public String toString() {
+        return "Content [code=" + code + ", msg=" + msg + "sucess=" + success + ", data=" + data + "]";
+    }
+
     public void setIntervalGridTimerOn(Boolean state, int interval) {
         this.gridTimeron.set(interval - 1, state);
         return;
@@ -488,60 +490,60 @@ public class Settings {
     }
 
     public String buildBody() {
-        String body = "{";
-        body = body + "\"sn\":\"" + this.data.sn + "\",";
-        body = body + "\"safetyType\":\"" + this.data.safetyType + "\",";
-        body = body + "\"battMode\":\"" + this.data.battMode + "\",";
-        body = body + "\"solarSell\":\"" + this.data.solarSell + "\",";
-        body = body + "\"pvMaxLimit\":\"" + this.data.pvMaxLimit + "\",";
-        body = body + "\"energyMode\":\"" + this.data.energyMode + "\",";
-        body = body + "\"peakAndVallery\":\"" + this.data.peakAndVallery + "\",";
-        body = body + "\"sysWorkMode\":\"" + this.data.sysWorkMode + "\",";
-        body = body + "\"sellTime1\":\"" + this.timerTime.get(0) + "\",";
-        body = body + "\"sellTime2\":\"" + this.timerTime.get(1) + "\",";
-        body = body + "\"sellTime3\":\"" + this.timerTime.get(2) + "\",";
-        body = body + "\"sellTime4\":\"" + this.timerTime.get(3) + "\",";
-        body = body + "\"sellTime5\":\"" + this.timerTime.get(4) + "\",";
-        body = body + "\"sellTime6\":\"" + this.timerTime.get(5) + "\",";
-        body = body + "\"sellTime1Pac\":\"" + this.batteryPowerLimit.get(0) + "\",";
-        body = body + "\"sellTime2Pac\":\"" + this.batteryPowerLimit.get(1) + "\",";
-        body = body + "\"sellTime3Pac\":\"" + this.batteryPowerLimit.get(2) + "\",";
-        body = body + "\"sellTime4Pac\":\"" + this.batteryPowerLimit.get(3) + "\",";
-        body = body + "\"sellTime5Pac\":\"" + this.batteryPowerLimit.get(4) + "\",";
-        body = body + "\"sellTime6Pac\":\"" + this.batteryPowerLimit.get(5) + "\",";
-        body = body + "\"cap1\":\"" + this.batteryCapacity.get(0) + "\",";
-        body = body + "\"cap2\":\"" + this.batteryCapacity.get(1) + "\",";
-        body = body + "\"cap3\":\"" + this.batteryCapacity.get(2) + "\",";
-        body = body + "\"cap4\":\"" + this.batteryCapacity.get(3) + "\",";
-        body = body + "\"cap5\":\"" + this.batteryCapacity.get(4) + "\",";
-        body = body + "\"cap6\":\"" + this.batteryCapacity.get(5) + "\",";
-        body = body + "\"sellTime1Volt\":\"" + this.data.sellTime1Volt + "\",";
-        body = body + "\"sellTime2Volt\":\"" + this.data.sellTime2Volt + "\",";
-        body = body + "\"sellTime3Volt\":\"" + this.data.sellTime3Volt + "\",";
-        body = body + "\"sellTime4Volt\":\"" + this.data.sellTime4Volt + "\",";
-        body = body + "\"sellTime5Volt\":\"" + this.data.sellTime5Volt + "\",";
-        body = body + "\"sellTime6Volt\":\"" + this.data.sellTime6Volt + "\",";
-        body = body + "\"zeroExportPower\":\"" + this.data.zeroExportPower + "\",";
-        body = body + "\"solarMaxSellPower\":\"" + this.data.solarMaxSellPower + "\",";
-        body = body + "\"mondayOn\":" + this.data.mondayOn + ",";
-        body = body + "\"tuesdayOn\":" + this.data.tuesdayOn + ",";
-        body = body + "\"wednesdayOn\":" + this.data.wednesdayOn + ",";
-        body = body + "\"thursdayOn\":" + this.data.thursdayOn + ",";
-        body = body + "\"fridayOn\":" + this.data.fridayOn + ",";
-        body = body + "\"saturdayOn\":" + this.data.saturdayOn + ",";
-        body = body + "\"sundayOn\":" + this.data.sundayOn + ",";
-        body = body + "\"time1on\":" + this.gridTimeron.get(0) + ",";
-        body = body + "\"time2on\":" + this.gridTimeron.get(1) + ",";
-        body = body + "\"time3on\":" + this.gridTimeron.get(2) + ",";
-        body = body + "\"time4on\":" + this.gridTimeron.get(3) + ",";
-        body = body + "\"time5on\":" + this.gridTimeron.get(4) + ",";
-        body = body + "\"time6on\":" + this.gridTimeron.get(5) + ",";
-        body = body + "\"genTime1on\":" + this.genTimeron.get(0) + ",";
-        body = body + "\"genTime2on\":" + this.genTimeron.get(1) + ",";
-        body = body + "\"genTime3on\":" + this.genTimeron.get(2) + ",";
-        body = body + "\"genTime4on\":" + this.genTimeron.get(3) + ",";
-        body = body + "\"genTime5on\":" + this.genTimeron.get(4) + ",";
-        body = body + "\"genTime6on\":" + this.genTimeron.get(5) + "}";
-        return body;
+        StringBuilder body = new StringBuilder("{");
+        body.append("\"sn\":\"" + this.data.sn + "\",");
+        body.append("\"safetyType\":\"" + this.data.safetyType + "\",");
+        body.append("\"battMode\":\"" + this.data.battMode + "\",");
+        body.append("\"solarSell\":\"" + this.data.solarSell + "\",");
+        body.append("\"pvMaxLimit\":\"" + this.data.pvMaxLimit + "\",");
+        body.append("\"energyMode\":\"" + this.data.energyMode + "\",");
+        body.append("\"peakAndVallery\":\"" + this.data.peakAndVallery + "\",");
+        body.append("\"sysWorkMode\":\"" + this.data.sysWorkMode + "\",");
+        body.append("\"sellTime1\":\"" + this.timerTime.get(0) + "\",");
+        body.append("\"sellTime2\":\"" + this.timerTime.get(1) + "\",");
+        body.append("\"sellTime3\":\"" + this.timerTime.get(2) + "\",");
+        body.append("\"sellTime4\":\"" + this.timerTime.get(3) + "\",");
+        body.append("\"sellTime5\":\"" + this.timerTime.get(4) + "\",");
+        body.append("\"sellTime6\":\"" + this.timerTime.get(5) + "\",");
+        body.append("\"sellTime1Pac\":\"" + this.batteryPowerLimit.get(0) + "\",");
+        body.append("\"sellTime2Pac\":\"" + this.batteryPowerLimit.get(1) + "\",");
+        body.append("\"sellTime3Pac\":\"" + this.batteryPowerLimit.get(2) + "\",");
+        body.append("\"sellTime4Pac\":\"" + this.batteryPowerLimit.get(3) + "\",");
+        body.append("\"sellTime5Pac\":\"" + this.batteryPowerLimit.get(4) + "\",");
+        body.append("\"sellTime6Pac\":\"" + this.batteryPowerLimit.get(5) + "\",");
+        body.append("\"cap1\":\"" + this.batteryCapacity.get(0) + "\",");
+        body.append("\"cap2\":\"" + this.batteryCapacity.get(1) + "\",");
+        body.append("\"cap3\":\"" + this.batteryCapacity.get(2) + "\",");
+        body.append("\"cap4\":\"" + this.batteryCapacity.get(3) + "\",");
+        body.append("\"cap5\":\"" + this.batteryCapacity.get(4) + "\",");
+        body.append("\"cap6\":\"" + this.batteryCapacity.get(5) + "\",");
+        body.append("\"sellTime1Volt\":\"" + this.data.sellTime1Volt + "\",");
+        body.append("\"sellTime2Volt\":\"" + this.data.sellTime2Volt + "\",");
+        body.append("\"sellTime3Volt\":\"" + this.data.sellTime3Volt + "\",");
+        body.append("\"sellTime4Volt\":\"" + this.data.sellTime4Volt + "\",");
+        body.append("\"sellTime5Volt\":\"" + this.data.sellTime5Volt + "\",");
+        body.append("\"sellTime6Volt\":\"" + this.data.sellTime6Volt + "\",");
+        body.append("\"zeroExportPower\":\"" + this.data.zeroExportPower + "\",");
+        body.append("\"solarMaxSellPower\":\"" + this.data.solarMaxSellPower + "\",");
+        body.append("\"mondayOn\":" + this.data.mondayOn + ",");
+        body.append("\"tuesdayOn\":" + this.data.tuesdayOn + ",");
+        body.append("\"wednesdayOn\":" + this.data.wednesdayOn + ",");
+        body.append("\"thursdayOn\":" + this.data.thursdayOn + ",");
+        body.append("\"fridayOn\":" + this.data.fridayOn + ",");
+        body.append("\"saturdayOn\":" + this.data.saturdayOn + ",");
+        body.append("\"sundayOn\":" + this.data.sundayOn + ",");
+        body.append("\"time1on\":" + this.gridTimeron.get(0) + ",");
+        body.append("\"time2on\":" + this.gridTimeron.get(1) + ",");
+        body.append("\"time3on\":" + this.gridTimeron.get(2) + ",");
+        body.append("\"time4on\":" + this.gridTimeron.get(3) + ",");
+        body.append("\"time5on\":" + this.gridTimeron.get(4) + ",");
+        body.append("\"time6on\":" + this.gridTimeron.get(5) + ",");
+        body.append("\"genTime1on\":" + this.genTimeron.get(0) + ",");
+        body.append("\"genTime2on\":" + this.genTimeron.get(1) + ",");
+        body.append("\"genTime3on\":" + this.genTimeron.get(2) + ",");
+        body.append("\"genTime4on\":" + this.genTimeron.get(3) + ",");
+        body.append("\"genTime5on\":" + this.genTimeron.get(4) + ",");
+        body.append("\"genTime6on\":" + this.genTimeron.get(5) + "}");
+        return body.toString();
     }
 }
