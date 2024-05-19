@@ -69,6 +69,11 @@ public class IoTaWattHandler extends BaseThingHandler implements DeviceHandlerCa
     @Override
     public void initialize() {
         final IoTaWattConfiguration config = getConfigAs(IoTaWattConfiguration.class);
+        if (!config.isValid()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/configuration-error");
+            return;
+        }
+
         final IoTaWattClient ioTaWattClient = ioTaWattClientProvider.getIoTaWattClient(config.hostname,
                 config.requestTimeout);
         fetchDataService.setIoTaWattClient(ioTaWattClient);

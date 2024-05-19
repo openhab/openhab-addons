@@ -13,6 +13,8 @@
 package org.openhab.binding.iotawatt.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link IoTaWattConfiguration} class contains fields mapping thing configuration parameters.
@@ -21,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class IoTaWattConfiguration {
+    private final Logger logger = LoggerFactory.getLogger(IoTaWattConfiguration.class);
     /**
      * The default refresh interval of the IoTaWatt device
      */
@@ -42,4 +45,21 @@ public class IoTaWattConfiguration {
      * The refresh interval of the IoTaWatt device in seconds
      */
     public int refreshInterval = REFRESH_INTERVAL_DEFAULT;
+
+    public boolean isValid() {
+        if (hostname.trim().isBlank()) {
+            logger.warn("Hostname is blank, please specify the hostname/IP address of IoTaWatt.");
+            return false;
+        }
+        if (requestTimeout <= 0) {
+            logger.warn("Invalid requestTimeout {}, please use a positive number", requestTimeout);
+            return false;
+        }
+        if (refreshInterval <= 0) {
+            logger.warn("Invalid refreshInterval {}, please use a positive number", refreshInterval);
+            return false;
+        }
+        // Also update "configuration-error" in src/main/resources/OH-INF/i18n/iotawatt_en.properties
+        return true;
+    }
 }
