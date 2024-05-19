@@ -113,6 +113,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
     @Activate
     protected void activate(Map<String, Object> config) {
+        tryCreatePiperDirectory();
         activateTask = executor.submit(() -> {
             try {
                 setupNativeDependencies();
@@ -124,7 +125,6 @@ public class PiperTTSService extends AbstractCachedTTSService {
                 logger.warn("Piper registration failed, the add-on will not work: {}", e.getMessage());
             }
         });
-        tryCreatePiperDirectory();
         configChange(config);
     }
 
@@ -136,14 +136,6 @@ public class PiperTTSService extends AbstractCachedTTSService {
     }
 
     private void setupNativeDependencies() throws IOException {
-        if (!Files.exists(LIB_FOLDER)) {
-            Files.createDirectory(LIB_FOLDER);
-        }
-        if (!Files.exists(JAR_FILE)) {
-            logger.debug("Downloading file: {}", JAR_URL);
-            InputStream in = new URL(JAR_URL).openStream();
-            Files.copy(in, JAR_FILE, StandardCopyOption.REPLACE_EXISTING);
-        }
         String folderName = "";
         String osName = System.getProperty("os.name").toLowerCase();
         String osArch = System.getProperty("os.arch").toLowerCase();
@@ -163,11 +155,19 @@ public class PiperTTSService extends AbstractCachedTTSService {
             if (osArch.contains("amd64") || osArch.contains("x86_64")) {
                 folderName = "macos-amd64";
             } else if (osArch.contains("aarch64") || osArch.contains("arm64")) {
-                folderName = "macos-amd64";
+                folderName = "macos-arm64";
             }
         }
         if (folderName.isBlank()) {
             throw new IOException("Incompatible platform, unable to setup add-on");
+        }
+        if (!Files.exists(LIB_FOLDER)) {
+            Files.createDirectory(LIB_FOLDER);
+        }
+        if (!Files.exists(JAR_FILE)) {
+            logger.debug("Downloading file: {}", JAR_URL);
+            InputStream in = new URL(JAR_URL).openStream();
+            Files.copy(in, JAR_FILE, StandardCopyOption.REPLACE_EXISTING);
         }
         try (java.util.jar.JarFile jar = new java.util.jar.JarFile(JAR_FILE.toFile())) {
             Enumeration<JarEntry> enumEntries = jar.entries();
