@@ -95,9 +95,6 @@ public class ChannelFactory {
         boolean containsStartsAt40 = false;
         boolean containsRunsAt60 = false;
 
-
-
-
         for (var element : enumValues) {
             var enumText = Utils.getAsString(element.getAsJsonObject(), JSON_ENUM_KEY_TEXT);
             var enumOrdinal = Utils.getAsString(element.getAsJsonObject(), JSON_KEY_CHANNEL_VALUE, GENERIC_NO_VAL);
@@ -124,7 +121,7 @@ public class ChannelFactory {
             if (writable) {
                 return ChannelType.RW_SWITCH;
             } else {
-                return ChannelType.SWITCH;
+                return ChannelType.ON_OFF;
             }
         } else if (enumValues.size() == 7 && containsOffAt10 && containsHotWaterAt20 && containsHeatingAt30
                 && containsPoolAt40) {
