@@ -481,7 +481,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="measurementtime">
-		<item-type>DateTimeType</item-type>
+		<item-type>DateTime</item-type>
 		<label>@text/channelMeasurementTimeLabel</label>
 		<description>@text/channelMeasurementTimeDescription</description>
 		<state readOnly="true"/>
