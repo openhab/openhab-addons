@@ -1,69 +1,53 @@
 # myUplink Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+The myUplink binding is used to get "live data" from from Nibe heat pumps without plugging any custom devices into your heat pump.
+This avoids the risk of losing your warranty.
+Instead data is retrieved from myUplink.
+The myUplink API is the successor of the Nibe Uplink API.
+This binding should in general be compatible with all heat pump models that support myUplink.
+Read or write access is supported by all channels as exposed by the API.
+Write access might only be available with a paid subscription for myUplink.
+You will need to create credentials at https://dev.myuplink.com/apps in order to use this binding.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+This binding provides two thing types:
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+| Thing/Bridge        | Thing Type          | Description                                                                                   |
+|---------------------|---------------------|-----------------------------------------------------------------------------------------------|
+| bridge              | account             | cloud connection to a myUplink user account                                                   |
+| thing               | genericDevice       | the physical heatpump which is connected to myUplink                                          |
+
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+Auto-discovery is supported and will discover all heatpumps within an account and also detect the specific channels supported by the model.
 
-## Binding Configuration
+## Bridge Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
+The following configuration parameters are available for the binding/bridge:
 
-```
-# Configuration for the myUplink Binding
-#
-# Default secret key for the pairing of the myUplink Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+| Configuration Parameter | Required | Description                                                                                                                                                                                 |
+|-------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| clientId                | yes      | The clientId to login at myUplink cloud service. This is some kind of UUID. Visit https://dev.myuplink.com/apps to generate login credentials.                                              |
+| clientSecret            | yes      | The secret which belongs to the clientId.                                                                                                                                                   |
+| dataPollingInterval     | no       | Interval (seconds) in which live data values are retrieved from the Easee Cloud API. (default = 60)                                                                                         |
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+It is recommended to use auto discovery which does not require further configuration.
+If manual configuration is preferred you need to specify configuration as below.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Configuration Parameter | Required | Description                                                                                                            |
+|-------------------------|----------|------------------------------------------------------------------------------------------------------------------------|
+| deviceId                | yes      | The id of the heatpump that will be represented by this thing. Can be retrieved via API call or autodiscovery.         |
 
-### `sample` Thing Configuration
-
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+The binding only supports all channels which are explicitely exposed by the myUplink API.
+Depending on your model and additional hardware the channels might be different. 
+Thus no list is provided here.
 
 ## Full Example
 
@@ -74,22 +58,22 @@ _*.sitemap examples are optional._
 ### Thing Configuration
 
 ```java
-Example thing configuration goes here.
+Bridge myuplink:account:myAccount "myUplink" [ 
+    clientId="c7c2f9a4-b960-448f-b00d-b8f30aff3324", 
+    clientSecret="471147114711ABCDEF133713371337AB", 
+    dataPollingInterval=55 
+    ] {
+        Thing genericDevice vvm320 "VVM320" [ deviceId="id taken from automatic discovery" ]
+    }
 ```
 
 ### Item Configuration
 
 ```java
-Example item configuration goes here.
+Number                  NIBE_ADD_STATUS        "Status ZH [%s]"          { channel="myuplink:genericDevice:myAccount:vvm320:49993" }
+Number                  NIBE_COMP_STATUS       "Status Compr. [%s]"      { channel="myuplink:genericDevice:myAccount:vvm320:44064" }
+Number:Temperature      NIBE_SUPPLY            "Supply line"             { unit="°C", channel="myuplink:genericDevice:myAccount:vvm320:40008" }
+Number:Temperature      NIBE_RETURN            "Return line"             { unit="°C", channel="myuplink:genericDevice:myAccount:vvm320:40012" }
+Number:Energy           NIBE_HM_HEAT           "HM heating"              { unit="kWh", channel="myuplink:genericDevice:myAccount:vvm320:44308" }
+Number:Energy           NIBE_HM_HW             "HM hot water"            { unit="kWh", channel="myuplink:genericDevice:myAccount:vvm320:44306" }
 ```
-
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
