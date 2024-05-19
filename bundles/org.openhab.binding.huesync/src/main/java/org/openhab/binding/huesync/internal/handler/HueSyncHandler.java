@@ -139,22 +139,27 @@ public class HueSyncHandler extends BaseThingHandler {
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_1.NAME, new StringType(hdmiStatus.input1.name));
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_1.TYPE, new StringType(hdmiStatus.input1.type));
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_1.STATUS, new StringType(hdmiStatus.input1.status));
+        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_1.MODE, new StringType(hdmiStatus.input1.lastSyncMode));
 
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_2.NAME, new StringType(hdmiStatus.input2.name));
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_2.TYPE, new StringType(hdmiStatus.input2.type));
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_2.STATUS, new StringType(hdmiStatus.input2.status));
+        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_2.MODE, new StringType(hdmiStatus.input2.lastSyncMode));
 
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_3.NAME, new StringType(hdmiStatus.input3.name));
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_3.TYPE, new StringType(hdmiStatus.input3.type));
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_3.STATUS, new StringType(hdmiStatus.input3.status));
+        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_3.MODE, new StringType(hdmiStatus.input3.lastSyncMode));
 
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_4.NAME, new StringType(hdmiStatus.input4.name));
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_4.TYPE, new StringType(hdmiStatus.input4.type));
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_4.STATUS, new StringType(hdmiStatus.input4.status));
+        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_4.MODE, new StringType(hdmiStatus.input4.lastSyncMode));
 
         this.updateState(HueSyncConstants.CHANNELS.HDMI.OUT.NAME, new StringType(hdmiStatus.output.name));
         this.updateState(HueSyncConstants.CHANNELS.HDMI.OUT.TYPE, new StringType(hdmiStatus.output.type));
         this.updateState(HueSyncConstants.CHANNELS.HDMI.OUT.STATUS, new StringType(hdmiStatus.output.status));
+        this.updateState(HueSyncConstants.CHANNELS.HDMI.OUT.MODE, new StringType(hdmiStatus.output.lastSyncMode));
     }
 
     private void updateFirmwareInformation(HueSyncDetailedDeviceStatus deviceStatus) {

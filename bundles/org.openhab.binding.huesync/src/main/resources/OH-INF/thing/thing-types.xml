@@ -51,6 +51,7 @@
 			<channel id="name" typeId="connection-name"></channel>
 			<channel id="type" typeId="connection-type"></channel>
 			<channel id="status" typeId="connection-status"></channel>
+			<channel id="mode" typeId="connection-lastSyncMode"></channel>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="device-hdmi-connection-out">
@@ -61,6 +62,7 @@
 			<channel id="name" typeId="connection-name"></channel>
 			<channel id="type" typeId="connection-type"></channel>
 			<channel id="status" typeId="connection-status"></channel>
+			<channel id="mode" typeId="connection-lastSyncMode"></channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -34,6 +34,7 @@
 	<channel-type id="connection-name">
 		<item-type>String</item-type>
 		<label>Friendly name</label>
+		<description>Friendly name of the HDMI connection</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -56,6 +57,7 @@
 	<channel-type id="connection-type">
 		<item-type>String</item-type>
 		<label>Friendly type</label>
+		<description>Type of the connected HDMI device</description>
 		<state readOnly="true"></state>
 		<command>
 			<options>
@@ -80,6 +82,20 @@
 				<option value="avreceiver"></option>
 				<option value="soundbar"></option>
 				<option value="hdmiswitch"></option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="connection-lastSyncMode">
+		<item-type>String</item-type>
+		<label>Last sync mode</label>
+		<description>Last sync mode used for this channel</description>
+		<state readOnly="true"></state>
+		<command>
+			<options>
+				<option value="video"></option>
+				<option value="game"></option>
+				<option value="music"></option>
 			</options>
 		</command>
 	</channel-type>
