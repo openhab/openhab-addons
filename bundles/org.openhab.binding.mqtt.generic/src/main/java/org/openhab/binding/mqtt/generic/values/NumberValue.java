@@ -84,7 +84,11 @@ public class NumberValue extends Value {
     public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         String formatPattern = pattern;
         if (formatPattern == null) {
-            formatPattern = "%s";
+            if (command instanceof DecimalType || command instanceof QuantityType<?>) {
+                formatPattern = "%.0f";
+            } else {
+                formatPattern = "%s";
+            }
         }
 
         return command.format(formatPattern);
