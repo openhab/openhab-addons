@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="device">
+	<thing-type id="climate-control">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
@@ -13,12 +13,12 @@
 		<description>Diakin Onecta device climateControl</description>
 
 		<channel-groups>
-			<channel-group id="basic" typeId="basicGroup"/>
-			<channel-group id="demandcontrol" typeId="demandcontrolGroup"/>
-			<channel-group id="consumptionDataCooling" typeId="consumptionDataCoolingGroup"/>
-			<channel-group id="consumptionDataHeating" typeId="consumptionDataHeatingGroup"/>
+			<channel-group id="basic" typeId="basic-group"/>
+			<channel-group id="demandcontrol" typeId="demandcontrol-group"/>
+			<channel-group id="consumption-data-cooling" typeId="consumption-data-cooling-group"/>
+			<channel-group id="consumption-data-heating" typeId="consumption-data-heating-group"/>
 
-			<channel-group id="extra" typeId="extraGroup"/>
+			<channel-group id="extra" typeId="extra-group"/>
 		</channel-groups>
 
 		<properties>
@@ -39,9 +39,9 @@
 		</config-description>
 	</thing-type>
 
-	<channel-group-type id="basicGroup">
+	<channel-group-type id="basic-group">
 		<label>Basic</label>
-		<description>BasicGroup related information</description>
+		<description>Basic group related information</description>
 		<channels>
 			<channel id="power" typeId="acunit-power"/>
 			<channel id="settemp" typeId="acunit-settemp"/>
@@ -50,7 +50,7 @@
 			<channel id="settempstep" typeId="acunit-settempstep"/>
 			<channel id="indoortemp" typeId="acunit-indoortemp"/>
 			<channel id="outdoortemp" typeId="acunit-outdoortemp"/>
-			<channel id="leavingwatertemp" typeId="acunit-leavingWaterTemp"/>
+			<channel id="leavingwatertemp" typeId="acunit-leavingwatertemp"/>
 			<channel id="humidity" typeId="acunit-humidity"/>
 			<channel id="operationmode" typeId="acunit-operationmode"/>
 			<channel id="fanspeed" typeId="acunit-fan"/>
@@ -61,18 +61,18 @@
 			<channel id="streamer" typeId="acunit-streamer"/>
 			<channel id="powerfulmode" typeId="acunit-powerfulmode"/>
 			<channel id="holidaymode" typeId="acunit-holidaymode"/>
-			<channel id="targettemp" typeId="acunit-targetTemp"/>
-			<channel id="targettempmin" typeId="acunit-targetTempMin"/>
-			<channel id="targettempmax" typeId="acunit-targetTempMax"/>
-			<channel id="targettempstep" typeId="acunit-targetTempStep"/>
-			<channel id="setleavingwateroffset" typeId="acunit-setleavingWaterOffset"/>
-			<channel id="setleavingwatertemp" typeId="acunit-setleavingWaterTemp"/>
+			<channel id="targettemp" typeId="acunit-targettemp"/>
+			<channel id="targettempmin" typeId="acunit-targettempmin"/>
+			<channel id="targettempmax" typeId="acunit-targettempmax"/>
+			<channel id="targettempstep" typeId="acunit-targettempstep"/>
+			<channel id="setleavingwateroffset" typeId="acunit-setleavingwateroffset"/>
+			<channel id="setleavingwatertemp" typeId="acunit-setleavingwatertemp"/>
 
 			<channel id="timestamp" typeId="acunit-timestamp"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="demandcontrolGroup">
+	<channel-group-type id="demandcontrol-group">
 		<label>Demandcontrol</label>
 		<description>Demandcontrol related information</description>
 		<channels>
@@ -83,14 +83,14 @@
 			<channel id="demandcontrolfixedmaxvalue" typeId="acunit-demandcontrolfixedmaxvalue"/>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="extraGroup">
+	<channel-group-type id="extra-group">
 		<label>Extra</label>
 		<description>Extra special information</description>
 		<channels>
 			<channel id="rawdata" typeId="acunit-rawdata"/>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="consumptionDataCoolingGroup">
+	<channel-group-type id="consumption-data-cooling-group">
 		<label>Consumption data cooling</label>
 		<description>Consumption data cooling</description>
 		<channels>
@@ -166,7 +166,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="consumptionDataHeatingGroup">
+	<channel-group-type id="consumption-data-heating-group">
 		<label>Consumption data heating</label>
 		<description>Consumption data heating</description>
 		<channels>
@@ -1575,7 +1575,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="acunit-setleavingWaterOffset">
+	<channel-type id="acunit-setleavingwateroffset">
 		<item-type>Number:Temperature</item-type>
 		<label>SetPoint Leaving water offset.</label>
 		<description>SetPoint Leaving water offset.</description>
@@ -1583,7 +1583,7 @@
 		<state step="1" pattern="%.0f %unit%" min="-100"/>
 	</channel-type>
 
-	<channel-type id="acunit-setleavingWaterTemp">
+	<channel-type id="acunit-setleavingwatertemp">
 		<item-type>Number:Temperature</item-type>
 		<label>SetPoint Leaving water temperature</label>
 		<description>SetPoint Leaving water temperature</description>
@@ -1591,28 +1591,28 @@
 		<state step="1" pattern="%.1d %unit%"/>
 	</channel-type>
 
-	<channel-type id="acunit-targetTemp">
+	<channel-type id="acunit-targettemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperatur</label>
 		<description>The set point temperature</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="acunit-targetTempMin">
+	<channel-type id="acunit-targettempmin">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature Min value</label>
 		<description>The target min temperature</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="acunit-targetTempMax">
+	<channel-type id="acunit-targettempmax">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature Max value</label>
 		<description>The target max temperature</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="acunit-targetTempStep">
+	<channel-type id="acunit-targettempstep">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature value step</label>
 		<description>The target temperature value step</description>
@@ -1643,7 +1643,7 @@
 		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
-	<channel-type id="acunit-leavingWaterTemp">
+	<channel-type id="acunit-leavingwatertemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Leaving Water Temperature</label>
 		<description>The leaving water temperature (readonly)</description>

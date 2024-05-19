@@ -149,12 +149,12 @@ public class DeviceDiscoveryServiceTest {
                 "e8776702-47bd-4486-a6bd-a1b2c3d4e5f6");
 
         verify(mockDiscoveryListener, times(6)).thingDiscovered(ArgumentMatchers.same(deviceDiscoveryService),
-                ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(DEVICE_THING_TYPE)));
+                ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(THING_TYPE_CLIMATECONTROL)));
         verify(mockDiscoveryListener, times(6)).thingDiscovered(ArgumentMatchers.same(deviceDiscoveryService),
-                ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(GATEWAY_THING_TYPE)));
+                ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(THING_TYPE_GATEWAY)));
         verify(mockDiscoveryListener, times(1)).thingDiscovered(ArgumentMatchers.same(deviceDiscoveryService),
-                ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(WATERTANK_THING_TYPE)));
+                ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(THING_TYPE_WATERTANK)));
         verify(mockDiscoveryListener, times(5)).thingDiscovered(ArgumentMatchers.same(deviceDiscoveryService),
-                ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(INDOORUNIT_THING_TYPE)));
+                ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(THING_TYPE_INDOORUNIT)));
     }
 }

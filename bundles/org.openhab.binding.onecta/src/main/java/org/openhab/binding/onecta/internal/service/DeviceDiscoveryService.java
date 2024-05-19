@@ -14,12 +14,14 @@ package org.openhab.binding.onecta.internal.service;
 
 import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 import static org.openhab.binding.onecta.internal.OnectaGatewayConstants.PROPERTY_GW_DISCOVERED;
+import static org.openhab.binding.onecta.internal.api.Enums.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.Unit;
 import org.openhab.binding.onecta.internal.handler.OnectaBridgeHandler;
@@ -64,22 +66,22 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
             onectaConnectionClient.refreshUnitsData(bridgeHandler.getThing());
             List<Unit> units = onectaConnectionClient.getUnits().getAll();
             for (Unit unit : units) {
-                thingDiscover(unit, CLIMATECONTROL, DEVICE_THING_TYPE);
-                thingDiscover(unit, GATEWAY, GATEWAY_THING_TYPE);
-                thingDiscover(unit, WATERTANK, WATERTANK_THING_TYPE);
-                thingDiscover(unit, INDOORUNIT, INDOORUNIT_THING_TYPE);
+                thingDiscover(unit, ManagementPoint.CLIMATECONTROL, THING_TYPE_CLIMATECONTROL);
+                thingDiscover(unit, ManagementPoint.GATEWAY, THING_TYPE_GATEWAY);
+                thingDiscover(unit, ManagementPoint.WATERTANK, THING_TYPE_WATERTANK);
+                thingDiscover(unit, ManagementPoint.INDOORUNIT, THING_TYPE_INDOORUNIT);
             }
         } catch (Exception e) {
             logger.error("Error in DiscoveryService", e);
         }
     }
 
-    protected void thingDiscover(Unit unit, String unitSourceType, ThingTypeUID thingTypeUID) {
+    protected void thingDiscover(Unit unit, Enums.ManagementPoint onectaManagementPoint, ThingTypeUID thingTypeUID) {
 
-        if (unit.findManagementPointsByType(unitSourceType) != null) {
+        if (unit.findManagementPointsByType(onectaManagementPoint.getValue()) != null) {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             String unitId = unit.getId().toString();
-            String unitName = unit.findManagementPointsByType(CLIMATECONTROL).getNameValue();
+            String unitName = unit.findManagementPointsByType(ManagementPoint.CLIMATECONTROL.getValue()).getNameValue();
             unitName = !unitName.isEmpty() ? unitName : unitId;
             Map<String, Object> properties = new LinkedHashMap<>();
             properties.put("unitID", unitId);
@@ -87,12 +89,14 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
             ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, unitId);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                     .withBridge(bridgeHandler.getThing().getUID())
-                    .withLabel(String.format("Daikin Onecta (%s) (%s)", unitSourceType, unitName)).build();
+                    .withLabel(String.format("Daikin Onecta (%s) (%s)", onectaManagementPoint.getValue(), unitName))
+                    .build();
 
             thingDiscovered(discoveryResult);
-            logger.info("Discovered a onecta {} thing with ID '{}' '{}'", unitSourceType, unitId, unitName);
-            bridgeHandler.getThing().setProperty(PROPERTY_GW_DISCOVERED + " " + unitSourceType + " (" + unitName + ")",
-                    unitId);
+            logger.info("Discovered a onecta {} thing with ID '{}' '{}'", onectaManagementPoint.getValue(), unitId,
+                    unitName);
+            bridgeHandler.getThing().setProperty(
+                    PROPERTY_GW_DISCOVERED + " " + onectaManagementPoint.getValue() + " (" + unitName + ")", unitId);
         }
     }
 

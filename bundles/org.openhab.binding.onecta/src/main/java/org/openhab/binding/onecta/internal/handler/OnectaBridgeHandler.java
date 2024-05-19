@@ -139,16 +139,16 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
             // BaseThingHandler handler;
             if (t.getStatus() == ThingStatus.ONLINE) {
 
-                if (t.getThingTypeUID().equals(DEVICE_THING_TYPE)) {
+                if (t.getThingTypeUID().equals(THING_TYPE_CLIMATECONTROL)) {
                     OnectaDeviceHandler onectaDeviceHandler = (OnectaDeviceHandler) t.getHandler();
                     onectaDeviceHandler.refreshDevice();
-                } else if (t.getThingTypeUID().equals(GATEWAY_THING_TYPE)) {
+                } else if (t.getThingTypeUID().equals(THING_TYPE_GATEWAY)) {
                     OnectaGatewayHandler onectaGatewayHandler = (OnectaGatewayHandler) t.getHandler();
                     onectaGatewayHandler.refreshDevice();
-                } else if (t.getThingTypeUID().equals(WATERTANK_THING_TYPE)) {
+                } else if (t.getThingTypeUID().equals(THING_TYPE_WATERTANK)) {
                     OnectaWaterTankHandler onectaWaterTankHandler = (OnectaWaterTankHandler) t.getHandler();
                     onectaWaterTankHandler.refreshDevice();
-                } else if (t.getThingTypeUID().equals(INDOORUNIT_THING_TYPE)) {
+                } else if (t.getThingTypeUID().equals(THING_TYPE_INDOORUNIT)) {
                     OnectaIndoorUnitHandler onectaIndoorUnitHandler = (OnectaIndoorUnitHandler) t.getHandler();
                     onectaIndoorUnitHandler.refreshDevice();
                 } else

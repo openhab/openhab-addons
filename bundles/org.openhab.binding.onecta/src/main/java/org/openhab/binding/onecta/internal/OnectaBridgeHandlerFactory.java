@@ -48,8 +48,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.onecta", service = ThingHandlerFactory.class)
 public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE, DEVICE_THING_TYPE,
-            GATEWAY_THING_TYPE, WATERTANK_THING_TYPE, INDOORUNIT_THING_TYPE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
+            THING_TYPE_CLIMATECONTROL, THING_TYPE_GATEWAY, THING_TYPE_WATERTANK, THING_TYPE_INDOORUNIT);
     private HttpClientFactory httpClientFactory;
     private TimeZoneProvider timeZoneProvider;
     private @Nullable OnectaBridgeHandler bridgeHandler = null;
@@ -73,7 +73,7 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals((BRIDGE_THING_TYPE))) {
+        if (thingTypeUID.equals((THING_TYPE_BRIDGE))) {
             bridgeHandler = new OnectaBridgeHandler((Bridge) thing);
             onectaConfiguration.setBridgeThing((Bridge) thing);
 
@@ -84,13 +84,13 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
                     DiscoveryService.class.getName(), deviceDiscoveryService, new Hashtable<String, Object>()));
 
             return bridgeHandler;
-        } else if (thingTypeUID.equals(DEVICE_THING_TYPE)) {
+        } else if (thingTypeUID.equals(THING_TYPE_CLIMATECONTROL)) {
             return new OnectaDeviceHandler(thing);
-        } else if (thingTypeUID.equals((GATEWAY_THING_TYPE))) {
+        } else if (thingTypeUID.equals((THING_TYPE_GATEWAY))) {
             return new OnectaGatewayHandler(thing);
-        } else if (thingTypeUID.equals((WATERTANK_THING_TYPE))) {
+        } else if (thingTypeUID.equals((THING_TYPE_WATERTANK))) {
             return new OnectaWaterTankHandler(thing);
-        } else if (thingTypeUID.equals((INDOORUNIT_THING_TYPE))) {
+        } else if (thingTypeUID.equals((THING_TYPE_INDOORUNIT))) {
             return new OnectaIndoorUnitHandler(thing);
         }
         return null;
@@ -98,7 +98,7 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler handler) {
-        if (handler.getThing().getThingTypeUID().equals(BRIDGE_THING_TYPE)) {
+        if (handler.getThing().getThingTypeUID().equals(THING_TYPE_BRIDGE)) {
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(handler.getThing().getUID());
             if (serviceReg != null) {
                 serviceReg.unregister();

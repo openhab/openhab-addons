@@ -27,11 +27,10 @@ public class OnectaBridgeConstants {
     private static final String BINDING_ID = "onecta";
     public static final String BRIDGE = "account";
     // List of all Device Types
-    public static final String DEVICE = "device";
-    public static final String GATEWAY = "gateway";
-    public static final String CLIMATECONTROL = "climateControl";
-    public static final String WATERTANK = "domesticHotWaterTank";
-    public static final String INDOORUNIT = "indoorUnit";
+    public static final String DEVICE_TYPE_GATEWAY = "gateway";
+    public static final String DEVICE_TYPE_CLIMATECONTROL = "climate-control";
+    public static final String DEVICE_TYPE_WATERTANK = "domestic-hotwatertank";
+    public static final String DEVICE_TYPE_INDOORUNIT = "indoor-unit";
 
     public static final String CHANNEL_REFRESH_TOKEN = "refreshToken";
     public static final String CHANNEL_PASSWORD = "password";
@@ -43,11 +42,12 @@ public class OnectaBridgeConstants {
     public static final String CHANNEL_UNITID = "unitID";
 
     // List of all Bridge Thing Type UIDs
-    public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, BRIDGE);
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, BRIDGE);
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID DEVICE_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE);
-    public static final ThingTypeUID GATEWAY_THING_TYPE = new ThingTypeUID(BINDING_ID, GATEWAY);
-    public static final ThingTypeUID WATERTANK_THING_TYPE = new ThingTypeUID(BINDING_ID, WATERTANK);
-    public static final ThingTypeUID INDOORUNIT_THING_TYPE = new ThingTypeUID(BINDING_ID, INDOORUNIT);
+    public static final ThingTypeUID THING_TYPE_CLIMATECONTROL = new ThingTypeUID(BINDING_ID,
+            DEVICE_TYPE_CLIMATECONTROL);
+    public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, DEVICE_TYPE_GATEWAY);
+    public static final ThingTypeUID THING_TYPE_WATERTANK = new ThingTypeUID(BINDING_ID, DEVICE_TYPE_WATERTANK);
+    public static final ThingTypeUID THING_TYPE_INDOORUNIT = new ThingTypeUID(BINDING_ID, DEVICE_TYPE_INDOORUNIT);
 }

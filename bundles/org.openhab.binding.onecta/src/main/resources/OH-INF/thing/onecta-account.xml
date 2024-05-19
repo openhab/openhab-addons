@@ -37,21 +37,16 @@
 					development.</description>
 				<default></default>
 			</parameter>
-
 			<parameter name="openhabHost" type="text">
 				<label>OpenHAB host</label>
 				<description>OpenHAB server URL. To access the api.</description>
 				<default>https://localhost:8080</default>
 			</parameter>
-
 			<parameter name="openhabApiToken" type="text">
 				<label>OpenHab API Token</label>
 				<description>OpenHAB API Token. You can manage all access tokens in your profile settings in the Main UI.</description>
 				<default></default>
 			</parameter>
-
-
 		</config-description>
-
 	</bridge-type>
 </thing:thing-descriptions>

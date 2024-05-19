@@ -56,15 +56,15 @@ public class OnectaDeviceConstants {
     public static final String CHANNEL_AC_DEMANDCONTROLFIXEDSTEPVALUE = "demandcontrol#demandcontrolfixedstepvalue";
     public static final String CHANNEL_AC_DEMANDCONTROLFIXEDMINVALUE = "demandcontrol#demandcontrolfixedminvalue";
     public static final String CHANNEL_AC_DEMANDCONTROLFIXEDMAXVALUE = "demandcontrol#demandcontrolfixedmaxvalue";
-    public static final String CHANNEL_AC_ENERGY_COOLING_DAY = "consumptionDataCooling#energycoolingday-%s";
-    public static final String CHANNEL_AC_ENERGY_COOLING_WEEK = "consumptionDataCooling#energycoolingweek-%s";
-    public static final String CHANNEL_AC_ENERGY_COOLING_MONTH = "consumptionDataCooling#energycoolingmonth-%s";
-    public static final String CHANNEL_AC_ENERGY_HEATING_DAY = "consumptionDataHeating#energyheatingday-%s";
-    public static final String CHANNEL_AC_ENERGY_HEATING_WEEK = "consumptionDataHeating#energyheatingweek-%s";
-    public static final String CHANNEL_AC_ENERGY_HEATING_MONTH = "consumptionDataHeating#energyheatingmonth-%s";
-    public static final String CHANNEL_AC_ENERGY_HEATING_CURRENT_DAY = "consumptionDataHeating#energyheatingcurrentday";
-    public static final String CHANNEL_AC_ENERGY_HEATING_CURRENT_YEAR = "consumptionDataHeating#energyheatingcurrentyear";
-    public static final String CHANNEL_AC_ENERGY_COOLING_CURRENT_DAY = "consumptionDataCooling#energycoolingcurrentday";
-    public static final String CHANNEL_AC_ENERGY_COOLING_CURRENT_YEAR = "consumptionDataCooling#energycoolingcurrentyear";
+    public static final String CHANNEL_AC_ENERGY_COOLING_DAY = "consumption-data-cooling#energycoolingday-%s";
+    public static final String CHANNEL_AC_ENERGY_COOLING_WEEK = "consumption-data-cooling#energycoolingweek-%s";
+    public static final String CHANNEL_AC_ENERGY_COOLING_MONTH = "consumption-data-cooling#energycoolingmonth-%s";
+    public static final String CHANNEL_AC_ENERGY_HEATING_DAY = "consumption-data-heating#energyheatingday-%s";
+    public static final String CHANNEL_AC_ENERGY_HEATING_WEEK = "consumption-data-heating#energyheatingweek-%s";
+    public static final String CHANNEL_AC_ENERGY_HEATING_MONTH = "consumption-data-heating#energyheatingmonth-%s";
+    public static final String CHANNEL_AC_ENERGY_HEATING_CURRENT_DAY = "consumption-data-heating#energyheatingcurrentday";
+    public static final String CHANNEL_AC_ENERGY_HEATING_CURRENT_YEAR = "consumption-data-heating#energyheatingcurrentyear";
+    public static final String CHANNEL_AC_ENERGY_COOLING_CURRENT_DAY = "consumption-data-cooling#energycoolingcurrentday";
+    public static final String CHANNEL_AC_ENERGY_COOLING_CURRENT_YEAR = "consumption-data-cooling#energycoolingcurrentyear";
     public static final String PROPERTY_AC_NAME = "name";
 }

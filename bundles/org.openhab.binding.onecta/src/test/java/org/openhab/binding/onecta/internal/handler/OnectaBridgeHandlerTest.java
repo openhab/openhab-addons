@@ -142,10 +142,10 @@ public class OnectaBridgeHandlerTest {
 
         List<Thing> things = new java.util.ArrayList<>(List.of());
 
-        things.add(new DummyThing(DEVICE_THING_TYPE, onectaDeviceHandlerMock, ThingStatus.ONLINE));
-        things.add(new DummyThing(GATEWAY_THING_TYPE, onectaGatewayHandlerMock, ThingStatus.ONLINE));
-        things.add(new DummyThing(WATERTANK_THING_TYPE, onectaWaterTankHandlerMock, ThingStatus.ONLINE));
-        things.add(new DummyThing(INDOORUNIT_THING_TYPE, onectaIndoorUnitHandlerMock, ThingStatus.ONLINE));
+        things.add(new DummyThing(THING_TYPE_CLIMATECONTROL, onectaDeviceHandlerMock, ThingStatus.ONLINE));
+        things.add(new DummyThing(THING_TYPE_GATEWAY, onectaGatewayHandlerMock, ThingStatus.ONLINE));
+        things.add(new DummyThing(THING_TYPE_WATERTANK, onectaWaterTankHandlerMock, ThingStatus.ONLINE));
+        things.add(new DummyThing(THING_TYPE_INDOORUNIT, onectaIndoorUnitHandlerMock, ThingStatus.ONLINE));
 
         when(handler.getThing().getThings()).thenReturn(things);
 
@@ -175,10 +175,10 @@ public class OnectaBridgeHandlerTest {
 
         List<Thing> things = new java.util.ArrayList<>(List.of());
 
-        things.add(new DummyThing(DEVICE_THING_TYPE, onectaDeviceHandlerMock, ThingStatus.OFFLINE));
-        things.add(new DummyThing(GATEWAY_THING_TYPE, onectaGatewayHandlerMock, ThingStatus.OFFLINE));
-        things.add(new DummyThing(WATERTANK_THING_TYPE, onectaWaterTankHandlerMock, ThingStatus.OFFLINE));
-        things.add(new DummyThing(INDOORUNIT_THING_TYPE, onectaIndoorUnitHandlerMock, ThingStatus.OFFLINE));
+        things.add(new DummyThing(THING_TYPE_CLIMATECONTROL, onectaDeviceHandlerMock, ThingStatus.OFFLINE));
+        things.add(new DummyThing(THING_TYPE_GATEWAY, onectaGatewayHandlerMock, ThingStatus.OFFLINE));
+        things.add(new DummyThing(THING_TYPE_WATERTANK, onectaWaterTankHandlerMock, ThingStatus.OFFLINE));
+        things.add(new DummyThing(THING_TYPE_INDOORUNIT, onectaIndoorUnitHandlerMock, ThingStatus.OFFLINE));
 
         when(handler.getThing().getThings()).thenReturn(things);
 

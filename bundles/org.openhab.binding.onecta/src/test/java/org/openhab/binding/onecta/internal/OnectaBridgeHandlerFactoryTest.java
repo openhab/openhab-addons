@@ -13,7 +13,6 @@
 package org.openhab.binding.onecta.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 
 import java.lang.reflect.Field;
@@ -83,11 +82,11 @@ public class OnectaBridgeHandlerFactoryTest {
 
     @Test
     public void supportsThingTypeTest() {
-        assertEquals(true, handler.supportsThingType(BRIDGE_THING_TYPE));
-        assertEquals(true, handler.supportsThingType(DEVICE_THING_TYPE));
-        assertEquals(true, handler.supportsThingType(GATEWAY_THING_TYPE));
-        assertEquals(true, handler.supportsThingType(WATERTANK_THING_TYPE));
-        assertEquals(true, handler.supportsThingType(INDOORUNIT_THING_TYPE));
+        assertEquals(true, handler.supportsThingType(THING_TYPE_BRIDGE));
+        assertEquals(true, handler.supportsThingType(THING_TYPE_CLIMATECONTROL));
+        assertEquals(true, handler.supportsThingType(THING_TYPE_GATEWAY));
+        assertEquals(true, handler.supportsThingType(THING_TYPE_WATERTANK));
+        assertEquals(true, handler.supportsThingType(THING_TYPE_INDOORUNIT));
     }
 
     @Test
@@ -97,29 +96,29 @@ public class OnectaBridgeHandlerFactoryTest {
         privateDataTransServiceField.setAccessible(true);
         privateDataTransServiceField.set(handler, bundleContextMock);
 
-        Thing bridgeThing = new DummyBridge(BRIDGE_THING_TYPE, onectaBridgeHandlerMock, ThingStatus.ONLINE);
+        Thing bridgeThing = new DummyBridge(THING_TYPE_BRIDGE, onectaBridgeHandlerMock, ThingStatus.ONLINE);
         ThingHandler thingHandler = handler.createHandler(bridgeThing);
         assertEquals(true, thingHandler instanceof OnectaBridgeHandler);
 
         Configuration configuration = new Configuration();
         configuration.put(CHANNEL_UNITID, UNITID);
 
-        Thing dummyThing = new DummyThing(DEVICE_THING_TYPE, onectaDeviceHandlerMock, ThingStatus.ONLINE);
+        Thing dummyThing = new DummyThing(THING_TYPE_CLIMATECONTROL, onectaDeviceHandlerMock, ThingStatus.ONLINE);
         ((DummyThing) dummyThing).setConfiguration(configuration);
         thingHandler = handler.createHandler(dummyThing);
         assertEquals(true, thingHandler instanceof OnectaDeviceHandler);
 
-        dummyThing = new DummyThing(GATEWAY_THING_TYPE, onectaGatewayHandlerMock, ThingStatus.ONLINE);
+        dummyThing = new DummyThing(THING_TYPE_GATEWAY, onectaGatewayHandlerMock, ThingStatus.ONLINE);
         ((DummyThing) dummyThing).setConfiguration(configuration);
         thingHandler = handler.createHandler(dummyThing);
         assertEquals(true, thingHandler instanceof OnectaGatewayHandler);
 
-        dummyThing = new DummyThing(WATERTANK_THING_TYPE, onectaWaterTankHandlerMock, ThingStatus.ONLINE);
+        dummyThing = new DummyThing(THING_TYPE_WATERTANK, onectaWaterTankHandlerMock, ThingStatus.ONLINE);
         ((DummyThing) dummyThing).setConfiguration(configuration);
         thingHandler = handler.createHandler(dummyThing);
         assertEquals(true, thingHandler instanceof OnectaWaterTankHandler);
 
-        dummyThing = new DummyThing(INDOORUNIT_THING_TYPE, onectaIndoorUnitHandlerMock, ThingStatus.ONLINE);
+        dummyThing = new DummyThing(THING_TYPE_INDOORUNIT, onectaIndoorUnitHandlerMock, ThingStatus.ONLINE);
         ((DummyThing) dummyThing).setConfiguration(configuration);
         thingHandler = handler.createHandler(dummyThing);
         assertEquals(true, thingHandler instanceof OnectaIndoorUnitHandler);
