@@ -107,18 +107,25 @@
 			<channel id="inverter-control-energy-pattern" typeId="control-pattern"/>
 			<channel id="inverter-control-work-mode" typeId="control-work-mode"/>
 		</channels>
+
+		<properties>
+			<property name="vendor">SunSynk</property>
+		</properties>
+
+		<representation-property>sn</representation-property>
+
 		<config-description>
 			<parameter name="sn" type="text" required="true">
-				<label>SunSynk Inverter Serial</label>
-				<description>Serial number of the inverter from SunSynk Connect.</description>
+				<label>Sun Synk Inverter Serial</label>
+				<description>Serial number of the inverter from Sun Synk Connect.</description>
 			</parameter>
 			<parameter name="alias" type="text" required="true">
-				<label>SunSynk Inverter Name</label>
-				<description>Name of inverter from SunSynk Connect.</description>
+				<label>Sun Synk Inverter Name</label>
+				<description>Name of inverter from Sun Synk Connect.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="true">
 				<label>Refresh time interval.</label>
-				<description>Time in seconds to retrieve status from SunSynk Connect services. Greater than 60 seconds.</description>
+				<description>Time in seconds to retrieve status from Sun Synk Connect services. Greater than 60 seconds.</description>
 				<default> 60 </default>
 				<advanced>true</advanced>
 			</parameter>

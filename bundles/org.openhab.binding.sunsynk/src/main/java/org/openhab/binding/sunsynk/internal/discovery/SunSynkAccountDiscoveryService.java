@@ -92,13 +92,14 @@ public class SunSynkAccountDiscoveryService extends AbstractDiscoveryService {
 
         Map<String, Object> properties = new HashMap<>();
         ThingUID thingUID = new ThingUID(SunSynkBindingConstants.THING_TYPE_INVERTER, bridgeUID, inverter.getUID());
-        properties.put(SunSynkBindingConstants.CONFIG_SECRET, inverter.getToken());
+        // properties.put(SunSynkBindingConstants.CONFIG_SECRET, inverter.getToken());
         properties.put(SunSynkBindingConstants.CONFIG_GATE_SERIAL, inverter.getGateSerialNo());
         properties.put(SunSynkBindingConstants.CONFIG_SERIAL, inverter.getSerialNo());
         properties.put(Thing.PROPERTY_MODEL_ID, inverter.getID());
-        properties.put(SunSynkBindingConstants.PROPERTY_NAME, inverter.getAlias());
+        properties.put(SunSynkBindingConstants.CONFIG_NAME, inverter.getAlias());
 
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withLabel(inverter.getAlias()).withBridge(bridgeUID)
+                .withProperty("uniqueId", inverter.getSerialNo()).withRepresentationProperty("uniqueId")
                 .withProperties(properties).build());
     }
 }
