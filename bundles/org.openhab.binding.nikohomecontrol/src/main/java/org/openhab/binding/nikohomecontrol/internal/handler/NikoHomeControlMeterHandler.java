@@ -265,6 +265,7 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
                 updateState(CHANNEL_ENERGY_DAY, new QuantityType<>(dayValue, KILOWATT_HOUR));
                 updateState(CHANNEL_ENERGY_LAST, new DateTimeType(lastReading));
                 updateStatus(ThingStatus.ONLINE);
+                break;
             case GAS:
                 updateState(CHANNEL_GAS, new QuantityType<>(value, SIUnits.CUBIC_METRE));
                 updateState(CHANNEL_GAS_DAY, new QuantityType<>(dayValue, SIUnits.CUBIC_METRE));
