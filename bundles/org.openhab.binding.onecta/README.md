@@ -256,9 +256,9 @@ Number:Energy   EnergyHeatingMonth23 "Energy Heating current year December"   <E
 ### Item Configuration gateway
 
 ```java
-Switch        DaylightSavingTime      "Daylight saving time enabled" <switch>            ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#daylightsavingtimeenabled", readOnly="true"}
-Switch        FirmwareUpdateSupported "Is firmware update supported" <switch>            ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#isfirmwareupdatesupported", readOnly="true"}
-String        FirmwaweVersion         "firmware version"                                 ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#firmwareversion", readOnly="true"}
+Switch        DaylightSavingTime      "Daylight saving time enabled" <switch>            ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#daylight-savingtime-enabled", readOnly="true"}
+Switch        FirmwareUpdateSupported "Is firmware update supported" <switch>            ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#is-firmware-update-supported", readOnly="true"}
+String        FirmwaweVersion         "firmware version"                                 ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#firmware-version", readOnly="true"}
 Switch        IsInErrorState          "Is in error state"            <switch>            ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#isinerrorstate", readOnly="true"}
 Switch        LedEnabled              "Led enabled      "            <switch>            ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#ledenabled", readOnly="true"}
 String        RegionCode              "Region code"                                      ["Point"] {channel="onecta:gateway:bridge:livingroom:basic#regioncode", readOnly="true"}

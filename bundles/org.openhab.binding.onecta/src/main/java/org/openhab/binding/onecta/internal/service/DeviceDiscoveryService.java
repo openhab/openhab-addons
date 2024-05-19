@@ -13,7 +13,7 @@
 package org.openhab.binding.onecta.internal.service;
 
 import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
-import static org.openhab.binding.onecta.internal.OnectaGatewayConstants.PROPERTY_GW_DISCOVERED;
+import static org.openhab.binding.onecta.internal.OnectaGatewayConstants.*;
 import static org.openhab.binding.onecta.internal.api.Enums.*;
 
 import java.util.LinkedHashMap;
@@ -96,7 +96,8 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
             logger.info("Discovered a onecta {} thing with ID '{}' '{}'", onectaManagementPoint.getValue(), unitId,
                     unitName);
             bridgeHandler.getThing().setProperty(
-                    PROPERTY_GW_DISCOVERED + " " + onectaManagementPoint.getValue() + " (" + unitName + ")", unitId);
+                    String.format("%s %s (%s)", PROPERTY_GW_DISCOVERED, onectaManagementPoint.getValue(), unitName),
+                    unitId);
         }
     }
 

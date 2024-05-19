@@ -13,7 +13,7 @@
 		<description>Diakin Onecta gateway</description>
 
 		<channel-groups>
-			<channel-group id="basic" typeId="basicGroupGateway"/>
+			<channel-group id="basic" typeId="basic-group-gateway"/>
 		</channel-groups>
 
 		<properties>
@@ -30,25 +30,25 @@
 		</config-description>
 	</thing-type>
 
-	<channel-group-type id="basicGroupGateway">
+	<channel-group-type id="basic-group-gateway">
 		<label>Basic</label>
 		<description>BasicGroup related information</description>
 		<channels>
-			<channel id="daylightsavingtimeenabled" typeId="gw-daylight-saving-time-enabled"/>
-			<channel id="firmwareversion" typeId="gw-firmware-version"/>
-			<channel id="isfirmwareupdatesupported" typeId="gw-is-firmwareUpdateSupported"/>
-			<channel id="isinerrorstate" typeId="gw-is-in-error-state"/>
-			<channel id="ledenabled" typeId="gw-led-enabled"/>
-			<channel id="regioncode" typeId="gw-region-code"/>
-			<channel id="serialnumber" typeId="gw-serialnumber"/>
+			<channel id="daylight-savingtime-enabled" typeId="gw-daylight-savingtime-enabled"/>
+			<channel id="firmware-version" typeId="gw-firmware-version"/>
+			<channel id="is-firmware-update-supported" typeId="gw-is-firmware-update-supported"/>
+			<channel id="is-in-error-state" typeId="gw-is-in-error-state"/>
+			<channel id="led-enabled" typeId="gw-led-enabled"/>
+			<channel id="region-code" typeId="gw-region-code"/>
+			<channel id="serial-number" typeId="gw-serial-number"/>
 			<channel id="ssid" typeId="gw-ssid"/>
 			<channel id="timezone" typeId="gw-time-zone"/>
-			<channel id="wificonnectionssid" typeId="gw-wifi-connection-ssid"/>
-			<channel id="wificonnectionpower" typeId="gw-wifi-connection-strength"/>
+			<channel id="wifi-connection-ssid" typeId="gw-wifi-connection-ssid"/>
+			<channel id="wifi-connection-power" typeId="gw-wifi-connection-strength"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="gw-daylight-saving-time-enabled">
+	<channel-type id="gw-daylight-savingtime-enabled">
 		<item-type>Switch</item-type>
 		<label>Daylight saving time enabled</label>
 		<description>Daylight saving time enabled</description>
@@ -62,7 +62,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="gw-is-firmwareUpdateSupported">
+	<channel-type id="gw-is-firmware-update-supported">
 		<item-type>Switch</item-type>
 		<label>Is firmware update supported</label>
 		<description>Is firmware update supported</description>
@@ -90,7 +90,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="gw-serialnumber">
+	<channel-type id="gw-serial-number">
 		<item-type>String</item-type>
 		<label>Serialnumber</label>
 		<description>Serialnumber</description>

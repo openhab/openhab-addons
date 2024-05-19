@@ -24,17 +24,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class OnectaGatewayConstants {
 
     // List of all Channel ids
-    public static final String CHANNEL_GW_DAYLIGHTSAVINGENABLED = "basic#daylightsavingtimeenabled";
-    public static final String CHANNEL_GW_FIRMWAREVERSION = "basic#firmwareversion";
-    public static final String CHANNEL_GW_IS_FIRMWAREUPDATE_SUPPORTED = "basic#isfirmwareupdatesupported";
-    public static final String CHANNEL_GW_IS_IN_ERROR_STATE = "basic#isinerrorstate";
-    public static final String CHANNEL_GW_REGION_CODE = "basic#regioncode";
-    public static final String CHANNEL_GW_LED_ENABLED = "basic#ledenabled";
-    public static final String CHANNEL_GW_SERIAL_NUMBER = "basic#serialnumber";
+    public static final String CHANNEL_GW_DAYLIGHTSAVINGENABLED = "basic#daylight-savingtime-enabled";
+    public static final String CHANNEL_GW_FIRMWAREVERSION = "basic#firmware-version";
+    public static final String CHANNEL_GW_IS_FIRMWAREUPDATE_SUPPORTED = "basic#is-firmware-update-supported";
+    public static final String CHANNEL_GW_IS_IN_ERROR_STATE = "basic#is-in-error-state";
+    public static final String CHANNEL_GW_REGION_CODE = "basic#region-code";
+    public static final String CHANNEL_GW_LED_ENABLED = "basic#led-enabled";
+    public static final String CHANNEL_GW_SERIAL_NUMBER = "basic#serial-number";
     public static final String CHANNEL_GW_SSID = "basic#ssid";
     public static final String CHANNEL_GW_TIME_ZONE = "basic#timezone";
-    public static final String CHANNEL_GW_WIFICONNENTION_SSID = "basic#wificonnectionssid";
-    public static final String CHANNEL_GW_WIFICONNENTION_STRENGTH = "basic#wificonnectionpower";
+    public static final String CHANNEL_GW_WIFICONNENTION_SSID = "basic#wifi-connection-ssid";
+    public static final String CHANNEL_GW_WIFICONNENTION_STRENGTH = "basic#wifi-connection-strength";
     public static final String PROPERTY_GW_NAME = "name";
-    public static final String PROPERTY_GW_DISCOVERED = "Discovered";
+    public static final String PROPERTY_GW_DISCOVERED = "discovered";
 }

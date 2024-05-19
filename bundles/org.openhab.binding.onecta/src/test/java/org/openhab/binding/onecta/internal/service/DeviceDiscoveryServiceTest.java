@@ -107,45 +107,45 @@ public class DeviceDiscoveryServiceTest {
         when(onectaConnectionClientMock.getUnits()).thenReturn(onectaData);
         deviceDiscoveryService.startScan();
 
-        verify(bridgeHandler.getThing()).setProperty("Discovered climateControl (Kantoor Jeanette)",
+        verify(bridgeHandler.getThing()).setProperty("discovered climateControl (Kantoor Jeanette)",
                 "1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered climateControl (Slaapkamer J & A)",
+        verify(bridgeHandler.getThing()).setProperty("discovered climateControl (Slaapkamer J & A)",
                 "5e41c4af-a5b8-4175-ac76-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered climateControl (Slaapkamer Tijn)",
+        verify(bridgeHandler.getThing()).setProperty("discovered climateControl (Slaapkamer Tijn)",
                 "6c51835b-95ea-4e6e-9619-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered climateControl (Woonkamer)",
+        verify(bridgeHandler.getThing()).setProperty("discovered climateControl (Woonkamer)",
                 "80100dc5-a289-47c1-bbdb-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered climateControl (Slaapkamer Sophie)",
+        verify(bridgeHandler.getThing()).setProperty("discovered climateControl (Slaapkamer Sophie)",
                 "e8776702-47bd-4486-a6bd-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered climateControl (c9cd8376-a32d-423b-acff-a1b2c3d4e5f6)",
+        verify(bridgeHandler.getThing()).setProperty("discovered climateControl (c9cd8376-a32d-423b-acff-a1b2c3d4e5f6)",
                 "c9cd8376-a32d-423b-acff-a1b2c3d4e5f6");
 
-        verify(bridgeHandler.getThing()).setProperty("Discovered gateway (Kantoor Jeanette)",
+        verify(bridgeHandler.getThing()).setProperty("discovered gateway (Kantoor Jeanette)",
                 "1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered gateway (Slaapkamer J & A)",
+        verify(bridgeHandler.getThing()).setProperty("discovered gateway (Slaapkamer J & A)",
                 "5e41c4af-a5b8-4175-ac76-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered gateway (Slaapkamer Tijn)",
+        verify(bridgeHandler.getThing()).setProperty("discovered gateway (Slaapkamer Tijn)",
                 "6c51835b-95ea-4e6e-9619-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered gateway (Woonkamer)",
+        verify(bridgeHandler.getThing()).setProperty("discovered gateway (Woonkamer)",
                 "80100dc5-a289-47c1-bbdb-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered gateway (Slaapkamer Sophie)",
+        verify(bridgeHandler.getThing()).setProperty("discovered gateway (Slaapkamer Sophie)",
                 "e8776702-47bd-4486-a6bd-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered gateway (c9cd8376-a32d-423b-acff-a1b2c3d4e5f6)",
+        verify(bridgeHandler.getThing()).setProperty("discovered gateway (c9cd8376-a32d-423b-acff-a1b2c3d4e5f6)",
                 "c9cd8376-a32d-423b-acff-a1b2c3d4e5f6");
 
         verify(bridgeHandler.getThing()).setProperty(
-                "Discovered domesticHotWaterTank (c9cd8376-a32d-423b-acff-a1b2c3d4e5f6)",
+                "discovered domesticHotWaterTank (c9cd8376-a32d-423b-acff-a1b2c3d4e5f6)",
                 "c9cd8376-a32d-423b-acff-a1b2c3d4e5f6");
 
-        verify(bridgeHandler.getThing()).setProperty("Discovered indoorUnit (Kantoor Jeanette)",
+        verify(bridgeHandler.getThing()).setProperty("discovered indoorUnit (Kantoor Jeanette)",
                 "1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered indoorUnit (Slaapkamer J & A)",
+        verify(bridgeHandler.getThing()).setProperty("discovered indoorUnit (Slaapkamer J & A)",
                 "5e41c4af-a5b8-4175-ac76-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered indoorUnit (Slaapkamer Tijn)",
+        verify(bridgeHandler.getThing()).setProperty("discovered indoorUnit (Slaapkamer Tijn)",
                 "6c51835b-95ea-4e6e-9619-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered indoorUnit (Woonkamer)",
+        verify(bridgeHandler.getThing()).setProperty("discovered indoorUnit (Woonkamer)",
                 "80100dc5-a289-47c1-bbdb-a1b2c3d4e5f6");
-        verify(bridgeHandler.getThing()).setProperty("Discovered indoorUnit (Slaapkamer Sophie)",
+        verify(bridgeHandler.getThing()).setProperty("discovered indoorUnit (Slaapkamer Sophie)",
                 "e8776702-47bd-4486-a6bd-a1b2c3d4e5f6");
 
         verify(mockDiscoveryListener, times(6)).thingDiscovered(ArgumentMatchers.same(deviceDiscoveryService),
