@@ -101,7 +101,7 @@ public class GenericResponseTransformer {
                             case TIME -> new QuantityType<>(Double.parseDouble(value), Units.HOUR);
                             case INTEGER -> new DecimalType(Double.valueOf(value).longValue());
                             case DOUBLE -> new DecimalType(Double.parseDouble(value));
-                            case SWITCH -> convertToOnOffType(value);
+                            case ON_OFF -> new DecimalType(Double.valueOf(value).longValue());
                             case RW_SWITCH -> convertToOnOffType(value);
                             case PRIORITY -> new DecimalType(Double.valueOf(value).longValue());
                             case COMPRESSOR_STATUS -> new DecimalType(Double.valueOf(value).longValue());

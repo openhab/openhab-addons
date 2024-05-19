@@ -16,11 +16,6 @@
 		<state pattern="%.1f" readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="type-switch">
-		<item-type>Switch</item-type>
-		<label>Unnamed Switch</label>
-		<state readOnly="true"></state>
-	</channel-type>
 	<channel-type id="type-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Unnamed Temperature</label>
@@ -67,6 +62,16 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Unnamed Percentage</label>
 		<state pattern="%d %%" readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="type-on-off">
+		<item-type>Number</item-type>
+		<label>Unnamed OnOff</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+			</options>
 		</state>
 	</channel-type>
 	<channel-type id="type-priority">

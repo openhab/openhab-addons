@@ -54,7 +54,7 @@ public class ChannelTypeTest {
     }
 
     @Test
-    public void testFromTypeSwitch() {
-        assertThat(ChannelType.fromTypeName("type-switch"), is(ChannelType.SWITCH));
+    public void testFromTypeOnOff() {
+        assertThat(ChannelType.fromTypeName("type-on-off"), is(ChannelType.ON_OFF));
     }
 }

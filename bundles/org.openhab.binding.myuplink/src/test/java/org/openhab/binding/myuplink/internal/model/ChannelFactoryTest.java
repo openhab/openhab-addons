@@ -100,8 +100,8 @@ public class ChannelFactoryTest {
         json = json == null ? new JsonObject() : json;
 
         Channel result = ChannelFactory.createChannel(TEST_THING_UID, TEST_CHANNEL_ID, json);
-        assertThat(result.getAcceptedItemType(), is(ChannelType.SWITCH.getAcceptedType()));
-        assertThat(result.getChannelTypeUID().getId(), is("type-switch"));
+        assertThat(result.getAcceptedItemType(), is(ChannelType.ON_OFF.getAcceptedType()));
+        assertThat(result.getChannelTypeUID().getId(), is("type-on-off"));
         assertThat(result.getUID().getThingUID(), is(TEST_THING_UID));
         assertThat(result.getUID().getId(), is(TEST_CHANNEL_ID));
         assertThat(result.getDescription(), is("Pump: Heating medium (GP6)"));
