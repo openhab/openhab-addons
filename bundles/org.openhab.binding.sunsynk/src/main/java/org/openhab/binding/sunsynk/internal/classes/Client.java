@@ -37,6 +37,10 @@ public class Client {
         return APIdata.static_access_token;
     }
 
+    public int getCode() {
+        return this.code;
+    }
+
     public void setAccessTokenString(String token) {
         APIdata.static_access_token = token;
     }

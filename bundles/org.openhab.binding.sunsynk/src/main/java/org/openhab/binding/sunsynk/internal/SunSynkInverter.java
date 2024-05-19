@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link SunSynkInverter} class defines methods that contol
@@ -81,7 +82,7 @@ public class SunSynkInverter {
             response = getInverterACDCTemperatures(); // get Inverter temperatures
             logger.debug("Trying Real Time Solar");
             response = getRealTimeIn(); // Used for solar power now
-        } catch (Exception e) {
+        } catch (IOException | JsonSyntaxException e) {
             logger.debug("Failed to get Inverter API information: {} ", e.getMessage());
             int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
             if (found > -1) {
@@ -117,7 +118,7 @@ public class SunSynkInverter {
     // ------ Battery charge settings ------ //
     // https://api.sunsynk.net/api/v1/common/setting/{inverter_sn}/read
 
-    String getCommonSettings() throws IOException {
+    String getCommonSettings() throws IOException, JsonSyntaxException {
         String response = apiGetMethod(makeURL("api/v1/common/setting/" + this.sn + "/read"),
                 APIdata.static_access_token);
         if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
@@ -132,7 +133,7 @@ public class SunSynkInverter {
     // ------ Realtime Grid ------ //
     // https://api.sunsynk.net/api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
 
-    String getGridRealTime() throws IOException {
+    String getGridRealTime() throws IOException, JsonSyntaxException {
         String response = apiGetMethod(makeURL("api/v1/inverter/grid/" + this.sn + "/realtime?sn=") + this.sn,
                 APIdata.static_access_token);
         if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
@@ -147,7 +148,7 @@ public class SunSynkInverter {
     // ------ Realtime Battery ------ //
     // https://api.sunsynk.net/api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
 
-    String getBatteryRealTime() throws IOException {
+    String getBatteryRealTime() throws IOException, JsonSyntaxException {
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/battery/" + this.sn + "/realtime?sn=" + this.sn + "&lan"),
                 APIdata.static_access_token);
@@ -162,7 +163,7 @@ public class SunSynkInverter {
     // ------ Realtime acdc temperatures ------ //
     // https://api.sunsynk.net/api/v1/inverter/{inverter_sn}/output/day?lan=en&date={date}&column=dc_temp,igbt_temp
 
-    String getInverterACDCTemperatures() throws IOException {
+    String getInverterACDCTemperatures() throws IOException, JsonSyntaxException {
         String date = getAPIFormatDate();
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/" + this.sn + "/output/day?lan=en&date=" + date + "&column=dc_temp,igbt_temp"),
@@ -179,7 +180,7 @@ public class SunSynkInverter {
     // ------ Realtime Input ------ //
     // https://api.sunsynk.net/api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
 
-    String getRealTimeIn() throws IOException { // Get URL Respnse
+    String getRealTimeIn() throws IOException, JsonSyntaxException { // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/" + this.sn + "/realtime/input"),
                 APIdata.static_access_token);
         if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
@@ -200,7 +201,7 @@ public class SunSynkInverter {
         try {
             String postResponse = apiPostMethod(makeURL(path), body, access_token);
             return postResponse;
-        } catch (Exception e) { // Don't think this will run
+        } catch (IOException e) {
             logger.debug("Failed to send to Inverter API: {} ", e.getMessage());
             int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
             if (found > -1) {

@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link SunSynkAccountHandler} is responsible for handling the SunSynk Account Bridge
@@ -98,7 +99,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             response = HttpUtil.executeUrl("GET", httpsURL, headers, null, "application/json", 2000);
             Details details = gson.fromJson(response, Details.class);
             return details;
-        } catch (IOException e) {
+        } catch (IOException | JsonSyntaxException e) {
             logger.debug("Error attempting to find inverters registered to account", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to find inverters registered to account");
@@ -112,7 +113,12 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         Client sunAccount = authenticate(accountConfig.getEmail(), accountConfig.getPassword());
         Optional<APIdata> checkAPI = sunAccount.safeAPIData();
         if (!checkAPI.isPresent()) { // API Data failed
+            updateStatus(ThingStatus.OFFLINE);
             logger.debug("Account fialed to authenticate, likely a certificate path or maybe a password problem.");
+            if (sunAccount.getCode() == 102) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Check e-mail and password!");
+                logger.debug("Looks like its your password or email.");
+            }
             return;
         }
         APIdata apiData = checkAPI.get();
@@ -131,6 +137,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         Long expires_in;
         Long issued_at;
         Configuration configuration = editConfiguration();
+
         try {
             expires_in = ((Long) configuration.get("expires_in"));
             issued_at = ((Long) configuration.get("issued_at"));
@@ -141,8 +148,6 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
 
         if ((issued_at + expires_in) - Instant.now().getEpochSecond() > 30) { // 30 seconds
             logger.debug("Account configuration token not expired.");
-            // logger.debug("Account fialed to refresh, token not expired. Trying re-auth");
-            // configAccount();
             return;
         }
         logger.debug("Account configuration token expired : {}", configuration);
@@ -179,7 +184,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
             Client API_Token = gson.fromJson(response, Client.class);
             return API_Token;
-        } catch (IOException e) {
+        } catch (IOException | JsonSyntaxException e) {
             logger.debug("Error attempting to autheticate account", e.getCause());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate account");
@@ -201,7 +206,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
             Client API_Token = gson.fromJson(response, Client.class);
             return API_Token;
-        } catch (IOException e) {
+        } catch (IOException | JsonSyntaxException e) {
             logger.debug("Error attempting to autheticate account", e.getCause());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate account");

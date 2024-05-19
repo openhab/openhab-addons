@@ -7,7 +7,7 @@
 
 	<!-- Bridge Thing Type -->
 
-	<bridge-type id="sunsynkaccount">
+	<bridge-type id="account">
 		<label>SunSynk Account</label>
 		<description>Access to SunSynk Account. Used to discover plants and inverters tied to account.</description>
 		<properties>
@@ -52,7 +52,7 @@
 	<!-- Inverter Thing Type -->
 	<thing-type id="inverter">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="sunsynkaccount"/>
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>SunSynk Inverter</label>
 		<description>Inverter thing for SunSynk Binding.</description>

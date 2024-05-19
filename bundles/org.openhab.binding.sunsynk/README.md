@@ -21,7 +21,7 @@ Acknowledgements:
 
 |Name            | Thing type    | Supported Thing |
 |----------------|---------------|-----------------|
-|SunSynk Account | Bridge Thing  | sunsynkaccount  |
+|SunSynk Account | Bridge Thing  | account         |
 |SunSynk Inverter| Thing         | inverter        |
 |SunSynk Plant   | Thing         | (TO DO)         |
 
@@ -123,7 +123,7 @@ The SunSynk Inverter has the following  channels
 #### sunsynk.things
 
 ```java
-Bridge sunsynk:sunsynkaccount: xxx @ "Loft" [email= "user.symbol@domain.", password="somepassword"]{
+Bridge sunsynk:account: xxx @ "Loft" [email= "user.symbol@domain.", password="somepassword"]{
     Thing inverter E1234567R1231234567890 @ "Loft" [alias= "My Inverter", sn= "1234567890", refresh= 60]
 }
 ```

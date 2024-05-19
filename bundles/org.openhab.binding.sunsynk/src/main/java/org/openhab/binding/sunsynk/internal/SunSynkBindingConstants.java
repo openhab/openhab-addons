@@ -27,7 +27,7 @@ public class SunSynkBindingConstants {
     private static final String BINDING_ID = "sunsynk";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID BRIDGE_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "sunsynkaccount");
+    public static final ThingTypeUID BRIDGE_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, "inverter");
     public static final ThingTypeUID THING_TYPE_PLANT = new ThingTypeUID(BINDING_ID, "plant");
 
