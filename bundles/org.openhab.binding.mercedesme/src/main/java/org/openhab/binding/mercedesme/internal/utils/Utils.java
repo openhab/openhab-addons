@@ -18,17 +18,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -139,32 +134,6 @@ public class Utils {
 
     public static synchronized void removePort(int portNr) {
         PORTS.remove(Integer.valueOf(portNr));
-    }
-
-    public static String getCallbackIP() throws SocketException {
-        // https://stackoverflow.com/questions/901755/how-to-get-the-ip-of-the-computer-on-linux-through-java
-        // https://stackoverflow.com/questions/1062041/ip-address-not-obtained-in-java
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-        while (networkInterfaces.hasMoreElements()) {
-            NetworkInterface networkInterface = networkInterfaces.nextElement();
-            try {
-                if (!networkInterface.isLoopback()) {
-                    if (networkInterface.isUp()) {
-                        Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
-                        while (addresses.hasMoreElements()) {
-                            InetAddress address = addresses.nextElement();
-                            if (address instanceof Inet4Address) {
-                                return address.getHostAddress();
-                            }
-                        }
-                    }
-                }
-            } catch (SocketException se) {
-                // Calling one network interface failed - continue searching
-                LOGGER.warn("Network {} failed {}", networkInterface.getName(), se.getMessage());
-            }
-        }
-        throw new SocketException("IP address not detected");
     }
 
     public static String getCallbackAddress(String callbackIP, int callbackPort) {

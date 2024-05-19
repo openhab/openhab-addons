@@ -25,6 +25,7 @@ import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.test.storage.VolatileStorageService;
@@ -52,11 +53,12 @@ public class AccountHandlerMock extends AccountHandler {
 
     public AccountHandlerMock() {
         super(mock(Bridge.class), mock(MercedesMeDiscoveryService.class), mock(HttpClient.class),
-                mock(LocaleProvider.class), mock(StorageService.class));
+                mock(LocaleProvider.class), mock(StorageService.class), mock(NetworkAddressService.class));
     }
 
     public AccountHandlerMock(Bridge b, @Nullable String storedObject) {
-        super(b, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class), localeProvider, storageService);
+        super(b, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class), localeProvider, storageService,
+                mock(NetworkAddressService.class));
         if (storedObject != null) {
             Storage<String> storage = storageService.getStorage(Constants.BINDING_ID);
             storage.put("a@b.c", storedObject);

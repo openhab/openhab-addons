@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mercedesme.internal.handler;
 
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +44,7 @@ import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
@@ -71,6 +71,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private static final String COMMAND_APPENDIX = "-commands";
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
+    private final NetworkAddressService networkService;
     private final MercedesMeDiscoveryService discoveryService;
     private final HttpClient httpClient;
     private final LocaleProvider localeProvider;
@@ -93,9 +94,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     ClientMessage message;
 
     public AccountHandler(Bridge bridge, MercedesMeDiscoveryService mmds, HttpClient hc, LocaleProvider lp,
-            StorageService store) {
+            StorageService store, NetworkAddressService nas) {
         super(bridge);
         discoveryService = mmds;
+        networkService = nas;
         ws = new MBWebsocket(this);
         httpClient = hc;
         localeProvider = lp;
@@ -161,13 +163,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             Utils.addPort(config.get().callbackPort);
         }
         if (!updateConfig.containsKey("callbackIP")) {
-            String ip;
-            try {
-                ip = Utils.getCallbackIP();
+            String ip = networkService.getPrimaryIpv4HostAddress();
+            if (ip != null) {
                 updateConfig.put("callbackIP", ip);
-            } catch (SocketException e) {
+            } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "@text/mercedesme.account.status.ip-autodetect-failure [\"" + e.getMessage() + "\"]");
+                        "@text/mercedesme.account.status.ip-autodetect-failure");
             }
         }
         super.updateConfiguration(updateConfig);
