@@ -652,44 +652,36 @@ Send lock/unlock or temperatures in a short period of time will result in failur
 
 ## Vehicle Actions
 
-You've the possibility to perform the below action in your rules. 
+Actions for `vehicle` [thing}(#vehicle) are provided. 
 
-### Send POI
+### `sendPOI`
 
-```java
-    /**
-     * Send Point of Interest (POI) to your vehicle.
-     * This POI is shown in your vehicle messages and can be instantly used to start a navigation route to this point.
-     * A title plus latitude / longitude are mandatory.
-     * Parameters args is optional. If you use it respect the following order
-     * 1) City
-     * 2) Street
-     * 3) Postal Code
-     * If you miss any of them provide an empty String
-     *
-     * @param title - the title will be shown in your vehicle message inbox
-     * @param latitude - latitude of POI location
-     * @param longitude - longitude of POI location
-     * @param args - optional but respect order city, street, postal code
-     */
-    public void sendPoi(String title, double latitude, double longitude, String... args) 
-```
+Send a Point of Interest (POI) to the vehicle message box.
+This POI can be used as navigation destination.
 
-#### Example
+| Parameter   | Type          | Description             | Mandatory |
+|-------------|---------------|-------------------------|-----------|
+| title       | String        | POI title               |     X     |
+| latitude    | double        | latitude of POI         |     X     |
+| longitude   | double        | longitude of POI        |     X     |
+| city        | String        | POI city location       |           |
+| street      | String        | POI street name         |           |
+| postalCode  | String        | POI postal code         |           |
 
-If you have 2 items `Poi_Location` (PointType) and `Poi_Location_Name` (StringType).
-Set first the name and then change the location and the rule will trigger.
+**Example Eiffel Tower**
+
+Required information
 
 ```
-rule "Send POI"
-    when
-        Item Poi_Location changed
-    then
-        val mercedesmeActions = getActions("mercedesme","mercedesme:bev:abc:xyz")
-        val double lat = Poi_Location.state.getLatitude
-        val double lon = Poi_Location.state.getLongitude
-        mercedesmeActions.sendPoi(Poi_Location_Name.state.toString,lat,lon)
-end
+        val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
+        mercedesmeActions.sendPOI("Eiffel Tower",48.85957476434348,2.2939068084684853)
+```
+
+Full information
+
+```
+        val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
+        mercedesmeActions.sendPOI("Eiffel Tower",48.85957476434348,2.2939068084684853,"Paris","Av. Gustave Eiffel", "75007")
 ```
 
 ## Discover your Vehicle
@@ -813,3 +805,24 @@ Number                  EQA_CommandName             {channel="mercedesme:bev:471
 Number                  EQA_CommandState            {channel="mercedesme:bev:4711:eqa:command#cmd-state" }
 DateTime                EQA_CommandTimestamp        {channel="mercedesme:bev:4711:eqa:command#cmd-last-update" }
 ```
+
+### POI ruleExample
+
+```
+// send POI from JSON String item
+rule "Send POI"
+    when
+        Item POIJsonString changed 
+    then
+        // decode JSON
+        val json = POIJsonString.state.toString        
+        val title = transform("JSONPATH", "$.title", json)
+        val lat = transform("JSONPATH", "$.latitude", json)
+        val lon = transform("JSONPATH", "$.longitude", json)
+
+        // send POI to vehicle
+        val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
+        mercedesmeActions.sendPoi(title,lat,lon)
+end
+```
+
