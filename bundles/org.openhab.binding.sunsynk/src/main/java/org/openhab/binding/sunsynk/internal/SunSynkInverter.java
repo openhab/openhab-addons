@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link SunSynkInverter} class defines methods, which contol
+ * The {@link SunSynkInverter} class defines methods that contol
  * communication with the inverter.
  *
  * @author Lee Charlton - Initial contribution
@@ -49,22 +49,19 @@ public class SunSynkInverter {
     private String sn;
     private String alias;
     private int refresh;
-    private Settings batterySettings; // cotains common settings including the inverter charge discharge and battert use
-    private Battery realTimeBattery; // contains the realtime stus of the battery
+    private Settings batterySettings; // common settings (inverter charge / discharge etc)
+    private Battery realTimeBattery; // realtime battery
     private Grid grid; // realtime grid
     private Daytemps inverter_day_temperatures; // inverter temperatures history
     private RealTimeInData realTimeDataIn; // realtime data
 
     public SunSynkInverter(SunSynkInverterConfig config) {
-        // this.gsn = config.getgsn();
-        // this.access_token = config.getToken();
         this.sn = config.getsn();
         this.refresh = config.getRefresh();
         this.alias = config.getAlias();
     }
 
-    public String sendGetState(Boolean batterySettingsUpdate) { // Entry method to class for updating internal state
-                                                                // from the inverter
+    public String sendGetState(Boolean batterySettingsUpdate) { // Class entry method to update internal inverter state
         logger.debug("Will get STATE for Inverter {} serial {}", this.alias, this.sn);
         // Get inverter infos
         String response = null;
@@ -83,8 +80,7 @@ public class SunSynkInverter {
             logger.debug("Trying Temperature History");
             response = getInverterACDCTemperatures(); // get Inverter temperatures
             logger.debug("Trying Real Time Solar");
-            response = getRealTimeIn(); // may not need this one used for solar values could use Inverter (but would
-                                        // loose Solar power now)
+            response = getRealTimeIn(); // Used for solar power now
         } catch (Exception e) {
             logger.debug("Failed to get Inverter API information: {} ", e.getMessage());
             int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
@@ -122,13 +118,11 @@ public class SunSynkInverter {
     // https://api.sunsynk.net/api/v1/common/setting/{inverter_sn}/read
 
     String getCommonSettings() throws IOException {
-        // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/common/setting/" + this.sn + "/read"),
                 APIdata.static_access_token);
         if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
             return response;
         }
-        // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.batterySettings = gson.fromJson(response, Settings.class);
         this.batterySettings.buildLists();
@@ -139,31 +133,27 @@ public class SunSynkInverter {
     // https://api.sunsynk.net/api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
 
     String getGridRealTime() throws IOException {
-        // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/grid/" + this.sn + "/realtime?sn=") + this.sn,
                 APIdata.static_access_token);
         if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
             return response;
         }
-        // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.grid = gson.fromJson(response, Grid.class);
         this.grid.sumVIP();
         return response;
     }
 
-    // ------ Realtime battery ------ //
-    // https://api.sunsynk.net/api/v1/inverter/battery/{inverter_sn}/realtime?sn={inverter_sn}&lan
+    // ------ Realtime Battery ------ //
+    // https://api.sunsynk.net/api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
 
     String getBatteryRealTime() throws IOException {
-        // Get URL Respnse
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/battery/" + this.sn + "/realtime?sn=" + this.sn + "&lan"),
                 APIdata.static_access_token);
         if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
             return response;
         }
-        // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.realTimeBattery = gson.fromJson(response, Battery.class);
         return response;
@@ -174,14 +164,12 @@ public class SunSynkInverter {
 
     String getInverterACDCTemperatures() throws IOException {
         String date = getAPIFormatDate();
-        // Get URL Respnse
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/" + this.sn + "/output/day?lan=en&date=" + date + "&column=dc_temp,igbt_temp"),
                 APIdata.static_access_token);
         if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
             return response;
         }
-        // JSON response -> realTime data Structure
         Gson gson = new Gson();
         this.inverter_day_temperatures = gson.fromJson(response, Daytemps.class);
         this.inverter_day_temperatures.getLastValue();
@@ -189,7 +177,7 @@ public class SunSynkInverter {
     }
 
     // ------ Realtime Input ------ //
-    // https://api.sunsynk.net//api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
+    // https://api.sunsynk.net/api/v1/inverter/grid/{inverter_sn}/realtime?sn={inverter_sn}
 
     String getRealTimeIn() throws IOException { // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/" + this.sn + "/realtime/input"),
@@ -197,13 +185,13 @@ public class SunSynkInverter {
         if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
             return response;
         }
-        // JSON response -> realTimeData Structure
         Gson gson = new Gson();
         this.realTimeDataIn = gson.fromJson(response, RealTimeInData.class);
         this.realTimeDataIn.sumPVIV();
         return response;
     }
     // ------ COMMANDS ------ //
+    // https://api.sunsynk.net/api/v1/common/setting/{inverter_sn}/set"
 
     public String sendCommandToSunSynk(String body, String access_token) {
         // GET URL
@@ -222,30 +210,15 @@ public class SunSynkInverter {
         }
     }
 
-    private static class CommandRequest {
-        private String cmd;
-
-        public String getCmd() {
-            return cmd;
-        }
-
-        public void setCmd(String cmd) {
-            this.cmd = cmd;
-        }
-    }
-
     // ------ Helpers ------ //
 
     private String apiPostMethod(String httpsURL, String body, String access_token) throws IOException {
         String response = "";
         Properties headers = new Properties();
-
         headers.setProperty("Accept", "application/json");
         headers.setProperty("Authorization", "Bearer " + access_token);
-        // headers.setProperty("Content-Type", "application/json"); // may not need this.
         InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
         response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
-
         return response;
     }
 
@@ -264,8 +237,8 @@ public class SunSynkInverter {
     }
 
     private String getAPIFormatDate() {
-        LocalDate date = LocalDate.now(); // Create a date object
-        DateTimeFormatter APIformat = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // 2023-12-14
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter APIformat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formattedDate = date.format(APIformat);
         return formattedDate;
     }

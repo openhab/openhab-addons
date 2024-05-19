@@ -64,25 +64,12 @@ public class Daytemps {
         }
     }
 
+    public String toString() {
+        return "Content [code=" + code + ", msg=" + msg + "sucess=" + success + ", data=" + data + "]";
+    }
+
     public Daytempsreturn inverterTemperatures() {
         // getLastValue();
         return new Daytempsreturn(this.response_status, this.dc_temperature, this.ac_temperature);
     }
 }
-/*
- * "{"code":0,"msg":"Success","data":{"infos":[
- * {"unit":"℃","records":[{"time":"2024-03-22 00:00:40","value":"36.6","updateTime":null},
- * {"time":"2024-03-22 00:01:46","value":"36.6","updateTime":null},
- * {"time":"2024-03-22 00:02:53","value":"36.6","updateTime":null},
- * ...
- * {"time":"2024-03-22 15:24:24","value":"41.1","updateTime":null},
- * {"time":"2024-03-22 15:25:31","value":"41.0","updateTime":null}],"id":76,"label":"DC TEMP"},
- * 
- * {"unit":"℃","records":[{"time":"2024-03-22 00:00:40","value":"29.1","updateTime":null},
- * {"time":"2024-03-22 00:01:46","value":"29.1","updateTime":null},
- * {"time":"2024-03-22 00:02:53","value":"29.1","updateTime":null},
- * {"time":"2024-03-22 00:03:59","value":"29.1","updateTime":null},
- * ...
- * {"time":"2024-03-22 15:24:24","value":"33.3","updateTime":null},
- * {"time":"2024-03-22 15:25:31","value":"33.2","updateTime":null}],"id":77,"label":"AC TEMP"}]},"success":true}"
- */

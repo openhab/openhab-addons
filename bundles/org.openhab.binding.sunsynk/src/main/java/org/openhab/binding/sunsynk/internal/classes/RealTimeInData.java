@@ -28,13 +28,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 
-// {'code': 0, 'msg': 'Success', 'data': {'pac': 0, 'grid_tip_power': '--', 'pvIV': [...], 'mpptIV': [...], 'etoday':
-// 0.0, 'etotal': 0.0}, 'success': True}//
-// pVIV: [{'id': None, 'pvNo': 1, 'vpv': '1.9', 'ipv': '0.0', 'ppv': '0.0', 'todayPv': '0.0', 'sn': '2211229948',
-// 'time': '2024-01-03 11:55:26'}, {'id': None, 'pvNo': 2, 'vpv': '2.1', 'ipv': '0.0', 'ppv': '0.0', 'todayPv': '0.0',
-// 'sn': '2211229948', 'time': '2024-01-03 11:55:26'}]
-// mpptIV: []
-
 public class RealTimeInData {
 
     private int code;
@@ -44,7 +37,6 @@ public class RealTimeInData {
     private double solar_power;
 
     class Data {
-
         private int pac;
         private String grid_tip_power = "";
         private double etoday;
@@ -73,6 +65,10 @@ public class RealTimeInData {
 
     public double getetotal() {
         return this.data.etotal;
+    }
+
+    public String toString() {
+        return "Content [code=" + code + ", msg=" + msg + "sucess=" + success + ", data=" + data + "]";
     }
 
     public void sumPVIV() {

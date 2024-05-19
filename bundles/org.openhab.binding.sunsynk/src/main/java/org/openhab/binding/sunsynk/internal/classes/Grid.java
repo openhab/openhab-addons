@@ -28,26 +28,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 
-// {'vip': [{...}], 'pac': 16, 'qac': 0, 'fac': 49.96, 'pf': 1.0, 'status': 1, 'etodayFrom': '0.5',
-// 'etodayTo': '0.0', 'etotalFrom': '1757.6', 'etotalTo': '253.7', 'limiterPowerArr': [16, 0], 'limiterTotalPower': 16}
-//
-// vip: 0: [{'volt': '242.5', 'current': '2.0', 'power': 16}] ...
-//
-//
-// "{"code":0,
-// "msg":"Success",
-// "data":{"vip":[{"volt":"241.1","current":"2.1","power":29}],
-// "pac":29,"qac":0,"fac":50.06,"pf":1.0,"status":1,"etodayFrom":"6.2","etodayTo":"0.0",
-// "etotalFrom":"1881.3","etotalTo":"256.7",
-// "limiterPowerArr":[29,0],
-// "limiterTotalPower":29},"success":true}"
 public class Grid {
 
     private int code;
     private String msg = "";
     private boolean success;
     private Data data = new Data();
-
     private double power;
     private double voltage;
     private double current;
@@ -57,7 +43,6 @@ public class Grid {
         private int pac;
         private int qac;
         private double fac;
-        // private String fac;
         private double pf;
         private int status;
         private double etodayFrom;
@@ -74,7 +59,7 @@ public class Grid {
         }
     }
 
-    class VIP { // needs checking
+    class VIP {
         private double volt;
         private double current;
         private double power;
@@ -110,6 +95,6 @@ public class Grid {
     }
 
     public String toString() {
-        return "Content [code=" + code + ", msg=" + msg + ", data=" + data.content() + "]";
+        return "Content [code=" + code + ", msg=" + msg + "sucess=" + success + ", data=" + data.content() + "]";
     }
 }
