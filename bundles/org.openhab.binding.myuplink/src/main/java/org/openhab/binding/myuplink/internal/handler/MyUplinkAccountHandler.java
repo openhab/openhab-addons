@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.myuplink.internal.AtomicReferenceTrait;
+import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.binding.myuplink.internal.command.MyUplinkCommand;
 import org.openhab.binding.myuplink.internal.command.account.GetSystems;
 import org.openhab.binding.myuplink.internal.config.MyUplinkConfiguration;
@@ -79,9 +80,6 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
         webInterface.start();
         startPolling();
-
-        // TODO: add command to update properties
-        // enqueueCommand(new GetSite(this, this::updateProperties));
     }
 
     /**
@@ -96,7 +94,6 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
      * Poll the Easee Cloud API one time.
      */
     void pollingRun() {
-        // TODO: check if this is the best polling command?!
         GetSystems state = new GetSystems(this, this::updateOnlineStatus);
         enqueueCommand(state);
 
@@ -113,7 +110,7 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
      * @param jsonObject json respone result
      */
     protected final void updateOnlineStatus(CommunicationStatus status, JsonObject jsonObject) {
-        String msg = null; // TODO: Utils.getAsString(jsonObject, JSON_KEY_ERROR);
+        String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR);
         if (msg == null || msg.isBlank()) {
             msg = status.getMessage();
         }

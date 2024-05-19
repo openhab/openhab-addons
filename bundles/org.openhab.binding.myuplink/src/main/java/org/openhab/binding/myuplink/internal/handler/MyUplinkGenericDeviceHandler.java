@@ -171,7 +171,7 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
      * @param jsonObject json respone result
      */
     protected final void updateOnlineStatus(CommunicationStatus status, JsonObject jsonObject) {
-        String msg = null; // TODO: Utils.getAsString(jsonObject, JSON_KEY_ERROR);
+        String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR);
         if (msg == null || msg.isBlank()) {
             msg = status.getMessage();
         }

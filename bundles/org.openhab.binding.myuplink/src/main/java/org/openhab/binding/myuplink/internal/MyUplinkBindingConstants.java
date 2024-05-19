@@ -47,9 +47,6 @@ public class MyUplinkBindingConstants {
     public static final String CHANNEL_TYPE_UNIT_NONE = "NO_UNIT";
     public static final String CHANNEL_TYPE_PREFIX_RW = "rw";
 
-    // Channels with specific handling
-    // TODO: add content
-
     // JSON Keys
     public static final String JSON_KEY_ROOT_DATA = "data";
     public static final String JSON_KEY_CHANNEL_STR_VAL = "strVal";
@@ -68,6 +65,7 @@ public class MyUplinkBindingConstants {
     public static final String JSON_KEY_NAME = "name";
     public static final String JSON_KEY_CURRENT_FW_VERSION = "currentFwVersion";
     public static final String JSON_KEY_CONNECTION_STATE = "connectionState";
+    public static final String JSON_KEY_ERROR = "error";
 
     public static final String JSON_KEY_AUTH_ACCESS_TOKEN = "access_token";
     public static final String JSON_KEY_AUTH_EXPIRES_IN = "expires_in";
@@ -96,12 +94,6 @@ public class MyUplinkBindingConstants {
 
     public static final String JSON_VAL_CONNECTION_CONNECTED = "Connected";
     public static final String JSON_VAL_DECIMAL_SEPARATOR = ".";
-
-    // Write Commands
-    // TODO: add content
-
-    // Command Values
-    // TODO: add content
 
     // web request constants
     public static final long WEB_REQUEST_INITIAL_DELAY = 10;

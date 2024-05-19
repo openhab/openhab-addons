@@ -123,7 +123,7 @@ public class WebInterface implements AtomicReferenceTrait {
         }
 
         private void processAuthenticationResult(CommunicationStatus status, JsonObject jsonObject) {
-            String msg = null; // TODO: Utils.getAsString(jsonObject, JSON_KEY_ERROR);
+            String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR);
             if (msg == null || msg.isBlank()) {
                 msg = status.getMessage();
             }
