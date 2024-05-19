@@ -378,7 +378,7 @@ public class ChannelState implements MqttMessageSubscriber {
 
         // Outgoing transformations
         for (ChannelStateTransformation t : transformationsOut) {
-            String commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, null);
+            String commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, "%s");
             String transformedValue = t.processValue(commandString);
             if (transformedValue != null) {
                 mqttFormatter = new TextValue();
