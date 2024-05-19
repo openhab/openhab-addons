@@ -260,7 +260,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
             return;
         }
 
-        updateState(CHANNEL_BELL_BUTTON, state ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_BELL_BUTTON, OnOffType.from(state));
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -272,7 +272,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
             return;
         }
 
-        updateState(CHANNEL_RING_AND_COME_IN, state ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_RING_AND_COME_IN, OnOffType.from(state));
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -284,7 +284,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
             return;
         }
 
-        updateState(CHANNEL_LOCK, state ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_LOCK, OnOffType.from(state));
         updateStatus(ThingStatus.ONLINE);
     }
 
