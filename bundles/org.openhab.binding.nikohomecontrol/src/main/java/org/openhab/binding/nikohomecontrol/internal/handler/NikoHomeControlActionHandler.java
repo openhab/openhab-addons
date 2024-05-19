@@ -89,8 +89,6 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
             default:
                 logger.debug("unexpected command for channel {}", channelUID.getId());
         }
-
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private void handleSwitchCommand(Command command) {
@@ -199,7 +197,7 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
         if ((bridge != null) && ThingStatus.ONLINE.equals(bridge.getStatus())) {
             // We need to do this in a separate thread because we may have to wait for the
             // communication to become active
-            scheduler.submit(this::startCommunication);
+            commStartThread = scheduler.submit(this::startCommunication);
         }
     }
 
@@ -221,6 +219,14 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
         if (nhcAction == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.deviceId");
+            return;
+        }
+
+        ActionType actionType = nhcAction.getType();
+        if (!(ActionType.TRIGGER.equals(actionType) || ActionType.RELAY.equals(actionType)
+                || ActionType.DIMMER.equals(actionType) || ActionType.ROLLERSHUTTER.equals(actionType))) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.actionType");
             return;
         }
 
@@ -306,8 +312,7 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
                 updateStatus(ThingStatus.ONLINE);
                 break;
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.configuration-error.actionType");
+                break;
         }
     }
 }

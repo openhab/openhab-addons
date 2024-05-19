@@ -117,7 +117,7 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
         if ((bridge != null) && ThingStatus.ONLINE.equals(bridge.getStatus())) {
             // We need to do this in a separate thread because we may have to wait for the
             // communication to become active
-            scheduler.submit(this::startCommunication);
+            commStartThread = scheduler.submit(this::startCommunication);
         }
     }
 
@@ -139,6 +139,14 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
         if (nhcMeter == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.deviceId");
+            return;
+        }
+
+        MeterType meterType = nhcMeter.getType();
+        if (!(MeterType.ENERGY_LIVE.equals(meterType) || MeterType.ENERGY.equals(meterType)
+                || MeterType.GAS.equals(meterType) || MeterType.WATER.equals(meterType))) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.meterType");
             return;
         }
 
@@ -270,8 +278,7 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
                 updateStatus(ThingStatus.ONLINE);
                 break;
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.configuration-error.meterType");
+                break;
         }
     }
 
@@ -292,7 +299,6 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
 
                 if (nhcComm.communicationActive()) {
                     nhcComm.startMeterLive(deviceId);
-                    updateStatus(ThingStatus.ONLINE);
                 }
             });
         }
@@ -316,7 +322,6 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
                     // as this is momentary power production/consumption, we set it UNDEF as we do not get readings
                     // anymore
                     updateState(CHANNEL_POWER, UnDefType.UNDEF);
-                    updateStatus(ThingStatus.ONLINE);
                 }
             });
         }

@@ -43,7 +43,7 @@ public abstract class NhcVideo {
 
     private boolean supportsVideoStream;
 
-    private @Nullable String ipAddress = null;
+    private @Nullable String ipAddress;
     private @Nullable String mjpegUri;
     private @Nullable String tnUri;
 
@@ -143,7 +143,7 @@ public abstract class NhcVideo {
     /**
      * Set name of the access control device.
      *
-     * @param access control name
+     * @param name access control name
      */
     public void setName(String name) {
         this.name = name;

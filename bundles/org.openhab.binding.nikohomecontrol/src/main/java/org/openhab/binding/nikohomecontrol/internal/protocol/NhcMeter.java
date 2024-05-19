@@ -44,7 +44,7 @@ public abstract class NhcMeter {
     protected @Nullable String location;
 
     // This can be null as long as we do not receive power readings
-    protected volatile @Nullable Integer power = null;
+    protected volatile @Nullable Integer power;
     protected volatile int reading;
     protected volatile int dayReading;
     protected volatile @Nullable LocalDateTime lastReadingUTC;
@@ -102,7 +102,7 @@ public abstract class NhcMeter {
      * Method called when meter is removed from the Niko Home Control Controller.
      */
     public void meterRemoved() {
-        logger.debug("action removed {}, {}", id, name);
+        logger.debug("meter removed {}, {}", id, name);
         NhcMeterEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.deviceRemoved();
@@ -151,7 +151,7 @@ public abstract class NhcMeter {
     /**
      * Set name of meter.
      *
-     * @param meters meter name
+     * @param name meter name
      */
     public void setName(String name) {
         this.name = name;
@@ -173,7 +173,7 @@ public abstract class NhcMeter {
     /**
      * Set location of meter.
      *
-     * @param meters meter location
+     * @param location meter location
      */
     public void setLocation(@Nullable String location) {
         this.location = location;
@@ -279,7 +279,6 @@ public abstract class NhcMeter {
      * of overloading controller during initialization.
      *
      * @param refresh interval between meter queries in minutes
-     * @param invert sign of reading
      */
     public void startMeter(int refresh) {
         stopMeter();

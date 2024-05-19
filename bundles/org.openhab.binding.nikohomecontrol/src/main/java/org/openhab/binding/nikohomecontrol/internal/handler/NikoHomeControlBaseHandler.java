@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
+import java.util.concurrent.Future;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcBaseEvent;
@@ -41,9 +43,20 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
     volatile boolean initialized = false;
 
     String deviceId = "";
+    @Nullable
+    Future<?> commStartThread;
 
     public NikoHomeControlBaseHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void dispose() {
+        if (commStartThread != null) {
+            commStartThread.cancel(true);
+            commStartThread = null;
+        }
+        super.dispose();
     }
 
     @Override
@@ -128,7 +141,10 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
         ThingStatus bridgeStatus = bridgeStatusInfo.getStatus();
         if (ThingStatus.ONLINE.equals(bridgeStatus)) {
             if (!initialized) {
-                scheduler.submit(this::startCommunication);
+                if (commStartThread != null) {
+                    commStartThread.cancel(true);
+                }
+                commStartThread = scheduler.submit(this::startCommunication);
             } else {
                 updateStatus(ThingStatus.ONLINE);
                 refresh();

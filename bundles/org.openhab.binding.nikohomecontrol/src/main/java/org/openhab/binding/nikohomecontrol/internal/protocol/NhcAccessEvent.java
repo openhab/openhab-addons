@@ -30,24 +30,24 @@ public interface NhcAccessEvent extends NhcBaseEvent {
      *
      * @param state true for bell ringing
      */
-    public void accessBellEvent(boolean state);
+    void accessBellEvent(boolean state);
 
     /**
-     * This method is called a ring and come in setting event is received from the Niko Home Control controller.
+     * This method is called when a ring and come in setting event is received from the Niko Home Control controller.
      *
      * @param state true for bell ringing
      */
-    public void accessRingAndComeInEvent(boolean state);
+    void accessRingAndComeInEvent(boolean state);
 
     /**
      * This method is called when a door lock event is received from the Niko Home Control controller.
      *
      * @param state true for locked
      */
-    public void accessDoorLockEvent(boolean state);
+    void accessDoorLockEvent(boolean state);
 
     /**
      * Update video device properties.
      */
-    public void updateVideoDeviceProperties();
+    void updateVideoDeviceProperties();
 }

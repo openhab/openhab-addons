@@ -33,7 +33,7 @@ public interface NhcMeterEvent extends NhcBaseEvent {
      *
      * @param power current power consumption/production in W (positive for consumption), null for an empty reading
      */
-    public void meterPowerEvent(@Nullable Integer power);
+    void meterPowerEvent(@Nullable Integer power);
 
     /**
      * This method is called when a meter reading is received from the Niko Home Control controller.
@@ -42,5 +42,5 @@ public interface NhcMeterEvent extends NhcBaseEvent {
      * @param dayReading meter reading for current day
      * @param lastReadingUTC last meter reading date and time, UTC
      */
-    public void meterReadingEvent(double reading, double dayReading, LocalDateTime lastReadingUTC);
+    void meterReadingEvent(double reading, double dayReading, LocalDateTime lastReadingUTC);
 }

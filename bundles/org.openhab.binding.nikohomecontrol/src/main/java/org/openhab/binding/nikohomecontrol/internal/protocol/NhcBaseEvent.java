@@ -29,11 +29,11 @@ public interface NhcBaseEvent {
      * Called to indicate the device has been initialized.
      *
      */
-    public void deviceInitialized();
+    void deviceInitialized();
 
     /**
      * Called to indicate the device has been removed from the Niko Home Control controller.
      *
      */
-    public void deviceRemoved();
+    void deviceRemoved();
 }

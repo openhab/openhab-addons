@@ -166,7 +166,7 @@ public abstract class NikoHomeControlCommunication {
     }
 
     /**
-     * Return all meters meters in the Niko Home Control Controller.
+     * Return all meters in the Niko Home Control Controller.
      *
      * @return <code>Map&ltString, {@link NhcMeter}></code>
      */

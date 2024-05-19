@@ -87,14 +87,12 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
             default:
                 logger.debug("unexpected command for channel {}", channelUID.getId());
         }
-
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private void handleBellButtonCommand(Command command) {
         NhcAccess nhcAccess = this.nhcAccess;
         if (nhcAccess == null) {
-            logger.debug(" access device with ID {} not initialized", deviceId);
+            logger.debug("access device with ID {} not initialized", deviceId);
             return;
         }
 
@@ -109,7 +107,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
     private void handleRingAndComeInCommand(Command command) {
         NhcAccess nhcAccess = this.nhcAccess;
         if (nhcAccess == null) {
-            logger.debug(" access device with ID {} not initialized", deviceId);
+            logger.debug("access device with ID {} not initialized", deviceId);
             return;
         }
 
@@ -122,7 +120,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
     private void handleDoorLockCommand(Command command) {
         NhcAccess nhcAccess = this.nhcAccess;
         if (nhcAccess == null) {
-            logger.debug(" access device with ID {} not initialized", deviceId);
+            logger.debug("access device with ID {} not initialized", deviceId);
             return;
         }
 
@@ -154,7 +152,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
         if ((bridge != null) && ThingStatus.ONLINE.equals(bridge.getStatus())) {
             // We need to do this in a separate thread because we may have to wait for the
             // communication to become active
-            scheduler.submit(this::startCommunication);
+            commStartThread = scheduler.submit(this::startCommunication);
         }
     }
 
@@ -258,7 +256,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
     public void accessBellEvent(boolean state) {
         NhcAccess nhcAccess = this.nhcAccess;
         if (nhcAccess == null) {
-            logger.debug(" access device with ID {} not initialized", deviceId);
+            logger.debug("access device with ID {} not initialized", deviceId);
             return;
         }
 
@@ -270,7 +268,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
     public void accessRingAndComeInEvent(boolean state) {
         NhcAccess nhcAccess = this.nhcAccess;
         if (nhcAccess == null) {
-            logger.debug(" access device with ID {} not initialized", deviceId);
+            logger.debug("access device with ID {} not initialized", deviceId);
             return;
         }
 
@@ -282,7 +280,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
     public void accessDoorLockEvent(boolean state) {
         NhcAccess nhcAccess = this.nhcAccess;
         if (nhcAccess == null) {
-            logger.debug(" access device with ID {} not initialized", deviceId);
+            logger.debug("access device with ID {} not initialized", deviceId);
             return;
         }
 

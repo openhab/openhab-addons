@@ -125,8 +125,6 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
             default:
                 logger.debug("unexpected command for channel {}", channelUID.getId());
         }
-
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -151,7 +149,7 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
         if ((bridge != null) && ThingStatus.ONLINE.equals(bridge.getStatus())) {
             // We need to do this in a separate thread because we may have to wait for the
             // communication to become active
-            scheduler.submit(this::startCommunication);
+            commStartThread = scheduler.submit(this::startCommunication);
         }
     }
 

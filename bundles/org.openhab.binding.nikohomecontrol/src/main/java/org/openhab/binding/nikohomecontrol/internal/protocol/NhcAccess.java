@@ -134,7 +134,7 @@ public abstract class NhcAccess {
     /**
      * Set name of the access control device.
      *
-     * @param access control name
+     * @param name access control name
      */
     public void setName(String name) {
         this.name = name;
@@ -146,7 +146,7 @@ public abstract class NhcAccess {
      * AccessType can be GENERIC (only doorlock), RINGANDCOMEIN (doorlock and ring and come in on/off) or BELLBUTTON
      * (doorlock and bell ringing).
      *
-     * @return {@link ActionType}
+     * @return {@link AccessType}
      */
     public AccessType getType() {
         return type;
@@ -164,7 +164,7 @@ public abstract class NhcAccess {
     /**
      * Set location of the access control device.
      *
-     * @param access control location
+     * @param location access control location
      */
     public void setLocation(@Nullable String location) {
         this.location = location;
@@ -219,9 +219,9 @@ public abstract class NhcAccess {
     }
 
     /**
-     * Get state of the access control device.
+     * Get bell state of the access control device.
      *
-     * @return action state
+     * @return bell state
      */
     public boolean getBellState() {
         return bellRinging;
@@ -267,14 +267,14 @@ public abstract class NhcAccess {
     /**
      * Get state of the access control device.
      *
-     * @return action state
+     * @return door lock state
      */
     public boolean getDoorLockState() {
         return locked;
     }
 
     /**
-     * Send update of doorlock state through event handler to subscribers.
+     * Send update of door lock state through event handler to subscribers.
      *
      * @param state
      */
