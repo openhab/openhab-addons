@@ -113,16 +113,16 @@ import com.google.protobuf.Int32Value;
  */
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
+    private static final List<String> HVAC_SEAT_LIST = Arrays
+            .asList(new String[] { GROUP_HVAC + "#" + OH_CHANNEL_FRONT_LEFT, GROUP_HVAC + "#" + OH_CHANNEL_FRONT_RIGHT,
+                    GROUP_HVAC + "#" + OH_CHANNEL_REAR_LEFT, GROUP_HVAC + "#" + OH_CHANNEL_REAR_RIGHT });
+
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
     private final LocationProvider locationProvider;
     private final MercedesMeCommandOptionProvider mmcop;
     private final MercedesMeStateOptionProvider mmsop;
-    private final List<String> HVAC_SEAT_LIST = Arrays
-            .asList(new String[] { GROUP_HVAC + "#" + OH_CHANNEL_FRONT_LEFT, GROUP_HVAC + "#" + OH_CHANNEL_FRONT_RIGHT,
-                    GROUP_HVAC + "#" + OH_CHANNEL_REAR_LEFT, GROUP_HVAC + "#" + OH_CHANNEL_REAR_RIGHT });
-    private Map<String, UOMObserver> unitStorage = new HashMap<>();
-    Map<String, ChannelStateMap> eventStorage = new HashMap<>();
 
+    private Map<String, UOMObserver> unitStorage = new HashMap<>();
     private int ignitionState = -1;
     private boolean chargingState = false;
     private int selectedChargeProgram = -1;
@@ -131,6 +131,8 @@ public class VehicleHandler extends BaseThingHandler {
     private JSONObject chargeGroupValueStorage = new JSONObject();
     private Map<String, State> hvacGroupValueStorage = new HashMap<>();
     private String vehicleType = NOT_SET;
+
+    Map<String, ChannelStateMap> eventStorage = new HashMap<>();
     Optional<AccountHandler> accountHandler = Optional.empty();
     Optional<VehicleConfiguration> config = Optional.empty();
 
