@@ -128,7 +128,7 @@ public class OnvifConnection {
     @SuppressWarnings("unused")
     private String imagingXAddr = "http://" + ipAddress + "/onvif/device_service";
     private String ptzXAddr = "http://" + ipAddress + "/onvif/ptz_service";
-    private String subscriptionXAddr = "http://" + ipAddress + "/onvif/device_service";
+    public String subscriptionXAddr = "http://" + ipAddress + "/onvif/device_service";
     private boolean isConnected = false;
     private int mediaProfileIndex = 0;
     private String rtspUri = "";
@@ -269,7 +269,7 @@ public class OnvifConnection {
                             + mediaProfileTokens.get(mediaProfileIndex)
                             + "</ProfileToken><Translation><Zoom x=\"-0.0240506344\" xmlns=\"http://www.onvif.org/ver10/schema\"/></Translation></RelativeMove>";
                 case Renew:
-                    return "<Renew xmlns=\"http://docs.oasis-open.org/wsn/b-2\"><TerminationTime>PT16S</TerminationTime></Renew>";
+                    return "<Renew xmlns=\"http://docs.oasis-open.org/wsn/b-2\"><TerminationTime>PT10S</TerminationTime></Renew>";
                 case GetConfigurations:
                     return "<GetConfigurations xmlns=\"http://www.onvif.org/ver20/ptz/wsdl\"></GetConfigurations>";
                 case GetConfigurationOptions:
@@ -310,8 +310,8 @@ public class OnvifConnection {
         logger.trace("ONVIF reply is: {}", message);
         if (message.contains("PullMessagesResponse")) {
             eventRecieved(message);
-        } else if (message.contains("RenewResponse")) {
             sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
+        } else if (message.contains("RenewResponse")) {
         } else if (message.contains("GetSystemDateAndTimeResponse")) {// 1st to be sent.
             setIsConnected(true);// Instar profile T only cameras need this
             parseDateAndTime(message);
@@ -570,7 +570,7 @@ public class OnvifConnection {
 
                 @Override
                 public void initChannel(SocketChannel socketChannel) throws Exception {
-                    socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 0, 20));
+                    socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 0, 18));
                     socketChannel.pipeline().addLast("HttpClientCodec", new HttpClientCodec());
                     socketChannel.pipeline().addLast("OnvifCodec", new OnvifCodec(getHandle()));
                 }
@@ -653,7 +653,7 @@ public class OnvifConnection {
     public void eventRecieved(String eventMessage) {
         String topic = Helper.fetchXML(eventMessage, "Topic", "tns1:");
         if (topic.isEmpty()) {
-            sendOnvifRequest(RequestType.Renew, subscriptionXAddr);
+            logger.debug("No ONVIF Events occured in the last 8 seconds");
             return;
         }
         String dataName = Helper.fetchXML(eventMessage, "tt:Data", "Name=\"");
@@ -783,7 +783,6 @@ public class OnvifConnection {
             default:
                 logger.debug("Please report this camera has an un-implemented ONVIF event. Topic: {}", topic);
         }
-        sendOnvifRequest(RequestType.Renew, subscriptionXAddr);
     }
 
     public boolean supportsPTZ() {
