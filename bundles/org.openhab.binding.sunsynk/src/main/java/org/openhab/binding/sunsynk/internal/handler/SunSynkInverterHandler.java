@@ -368,9 +368,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         if (inverterChargeSettings == null) {
             return;
         }
-        updateProperty(Thing.PROPERTY_VENDOR, "SunSynk");
-        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, inverterChargeSettings.getsn());
-
         updateState(CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE,
                 OnOffType.from(inverterChargeSettings.getIntervalGridTimerOn().get(0)));
         updateState(CHANNEL_BATTERY_INTERVAL_2_GRID_CHARGE,
