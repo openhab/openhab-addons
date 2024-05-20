@@ -106,7 +106,6 @@ After the bridge has been added and authorized, devices are discovered automatic
     - _Home Connect User Account for Testing_: the associated user account email from [Home Connect](https://www.home-connect.com/)  
        > **WARNING**: Please don't use your developer account username  
 
-     **_Please don't use your developer account username_**
     - _Redirect URIs_: add your openHAB URL followed by `/homeconnect`  
     for example: `http://192.168.178.34:8080/homeconnect` or `https://myhome.domain.com/homeconnect`
     - _One Time Token Mode_: keep unchecked
