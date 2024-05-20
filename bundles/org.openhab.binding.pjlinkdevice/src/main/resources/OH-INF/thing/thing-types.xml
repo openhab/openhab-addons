@@ -18,6 +18,10 @@
 			<channel id="lamp1Active" typeId="lampActive"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter-group name="basic">
 				<context>basic</context>
