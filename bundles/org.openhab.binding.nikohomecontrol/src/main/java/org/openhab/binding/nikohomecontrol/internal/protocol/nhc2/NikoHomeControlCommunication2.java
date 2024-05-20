@@ -469,7 +469,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void addAccessDevice(NhcDevice2 device, @Nullable String location) {
-        AccessType accessType;
+        AccessType accessType = AccessType.BASE;
         if ("bellbutton".equals(device.model)) {
             accessType = AccessType.BELLBUTTON;
         } else {
@@ -480,7 +480,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     accessType = AccessType.RINGANDCOMEIN;
                 }
             }
-            accessType = AccessType.BASE;
         }
 
         NhcAccess2 nhcAccess = (NhcAccess2) accessDevices.get(device.uuid);
@@ -507,7 +506,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                         int buttonIndex = access.getButtonIndex();
                         logger.debug("link access device {} to video device {} button {}", device.uuid,
                                 videoDevice.getId(), buttonIndex);
-                        videoDevice.setNhcAccess(access.getButtonIndex(), access);
+                        videoDevice.setNhcAccess(buttonIndex, access);
                         access.setNhcVideo(videoDevice);
                     }
                 });
@@ -751,7 +750,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             logger.trace("setting energy meter {} power to {}", meter.getId(), power);
             meter.setPower(power);
         } catch (NumberFormatException e) {
-            logger.trace("wrong format  in energy meter {} power reading", meter.getId());
+            logger.trace("wrong format in energy meter {} power reading", meter.getId());
             meter.setPower(null);
         }
     }
@@ -1011,16 +1010,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        List<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = accessId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
         NhcProperty property = new NhcProperty();
         deviceProperties.add(property);
         device.properties = deviceProperties;
@@ -1042,16 +1041,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        List<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = accessId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
         NhcProperty property = new NhcProperty();
         deviceProperties.add(property);
         device.properties = deviceProperties;
@@ -1088,7 +1087,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        List<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
