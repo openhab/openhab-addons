@@ -61,6 +61,7 @@ import org.openhab.binding.ipcamera.internal.IpCameraDynamicStateDescriptionProv
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.ReolinkHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
+import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection.RequestType;
 import org.openhab.binding.ipcamera.internal.servlet.CameraServlet;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.DecimalType;
@@ -1556,19 +1557,13 @@ public class IpCameraHandler extends BaseThingHandler {
         // what needs to be done every poll//
         switch (thing.getThingTypeUID().getId()) {
             case GENERIC_THING:
-                if (!snapshotPolling) {
-                    checkCameraConnection();
-                }
+                checkCameraConnection();
                 break;
             case ONVIF_THING:
-                if (!snapshotPolling) {
-                    checkCameraConnection();
-                }
+                onvifCamera.sendOnvifRequest(RequestType.Renew, onvifCamera.subscriptionXAddr);
                 break;
             case INSTAR_THING:
-                if (!snapshotPolling) {
-                    checkCameraConnection();
-                }
+                checkCameraConnection();
                 noMotionDetected(CHANNEL_MOTION_ALARM);
                 noMotionDetected(CHANNEL_PIR_ALARM);
                 noMotionDetected(CHANNEL_HUMAN_ALARM);
@@ -1588,19 +1583,14 @@ public class IpCameraHandler extends BaseThingHandler {
                 sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation");
                 break;
             case REOLINK_THING:
-                if (cameraConfig.getNvrChannel() > 0) {
-                    sendHttpGET("/api.cgi?cmd=GetAiState&channel=" + cameraConfig.getNvrChannel() + "&user="
-                            + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
-                    sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + "&user="
-                            + cameraConfig.getUser() + "&password=" + cameraConfig.getPassword());
-                } else if (!snapshotPolling) {
-                    checkCameraConnection();
+                if (cameraConfig.getOnvifPort() == 0) {
+                    sendHttpGET("/api.cgi?cmd=GetAiState&channel=" + cameraConfig.getNvrChannel() + reolinkAuth);
+                    sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + reolinkAuth);
+                } else {
+                    onvifCamera.sendOnvifRequest(RequestType.Renew, onvifCamera.subscriptionXAddr);
                 }
                 break;
             case DAHUA_THING:
-                if (!snapshotPolling) {
-                    checkCameraConnection();
-                }
                 // Check for alarms, channel for NVRs appears not to work at filtering.
                 if (streamIsStopped("/cgi-bin/eventManager.cgi?action=attach&codes=[All]")) {
                     logger.info("The alarm stream was not running for camera {}, re-starting it now",
@@ -1609,9 +1599,6 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 break;
             case DOORBIRD_THING:
-                if (!snapshotPolling) {
-                    checkCameraConnection();
-                }
                 // Check for alarms, channel for NVRs appears not to work at filtering.
                 if (streamIsStopped("/bha-api/monitor.cgi?ring=doorbell,motionsensor")) {
                     logger.info("The alarm stream was not running for camera {}, re-starting it now",
@@ -1733,20 +1720,14 @@ public class IpCameraHandler extends BaseThingHandler {
                             "[{ \"cmd\":\"GetAbility\", \"param\":{ \"User\":{ \"userName\":\"admin\" }}}]");
                 }
                 if (snapshotUri.isEmpty()) {
-                    if (cameraConfig.getNvrChannel() < 1) {
-                        snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=0&rs=openHAB" + reolinkAuth;
-                    } else {
-                        snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + (cameraConfig.getNvrChannel() - 1)
-                                + "&rs=openHAB" + reolinkAuth;
-                    }
+                    // ReolinkHandler will change the snapshotUri in the response to /api.cgi?cmd=Login
+                    snapshotUri = "/cgi-bin/api.cgi?cmd=Snap&channel=" + cameraConfig.getNvrChannel() + "&rs=openHAB"
+                            + reolinkAuth;
                 }
+                // channel numbers for snapshots start at 0, while the rtsp start at 1
                 if (rtspUri.isEmpty()) {
-                    if (cameraConfig.getNvrChannel() < 1) {
-                        rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_01_main";
-                    } else {
-                        rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0" + cameraConfig.getNvrChannel()
-                                + "_main";
-                    }
+                    rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0"
+                            + (cameraConfig.getNvrChannel() + 1) + "_main";
                 }
                 break;
         }
@@ -1777,7 +1758,7 @@ public class IpCameraHandler extends BaseThingHandler {
             case ONVIF_THING:
                 return true;
             case REOLINK_THING:
-                if (cameraConfig.getNvrChannel() < 1) {
+                if (cameraConfig.getOnvifPort() > 0) {
                     return true;
                 }
         }
