@@ -37,7 +37,7 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>${org.json.version}</version>
+      <version>20231013</version>
       <scope>compile</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->

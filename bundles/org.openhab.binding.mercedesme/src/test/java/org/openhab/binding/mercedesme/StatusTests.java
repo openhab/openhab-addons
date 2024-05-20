@@ -101,7 +101,7 @@ class StatusTests {
         ahm.setCallback(tcl);
         ahm.initialize();
         assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "Auth Offline");
-        assertEquals(ThingStatusDetail.NONE, tcl.getThingStatus().getStatusDetail(), "Auth details");
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tcl.getThingStatus().getStatusDetail(), "Auth details");
         String statusDescription = tcl.getThingStatus().getDescription();
         assertNotNull(statusDescription);
         assertTrue(statusDescription.contains("@text/mercedesme.account.status.authorization-needed"), "Auth text");
