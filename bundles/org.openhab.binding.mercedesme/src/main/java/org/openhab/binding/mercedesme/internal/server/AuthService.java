@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AuthService {
-    private static final AccessTokenResponse INVALID_TOKEN = new AccessTokenResponse();
+    public static final AccessTokenResponse INVALID_TOKEN = new AccessTokenResponse();
     private static final int EXPIRATION_BUFFER = 5;
     private static final Map<Integer, AuthService> AUTH_MAP = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(AuthService.class);
@@ -79,7 +79,7 @@ public class AuthService {
             token = INVALID_TOKEN;
             listener.onAccessTokenResponse(token);
         } else {
-            token = (AccessTokenResponse) Utils.fromString(storedObject);
+            token = Utils.fromString(storedObject);
             if (token.isExpired(Instant.now(), EXPIRATION_BUFFER)) {
                 if (!Constants.NOT_SET.equals(token.getRefreshToken())) {
                     refreshToken();

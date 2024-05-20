@@ -17,7 +17,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -38,6 +37,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.MercedesMeHandlerFactory;
+import org.openhab.binding.mercedesme.internal.server.AuthService;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -99,11 +100,24 @@ public class Utils {
         localeProvider = lp;
     }
 
+    /**
+     * Getting openHAB DateTimeType from given milliseconds according to configured TimeZone
+     *
+     * @param ms - milliseconds in epoch milli
+     * @return openHAB DateTimeType according to configured TimeZone
+     */
     public static DateTimeType getDateTimeType(long ms) {
         Instant timestamp = Instant.ofEpochMilli(ms);
         return new DateTimeType(timestamp.atZone(timeZoneProvider.getTimeZone()));
     }
 
+    /**
+     * Calculates the DateTime of charge end according to given Mercedes parameters
+     *
+     * @param ms - current timestamp in milliseconds in epoch milli
+     * @param minutesAfterMidnight - minutes after midnight
+     * @return calculates the start of day from given in ms plus minutes given in minutesAfterMidnight
+     */
     public static DateTimeType getEndOfChargeTime(long ms, long minutesAfterMidnight) {
         // get today midnight
         Instant timestamp = Instant.ofEpochMilli(ms);
@@ -113,9 +127,9 @@ public class Utils {
     }
 
     /**
-     * Get free port without other Thread interference
+     * Get free port without other Thread interference from other AccountHandlers
      *
-     * @return
+     * @return number of free port
      */
     public static synchronized int getFreePort() {
         while (PORTS.contains(port)) {
@@ -125,6 +139,9 @@ public class Utils {
         return port;
     }
 
+    /**
+     * Register port for an AccountHandler
+     */
     public static synchronized void addPort(int portNr) {
         if (PORTS.contains(portNr) && portNr != 99999) {
             LOGGER.warn("Port {} already occupied", portNr);
@@ -132,6 +149,9 @@ public class Utils {
         PORTS.add(portNr);
     }
 
+    /**
+     * Unregister port for an AccountHandler
+     */
     public static synchronized void removePort(int portNr) {
         PORTS.remove(Integer.valueOf(portNr));
     }
@@ -140,6 +160,12 @@ public class Utils {
         return "http://" + callbackIP + Constants.COLON + callbackPort + Constants.CALLBACK_ENDPOINT;
     }
 
+    /**
+     * Calculate REST API server address according to region
+     *
+     * @param region - configured region
+     * @return base REST server address
+     */
     public static String getRestAPIServer(String region) {
         switch (region) {
             case Constants.REGION_APAC:
@@ -153,6 +179,12 @@ public class Utils {
         }
     }
 
+    /**
+     * Calculate Login API server address according to region
+     *
+     * @param region - configured region
+     * @return base login server address
+     */
     public static String getLoginServer(String region) {
         switch (region) {
             case Constants.REGION_APAC:
@@ -166,6 +198,12 @@ public class Utils {
         }
     }
 
+    /**
+     * Calculate websocket server address according to region
+     *
+     * @param region - configured region
+     * @return websocket base server address
+     */
     public static String getWebsocketServer(String region) {
         switch (region) {
             case Constants.REGION_APAC:
@@ -179,6 +217,12 @@ public class Utils {
         }
     }
 
+    /**
+     * Calculate application name according to region
+     *
+     * @param region - configured region
+     * @return application name as String
+     */
     public static String getApplication(String region) {
         switch (region) {
             case Constants.REGION_APAC:
@@ -192,6 +236,12 @@ public class Utils {
         }
     }
 
+    /**
+     * Calculate application version according to region
+     *
+     * @param region - configured region
+     * @return application version as String
+     */
     public static String getRisApplicationVersion(String region) {
         switch (region) {
             case Constants.REGION_APAC:
@@ -205,6 +255,12 @@ public class Utils {
         }
     }
 
+    /**
+     * Calculate user agent according to region
+     *
+     * @param region - configured region
+     * @return user agent as String
+     */
     public static String getUserAgent(String region) {
         switch (region) {
             case Constants.REGION_APAC:
@@ -216,6 +272,12 @@ public class Utils {
         }
     }
 
+    /**
+     * Calculate SDK version according to region
+     *
+     * @param region - configured region
+     * @return SDK version as String
+     */
     public static String getRisSDKVersion(String region) {
         switch (region) {
             case Constants.REGION_CHINA:
@@ -225,18 +287,22 @@ public class Utils {
         }
     }
 
+    /**
+     * Calculate authorization config URL as pre-configuration prior to authorization call
+     *
+     * @param region - configured region
+     * @return authorization config URL as String
+     */
     public static String getAuthConfigURL(String region) {
         return getRestAPIServer(region) + "/v1/config";
     }
 
-    public static String getAuthURL(String region) {
-        return getRestAPIServer(region) + "/v1/login";
-    }
-
-    public static String getTokenUrl(String region) {
-        return getLoginServer(region) + "/as/token.oauth2";
-    }
-
+    /**
+     * Calculate login app id according to region
+     *
+     * @param region - configured region
+     * @return login app id as String
+     */
     public static String getLoginAppId(String region) {
         switch (region) {
             case Constants.REGION_CHINA:
@@ -246,26 +312,55 @@ public class Utils {
         }
     }
 
-    /** Read the object from Base64 string. */
-    public static Object fromString(String s) {
+    /**
+     * Calculate authorization URL for authorization call
+     *
+     * @param region - configured region
+     * @return authorization URL as String
+     */
+    public static String getAuthURL(String region) {
+        return getRestAPIServer(region) + "/v1/login";
+    }
+
+    /**
+     * Calculate token URL for getting token
+     *
+     * @param region - configured region
+     * @return token URL as String
+     */
+    public static String getTokenUrl(String region) {
+        return getLoginServer(region) + "/as/token.oauth2";
+    }
+
+    /**
+     * Decode String as Base64 from stored AccessTokenResponse
+     *
+     * @param token - Base64 String from storage
+     * @return AccessTokenResponse decoded from String, invalid token otherwise
+     */
+    public static AccessTokenResponse fromString(String token) {
         try {
-            byte[] data = Base64.getDecoder().decode(s);
+            byte[] data = Base64.getDecoder().decode(token);
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
             Object o = ois.readObject();
             ois.close();
-            return o;
+            return (AccessTokenResponse) o;
         } catch (IOException | ClassNotFoundException e) {
             LOGGER.warn("Error converting string to token {}", e.getMessage());
         }
-        return Constants.NOT_SET;
+        return AuthService.INVALID_TOKEN;
     }
 
-    /** Write the object to a Base64 string. */
-    public static String toString(Serializable o) {
+    /**
+     * Encode AccessTokenResponse as Base64 String for storage
+     *
+     * @param token - AccessTokenResponse to convert
+     */
+    public static String toString(AccessTokenResponse token) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(o);
+            oos.writeObject(token);
             oos.close();
             return Base64.getEncoder().encodeToString(baos.toByteArray());
         } catch (IOException e) {
@@ -275,29 +370,36 @@ public class Utils {
     }
 
     /**
-     * Combine vehicle data maps is is needed for partial updates
-     * First write oldData values in map, then newData values can override old values
+     * Combine vehicle data maps which is needed for partial updates.
+     * First take fullMap, then updates are taken from updateMap.
      *
-     * @param oldData
-     * @param newData
-     * @return
+     * @param fullMap - last present update of vehicle data
+     * @param updateMap - updates to override
+     * @return combined Map with updates taken into account
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static Map combineMaps(Map oldData, Map newData) {
+    public static Map combineMaps(Map fullMap, Map updateMap) {
         final Map combined = new TreeMap();
-        oldData.forEach((key, value) -> {
+        fullMap.forEach((key, value) -> {
             combined.put(key, value);
         });
-        newData.forEach((key, value) -> {
+        updateMap.forEach((key, value) -> {
             combined.put(key, value);
         });
         return combined;
     }
 
+    /**
+     * Converts a protobuf update into JSON String
+     *
+     * @param protoUpdate - proto update
+     * @param uid - thing type uid for identification
+     * @return JSON as String
+     */
     @SuppressWarnings({ "unused", "null" })
-    public static String proto2Json(VEPUpdate update, ThingTypeUID ttuid) {
+    public static String proto2Json(VEPUpdate protoUpdate, ThingTypeUID uid) {
         JSONObject protoJson = new JSONObject();
-        Map<String, VehicleAttributeStatus> m = update.getAttributesMap();
+        Map<String, VehicleAttributeStatus> m = protoUpdate.getAttributesMap();
         m.forEach((key, value) -> {
             Map<FieldDescriptor, Object> attMap = value.getAllFields();
             JSONObject attributesJson = getJsonObject(attMap);
@@ -372,12 +474,18 @@ public class Utils {
         // finally put binding version in
         JSONObject bindingInfo = new JSONObject();
         bindingInfo.put("version", Constants.BINDING_VERSION);
-        bindingInfo.put("vehicle", ttuid.getAsString());
+        bindingInfo.put("vehicle", uid.getAsString());
         bindingInfo.put("oh-bundle", MercedesMeHandlerFactory.getVersion());
         protoJson.put("bindingInfo", bindingInfo);
         return protoJson.toString();
     }
 
+    /**
+     * Converts a proto Map with FieldDescriptor into a JSON Object
+     *
+     * @param attMap - proto attributes Map
+     * @return JSONObject with key value pairs
+     */
     public static JSONObject getJsonObject(Map<FieldDescriptor, Object> attMap) {
         JSONObject joa = new JSONObject();
         attMap.forEach((aKey, aValue) -> {
@@ -391,6 +499,12 @@ public class Utils {
         return joa;
     }
 
+    /**
+     * Calculate zone number from 3rdparty generated proto files
+     *
+     * @param zone - zone definition as String
+     * @return zone number for selection
+     */
     public static int getZoneNumber(String zone) {
         if (ZONE_HASHMAP.isEmpty()) {
             Zone[] zones = Zone.values();
@@ -405,6 +519,12 @@ public class Utils {
         return -1;
     }
 
+    /**
+     * Calculate charge program number from 3rdparty generated proto files
+     *
+     * @param program - charge program definition as String
+     * @return charge program number for selection
+     */
     public static int getChargeProgramNumber(String program) {
         if (PROGRAM_HASHMAP.isEmpty()) {
             ChargeProgram[] programs = ChargeProgram.values();
@@ -419,6 +539,12 @@ public class Utils {
         return -1;
     }
 
+    /**
+     * Calculate duration String from given minutes
+     *
+     * @param durationMinutes - duration in minutes
+     * @return Sting in format days, hours and minutes
+     */
     public static String getDurationString(long durationMinutes) {
         if (durationMinutes < 0) {
             return "-1";
@@ -434,18 +560,21 @@ public class Utils {
         }
     }
 
+    /**
+     * Get int from proto VehicleAttributeStatus
+     *
+     * @param value - proto value
+     * @return value as int, -1 otherwise
+     */
     public static int getInt(VehicleAttributeStatus value) {
         return Double.valueOf(getDouble(value)).intValue();
     }
 
     /**
-     * Priority:
-     * 1) get display value with converted values
-     * 2) get double if available
-     * 3) get in if available
+     * Get double from proto VehicleAttributeStatus
      *
-     * @param value
-     * @return
+     * @param value - proto value
+     * @return value as double, -1 otherwise
      */
     public static double getDouble(@Nullable VehicleAttributeStatus value) {
         double ret = -1;
@@ -470,6 +599,12 @@ public class Utils {
         return ret;
     }
 
+    /**
+     * Checks proto VehicleAttributeStatus is nil
+     *
+     * @param value - proto value
+     * @return true if nil value is present, false otherwise
+     */
     public static boolean isNil(@Nullable VehicleAttributeStatus value) {
         if (value != null) {
             if (value.hasNilValue()) {
@@ -479,6 +614,11 @@ public class Utils {
         return false;
     }
 
+    /**
+     * Get country code from configured LocaleProvider
+     *
+     * @return country code
+     */
     public static String getCountry() {
         return localeProvider.getLocale().getCountry();
     }
@@ -488,12 +628,11 @@ public class Utils {
      * into account height difference. If you are not interested in height
      * difference pass 0.0. Uses Haversine method as its base.
      *
+     * https://stackoverflow.com/questions/3694380/calculating-distance-between-two-points-using-latitude-longitude
      * lat1, lon1 Start point lat2, lon2 End point el1 Start altitude in meters
      * el2 End altitude in meters
      *
      * @returns Distance in Meters
-     *
-     *          https://stackoverflow.com/questions/3694380/calculating-distance-between-two-points-using-latitude-longitude
      */
     public static double distance(double lat1, double lat2, double lon1, double lon2, double el1, double el2) {
         double latDistance = Math.toRadians(lat2 - lat1);
@@ -507,6 +646,12 @@ public class Utils {
         return Math.sqrt(distance);
     }
 
+    /**
+     * Calculates a list of CommandOptions for temperature settings which are also available in the Mercedes Me app
+     *
+     * @param unit - unit of temperature
+     * @return List of CommandOptions, empty if unit isn't supported
+     */
     public static List<CommandOption> getTemperatureOptions(Unit<?> unit) {
         if (ImperialUnits.FAHRENHEIT.equals(unit)) {
             if (FAHRENHEIT_COMMAND_OPTIONS.isEmpty()) {
