@@ -467,7 +467,7 @@ public class VehicleHandler extends BaseThingHandler {
             }
         } else if (Constants.GROUP_DOORS.equals(channelUID.getGroupId())) {
             /**
-             * Commands for Windows
+             * Commands for Doors
              */
             if (OH_CHANNEL_SUNROOF.equals(channelUID.getIdWithoutGroup())) {
                 String supported = thing.getProperties().get(MB_KEY_COMMAND_SUNROOF_OPEN);
@@ -512,6 +512,8 @@ public class VehicleHandler extends BaseThingHandler {
                     }
                 }
             }
+        } else {
+            logger.trace("No command {} found for {}", command, channelUID.getAsString());
         }
     }
 
