@@ -45,7 +45,7 @@ public class CapabilityFactory {
         List<AbstractCapabilityFactory<?>> factories = Arrays.asList(new ACCapabilityFactoryV1(),
                 new ACCapabilityFactoryV2(), new FridgeCapabilityFactoryV1(), new FridgeCapabilityFactoryV2(),
                 new WasherDryerCapabilityFactoryV1(), new WasherDryerCapabilityFactoryV2(),
-                new WasherDryerCapabilityFactoryV1(), new DishWasherCapabilityFactoryV2());
+                new DishWasherCapabilityFactoryV2());
         factories.forEach(f -> {
             f.getSupportedDeviceTypes().forEach(d -> {
                 Map<LGAPIVerion, AbstractCapabilityFactory<?>> versionMap = capabilityDeviceFactories.get(d);
