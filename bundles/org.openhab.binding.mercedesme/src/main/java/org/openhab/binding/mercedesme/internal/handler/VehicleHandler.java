@@ -207,7 +207,7 @@ public class VehicleHandler extends BaseThingHandler {
                         if (Constants.NOT_SET.equals(pin)) {
                             logger.trace("Security PIN missing in Account bridge");
                         } else {
-                            EngineStart eStart = EngineStart.newBuilder().setPin(supported).build();
+                            EngineStart eStart = EngineStart.newBuilder().setPin(pin).build();
                             CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
                                     .setRequestId(UUID.randomUUID().toString()).setEngineStart(eStart).build();
                             ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();

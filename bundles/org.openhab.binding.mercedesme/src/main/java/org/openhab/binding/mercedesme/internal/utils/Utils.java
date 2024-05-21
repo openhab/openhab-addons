@@ -442,10 +442,10 @@ public class Utils {
                 WeeklySettingsHeadUnitValue wshuv = value.getWeeklySettingsHeadUnitValue();
                 List<WeeklySetting> valList = wshuv.getWeeklySettingsList();
                 JSONArray settingsJsonArray = new JSONArray();
-                valList.forEach(weekySettingProto -> {
+                valList.forEach(weeklySettingProto -> {
                     JSONObject settings = new JSONObject();
-                    settings.put("day", weekySettingProto.getDay());
-                    settings.put("minutes_since_midnight", weekySettingProto.getMinutesSinceMidnight());
+                    settings.put("day", weeklySettingProto.getDay());
+                    settings.put("minutes_since_midnight", weeklySettingProto.getMinutesSinceMidnight());
                     settingsJsonArray.put(settings);
                 });
                 attributesJson.put("weekly_settings_head_unit_value", settingsJsonArray);
