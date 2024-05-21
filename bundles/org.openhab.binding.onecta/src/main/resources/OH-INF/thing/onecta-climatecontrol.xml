@@ -159,10 +159,8 @@
 			<channel id="energycoolingmonth-22" typeId="acunit-energycoolingmonth-22"/>
 			<channel id="energycoolingmonth-23" typeId="acunit-energycoolingmonth-23"/>
 
-
 			<channel id="energycoolingcurrentday" typeId="acunit-energycoolingcurrentday"/>
 			<channel id="energycoolingcurrentyear" typeId="acunit-energycoolingcurrentyear"/>
-
 		</channels>
 	</channel-group-type>
 

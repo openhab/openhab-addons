@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.onecta.internal.api;
 
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.CHANNEL_LOGRAWDATA;
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.CHANNEL_STUBDATAFILE;
+import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.CONFIG_PAR_LOGRAWDATA;
+import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.CONFIG_PAR_STUBDATAFILE;
 import static org.openhab.binding.onecta.internal.api.OnectaProperties.*;
 
 import java.io.IOException;
@@ -157,9 +157,9 @@ public class OnectaConnectionClient {
         Response response = null;
         String jsonString = "";
         boolean dataAvailable = false;
-        Boolean logRawData = bridgeThing.getConfiguration().get(CHANNEL_LOGRAWDATA).toString().equals("true");
-        String stubDataFile = bridgeThing.getConfiguration().get(CHANNEL_STUBDATAFILE) == null ? ""
-                : bridgeThing.getConfiguration().get(CHANNEL_STUBDATAFILE).toString();
+        Boolean logRawData = bridgeThing.getConfiguration().get(CONFIG_PAR_LOGRAWDATA).toString().equals("true");
+        String stubDataFile = bridgeThing.getConfiguration().get(CONFIG_PAR_STUBDATAFILE) == null ? ""
+                : bridgeThing.getConfiguration().get(CONFIG_PAR_STUBDATAFILE).toString();
 
         if (stubDataFile.isEmpty()) {
             response = doBearerRequestGet(false);

@@ -82,10 +82,10 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
 
         scheduler.execute(() -> {
             try {
-                String refreshToken = thing.getConfiguration().get(CHANNEL_REFRESH_TOKEN) == null ? ""
-                        : thing.getConfiguration().get(CHANNEL_REFRESH_TOKEN).toString();
-                onectaConnectionClient.startConnecton(thing.getConfiguration().get(CHANNEL_USERID).toString(),
-                        thing.getConfiguration().get(CHANNEL_PASSWORD).toString(), refreshToken);
+                String refreshToken = thing.getConfiguration().get(CONFIG_PAR_REFRESH_TOKEN) == null ? ""
+                        : thing.getConfiguration().get(CONFIG_PAR_REFRESH_TOKEN).toString();
+                onectaConnectionClient.startConnecton(thing.getConfiguration().get(CONFIG_PAR_USERID).toString(),
+                        thing.getConfiguration().get(CONFIG_PAR_PASSWORD).toString(), refreshToken);
 
                 if (onectaConnectionClient.isOnline()) {
                     updateStatus(ThingStatus.ONLINE);
@@ -98,7 +98,8 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         });
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 10,
-                Integer.parseInt(thing.getConfiguration().get(CHANNEL_REFRESHINTERVAL).toString()), TimeUnit.SECONDS);
+                Integer.parseInt(thing.getConfiguration().get(CONFIG_PAR_REFRESHINTERVAL).toString()),
+                TimeUnit.SECONDS);
 
         // Trigger discovery of Devices
         scheduler.submit(runnable);
@@ -119,7 +120,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         if (onectaConnectionClient.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
 
-            getThing().getConfiguration().put(CHANNEL_REFRESH_TOKEN, onectaConnectionClient.getRefreshToken());
+            getThing().getConfiguration().put(CONFIG_PAR_REFRESH_TOKEN, onectaConnectionClient.getRefreshToken());
 
         } else {
             if (getThing().getStatus() != ThingStatus.OFFLINE) {

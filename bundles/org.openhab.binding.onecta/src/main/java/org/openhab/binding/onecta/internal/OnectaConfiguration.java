@@ -49,7 +49,7 @@ public class OnectaConfiguration {
     }
 
     public String getHost() {
-        return OnectaConfiguration.bridgeThing.getConfiguration().get(CHANNEL_OPENHAB_HOST).toString();
+        return OnectaConfiguration.bridgeThing.getConfiguration().get(CONFIG_PAR_OPENHAB_HOST).toString();
     };
 
     public @Nullable HttpClient getHttpClient() {

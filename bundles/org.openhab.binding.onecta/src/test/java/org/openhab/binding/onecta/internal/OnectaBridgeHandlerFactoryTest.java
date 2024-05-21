@@ -72,11 +72,11 @@ public class OnectaBridgeHandlerFactoryTest {
     @BeforeEach
     public void setUp() {
         handler = new OnectaBridgeHandlerFactory(httpClientFactoryMock, timeZoneProviderMock);
-        bridgeProperties.put(CHANNEL_REFRESH_TOKEN, REFRESH_TOKEN);
-        bridgeProperties.put(CHANNEL_USERID, USERID);
-        bridgeProperties.put(CHANNEL_PASSWORD, PASSWORD);
-        bridgeProperties.put(CHANNEL_REFRESHINTERVAL, "10");
-        bridgeProperties.put(CHANNEL_UNITID, UNITID);
+        bridgeProperties.put(CONFIG_PAR_REFRESH_TOKEN, REFRESH_TOKEN);
+        bridgeProperties.put(CONFIG_PAR_USERID, USERID);
+        bridgeProperties.put(CONFIG_PAR_PASSWORD, PASSWORD);
+        bridgeProperties.put(CONFIG_PAR_REFRESHINTERVAL, "10");
+        bridgeProperties.put(CONFIG_PAR_UNITID, UNITID);
         thingConfiguration.setProperties(bridgeProperties);
     }
 
@@ -101,7 +101,7 @@ public class OnectaBridgeHandlerFactoryTest {
         assertEquals(true, thingHandler instanceof OnectaBridgeHandler);
 
         Configuration configuration = new Configuration();
-        configuration.put(CHANNEL_UNITID, UNITID);
+        configuration.put(CONFIG_PAR_UNITID, UNITID);
 
         Thing dummyThing = new DummyThing(THING_TYPE_CLIMATECONTROL, onectaDeviceHandlerMock, ThingStatus.ONLINE);
         ((DummyThing) dummyThing).setConfiguration(configuration);

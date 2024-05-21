@@ -13,7 +13,7 @@
 		<description>Diakin Onecta Domestic HotWater Tank</description>
 
 		<channel-groups>
-			<channel-group id="basic" typeId="basicGroupWaterTank"/>
+			<channel-group id="basic" typeId="basic-group-watertank"/>
 		</channel-groups>
 
 		<properties>
@@ -35,7 +35,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-group-type id="basicGroupWaterTank">
+	<channel-group-type id="basic-group-watertank">
 		<label>Basic</label>
 		<description>BasicGroup related information</description>
 		<channels>

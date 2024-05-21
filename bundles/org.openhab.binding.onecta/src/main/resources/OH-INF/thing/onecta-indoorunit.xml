@@ -13,7 +13,7 @@
 		<description>Diakin Onecta Indoor Unit</description>
 
 		<channel-groups>
-			<channel-group id="basic" typeId="basicGroupIndoorUnit"/>
+			<channel-group id="basic" typeId="basic-group-indoor-unit"/>
 		</channel-groups>
 
 		<properties>
@@ -30,7 +30,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-group-type id="basicGroupIndoorUnit">
+	<channel-group-type id="basic-group-indoor-unit">
 		<label>Basic</label>
 		<description>BasicGroup related information</description>
 		<channels>

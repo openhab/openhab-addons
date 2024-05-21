@@ -74,11 +74,11 @@ public class OnectaBridgeHandlerTest {
 
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        bridgeProperties.put(CHANNEL_REFRESH_TOKEN, REFRESH_TOKEN);
-        bridgeProperties.put(CHANNEL_USERID, USERID);
-        bridgeProperties.put(CHANNEL_PASSWORD, PASSWORD);
-        bridgeProperties.put(CHANNEL_REFRESHINTERVAL, "10");
-        bridgeProperties.put(CHANNEL_UNITID, UNITID);
+        bridgeProperties.put(CONFIG_PAR_REFRESH_TOKEN, REFRESH_TOKEN);
+        bridgeProperties.put(CONFIG_PAR_USERID, USERID);
+        bridgeProperties.put(CONFIG_PAR_PASSWORD, PASSWORD);
+        bridgeProperties.put(CONFIG_PAR_REFRESHINTERVAL, "10");
+        bridgeProperties.put(CONFIG_PAR_UNITID, UNITID);
 
         thingConfiguration.setProperties(bridgeProperties);
         when(bridgeMock.getConfiguration()).thenReturn(thingConfiguration);
@@ -154,7 +154,7 @@ public class OnectaBridgeHandlerTest {
         privateMethod.invoke(handler);
 
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-        assertEquals(REFRESH_TOKEN, handler.getThing().getConfiguration().get(CHANNEL_REFRESH_TOKEN));
+        assertEquals(REFRESH_TOKEN, handler.getThing().getConfiguration().get(CONFIG_PAR_REFRESH_TOKEN));
         verify(onectaConnectionClientMock).refreshUnitsData(eq(handler.getThing()));
         verify(onectaDeviceHandlerMock).refreshDevice();
         verify(onectaGatewayHandlerMock).refreshDevice();
@@ -187,7 +187,7 @@ public class OnectaBridgeHandlerTest {
         privateMethod.invoke(handler);
 
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
-        assertEquals(REFRESH_TOKEN, handler.getThing().getConfiguration().get(CHANNEL_REFRESH_TOKEN));
+        assertEquals(REFRESH_TOKEN, handler.getThing().getConfiguration().get(CONFIG_PAR_REFRESH_TOKEN));
         verify(onectaConnectionClientMock).refreshUnitsData(eq(handler.getThing()));
         verify(onectaDeviceHandlerMock, times(0)).refreshDevice();
         verify(onectaGatewayHandlerMock, times(0)).refreshDevice();
@@ -215,7 +215,7 @@ public class OnectaBridgeHandlerTest {
         privateMethod.invoke(handler);
 
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
-        assertEquals(REFRESH_TOKEN, handler.getThing().getConfiguration().get(CHANNEL_REFRESH_TOKEN));
+        assertEquals(REFRESH_TOKEN, handler.getThing().getConfiguration().get(CONFIG_PAR_REFRESH_TOKEN));
         verify(onectaConnectionClientMock).refreshUnitsData(eq(handler.getThing()));
         verify(onectaDeviceHandlerMock, times(0)).refreshDevice();
         verify(onectaGatewayHandlerMock, times(0)).refreshDevice();
