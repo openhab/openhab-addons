@@ -5,6 +5,14 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:samsungtv:tv">
+		<parameter-group name="Cloud Connection">
+			<label>Smartthings Connection</label>
+			<description>
+				This enables the Input Source and Channel Number channels on TV's that don't support this locally, by
+				connecting wth the Smartthings cloud API. Only available with WebSocket and SecureWebSocket Protocols.
+			</description>
+			<advanced>true</advanced>
+		</parameter-group>
 		<parameter name="hostName" type="text" required="true">
 			<label>Host Name</label>
 			<description>Network address of the Samsung TV.</description>
@@ -12,7 +20,7 @@
 		</parameter>
 		<parameter name="port" type="integer" min="1" max="65535">
 			<label>TCP Port</label>
-			<description>TCP port of the Samsung TV.</description>
+			<description>TCP port of the Samsung TV (legacy: 1515, 7001, 15500, 55000 websockets: 8001, 8002).</description>
 			<default>55000</default>
 		</parameter>
 		<parameter name="macAddress" type="text">
@@ -39,6 +47,22 @@
 		<parameter name="webSocketToken" type="text" readOnly="true">
 			<label>Websocket Token</label>
 			<description>Security token for secure websocket connection</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="subscription" type="boolean">
+			<label>Subscribe to UPNP</label>
+			<description>Reduces polling on UPNP devices, but may be unreliable, disable if you have problems</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="smartThingsApiKey" type="text" groupName="Cloud Connection">
+			<label>Smartthings PAT</label>
+			<description>Go to https://account.smartthings.com/tokens and obtain a Personal Access Token, enter it here.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="smartThingsDeviceId" type="text" groupName="Cloud Connection">
+			<label>Smartthings Device ID</label>
+			<description>Once your PAT is entered and saved, look in the log for the Device ID for this TV, enter it here.</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
