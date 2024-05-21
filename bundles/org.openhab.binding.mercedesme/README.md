@@ -538,7 +538,7 @@ In your Mercedes Me App front page
 - Last Entry `Settings`
 - First Entry `Units`
 
-<img src="./doc/ElectricConsumptionUints.png" width="300" height="300"/>
+<img src="./doc/ElectricConsumptionUnits.png" width="300" height="300"/>
 
 ### Trip Duration
 

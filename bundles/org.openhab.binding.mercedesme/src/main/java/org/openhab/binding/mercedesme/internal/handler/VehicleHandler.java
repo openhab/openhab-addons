@@ -1009,18 +1009,18 @@ public class VehicleHandler extends BaseThingHandler {
         super.updateStatus(ts);
     }
 
-    public void setFeatureCapabilities(@Nullable String capa) {
-        if (capa != null) {
+    public void setFeatureCapabilities(@Nullable String capabilities) {
+        if (capabilities != null) {
             ChannelStateMap csm = new ChannelStateMap(MB_KEY_FEATURE_CAPABILITIES, GROUP_VEHICLE,
-                    StringType.valueOf(capa));
+                    StringType.valueOf(capabilities));
             updateChannel(csm);
         }
     }
 
-    public void setCommandCapabilities(@Nullable String capa) {
-        if (capa != null) {
+    public void setCommandCapabilities(@Nullable String capabilities) {
+        if (capabilities != null) {
             ChannelStateMap csm = new ChannelStateMap(MB_KEY_COMMAND_CAPABILITIES, GROUP_VEHICLE,
-                    StringType.valueOf(capa));
+                    StringType.valueOf(capabilities));
             updateChannel(csm);
         }
     }

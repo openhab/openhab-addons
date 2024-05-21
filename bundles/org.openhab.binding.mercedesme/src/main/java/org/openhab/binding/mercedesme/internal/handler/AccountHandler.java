@@ -197,9 +197,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void dispose() {
         if (server.isPresent()) {
-            AuthServer serv = server.get();
-            serv.stop();
-            serv.dispose();
+            AuthServer authServer = server.get();
+            authServer.stop();
+            authServer.dispose();
             server = Optional.empty();
             Utils.removePort(config.get().callbackPort);
         }
