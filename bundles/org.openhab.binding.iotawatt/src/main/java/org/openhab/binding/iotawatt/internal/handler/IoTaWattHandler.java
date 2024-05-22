@@ -94,8 +94,9 @@ public class IoTaWattHandler extends BaseThingHandler implements DeviceHandlerCa
             fetchDataJobLocal.cancel(true);
             this.fetchDataJob = null;
         }
-        if (this.ioTaWattClient != null) {
-            this.ioTaWattClient.stop();
+        IoTaWattClient ioTaWattClient = this.ioTaWattClient;
+        if (ioTaWattClient != null) {
+            ioTaWattClient.stop();
             this.ioTaWattClient = null;
         }
         super.dispose();
