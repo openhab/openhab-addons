@@ -14,20 +14,15 @@ package org.openhab.binding.ephemeris.internal.handler;
 
 import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.io.*;
+import java.time.*;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.*;
 import org.openhab.binding.ephemeris.internal.configuration.FileConfiguration;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.*;
 
 /**
  * The {@link FileHandler} delivers user defined Jollyday definition events.
@@ -44,9 +39,9 @@ public class FileHandler extends JollydayHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
         FileConfiguration config = getConfigAs(FileConfiguration.class);
         definitionFile = Optional.of(new File(BINDING_DATA_PATH, config.fileName));
+        super.initialize();
     }
 
     @Override

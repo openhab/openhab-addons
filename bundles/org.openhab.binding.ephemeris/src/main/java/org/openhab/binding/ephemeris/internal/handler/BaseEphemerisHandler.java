@@ -12,25 +12,17 @@
  */
 package org.openhab.binding.ephemeris.internal.handler;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.*;
 import org.openhab.core.ephemeris.EphemerisManager;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.types.*;
+import org.slf4j.*;
 
 /**
  * The {@link BaseEphemerisHandler} is the base class for Ephemeris Things. It takes care of
@@ -58,7 +50,7 @@ public abstract class BaseEphemerisHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(this::updateData);
+        refreshJob = Optional.of(scheduler.schedule(this::updateData, 1, TimeUnit.SECONDS));
     }
 
     @Override
@@ -71,14 +63,14 @@ public abstract class BaseEphemerisHandler extends BaseThingHandler {
     private void updateData() {
         ZonedDateTime now = ZonedDateTime.now().withZoneSameLocal(zoneId);
 
-        logger.info("Updating {} channels", getThing().getUID());
+        logger.debug("Updating {} channels", getThing().getUID());
         String error = internalUpdate(now.truncatedTo(ChronoUnit.DAYS));
         if (error == null) {
             updateStatus(ThingStatus.ONLINE);
             ZonedDateTime nextUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
                     .withMinute(REFRESH_FIRST_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
             long delay = ChronoUnit.MINUTES.between(now, nextUpdate);
-            logger.info("Scheduling next {} update in {} minutes", getThing().getUID(), delay);
+            logger.debug("Scheduling next {} update in {} minutes", getThing().getUID(), delay);
             refreshJob = Optional.of(scheduler.schedule(this::updateData, delay, TimeUnit.MINUTES));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, error);

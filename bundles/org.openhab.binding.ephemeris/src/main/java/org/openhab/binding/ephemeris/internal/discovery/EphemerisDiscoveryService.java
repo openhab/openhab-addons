@@ -14,27 +14,15 @@ package org.openhab.binding.ephemeris.internal.discovery;
 
 import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.thing.ThingTypeUID;
+import org.eclipse.jdt.annotation.*;
+import org.openhab.core.config.discovery.*;
+import org.openhab.core.i18n.*;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.osgi.service.component.annotations.*;
+import org.slf4j.*;
 
 /**
  * The {@link EphemerisDiscoveryService} creates default available ephemeris Things.
@@ -55,7 +43,7 @@ public class EphemerisDiscoveryService extends AbstractDiscoveryService {
     @Activate
     public EphemerisDiscoveryService(final @Reference LocaleProvider localeProvider,
             final @Reference TranslationProvider i18nProvider, @Nullable Map<String, Object> configProperties) {
-        super(new HashSet<>(Arrays.asList(new ThingTypeUID(BINDING_ID, "-"))), DISCOVER_TIMEOUT_SECONDS, true);
+        super(Set.of(THING_TYPE_HOLIDAY, THING_TYPE_WEEKEND), DISCOVER_TIMEOUT_SECONDS, true);
         this.localeProvider = localeProvider;
         this.i18nProvider = i18nProvider;
         activate(configProperties);

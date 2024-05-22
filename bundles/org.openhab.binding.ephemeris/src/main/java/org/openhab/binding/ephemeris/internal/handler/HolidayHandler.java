@@ -14,22 +14,15 @@ package org.openhab.binding.ephemeris.internal.handler;
 
 import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.*;
+import java.util.*;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.*;
 import org.openhab.binding.ephemeris.internal.providers.EphemerisDescriptionProvider;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.types.State;
+import org.openhab.core.thing.*;
 import org.openhab.core.types.StateOption;
-import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link HolidayHandler} delivers system default Holidays data.
@@ -72,10 +65,5 @@ public class HolidayHandler extends JollydayHandler {
     @Override
     protected @Nullable String getEvent(ZonedDateTime day) {
         return ephemeris.getBankHolidayName(day);
-    }
-
-    @Override
-    protected State toStringType(@Nullable String event) {
-        return event == null || event.isEmpty() ? UnDefType.NULL : new StringType(event);
     }
 }
