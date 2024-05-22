@@ -342,10 +342,11 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         // NodeList doesn't have a stream, so do this
         sources = Optional.of(updateResourceState("GetSourceList")).filter(a -> "OK".equals(a.get("Result")))
                 .map(a -> a.get("SourceList")).flatMap(xml -> Utils.loadXMLFromString(xml, host))
-                .map(a -> a.getDocumentElement()).map(a -> a.getElementsByTagName("Source"))
+                .map(a -> a.getDocumentElement()).map(
+                        a -> a.getElementsByTagName("Source"))
                 .map(nList -> IntStream.range(0, nList.getLength()).boxed().map(i -> (Element) nList.item(i))
                         .collect(Collectors.toMap(a -> getFirstNodeValue(a, "SourceType", ""),
-                                a -> getFirstNodeValue(a, "ID", ""))))
+                                a -> getFirstNodeValue(a, "ID", ""), (key1, key2) -> key2)))
                 .orElse(Map.of());
     }
 
