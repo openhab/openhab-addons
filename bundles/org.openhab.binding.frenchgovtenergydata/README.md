@@ -1,4 +1,4 @@
-# French Govt Energy Data Binding
+# French Government Energy Data Binding
 
 This binding provides regulated electricity prices in France.
 

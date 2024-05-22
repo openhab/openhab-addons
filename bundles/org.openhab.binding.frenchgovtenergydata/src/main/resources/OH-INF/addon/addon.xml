@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>French Govt Energy Data Binding</name>
+	<name>French Government Energy Data Binding</name>
 	<description>This binding provides French regulated electricity tariffs.</description>
 	<connection>cloud</connection>
 	<countries>fr</countries>
