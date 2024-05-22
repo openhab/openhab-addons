@@ -28,17 +28,17 @@ The binding does not auto-discover the IoTaWatt device.
 
 The binding detects configured inputs and outputs and creates channels for them.
 
-| Channel             | Type                     | Read/Write | Description                     |
-|---------------------|--------------------------|------------|---------------------------------|
-| Amps                | Number:Power             | RO         | The current amps                |
-| Frequency           | Number:Frequency         | RO         | The current AC frequency        |
-| Power Factor        | Number:Dimensionless     | RO         | The current power factor        |
-| Apparent Power      | Number:Power             | RO         | The current apparent power      |
-| Reactive Power      | Number:Power             | RO         | The current reactive power      |
-| Reactive Power hour | Number:Power             | RO         | The current reactive power hour |
-| Voltage             | Number:ElectricPotential | RO         | The current voltage             |
-| Power Consumption   | Number:Power             | RO         | The current power consumption   |
-| Phase               | Number:Dimensionless     | RO         | The current phase               |
+| Channel             | Type                     | ID                  | Read/Write | Description                     |
+|---------------------|--------------------------|---------------------|------------|---------------------------------|
+| Amps                | Number:Power             | amps                | RO         | The current amps                |
+| Frequency           | Number:Frequency         | frequency           | RO         | The current AC frequency        |
+| Power Factor        | Number:Dimensionless     | power-factor        | RO         | The current power factor        |
+| Apparent Power      | Number:Power             | apparent-power      | RO         | The current apparent power      |
+| Reactive Power      | Number:Power             | reactive-power      | RO         | The current reactive power      |
+| Reactive Power hour | Number:Power             | reactive-power-hour | RO         | The current reactive power hour |
+| Voltage             | Number:ElectricPotential | voltage             | RO         | The current voltage             |
+| Power Consumption   | Number:Power             | watts               | RO         | The current power consumption   |
+| Phase               | Number:Dimensionless     | phase               | RO         | The current phase               |
 
 ## Example Configuration
 
