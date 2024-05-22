@@ -49,7 +49,6 @@ import com.google.gson.Gson;
 public class IoTaWattHandlerFactory extends BaseThingHandlerFactory
         implements HttpClientProvider, IoTaWattClientProvider, FetchDataServiceProvider {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_IOTAWATT);
-    private final Logger logger = LoggerFactory.getLogger(IoTaWattHandlerFactory.class);
 
     private final HttpClient insecureClient;
     private final Gson gson = new Gson();
