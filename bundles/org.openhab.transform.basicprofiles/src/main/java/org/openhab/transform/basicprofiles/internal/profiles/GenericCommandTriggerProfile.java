@@ -59,8 +59,7 @@ public class GenericCommandTriggerProfile extends AbstractTriggerProfile {
         Object paramValue = context.getConfiguration().get(PARAM_COMMAND);
         logger.trace("Configuring profile '{}' with '{}' parameter: '{}'", getProfileTypeUID(), PARAM_COMMAND,
                 paramValue);
-        if (paramValue instanceof String) {
-            String value = (String) paramValue;
+        if (paramValue instanceof String value) {
             command = TypeParser.parseCommand(SUPPORTED_COMMANDS, value);
             if (command == null) {
                 logger.debug("Value '{}' for parameter '{}' is a not supported command. Using StringType instead.",

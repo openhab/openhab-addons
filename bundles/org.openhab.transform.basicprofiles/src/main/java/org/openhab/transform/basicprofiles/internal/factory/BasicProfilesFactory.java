@@ -19,11 +19,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.LocalizedKey;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
@@ -121,13 +121,16 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     private final ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService;
     private final Bundle bundle;
     private final ItemRegistry itemRegistry;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public BasicProfilesFactory(final @Reference ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService,
-            final @Reference BundleResolver bundleResolver, @Reference ItemRegistry itemRegistry) {
+            final @Reference BundleResolver bundleResolver, @Reference ItemRegistry itemRegistry,
+            @Reference TimeZoneProvider timeZoneProvider) {
         this.profileTypeI18nLocalizationService = profileTypeI18nLocalizationService;
         this.bundle = bundleResolver.resolveBundle(BasicProfilesFactory.class);
         this.itemRegistry = itemRegistry;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -148,7 +151,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
         } else if (THRESHOLD_UID.equals(profileTypeUID)) {
             return new ThresholdStateProfile(callback, context);
         } else if (TIME_RANGE_COMMAND_UID.equals(profileTypeUID)) {
-            return new TimeRangeCommandProfile(callback, context);
+            return new TimeRangeCommandProfile(callback, context, timeZoneProvider);
         } else if (STATE_FILTER_UID.equals(profileTypeUID)) {
             return new StateFilterProfile(callback, context, itemRegistry);
         }
@@ -157,8 +160,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
 
     @Override
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return SUPPORTED_PROFILE_TYPES.stream().map(p -> createLocalizedProfileType(p, locale))
-                .collect(Collectors.toUnmodifiableList());
+        return SUPPORTED_PROFILE_TYPES.stream().map(p -> createLocalizedProfileType(p, locale)).toList();
     }
 
     @Override

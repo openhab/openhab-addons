@@ -83,14 +83,11 @@ public class InvertStateProfile implements StateProfile {
             return type;
         }
 
-        if (type instanceof QuantityType) {
-            QuantityType<?> qtState = (QuantityType<?>) type;
+        if (type instanceof QuantityType<?> qtState) {
             return qtState.negate();
-        } else if (type instanceof PercentType) {
-            PercentType ptState = (PercentType) type;
+        } else if (type instanceof PercentType ptState) {
             return new PercentType(100 - ptState.intValue());
-        } else if (type instanceof DecimalType) {
-            DecimalType dtState = (DecimalType) type;
+        } else if (type instanceof DecimalType dtState) {
             return new DecimalType(-1 * dtState.doubleValue());
         } else if (type instanceof IncreaseDecreaseType) {
             return IncreaseDecreaseType.INCREASE.equals(type) ? IncreaseDecreaseType.DECREASE

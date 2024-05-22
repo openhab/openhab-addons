@@ -15,7 +15,7 @@ package org.openhab.transform.basicprofiles.internal.profiles;
 import static org.openhab.transform.basicprofiles.internal.factory.BasicProfilesFactory.TIME_RANGE_COMMAND_UID;
 
 import java.time.Duration;
-import java.time.ZoneId;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.regex.Pattern;
@@ -23,6 +23,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.profiles.ProfileCallback;
@@ -58,6 +59,7 @@ public class TimeRangeCommandProfile implements StateProfile {
 
     private final Logger logger = LoggerFactory.getLogger(TimeRangeCommandProfile.class);
     private final ProfileCallback callback;
+    private final TimeZoneProvider timeZoneProvider;
 
     private final PercentType inRangeValue;
     private final PercentType outOfRangeValue;
@@ -68,8 +70,11 @@ public class TimeRangeCommandProfile implements StateProfile {
     private @Nullable PercentType previousState;
     private @Nullable PercentType restoreState;
 
-    public TimeRangeCommandProfile(ProfileCallback callback, ProfileContext context) {
+    public TimeRangeCommandProfile(ProfileCallback callback, ProfileContext context,
+            TimeZoneProvider timeZoneProvider) {
         this.callback = callback;
+        this.timeZoneProvider = timeZoneProvider;
+
         TimeRangeCommandProfileConfig config = context.getConfiguration().as(TimeRangeCommandProfileConfig.class);
         logger.debug(
                 "Configuring profile with parameters: [{inRangeValue='{}', outOfRangeValue='{}', start='{}', end='{}', restoreValue='{}']",
@@ -194,7 +199,7 @@ public class TimeRangeCommandProfile implements StateProfile {
     }
 
     private PercentType getOnValue() {
-        ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(ZoneId.systemDefault());
+        ZonedDateTime now = Instant.now().atZone(timeZoneProvider.getTimeZone());
         ZonedDateTime today = now.truncatedTo(ChronoUnit.DAYS);
         return now.isAfter(today.plusMinutes(startTimeInMinutes)) && now.isBefore(today.plusMinutes(endTimeInMinutes))
                 ? inRangeValue

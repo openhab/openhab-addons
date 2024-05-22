@@ -57,7 +57,7 @@ public class RoundStateProfile implements StateProfile {
 
         int localScale = 0;
         Integer configScale = config.scale;
-        if (configScale instanceof Number) {
+        if (configScale != null) {
             localScale = ((Number) configScale).intValue();
         } else {
             logger.error("Parameter 'scale' is not of type String or Number.");
@@ -110,11 +110,9 @@ public class RoundStateProfile implements StateProfile {
         }
 
         Type result = UnDefType.UNDEF;
-        if (state instanceof QuantityType) {
-            QuantityType<?> qtState = (QuantityType<?>) state;
+        if (state instanceof QuantityType<?> qtState) {
             result = new QuantityType<>(qtState.toBigDecimal().setScale(scale, roundingMode), qtState.getUnit());
-        } else if (state instanceof DecimalType) {
-            DecimalType dtState = (DecimalType) state;
+        } else if (state instanceof DecimalType dtState) {
             result = new DecimalType(dtState.toBigDecimal().setScale(scale, roundingMode));
         } else {
             logger.warn(

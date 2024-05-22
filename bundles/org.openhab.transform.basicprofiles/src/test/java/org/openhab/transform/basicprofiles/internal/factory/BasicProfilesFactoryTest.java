@@ -30,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.profiles.ProfileCallback;
@@ -62,6 +63,7 @@ public class BasicProfilesFactoryTest {
     private static final Configuration CONFIG = new Configuration(PROPERTIES);
 
     private @Mock @NonNullByDefault({}) ProfileTypeI18nLocalizationService mockLocalizationService;
+    private @Mock @NonNullByDefault({}) TimeZoneProvider mockTimeZoneProvider;
     private @Mock @NonNullByDefault({}) BundleResolver mockBundleResolver;
     private @Mock @NonNullByDefault({}) ProfileCallback mockCallback;
     private @Mock @NonNullByDefault({}) ProfileContext mockContext;
@@ -71,7 +73,8 @@ public class BasicProfilesFactoryTest {
 
     @BeforeEach
     public void setup() {
-        profileFactory = new BasicProfilesFactory(mockLocalizationService, mockBundleResolver, mockItemRegistry);
+        profileFactory = new BasicProfilesFactory(mockLocalizationService, mockBundleResolver, mockItemRegistry,
+                mockTimeZoneProvider);
 
         when(mockContext.getConfiguration()).thenReturn(CONFIG);
     }

@@ -62,7 +62,7 @@ Switch debouncedSwitch { channel="xxx" [profile="basic-profiles:debounce-countin
 ## Debounce (Time) Profile
 
 In `LAST` mode this profile delays commands or state updates for a configured number of milliseconds and only send the value if no other value is received with that timespan.
-In `FIRST` mode this profile discards values for the configured time after a value is send.
+In `FIRST` mode this profile discards values for the configured time after a value is sent.
 
 It can be used to debounce Item States/Commands or prevent excessive load on networks.
 
@@ -171,7 +171,7 @@ Possible values for parameter `restoreValue`:
 
 ### Full Example
 
-```Java
+```java
 Switch motionSensorFirstFloor {
     channel="deconz:presencesensor:XXX:YYY:presence",
     channel="deconz:colortemperaturelight:AAA:BBB:brightness" [profile="basic-profiles:time-range-command", inRangeValue=100, outOfRangeValue=15, start="08:00", end="23:00", restoreValue="PREVIOUS"]
