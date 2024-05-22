@@ -13,7 +13,6 @@ The IoTaWatt binding supports one Thing called `iotawatt`.
 ## Discovery
 
 The binding does not auto-discover the IoTaWatt device.  
-It detects configured inputs and outputs and creates channels for them.
 
 ## Thing Configuration
 
@@ -26,6 +25,8 @@ It detects configured inputs and outputs and creates channels for them.
 | requestTimeout  | long    | The request timeout to call the device in sec. | 10      | no       | no       |
 
 ## Channels
+
+The binding detects configured inputs and outputs and creates channels for them.
 
 | Channel             | Type                     | Read/Write | Description                     |
 |---------------------|--------------------------|------------|---------------------------------|
