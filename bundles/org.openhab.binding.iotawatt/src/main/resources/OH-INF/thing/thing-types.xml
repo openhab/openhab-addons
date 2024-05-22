@@ -36,7 +36,7 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Amps</label>
 		<description>The current Amps.</description>
-		<state pattern="%.2f A" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="frequency">
 		<item-type>Number:Frequency</item-type>
