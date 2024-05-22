@@ -277,7 +277,8 @@ public class SalusApiTest {
                 .hasMessage("HTTP Error 403: forbidden_error_json");
     }
 
-    private void setAuthToken(SalusApi salusApi, RestClient restClient, GsonMapper mapper, AuthToken authToken) {
+    private void setAuthToken(SalusApi salusApi, RestClient restClient, GsonMapper mapper, AuthToken authToken)
+            throws SalusApiException {
         var username = "correct_username";
         var password = "correct_password".toCharArray();
         var inputBody = "login_param_json";

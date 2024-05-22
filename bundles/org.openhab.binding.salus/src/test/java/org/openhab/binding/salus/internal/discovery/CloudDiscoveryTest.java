@@ -40,7 +40,7 @@ public class CloudDiscoveryTest {
 
     @Test
     @DisplayName("Method filters out disconnected devices and adds connected devices as things using addThing method")
-    void testFiltersOutDisconnectedDevicesAndAddsConnectedDevicesAsThings() {
+    void testFiltersOutDisconnectedDevicesAndAddsConnectedDevicesAsThings() throws SalusApiException {
         // Given
         var cloudApi = mock(CloudApi.class);
         var bridgeHandler = mock(CloudBridgeHandler.class);
@@ -73,7 +73,7 @@ public class CloudDiscoveryTest {
 
     @Test
     @DisplayName("Cloud API throws an exception during device retrieval, method logs the error")
-    void testLogsErrorWhenCloudApiThrowsException() {
+    void testLogsErrorWhenCloudApiThrowsException() throws SalusApiException {
         // Given
         var cloudApi = mock(CloudApi.class);
         var bridgeHandler = mock(CloudBridgeHandler.class);
