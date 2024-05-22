@@ -33,6 +33,7 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 
 import com.google.gson.Gson;
 
@@ -87,5 +88,10 @@ public class IoTaWattHandlerFactory extends BaseThingHandlerFactory
     @Override
     public FetchDataService getFetchDataService(DeviceHandlerCallback deviceHandlerCallback) {
         return new FetchDataService(deviceHandlerCallback);
+    }
+
+    @Deactivate
+    public void deactivate() {
+        insecureClient.destroy();
     }
 }
