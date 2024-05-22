@@ -18,7 +18,7 @@ import java.io.Serial;
  * @author Martin Grześlowski - Initial contribution
  */
 @SuppressWarnings("SerializableHasSerializationMethods")
-public class SalusApiException extends RuntimeException {
+public class SalusApiException extends Exception {
     @Serial
     private static final long serialVersionUID = 1L;
 
