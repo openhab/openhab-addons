@@ -265,7 +265,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     }
 
     /**
-     * Send a command and read the response. This should only be used when their is no listener active on the socket to
+     * Send a command and read the response. This should only be used when there is no listener active on the socket to
      * listen to responses. In that case send and received would be decoupled.
      *
      * @param command

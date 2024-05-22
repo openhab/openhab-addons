@@ -170,13 +170,13 @@ Thing nikohomecontrol:thermostat:mybridge:mythermostat [ thermostatId="abcdef01-
 For **energy meters**:
 
 ```java
-Thing nikohomecontrol:energymeter:mybridge:mymeter [ meterId="3" ]
+Thing nikohomecontrol:energymeter:mybridge:mymeter [ meterId="3", refresh=30 ]
 ```
 
 For **access devices**:
 
 ```java
-Thing nikohomecontrol:accessRingAndComeIn:mybridge:myaccess [ accessId="abcdef01-dcba-1234-ab98-012345abcdef", refresh=30 ]
+Thing nikohomecontrol:accessRingAndComeIn:mybridge:myaccess [ accessId="abcdef01-dcba-1234-ab98-012345abcdef" ]
 ```
 
 
@@ -192,7 +192,7 @@ Thing nikohomecontrol:accessRingAndComeIn:mybridge:myaccess [ accessId="abcdef01
 | heatingmode     | RW |          | String             | thermostat  | current thermostat mode. Allowed values are Day, Night, Eco, Off, Cool, Prog1, Prog2, Prog3. Setting `heatingmode` will reset the `setpoint` channel to the standard value for the mode in the controller |
 | mode            | RW |    X     | Number             | thermostat  | current thermostat mode, same meaning as `heatingmode`, but numeric values (0=Day, 1=Night, 2=Eco, 3=Off, 4=Cool, 5=Prog1, 6=Prog2, 7=Prog3). Setting `mode` will reset the `setpoint` channel to the standard value for the mode in the controller. This channel is kept for binding backward compatibility |
 | setpoint        | RW |          | Number:Temperature | thermostat  | current thermostat setpoint. Updating the `setpoint` will overrule the temperature setpoint defined by `heatingmode` or `mode` for `overruletime` duration. Because of API restrictions, NHC II will only report in 0.5°C increments |
-| overruletime    | RW |          | Number             | thermostat  | used to set the total duration to apply the setpoint temperature set in the `setpoint` channel before the thermostat returns to the setting from its mode |
+| overruletime    | RW |          | Number             | thermostat  | used to set the total duration in minutes to apply the setpoint temperature set in the `setpoint` channel before the thermostat returns to the setting from its mode |
 | heatingdemand   | R  |          | String             | thermostat  | indicating if the system is actively heating/cooling. This channel will have value Heating, Cooling or None. For NHC I this is set by the binding from the temperature difference between `setpoint` and `measured`. It therefore may incorrectly indicate cooling even when the system does not have active cooling capabilities |
 | demand          | R  |    X     | Number             | thermostat  | indicating if the system is actively heating/cooling, same as `heatingdemand` but numeric values (-1=Cooling, 0=None, 1=Heating) |
 | power           | R  |          | Number:Power       | energyMeterLive | instant power consumption/production (negative for production), refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
@@ -279,7 +279,7 @@ Text item=CurTemperature
 Selection item=ThermostatMode mappings=[Day="day", Night="night", Eco="eco", Off="off", Prog1="Away"]
 Setpoint item=SetTemperature minValue=0 maxValue=30
 Slider item=OverruleDuration minValue=0 maxValue=120
-Text item=Power
+Text item=CurPower
 Text item=MyMeter
 Text item=MyMeterDay
 ```
