@@ -8,7 +8,7 @@ Limitations of this version:
 
 ## Supported Things
 
-The IoTaWatt binding supports one Thing called `iotawatt` and IoTaWatt's `Input` and `Output` channels.
+The IoTaWatt binding supports one Thing called `iotawatt`.
 
 ## Discovery
 
