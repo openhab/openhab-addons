@@ -15,7 +15,9 @@ package org.openhab.binding.onecta.internal.api;
 import static org.openhab.binding.onecta.internal.api.OnectaProperties.*;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.MediaType;
 
@@ -92,10 +94,9 @@ public class OnectaConnectionClient {
                 response = doBearerRequestGet(true);
             }
 
-        } catch (Exception e) {
+        } catch (DaikinCommunicationException | ExecutionException | InterruptedException | TimeoutException e) {
             if (!refreshed) {
                 try {
-                    logger.debug("Get new token");
                     onectaSignInClient.fetchAccessToken();
                     response = doBearerRequestGet(true);
                 } catch (DaikinCommunicationException ex) {
@@ -133,10 +134,9 @@ public class OnectaConnectionClient {
                 response = doBearerRequestPatch(url, body, true);
             }
             return response;
-        } catch (Exception e) {
+        } catch (DaikinCommunicationException | ExecutionException | InterruptedException | TimeoutException e) {
             if (!refreshed) {
                 try {
-                    logger.debug("Get new token");
                     onectaSignInClient.fetchAccessToken();
                     response = doBearerRequestPatch(url, body, true);
                 } catch (DaikinCommunicationException ex) {
