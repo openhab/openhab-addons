@@ -15,6 +15,7 @@ package org.openhab.binding.onecta.internal.api;
 import static org.openhab.binding.onecta.internal.api.OnectaProperties.*;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MediaType;
 
@@ -42,11 +43,12 @@ import com.google.gson.*;
  */
 public class OnectaConnectionClient {
 
-    static private final Logger logger = LoggerFactory.getLogger(OnectaConnectionClient.class);
-    public static final String HTTPHEADER_X_API_KEY = "x-api-key";
-    public static final String HTTPHEADER_BEARER = "Bearer %s";
-    public static final String USER_AGENT_VALUE = "Daikin/1.6.1.4681 CFNetwork/1209 Darwin/20.2.0";
-    public static final String HTTPHEADER_X_API_KEY_VALUE = "xw6gvOtBHq5b1pyceadRp6rujSNSZdjx2AqT03iC";
+    private static final Logger logger = LoggerFactory.getLogger(OnectaConnectionClient.class);
+    private static final String HTTPHEADER_X_API_KEY = "x-api-key";
+    private static final String HTTPHEADER_BEARER = "Bearer %s";
+    private static final String USER_AGENT_VALUE = "Daikin/1.6.1.4681 CFNetwork/1209 Darwin/20.2.0";
+    private static final String HTTPHEADER_X_API_KEY_VALUE = "xw6gvOtBHq5b1pyceadRp6rujSNSZdjx2AqT03iC";
+    private static final Long REQUEST_TIMEOUT = 60L; // 60 seconds
 
     private static JsonArray onectaCompleteJsonArrayData = new JsonArray();
     private static Units onectaUnitsData = new Units();
@@ -82,7 +84,8 @@ public class OnectaConnectionClient {
                     .method(HttpMethod.GET)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
-                    .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).send();
+                    .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
+                    .send();
 
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401 && !refreshed) {
                 onectaSignInClient.fetchAccessToken();
@@ -118,7 +121,8 @@ public class OnectaConnectionClient {
                     .content(new StringContentProvider(new Gson().toJson(body)), MediaType.APPLICATION_JSON)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
-                    .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).send();
+                    .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
+                    .send();
 
             logger.trace("Request : {}", response.getRequest().getURI().toString());
             logger.trace("Body    : {}", new Gson().toJson(body));

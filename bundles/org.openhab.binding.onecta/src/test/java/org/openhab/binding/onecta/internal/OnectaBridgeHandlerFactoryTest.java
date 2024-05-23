@@ -44,7 +44,6 @@ public class OnectaBridgeHandlerFactoryTest {
 
     public static final String USERID = "Userid";
     public static final String PASSWORD = "Password";
-    public static final String REFRESH_TOKEN = "ThisIsARefreshToken";
     public static final String UNITID = "ThisIsAUnitID";
 
     private Map<String, Object> bridgeProperties = new HashMap<>();

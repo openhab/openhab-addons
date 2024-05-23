@@ -116,6 +116,7 @@ public class OnectaSignInClient {
 
         try {
             logger.info("Start logon to Daikin : {}", userId);
+            httpClient.setConnectTimeout(60000L);
             httpClient.setFollowRedirects(false);
             httpClient.getCookieStore().removeAll();
             // Step 1
