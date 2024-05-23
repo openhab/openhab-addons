@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.emotiva.internal;
 
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_EMOTIVA_PROTOCOL_VERSION;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_KEEP_ALIVE_IN_MILLISECONDS;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_RETRY_INTERVAL_MINUTES;
+import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

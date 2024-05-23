@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.emotiva.internal;
 
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_EMOTIVA_PROTOCOL_VERSION;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_UDP_SENDING_TIMEOUT;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.THING_PROCESSOR;
+import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.PROTOCOL_V3;
 
 import java.io.IOException;

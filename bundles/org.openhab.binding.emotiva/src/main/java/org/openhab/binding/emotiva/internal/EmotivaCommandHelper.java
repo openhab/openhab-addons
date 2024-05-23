@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.emotiva.internal;
 
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_VOLUME_MAX_DECIBEL;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_VOLUME_MIN_DECIBEL;
+import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 
 import java.util.Map;
 

@@ -150,7 +150,6 @@ public class EmotivaXmlUtils {
     }
 
     public List<EmotivaCommandDTO> unmarshallXmlObjectsToControlCommands(List<Object> objects) {
-
         List<EmotivaCommandDTO> commands = new ArrayList<>();
         for (Object object : objects) {
             try {
@@ -170,7 +169,6 @@ public class EmotivaXmlUtils {
     }
 
     public List<EmotivaNotifyDTO> unmarshallToNotification(List<Object> objects) {
-
         List<EmotivaNotifyDTO> commands = new ArrayList<>();
         for (Object object : objects) {
             try {
@@ -190,7 +188,6 @@ public class EmotivaXmlUtils {
     }
 
     public List<EmotivaBarNotifyDTO> unmarshallToBarNotify(List<Object> objects) {
-
         List<EmotivaBarNotifyDTO> commands = new ArrayList<>();
         for (Object object : objects) {
             try {
@@ -210,7 +207,6 @@ public class EmotivaXmlUtils {
     }
 
     public List<EmotivaCommandDTO> unmarshallToCommands(String elementAsString) {
-
         List<EmotivaCommandDTO> commands = new ArrayList<>();
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();

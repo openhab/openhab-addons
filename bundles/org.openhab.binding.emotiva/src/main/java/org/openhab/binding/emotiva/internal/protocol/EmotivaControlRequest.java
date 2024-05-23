@@ -12,25 +12,10 @@
  */
 package org.openhab.binding.emotiva.internal.protocol;
 
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_SOURCE;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_TUNER_BAND;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_TUNER_CHANNEL_SELECT;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_ZONE2_SOURCE;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_TRIM_MAX_DECIBEL;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_TRIM_MIN_DECIBEL;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_VOLUME_MAX_DECIBEL;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_VOLUME_MIN_DECIBEL;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.MAP_SOURCES_MAIN_ZONE;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.MAP_SOURCES_ZONE_2;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.PROTOCOL_V3_LEVEL_MULTIPLIER;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.TRIM_SET_COMMAND_SUFFIX;
+import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.clamp;
 import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.volumePercentageToDecibel;
-import static org.openhab.binding.emotiva.internal.protocol.EmotivaCommandType.NUMBER;
-import static org.openhab.binding.emotiva.internal.protocol.EmotivaCommandType.SET;
-import static org.openhab.binding.emotiva.internal.protocol.EmotivaCommandType.TOGGLE;
-import static org.openhab.binding.emotiva.internal.protocol.EmotivaCommandType.UP_DOWN_HALF;
-import static org.openhab.binding.emotiva.internal.protocol.EmotivaCommandType.UP_DOWN_SINGLE;
+import static org.openhab.binding.emotiva.internal.protocol.EmotivaCommandType.*;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaDataType.FREQUENCY_HERTZ;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags.tuner_band;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags.tuner_channel;
@@ -122,7 +107,6 @@ public class EmotivaControlRequest {
     }
 
     public EmotivaControlDTO createDTO(Command ohCommand, @Nullable State previousState) {
-
         switch (defaultCommand.getCommandType()) {
             case CYCLE -> {
                 return EmotivaControlDTO.create(defaultCommand);
@@ -312,7 +296,6 @@ public class EmotivaControlRequest {
     }
 
     private EmotivaControlDTO handleNumberTypes(EmotivaControlCommands setCommand, Command ohCommand, Number value) {
-
         switch (dataType) {
             case DIMENSIONLESS_PERCENT -> {
                 if (name.equals(EmotivaControlCommands.volume.name())) {

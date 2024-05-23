@@ -111,13 +111,13 @@ The Emotiva Processor supports the following channels (some channels are model s
 
 ## Full Example
 
-`.things` file:
+### `.things` file:
 
 ```perl
 Thing emotiva:processor:1 "XMC-2" @ "Living room" [ipAddress="10.0.0.100", protocolVersion="3.0"]
 ```
 
-`.items` file:
+### `.items` file:
 
 ```perl
 Switch                  emotiva-power               "Processor"                     {channel="emotiva:processor:1:general#power"}
@@ -142,10 +142,9 @@ String                  emotiva-menu-tottom-center  ""                      <non
 String                  emotiva-menu-tottom-end     ""                      <none>  {channel="emotiva:processor:1:general#menu-display-bottom-end"}
 ```
 
-`.sitemap` file:
+### `.sitemap` file:
 
 ```perl
-...
 Group item=emotiva-input label="Processor" icon="receiver" {
     Default   item=emotiva-power
     Default   item=emotiva-mute             
@@ -176,11 +175,10 @@ Frame label="Front Panel" {
     }
     Buttongrid label="Menu Control" staticIcon=material:control-camera item=emotiva-menu_control buttons=[1:1:POWER="Power"=switch-off , 1:2:MENU="Menu", 1:3:INFO="Info" , 2:2:UP="Up"=f7:arrowtriangle_up , 4:2:DOWN="Down"=f7:arrowtriangle_down , 3:1:LEFT="Left"=f7:arrowtriangle_left , 3:3:RIGHT="Right"=f7:arrowtriangle_right , 3:2:ENTER="Select" ]
 }
-...
 ```
 
-## Network Remote Control protocol Reference
+## Network Remote Control Protocol Reference
 
-These resources can be useful to learn what to send using the `command`channel:
+These resources can be useful to learn what to send using the `command` channel:
 
 - [Emotiva Remote Interface Description](https://www.dropbox.com/sh/lvo9lbhu89jqfdb/AACa4iguvWK3I6ONjIpyM5Zca/Emotiva_Remote_Interface_Description%20V3.1.docx)

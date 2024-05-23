@@ -463,6 +463,7 @@
 		<item-type>String</item-type>
 		<label>Front Panel Bar</label>
 		<description>Text displayed on front panel bar of device.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="keep-alive">

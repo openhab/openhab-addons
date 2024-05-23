@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.emotiva.internal.discovery;
 
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DISCOVERY_BROADCAST_ADDRESS;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DISCOVERY_TIMEOUT_SECONDS;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 
 import java.util.Objects;
 
