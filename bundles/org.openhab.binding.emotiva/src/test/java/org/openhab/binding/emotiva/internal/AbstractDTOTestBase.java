@@ -75,6 +75,14 @@ public class AbstractDTOTestBase {
             <emotivaNotify sequence="54062">
               <property name="keepAlive" value="7500" visible="true"/>
             </emotivaNotify>""";
+
+    protected String emotivaNotifyV3_EmptyMenuValue = """
+            <?xml version="1.0"?>
+            <emotivaNotify sequence="23929">
+              <property name="menu" value="" visible="true"/>
+            </emotivaNotify>
+            """;
+
     protected String emotivaUpdate_Request = """
             <?xml version="1.0" encoding="utf-8"?>
             <emotivaUpdate protocol="3.0">

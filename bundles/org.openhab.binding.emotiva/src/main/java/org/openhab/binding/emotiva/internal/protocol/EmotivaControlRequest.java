@@ -91,7 +91,7 @@ public class EmotivaControlRequest {
                 this.downCommand = resolveDownCommand(controlCommand);
             }
         } else {
-            this.defaultCommand = resolveControlCommand(channelSubscription.getName(), controlCommand);
+            this.defaultCommand = resolveControlCommand(channelSubscription.getEmotivaName(), controlCommand);
             if (controlCommand.equals(EmotivaControlCommands.none)) {
                 this.onCommand = resolveOnCommand(defaultCommand);
                 this.offCommand = resolveOffCommand(defaultCommand);
@@ -138,7 +138,7 @@ public class EmotivaControlRequest {
             }
             case MODE -> {
                 if (ohCommand instanceof StringType value) {
-                    // Check if value can be interpreted as a mode_<command>
+                    // Check if value can be interpreted as a mode-<command>
                     try {
                         OHChannelToEmotivaCommand ohChannelToEmotivaCommand = OHChannelToEmotivaCommand
                                 .valueOf(value.toString());
@@ -171,10 +171,10 @@ public class EmotivaControlRequest {
             case NONE -> {
                 switch (channel) {
                     case CHANNEL_TUNER_BAND -> {
-                        return matchToCommandMap(ohCommand, tuner_band.getName());
+                        return matchToCommandMap(ohCommand, tuner_band.getEmotivaName());
                     }
                     case CHANNEL_TUNER_CHANNEL_SELECT -> {
-                        return matchToCommandMap(ohCommand, tuner_channel.getName());
+                        return matchToCommandMap(ohCommand, tuner_channel.getEmotivaName());
                     }
                     case CHANNEL_SOURCE -> {
                         return matchToCommandMap(ohCommand, MAP_SOURCES_MAIN_ZONE);

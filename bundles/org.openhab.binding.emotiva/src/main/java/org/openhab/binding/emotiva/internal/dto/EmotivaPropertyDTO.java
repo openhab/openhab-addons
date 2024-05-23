@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -57,14 +59,14 @@ public class EmotivaPropertyDTO {
     }
 
     public String getValue() {
-        return value;
+        return Objects.requireNonNullElse(value, "");
     }
 
     public String getVisible() {
-        return visible;
+        return Objects.requireNonNullElse(visible, "false");
     }
 
     public String getStatus() {
-        return status;
+        return Objects.requireNonNullElse(status, "");
     }
 }

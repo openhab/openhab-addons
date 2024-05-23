@@ -195,7 +195,7 @@ public class EmotivaUdpReceivingService {
         // log & notify listener in new thread (so that listener loop continues immediately)
         executorService.execute(() -> {
             if (answer.getAddress() != null && answer.getLength() > 0) {
-                logger.debug("Received data on port '{}': {}", answer.getPort(), receivedData);
+                logger.trace("Received data on port '{}': {}", answer.getPort(), receivedData);
                 EmotivaUdpResponse emotivaUdpResponse = new EmotivaUdpResponse(
                         new String(answer.getData(), 0, answer.getLength()), answer.getAddress().getHostAddress());
                 localListener.accept(emotivaUdpResponse);

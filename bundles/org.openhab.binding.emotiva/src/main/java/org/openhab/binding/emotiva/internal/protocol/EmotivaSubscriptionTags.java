@@ -36,6 +36,7 @@ import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANN
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MENU;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MENU_DISPLAY_PREFIX;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MODE;
+import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MODE_ALL_STEREO;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MODE_AUTO;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MODE_DIRECT;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MODE_DOLBY;
@@ -77,6 +78,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Emotiva subscription tags with corresponding UoM data type and channel.
@@ -91,7 +94,7 @@ public enum EmotivaSubscriptionTags {
     source("source", STRING, CHANNEL_SOURCE),
     dim("dim", DIMENSIONLESS_PERCENT, CHANNEL_DIM),
     mode("mode", STRING, CHANNEL_MODE),
-    speaker_preset("speaker_preset", STRING, CHANNEL_SPEAKER_PRESET),
+    speaker_preset("speaker-preset", STRING, CHANNEL_SPEAKER_PRESET),
     center("center", DIMENSIONLESS_DECIBEL, CHANNEL_CENTER),
     subwoofer("subwoofer", DIMENSIONLESS_DECIBEL, CHANNEL_SUBWOOFER),
     surround("surround", DIMENSIONLESS_DECIBEL, CHANNEL_SURROUND),
@@ -100,57 +103,59 @@ public enum EmotivaSubscriptionTags {
     loudness("loudness", ON_OFF, CHANNEL_LOUDNESS),
     treble("treble", DIMENSIONLESS_DECIBEL, CHANNEL_TREBLE),
     bass("bass", DIMENSIONLESS_DECIBEL, CHANNEL_BASS),
-    zone2_power("zone2_power", ON_OFF, CHANNEL_ZONE2_POWER),
-    zone2_volume("zone2_volume", DIMENSIONLESS_DECIBEL, CHANNEL_ZONE2_VOLUME),
-    zone2_input("zone2_input", STRING, CHANNEL_ZONE2_SOURCE),
-    tuner_band("tuner_band", STRING, CHANNEL_TUNER_BAND),
-    tuner_channel("tuner_channel", FREQUENCY_HERTZ, CHANNEL_TUNER_CHANNEL),
-    tuner_signal("tuner_signal", STRING, CHANNEL_TUNER_SIGNAL),
-    tuner_program("tuner_program", STRING, CHANNEL_TUNER_PROGRAM),
-    tuner_RDS("tuner_RDS", STRING, CHANNEL_TUNER_RDS),
-    audio_input("audio_input", STRING, CHANNEL_AUDIO_INPUT),
-    audio_bitstream("audio_bitstream", STRING, CHANNEL_AUDIO_BITSTREAM),
-    audio_bits("audio_bits", STRING, CHANNEL_AUDIO_BITS),
-    video_input("video_input", STRING, CHANNEL_VIDEO_INPUT),
-    video_format("video_format", STRING, CHANNEL_VIDEO_FORMAT),
-    video_space("video_space", STRING, CHANNEL_VIDEO_SPACE),
-    input_1("input_1", STRING, CHANNEL_INPUT1),
-    input_2("input_2", STRING, CHANNEL_INPUT2),
-    input_3("input_3", STRING, CHANNEL_INPUT3),
-    input_4("input_4", STRING, CHANNEL_INPUT4),
-    input_5("input_5", STRING, CHANNEL_INPUT5),
-    input_6("input_6", STRING, CHANNEL_INPUT6),
-    input_7("input_7", STRING, CHANNEL_INPUT7),
-    input_8("input_8", STRING, CHANNEL_INPUT8),
+    zone2_power("zone2-power", ON_OFF, CHANNEL_ZONE2_POWER),
+    zone2_volume("zone2-volume", DIMENSIONLESS_DECIBEL, CHANNEL_ZONE2_VOLUME),
+    zone2_input("zone2-input", STRING, CHANNEL_ZONE2_SOURCE),
+    tuner_band("tuner-band", STRING, CHANNEL_TUNER_BAND),
+    tuner_channel("tuner-channel", FREQUENCY_HERTZ, CHANNEL_TUNER_CHANNEL),
+    tuner_signal("tuner-signal", STRING, CHANNEL_TUNER_SIGNAL),
+    tuner_program("tuner-program", STRING, CHANNEL_TUNER_PROGRAM),
+    tuner_RDS("tuner-RDS", STRING, CHANNEL_TUNER_RDS),
+    audio_input("audio-input", STRING, CHANNEL_AUDIO_INPUT),
+    audio_bitstream("audio-bitstream", STRING, CHANNEL_AUDIO_BITSTREAM),
+    audio_bits("audio-bits", STRING, CHANNEL_AUDIO_BITS),
+    video_input("video-input", STRING, CHANNEL_VIDEO_INPUT),
+    video_format("video-format", STRING, CHANNEL_VIDEO_FORMAT),
+    video_space("video-space", STRING, CHANNEL_VIDEO_SPACE),
+    input_1("input-1", STRING, CHANNEL_INPUT1),
+    input_2("input-2", STRING, CHANNEL_INPUT2),
+    input_3("input-3", STRING, CHANNEL_INPUT3),
+    input_4("input-4", STRING, CHANNEL_INPUT4),
+    input_5("input-5", STRING, CHANNEL_INPUT5),
+    input_6("input-6", STRING, CHANNEL_INPUT6),
+    input_7("input-7", STRING, CHANNEL_INPUT7),
+    input_8("input-8", STRING, CHANNEL_INPUT8),
 
     /* Protocol V2 notify tags */
-    selected_mode("selected_mode", STRING, CHANNEL_SELECTED_MODE),
-    selected_movie_music("selected_movie_music", STRING, CHANNEL_SELECTED_MOVIE_MUSIC),
-    mode_ref_stereo("mode_ref_stereo", STRING, CHANNEL_MODE_REF_STEREO),
-    mode_stereo("mode_stereo", STRING, CHANNEL_MODE_STEREO),
-    mode_music("mode_music", STRING, CHANNEL_MODE_MUSIC),
-    mode_movie("mode_movie", STRING, CHANNEL_MODE_MOVIE),
-    mode_direct("mode_direct", STRING, CHANNEL_MODE_DIRECT),
-    mode_dolby("mode_dolby", STRING, CHANNEL_MODE_DOLBY),
-    mode_dts("mode_dts", STRING, CHANNEL_MODE_DTS),
-    mode_all_stereo("mode_all_stereo", STRING, CHANNEL_MODE_DTS),
-    mode_auto("mode_auto", STRING, CHANNEL_MODE_AUTO),
-    mode_surround("mode_surround", STRING, CHANNEL_MODE_SURROUND),
+    selected_mode("selected-mode", STRING, CHANNEL_SELECTED_MODE),
+    selected_movie_music("selected-movie-music", STRING, CHANNEL_SELECTED_MOVIE_MUSIC),
+    mode_ref_stereo("mode-ref-stereo", STRING, CHANNEL_MODE_REF_STEREO),
+    mode_stereo("mode-stereo", STRING, CHANNEL_MODE_STEREO),
+    mode_music("mode-music", STRING, CHANNEL_MODE_MUSIC),
+    mode_movie("mode-movie", STRING, CHANNEL_MODE_MOVIE),
+    mode_direct("mode-direct", STRING, CHANNEL_MODE_DIRECT),
+    mode_dolby("mode-dolby", STRING, CHANNEL_MODE_DOLBY),
+    mode_dts("mode-dts", STRING, CHANNEL_MODE_DTS),
+    mode_all_stereo("mode-all-stereo", STRING, CHANNEL_MODE_ALL_STEREO),
+    mode_auto("mode-auto", STRING, CHANNEL_MODE_AUTO),
+    mode_surround("mode-surround", STRING, CHANNEL_MODE_SURROUND),
     menu("menu", ON_OFF, CHANNEL_MENU),
-    menu_update("menu_update", STRING, CHANNEL_MENU_DISPLAY_PREFIX),
+    menu_update("menu-update", STRING, CHANNEL_MENU_DISPLAY_PREFIX),
 
     /* Protocol V3 notify tags */
     keepAlive("keepAlive", NUMBER_TIME, CHANNEL_KEEP_ALIVE),
     goodBye("goodBye", GOODBYE, ""),
-    bar_update("bar_update", STRING, CHANNEL_BAR),
+    bar_update("bar-update", STRING, CHANNEL_BAR),
     width("width", DIMENSIONLESS_DECIBEL, CHANNEL_WIDTH),
     height("height", DIMENSIONLESS_DECIBEL, CHANNEL_HEIGHT),
 
     /* Notify tag not in the documentation */
-    source_tuner("source_tuner", ON_OFF, ""),
+    source_tuner("source-tuner", ON_OFF, ""),
 
     /* No match tag */
     unknown("unknown", UNKNOWN, "");
+
+    private static final Logger logger = LoggerFactory.getLogger(EmotivaSubscriptionTags.class);
 
     /* For error handling */
     public static final String UNKNOWN_TAG = "unknown";
@@ -222,6 +227,12 @@ public enum EmotivaSubscriptionTags {
 
     public String getName() {
         return name;
+    }
+
+    public String getEmotivaName() {
+        String retVal = name.replaceAll("-", "_");
+        logger.debug("Converting OH channel '{}' to Emotiva command '{}'", name, retVal);
+        return retVal;
     }
 
     public EmotivaDataType getDataType() {

@@ -49,15 +49,6 @@ public class EmotivaNotifyDTO {
         this.tagName = tag;
     }
 
-    public EmotivaNotifyDTO(EmotivaSubscriptionTags tag, String value) {
-        this.tagName = tag.getName();
-        this.value = value;
-    }
-
-    public static EmotivaNotifyDTO fromType(EmotivaSubscriptionTags command) {
-        return new EmotivaNotifyDTO(command.name());
-    }
-
     public String getName() {
         return tagName;
     }

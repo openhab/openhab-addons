@@ -43,9 +43,11 @@ public class EmotivaHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(EmotivaHandlerFactory.class);
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_PROCESSOR);
+    private final EmotivaTranslationProvider i18nProvider;
 
     @Activate
     public EmotivaHandlerFactory(final @Reference EmotivaTranslationProvider i18nProvider) {
+        this.i18nProvider = i18nProvider;
     }
 
     @Override
@@ -59,7 +61,7 @@ public class EmotivaHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_PROCESSOR.equals(thingTypeUID)) {
             try {
-                return new EmotivaProcessorHandler(thing);
+                return new EmotivaProcessorHandler(thing, i18nProvider);
             } catch (JAXBException e) {
                 logger.debug("Could not create Emotiva Process Handler", e);
             }

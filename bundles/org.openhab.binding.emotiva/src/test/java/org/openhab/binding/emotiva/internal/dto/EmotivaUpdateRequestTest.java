@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.emotiva.internal.AbstractDTOTestBase;
+import org.openhab.binding.emotiva.internal.EmotivaBindingConstants;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
 
 /**
@@ -45,7 +46,8 @@ class EmotivaUpdateRequestTest extends AbstractDTOTestBase {
 
     @Test
     void marshalFromChannelUID() {
-        EmotivaSubscriptionTags subscriptionChannel = EmotivaSubscriptionTags.fromChannelUID("general#tuner_RDS");
+        EmotivaSubscriptionTags subscriptionChannel = EmotivaSubscriptionTags
+                .fromChannelUID(EmotivaBindingConstants.CHANNEL_TUNER_RDS);
         EmotivaUpdateRequest emotivaUpdateRequest = new EmotivaUpdateRequest(subscriptionChannel);
         String xmlString = xmlUtils.marshallJAXBElementObjects(emotivaUpdateRequest);
         assertThat(xmlString).contains("<emotivaUpdate>");

@@ -90,4 +90,17 @@ class EmotivaNotifyWrapperTest extends AbstractDTOTestBase {
         assertThat(dto.getProperties().size()).isEqualTo(1);
         assertThat(dto.getTags()).isNull();
     }
+
+    @Test
+    void testUnmarshallV3_EmptyValue() throws JAXBException {
+        EmotivaNotifyWrapper dto = (EmotivaNotifyWrapper) xmlUtils
+                .unmarshallToEmotivaDTO(emotivaNotifyV3_EmptyMenuValue);
+        assertThat(dto.getSequence()).isEqualTo("23929");
+        assertThat(dto.getProperties().size()).isEqualTo(1);
+        assertThat(dto.getProperties().get(0).getName()).isEqualTo("menu");
+        assertThat(dto.getProperties().get(0).getValue()).isEqualTo("");
+        assertThat(dto.getProperties().get(0).getVisible()).isEqualTo("true");
+        assertThat(dto.getProperties().get(0).getStatus()).isNotNull();
+        assertThat(dto.getTags()).isNull();
+    }
 }

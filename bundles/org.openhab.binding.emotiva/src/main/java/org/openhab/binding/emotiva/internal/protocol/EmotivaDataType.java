@@ -27,8 +27,7 @@ public enum EmotivaDataType {
     NUMBER("number"),
     NUMBER_TIME("number_time"),
     GOODBYE("goodbye"),
-    NOT_AVAILABLE("not_implemented"),
-    NOT_IMPLEMENTED("unknown"),
+    NOT_IMPLEMENTED("not_implemented"),
     ON_OFF("boolean"),
     STRING("string"),
     UNKNOWN("unknown");

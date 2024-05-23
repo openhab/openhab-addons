@@ -36,10 +36,6 @@ public class EmotivaAckDTO {
     public EmotivaAckDTO() {
     }
 
-    public EmotivaAckDTO(List<Object> commands) {
-        this.commands = commands;
-    }
-
     public List<Object> getCommands() {
         return commands;
     }

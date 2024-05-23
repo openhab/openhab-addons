@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class provides the list of valid inputs for the input channel of a source.
+ * This class provides the list of valid inputs for a source or audio mode.
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Espen Fossen - Adapted to Emotiva binding
@@ -81,8 +81,8 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
                 for (EmotivaSubscriptionTags modeKey : modeKeys) {
                     options.add(new StateOption(modeKey.name(), modes.get(modeKey)));
                 }
+                logger.debug("Updated '{}' with '{}'", CHANNEL_MODE, options);
                 setStateOptions(channel.getUID(), options);
-                logger.debug("Updated '{}' with '{}' options", CHANNEL_MODE, options.size());
             }
         }
 
@@ -99,7 +99,7 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
                 options.add(new StateOption(sourceKey.name(), sourceKey.getLabel()));
             }
         }
+        logger.debug("Updated '{}' with '{}'", channel.getUID().getId(), options);
         setStateOptions(channel.getUID(), options);
-        logger.debug("Updated '{}' with '{}' options", channel.getUID(), options.size());
     }
 }

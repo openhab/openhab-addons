@@ -42,7 +42,7 @@ class EmotivaPropertyDTOTest extends AbstractDTOTestBase {
         assertThat(commandDTO.getName()).isEqualTo(EmotivaSubscriptionTags.tuner_channel.name());
         assertThat(commandDTO.getValue()).isEqualTo("FM 106.50MHz");
         assertThat(commandDTO.getVisible()).isEqualTo("true");
-        assertThat(commandDTO.getStatus()).isNull();
+        assertThat(commandDTO.getStatus()).isNotNull();
     }
 
     @Test

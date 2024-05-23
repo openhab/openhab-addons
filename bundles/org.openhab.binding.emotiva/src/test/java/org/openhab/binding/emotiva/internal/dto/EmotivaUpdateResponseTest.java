@@ -89,8 +89,8 @@ class EmotivaUpdateResponseTest extends AbstractDTOTestBase {
         assertThat(dto.getProperties().get(1).getStatus()).isEqualTo(NOT_VALID.getValue());
 
         assertThat(dto.getProperties().get(2).getName()).isEqualTo("noKnownTag");
-        assertThat(dto.getProperties().get(2).getStatus()).isNull();
-        assertThat(dto.getProperties().get(2).getValue()).isNull();
-        assertThat(dto.getProperties().get(2).getVisible()).isNull();
+        assertThat(dto.getProperties().get(2).getStatus()).isNotNull();
+        assertThat(dto.getProperties().get(2).getValue()).isNotNull();
+        assertThat(dto.getProperties().get(2).getVisible()).isNotNull();
     }
 }

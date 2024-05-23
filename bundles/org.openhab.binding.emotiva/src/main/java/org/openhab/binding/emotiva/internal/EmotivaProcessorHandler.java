@@ -63,7 +63,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -136,6 +135,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     private final EnumMap<EmotivaControlCommands, String> sources_zone_2;
     private final EnumMap<EmotivaSubscriptionTags, String> modes;
     private final Map<String, Map<EmotivaControlCommands, String>> commandMaps = new ConcurrentHashMap<>();
+    private final EmotivaTranslationProvider i18nProvider;
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> connectRetryJob;
@@ -155,8 +155,9 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
     private boolean udpSenderActive = false;
 
-    public EmotivaProcessorHandler(Thing thing) throws JAXBException {
+    public EmotivaProcessorHandler(Thing thing, EmotivaTranslationProvider i18nProvider) throws JAXBException {
         super(thing);
+        this.i18nProvider = i18nProvider;
         this.config = getConfigAs(EmotivaConfiguration.class);
         this.retryConnectInMinutes = config.retryConnectInMinutes;
 
@@ -187,11 +188,11 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                         Map.entry(EmotivaControlCommands.channel_18, EmotivaControlCommands.channel_18.getLabel()),
                         Map.entry(EmotivaControlCommands.channel_19, EmotivaControlCommands.channel_19.getLabel()),
                         Map.entry(EmotivaControlCommands.channel_20, EmotivaControlCommands.channel_20.getLabel())));
-        commandMaps.put(tuner_channel.getName(), channels);
+        commandMaps.put(tuner_channel.getEmotivaName(), channels);
 
         EnumMap<EmotivaControlCommands, String> bands = new EnumMap<>(
                 Map.of(band_am, band_am.getLabel(), band_fm, band_fm.getLabel()));
-        commandMaps.put(tuner_band.getName(), bands);
+        commandMaps.put(tuner_band.getEmotivaName(), bands);
 
         modes = new EnumMap<>(EmotivaSubscriptionTags.class);
     }
@@ -323,7 +324,8 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             object = xmlUtils.unmarshallToEmotivaDTO(emotivaUdpResponse.answer());
         } catch (JAXBException e) {
             logger.debug("Could not unmarshal answer from '{}' with length '{}' and content '{}'",
-                    emotivaUdpResponse.ipAddress(), emotivaUdpResponse.answer().length(), emotivaUdpResponse.answer());
+                    emotivaUdpResponse.ipAddress(), emotivaUdpResponse.answer().length(), emotivaUdpResponse.answer(),
+                    e);
             return;
         }
 
@@ -382,11 +384,12 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
             if (answerDto.getProperties() == null) {
                 for (EmotivaNotifyDTO dto : xmlUtils.unmarshallToNotification(answerDto.getTags())) {
-                    handleChannel(dto.getName(), dto.getValue(), dto.getVisible(), dto.getAck());
+                    handleChannelUpdate(dto.getName(), dto.getValue(), dto.getVisible(), dto.getAck());
                 }
             } else {
                 for (EmotivaPropertyDTO property : answerDto.getProperties()) {
-                    handleChannel(property.getName(), property.getValue(), property.getVisible(), property.getStatus());
+                    handleChannelUpdate(property.getName(), property.getValue(), property.getVisible(),
+                            property.getStatus());
                 }
             }
         }
@@ -416,7 +419,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                     highlightValue = cellValue;
                 }
 
-                var channelName = format("%s_%s_%s", CHANNEL_MENU_DISPLAY_PREFIX, getMenuPanelRowLabel(row),
+                var channelName = format("%s-%s-%s", CHANNEL_MENU_DISPLAY_PREFIX, getMenuPanelRowLabel(row),
                         getMenuPanelColumnLabel(column));
                 updateChannelState(channelName, new StringType(cellValue));
             }
@@ -440,7 +443,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         logger.debug("Resetting Menu Panel Display");
         for (var row = 4; row <= 6; row++) {
             for (var column = 0; column <= 2; column++) {
-                var channelName = format("%s_%s_%s", CHANNEL_MENU_DISPLAY_PREFIX, getMenuPanelRowLabel(row),
+                var channelName = format("%s-%s-%s", CHANNEL_MENU_DISPLAY_PREFIX, getMenuPanelRowLabel(row),
                         getMenuPanelColumnLabel(column));
                 updateChannelState(channelName, new StringType(""));
             }
@@ -474,66 +477,83 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             }
         } else {
             for (EmotivaPropertyDTO property : answerDto.getProperties()) {
-                handleChannel(property.getName(), property.getValue(), property.getVisible(), property.getStatus());
+                handleChannelUpdate(property.getName(), property.getValue(), property.getVisible(),
+                        property.getStatus());
             }
         }
     }
 
-    private void handleChannel(String name, String value, String visible, String status) {
+    private void handleChannelUpdate(String emotivaSubscriptionName, String value, String visible, String status) {
+        logger.debug("Handling channel update for '{}' with value '{}'", emotivaSubscriptionName, value);
 
-        if (Objects.nonNull(status) && status.equals(NOT_VALID.name())) {
-            logger.debug("Subscription property '{}' not present in device, skipping", name);
+        if (status.equals(NOT_VALID.name())) {
+            logger.debug("Subscription property '{}' not present in device, skipping", emotivaSubscriptionName);
             return;
         }
 
-        if (Objects.nonNull(value) && "None".equals(value)) {
-            logger.debug("No value present for channel {}, usually means a speaker is not enabled", name);
+        if ("None".equals(value)) {
+            logger.debug("No value present for channel {}, usually means a speaker is not enabled",
+                    emotivaSubscriptionName);
             return;
         }
 
         try {
-            EmotivaSubscriptionTags.hasChannel(name);
+            EmotivaSubscriptionTags.hasChannel(emotivaSubscriptionName);
         } catch (IllegalArgumentException e) {
-            logger.debug("Subscription property '{}' is not know to the binding, might need updating", name);
+            logger.debug("Subscription property '{}' is not know to the binding, might need updating",
+                    emotivaSubscriptionName);
             return;
         }
 
-        if (Objects.nonNull(status) && noSubscriptionToChannel().contains(EmotivaSubscriptionTags.valueOf(name))) {
-            logger.debug("Initial subscription status update for {}, skipping, only want notifications", name);
+        if (noSubscriptionToChannel().contains(EmotivaSubscriptionTags.valueOf(emotivaSubscriptionName))) {
+            logger.debug("Initial subscription status update for {}, skipping, only want notifications",
+                    emotivaSubscriptionName);
             return;
         }
 
         try {
             EmotivaSubscriptionTags subscriptionTag;
             try {
-                subscriptionTag = EmotivaSubscriptionTags.valueOf(name);
+                subscriptionTag = EmotivaSubscriptionTags.valueOf(emotivaSubscriptionName);
             } catch (IllegalArgumentException e) {
-                logger.debug("Property '{}' could not be mapped subscription tag, skipping", name);
+                logger.debug("Property '{}' could not be mapped subscription tag, skipping", emotivaSubscriptionName);
                 return;
             }
 
             if (subscriptionTag.getChannel().isEmpty()) {
-                logger.debug("Subscription property '{}' does not have a corresponding channel, skipping", name);
+                logger.debug("Subscription property '{}' does not have a corresponding channel, skipping",
+                        emotivaSubscriptionName);
                 return;
             }
 
+            String trimmedValue = value.trim();
+
+            logger.debug("Found subscription '{}' for '{}' and value '{}'", subscriptionTag, emotivaSubscriptionName,
+                    trimmedValue);
+
             // Add/Update user assigned name for inputs
-            if (subscriptionTag.getChannel().startsWith(CHANNEL_INPUT1.substring(0, CHANNEL_INPUT1.indexOf("_") + 1))
+            if (subscriptionTag.getChannel().startsWith(CHANNEL_INPUT1.substring(0, CHANNEL_INPUT1.indexOf("-") + 1))
                     && "true".equals(visible)) {
-                logger.debug("Adding '{}' to dynamic source input list", value);
-                sources_main_zone.put(EmotivaControlCommands.matchToInput(subscriptionTag.name()), value);
+                logger.debug("Adding '{}' to dynamic source input list", trimmedValue);
+                sources_main_zone.put(EmotivaControlCommands.matchToInput(subscriptionTag.name()), trimmedValue);
                 commandMaps.put(MAP_SOURCES_MAIN_ZONE, sources_main_zone);
+
+                logger.debug("sources list is now {}", sources_main_zone.size());
             }
 
             // Add/Update audio modes
-            if (subscriptionTag.getChannel().startsWith(CHANNEL_MODE + "_") && "true".equals(visible)) {
-                logger.debug("Adding '{}' to dynamic mode list", value);
-                modes.put(EmotivaSubscriptionTags.fromChannelUID(subscriptionTag.getChannel()), value);
+            if (subscriptionTag.getChannel().startsWith(CHANNEL_MODE + "-") && "true".equals(visible)) {
+                String modeName = i18nProvider.getText("channel-type.emotiva.selected-mode.option."
+                        + subscriptionTag.getChannel().substring(subscriptionTag.getChannel().indexOf("_") + 1));
+                logger.debug("Adding '{} ({})' from channel '{}' to dynamic mode list", trimmedValue, modeName,
+                        subscriptionTag.getChannel());
+                modes.put(EmotivaSubscriptionTags.fromChannelUID(subscriptionTag.getChannel()), trimmedValue);
             }
 
-            findChannelDatatypeAndUpdateChannel(subscriptionTag.getChannel(), value, subscriptionTag.getDataType());
+            findChannelDatatypeAndUpdateChannel(subscriptionTag.getChannel(), trimmedValue,
+                    subscriptionTag.getDataType());
         } catch (IllegalArgumentException e) {
-            logger.debug("Error updating subscription property '{}'", name, e);
+            logger.debug("Error updating subscription property '{}'", emotivaSubscriptionName, e);
         }
     }
 
@@ -581,7 +601,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 }
             }
             case GOODBYE -> {
-                logger.debug(
+                logger.info(
                         "Received goodbye notification from '{}'; disconnecting and scheduling av connection retry in '{}' minutes",
                         getThing().getUID(), DEFAULT_RETRY_INTERVAL_MINUTES);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/message.processor.goodbye");
@@ -615,7 +635,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
     private void updateChannelState(String channelID, State state) {
         stateMap.put(channelID, state);
-        logger.debug("Updating channel '{}' with '{}'", state, "");
+        logger.debug("Updating channel '{}' with '{}'", channelID, state);
         updateState(channelID, state);
     }
 

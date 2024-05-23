@@ -365,11 +365,11 @@ class EmotivaControlRequestTest {
         channelMap.put(channel_1, "Channel 1");
         channelMap.put(channel_2, "Channel 2");
         channelMap.put(channel_3, "My Radio Channel");
-        commandMaps.put(tuner_channel.getName(), channelMap);
+        commandMaps.put(tuner_channel.getEmotivaName(), channelMap);
 
         bandMap.put(band_am, "AM");
         bandMap.put(band_fm, "FM");
-        commandMaps.put(tuner_band.getName(), bandMap);
+        commandMaps.put(tuner_band.getEmotivaName(), bandMap);
 
         stateMap.put(CHANNEL_TREBLE, new DecimalType(-3));
         stateMap.put(CHANNEL_TUNER_CHANNEL, new StringType("FM    87.50MHz"));
