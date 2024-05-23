@@ -23,10 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class OnectaIndoorUnitConstants {
 
-    public static final String PROPERTY_IDU_NAME = "name";
-    public static final String CHANNEL_IDU_MODELINFO = "basic#modelinfo";
-    public static final String CHANNEL_IDU_SOFTWAREVERSION = "basic#softwareversion";
-    public static final String CHANNEL_IDU_EEPROMVERSION = "basic#eepromversion";
+    public static final String PROPERTY_IDU_MODELINFO = "modelinfo";
+    public static final String PROPERTY_IDU_SOFTWAREVERSION = "softwareversion";
+    public static final String PROPERTY_IDU_EEPROMVERSION = "eepromversion";
     public static final String CHANNEL_IDU_ISKEEPDRY = "basic#isdrykeepsetting";
     public static final String CHANNEL_IDU_FANSPEED = "basic#fanmotorratationspeed";
     public static final String CHANNEL_IDU_DELTAD = "basic#deltadvalue";

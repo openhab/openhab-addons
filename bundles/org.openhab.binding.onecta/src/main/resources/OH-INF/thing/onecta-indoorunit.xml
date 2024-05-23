@@ -17,7 +17,9 @@
 		</channel-groups>
 
 		<properties>
-			<property name="name"></property>
+			<property name="modelinfo"></property>
+			<property name="softwareversion"></property>
+			<property name="eepromversion"></property>
 		</properties>
 
 		<representation-property>unitID</representation-property>
@@ -34,11 +36,7 @@
 		<label>Basic</label>
 		<description>BasicGroup related information</description>
 		<channels>
-			<channel id="modelinfo" typeId="idu-modelinfo"/>
-			<channel id="softwareversion" typeId="idu-softwareversion"/>
-			<channel id="eepromversion" typeId="idu-eepromversion"/>
 			<channel id="isdrykeepsetting" typeId="idu-drykeepsetting"/>
-
 			<channel id="deltadvalue" typeId="idu-deltadvalue"/>
 			<channel id="fanmotorratationspeed" typeId="idu-fanmotorratationspeed"/>
 			<channel id="heatexchangertemp" typeId="idu-heatexchangertemp"/>
@@ -46,24 +44,6 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="idu-modelinfo">
-		<item-type>String</item-type>
-		<label>Model information</label>
-		<description>Model information</description>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="idu-softwareversion">
-		<item-type>String</item-type>
-		<label>Software version</label>
-		<description>Software version</description>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="idu-eepromversion">
-		<item-type>String</item-type>
-		<label>Eeprom version</label>
-		<description>Eeprom version</description>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="idu-drykeepsetting">
 		<item-type>Switch</item-type>
 		<label>Dry keep setting</label>

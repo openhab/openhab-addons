@@ -31,7 +31,6 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -118,12 +117,6 @@ public class OnectaIndoorUnitHandlerTest {
         verify(callbackMock, times(0)).statusUpdated(eq(thingMock),
                 argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
 
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_IDU_MODELINFO),
-                new StringType("DaikinModel"));
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_IDU_SOFTWAREVERSION),
-                new StringType("1-2-3"));
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_IDU_EEPROMVERSION),
-                new StringType("2012351"));
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_IDU_ISKEEPDRY),
                 OnOffType.from("ON"));
 
@@ -156,12 +149,6 @@ public class OnectaIndoorUnitHandlerTest {
         verify(callbackMock, times(0)).statusUpdated(eq(thingMock),
                 argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
 
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_IDU_MODELINFO),
-                UnDefType.UNDEF);
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_IDU_SOFTWAREVERSION),
-                UnDefType.UNDEF);
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_IDU_EEPROMVERSION),
-                UnDefType.UNDEF);
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_IDU_ISKEEPDRY),
                 UnDefType.UNDEF);
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_IDU_FANSPEED),
