@@ -25,15 +25,15 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.*;
 
 /**
- * The {@link FileHandler} delivers user defined Jollyday definition events.
+ * The {@link CustomHandler} delivers user defined Jollyday definition events.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class FileHandler extends JollydayHandler {
+public class CustomHandler extends JollydayHandler {
     private Optional<File> definitionFile = Optional.empty();
 
-    public FileHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId) {
+    public CustomHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId) {
         super(thing, ephemerisManager, zoneId);
     }
 

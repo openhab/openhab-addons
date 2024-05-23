@@ -20,8 +20,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ephemeris.internal.handler.CustomHandler;
 import org.openhab.binding.ephemeris.internal.handler.DaysetHandler;
-import org.openhab.binding.ephemeris.internal.handler.FileHandler;
 import org.openhab.binding.ephemeris.internal.handler.HolidayHandler;
 import org.openhab.binding.ephemeris.internal.handler.WeekendHandler;
 import org.openhab.binding.ephemeris.internal.providers.EphemerisDescriptionProvider;
@@ -45,7 +45,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.ephemeris", service = ThingHandlerFactory.class)
 public class EphemerisHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_FILE, THING_TYPE_HOLIDAY,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CUSTOM, THING_TYPE_HOLIDAY,
             THING_TYPE_DAYSET, THING_TYPE_WEEKEND);
 
     private final EphemerisManager ephemerisManager;
@@ -74,8 +74,8 @@ public class EphemerisHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_FILE.equals(thingTypeUID)) {
-            return new FileHandler(thing, ephemerisManager, zoneId);
+        if (THING_TYPE_CUSTOM.equals(thingTypeUID)) {
+            return new CustomHandler(thing, ephemerisManager, zoneId);
         } else if (THING_TYPE_HOLIDAY.equals(thingTypeUID)) {
             return new HolidayHandler(thing, ephemerisManager, zoneId, descriptionProvider);
         } else if (THING_TYPE_DAYSET.equals(thingTypeUID)) {

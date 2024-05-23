@@ -29,10 +29,8 @@ public class EphemerisBindingConstants {
 
     public static final String BINDING_ID = "ephemeris";
 
-    public static final String LOCAL = "local";
-
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_FILE = new ThingTypeUID(BINDING_ID, "file");
+    public static final ThingTypeUID THING_TYPE_CUSTOM = new ThingTypeUID(BINDING_ID, "custom");
     public static final ThingTypeUID THING_TYPE_HOLIDAY = new ThingTypeUID(BINDING_ID, "holiday");
     public static final ThingTypeUID THING_TYPE_DAYSET = new ThingTypeUID(BINDING_ID, "dayset");
     public static final ThingTypeUID THING_TYPE_WEEKEND = new ThingTypeUID(BINDING_ID, "weekend");

@@ -4,12 +4,12 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="file">
-		<label>Ephemeris File</label>
+	<thing-type id="custom">
+		<label>Custom Jollyday File</label>
 		<description>Events defined in a Jollyday file</description>
 
 		<channels>
-			<channel id="title-today" typeId="event_current_title"/>
+			<channel id="title-today" typeId="event-current-title"/>
 			<channel id="event-today" typeId="in-dayset">
 				<label>Event Today</label>
 				<description>Set to ON if an event exists today</description>
@@ -18,15 +18,15 @@
 				<label>Event Tomorrow</label>
 				<description>Set to ON if an event exists tomorrow</description>
 			</channel>
-			<channel id="next-title" typeId="event_next_title"/>
-			<channel id="next-start" typeId="event_next_start"/>
-			<channel id="days-remaining" typeId="remaining_days"/>
+			<channel id="next-title" typeId="event-next-title"/>
+			<channel id="next-start" typeId="event-next-start"/>
+			<channel id="days-remaining" typeId="days-remaining"/>
 		</channels>
 
 		<config-description>
 			<parameter name="fileName" type="text" required="true">
 				<label>File Name</label>
-				<description>Name of a Jollyday XML file in the binding folder.</description>
+				<description>Name of a Jollyday XML file in the configuration folder.</description>
 			</parameter>
 		</config-description>
 
@@ -37,7 +37,9 @@
 		<description>Holidays based on system default Ephemeris configuration</description>
 
 		<channels>
-			<channel id="title-today" typeId="event_current_title"/>
+			<channel id="title-today" typeId="event-current-title">
+				<description>Name of today's holiday if any, NULL otherwise </description>
+			</channel>
 			<channel id="holiday-today" typeId="in-dayset">
 				<label>Holiday Today</label>
 				<description>Set to ON if today is a holiday</description>
@@ -46,9 +48,11 @@
 				<label>Holiday Tomorrow</label>
 				<description>Set to ON if tomorrow is a holiday</description>
 			</channel>
-			<channel id="next-title" typeId="event_next_title"/>
-			<channel id="next-start" typeId="event_next_start"/>
-			<channel id="days-remaining" typeId="remaining_days"/>
+			<channel id="next-title" typeId="event-next-title">
+				<description>Name of the next coming holiday</description>
+			</channel>
+			<channel id="next-start" typeId="event-next-start"/>
+			<channel id="days-remaining" typeId="days-remaining"/>
 		</channels>
 	</thing-type>
 
@@ -57,8 +61,14 @@
 		<description>Events based on a given dayset</description>
 
 		<channels>
-			<channel id="today" typeId="in-dayset"/>
-			<channel id="tomorrow" typeId="in-dayset"/>
+			<channel id="today" typeId="in-dayset">
+				<label>Today in Dayset</label>
+				<description>Set to ON if today is in the given dayset, OFF in the other case</description>
+			</channel>
+			<channel id="tomorrow" typeId="in-dayset">
+				<label>Tomorrow in Dayset</label>
+				<description>Set to ON if tomorrow is in the given dayset, OFF in the other case</description>
+			</channel>
 		</channels>
 
 		<config-description>
@@ -72,47 +82,51 @@
 
 	<thing-type id="weekend">
 		<label>Weekend</label>
-		<description>Events based on system a the week-end default dayset</description>
+		<description>Events based on the system default week-end dayset</description>
 
 		<channels>
-			<channel id="today" typeId="in-dayset"/>
-			<channel id="tomorrow" typeId="in-dayset"/>
+			<channel id="today" typeId="in-dayset">
+				<label>Weekend Today</label>
+				<description>Set to ON if today is a weekend day, OFF in the other case</description>
+			</channel>
+			<channel id="tomorrow" typeId="in-dayset">
+				<label>Weekend Tomorrow</label>
+				<description>Set to ON if tomorrow is a weekend day, OFF in the other case</description>
+			</channel>
 		</channels>
 	</thing-type>
 
 	<channel-type id="in-dayset">
 		<item-type>Switch</item-type>
 		<label>In Dayset</label>
-		<description>Set to ON if the day is in the dayset, OFF in the other case</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-
-	<channel-type id="event_current_title">
+	<channel-type id="event-current-title">
 		<item-type>String</item-type>
 		<label>Current Event Title</label>
 		<description>Title of the currently present event</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="event_next_title">
+	<channel-type id="event-next-title">
 		<item-type>String</item-type>
 		<label>Next Event Title</label>
 		<description>Title of the next starting event</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="event_next_start">
+	<channel-type id="event-next-start">
 		<item-type>DateTime</item-type>
 		<label>Next Event Start</label>
-		<description>Start of the next event</description>
+		<description>Start date of the next coming event</description>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td"/>
 	</channel-type>
 
-	<channel-type id="remaining_days">
+	<channel-type id="days-remaining">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Days</label>
-		<description>Days until next event</description>
+		<description>Remaining days until next event</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 

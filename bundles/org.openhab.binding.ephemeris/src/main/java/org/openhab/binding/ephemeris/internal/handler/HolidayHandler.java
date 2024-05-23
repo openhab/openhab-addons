@@ -14,14 +14,18 @@ package org.openhab.binding.ephemeris.internal.handler;
 
 import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*;
 
-import java.time.*;
-import java.util.*;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.eclipse.jdt.annotation.*;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ephemeris.internal.providers.EphemerisDescriptionProvider;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.types.StateOption;
 
 /**
@@ -31,13 +35,13 @@ import org.openhab.core.types.StateOption;
  */
 @NonNullByDefault
 public class HolidayHandler extends JollydayHandler {
-    private final List<StateOption> events = new ArrayList<>();
 
     public HolidayHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId,
             EphemerisDescriptionProvider descriptionProvider) {
         super(thing, ephemerisManager, zoneId);
 
         // Search all holidays in the coming year
+        List<StateOption> events = new ArrayList<>();
         ZonedDateTime now = ZonedDateTime.now();
         for (int offset = 0; offset < 366; offset++) {
             String nextEvent = getEvent(now.plusDays(offset));
@@ -54,11 +58,8 @@ public class HolidayHandler extends JollydayHandler {
 
     @Override
     protected @Nullable String internalUpdate(ZonedDateTime today) {
-        String event = getEvent(today);
-        updateState(CHANNEL_HOLIDAY_TODAY, OnOffType.from(event != null));
-
-        event = getEvent(today.plusDays(1));
-        updateState(CHANNEL_HOLIDAY_TOMORROW, OnOffType.from(event != null));
+        updateState(CHANNEL_HOLIDAY_TODAY, OnOffType.from(getEvent(today) != null));
+        updateState(CHANNEL_HOLIDAY_TOMORROW, OnOffType.from(getEvent(today.plusDays(1)) != null));
         return super.internalUpdate(today);
     }
 

@@ -10,7 +10,7 @@ The binding will auto create a folder in openhab configuration folder where it e
 The binding handles the following Things:
 
 * default holiday data (`holiday`)
-* personal holiday data file (`file`)
+* custom holiday file (`custom`)
 * daysets (`dayset`)
 * weekend (`weekend`)
 
@@ -27,9 +27,9 @@ There is no configuration at binding level.
 
 ### `file` Thing Configuration
 
-| Name            | Type    | Description                                   | Default | Required | Advanced |
-|-----------------|---------|-----------------------------------------------|---------|----------|----------|
-| fileName        | text    | Name of the XML file in the ephemeris folder  | N/A     | yes      | no       |
+| Name            | Type    | Description                                       | Default | Required | Advanced |
+|-----------------|---------|---------------------------------------------------|---------|----------|----------|
+| fileName        | text    | Name of the XML file in the configuration folder  | N/A     | yes      | no       |
 
 The file has to use the syntax described here : https://www.openhab.org/docs/configuration/actions.html#custom-bank-holidays
 
@@ -42,15 +42,31 @@ The file has to use the syntax described here : https://www.openhab.org/docs/con
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+### `weekend` Channels
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Name     | Type   | Description                                                   |
+|----------|--------|---------------------------------------------------------------|
+| today    | Switch | Set to ON if today is a weekend day, OFF in the other case    |
+| tomorrow | Switch | Set to ON if tomorrow is a weekend day, OFF in the other case |
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+### `dayset` Channels
 
-## Full Example
+| Name     | Type   | Description                                                         |
+|----------|--------|---------------------------------------------------------------------|
+| today    | Switch | Set to ON if today is in the given dayset, OFF in the other case    |
+| tomorrow | Switch | Set to ON if tomorrow is in the given dayset, OFF in the other case |
+
+### `holiday` and `custom` Channels
+
+| Name             | Type        | Description                                    |
+|------------------|-------------|------------------------------------------------|
+| title-today      | String      | Name of today's holiday if any, NULL otherwise |
+| holiday-today    | Switch      | Set to ON if today is a holiday                |
+| holiday-tomorrow | Switch      | Set to ON if tomorrow is a holiday             |
+| next-title       | String      | Name of the next coming holiday                |
+| next-start       | DateTime    | Start date of the next coming event            |
+| days-remaining   | Number:Time | Remaining days until next event                |
+
 
 
 ### Thing Configuration
@@ -58,15 +74,15 @@ _Note that it is planned to generate some part of this based on the XML files wi
 ```java
 Thing ephemeris:holiday:local "Holidays"
 Thing ephemeris:weekend:local "Week-end"
-Thing ephemeris:file:events "Event" [fileName="events.xml"]
+Thing ephemeris:custom:events "Event" [fileName="events.xml"]
 ```
 
 ### Item Configuration
 
 ```java
-String         ToD_Event_Current          "Event Today"       <calendar>    (gEvents)       ["Event"]                     {channel="ephemeris:file:events:title-today"}
+String         ToD_Event_Current          "Event Today"       <calendar>    (gEvents)       ["Event"]                     {channel="ephemeris:custom:events:title-today"}
 String         ToD_Event_Next          "Event Next"       <calendar>    (gEvents)       ["Event"]                     {channel="ephemeris:file:events:next-title"}
-Number:Time    ToD_Event_Next_Left       "Event In"          <calendar>    (gEvents)       ["Measurement","Duration"]    {channel="ephemeris:file:events:days-remaining", unit="day"}
+Number:Time    ToD_Event_Next_Left       "Event In"          <calendar>    (gEvents)       ["Measurement","Duration"]    {channel="ephemeris:custom:events:days-remaining", unit="day"}
 
 Switch         ToD_Week_End_Current           "Week-End"                <calendar>    (gWeekEnd)          ["Event"]                     {channel="ephemeris:weekend:local:today"}
 Switch         ToD_Week_End_Tomorrow           "Week-End Tomorrow"         <calendar>    (gWeekEnd)          ["Event"]                     {channel="ephemeris:weekend:local:tomorrow"}
