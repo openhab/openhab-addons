@@ -33,13 +33,9 @@ public class OnectaBridgeConstants {
     public static final String DEVICE_TYPE_INDOORUNIT = "indoor-unit";
 
     // List of config parameters
-    public static final String CONFIG_PAR_REFRESH_TOKEN = "refreshToken";
     public static final String CONFIG_PAR_PASSWORD = "password";
     public static final String CONFIG_PAR_USERID = "userId";
     public static final String CONFIG_PAR_REFRESHINTERVAL = "refreshInterval";
-    public static final String CONFIG_PAR_LOGRAWDATA = "rawdataLogging";
-    public static final String CONFIG_PAR_STUBDATAFILE = "stubdataFile";
-    public static final String CONFIG_PAR_OPENHAB_HOST = "openhabHost";
     public static final String CONFIG_PAR_UNITID = "unitID";
 
     // List of all Bridge Thing Type UIDs

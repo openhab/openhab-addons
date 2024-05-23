@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.onecta.internal.service;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.*;
 
@@ -36,7 +35,6 @@ import org.openhab.binding.onecta.internal.exception.DaikinCommunicationExceptio
 import org.openhab.binding.onecta.internal.handler.OnectaBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 
@@ -103,7 +101,7 @@ public class DeviceDiscoveryServiceTest {
     @Test
     public void startScanTest() throws DaikinCommunicationException {
 
-        doNothing().when(onectaConnectionClientMock).refreshUnitsData(any(Thing.class));
+        doNothing().when(onectaConnectionClientMock).refreshUnitsData();
         when(onectaConnectionClientMock.getUnits()).thenReturn(onectaData);
         deviceDiscoveryService.startScan();
 

@@ -72,7 +72,6 @@ public class OnectaBridgeHandlerFactoryTest {
     @BeforeEach
     public void setUp() {
         handler = new OnectaBridgeHandlerFactory(httpClientFactoryMock, timeZoneProviderMock);
-        bridgeProperties.put(CONFIG_PAR_REFRESH_TOKEN, REFRESH_TOKEN);
         bridgeProperties.put(CONFIG_PAR_USERID, USERID);
         bridgeProperties.put(CONFIG_PAR_PASSWORD, PASSWORD);
         bridgeProperties.put(CONFIG_PAR_REFRESHINTERVAL, "10");

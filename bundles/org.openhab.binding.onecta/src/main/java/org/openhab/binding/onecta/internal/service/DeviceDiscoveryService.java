@@ -62,8 +62,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
         }
 
         try {
-            ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            onectaConnectionClient.refreshUnitsData(bridgeHandler.getThing());
+            onectaConnectionClient.refreshUnitsData();
             List<Unit> units = onectaConnectionClient.getUnits().getAll();
             for (Unit unit : units) {
                 thingDiscover(unit, ManagementPoint.CLIMATECONTROL, THING_TYPE_CLIMATECONTROL);

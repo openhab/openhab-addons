@@ -82,10 +82,8 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
 
         scheduler.execute(() -> {
             try {
-                String refreshToken = thing.getConfiguration().get(CONFIG_PAR_REFRESH_TOKEN) == null ? ""
-                        : thing.getConfiguration().get(CONFIG_PAR_REFRESH_TOKEN).toString();
                 onectaConnectionClient.startConnecton(thing.getConfiguration().get(CONFIG_PAR_USERID).toString(),
-                        thing.getConfiguration().get(CONFIG_PAR_PASSWORD).toString(), refreshToken);
+                        thing.getConfiguration().get(CONFIG_PAR_PASSWORD).toString());
 
                 if (onectaConnectionClient.isOnline()) {
                     updateStatus(ThingStatus.ONLINE);
@@ -120,15 +118,13 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         if (onectaConnectionClient.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
 
-            getThing().getConfiguration().put(CONFIG_PAR_REFRESH_TOKEN, onectaConnectionClient.getRefreshToken());
-
         } else {
             if (getThing().getStatus() != ThingStatus.OFFLINE) {
                 updateStatus(ThingStatus.OFFLINE);
             }
         }
         try {
-            onectaConnectionClient.refreshUnitsData(getThing());
+            onectaConnectionClient.refreshUnitsData();
         } catch (DaikinCommunicationException e) {
             logger.debug("DaikinCommunicationException: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

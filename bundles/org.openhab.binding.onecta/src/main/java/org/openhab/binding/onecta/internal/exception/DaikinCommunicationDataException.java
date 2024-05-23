@@ -12,25 +12,20 @@
  */
 package org.openhab.binding.onecta.internal.exception;
 
-import java.io.IOException;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * @author Alexander Drent - Initial contribution
  */
-@NonNullByDefault
-public class DaikinCommunicationException extends IOException {
+public class DaikinCommunicationDataException extends DaikinCommunicationException {
 
-    public DaikinCommunicationException(String message) {
+    public DaikinCommunicationDataException(String message) {
         super(message);
     }
 
-    public DaikinCommunicationException(Throwable ex) {
+    public DaikinCommunicationDataException(Throwable ex) {
         super(ex);
     }
 
-    public DaikinCommunicationException(String message, Throwable cause) {
+    public DaikinCommunicationDataException(String message, Throwable cause) {
         super(message, cause);
     }
 }

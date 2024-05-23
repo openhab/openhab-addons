@@ -17,8 +17,6 @@ package org.openhab.binding.onecta.internal.exception;
  */
 public class DaikinCommunicationForbiddenException extends DaikinCommunicationException {
 
-    private static final long serialVersionUID = 1L;
-
     public DaikinCommunicationForbiddenException(String message) {
         super(message);
     }

@@ -17,35 +17,10 @@
 				<label>Password</label>
 				<description>Onecta password</description>
 			</parameter>
-			<parameter name="refreshToken" type="text">
-				<label>Onecta Refresh token.</label>
-				<description>Onecta Refresh token is filled after succesfull login. This will be used instead of user/password</description>
-			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="5">
 				<label>Refresh Interval.</label>
 				<description>Interval the device is polled in seconds.</description>
 				<default>60</default>
-			</parameter>
-			<parameter name="rawdataLogging" type="boolean">
-				<label>Drop Raw-data</label>
-				<description>Drop Raw json-data into info logging</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="stubdataFile" type="text">
-				<label>Stub datafile</label>
-				<description>With the stub datafile conecta data input can be simulated. This is just for testing during
-					development.</description>
-				<default></default>
-			</parameter>
-			<parameter name="openhabHost" type="text">
-				<label>OpenHAB host</label>
-				<description>OpenHAB server URL. To access the api.</description>
-				<default>https://localhost:8080</default>
-			</parameter>
-			<parameter name="openhabApiToken" type="text">
-				<label>OpenHab API Token</label>
-				<description>OpenHAB API Token. You can manage all access tokens in your profile settings in the Main UI.</description>
-				<default></default>
 			</parameter>
 		</config-description>
 	</bridge-type>

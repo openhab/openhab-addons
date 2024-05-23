@@ -12,14 +12,8 @@
  */
 package org.openhab.binding.onecta.internal.api;
 
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.CONFIG_PAR_LOGRAWDATA;
-import static org.openhab.binding.onecta.internal.OnectaBridgeConstants.CONFIG_PAR_STUBDATAFILE;
 import static org.openhab.binding.onecta.internal.api.OnectaProperties.*;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 import javax.ws.rs.core.MediaType;
@@ -35,19 +29,16 @@ import org.openhab.binding.onecta.internal.api.dto.commands.CommandOnOf;
 import org.openhab.binding.onecta.internal.api.dto.commands.CommandTrueFalse;
 import org.openhab.binding.onecta.internal.api.dto.units.Unit;
 import org.openhab.binding.onecta.internal.api.dto.units.Units;
+import org.openhab.binding.onecta.internal.exception.DaikinCommunicationDataException;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationForbiddenException;
-import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 /**
- * @author Alexander Drent - Initial contribution
+ * @author Alexander Drent - Initial contributionF
  */
 public class OnectaConnectionClient {
 
@@ -57,8 +48,8 @@ public class OnectaConnectionClient {
     public static final String USER_AGENT_VALUE = "Daikin/1.6.1.4681 CFNetwork/1209 Darwin/20.2.0";
     public static final String HTTPHEADER_X_API_KEY_VALUE = "xw6gvOtBHq5b1pyceadRp6rujSNSZdjx2AqT03iC";
 
-    private static JsonArray rawData = new JsonArray();
-    private static Units onectaData = new Units();
+    private static JsonArray onectaCompleteJsonArrayData = new JsonArray();
+    private static Units onectaUnitsData = new Units();
     private static OnectaSignInClient onectaSignInClient;
     private OnectaConfiguration onectaConfiguration = new OnectaConfiguration();
 
@@ -69,12 +60,11 @@ public class OnectaConnectionClient {
     }
 
     public Units getUnits() {
-        return onectaData;
+        return onectaUnitsData;
     }
 
-    public void startConnecton(String userId, String password, String refreshToken)
-            throws DaikinCommunicationException {
-        onectaSignInClient.signIn(userId, password, refreshToken);
+    public void startConnecton(String userId, String password) throws DaikinCommunicationException {
+        onectaSignInClient.signIn(userId, password);
     }
 
     public Boolean isOnline() {
@@ -153,51 +143,39 @@ public class OnectaConnectionClient {
         return response;
     }
 
-    public void refreshUnitsData(Thing bridgeThing) throws DaikinCommunicationException {
-        Response response = null;
-        String jsonString = "";
-        boolean dataAvailable = false;
-        Boolean logRawData = bridgeThing.getConfiguration().get(CONFIG_PAR_LOGRAWDATA).toString().equals("true");
-        String stubDataFile = bridgeThing.getConfiguration().get(CONFIG_PAR_STUBDATAFILE) == null ? ""
-                : bridgeThing.getConfiguration().get(CONFIG_PAR_STUBDATAFILE).toString();
+    public void refreshUnitsData() throws DaikinCommunicationException {
 
-        if (stubDataFile.isEmpty()) {
-            response = doBearerRequestGet(false);
-            if (logRawData) {
-                logger.info("{}", ((HttpContentResponse) response).getContentAsString());
-            }
-            dataAvailable = (response.getStatus() == HttpStatus.OK_200);
-            jsonString = JsonParser.parseString(((HttpContentResponse) response).getContentAsString()).toString();
-        } else {
+        Response response = doBearerRequestGet(false);
+        String responseString = ((HttpContentResponse) response).getContentAsString();
+
+        logger.trace("Response body: {}", responseString);
+        if (response.getStatus() == HttpStatus.OK_200) {
             try {
-                jsonString = new String(Files.readAllBytes(Paths.get(stubDataFile)), StandardCharsets.UTF_8);
-                dataAvailable = true;
-            } catch (IOException e) {
-                logger.debug("Error reading file :{}", e.getMessage());
-            }
-        }
-
-        if (dataAvailable) {
-            rawData = JsonParser.parseString(jsonString).getAsJsonArray();
-            onectaData.getAll().clear();
-            for (int i = 0; i < rawData.size(); i++) {
-                onectaData.getAll()
-                        .add(Objects.requireNonNull(new Gson().fromJson(rawData.get(i).getAsJsonObject(), Unit.class)));
+                onectaCompleteJsonArrayData = JsonParser.parseString(responseString).getAsJsonArray();
+                onectaUnitsData.getAll().clear();
+                for (int i = 0; i < onectaCompleteJsonArrayData.size(); i++) {
+                    onectaUnitsData.getAll().add(Objects.requireNonNull(
+                            new Gson().fromJson(onectaCompleteJsonArrayData.get(i).getAsJsonObject(), Unit.class)));
+                }
+            } catch (JsonSyntaxException ex) {
+                logger.error("Response body: {}", responseString);
+                throw new DaikinCommunicationDataException(
+                        String.format("Not a valid json response from Onecta received: (%s)", ex.getMessage()));
             }
         } else {
             throw new DaikinCommunicationForbiddenException(
-                    String.format("GetToken resonse (%s) : (%s)", response.getStatus(), jsonString));
+                    String.format("refreshUnitsData resonse (%s) : (%s)", response.getStatus(), responseString));
         }
     }
 
     public Unit getUnit(String unitId) {
-        return onectaData.findById(unitId);
+        return onectaUnitsData.findById(unitId);
     }
 
     public JsonObject getRawData(String unitId) {
         JsonObject jsonObject = null;
-        for (int i = 0; i < rawData.size(); i++) {
-            jsonObject = rawData.get(i).getAsJsonObject();
+        for (int i = 0; i < onectaCompleteJsonArrayData.size(); i++) {
+            jsonObject = onectaCompleteJsonArrayData.get(i).getAsJsonObject();
             if (jsonObject.get("id").getAsString().equals(unitId)) {
                 return jsonObject;
             }

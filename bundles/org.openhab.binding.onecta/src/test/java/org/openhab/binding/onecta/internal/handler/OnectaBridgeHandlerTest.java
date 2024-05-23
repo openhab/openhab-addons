@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.onecta.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -48,7 +47,6 @@ public class OnectaBridgeHandlerTest {
 
     public static final String USERID = "Userid";
     public static final String PASSWORD = "Password";
-    public static final String REFRESH_TOKEN = "ThisIsARefreshToken";
     public static final String UNITID = "ThisIsAUnitID";
     private OnectaBridgeHandler handler;
     Map<String, Object> bridgeProperties = new HashMap<>();
@@ -74,14 +72,13 @@ public class OnectaBridgeHandlerTest {
 
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        bridgeProperties.put(CONFIG_PAR_REFRESH_TOKEN, REFRESH_TOKEN);
         bridgeProperties.put(CONFIG_PAR_USERID, USERID);
         bridgeProperties.put(CONFIG_PAR_PASSWORD, PASSWORD);
         bridgeProperties.put(CONFIG_PAR_REFRESHINTERVAL, "10");
         bridgeProperties.put(CONFIG_PAR_UNITID, UNITID);
 
         thingConfiguration.setProperties(bridgeProperties);
-        when(bridgeMock.getConfiguration()).thenReturn(thingConfiguration);
+        lenient().when(bridgeMock.getConfiguration()).thenReturn(thingConfiguration);
 
         handler = new OnectaBridgeHandler(bridgeMock);
         handler.setCallback(callbackMock);
@@ -104,19 +101,19 @@ public class OnectaBridgeHandlerTest {
 
         Thread.sleep(500);
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
-        verify(onectaConnectionClientMock).startConnecton(eq(USERID), eq(PASSWORD), eq(REFRESH_TOKEN));
+        verify(onectaConnectionClientMock).startConnecton(eq(USERID), eq(PASSWORD));
     }
 
     @Test
     public void initializeShouldCallTheCallbackOfflineByExceptionTest()
             throws DaikinCommunicationException, InterruptedException {
         doThrow(new DaikinCommunicationException("Connection failed")).when(onectaConnectionClientMock)
-                .startConnecton(anyString(), anyString(), anyString());
+                .startConnecton(anyString(), anyString());
 
         handler.initialize();
         Thread.sleep(500);
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
-        verify(onectaConnectionClientMock).startConnecton(eq(USERID), eq(PASSWORD), eq(REFRESH_TOKEN));
+        verify(onectaConnectionClientMock).startConnecton(eq(USERID), eq(PASSWORD));
     }
 
     @Test
@@ -125,7 +122,7 @@ public class OnectaBridgeHandlerTest {
         handler.initialize();
         Thread.sleep(500);
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-        verify(onectaConnectionClientMock).startConnecton(eq(USERID), eq(PASSWORD), eq(REFRESH_TOKEN));
+        verify(onectaConnectionClientMock).startConnecton(eq(USERID), eq(PASSWORD));
     }
 
     @Test
@@ -136,9 +133,6 @@ public class OnectaBridgeHandlerTest {
         privateMethod.setAccessible(true);
 
         when(onectaConnectionClientMock.isOnline()).thenReturn(true);
-        when(onectaConnectionClientMock.getRefreshToken()).thenReturn(REFRESH_TOKEN);
-
-        when(bridgeMock.getConfiguration()).thenReturn(thingConfiguration);
 
         List<Thing> things = new java.util.ArrayList<>(List.of());
 
@@ -154,8 +148,7 @@ public class OnectaBridgeHandlerTest {
         privateMethod.invoke(handler);
 
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
-        assertEquals(REFRESH_TOKEN, handler.getThing().getConfiguration().get(CONFIG_PAR_REFRESH_TOKEN));
-        verify(onectaConnectionClientMock).refreshUnitsData(eq(handler.getThing()));
+        verify(onectaConnectionClientMock).refreshUnitsData();
         verify(onectaDeviceHandlerMock).refreshDevice();
         verify(onectaGatewayHandlerMock).refreshDevice();
         verify(onectaWaterTankHandlerMock).refreshDevice();
@@ -171,8 +164,6 @@ public class OnectaBridgeHandlerTest {
 
         when(onectaConnectionClientMock.isOnline()).thenReturn(false);
 
-        when(bridgeMock.getConfiguration()).thenReturn(thingConfiguration);
-
         List<Thing> things = new java.util.ArrayList<>(List.of());
 
         things.add(new DummyThing(THING_TYPE_CLIMATECONTROL, onectaDeviceHandlerMock, ThingStatus.OFFLINE));
@@ -187,8 +178,7 @@ public class OnectaBridgeHandlerTest {
         privateMethod.invoke(handler);
 
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
-        assertEquals(REFRESH_TOKEN, handler.getThing().getConfiguration().get(CONFIG_PAR_REFRESH_TOKEN));
-        verify(onectaConnectionClientMock).refreshUnitsData(eq(handler.getThing()));
+        verify(onectaConnectionClientMock).refreshUnitsData();
         verify(onectaDeviceHandlerMock, times(0)).refreshDevice();
         verify(onectaGatewayHandlerMock, times(0)).refreshDevice();
         verify(onectaWaterTankHandlerMock, times(0)).refreshDevice();
@@ -204,19 +194,15 @@ public class OnectaBridgeHandlerTest {
 
         when(onectaConnectionClientMock.isOnline()).thenReturn(true);
 
-        when(bridgeMock.getConfiguration()).thenReturn(thingConfiguration);
-        when(onectaConnectionClientMock.getRefreshToken()).thenReturn(REFRESH_TOKEN);
-
         doThrow(new DaikinCommunicationException("Connection failed")).when(onectaConnectionClientMock)
-                .refreshUnitsData(eq(handler.getThing()));
+                .refreshUnitsData();
 
         handler.getThing();
 
         privateMethod.invoke(handler);
 
         verify(callbackMock).statusUpdated(eq(bridgeMock), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
-        assertEquals(REFRESH_TOKEN, handler.getThing().getConfiguration().get(CONFIG_PAR_REFRESH_TOKEN));
-        verify(onectaConnectionClientMock).refreshUnitsData(eq(handler.getThing()));
+        verify(onectaConnectionClientMock).refreshUnitsData();
         verify(onectaDeviceHandlerMock, times(0)).refreshDevice();
         verify(onectaGatewayHandlerMock, times(0)).refreshDevice();
         verify(onectaWaterTankHandlerMock, times(0)).refreshDevice();
