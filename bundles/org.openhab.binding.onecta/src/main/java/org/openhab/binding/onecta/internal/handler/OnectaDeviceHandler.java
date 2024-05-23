@@ -150,9 +150,8 @@ public class OnectaDeviceHandler extends BaseThingHandler {
             }
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception ex) {
-            // catch exceptions and handle it in your binding
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+        } catch (RuntimeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -177,47 +176,64 @@ public class OnectaDeviceHandler extends BaseThingHandler {
 
             updateState(CHANNEL_AC_RAWDATA, getRawData());
 
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_POWER))
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_POWER)) {
                 updateState(CHANNEL_AC_POWER, getPowerOnOff());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_POWERFULMODE))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_POWERFULMODE)) {
                 updateState(CHANNEL_AC_POWERFULMODE, getPowerFulMode());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_OPERATIONMODE))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_OPERATIONMODE)) {
                 updateState(CHANNEL_AC_OPERATIONMODE, getCurrentOperationMode());
+            }
 
             // Set Temp
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TEMP))
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TEMP)) {
                 updateState(CHANNEL_AC_TEMP, getCurrentTemperatureSet());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TEMPMIN))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TEMPMIN)) {
                 updateState(CHANNEL_AC_TEMPMIN, getCurrentTemperatureSetMin());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TEMPMAX))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TEMPMAX)) {
                 updateState(CHANNEL_AC_TEMPMAX, getCurrentTemperatureSetMax());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TEMPSTEP))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TEMPSTEP)) {
                 updateState(CHANNEL_AC_TEMPSTEP, getCurrentTemperatureSetStep());
+            }
 
             // Target temp
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMP))
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMP)) {
                 updateState(CHANNEL_AC_TARGETTEMP, getTargetTemperatur());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMPMIN))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMPMIN)) {
                 updateState(CHANNEL_AC_TARGETTEMPMIN, getTargetTemperaturMin());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMPMAX))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMPMAX)) {
                 updateState(CHANNEL_AC_TARGETTEMPMAX, getTargetTemperaturMax());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMPSTEP))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMPSTEP)) {
                 updateState(CHANNEL_AC_TARGETTEMPSTEP, getTargetTemperaturStep());
+            }
 
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_SETPOINT_LEAVINGWATER_OFFSET))
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_SETPOINT_LEAVINGWATER_OFFSET)) {
                 updateState(CHANNEL_AC_SETPOINT_LEAVINGWATER_OFFSET, getSetpointLeavingWaterOffset());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_SETPOINT_LEAVINGWATER_TEMP))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_SETPOINT_LEAVINGWATER_TEMP)) {
                 updateState(CHANNEL_AC_SETPOINT_LEAVINGWATER_TEMP, getSetpointLeavingWaterTemperature());
+            }
 
             // Fan
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_FANMOVEMENT))
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_FANMOVEMENT)) {
                 updateState(CHANNEL_AC_FANMOVEMENT, getCurrentFanDirection());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_FANSPEED))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_FANSPEED)) {
                 updateState(CHANNEL_AC_FANSPEED, getCurrentFanspeed());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_ECONOMODE))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_ECONOMODE)) {
                 updateState(CHANNEL_AC_ECONOMODE, getEconoMode());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_STREAMER))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_STREAMER)) {
                 updateState(CHANNEL_AC_STREAMER, getStreamerMode());
+            }
 
             updateState(CHANNEL_INDOOR_TEMP, getIndoorTemperature());
             updateState(CHANNEL_OUTDOOR_TEMP, getOutdoorTemperature());
@@ -225,19 +241,24 @@ public class OnectaDeviceHandler extends BaseThingHandler {
             updateState(CHANNEL_INDOOR_HUMIDITY, getIndoorHumidity());
             updateState(CHANNEL_AC_TIMESTAMP, getTimeStamp());
 
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_FANMOVEMENT_HOR))
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_FANMOVEMENT_HOR)) {
                 updateState(CHANNEL_AC_FANMOVEMENT_HOR, getCurrentFanDirectionHor());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_FANMOVEMENT_VER))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_FANMOVEMENT_VER)) {
                 updateState(CHANNEL_AC_FANMOVEMENT_VER, getCurrentFanDirectionVer());
+            }
 
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_HOLIDAYMODE))
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_HOLIDAYMODE)) {
                 updateState(CHANNEL_AC_HOLIDAYMODE, getHolidayMode());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_DEMANDCONTROL))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_DEMANDCONTROL)) {
                 updateState(CHANNEL_AC_DEMANDCONTROL, getDemandControl());
+            }
 
             // DEMANDCONTROL
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_DEMANDCONTROLFIXEDVALUE))
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_DEMANDCONTROLFIXEDVALUE)) {
                 updateState(CHANNEL_AC_DEMANDCONTROLFIXEDVALUE, getDemandControlFixedValue());
+            }
             updateState(CHANNEL_AC_DEMANDCONTROLFIXEDSTEPVALUE, getDemandControlFixedStepValue());
             updateState(CHANNEL_AC_DEMANDCONTROLFIXEDMINVALUE, getDemandControlFixedMinValue());
             updateState(CHANNEL_AC_DEMANDCONTROLFIXEDMAXVALUE, getDemandControlFixedMaxValue());
@@ -306,7 +327,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getRawData() {
         try {
             return new StringType(dataTransService.getRawData().toString());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -314,7 +335,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getPowerOnOff() {
         try {
             return OnOffType.from(dataTransService.getPowerOnOff());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -322,7 +343,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getPowerFulMode() {
         try {
             return OnOffType.from(dataTransService.getPowerFulModeOnOff());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -330,7 +351,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getCurrentOperationMode() {
         try {
             return new StringType(dataTransService.getCurrentOperationMode().toString());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -338,7 +359,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getCurrentFanspeed() {
         try {
             return new StringType(dataTransService.getCurrentFanspeed().toString());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -346,7 +367,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getCurrentTemperatureSet() {
         try {
             return new DecimalType(dataTransService.getCurrentTemperatureSet());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -354,7 +375,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getSetpointLeavingWaterTemperature() {
         try {
             return new DecimalType(dataTransService.getSetpointLeavingWaterTemperature());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -362,7 +383,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getSetpointLeavingWaterOffset() {
         try {
             return new DecimalType(dataTransService.getSetpointLeavingWaterOffset());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -370,7 +391,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getCurrentTemperatureSetMin() {
         try {
             return new DecimalType(dataTransService.getCurrentTemperatureSetMin());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -378,7 +399,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getCurrentTemperatureSetMax() {
         try {
             return new DecimalType(dataTransService.getCurrentTemperatureSetMax());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -386,7 +407,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getCurrentTemperatureSetStep() {
         try {
             return new DecimalType(dataTransService.getCurrentTemperatureSetStep());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -394,7 +415,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getOutdoorTemperature() {
         try {
             return new DecimalType(dataTransService.getOutdoorTemperature());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -402,7 +423,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getIndoorTemperature() {
         try {
             return new DecimalType(dataTransService.getIndoorTemperature());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -410,7 +431,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getLeavingWaterTemperature() {
         try {
             return new DecimalType(dataTransService.getLeavingWaterTemperature());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -418,7 +439,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getTargetTemperatur() {
         try {
             return new DecimalType(dataTransService.getTargetTemperatur());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -426,7 +447,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getTargetTemperaturMax() {
         try {
             return new DecimalType(dataTransService.getTargetTemperaturMax());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -434,7 +455,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getTargetTemperaturMin() {
         try {
             return new DecimalType(dataTransService.getTargetTemperaturMin());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -442,7 +463,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getTargetTemperaturStep() {
         try {
             return new DecimalType(dataTransService.getTargetTemperaturStep());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -450,7 +471,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getDemandControlFixedValue() {
         try {
             return new DecimalType(dataTransService.getDemandControlFixedValue());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -458,7 +479,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getDemandControlFixedStepValue() {
         try {
             return new DecimalType(dataTransService.getDemandControlFixedStepValue());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -466,7 +487,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getDemandControlFixedMinValue() {
         try {
             return new DecimalType(dataTransService.getDemandControlFixedMinValue());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -474,7 +495,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getDemandControlFixedMaxValue() {
         try {
             return new DecimalType(dataTransService.getDemandControlFixedMaxValue());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -482,7 +503,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getIndoorHumidity() {
         try {
             return new DecimalType(dataTransService.getIndoorHumidity());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -490,7 +511,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getTimeStamp() {
         try {
             return new DateTimeType(dataTransService.getTimeStamp());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -498,7 +519,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getEconoMode() {
         try {
             return OnOffType.from(dataTransService.getEconoMode());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -506,7 +527,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getStreamerMode() {
         try {
             return OnOffType.from(dataTransService.getStreamerMode());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -514,7 +535,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getCurrentFanDirectionHor() {
         try {
             return new StringType(dataTransService.getCurrentFanDirectionHor().toString());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -522,7 +543,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getCurrentFanDirectionVer() {
         try {
             return new StringType(dataTransService.getCurrentFanDirectionVer().toString());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -530,7 +551,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getCurrentFanDirection() {
         try {
             return new StringType(dataTransService.getCurrentFanDirection().toString());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -538,7 +559,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getHolidayMode() {
         try {
             return OnOffType.from(dataTransService.getHolidayMode());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -546,7 +567,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getDemandControl() {
         try {
             return new StringType(dataTransService.getDemandControl().toString());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -559,7 +580,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getEnergyHeatingCurrentDay() {
         try {
             return new DecimalType(dataTransService.getConsumptionHeatingWeek()[7 + getCurrentDayOfWeek()]);
-        } catch (Exception e) {
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -567,7 +588,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
     private State getEnergyCoolingCurrentDay() {
         try {
             return new DecimalType(dataTransService.getConsumptionCoolingWeek()[7 + getCurrentDayOfWeek()]);
-        } catch (Exception e) {
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -588,7 +609,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
                 }
             }
             return new DecimalType(Math.round(total * 10) / 10D);
-        } catch (Exception e) {
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -604,7 +625,7 @@ public class OnectaDeviceHandler extends BaseThingHandler {
                 }
             }
             return new DecimalType(Math.round(total * 10) / 10D);
-        } catch (Exception e) {
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
             return UnDefType.UNDEF;
         }
     }

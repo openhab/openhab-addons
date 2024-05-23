@@ -91,7 +91,7 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
     private State getModelInfo() {
         try {
             return new StringType(this.dataTransService.getModelInfo());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -99,7 +99,7 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
     private State getSoftwareVerion() {
         try {
             return new StringType(dataTransService.getSoftwareVersion());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -107,7 +107,7 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
     private State getEepromVerion() {
         try {
             return new StringType(dataTransService.getEepromVerion());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -115,7 +115,7 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
     private State getDryKeepSetting() {
         try {
             return OnOffType.from(dataTransService.getDryKeepSetting());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -123,7 +123,7 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
     private State getFanMotorRotationSpeed() {
         try {
             return new DecimalType(dataTransService.getFanMotorRotationSpeed());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -131,7 +131,7 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
     private State getDeltaD() {
         try {
             return new DecimalType(dataTransService.getDeltaD());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -139,7 +139,7 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
     private State getHeatExchangerTemperature() {
         try {
             return new DecimalType(dataTransService.getHeatExchangerTemperature());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -147,7 +147,7 @@ public class OnectaIndoorUnitHandler extends BaseThingHandler {
     private State getSuctionTemperature() {
         try {
             return new DecimalType(dataTransService.getSuctionTemperature());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }

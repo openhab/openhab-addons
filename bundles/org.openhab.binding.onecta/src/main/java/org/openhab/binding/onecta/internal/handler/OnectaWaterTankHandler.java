@@ -87,9 +87,8 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
             }
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception ex) {
-            // catch exceptions and handle it in your binding
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+        } catch (RuntimeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -111,10 +110,12 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
             // getThing().setLabel(String.format("Daikin Onecta Unit (%s)", dataTransService.getUnitName()));
             getThing().setProperty(PROPERTY_HWT_NAME, dataTransService.getUnitName());
 
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_POWER))
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_POWER)) {
                 updateState(CHANNEL_HWT_POWER, getCurrentOnOff());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_OPERATIONMODE))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_OPERATIONMODE)) {
                 updateState(CHANNEL_AC_OPERATIONMODE, getCurrentOperationMode());
+            }
 
             updateState(CHANNEL_HWT_ERRORCODE, getErrorState());
             updateState(CHANNEL_HWT_IS_IN_EMERGENCY_STATE, getIsInEmergencyState());
@@ -127,14 +128,18 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
 
             updateState(CHANNEL_HWT_HEATUP_MODE, getHeatupMode());
             updateState(CHANNEL_HWT_TANK_TEMPERATURE, getTankTemperatur());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_SETTEMP))
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_SETTEMP)) {
                 updateState(CHANNEL_HWT_SETTEMP, getCurrentTankTemperatureSet());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_SETTEMP_MIN))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_SETTEMP_MIN)) {
                 updateState(CHANNEL_HWT_SETTEMP_MIN, getCurrentTankTemperatureSetMin());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_SETTEMP_MAX))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_SETTEMP_MAX)) {
                 updateState(CHANNEL_HWT_SETTEMP_MAX, getCurrentTankTemperatureSetMax());
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_SETTEMP_STEP))
+            }
+            if (channelsRefreshDelay.isDelayPassed(CHANNEL_HWT_SETTEMP_STEP)) {
                 updateState(CHANNEL_HWT_SETTEMP_STEP, getCurrentTankTemperatureSetStep());
+            }
 
             updateState(CHANNEL_HWT_SETPOINT_MODE, getSetpointMode());
 
@@ -151,7 +156,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
             } else {
                 return UnDefType.UNDEF;
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -159,7 +164,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getCurrentOperationMode() {
         try {
             return new StringType(dataTransService.getCurrentOperationMode().toString());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -167,7 +172,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getSetpointMode() {
         try {
             return new StringType(dataTransService.getSetpointMode().toString());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -175,7 +180,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getIsHolidayModeActive() {
         try {
             return OnOffType.from(dataTransService.getIsHolidayModeActive());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -183,7 +188,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getTankTemperatur() {
         try {
             return new DecimalType(dataTransService.getTankTemperature());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -191,7 +196,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getHeatupMode() {
         try {
             return new StringType(this.dataTransService.getHeatupMode().toString());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -199,7 +204,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getIsInErrorState() {
         try {
             return OnOffType.from(this.dataTransService.getIsInErrorState());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -207,7 +212,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getErrorState() {
         try {
             return new StringType(this.dataTransService.getErrorCode());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -215,7 +220,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getIsInEmergencyState() {
         try {
             return OnOffType.from(this.dataTransService.getIsInEmergencyState());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -223,7 +228,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getIsInInstallerState() {
         try {
             return OnOffType.from(this.dataTransService.getIsInInstallerState());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -231,7 +236,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getIsInWarningState() {
         try {
             return OnOffType.from(this.dataTransService.getIsInWarningState());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -239,7 +244,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getPowerFulMode() {
         try {
             return OnOffType.from(this.dataTransService.getPowerFulModeOnOff());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -247,7 +252,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getCurrentTankTemperatureSet() {
         try {
             return new DecimalType(dataTransService.getCurrentTankTemperatureSet());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -255,7 +260,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getCurrentTankTemperatureSetMin() {
         try {
             return new DecimalType(dataTransService.getCurrentTankTemperatureSetMin());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -263,7 +268,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getCurrentTankTemperatureSetMax() {
         try {
             return new DecimalType(dataTransService.getCurrentTankTemperatureSetMax());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -271,7 +276,7 @@ public class OnectaWaterTankHandler extends BaseThingHandler {
     private State getCurrentTankTemperatureSetStep() {
         try {
             return new DecimalType(dataTransService.getCurrentTankTemperatureSetStep());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }

@@ -96,7 +96,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private State getDaylightSavingTimeEnabled() {
         try {
             return OnOffType.from(this.dataTransService.getDaylightSavingTimeEnabled());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -104,7 +104,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private State getFirmwareVerion() {
         try {
             return new StringType(this.dataTransService.getFirmwareVerion());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -112,7 +112,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private State getIsFirmwareUpdateSupported() {
         try {
             return OnOffType.from(this.dataTransService.getIsFirmwareUpdateSupported());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -120,7 +120,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private State getIsInErrorState() {
         try {
             return OnOffType.from(this.dataTransService.getIsInErrorState());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -128,7 +128,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private State getIsLedEnabled() {
         try {
             return OnOffType.from(this.dataTransService.getIsLedEnabled());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -136,7 +136,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private State getRegionCode() {
         try {
             return new StringType(this.dataTransService.getRegionCode());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -144,7 +144,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private State getSerialNumber() {
         try {
             return new StringType(this.dataTransService.getSerialNumber());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -152,7 +152,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private State getSsid() {
         try {
             return new StringType(this.dataTransService.getSsid());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -160,7 +160,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private State getTimeZone() {
         try {
             return new StringType(this.dataTransService.getTimeZone());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -168,7 +168,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private State getWifiConnectionSsid() {
         try {
             return new StringType(this.dataTransService.getWifiConectionSSid());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }
@@ -176,7 +176,7 @@ public class OnectaGatewayHandler extends BaseThingHandler {
     private State getWifiConnectionStrength() {
         try {
             return new DecimalType(this.dataTransService.getWifiConectionStrength());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             return UnDefType.UNDEF;
         }
     }

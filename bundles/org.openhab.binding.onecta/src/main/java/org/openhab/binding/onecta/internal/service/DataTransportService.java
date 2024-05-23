@@ -100,7 +100,7 @@ public class DataTransportService {
                     .getOperationModes().getFanOperationMode(getCurrentOperationMode()).getFanDirection()
                     .getHorizontal().getCurrentMode().getValue();
             return Enums.FanMovementHor.fromValue(fanMode);
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return Enums.FanMovementHor.NOTAVAILABLE;
         }
     }
@@ -111,7 +111,7 @@ public class DataTransportService {
                     .getOperationModes().getFanOperationMode(getCurrentOperationMode()).getFanDirection().getVertical()
                     .getCurrentMode().getValue();
             return Enums.FanMovementVer.fromValue(fanMode);
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return Enums.FanMovementVer.NOTAVAILABLE;
         }
     }
@@ -142,7 +142,7 @@ public class DataTransportService {
                 default:
                     throw new IllegalArgumentException("Invalid fan direc" + "tion: ");
             }
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return Enums.FanMovement.UNKNOWN;
         }
     }
@@ -160,17 +160,20 @@ public class DataTransportService {
     }
 
     public String getPowerOnOff() {
-        try {
+        if (getManagementPoint(managementPointType) != null
+                && getManagementPoint(managementPointType).getOnOffMode() != null) {
             return getManagementPoint(managementPointType).getOnOffMode().getValue();
-        } catch (Exception e) {
+        } else {
             return null;
         }
     }
 
     public String getPowerFulModeOnOff() {
-        try {
+
+        if (getManagementPoint(managementPointType) != null
+                && getManagementPoint(managementPointType).getPowerfulMode() != null) {
             return getManagementPoint(this.managementPointType).getPowerfulMode().getValue();
-        } catch (Exception e) {
+        } else {
             return null;
         }
     }
@@ -240,7 +243,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
                     .getOperationMode(getCurrentOperationMode()).getSetpoints().getRoomTemperature().getStepValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -250,7 +253,7 @@ public class DataTransportService {
             return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
                     .getOperationMode(getCurrentOperationMode()).getSetpoints().getdomesticHotWaterTemperature()
                     .getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -266,7 +269,7 @@ public class DataTransportService {
             return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
                     .getOperationMode(getCurrentOperationMode()).getSetpoints().getdomesticHotWaterTemperature()
                     .getMinValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -276,7 +279,7 @@ public class DataTransportService {
             return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
                     .getOperationMode(getCurrentOperationMode()).getSetpoints().getdomesticHotWaterTemperature()
                     .getMaxValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -286,7 +289,7 @@ public class DataTransportService {
             return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
                     .getOperationMode(getCurrentOperationMode()).getSetpoints().getdomesticHotWaterTemperature()
                     .getStepValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -295,7 +298,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
                     .getOperationMode(getCurrentOperationMode()).getSetpoints().getLeavingWaterTemperature().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -309,7 +312,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(this.managementPointType).getTemperatureControl().getValue().getOperationModes()
                     .getOperationMode(getCurrentOperationMode()).getSetpoints().getLeavingWaterOffset().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -322,7 +325,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(this.managementPointType).getSensoryData().getValue().getRoomTemperature()
                     .getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -331,7 +334,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(this.managementPointType).getSensoryData().getValue().getLeavingWaterTemperature()
                     .getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -340,7 +343,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(this.managementPointType).getSensoryData().getValue().getTankTemperature()
                     .getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -349,7 +352,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getSensoryData().getValue()
                     .getRoomHumidity().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -357,7 +360,7 @@ public class DataTransportService {
     public ZonedDateTime getTimeStamp() {
         try {
             return ZonedDateTime.parse(unit.getTimestamp());
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -366,7 +369,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getSensoryData().getValue()
                     .getOutdoorTemperature().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -374,7 +377,7 @@ public class DataTransportService {
     public Number getTargetTemperatur() {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getTargetTemperature().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -386,7 +389,7 @@ public class DataTransportService {
     public Number getTargetTemperaturMax() {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getTargetTemperature().getMaxValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -394,7 +397,7 @@ public class DataTransportService {
     public Number getTargetTemperaturMin() {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getTargetTemperature().getMinValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -402,7 +405,7 @@ public class DataTransportService {
     public Number getTargetTemperaturStep() {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getTargetTemperature().getStepValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -410,7 +413,7 @@ public class DataTransportService {
     public String getStreamerMode() {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getStreamerMode().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -422,7 +425,7 @@ public class DataTransportService {
     public String getHolidayMode() {
         try {
             return getManagementPoint(this.managementPointType).getHolidayMode().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -430,7 +433,7 @@ public class DataTransportService {
     public Boolean getIsHolidayModeActive() {
         try {
             return getManagementPoint(this.managementPointType).getisHolidayModeActive().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -438,7 +441,7 @@ public class DataTransportService {
     public Boolean getIsPowerfulModeActive() {
         try {
             return getManagementPoint(this.managementPointType).getIsPowerfulModeActive().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -451,7 +454,7 @@ public class DataTransportService {
         try {
             return Enums.DemandControl.fromValue(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL)
                     .getDemandControl().getValue().getCurrentMode().getValue());
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -464,7 +467,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getDemandControl().getValue().getModes()
                     .getFixedValues().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -473,7 +476,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getDemandControl().getValue().getModes()
                     .getFixedValues().getStepValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -482,7 +485,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getDemandControl().getValue().getModes()
                     .getFixedValues().getMinValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -491,7 +494,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getDemandControl().getValue().getModes()
                     .getFixedValues().getMaxValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -504,7 +507,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
                     .getElectrical().getCooling().getDay();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -513,7 +516,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
                     .getElectrical().getCooling().getWeek();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -522,7 +525,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
                     .getElectrical().getCooling().getMonth();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -531,7 +534,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
                     .getElectrical().getHeating().getDay();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -540,7 +543,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
                     .getElectrical().getHeating().getWeek();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -549,7 +552,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getConsumptionData().getValue()
                     .getElectrical().getHeating().getMonth();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -559,7 +562,7 @@ public class DataTransportService {
     public Boolean getDaylightSavingTimeEnabled() {
         try {
             return getManagementPoint(this.managementPointType).getDaylightSavingTimeEnabled().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -567,7 +570,7 @@ public class DataTransportService {
     public String getFirmwareVerion() {
         try {
             return getManagementPoint(this.managementPointType).getFirmwareVersion().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -575,7 +578,7 @@ public class DataTransportService {
     public Boolean getIsFirmwareUpdateSupported() {
         try {
             return getManagementPoint(this.managementPointType).getIsFirmwareUpdateSupported().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -583,7 +586,7 @@ public class DataTransportService {
     public Boolean getIsInErrorState() {
         try {
             return getManagementPoint(this.managementPointType).getIsInErrorState().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -591,7 +594,7 @@ public class DataTransportService {
     public String getErrorCode() {
         try {
             return getManagementPoint(this.managementPointType).getErrorCode().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -599,7 +602,7 @@ public class DataTransportService {
     public Boolean getIsInEmergencyState() {
         try {
             return getManagementPoint(this.managementPointType).getIsInEmergencyState().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -607,7 +610,7 @@ public class DataTransportService {
     public Boolean getIsInInstallerState() {
         try {
             return getManagementPoint(this.managementPointType).getIsInInstallerState().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -615,7 +618,7 @@ public class DataTransportService {
     public Boolean getIsInWarningState() {
         try {
             return getManagementPoint(this.managementPointType).getIsInWarningState().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -623,7 +626,7 @@ public class DataTransportService {
     public Boolean getIsLedEnabled() {
         try {
             return getManagementPoint(this.managementPointType).getIsLedEnabled().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -631,7 +634,7 @@ public class DataTransportService {
     public String getRegionCode() {
         try {
             return getManagementPoint(this.managementPointType).getRegionCode().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -639,7 +642,7 @@ public class DataTransportService {
     public String getSerialNumber() {
         try {
             return getManagementPoint(this.managementPointType).getSerialNumber().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -647,7 +650,7 @@ public class DataTransportService {
     public String getSsid() {
         try {
             return getManagementPoint(this.managementPointType).getSsid().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -655,7 +658,7 @@ public class DataTransportService {
     public String getTimeZone() {
         try {
             return getManagementPoint(this.managementPointType).getTimeZone().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -663,7 +666,7 @@ public class DataTransportService {
     public String getWifiConectionSSid() {
         try {
             return getManagementPoint(this.managementPointType).getWifiConnectionSSID().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -671,7 +674,7 @@ public class DataTransportService {
     public Integer getWifiConectionStrength() {
         try {
             return getManagementPoint(this.managementPointType).getWifiConnectionStrength().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -679,7 +682,7 @@ public class DataTransportService {
     public String getModelInfo() {
         try {
             return getManagementPoint(this.managementPointType).getModelInfo().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -687,7 +690,7 @@ public class DataTransportService {
     public String getSoftwareVersion() {
         try {
             return getManagementPoint(this.managementPointType).getSoftwareVersion().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -695,7 +698,7 @@ public class DataTransportService {
     public String getEepromVerion() {
         try {
             return getManagementPoint(this.managementPointType).getEepromVersion().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -703,7 +706,7 @@ public class DataTransportService {
     public String getDryKeepSetting() {
         try {
             return getManagementPoint(this.managementPointType).getDryKeepSetting().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -712,7 +715,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(this.managementPointType).getSensoryData().getValue().getFanMotorRotationSpeed()
                     .getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -720,7 +723,7 @@ public class DataTransportService {
     public Number getDeltaD() {
         try {
             return getManagementPoint(this.managementPointType).getSensoryData().getValue().getDeltaD().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -729,7 +732,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(this.managementPointType).getSensoryData().getValue()
                     .getHeatExchangerTemperature().getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -738,7 +741,7 @@ public class DataTransportService {
         try {
             return getManagementPoint(this.managementPointType).getSensoryData().getValue().getSuctionTemperature()
                     .getValue();
-        } catch (Exception e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }

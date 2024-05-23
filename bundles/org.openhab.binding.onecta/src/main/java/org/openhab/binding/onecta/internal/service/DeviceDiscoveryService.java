@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.Unit;
+import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
 import org.openhab.binding.onecta.internal.handler.OnectaBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -51,7 +52,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    public void startScan() throws IllegalArgumentException {
+    public void startScan() {
 
         if (bridgeHandler == null) {
             return;
@@ -70,7 +71,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
                 thingDiscover(unit, ManagementPoint.WATERTANK, THING_TYPE_WATERTANK);
                 thingDiscover(unit, ManagementPoint.INDOORUNIT, THING_TYPE_INDOORUNIT);
             }
-        } catch (Exception e) {
+        } catch (DaikinCommunicationException e) {
             logger.error("Error in DiscoveryService", e);
         }
     }
@@ -79,7 +80,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
 
         if (unit.findManagementPointsByType(onectaManagementPoint.getValue()) != null) {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-            String unitId = unit.getId().toString();
+            String unitId = unit.getId();
             String unitName = unit.findManagementPointsByType(ManagementPoint.CLIMATECONTROL.getValue()).getNameValue();
             unitName = !unitName.isEmpty() ? unitName : unitId;
             Map<String, Object> properties = new LinkedHashMap<>();
