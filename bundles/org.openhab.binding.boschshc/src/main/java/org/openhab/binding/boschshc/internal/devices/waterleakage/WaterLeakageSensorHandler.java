@@ -152,7 +152,7 @@ public class WaterLeakageSensorHandler extends AbstractBatteryPoweredDeviceHandl
         super.processMessage(message);
 
         if (message.messageCode != null && MESSAGE_CODE_TILT_DETECTED.equals(message.messageCode.name)) {
-            updateState(CHANNEL_SENSOR_MOVED, OnOffType.ON);
+            triggerChannel(CHANNEL_SENSOR_MOVED);
         }
     }
 }

@@ -835,10 +835,14 @@
 	</channel-type>
 
 	<channel-type id="sensor-moved">
-		<item-type>Switch</item-type>
+		<kind>trigger</kind>
 		<label>Sensor Moved</label>
 		<description>Triggered when the sensor is moved.</description>
-		<state readOnly="true"/>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tilt</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

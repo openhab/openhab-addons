@@ -349,7 +349,7 @@ Smart water leakage detector.
 | push-notifications         | Switch    | &#9745;  | Indicates whether push notifications are enabled.             |
 | acoustic-signals           | Switch    | &#9745;  | Indicates whether acoustic signals are enabled.               |
 | water-leakage-sensor-check | String    | &#9744;  | Provides the result of the last water leakage sensor check.   |
-| sensor-moved               | Switch    | &#9744;  | Triggered when the sensor is moved.                           |
+| sensor-moved               | Trigger   | &#9744;  | Triggered when the sensor is moved.                           |
 
 ## Limitations
 

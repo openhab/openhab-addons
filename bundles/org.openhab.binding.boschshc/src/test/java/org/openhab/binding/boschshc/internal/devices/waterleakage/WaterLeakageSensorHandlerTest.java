@@ -223,7 +223,7 @@ class WaterLeakageSensorHandlerTest extends AbstractBatteryPoweredDeviceHandlerT
 
         getFixture().processMessage(message);
 
-        verify(getCallback()).stateUpdated(
-                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SENSOR_MOVED), OnOffType.ON);
+        verify(getCallback()).channelTriggered(getThing(),
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SENSOR_MOVED), "");
     }
 }
