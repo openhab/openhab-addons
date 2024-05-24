@@ -13,11 +13,9 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link NhcEnergyMeterEvent} interface is used to pass energyMeters meter events received from the Niko Home
- * Control
+ * The {@link NhcAccessEvent} interface is used to pass door lock events received from the Niko Home Control
  * controller to the consuming client. It is designed to pass events to openHAB handlers that implement this interface.
  * Because of the design, the org.openhab.binding.nikohomecontrol.internal.protocol package can be extracted and used
  * independent of openHAB.
@@ -25,24 +23,31 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public interface NhcEnergyMeterEvent {
+public interface NhcAccessEvent extends NhcBaseEvent {
 
     /**
-     * This method is called when an energyMeter event is received from the Niko Home Control controller.
+     * This method is called when a door bell event is received from the Niko Home Control controller.
      *
-     * @param power current power consumption/production in W (positive for consumption), null for an empty reading
+     * @param state true for bell ringing
      */
-    void energyMeterEvent(@Nullable Integer power);
+    void accessBellEvent(boolean state);
 
     /**
-     * Called to indicate the energyMeter has been initialized.
+     * This method is called when a ring and come in setting event is received from the Niko Home Control controller.
      *
+     * @param state true for bell ringing
      */
-    void energyMeterInitialized();
+    void accessRingAndComeInEvent(boolean state);
 
     /**
-     * Called to indicate the energyMeter has been removed from the Niko Home Control controller.
+     * This method is called when a door lock event is received from the Niko Home Control controller.
      *
+     * @param state true for locked
      */
-    void energyMeterRemoved();
+    void accessDoorLockEvent(boolean state);
+
+    /**
+     * Update video device properties.
+     */
+    void updateVideoDeviceProperties();
 }
