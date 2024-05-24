@@ -76,24 +76,22 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        logger.debug("initialize.");
         config = getConfigAs(OnectaConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
+        try {
+            onectaConnectionClient.startConnecton(thing.getConfiguration().get(CONFIG_PAR_USERID).toString(),
+                    thing.getConfiguration().get(CONFIG_PAR_PASSWORD).toString());
 
-        scheduler.execute(() -> {
-            try {
-                onectaConnectionClient.startConnecton(thing.getConfiguration().get(CONFIG_PAR_USERID).toString(),
-                        thing.getConfiguration().get(CONFIG_PAR_PASSWORD).toString());
-
-                if (onectaConnectionClient.isOnline()) {
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE);
-                }
-            } catch (DaikinCommunicationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            if (onectaConnectionClient.isOnline()) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE);
             }
-        });
+        } catch (DaikinCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 10,
                 Integer.parseInt(thing.getConfiguration().get(CONFIG_PAR_REFRESHINTERVAL).toString()),
@@ -115,41 +113,50 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
 
     private void pollDevices() {
         logger.debug("pollDevices.");
-        if (onectaConnectionClient.isOnline()) {
-            updateStatus(ThingStatus.ONLINE);
 
-        } else {
-            if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                updateStatus(ThingStatus.OFFLINE);
+        if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+            try {
+                logger.debug("Try to restore connection ");
+                onectaConnectionClient.restoreConnecton();
+
+                if (onectaConnectionClient.isOnline()) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } catch (DaikinCommunicationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Try to restore connection. See log for more information. ");
             }
         }
-        try {
-            onectaConnectionClient.refreshUnitsData();
-        } catch (DaikinCommunicationException e) {
-            logger.debug("DaikinCommunicationException: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
 
-        List<Thing> things = getThing().getThings();
+        if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
 
-        for (Thing t : things) {
-            // BaseThingHandler handler;
-            if (t.getStatus() == ThingStatus.ONLINE) {
+            try {
+                onectaConnectionClient.refreshUnitsData();
+            } catch (DaikinCommunicationException e) {
+                logger.debug("DaikinCommunicationException: {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
 
-                if (t.getThingTypeUID().equals(THING_TYPE_CLIMATECONTROL)) {
-                    OnectaDeviceHandler onectaDeviceHandler = (OnectaDeviceHandler) t.getHandler();
-                    onectaDeviceHandler.refreshDevice();
-                } else if (t.getThingTypeUID().equals(THING_TYPE_GATEWAY)) {
-                    OnectaGatewayHandler onectaGatewayHandler = (OnectaGatewayHandler) t.getHandler();
-                    onectaGatewayHandler.refreshDevice();
-                } else if (t.getThingTypeUID().equals(THING_TYPE_WATERTANK)) {
-                    OnectaWaterTankHandler onectaWaterTankHandler = (OnectaWaterTankHandler) t.getHandler();
-                    onectaWaterTankHandler.refreshDevice();
-                } else if (t.getThingTypeUID().equals(THING_TYPE_INDOORUNIT)) {
-                    OnectaIndoorUnitHandler onectaIndoorUnitHandler = (OnectaIndoorUnitHandler) t.getHandler();
-                    onectaIndoorUnitHandler.refreshDevice();
-                } else
-                    continue;
+            List<Thing> things = getThing().getThings();
+            for (Thing t : things) {
+                // BaseThingHandler handler;
+                if (t.getStatus().equals(ThingStatus.ONLINE)) {
+
+                    if (t.getThingTypeUID().equals(THING_TYPE_CLIMATECONTROL)) {
+                        OnectaDeviceHandler onectaDeviceHandler = (OnectaDeviceHandler) t.getHandler();
+                        onectaDeviceHandler.refreshDevice();
+                    } else if (t.getThingTypeUID().equals(THING_TYPE_GATEWAY)) {
+                        OnectaGatewayHandler onectaGatewayHandler = (OnectaGatewayHandler) t.getHandler();
+                        onectaGatewayHandler.refreshDevice();
+                    } else if (t.getThingTypeUID().equals(THING_TYPE_WATERTANK)) {
+                        OnectaWaterTankHandler onectaWaterTankHandler = (OnectaWaterTankHandler) t.getHandler();
+                        onectaWaterTankHandler.refreshDevice();
+                    } else if (t.getThingTypeUID().equals(THING_TYPE_INDOORUNIT)) {
+                        OnectaIndoorUnitHandler onectaIndoorUnitHandler = (OnectaIndoorUnitHandler) t.getHandler();
+                        onectaIndoorUnitHandler.refreshDevice();
+                    } else
+                        continue;
+                }
             }
         }
     }

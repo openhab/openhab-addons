@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onecta.internal.handler.*;
 import org.openhab.binding.onecta.internal.service.DeviceDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -50,17 +49,12 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
             THING_TYPE_CLIMATECONTROL, THING_TYPE_GATEWAY, THING_TYPE_WATERTANK, THING_TYPE_INDOORUNIT);
-    private HttpClientFactory httpClientFactory;
-    private TimeZoneProvider timeZoneProvider;
-    private @Nullable OnectaBridgeHandler bridgeHandler = null;
+
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private OnectaConfiguration onectaConfiguration = new OnectaConfiguration();
 
     @Activate
-    public OnectaBridgeHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference TimeZoneProvider timeZoneProvider) {
-        this.httpClientFactory = httpClientFactory;
-        this.timeZoneProvider = timeZoneProvider;
+    public OnectaBridgeHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         onectaConfiguration.setHttpClientFactory(httpClientFactory);
     }
 
@@ -74,7 +68,7 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals((THING_TYPE_BRIDGE))) {
-            bridgeHandler = new OnectaBridgeHandler((Bridge) thing);
+            OnectaBridgeHandler bridgeHandler = new OnectaBridgeHandler((Bridge) thing);
             onectaConfiguration.setBridgeThing((Bridge) thing);
 
             DeviceDiscoveryService deviceDiscoveryService = new DeviceDiscoveryService(bridgeHandler);
@@ -103,7 +97,6 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
             if (serviceReg != null) {
                 serviceReg.unregister();
                 discoveryServiceRegs.remove(handler.getThing().getUID());
-                bridgeHandler = null;
             }
         }
         super.removeHandler(handler);

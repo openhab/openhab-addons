@@ -53,7 +53,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void startScan() {
-
+        logger.debug("startScan.");
         if (bridgeHandler == null) {
             return;
         }

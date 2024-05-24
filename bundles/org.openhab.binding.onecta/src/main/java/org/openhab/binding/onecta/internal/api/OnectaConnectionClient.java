@@ -71,6 +71,10 @@ public class OnectaConnectionClient {
         onectaSignInClient.signIn(userId, password);
     }
 
+    public void restoreConnecton() throws DaikinCommunicationException {
+        onectaSignInClient.fetchAccessToken();
+    }
+
     public Boolean isOnline() {
         return onectaSignInClient.isOnline();
     }
@@ -79,9 +83,11 @@ public class OnectaConnectionClient {
         Response response = null;
         logger.debug("doBearerRequestGet : Accesstoken refreshed {}", refreshed.toString());
         try {
-            if (!onectaSignInClient.isOnline()) {
-                onectaSignInClient.signIn();
-            }
+            /*
+             * if (!onectaSignInClient.isOnline()) {
+             * onectaSignInClient.signIn();
+             * }
+             */
             response = onectaConfiguration.getHttpClient().newRequest(OnectaProperties.getBaseUrl(""))
                     .method(HttpMethod.GET)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
@@ -102,6 +108,8 @@ public class OnectaConnectionClient {
                 } catch (DaikinCommunicationException ex) {
                     throw new DaikinCommunicationException(ex);
                 }
+            } else {
+                throw new DaikinCommunicationException(e);
             }
         }
 
@@ -115,9 +123,11 @@ public class OnectaConnectionClient {
     private Response doBearerRequestPatch(String url, Object body, Boolean refreshed) {
         Response response = null;
         try {
-            if (!onectaSignInClient.isOnline()) {
-                onectaSignInClient.signIn();
-            }
+            /*
+             * if (!onectaSignInClient.isOnline()) {
+             * onectaSignInClient.signIn();
+             * }
+             */
             response = onectaConfiguration.getHttpClient().newRequest(url).method(HttpMethod.PATCH)
                     .content(new StringContentProvider(new Gson().toJson(body)), MediaType.APPLICATION_JSON)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
