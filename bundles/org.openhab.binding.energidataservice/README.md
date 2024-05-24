@@ -90,6 +90,19 @@ The recommended persistence strategy is `forecast`, as it ensures a clean histor
 Prices from the past 24 hours and all forthcoming prices will be stored.
 Any changes that impact published prices (e.g. selecting or deselecting VAT Profile) will result in the replacement of persisted prices within this period.
 
+##### Manually Persisting History
+
+During extended service interruptions, data unavailability, or openHAB downtime, historic prices may be absent from persistence.
+A console command is provided to fill gaps: `energidataservice update [SpotPrice|GridTariff|SystemTariff|TransmissionGridTariff|ElectricityTax|ReducedElectricitytax] <StartDate> [<EndDate>]`.
+
+Example:
+
+```shell
+energidataservice update spotprice 2024-04-12 2024-04-14
+```
+
+This can also be useful for retrospectively changing the [VAT profile](https://www.openhab.org/addons/transformations/vat/).
+
 #### Grid Tariff
 
 Discounts are automatically taken into account for channel `grid-tariff` so that it represents the actual price.
@@ -156,6 +169,14 @@ A persistence configuration is required for this channel.
 
 Please note that the CO₂ emission channels only apply to Denmark.
 These channels will not be updated when the configured price area is not DK1 or DK2.
+
+#### Trigger Channels
+
+Advanced channel `event` can trigger the following events:
+
+| Event                | Description                    |
+|----------------------|--------------------------------|
+| DAY_AHEAD_AVAILABLE  | Day-ahead prices are available |
 
 ## Thing Actions
 
@@ -543,6 +564,39 @@ logInfo("Spot price two hours from now", price.toString)
 var hourStart = time.toZDT().plusHours(2).truncatedTo(time.ChronoUnit.HOURS);
 var price = items.SpotPrice.history.historicState(hourStart).quantityState;
 console.log("Spot price two hours from now: " + price);
+```
+
+:::
+
+::::
+
+### Trigger Channel Example
+
+:::: tabs
+
+::: tab DSL
+
+```javascript
+rule "Day-ahead event"
+when
+    Channel 'energidataservice:service:energidataservice:electricity#event' triggered 'DAY_AHEAD_AVAILABLE'
+then
+    logInfo("Day-ahead", "Day-ahead prices for the next day are now available")
+end
+```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+rules.when()
+    .channel('energidataservice:service:energidataservice:electricity#event').triggered('DAY_AHEAD_AVAILABLE')
+    .then(event =>
+    {
+        console.log('Day-ahead prices for the next day are now available');
+    })
+    .build("Day-ahead event");
 ```
 
 :::

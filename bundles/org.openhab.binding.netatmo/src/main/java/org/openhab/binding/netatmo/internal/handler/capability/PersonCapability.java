@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.EventSubType;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.Event;
@@ -100,7 +101,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
         }
         lastEventTime = eventTime;
         handler.triggerChannel(CHANNEL_HOME_EVENT,
-                event.getSubTypeDescription().map(st -> st.name()).orElse(event.getEventType().name()));
+                event.getSubTypeDescription().map(EventSubType::name).orElse(event.getEventType().name()));
     }
 
     @Override

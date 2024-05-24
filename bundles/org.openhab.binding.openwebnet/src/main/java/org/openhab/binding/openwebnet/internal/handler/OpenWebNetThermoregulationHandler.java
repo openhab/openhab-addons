@@ -164,8 +164,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.THERMOREGULATION.value().toString();
+    protected Who getManagedWho() {
+        return Who.THERMOREGULATION;
     }
 
     private void handleSetFanSpeed(Command command) {
@@ -309,7 +309,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     }
                 } catch (MalformedFrameException | OWNException e) {
                     logger.warn("handleSetpoint() {}", e.getMessage());
-
                 }
             } else {
                 logger.info("handleSetpoint() Setpoint temperature must be between 5°C and 40°C for thing {}",
