@@ -43,7 +43,7 @@ public class NhcAction1 extends NhcAction {
         void execute();
     }
 
-    private ScheduledExecutorService scheduler;
+    private final ScheduledExecutorService scheduler;
 
     private volatile @Nullable Action rollershutterTask;
     private volatile @Nullable ScheduledFuture<?> rollershutterStopTask;
