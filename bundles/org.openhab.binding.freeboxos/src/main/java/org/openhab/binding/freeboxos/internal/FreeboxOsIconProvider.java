@@ -81,7 +81,7 @@ public class FreeboxOsIconProvider extends AbstractResourceIconProvider {
         String label = getText("label", DEFAULT_LABEL, locale);
         String description = getText("decription", DEFAULT_DESCRIPTION, locale);
 
-        return Set.of(new IconSet(BINDING_ID, label, description, Set.of(Format.SVG)));
+        return Set.of(new IconSet(BINDING_ID, label, description, Set.of(Format.PNG)));
     }
 
     private String getText(String entry, String defaultValue, @Nullable Locale locale) {
