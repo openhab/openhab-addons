@@ -55,7 +55,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(immediate = true, service = { IconProvider.class })
 public class FreeboxOsIconProvider extends AbstractResourceIconProvider {
-    private static final String DEFAULT_DESCRIPTION = "Icons provided by FreeboxOS iteself";
+    private static final String ICONSET_PREFIX = "iconset.%s";
+    private static final String DEFAULT_DESCRIPTION = "Icons provided by FreeboxOS itself";
     private static final String DEFAULT_LABEL = "FreeboxOS Icons";
     private static final int REQUEST_TIMEOUT_MS = 8000;
 
@@ -84,12 +85,8 @@ public class FreeboxOsIconProvider extends AbstractResourceIconProvider {
     }
 
     private String getText(String entry, String defaultValue, @Nullable Locale locale) {
-        String text = defaultValue;
-        if (locale != null) {
-            text = i18nProvider.getText(context.getBundle(), "iconset." + entry, defaultValue, locale);
-            text = text == null ? defaultValue : text;
-        }
-        return text;
+        String text = i18nProvider.getText(context.getBundle(), ICONSET_PREFIX.formatted(entry), defaultValue, locale);
+        return text == null ? defaultValue : text;
     }
 
     @Override
