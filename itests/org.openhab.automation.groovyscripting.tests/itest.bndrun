@@ -62,15 +62,15 @@ Fragment-Host: org.openhab.automation.groovyscripting
 	org.openhab.core.test;version='[4.2.0,4.2.1)',\
 	org.openhab.core.thing;version='[4.2.0,4.2.1)',\
 	org.openhab.core.transform;version='[4.2.0,4.2.1)',\
-	com.fasterxml.jackson.core.jackson-annotations;version='[2.16.0,2.16.1)',\
-	com.fasterxml.jackson.core.jackson-core;version='[2.16.0,2.16.1)',\
-	com.fasterxml.jackson.core.jackson-databind;version='[2.16.0,2.16.1)',\
-	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.16.0,2.16.1)',\
+	com.fasterxml.jackson.core.jackson-annotations;version='[2.17.1,2.17.2)',\
+	com.fasterxml.jackson.core.jackson-core;version='[2.17.1,2.17.2)',\
+	com.fasterxml.jackson.core.jackson-databind;version='[2.17.1,2.17.2)',\
+	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.17.1,2.17.2)',\
 	org.jsr-305;version='[3.0.2,3.0.3)',\
 	org.yaml.snakeyaml;version='[2.2.0,2.2.1)',\
 	org.osgi.service.component.annotations;version='[1.5.1,1.5.2)',\
-	com.fasterxml.jackson.dataformat.jackson-dataformat-xml;version='[2.16.0,2.16.1)',\
-	org.threeten.extra;version='[1.7.2,1.7.3)',\
+	com.fasterxml.jackson.dataformat.jackson-dataformat-xml;version='[2.17.1,2.17.2)',\
+	org.threeten.extra;version='[1.8.0,1.8.1)',\
 	stax2-api;version='[4.2.1,4.2.2)',\
 	org.openhab.core.addon;version='[4.2.0,4.2.1)',\
 	com.sun.jna;version='[5.14.0,5.14.1)',\
@@ -88,6 +88,6 @@ Fragment-Host: org.openhab.automation.groovyscripting
 	org.objectweb.asm.tree.analysis;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.util;version='[9.6.0,9.6.1)',\
 	org.ops4j.pax.logging.pax-logging-api;version='[2.2.7,2.2.8)',\
-	de.focus_shift.jollyday-core;version='[0.27.0,0.27.1)',\
-	de.focus_shift.jollyday-jackson;version='[0.27.0,0.27.1)'
+	de.focus_shift.jollyday-core;version='[0.28.1,0.28.2)',\
+	de.focus_shift.jollyday-jackson;version='[0.28.1,0.28.2)'
 
