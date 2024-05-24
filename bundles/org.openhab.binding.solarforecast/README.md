@@ -268,7 +268,7 @@ Number:Energy           ForecastSolarHome_Actual_SW         "SW Today's forecast
 Number:Energy           ForecastSolarHome_Remaining_SW      "SW Today's remaining forecast till sunset"     { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
 Number:Energy           ForecastSolarHome_Today_SW          "SW Today's total energy forecast"              { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }                                                                           
 
-// estimaion items
+// estimation items
 Group influxdb
 Number:Power            ForecastSolarHome_Power_Estimate        "Power estimations"                         (influxdb)  { channel="solarforecast:fs-site:homeSite:power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }                                                                           
 Number:Energy           ForecastSolarHome_Energy_Estimate       "Energy estimations"                        (influxdb)  { channel="solarforecast:fs-site:homeSite:energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
