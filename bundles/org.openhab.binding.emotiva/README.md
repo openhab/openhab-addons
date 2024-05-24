@@ -18,15 +18,17 @@ The binding automatically discovers devices on your network.
 The Emotiva Processor thing requires the `ipAddress` it can connect to.
 There are more parameters which all have defaults set.
 
-| Parameter       | Values                                                        | Default |
-|-----------------|---------------------------------------------------------------|---------|
-| ipAddress       | IP address of the processor                                   | -       |
-| controlPort     | port number, e.g. 7002                                        | 7002    |
-| notifyPort      | port number, e.g. 7003                                        | 7003    |
-| setupPortTCP    | port number, e.g. 7100                                        | 7100    |
-| menuNotifyPort  | port number, e.g. 7005                                        | 7005    |
-| protocolVersion | Emotiva Network Protocol version, e.g. 3.0                    | 2.0     |
-| keepAlive       | Time between notification update from device, in milliseconds | 7500    |
+| Parameter             | Values                                                        | Default |
+|-----------------------|---------------------------------------------------------------|---------|
+| ipAddress             | IP address of the processor                                   | -       |
+| controlPort           | port number, e.g. 7002                                        | 7002    |
+| notifyPort            | port number, e.g. 7003                                        | 7003    |
+| infoPort              | port number, e.g. 7004                                        | 7004    |
+| setupPortTCP          | port number, e.g. 7100                                        | 7100    |
+| menuNotifyPort        | port number, e.g. 7005                                        | 7005    |
+| protocolVersion       | Emotiva Network Protocol version, e.g. 3.0                    | 2.0     |
+| keepAlive             | Time between notification update from device, in milliseconds | 7500    |
+| retryConnectInMinutes | Time between connection retry, in minutes                     | 2       |
 
 
 ## Channels

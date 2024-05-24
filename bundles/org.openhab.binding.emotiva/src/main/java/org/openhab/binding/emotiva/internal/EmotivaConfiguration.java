@@ -30,9 +30,6 @@ public class EmotivaConfiguration {
     public int infoPort = 7004;
     public int setupPortTCP = 7100;
     public int menuNotifyPort = 7005;
-    public String model = "";
-    public String revision = "";
-    public String dataRevision = "";
     public String protocolVersion = DEFAULT_EMOTIVA_PROTOCOL_VERSION;
     public int keepAlive = DEFAULT_KEEP_ALIVE_IN_MILLISECONDS;
     public int retryConnectInMinutes = DEFAULT_RETRY_INTERVAL_MINUTES;

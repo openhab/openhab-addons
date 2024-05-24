@@ -13,28 +13,7 @@
 package org.openhab.binding.emotiva.internal;
 
 import static java.lang.String.format;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_BAR;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_INPUT1;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_KEEP_ALIVE;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MAIN_VOLUME;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MAIN_VOLUME_DB;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MENU;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MENU_DISPLAY_HIGHLIGHT;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MENU_DISPLAY_PREFIX;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MODE;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MUTE;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_TUNER_CHANNEL;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_ZONE2_MUTE;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_ZONE2_VOLUME;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_ZONE2_VOLUME_DB;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_CONNECTION_RETRIES;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_KEEP_ALIVE_CONSIDERED_LOST_IN_MILLISECONDS;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_KEEP_ALIVE_IN_MILLISECONDS;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.DEFAULT_RETRY_INTERVAL_MINUTES;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.MAP_SOURCES_MAIN_ZONE;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.MAP_SOURCES_ZONE_2;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.MENU_PANEL_CHECKBOX_ON;
-import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.MENU_PANEL_HIGHLIGHTED;
+import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.channelToControlRequest;
 import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.getMenuPanelColumnLabel;
 import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.getMenuPanelRowLabel;
@@ -200,6 +179,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initialize: '{}'", getThing().getUID());
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/message.processor.connecting");
 
         scheduler.execute(this::connect);
     }
@@ -207,8 +187,6 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     private synchronized void connect() {
         final EmotivaConfiguration localConfig = config;
         try {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/message.processor.connecting");
-
             final EmotivaUdpReceivingService notifyListener = new EmotivaUdpReceivingService(localConfig.notifyPort,
                     localConfig, scheduler);
             this.notifyListener = notifyListener;
@@ -289,7 +267,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     private void checkKeepAliveTimestamp() {
 
         if (ThingStatus.ONLINE.equals(getThing().getStatusInfo().getStatus())) {
-            State state = stateMap.get(CHANNEL_KEEP_ALIVE);
+            State state = stateMap.get(CHANNEL_LAST_SEEN);
             if (state instanceof Number value) {
                 Instant lastKeepAliveMessageTimestamp = Instant.ofEpochSecond(value.longValue());
                 Instant deviceGoneGracePeriod = Instant.now().minus(config.keepAlive, ChronoUnit.MILLIS)

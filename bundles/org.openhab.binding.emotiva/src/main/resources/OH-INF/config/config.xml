@@ -45,35 +45,10 @@
 			<default>7100</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="model" type="text" required="false" readOnly="true">
-			<context>model</context>
-			<label>Model Name</label>
-			<description>Device model name</description>
-		</parameter>
-		<parameter name="revision" type="text" required="false" readOnly="true">
-			<context>revision</context>
-			<label>Device Revision</label>
-			<description>Revision for given Emotiva device model</description>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="dataRevision" type="text" required="false" readOnly="true">
-			<context>data-revision</context>
-			<label>Data Revision</label>
-			<description>Data revision for given Emotiva device model</description>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="protocolVersion" type="text" required="false">
 			<context>protocol-revision</context>
 			<label>Protocol Version</label>
 			<description>Protocol version, only change if you know what your doing</description>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="keepAlive" type="integer" required="false" unit="ms">
-			<context>keep-alive</context>
-			<label>Keep Alive Notification</label>
-			<description>The interval, in milliseconds, at which the Emotiva Device will send a "keepAlive"
-				notification
-			</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="retryConnectInMinutes" type="integer" required="false" unit="s">

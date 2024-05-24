@@ -158,7 +158,7 @@ public class EmotivaBindingConstants {
     public static final String CHANNEL_BASS = "general#bass";
     public static final String CHANNEL_WIDTH = "general#width";
     public static final String CHANNEL_HEIGHT = "general#height";
-    public static final String CHANNEL_KEEP_ALIVE = "general#keep-alive";
+    public static final String CHANNEL_LAST_SEEN = "general#last-seen";
     public static final String CHANNEL_BAR = "general#bar";
     public static final String CHANNEL_MENU_DISPLAY_PREFIX = "general#menu-display";
     public static final String CHANNEL_MENU_DISPLAY_HIGHLIGHT = "general#menu-display-highlight";

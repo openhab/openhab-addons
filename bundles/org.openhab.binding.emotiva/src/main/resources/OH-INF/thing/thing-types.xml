@@ -20,6 +20,12 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="model">Unknown Model</property>
+			<property name="revision">Unknown Model Revision</property>
+			<property name="dataRevision">Unknown Data Revision</property>
+		</properties>
+
 		<representation-property>ipAddress</representation-property>
 
 		<config-description-ref uri="thing-type:processor:config"/>
@@ -101,7 +107,9 @@
 			<channel id="width" typeId="volume-speaker-db"/>
 			<channel id="height" typeId="volume-speaker-db"/>
 			<channel id="bar" typeId="bar"/>
-			<channel id="keep-alive" typeId="keep-alive"/>
+
+			<channel id="last-seen" typeId="last-seen"/>
+
 		</channels>
 	</channel-group-type>
 
@@ -466,9 +474,9 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="keep-alive">
+	<channel-type id="last-seen">
 		<item-type>Number:Time</item-type>
-		<label>Keep Alive Timestamp</label>
+		<label>Last Seen</label>
 		<description>Timestamp of last received keepAlive message.</description>
 	</channel-type>
 
