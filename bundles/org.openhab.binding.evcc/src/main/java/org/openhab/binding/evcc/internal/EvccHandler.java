@@ -49,9 +49,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.type.ChannelGroupType;
-import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
-import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -74,8 +71,6 @@ public class EvccHandler extends BaseThingHandler {
 
     private @Nullable Result result;
 
-    private final EvccDynamicTypeProvider typeProvider;
-
     private boolean batteryConfigured = false;
     private boolean gridConfigured = false;
     private boolean pvConfigured = false;
@@ -84,9 +79,8 @@ public class EvccHandler extends BaseThingHandler {
 
     Map<String, Triple<Boolean, Float, ZonedDateTime>> vehiclePlans = new HashMap<>();
 
-    public EvccHandler(Thing thing, EvccDynamicTypeProvider typeProvider) {
+    public EvccHandler(Thing thing) {
         super(thing);
-        this.typeProvider = typeProvider;
     }
 
     @Override
@@ -438,14 +432,12 @@ public class EvccHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleRemoval() {
+    public void dispose() {
         ScheduledFuture<?> statePollingJob = this.statePollingJob;
         if (statePollingJob != null) {
             statePollingJob.cancel(true);
             this.statePollingJob = null;
         }
-        // typeProvider.removeChannelTypesForThing(getThing().getUID());
-        super.handleRemoval();
     }
 
     // Utility functions
@@ -607,8 +599,6 @@ public class EvccHandler extends BaseThingHandler {
             } else {
                 channelGroup = loadpointName + CHANNEL_GROUP_ID_CURRENT;
             }
-
-            createChannelGroup(channelGroup);
 
             createChannel(CHANNEL_HEATING_MIN_TEMPERATURE, channelGroup, CHANNEL_TYPE_UID_HEATING_MIN_TEMPERATURE,
                     "Number:Temperature");
@@ -999,15 +989,6 @@ public class EvccHandler extends BaseThingHandler {
             channel = new ChannelUID(uid, channelGroup, CHANNEL_VEHICLE_PLAN_TIME);
             updateState(channel, new DateTimeType(planValues.getRight()));
         }
-    }
-
-    private void createChannelGroup(String channelGroupTypeId) {
-        ChannelGroupTypeUID channelGroupTypeUID = new ChannelGroupTypeUID(BINDING_ID, channelGroupTypeId);
-        ChannelGroupTypeBuilder builder = ChannelGroupTypeBuilder.instance(channelGroupTypeUID, channelGroupTypeId);
-        ChannelGroupType channelGroupType = builder.build();
-        typeProvider.putChannelGroupType(channelGroupType);
-        logger.info("channelGroupTypeId: {}; channelGroupTypeUID: {}; channelGroupType: {}", channelGroupTypeId,
-                channelGroupTypeUID, channelGroupType);
     }
 
     private void createChannel(String channel, String channelGroupId, ChannelTypeUID channelTypeUID, String itemType) {
