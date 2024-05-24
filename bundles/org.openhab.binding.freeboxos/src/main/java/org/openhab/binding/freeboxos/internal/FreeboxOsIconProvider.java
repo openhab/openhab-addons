@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeboxos.internal.api;
+package org.openhab.binding.freeboxos.internal;
+
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.BINDING_ID;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -31,11 +33,14 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
+import org.openhab.binding.freeboxos.internal.api.FreeboxTlsCertificateProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.ui.icon.AbstractResourceIconProvider;
 import org.openhab.core.ui.icon.IconProvider;
 import org.openhab.core.ui.icon.IconSet;
+import org.openhab.core.ui.icon.IconSet.Format;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -50,17 +55,22 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(immediate = true, service = { IconProvider.class })
 public class FreeboxOsIconProvider extends AbstractResourceIconProvider {
+    private static final String ICONSET_PREFIX = "iconset.%s";
+    private static final String DEFAULT_DESCRIPTION = "Icons provided by FreeboxOS itself";
+    private static final String DEFAULT_LABEL = "FreeboxOS Icons";
+    private static final int REQUEST_TIMEOUT_MS = 8000;
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsIconProvider.class);
-    private static final int REQUEST_TIMEOUT_MS = 8000;
 
     private final HttpClient httpClient;
     private final UriBuilder uriBuilder;
+    private final BundleContext context;
 
     @Activate
-    public FreeboxOsIconProvider(final @Reference TranslationProvider i18nProvider,
+    public FreeboxOsIconProvider(final BundleContext context, final @Reference TranslationProvider i18nProvider,
             final @Reference HttpClientFactory httpClientFactory) {
         super(i18nProvider);
+        this.context = context;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.uriBuilder = UriBuilder.fromPath("/").scheme("http").host(FreeboxTlsCertificateProvider.DEFAULT_NAME)
                 .path("resources/images/home/pictos");
@@ -68,7 +78,15 @@ public class FreeboxOsIconProvider extends AbstractResourceIconProvider {
 
     @Override
     public Set<IconSet> getIconSets(@Nullable Locale locale) {
-        return Set.of();
+        String label = getText("label", DEFAULT_LABEL, locale);
+        String description = getText("decription", DEFAULT_DESCRIPTION, locale);
+
+        return Set.of(new IconSet(BINDING_ID, label, description, Set.of(Format.PNG)));
+    }
+
+    private String getText(String entry, String defaultValue, @Nullable Locale locale) {
+        String text = i18nProvider.getText(context.getBundle(), ICONSET_PREFIX.formatted(entry), defaultValue, locale);
+        return text == null ? defaultValue : text;
     }
 
     @Override
@@ -88,13 +106,14 @@ public class FreeboxOsIconProvider extends AbstractResourceIconProvider {
                 return new ByteArrayInputStream(response.getContent());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error getting icon {}: {}", resourceName, e.getMessage());
+            logger.warn("Error retrieving icon {}: {}", resourceName, e.getMessage());
         }
         return null;
     }
 
     @Override
     protected boolean hasResource(String iconSetId, String resourceName) {
-        return resourceName.contains(".png") && getResource(iconSetId, resourceName) != null;
+        return iconSetId.equals(BINDING_ID) && resourceName.endsWith("png")
+                && getResource(iconSetId, resourceName) != null;
     }
 }
