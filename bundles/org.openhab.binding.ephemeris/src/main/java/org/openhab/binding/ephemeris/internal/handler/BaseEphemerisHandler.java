@@ -12,17 +12,25 @@
  */
 package org.openhab.binding.ephemeris.internal.handler;
 
-import java.time.*;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.*;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.ephemeris.EphemerisManager;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.types.*;
-import org.slf4j.*;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BaseEphemerisHandler} is the base class for Ephemeris Things. It takes care of
@@ -34,8 +42,8 @@ import org.slf4j.*;
 public abstract class BaseEphemerisHandler extends BaseThingHandler {
     private static final int REFRESH_FIRST_HOUR_OF_DAY = 0;
     private static final int REFRESH_FIRST_MINUTE_OF_DAY = 1;
-    private final Logger logger = LoggerFactory.getLogger(BaseEphemerisHandler.class);
 
+    private final Logger logger = LoggerFactory.getLogger(BaseEphemerisHandler.class);
     private final ZoneId zoneId;
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 

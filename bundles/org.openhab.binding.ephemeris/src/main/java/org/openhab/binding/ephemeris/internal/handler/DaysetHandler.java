@@ -14,9 +14,11 @@ package org.openhab.binding.ephemeris.internal.handler;
 
 import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*;
 
-import java.time.*;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
-import org.eclipse.jdt.annotation.*;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ephemeris.internal.configuration.DaysetConfiguration;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.OnOffType;

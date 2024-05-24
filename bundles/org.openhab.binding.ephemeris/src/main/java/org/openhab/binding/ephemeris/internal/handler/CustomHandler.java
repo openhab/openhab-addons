@@ -14,15 +14,20 @@ package org.openhab.binding.ephemeris.internal.handler;
 
 import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*;
 
-import java.io.*;
-import java.time.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
-import org.eclipse.jdt.annotation.*;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ephemeris.internal.configuration.FileConfiguration;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 
 /**
  * The {@link CustomHandler} delivers user defined Jollyday definition events.
