@@ -24,7 +24,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 
 /**
- * The {@link WeekendHandler} delivers system default Ephemeris data.
+ * The {@link WeekendHandler} delivers system default Weekend data.
  *
  * @author Gaël L'hopital - Initial contribution
  */

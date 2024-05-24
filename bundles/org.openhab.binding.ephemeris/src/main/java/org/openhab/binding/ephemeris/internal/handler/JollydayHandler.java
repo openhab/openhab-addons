@@ -43,26 +43,21 @@ public abstract class JollydayHandler extends BaseEphemerisHandler {
 
     @Override
     protected @Nullable String internalUpdate(ZonedDateTime today) {
-        try {
-            String todayEvent = getEvent(today);
-            updateState(CHANNEL_CURRENT_EVENT, toStringType(todayEvent));
+        String todayEvent = getEvent(today);
+        updateState(CHANNEL_CURRENT_EVENT, toStringType(todayEvent));
 
-            String nextEvent = "";
-            ZonedDateTime nextDay = today;
+        String nextEvent = null;
+        ZonedDateTime nextDay = today;
 
-            for (int offset = 1; offset < 366 && (nextEvent == null || nextEvent.isEmpty()); offset++) {
-                nextDay = today.plusDays(offset);
-                nextEvent = getEvent(nextDay);
-            }
-
-            updateState(CHANNEL_NEXT_EVENT, toStringType(nextEvent));
-            updateState(CHANNEL_NEXT_REMAINING,
-                    new QuantityType<>(Duration.between(today, nextDay).toDays(), Units.DAY));
-            updateState(CHANNEL_NEXT_START, new DateTimeType(nextDay));
-            return null;
-        } catch (IllegalStateException e) {
-            return "Unable to access Ephemeris data";
+        for (int offset = 1; offset < 366 && (nextEvent == null || nextEvent.isEmpty()); offset++) {
+            nextDay = today.plusDays(offset);
+            nextEvent = getEvent(nextDay);
         }
+
+        updateState(CHANNEL_NEXT_EVENT, toStringType(nextEvent));
+        updateState(CHANNEL_NEXT_REMAINING, new QuantityType<>(Duration.between(today, nextDay).toDays(), Units.DAY));
+        updateState(CHANNEL_NEXT_START, nextEvent != null ? new DateTimeType(nextDay) : UnDefType.UNDEF);
+        return null;
     }
 
     protected abstract @Nullable String getEvent(ZonedDateTime day);

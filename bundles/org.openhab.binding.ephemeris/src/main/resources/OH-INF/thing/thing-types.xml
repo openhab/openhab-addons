@@ -62,11 +62,11 @@
 
 		<channels>
 			<channel id="today" typeId="in-dayset">
-				<label>Today in Dayset</label>
+				<label>Today In Dayset</label>
 				<description>Set to ON if today is in the given dayset, OFF in the other case</description>
 			</channel>
 			<channel id="tomorrow" typeId="in-dayset">
-				<label>Tomorrow in Dayset</label>
+				<label>Tomorrow In Dayset</label>
 				<description>Set to ON if tomorrow is in the given dayset, OFF in the other case</description>
 			</channel>
 		</channels>
@@ -82,7 +82,7 @@
 
 	<thing-type id="weekend">
 		<label>Weekend</label>
-		<description>Events based on the system default week-end dayset</description>
+		<description>Events based on the system default weekend dayset</description>
 
 		<channels>
 			<channel id="today" typeId="in-dayset">

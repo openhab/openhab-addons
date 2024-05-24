@@ -45,25 +45,29 @@ public class CustomHandler extends JollydayHandler {
     @Override
     public void initialize() {
         FileConfiguration config = getConfigAs(FileConfiguration.class);
-        definitionFile = Optional.of(new File(BINDING_DATA_PATH, config.fileName));
-        super.initialize();
+        File file = new File(BINDING_DATA_PATH, config.fileName);
+        if (file.exists()) {
+            definitionFile = Optional.of(file);
+            super.initialize();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Missing file: %s".formatted(file.getAbsolutePath()));
+        }
     }
 
     @Override
     protected @Nullable String internalUpdate(ZonedDateTime today) {
-        if (definitionFile.isPresent()) {
-            File file = definitionFile.get();
-            if (file.exists()) {
-                String event = getEvent(today);
-                updateState(CHANNEL_EVENT_TODAY, OnOffType.from(event != null));
+        String event = getEvent(today);
+        updateState(CHANNEL_EVENT_TODAY, OnOffType.from(event != null));
 
-                event = getEvent(today.plusDays(1));
-                updateState(CHANNEL_EVENT_TOMORROW, OnOffType.from(event != null));
-                return super.internalUpdate(today);
-            }
-            return "Missing file: %s".formatted(file.getAbsolutePath());
+        event = getEvent(today.plusDays(1));
+        updateState(CHANNEL_EVENT_TOMORROW, OnOffType.from(event != null));
+
+        // Thing could have been set to OFFLINE when calling getEvent
+        if (!thing.getStatus().equals(ThingStatus.ONLINE)) {
+            return null;
         }
-        throw new IllegalArgumentException("Initialization problem, please file a bug.");
+        return super.internalUpdate(today);
     }
 
     @Override

@@ -35,6 +35,8 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EphemerisHandlerFactory} is responsible for creating things and thing
@@ -48,6 +50,7 @@ public class EphemerisHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CUSTOM, THING_TYPE_HOLIDAY,
             THING_TYPE_DAYSET, THING_TYPE_WEEKEND);
 
+    private final Logger logger = LoggerFactory.getLogger(EphemerisHandlerFactory.class);
     private final EphemerisManager ephemerisManager;
     private final ZoneId zoneId;
     private final EphemerisDescriptionProvider descriptionProvider;
@@ -61,7 +64,8 @@ public class EphemerisHandlerFactory extends BaseThingHandlerFactory {
         this.descriptionProvider = descriptionProvider;
         File folder = new File(BINDING_DATA_PATH);
         if (!folder.exists()) {
-            folder.mkdirs();
+            logger.info("Please, create the folder '{}' to store your custom Jollyday definition files.",
+                    BINDING_DATA_PATH);
         }
     }
 

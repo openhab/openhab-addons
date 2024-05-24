@@ -25,7 +25,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 
 /**
- * The {@link DaysetHandler} delivers system default Ephemeris data.
+ * The {@link DaysetHandler} delivers system default dayset data.
  *
  * @author Gaël L'hopital - Initial contribution
  */
