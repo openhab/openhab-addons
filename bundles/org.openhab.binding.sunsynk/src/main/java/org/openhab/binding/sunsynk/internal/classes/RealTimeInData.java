@@ -27,9 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-
 public class RealTimeInData {
-
     private int code;
     private String msg = "";
     private boolean success;

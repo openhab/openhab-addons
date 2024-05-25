@@ -24,9 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-
 public class APIdata {
-
     public static String static_access_token = "";
     private String access_token = "";
     private String refresh_token = "";

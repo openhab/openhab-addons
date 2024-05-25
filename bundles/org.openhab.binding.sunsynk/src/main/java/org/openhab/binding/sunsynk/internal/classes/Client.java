@@ -21,9 +21,7 @@ import java.util.Optional;
  */
 
 // @NonNullByDefault
-
 public class Client {
-
     private int code;
     private String msg = "";
     private boolean success;

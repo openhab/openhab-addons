@@ -4,9 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-
-	<!-- Bridge Thing Type -->
-
 	<bridge-type id="account">
 		<label>SunSynk Account</label>
 		<description>Access to SunSynk Account. Used to discover plants and inverters tied to account.</description>
@@ -48,16 +45,12 @@
 
 	</bridge-type>
 
-
-	<!-- Inverter Thing Type -->
 	<thing-type id="inverter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>SunSynk Inverter</label>
 		<description>Inverter thing for SunSynk Binding.</description>
-		<!-- Comment this in for Things which need a Bridge to function.
-		-->
 
 		<channels>
 			<channel id="interval-1-grid-charge" typeId="grid-charge"/>
@@ -116,33 +109,24 @@
 
 		<config-description>
 			<parameter name="sn" type="text" required="true">
-				<label>Sun Synk Inverter Serial</label>
+				<label>Inverter Serial Number</label>
 				<description>Serial number of the inverter from Sun Synk Connect.</description>
 			</parameter>
 			<parameter name="alias" type="text" required="true">
-				<label>Sun Synk Inverter Name</label>
+				<label>Inverter Name</label>
 				<description>Name of inverter from Sun Synk Connect.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="true">
-				<label>Refresh time interval.</label>
+				<label>Refresh Interval.</label>
 				<description>Time in seconds to retrieve status from Sun Synk Connect services. Greater than 60 seconds.</description>
 				<default> 60 </default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
-
 	</thing-type>
 
 	<!-- Plant Thing Type -->
-	<!--
-		<thing-type id="plant">
-		<supported-bridge-type-refs>
-		<bridge-type-ref id="sunsynkaccount" />
-		</supported-bridge-type-refs>
-	-->
-	<!-- Comment this in for Things which need a Bridge to function.
-	-->
 	<thing-type id="plant">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="sunsynkaccount"/>
@@ -181,68 +165,67 @@
 
 	<channel-type id="grid-time" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Grid charge interval start time</label>
-		<description>"24hr time for the start of the interval. 00:00 to 23:55 are valid in 5 min increments with leading zero
-			on the hour and minute. Times must be in ascending order. ".</description>
+		<label>Grid Charge Time</label>
+		<description>"Grid charging interval start time. Use 24hr time 00:00 to 23:55 are valid in 5 min increments with leading zero
+			on the hour and minute. Interval times must be in ascending order."</description>
 		<state readOnly="false"/> <!--- pattern="%1$tH:%1$tM"/> -->
 	</channel-type>
 
 	<channel-type id="grid-charge" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Grid charge this interval</label>
-		<description>charge the inverter battery from the grid.</description>
+		<label>Grid Charge</label>
+		<description>Charge the inverter battery from the grid during this interval.</description>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="gen-charge" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Generator (auxilary) charge this interval</label>
-		<description>charge the inverter battery from the generator auxilary.</description>
+		<label>Generator (AUX) Charge</label>
+		<description>Charge the inverter battery from the generator (auxilary) during this interval.</description>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="battery-target" advanced="true">
 		<item-type>Number</item-type>
 		<label>Target Charge Level</label>
+		<description>the desired charge level of the battery (%).</description>
 		<category>Battery</category>
 		<state min="0" max="100" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="power-charge-limit" advanced="true">
 		<item-type>Number</item-type>
-		<label>Maximum charge rate</label>
+		<label>Maximum Charge Rate</label>
+		<description>maximum charge power desired (limited by inverter capability).</description>
 		<category>Inverter</category>
 		<state min="0" max="100" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="control-timer" advanced="true">
 		<item-type>Switch</item-type>
-		<label>System Mode Timer</label>
+		<label>System Timer</label>
 		<description>Use the system mode timer to control battery charge discharge.</description>
 		<state readOnly="false" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="control-pattern" advanced="true">
 		<item-type>Number</item-type>
-		<label>System Mode Energy Pattern</label>
-		<description>'0' is Priority Battery and '1' is Priority Load.</description>
+		<label>System Energy Pattern</label>
+		<description>Set the system mode energy pattern to '0' priority battery or '1' priority load.</description>
 		<state min="0" max="1" readOnly="false" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="control-work-mode" advanced="true">
 		<item-type>Number</item-type>
 		<label>System Work Mode</label>
-		<description>'0' is Selling First; '1' is Zero-Export + Limted to Load and '2' is Limited to Home.</description>
+		<description>Set the work mode to '0' selling First; '1' izero-export + limted to load or '2' limited to home.</description>
 		<state min="0" max="2" readOnly="false" pattern="%d"/>
 	</channel-type>
-
-
-
 
 	<!-- plant-status Channel Type -->
 	<channel-type id="plant-status">
 		<item-type>String</item-type>
-		<label>Current State</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>Current State</label>
 		<description>State of plant</description>
 		<state readOnly="true" pattern="%s">
 			<options>
