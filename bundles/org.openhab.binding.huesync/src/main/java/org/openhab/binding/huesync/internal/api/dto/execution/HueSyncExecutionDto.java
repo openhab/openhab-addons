@@ -10,19 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.huesync.internal.handler.tasks;
+package org.openhab.binding.huesync.internal.api.dto.execution;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDtoDetailed;
-import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmiDto;
 
 /**
  * 
- * @author Patrik Gfeller - Initial contribution
+ * @author Patrik Gfeller - Initial Contribution
+ * 
  */
 @NonNullByDefault
-public class HueSyncUpdateInfo {
-    public @Nullable HueSyncDeviceDtoDetailed deviceStatus;
-    public @Nullable HueSyncHdmiDto hdmiStatus;
+public class HueSyncExecutionDto {
 }

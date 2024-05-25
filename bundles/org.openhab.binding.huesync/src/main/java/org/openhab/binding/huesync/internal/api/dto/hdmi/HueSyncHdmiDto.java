@@ -21,13 +21,13 @@ import org.eclipse.jdt.annotation.Nullable;
  * 
  */
 @NonNullByDefault
-public class HueSyncHdmiStatus {
-    public @Nullable HueSyncHdmiStatusConnection input1;
-    public @Nullable HueSyncHdmiStatusConnection input2;
-    public @Nullable HueSyncHdmiStatusConnection input3;
-    public @Nullable HueSyncHdmiStatusConnection input4;
+public class HueSyncHdmiDto {
+    public @Nullable HueSyncHdmiDtoConnectionInfo input1;
+    public @Nullable HueSyncHdmiDtoConnectionInfo input2;
+    public @Nullable HueSyncHdmiDtoConnectionInfo input3;
+    public @Nullable HueSyncHdmiDtoConnectionInfo input4;
 
-    public @Nullable HueSyncHdmiStatusConnection output;
+    public @Nullable HueSyncHdmiDtoConnectionInfo output;
 
     /** <horizontal pixels> x <vertical pixels> @ <framerate fpks> – <HDR> */
     public @Nullable String contentSpecs;

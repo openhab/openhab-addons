@@ -14,7 +14,6 @@ package org.openhab.binding.huesync.internal.api.dto.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfoCapabilities;
 
 /**
  * HDMI Sync Box Device Information DTO
@@ -26,7 +25,7 @@ import org.openhab.binding.huesync.internal.api.dto.HueSyncDeviceInfoCapabilitie
  *      HDMI Sync Box API</a>
  */
 @NonNullByDefault
-public class HueSyncDeviceStatus {
+public class HueSyncDeviceDto {
     /** Friendly name of the device */
     public @Nullable String name;
     /** Device Type identifier */
@@ -59,7 +58,7 @@ public class HueSyncDeviceStatus {
     public @Nullable String wifiState;
     public @Nullable String ipAddress;
 
-    public @Nullable HueSyncDeviceInfoCapabilities capabilities;
+    public @Nullable HueSyncDeviceDtoCapabilitiesInfo capabilities;
 
     public boolean beta;
     public boolean overheating;

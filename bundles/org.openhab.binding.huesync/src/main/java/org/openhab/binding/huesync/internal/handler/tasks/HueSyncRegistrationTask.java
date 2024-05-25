@@ -16,8 +16,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceStatus;
-import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDto;
+import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationDto;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.thing.ThingStatus;
@@ -33,13 +33,13 @@ public class HueSyncRegistrationTask implements Runnable {
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncRegistrationTask.class);
 
     private HueSyncDeviceConnection connection;
-    private HueSyncDeviceStatus deviceInfo;
+    private HueSyncDeviceDto deviceInfo;
 
-    private Consumer<HueSyncRegistration> action;
+    private Consumer<HueSyncRegistrationDto> action;
     private Supplier<ThingStatus> status;
 
-    public HueSyncRegistrationTask(HueSyncDeviceConnection connection, HueSyncDeviceStatus deviceInfo,
-            Supplier<ThingStatus> status, Consumer<HueSyncRegistration> action) {
+    public HueSyncRegistrationTask(HueSyncDeviceConnection connection, HueSyncDeviceDto deviceInfo,
+            Supplier<ThingStatus> status, Consumer<HueSyncRegistrationDto> action) {
 
         this.connection = connection;
         this.deviceInfo = deviceInfo;
@@ -55,7 +55,7 @@ public class HueSyncRegistrationTask implements Runnable {
                         this.deviceInfo.deviceType, this.deviceInfo.uniqueId);
 
                 if (this.status.get() == ThingStatus.OFFLINE) {
-                    HueSyncRegistration registration = this.connection.registerDevice(deviceInfo.uniqueId);
+                    HueSyncRegistrationDto registration = this.connection.registerDevice(deviceInfo.uniqueId);
 
                     if (registration != null) {
                         this.action.accept(registration);

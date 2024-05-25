@@ -28,9 +28,9 @@ import org.eclipse.jdt.annotation.Nullable;
  *      HDMI Sync Box API</a>
  */
 @NonNullByDefault
-public class HueSyncDetailedDeviceStatus extends HueSyncDeviceStatus {
-    public @Nullable HueSyncDetailedDeviceStatusWifi wifi;
-    public @Nullable HueSyncDetailedDeviceStatusUpdate update;
+public class HueSyncDeviceDtoDetailed extends HueSyncDeviceDto {
+    public @Nullable HueSyncDeviceDtoDetailedWifiInfo wifi;
+    public @Nullable HueSyncDeviceDtoDetailedUpdateInfo update;
 
     /** UTC time when last check for update was performed. */
     public @Nullable Date lastCheckedUpdate;

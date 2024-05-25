@@ -10,23 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.huesync.internal.api.dto;
+package org.openhab.binding.huesync.internal.api.dto.registration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * HDMI Sync Box Device Information Capabilities DTO
  * 
  * @author Patrik Gfeller - Initial Contribution
- * 
- * @see <a href=
- *      "https://developers.meethue.com/develop/hue-entertainment/hue-hdmi-sync-box-api/#Resource%20Table">Hue
- *      HDMI Sync Box API</a>
  */
 @NonNullByDefault
-public class HueSyncDeviceInfoCapabilities {
-    /** The total number of IR codes configurable */
-    public int maxIrCodes;
-    /** The total number of Presets configurable */
-    public int maxPresets;
+public class HueSyncRegistrationDto {
+    public @Nullable String registrationId;
+    public @Nullable String accessToken;
 }
