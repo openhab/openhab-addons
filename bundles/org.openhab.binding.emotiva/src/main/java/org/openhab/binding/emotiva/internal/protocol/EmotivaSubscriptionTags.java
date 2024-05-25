@@ -84,7 +84,7 @@ public enum EmotivaSubscriptionTags {
     menu_update("menu-update", STRING, CHANNEL_MENU_DISPLAY_PREFIX),
 
     /* Protocol V3 notify tags */
-    keepAlive("keepAlive", NUMBER_TIME, CHANNEL_LAST_SEEN),
+    keepAlive("keepAlive", NUMBER_TIME, LAST_SEEN_STATE_NAME),
     goodBye("goodBye", GOODBYE, ""),
     bar_update("bar-update", STRING, CHANNEL_BAR),
     width("width", DIMENSIONLESS_DECIBEL, CHANNEL_WIDTH),

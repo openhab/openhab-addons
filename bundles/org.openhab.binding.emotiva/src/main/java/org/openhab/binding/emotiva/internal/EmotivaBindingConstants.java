@@ -51,6 +51,9 @@ public class EmotivaBindingConstants {
     /** Default Emotiva device keep alive in milliseconds. {@link ControlDTO} */
     static int DEFAULT_KEEP_ALIVE_IN_MILLISECONDS = 7500;
 
+    /** State name for storing keepAlive timestamp messages */
+    public static String LAST_SEEN_STATE_NAME = "no-channel#last-seen";
+
     /** Default Emotiva device considered list in milliseconds. {@link ControlDTO} */
     static int DEFAULT_KEEP_ALIVE_CONSIDERED_LOST_IN_MILLISECONDS = 30000;
 
@@ -158,7 +161,6 @@ public class EmotivaBindingConstants {
     public static final String CHANNEL_BASS = "general#bass";
     public static final String CHANNEL_WIDTH = "general#width";
     public static final String CHANNEL_HEIGHT = "general#height";
-    public static final String CHANNEL_LAST_SEEN = "general#last-seen";
     public static final String CHANNEL_BAR = "general#bar";
     public static final String CHANNEL_MENU_DISPLAY_PREFIX = "general#menu-display";
     public static final String CHANNEL_MENU_DISPLAY_HIGHLIGHT = "general#menu-display-highlight";

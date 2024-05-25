@@ -108,8 +108,6 @@
 			<channel id="height" typeId="volume-speaker-db"/>
 			<channel id="bar" typeId="bar"/>
 
-			<channel id="last-seen" typeId="last-seen"/>
-
 		</channels>
 	</channel-group-type>
 
@@ -472,12 +470,6 @@
 		<label>Front Panel Bar</label>
 		<description>Text displayed on front panel bar of device.</description>
 		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="last-seen">
-		<item-type>Number:Time</item-type>
-		<label>Last Seen</label>
-		<description>Timestamp of last received keepAlive message.</description>
 	</channel-type>
 
 	<channel-type id="menu-display">

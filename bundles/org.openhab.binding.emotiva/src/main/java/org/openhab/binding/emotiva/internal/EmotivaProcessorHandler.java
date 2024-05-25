@@ -267,7 +267,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     private void checkKeepAliveTimestamp() {
 
         if (ThingStatus.ONLINE.equals(getThing().getStatusInfo().getStatus())) {
-            State state = stateMap.get(CHANNEL_LAST_SEEN);
+            State state = stateMap.get(LAST_SEEN_STATE_NAME);
             if (state instanceof Number value) {
                 Instant lastKeepAliveMessageTimestamp = Instant.ofEpochSecond(value.longValue());
                 Instant deviceGoneGracePeriod = Instant.now().minus(config.keepAlive, ChronoUnit.MILLIS)
