@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 
-// "data":{"access_token":"xxxxxxx","token_type":"bearer","refresh_token":"xxxxxxxx","expires_in":258669,"scope":"all"},"success":true}
 public class APIdata {
 
     public static String static_access_token = "";
