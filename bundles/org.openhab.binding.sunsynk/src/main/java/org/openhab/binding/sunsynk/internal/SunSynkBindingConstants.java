@@ -29,11 +29,8 @@ public class SunSynkBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(BINDING_ID, "inverter");
-    public static final ThingTypeUID THING_TYPE_PLANT = new ThingTypeUID(BINDING_ID, "plant");
 
     // List of all Channel ids
-    public static final String PLANT_STATUS = "plant-status";
-
     public static final String CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE = "interval-1-grid-charge";
     public static final String CHANNEL_BATTERY_INTERVAL_2_GRID_CHARGE = "interval-2-grid-charge";
     public static final String CHANNEL_BATTERY_INTERVAL_3_GRID_CHARGE = "interval-3-grid-charge";
@@ -89,6 +86,7 @@ public class SunSynkBindingConstants {
     public static final String CHANNEL_INVERTER_CONTROL_TIMER = "inverter-control-timer";
     public static final String CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN = "inverter-control-energy-pattern";
     public static final String CHANNEL_INVERTER_CONTROL_WORK_MODE = "inverter-control-work-mode";
+
     // Thing Discovery
     public static final String CONFIG_SECRET = "access_token";
     public static final String CONFIG_GATE_SERIAL = "gsn";
