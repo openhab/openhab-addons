@@ -409,7 +409,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             logger.trace("result of getDocument for uri '{}' (status code {}):\r\n{}", uri, status, result);
 
             if (!HttpStatus.isSuccess(status)) {
-                throw new HttpCommunicationException("Error retrieving document for uri '{}'", status);
+                throw new HttpCommunicationException("Error retrieving document for uri '" + uri + "'", status);
             }
 
             if (result != null && !result.isBlank()) {
@@ -458,7 +458,7 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             logger.trace("result of postDocument for uri '{}' (status code {}):\r\n{}", uri, status, result);
 
             if (!HttpStatus.isSuccess(status)) {
-                throw new HttpCommunicationException("Error retrieving document for uri '{}'", status);
+                throw new HttpCommunicationException("Error retrieving document for uri '" + uri + "'", status);
             }
 
             if (result != null && !result.isBlank()) {
