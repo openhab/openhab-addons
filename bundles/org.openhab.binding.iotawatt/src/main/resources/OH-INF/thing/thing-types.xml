@@ -42,7 +42,7 @@
 		<item-type>Number:Frequency</item-type>
 		<label>AC Frequency</label>
 		<description>The current AC frequency.</description>
-		<state pattern="%.2f Hz" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-factor">
 		<item-type>Number:Dimensionless</item-type>
@@ -54,19 +54,19 @@
 		<item-type>Number:Power</item-type>
 		<label>Apparent Power</label>
 		<description>The current apparent power.</description>
-		<state pattern="%.2f VA" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactive-power">
 		<item-type>Number:Power</item-type>
 		<label>Reactive Power</label>
 		<description>The current reactive power.</description>
-		<state pattern="%.2f VAR" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactive-power-hour">
 		<item-type>Number:Energy</item-type>
 		<label>Reactive Power Hour</label>
 		<description>The current reactive power hour.</description>
-		<state pattern="%.2f VARh" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
@@ -77,7 +77,7 @@
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
 		</tags>
-		<state pattern="%.3f V" readOnly="true">
+		<state pattern="%.3f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="watts">
@@ -89,7 +89,7 @@
 			<tag>Measurement</tag>
 			<tag>Power</tag>
 		</tags>
-		<state pattern="%.2f W" readOnly="true">
+		<state pattern="%.2f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="phase">
