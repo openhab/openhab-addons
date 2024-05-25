@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Mark Brooks - Initial contribution
  */
 @NonNullByDefault
-public class RestApiException extends RuntimeException {
+public class RestApiException extends Exception {
     private static final long serialVersionUID = -6340681561578357625L;
 
     public RestApiException(String message) {

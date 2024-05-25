@@ -56,47 +56,47 @@ public class FanRestApi {
     }
 
     @Nullable
-    public ShadowBufferDto getShadowBuffer() {
+    public ShadowBufferDto getShadowBuffer() throws RestApiException {
         return doPost("{\"queryDynamicShadowData\" : 1}");
     }
 
     @Nullable
-    public ShadowBufferDto setFanPower(boolean power) {
+    public ShadowBufferDto setFanPower(boolean power) throws RestApiException {
         return doPost(String.format("{\"fanOn\" : %s}", String.valueOf(power)));
     }
 
     @Nullable
-    public ShadowBufferDto setFanSpeed(int speed) {
+    public ShadowBufferDto setFanSpeed(int speed) throws RestApiException {
         return doPost(String.format("{\"fanSpeed\" : %d}", speed));
     }
 
     @Nullable
-    public ShadowBufferDto setFanDirection(ShadowBufferDto.FanDirection direction) {
+    public ShadowBufferDto setFanDirection(ShadowBufferDto.FanDirection direction) throws RestApiException {
         return doPost(String.format("{\"fanDirection\" : \"%s\"}", direction.name()));
     }
 
     @Nullable
-    public ShadowBufferDto setWindPower(boolean power) {
+    public ShadowBufferDto setWindPower(boolean power) throws RestApiException {
         return doPost(String.format("{\"wind\" : %s}", String.valueOf(power)));
     }
 
     @Nullable
-    public ShadowBufferDto setWindSpeed(int speed) {
+    public ShadowBufferDto setWindSpeed(int speed) throws RestApiException {
         return doPost(String.format("{\"windSpeed\" : %d}", speed));
     }
 
     @Nullable
-    public ShadowBufferDto setLightPower(boolean power) {
+    public ShadowBufferDto setLightPower(boolean power) throws RestApiException {
         return doPost(String.format("{\"lightOn\" : %s}", String.valueOf(power)));
     }
 
     @Nullable
-    public ShadowBufferDto setLightIntensity(int intensity) {
+    public ShadowBufferDto setLightIntensity(int intensity) throws RestApiException {
         return doPost(String.format("{\"lightBrightness\" : %d}", intensity));
     }
 
     @Nullable
-    private ShadowBufferDto doPost(String payloadJson) {
+    private ShadowBufferDto doPost(String payloadJson) throws RestApiException {
         try {
             this.logger.debug("Performing Post: 'URL: {}, Payload: '{}'", this.url, payloadJson);
             Request postRequest = this.client.POST(this.url);
@@ -111,7 +111,6 @@ public class FanRestApi {
                 return this.gson.fromJson(postResponse.getContentAsString(), ShadowBufferDto.class);
             }
         } catch (JsonSyntaxException | InterruptedException | TimeoutException | ExecutionException e) {
-
             this.logger.warn("Exception on post: {}", e.getMessage());
             throw new RestApiException(e);
         }

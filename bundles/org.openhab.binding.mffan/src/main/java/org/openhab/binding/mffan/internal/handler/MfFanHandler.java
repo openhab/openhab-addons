@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mffan.internal.MfFanBindingConstants;
 import org.openhab.binding.mffan.internal.MfFanConfiguration;
 import org.openhab.binding.mffan.internal.api.FanRestApi;
+import org.openhab.binding.mffan.internal.api.RestApiException;
 import org.openhab.binding.mffan.internal.api.ShadowBufferDto;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
@@ -72,22 +73,15 @@ public class MfFanHandler extends BaseThingHandler {
         this.logger.debug("Initializing MfFan handler '{}'", getThing().getUID());
         updateStatus(ThingStatus.UNKNOWN);
         this.config = getConfigAs(MfFanConfiguration.class);
-        if (validateConfig(this.config)) {
-            try {
-                this.api = new FanRestApi(this.config.getIpAddress().trim(), this.httpClientFactory);
-                // handleCommand(RefreshType.REFRESH);
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-            }
-
+        if (MfFanConfiguration.validateConfig(this.config)) {
+            this.api = new FanRestApi(this.config.getIpAddress().trim(), this.httpClientFactory);
             this.pollingJob = this.scheduler.scheduleWithFixedDelay(() -> handleCommand(RefreshType.REFRESH), 0,
                     this.config.getPollingPeriod(), TimeUnit.SECONDS);
-
             this.logger.debug("Polling job scheduled to run every {} sec. for '{}'", this.config.getPollingPeriod(),
                     getThing().getUID());
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid configuration detected.");
+            return;
         }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid configuration detected.");
     }
 
     @Override
@@ -98,14 +92,10 @@ public class MfFanHandler extends BaseThingHandler {
         if (job != null) {
             job.cancel(true);
         }
+        this.pollingJob = null;
 
         ExecutorService exec = this.executor;
         exec.shutdown();
-        try {
-            exec.awaitTermination(2, TimeUnit.SECONDS);
-        } catch (@SuppressWarnings("unused") InterruptedException e) {
-            exec.shutdownNow();
-        }
     }
 
     @Override
@@ -172,9 +162,8 @@ public class MfFanHandler extends BaseThingHandler {
                     }
                 } else {
                     MfFanHandler.this.logger.warn("Skipping command. Unidentified channel id '{}'", channelUID.getId());
-
                 }
-            } catch (@SuppressWarnings("unused") Exception e) {
+            } catch (@SuppressWarnings("unused") RestApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
                         .format("Could not control device at IP address %s", MfFanHandler.this.config.getIpAddress()));
             }
@@ -183,42 +172,22 @@ public class MfFanHandler extends BaseThingHandler {
         @SuppressWarnings("synthetic-access")
         private void update(@Nullable ShadowBufferDto dto) {
             MfFanHandler.this.logger.debug("Updating data '{}'", getThing().getUID());
-
-            try {
-                if (dto != null) {
-                    updateState(MfFanBindingConstants.CHANNEL_FAN_ON, OnOffType.from(dto.getFanOn().booleanValue()));
-                    updateState(MfFanBindingConstants.CHANNEL_FAN_SPEED,
-                            StringType.valueOf(String.valueOf(dto.getFanSpeed())));
-                    updateState(MfFanBindingConstants.CHANNEL_FAN_DIRECTION,
-                            StringType.valueOf(dto.getFanDirection().name()));
-                    updateState(MfFanBindingConstants.CHANNEL_WIND_ON, OnOffType.from(dto.getWind().booleanValue()));
-                    updateState(MfFanBindingConstants.CHANNEL_WIND_LEVEL,
-                            StringType.valueOf(String.valueOf(dto.getWindSpeed())));
-                    updateState(MfFanBindingConstants.CHANNEL_LIGHT_ON,
-                            OnOffType.from(dto.getLightOn().booleanValue()));
-                    updateState(MfFanBindingConstants.CHANNEL_LIGHT_INTENSITY,
-                            new PercentType(dto.getLightBrightness()));
-
-                    if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                        updateStatus(ThingStatus.ONLINE);
-                    }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                            "Null shadow buffer returned.");
-                }
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            if (dto != null) {
+                updateState(MfFanBindingConstants.CHANNEL_FAN_ON, OnOffType.from(dto.getFanOn().booleanValue()));
+                updateState(MfFanBindingConstants.CHANNEL_FAN_SPEED,
+                        StringType.valueOf(String.valueOf(dto.getFanSpeed())));
+                updateState(MfFanBindingConstants.CHANNEL_FAN_DIRECTION,
+                        StringType.valueOf(dto.getFanDirection().name()));
+                updateState(MfFanBindingConstants.CHANNEL_WIND_ON, OnOffType.from(dto.getWind().booleanValue()));
+                updateState(MfFanBindingConstants.CHANNEL_WIND_LEVEL,
+                        StringType.valueOf(String.valueOf(dto.getWindSpeed())));
+                updateState(MfFanBindingConstants.CHANNEL_LIGHT_ON, OnOffType.from(dto.getLightOn().booleanValue()));
+                updateState(MfFanBindingConstants.CHANNEL_LIGHT_INTENSITY, new PercentType(dto.getLightBrightness()));
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Null shadow buffer returned.");
             }
         }
-    }
-
-    private static boolean validateConfig(@Nullable MfFanConfiguration config) {
-        if ((config == null) || (config.getIpAddress().trim().length() == 0)) {
-            return false;
-        }
-        if (config.getPollingPeriod() < 10) {
-            return false;
-        }
-        return true;
     }
 }

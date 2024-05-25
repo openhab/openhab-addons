@@ -13,6 +13,7 @@
 package org.openhab.binding.mffan.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link MfFanConfiguration} class contains fields mapping thing configuration parameters.
@@ -44,5 +45,12 @@ public class MfFanConfiguration {
 
     public void setPollingPeriod(Integer pollingPeriod) {
         this.pollingPeriod = pollingPeriod;
+    }
+
+    public static boolean validateConfig(@Nullable MfFanConfiguration config) {
+        if ((config == null) || config.getIpAddress().isBlank()) {
+            return false;
+        }
+        return config.getPollingPeriod() >= 10;
     }
 }
