@@ -11,6 +11,25 @@
 			</update-channel>
 		</instruction-set>
 
+		<instruction-set targetVersion="2">
+			<update-channel id="power" groupIds="general">
+				<type>system:power</type>
+				<description>Power ON/OFF the AVR</description>
+			</update-channel>
+			<update-channel id="power" groupIds="mainZone,zone2,zone3,zone4">
+				<type>system:power</type>
+				<description>Power ON/OFF this zone of the AVR</description>
+			</update-channel>
+			<update-channel id="volume" groupIds="mainZone,zone2,zone3,zone4">
+				<type>system:volume</type>
+				<description>Set the volume level of this zone</description>
+			</update-channel>
+			<update-channel id="mute" groupIds="mainZone,zone2,zone3,zone4">
+				<type>system:mute</type>
+				<description>Mute audio on this zone of the AVR</description>
+			</update-channel>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>
