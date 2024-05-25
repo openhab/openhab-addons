@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.denonmarantz.internal.xml.dto.commands;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +21,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.denonmarantz.internal.xml.adapters.OnOffAdapter;
+import org.openhab.binding.denonmarantz.internal.xml.adapters.VolumeAdapter;
 
 /**
  * Response to a {@link CommandTx}
@@ -33,21 +37,27 @@ import org.eclipse.jdt.annotation.Nullable;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CommandRx {
 
-    private String zone1;
+    @XmlJavaTypeAdapter(OnOffAdapter.class)
+    private Boolean zone1;
 
-    private String zone2;
+    @XmlJavaTypeAdapter(OnOffAdapter.class)
+    private Boolean zone2;
 
-    private String zone3;
+    @XmlJavaTypeAdapter(OnOffAdapter.class)
+    private Boolean zone3;
 
-    private String zone4;
+    @XmlJavaTypeAdapter(OnOffAdapter.class)
+    private Boolean zone4;
 
-    private String volume;
+    @XmlJavaTypeAdapter(value = VolumeAdapter.class)
+    private BigDecimal volume;
 
     private String disptype;
 
     private String dispvalue;
 
-    private String mute;
+    @XmlJavaTypeAdapter(OnOffAdapter.class)
+    private Boolean mute;
 
     private String type;
 
@@ -72,46 +82,48 @@ public class CommandRx {
 
     private String source;
 
+    private String surround;
+
     public CommandRx() {
     }
 
-    public String getZone1() {
+    public Boolean getZone1() {
         return zone1;
     }
 
-    public void setZone1(String zone1) {
+    public void setZone1(Boolean zone1) {
         this.zone1 = zone1;
     }
 
-    public String getZone2() {
+    public Boolean getZone2() {
         return zone2;
     }
 
-    public void setZone2(String zone2) {
+    public void setZone2(Boolean zone2) {
         this.zone2 = zone2;
     }
 
-    public String getZone3() {
+    public Boolean getZone3() {
         return zone3;
     }
 
-    public void setZone3(String zone3) {
+    public void setZone3(Boolean zone3) {
         this.zone3 = zone3;
     }
 
-    public String getZone4() {
+    public Boolean getZone4() {
         return zone4;
     }
 
-    public void setZone4(String zone4) {
+    public void setZone4(Boolean zone4) {
         this.zone4 = zone4;
     }
 
-    public String getVolume() {
+    public BigDecimal getVolume() {
         return volume;
     }
 
-    public void setVolume(String volume) {
+    public void setVolume(BigDecimal volume) {
         this.volume = volume;
     }
 
@@ -131,11 +143,11 @@ public class CommandRx {
         this.dispvalue = dispvalue;
     }
 
-    public String getMute() {
+    public Boolean getMute() {
         return mute;
     }
 
-    public void setMute(String mute) {
+    public void setMute(Boolean mute) {
         this.mute = mute;
     }
 
@@ -185,6 +197,14 @@ public class CommandRx {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public String getSurround() {
+        return surround;
+    }
+
+    public void setSurround(String surround) {
+        this.surround = surround;
     }
 
     public @Nullable String getText(@NonNull String key) {
