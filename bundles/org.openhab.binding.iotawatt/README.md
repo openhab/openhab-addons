@@ -68,19 +68,19 @@ Thing iotawatt:iotawatt:iotawatt1 "IoTaWatt 1" [ hostname="192.168.1.10" ] {
 ### Items
 
 ```java
-Number input_voltage "Voltage"           { channel="iotawatt:iotawatt:iotawatt1:input_00#voltage"  }
-Number input_frequency "AC Frequency"    { channel="iotawatt:iotawatt:iotawatt1:input_00#frequency"  }
-Number input_phase0 "Phase"               { channel="iotawatt:iotawatt:iotawatt1:input_00#phase" }
-Number input_watts "Watts"               { channel="iotawatt:iotawatt:iotawatt1:input_01#watts" }
-Number input_power_factor "Power Factor" { channel="iotawatt:iotawatt:iotawatt1:input_01#power-factor" }
-Number input_phase1 "Phase"               { channel="iotawatt:iotawatt:iotawatt1:input_01#phase" }
+Number:ElectricPotential input_voltage "Voltage"           { channel="iotawatt:iotawatt:iotawatt1:input_00#voltage"  }
+Number:Frequency input_frequency "AC Frequency"    { channel="iotawatt:iotawatt:iotawatt1:input_00#frequency"  }
+Number:Dimensionless input_phase0 "Phase"               { channel="iotawatt:iotawatt:iotawatt1:input_00#phase" }
+Number:Power input_watts "Watts"               { channel="iotawatt:iotawatt:iotawatt1:input_01#watts" }
+Number:Dimensionless input_power_factor "Power Factor" { channel="iotawatt:iotawatt:iotawatt1:input_01#power-factor" }
+Number:Dimensionless input_phase1 "Phase"               { channel="iotawatt:iotawatt:iotawatt1:input_01#phase" }
 
-Number output_amps "Amps"                               { channel="iotawatt:iotawatt:iotawatt1:output_00#Input_1_amps" }
-Number output_frequency "Frequency"                     { channel="iotawatt:iotawatt:iotawatt1:output_01#Input_1_hz" }
-Number output_power_factor "Power Factor"               { channel="iotawatt:iotawatt:iotawatt1:output_02#Input_1_pf" }
-Number output_apparent_power "Apparent Power"           { channel="iotawatt:iotawatt:iotawatt1:output_03#Input_1_va" }
-Number output_reactive_power "Reactive Power"           { channel="iotawatt:iotawatt:iotawatt1:output_04#Input_1_var" }
-Number output_reactive_power_hour "Reactive Power Hour" { channel="iotawatt:iotawatt:iotawatt1:output_05#Input_1_varh" }
-Number output_voltage "Voltage"                         { channel="iotawatt:iotawatt:iotawatt1:output_06#Input_1_volts" }
-Number output_watts "Watts"                             { channel="iotawatt:iotawatt:iotawatt1:output_07#Input_1_watts" }
+Number:ElectricCurrent output_amps "Amps"                               { channel="iotawatt:iotawatt:iotawatt1:output_00#Input_1_amps" }
+Number:Frequency output_frequency "AC Frequency"                     { channel="iotawatt:iotawatt:iotawatt1:output_01#Input_1_hz" }
+Number:Dimensionless output_power_factor "Power Factor"               { channel="iotawatt:iotawatt:iotawatt1:output_02#Input_1_pf" }
+Number:Power output_apparent_power "Apparent Power"           { channel="iotawatt:iotawatt:iotawatt1:output_03#Input_1_va" }
+Number:Power output_reactive_power "Reactive Power"           { channel="iotawatt:iotawatt:iotawatt1:output_04#Input_1_var" }
+Number:Energy output_reactive_power_hour "Reactive Power Hour" { channel="iotawatt:iotawatt:iotawatt1:output_05#Input_1_varh" }
+Number:ElectricPotential output_voltage "Voltage"                         { channel="iotawatt:iotawatt:iotawatt1:output_06#Input_1_volts" }
+Number:Power output_watts "Watts"                             { channel="iotawatt:iotawatt:iotawatt1:output_07#Input_1_watts" }
 ```
