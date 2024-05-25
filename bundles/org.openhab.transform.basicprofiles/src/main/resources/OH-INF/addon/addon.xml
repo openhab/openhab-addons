@@ -6,5 +6,6 @@
 	<type>transformation</type>
 	<name>Basic Profiles</name>
 	<description>A set of profiles with basic functionality.</description>
+	<connection>local</connection>
 
 </addon:addon>
