@@ -156,7 +156,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         Client sunAccount = refresh(accountConfig.getEmail(), refreshtToken);
         Optional<APIdata> checkAPI = sunAccount.safeAPIData();
         if (!checkAPI.isPresent()) { // API Data failed
-            logger.debug("Account fialed to refresh, likely a certificate path or maybe a password problem.");
+            logger.debug("Account failed to refresh, likely a certificate path or password problem.");
             updateStatus(ThingStatus.OFFLINE);
             return;
         }

@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-
 public class Settings {
     private int code;
     private String msg = "";

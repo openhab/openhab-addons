@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-
 public class Battery {
     private int code;
     private String msg = "";

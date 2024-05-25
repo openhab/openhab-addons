@@ -25,9 +25,7 @@ import com.google.gson.annotations.SerializedName;
  */
 
 @NonNullByDefault
-
 public class Inverter {
-
     private String uid = "";
     @SerializedName("secret_key")
     private String token = "";

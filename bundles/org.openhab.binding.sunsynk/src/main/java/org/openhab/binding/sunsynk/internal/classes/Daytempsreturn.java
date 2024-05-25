@@ -23,9 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-
 public class Daytempsreturn {
-
     private String status = "";
     public double dc;
     public double ac;

@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-
 public class Daytemps {
     private int code;
     private String msg = "";
@@ -69,7 +68,6 @@ public class Daytemps {
     }
 
     public Daytempsreturn inverterTemperatures() {
-        // getLastValue();
         return new Daytempsreturn(this.response_status, this.dc_temperature, this.ac_temperature);
     }
 }

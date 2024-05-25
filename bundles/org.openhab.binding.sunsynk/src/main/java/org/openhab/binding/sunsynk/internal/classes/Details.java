@@ -24,9 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 
 @NonNullByDefault
-
 public class Details {
-
     private int code;
     private String msg = "";
     private boolean success;
