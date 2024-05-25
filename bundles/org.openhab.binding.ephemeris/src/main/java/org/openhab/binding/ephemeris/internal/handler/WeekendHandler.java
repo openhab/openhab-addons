@@ -18,7 +18,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ephemeris.internal.EphemerisException;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
@@ -36,9 +36,8 @@ public class WeekendHandler extends BaseEphemerisHandler {
     }
 
     @Override
-    protected @Nullable String internalUpdate(ZonedDateTime today) {
+    protected void internalUpdate(ZonedDateTime today) throws EphemerisException {
         updateState(CHANNEL_TODAY, OnOffType.from(ephemeris.isWeekend(today)));
         updateState(CHANNEL_TOMORROW, OnOffType.from(ephemeris.isWeekend(today.plusDays(1))));
-        return null;
     }
 }

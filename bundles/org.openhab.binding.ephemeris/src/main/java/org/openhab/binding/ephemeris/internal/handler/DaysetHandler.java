@@ -18,7 +18,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ephemeris.internal.EphemerisException;
 import org.openhab.binding.ephemeris.internal.configuration.DaysetConfiguration;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.OnOffType;
@@ -45,9 +45,8 @@ public class DaysetHandler extends BaseEphemerisHandler {
     }
 
     @Override
-    protected @Nullable String internalUpdate(ZonedDateTime today) {
+    protected void internalUpdate(ZonedDateTime today) throws EphemerisException {
         updateState(CHANNEL_TODAY, OnOffType.from(ephemeris.isInDayset(dayset, today)));
         updateState(CHANNEL_TOMORROW, OnOffType.from(ephemeris.isInDayset(dayset, today.plusDays(1))));
-        return null;
     }
 }

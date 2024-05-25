@@ -20,12 +20,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ephemeris.internal.EphemerisException;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -72,20 +71,21 @@ public abstract class BaseEphemerisHandler extends BaseThingHandler {
         ZonedDateTime now = ZonedDateTime.now().withZoneSameLocal(zoneId);
 
         logger.debug("Updating {} channels", getThing().getUID());
-        String error = internalUpdate(now.truncatedTo(ChronoUnit.DAYS));
-        if (error == null) {
+        try {
+            internalUpdate(now.truncatedTo(ChronoUnit.DAYS));
+
             updateStatus(ThingStatus.ONLINE);
             ZonedDateTime nextUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
                     .withMinute(REFRESH_FIRST_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
             long delay = ChronoUnit.MINUTES.between(now, nextUpdate);
             logger.debug("Scheduling next {} update in {} minutes", getThing().getUID(), delay);
             refreshJob = Optional.of(scheduler.schedule(this::updateData, delay, TimeUnit.MINUTES));
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, error);
+        } catch (EphemerisException e) {
+            updateStatus(ThingStatus.OFFLINE, e.getStatusDetail(), e.getMessage());
         }
     }
 
-    protected abstract @Nullable String internalUpdate(ZonedDateTime today);
+    protected abstract void internalUpdate(ZonedDateTime today) throws EphemerisException;
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

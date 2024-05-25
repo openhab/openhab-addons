@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ephemeris.internal.EphemerisException;
 import org.openhab.binding.ephemeris.internal.configuration.FileConfiguration;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.OnOffType;
@@ -56,30 +57,25 @@ public class CustomHandler extends JollydayHandler {
     }
 
     @Override
-    protected @Nullable String internalUpdate(ZonedDateTime today) {
+    protected void internalUpdate(ZonedDateTime today) throws EphemerisException {
         String event = getEvent(today);
         updateState(CHANNEL_EVENT_TODAY, OnOffType.from(event != null));
 
         event = getEvent(today.plusDays(1));
         updateState(CHANNEL_EVENT_TOMORROW, OnOffType.from(event != null));
 
-        // Thing could have been set to OFFLINE when calling getEvent
-        if (!thing.getStatus().equals(ThingStatus.ONLINE)) {
-            return null;
-        }
-        return super.internalUpdate(today);
+        super.internalUpdate(today);
     }
 
     @Override
-    protected @Nullable String getEvent(ZonedDateTime day) {
+    protected @Nullable String getEvent(ZonedDateTime day) throws EphemerisException {
         String path = definitionFile.get().getAbsolutePath();
         try {
             return ephemeris.getBankHolidayName(day, path);
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Incorrect syntax");
+            throw new EphemerisException("Incorrect syntax", ThingStatusDetail.NONE);
         } catch (FileNotFoundException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "File is absent: " + path);
+            throw new EphemerisException("File is absent: " + path, ThingStatusDetail.CONFIGURATION_ERROR);
         }
-        return null;
     }
 }

@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ephemeris.internal.EphemerisException;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
@@ -42,7 +43,7 @@ public abstract class JollydayHandler extends BaseEphemerisHandler {
     }
 
     @Override
-    protected @Nullable String internalUpdate(ZonedDateTime today) {
+    protected void internalUpdate(ZonedDateTime today) throws EphemerisException {
         String todayEvent = getEvent(today);
         updateState(CHANNEL_CURRENT_EVENT, toStringType(todayEvent));
 
@@ -55,12 +56,13 @@ public abstract class JollydayHandler extends BaseEphemerisHandler {
         }
 
         updateState(CHANNEL_NEXT_EVENT, toStringType(nextEvent));
-        updateState(CHANNEL_NEXT_REMAINING, new QuantityType<>(Duration.between(today, nextDay).toDays(), Units.DAY));
+        updateState(CHANNEL_NEXT_REMAINING,
+                nextEvent != null ? new QuantityType<>(Duration.between(today, nextDay).toDays(), Units.DAY)
+                        : UnDefType.UNDEF);
         updateState(CHANNEL_NEXT_START, nextEvent != null ? new DateTimeType(nextDay) : UnDefType.UNDEF);
-        return null;
     }
 
-    protected abstract @Nullable String getEvent(ZonedDateTime day);
+    protected abstract @Nullable String getEvent(ZonedDateTime day) throws EphemerisException;
 
     protected State toStringType(@Nullable String event) {
         return event == null || event.isEmpty() ? UnDefType.NULL : new StringType(event);
