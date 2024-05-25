@@ -16,12 +16,13 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.snmp.internal.types.SnmpAuthProtocol;
-import org.openhab.binding.snmp.internal.types.SnmpPrivProtocol;
 import org.snmp4j.CommandResponder;
 import org.snmp4j.PDU;
 import org.snmp4j.Target;
 import org.snmp4j.event.ResponseListener;
+import org.snmp4j.security.UsmUser;
+import org.snmp4j.smi.Address;
+import org.snmp4j.smi.OctetString;
 
 /**
  * The {@link SnmpService} is responsible for SNMP communication
@@ -37,8 +38,18 @@ public interface SnmpService {
 
     void removeCommandResponder(CommandResponder listener);
 
-    void send(PDU pdu, Target target, @Nullable Object userHandle, ResponseListener listener) throws IOException;
+    void send(PDU pdu, Target<?> target, @Nullable Object userHandle, ResponseListener listener) throws IOException;
 
-    void addUser(String userName, SnmpAuthProtocol snmpAuthProtocol, @Nullable String authPassphrase,
-            SnmpPrivProtocol snmpPrivProtocol, @Nullable String privPassphrase, byte[] engineId);
+    void addUser(UsmUser user, OctetString engineId);
+
+    /**
+     * Remove a user from the service
+     *
+     * @param address the remote address
+     * @param user the user
+     * @param engineId the engine id
+     */
+    void removeUser(Address address, UsmUser user, OctetString engineId);
+
+    byte @Nullable [] getEngineId(Address address);
 }
