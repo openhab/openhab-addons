@@ -166,8 +166,10 @@ public class SnmpServiceImpl implements SnmpService {
     @Override
     public void addUser(String userName, SnmpAuthProtocol snmpAuthProtocol, @Nullable String authPassphrase,
             SnmpPrivProtocol snmpPrivProtocol, @Nullable String privPassphrase, byte[] engineId) {
-        UsmUser usmUser = new UsmUser(new OctetString(userName), snmpAuthProtocol.getOid(),
-                authPassphrase != null ? new OctetString(authPassphrase) : null, snmpPrivProtocol.getOid(),
+        UsmUser usmUser = new UsmUser(new OctetString(userName),
+                authPassphrase != null ? snmpAuthProtocol.getOid() : null,
+                authPassphrase != null ? new OctetString(authPassphrase) : null,
+                privPassphrase != null ? snmpPrivProtocol.getOid() : null,
                 privPassphrase != null ? new OctetString(privPassphrase) : null);
         OctetString securityNameOctets = new OctetString(userName);
 
