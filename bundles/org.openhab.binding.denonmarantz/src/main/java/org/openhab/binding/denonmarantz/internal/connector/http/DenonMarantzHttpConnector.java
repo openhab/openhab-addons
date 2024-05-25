@@ -14,14 +14,16 @@ package org.openhab.binding.denonmarantz.internal.connector.http;
 
 import java.beans.Introspector;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -35,11 +37,17 @@ import javax.xml.stream.util.StreamReaderDelegate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
 import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector;
+import org.openhab.binding.denonmarantz.internal.exception.HttpCommunicationException;
 import org.openhab.binding.denonmarantz.internal.xml.dto.Deviceinfo;
 import org.openhab.binding.denonmarantz.internal.xml.dto.Main;
 import org.openhab.binding.denonmarantz.internal.xml.dto.ZoneStatus;
@@ -48,7 +56,7 @@ import org.openhab.binding.denonmarantz.internal.xml.dto.commands.AppCommandRequ
 import org.openhab.binding.denonmarantz.internal.xml.dto.commands.AppCommandResponse;
 import org.openhab.binding.denonmarantz.internal.xml.dto.commands.CommandRx;
 import org.openhab.binding.denonmarantz.internal.xml.dto.commands.CommandTx;
-import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.binding.denonmarantz.internal.xml.dto.types.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +100,8 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
+    private boolean legacyApiSupported = true;
+
     public DenonMarantzHttpConnector(DenonMarantzConfiguration config, DenonMarantzState state,
             ScheduledExecutorService scheduler, HttpClient httpClient) {
         super(config, scheduler, state);
@@ -114,16 +124,19 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
             logger.debug("HTTP polling started.");
             try {
                 setConfigProperties();
-            } catch (IOException e) {
+            } catch (TimeoutException | ExecutionException | HttpCommunicationException e) {
                 logger.debug("IO error while retrieving document:", e);
                 state.connectionError("IO error while connecting to AVR: " + e.getMessage());
                 return;
+            } catch (InterruptedException e) {
+                logger.debug("Interrupted while retrieving document: {}", e.getMessage());
+                Thread.currentThread().interrupt();
             }
 
             pollingJob = scheduler.scheduleWithFixedDelay(() -> {
                 try {
                     refreshHttpProperties();
-                } catch (IOException e) {
+                } catch (TimeoutException | ExecutionException e) {
                     logger.debug("IO error while retrieving document", e);
                     state.connectionError("IO error while connecting to AVR: " + e.getMessage());
                     stopPolling();
@@ -137,6 +150,9 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
                         sb.append(s.toString()).append("\n");
                     }
                     logger.error("Error while polling Http: \"{}\". Stacktrace: \n{}", e.getMessage(), sb.toString());
+                } catch (InterruptedException e) {
+                    logger.debug("Interrupted while polling: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
             }, 0, config.httpPollingInterval, TimeUnit.SECONDS);
         }
@@ -186,96 +202,163 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         });
     }
 
-    private void updateMain() throws IOException {
+    private void updateMain() throws TimeoutException, ExecutionException, InterruptedException {
         String url = statusUrl + URL_MAIN;
         logger.trace("Refreshing URL: {}", url);
 
-        Main statusMain = getDocument(url, Main.class);
-        if (statusMain != null) {
-            state.setPower(statusMain.getPower().getValue());
+        try {
+            Main statusMain = getDocument(url, Main.class);
+            if (statusMain != null) {
+                state.setPower(statusMain.getPower().getValue());
+            }
+        } catch (HttpCommunicationException e) {
+            if (e.getHttpStatus() == HttpStatus.FORBIDDEN_403) {
+                legacyApiSupported = false;
+                logger.debug("Legacy API not supported, will attempt app command method");
+            } else {
+                logger.debug("Failed to update main by legacy API: {}", e.getMessage());
+            }
         }
     }
 
-    private void updateMainZone() throws IOException {
+    private void updateMainZone() throws TimeoutException, ExecutionException, InterruptedException {
         String url = statusUrl + URL_ZONE_MAIN;
         logger.trace("Refreshing URL: {}", url);
 
-        ZoneStatus mainZone = getDocument(url, ZoneStatus.class);
-        if (mainZone != null) {
-            state.setInput(mainZone.getInputFuncSelect().getValue());
-            state.setMainVolume(mainZone.getMasterVolume().getValue());
-            state.setMainZonePower(mainZone.getPower().getValue());
-            state.setMute(mainZone.getMute().getValue());
+        try {
+            ZoneStatus mainZone = getDocument(url, ZoneStatus.class);
+            if (mainZone != null) {
+                state.setInput(mainZone.getInputFuncSelect().getValue());
+                state.setMainVolume(mainZone.getMasterVolume().getValue());
+                state.setMainZonePower(mainZone.getPower().getValue());
+                state.setMute(mainZone.getMute().getValue());
 
-            if (config.inputOptions == null) {
-                config.inputOptions = mainZone.getInputFuncList();
+                if (config.inputOptions == null) {
+                    config.inputOptions = mainZone.getInputFuncList();
+                }
+
+                StringType surroundMode = mainZone.getSurrMode();
+                if (surroundMode == null) {
+                    logger.debug("Unable to get the SURROUND_MODE. MainZone update may not be correct.");
+                } else {
+                    state.setSurroundProgram(surroundMode.getValue());
+                }
             }
-
-            if (mainZone.getSurrMode() == null) {
-                logger.debug("Unable to get the SURROUND_MODE. MainZone update may not be correct.");
+        } catch (HttpCommunicationException e) {
+            if (e.getHttpStatus() == HttpStatus.FORBIDDEN_403) {
+                legacyApiSupported = false;
+                logger.debug("Legacy API not supported, will attempt app command method");
             } else {
-                state.setSurroundProgram(mainZone.getSurrMode().getValue());
+                logger.debug("Failed to update main zone by legacy API: {}", e.getMessage());
             }
         }
     }
 
-    private void updateSecondaryZones() throws IOException {
+    private void updateMainZoneByAppCommand() throws TimeoutException, ExecutionException, InterruptedException {
+        String url = statusUrl + URL_APP_COMMAND;
+        logger.trace("Refreshing URL: {}", url);
+
+        AppCommandRequest request = AppCommandRequest.of(CommandTx.CMD_ALL_POWER).add(CommandTx.CMD_VOLUME_LEVEL)
+                .add(CommandTx.CMD_MUTE_STATUS).add(CommandTx.CMD_SOURCE_STATUS).add(CommandTx.CMD_SURROUND_STATUS);
+
+        try {
+            AppCommandResponse response = postDocument(url, AppCommandResponse.class, request);
+
+            if (response != null) {
+                for (CommandRx rx : response.getCommands()) {
+                    String inputSource = rx.getSource();
+                    if (inputSource != null) {
+                        state.setInput(inputSource);
+                    }
+                    Boolean power = rx.getZone1();
+                    if (power != null) {
+                        state.setMainZonePower(power.booleanValue());
+                    }
+                    BigDecimal volume = rx.getVolume();
+                    if (volume != null) {
+                        state.setMainVolume(volume);
+                    }
+                    Boolean mute = rx.getMute();
+                    if (mute != null) {
+                        state.setMute(mute.booleanValue());
+                    }
+                    String surroundMode = rx.getSurround();
+                    if (surroundMode != null) {
+                        state.setSurroundProgram(surroundMode);
+                    }
+                }
+            }
+        } catch (HttpCommunicationException e) {
+            logger.debug("Failed to update main zone by app command: {}", e.getMessage());
+        }
+    }
+
+    private void updateSecondaryZones() throws TimeoutException, ExecutionException, InterruptedException {
         for (int i = 2; i <= config.getZoneCount(); i++) {
             String url = String.format("%s" + URL_ZONE_SECONDARY_LITE, statusUrl, i, i);
             logger.trace("Refreshing URL: {}", url);
-            ZoneStatusLite zoneSecondary = getDocument(url, ZoneStatusLite.class);
-            if (zoneSecondary != null) {
-                switch (i) {
-                    // maximum 2 secondary zones are supported
-                    case 2:
-                        state.setZone2Power(zoneSecondary.getPower().getValue());
-                        state.setZone2Volume(zoneSecondary.getMasterVolume().getValue());
-                        state.setZone2Mute(zoneSecondary.getMute().getValue());
-                        state.setZone2Input(zoneSecondary.getInputFuncSelect().getValue());
-                        break;
-                    case 3:
-                        state.setZone3Power(zoneSecondary.getPower().getValue());
-                        state.setZone3Volume(zoneSecondary.getMasterVolume().getValue());
-                        state.setZone3Mute(zoneSecondary.getMute().getValue());
-                        state.setZone3Input(zoneSecondary.getInputFuncSelect().getValue());
-                        break;
-                    case 4:
-                        state.setZone4Power(zoneSecondary.getPower().getValue());
-                        state.setZone4Volume(zoneSecondary.getMasterVolume().getValue());
-                        state.setZone4Mute(zoneSecondary.getMute().getValue());
-                        state.setZone4Input(zoneSecondary.getInputFuncSelect().getValue());
-                        break;
+            try {
+                ZoneStatusLite zoneSecondary = getDocument(url, ZoneStatusLite.class);
+                if (zoneSecondary != null) {
+                    switch (i) {
+                        // maximum 2 secondary zones are supported
+                        case 2:
+                            state.setZone2Power(zoneSecondary.getPower().getValue());
+                            state.setZone2Volume(zoneSecondary.getMasterVolume().getValue());
+                            state.setZone2Mute(zoneSecondary.getMute().getValue());
+                            state.setZone2Input(zoneSecondary.getInputFuncSelect().getValue());
+                            break;
+                        case 3:
+                            state.setZone3Power(zoneSecondary.getPower().getValue());
+                            state.setZone3Volume(zoneSecondary.getMasterVolume().getValue());
+                            state.setZone3Mute(zoneSecondary.getMute().getValue());
+                            state.setZone3Input(zoneSecondary.getInputFuncSelect().getValue());
+                            break;
+                        case 4:
+                            state.setZone4Power(zoneSecondary.getPower().getValue());
+                            state.setZone4Volume(zoneSecondary.getMasterVolume().getValue());
+                            state.setZone4Mute(zoneSecondary.getMute().getValue());
+                            state.setZone4Input(zoneSecondary.getInputFuncSelect().getValue());
+                            break;
+                    }
                 }
+            } catch (HttpCommunicationException e) {
+                logger.debug("Failed to update zone {}: {}", i, e.getMessage());
             }
         }
     }
 
-    private void updateDisplayInfo() throws IOException {
+    private void updateDisplayInfo() throws TimeoutException, ExecutionException, InterruptedException {
         String url = statusUrl + URL_APP_COMMAND;
         logger.trace("Refreshing URL: {}", url);
 
         AppCommandRequest request = AppCommandRequest.of(CommandTx.CMD_NET_STATUS);
-        AppCommandResponse response = postDocument(url, AppCommandResponse.class, request);
+        try {
+            AppCommandResponse response = postDocument(url, AppCommandResponse.class, request);
 
-        if (response == null) {
-            return;
-        }
-        CommandRx titleInfo = response.getCommands().get(0);
-        String artist = titleInfo.getText("artist");
-        if (artist != null) {
-            state.setNowPlayingArtist(artist);
-        }
-        String album = titleInfo.getText("album");
-        if (album != null) {
-            state.setNowPlayingAlbum(album);
-        }
-        String track = titleInfo.getText("track");
-        if (track != null) {
-            state.setNowPlayingTrack(track);
+            if (response == null) {
+                return;
+            }
+            CommandRx titleInfo = response.getCommands().get(0);
+            String artist = titleInfo.getText("artist");
+            if (artist != null) {
+                state.setNowPlayingArtist(artist);
+            }
+            String album = titleInfo.getText("album");
+            if (album != null) {
+                state.setNowPlayingAlbum(album);
+            }
+            String track = titleInfo.getText("track");
+            if (track != null) {
+                state.setNowPlayingTrack(track);
+            }
+        } catch (HttpCommunicationException e) {
+            logger.debug("Failed to update display info: {}", e.getMessage());
         }
     }
 
-    private boolean setConfigProperties() throws IOException {
+    private boolean setConfigProperties()
+            throws TimeoutException, ExecutionException, InterruptedException, HttpCommunicationException {
         String url = statusUrl + URL_DEVICE_INFO;
         logger.debug("Refreshing URL: {}", url);
 
@@ -295,20 +378,39 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
         return (deviceinfo != null);
     }
 
-    private void refreshHttpProperties() throws IOException {
+    private void refreshHttpProperties() throws TimeoutException, ExecutionException, InterruptedException {
         logger.trace("Refreshing Denon status");
 
-        updateMain();
-        updateMainZone();
+        if (legacyApiSupported) {
+            updateMain();
+            updateMainZone();
+        }
+
+        if (!legacyApiSupported) {
+            updateMainZoneByAppCommand();
+        }
+
         updateSecondaryZones();
         updateDisplayInfo();
     }
 
     @Nullable
-    private <T> T getDocument(String uri, Class<T> response) throws IOException {
+    private <T> T getDocument(String uri, Class<T> response)
+            throws TimeoutException, ExecutionException, InterruptedException, HttpCommunicationException {
         try {
-            String result = HttpUtil.executeUrl("GET", uri, REQUEST_TIMEOUT_MS);
-            logger.trace("result of getDocument for uri '{}':\r\n{}", uri, result);
+            Request request = httpClient.newRequest(uri).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                    .method(HttpMethod.GET);
+
+            ContentResponse contentResponse = request.send();
+
+            String result = contentResponse.getContentAsString();
+            int status = contentResponse.getStatus();
+
+            logger.trace("result of getDocument for uri '{}' (status code {}):\r\n{}", uri, status, result);
+
+            if (!HttpStatus.isSuccess(status)) {
+                throw new HttpCommunicationException("Error retrieving document for uri '" + uri + "'", status);
+            }
 
             if (result != null && !result.isBlank()) {
                 JAXBContext jc = JAXBContext.newInstance(response);
@@ -336,15 +438,28 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
     }
 
     @Nullable
-    private <T, S> T postDocument(String uri, Class<T> response, S request) throws IOException {
+    private <T, S> T postDocument(String uri, Class<T> response, S request)
+            throws TimeoutException, ExecutionException, InterruptedException, HttpCommunicationException {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(request.getClass());
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
             StringWriter sw = new StringWriter();
             jaxbMarshaller.marshal(request, sw);
 
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(sw.toString().getBytes(StandardCharsets.UTF_8));
-            String result = HttpUtil.executeUrl("POST", uri, inputStream, CONTENT_TYPE_XML, REQUEST_TIMEOUT_MS);
+            Request httpRequest = httpClient.newRequest(uri).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                    .content(new StringContentProvider(sw.toString(), StandardCharsets.UTF_8), CONTENT_TYPE_XML)
+                    .method(HttpMethod.POST);
+
+            ContentResponse contentResponse = httpRequest.send();
+
+            String result = contentResponse.getContentAsString();
+            int status = contentResponse.getStatus();
+
+            logger.trace("result of postDocument for uri '{}' (status code {}):\r\n{}", uri, status, result);
+
+            if (!HttpStatus.isSuccess(status)) {
+                throw new HttpCommunicationException("Error retrieving document for uri '" + uri + "'", status);
+            }
 
             if (result != null && !result.isBlank()) {
                 JAXBContext jcResponse = JAXBContext.newInstance(response);
