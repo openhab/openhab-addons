@@ -126,47 +126,11 @@
 
 	</thing-type>
 
-	<!-- Plant Thing Type -->
-	<thing-type id="plant">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="sunsynkaccount"/>
-		</supported-bridge-type-refs>
-		<label>SunSynk Plant</label>
-		<description>Plant thing for SunSynk Binding</description>
-
-		<channels>
-			<channel id="plant-status" typeId="plant-status"/>
-		</channels>
-
-		<config-description>
-			<parameter name="hostname" type="text" required="true">
-				<context>network-address</context>
-				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the device</description>
-			</parameter>
-			<parameter name="serial" type="text" required="true">
-				<context>password</context>
-				<label>Gateway Serial Number</label>
-				<description>Serial number of the gateway</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
-	</thing-type>
-
 	<channel-type id="grid-time" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Grid Charge Time</label>
-		<description>"Grid charging interval start time. Use 24hr time 00:00 to 23:55 are valid in 5 min increments with leading zero
+		<description>"Grid charging interval start time. Use 24hr time 00:00 to 23:55 are valid in 5 min increments with
+			leading zero
 			on the hour and minute. Interval times must be in ascending order."</description>
 		<state readOnly="false"/> <!--- pattern="%1$tH:%1$tM"/> -->
 	</channel-type>

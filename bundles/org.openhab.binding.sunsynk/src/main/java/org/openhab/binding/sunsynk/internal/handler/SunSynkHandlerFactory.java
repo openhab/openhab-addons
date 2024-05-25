@@ -49,13 +49,10 @@ public class SunSynkHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SunSynkHandlerFactory.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections.unmodifiableSet(
-            Stream.of(BRIDGE_TYPE_ACCOUNT, THING_TYPE_INVERTER, THING_TYPE_PLANT).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Collections
+            .unmodifiableSet(Stream.of(BRIDGE_TYPE_ACCOUNT, THING_TYPE_INVERTER).collect(Collectors.toSet()));
 
-    // private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS =
-    // Set.of(BRIDGE_TYPE_ACCOUNT,THING_TYPE_PLANT,THING_TYPE_INVERTER);
-
-    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPE_UIDS = Set.of(THING_TYPE_PLANT, THING_TYPE_INVERTER);
+    public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPE_UIDS = Set.of(THING_TYPE_INVERTER);
 
     private Map<ThingUID, ServiceRegistration<DiscoveryService>> discoveryServiceRegistrations = new HashMap<>();
 
@@ -68,10 +65,7 @@ public class SunSynkHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(@NonNull Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_PLANT)) {
-            logger.debug("SunSynkHandlerFactory created Plant Handler ");
-            return new SunSynkPlantHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_INVERTER)) {
+        if (thingTypeUID.equals(THING_TYPE_INVERTER)) {
             logger.debug("SunSynkHandlerFactory created Inverter Handler ");
             return new SunSynkInverterHandler(thing);
         } else if (thingTypeUID.equals(BRIDGE_TYPE_ACCOUNT)) {
