@@ -7,7 +7,7 @@ This binding is used to connect your openHAB system with Sun Synk Connect (where
 
 ## Introduction
 
-You will require to have installed a Sun Synk inverter with a WiFi Data logger [e-linter](https://www.e-linter.com/) connected to the Sun Synk App or Connect. See [Data Logger set up](https://www.sunsynk.org/_files/ugd/39fbfb_a325b6884e684c4ba1a3ad80afd5da20.pdf) or [Sun Synk Web](https://www.sunsynk.org/remote-monitoring). It is recommended, but not  necessary that the "data interval" of your Gateway is set via Sun Synk Connect to 60s for best time latency. If you do not have that setting avaailable you can request it set via Sun Synk or your installer or you can ask for an [User Level Access Change Request](https://www.sunsynk.org/remote-monitoring)
+You will require to have installed a Sun Synk inverter with a WiFi Data logger [e-linter](https://www.e-linter.com/) connected to the Sun Synk App or Connect. See [Data Logger set up](https://www.sunsynk.org/_files/ugd/39fbfb_a325b6884e684c4ba1a3ad80afd5da20.pdf) or [Sun Synk Web](https://www.sunsynk.org/remote-monitoring). It is recommended, but not necessary that the "data interval" of your Gateway is set via Sun Synk Connect to 60s for best latency. If you do not have that setting avaailable you can request it set via Sun Synk or your installer or you can ask for an [User Level Access Change Request](https://www.sunsynk.org/remote-monitoring)
 
 This binding uses your Sun Synk Connect credentials to access Sun Synk's web services via an OpenHAB Bridge (SunSynk Account). The bridge manages the account authentication and the discovery of SunSynk Inverter Things. Only the Inverter Thing is currently supported.
 
@@ -36,9 +36,9 @@ When using the UI Scan service all the parameters for an Inverter Thing are disc
 
 - Inverter Serial maps to the Sun Synk Connect inverter serial number
 - Inverter Name maps to the Sun Synk Connect inverter alias
-- Refresh time (advanced) default 60s; determines the interval between polls of Sun Synk Connect. A value above 60 is enforced. When setting this remember your inverter values are only published to Sun Synk Connect at the rate set by "data interval".
+- Refresh time (advanced) default 60s; determines the interval between polls of Sun Synk Connect. A value above 60 is enforced. When setting this remember your inverter values are only published by Sun Synk Connect at the rate set by "data interval".
 
-The refresh rate is limited to once every 60s to prevent to many requests from the Sun Synk Connect API, although there is no rate limit, the Sun Synk data is fully refreshed at the "data interval" set in Sun Synk Connect, at best that is every 60s. This can mean the data in openHAB is more than 1 minute delayed from real-time. Commands sent (from openHAB) to Sun Synk are buffered up until the next refresh interval and as they take a while to propagate through to your inverter, some channels are not refreshed (read back) from Sun Synk Connect until the next minute. 
+The refresh rate is limited to once every 60s to prevent too many requests from the Sun Synk Connect API, although there is no rate limit, the Sun Synk data is fully refreshed at the "data interval" set in Sun Synk Connect, at best that is every 60s. This can mean the data in openHAB is more than 1 minute delayed from real-time. Commands sent (from openHAB) to Sun Synk are buffered up until the next refresh interval and as they take a while to propagate through to your inverter, some channels are not refreshed (read back) from Sun Synk Connect until the next minute. 
 
 The SunSynk Account requires the user e-mail address and password used to login to Sun Synk Connect.
 
@@ -114,8 +114,8 @@ The SunSynk Inverter has the following channels.
 |interval-5-gen-charge           |Switch   | R/W | Interval 5 generator charge on/of | yes      |
 |interval-6-gen-charge           |Switch   | R/W | Interval 6 generator charge on/of | yes      |
 |inverter-control-timer          |Switch   | R/W | Inverter control timer on/off     | yes      |
-|inverter-control-work-mode      |Number   | R/W | Inverter work mode 1, 2 or 3      | yes      |
-|inverter-control-energy-pattern |Number   | R/W | Inverter energy pattern 1 or 2    | yes      |
+|inverter-control-work-mode      |String   | R/W | Inverter work mode 1, 2 or 3      | yes      |
+|inverter-control-energy-pattern |String   | R/W | Inverter energy pattern 1 or 2    | yes      |
 
 ### Thing Configuration
 
@@ -132,7 +132,6 @@ Bridge sunsynk:account: xxx @ "Loft" [email= "user.symbol@domain.", password="so
 #### sunsynk.items
 
 ```java
-
 Switch                      Interval1GridCharge         "Switch on Grid Charge for Interval 1"         {channel="sunsynk:inverter:xxx:1234567R1231234567890:interval-1-grid-charge"}
 Switch                      Interval2GridCharge         "Switch on Grid Charge for Interval 2"         {channel="sunsynk:inverter:xxx:1234567R1231234567890:interval-2-grid-charge"}
 Switch                      Interval3GridCharge         "Switch on Grid Charge for Interval 3"         {channel="sunsynk:inverter:xxx:1234567R1231234567890:interval-3-grid-charge"}
@@ -183,8 +182,8 @@ Number:Energy               InverterSolarEnergyTotal    "Inverter Enery Gross"  
 Number:Power                InverterSolarPowerNow       "Inverter Power"                               {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-power-now"}
 
 Switch                      Interval6ControlTimer       "Switch on System Mode Timer"                  {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-control-timer"}
-Number:Dimensionless        InverterControlWorkMode     "System Work Mode 0, 1 or 2"                   {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-control-work-mode", widget="oh-slider-card",listWidget="oh-slider-item"[title="Inverter Work Mode",subtitle="0 - Selling, 1 - Zero-Export or 2 - Limted to Home", min=0, max=2,step=1]}
-Number:Dimensionless        InverterControlPattern      "System Mode Energy Pattern 0 or 1"            {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-control-energy-pattern", widget="oh-slider-card",listWidget="oh-slider-item"[title="Inverter Energy Pattern",subtitle="0 - Battery or 1 - Load", min=0, max=1,step=1]}
+String                      InverterControlWorkMode     "System Work Mode 0, 1 or 2"                   {channel="sunsynk:inverter:a1a6340bc0:E4701229R3312211229948:inverter-control-work-mode"}
+String                      InverterControlPattern      "System Mode Energy Pattern 0 or 1"            {channel="sunsynk:inverter:a1a6340bc0:E4701229R3312211229948:inverter-control-energy-pattern"}
 ```
 
 ## DateTime Widget
