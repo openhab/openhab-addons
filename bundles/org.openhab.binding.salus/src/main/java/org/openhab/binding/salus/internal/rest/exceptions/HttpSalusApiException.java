@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.salus.internal.rest;
+package org.openhab.binding.salus.internal.rest.exceptions;
 
 import java.io.Serial;
 

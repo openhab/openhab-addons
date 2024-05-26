@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 
 /**
  * @author Martin Grześlowski - Initial contribution

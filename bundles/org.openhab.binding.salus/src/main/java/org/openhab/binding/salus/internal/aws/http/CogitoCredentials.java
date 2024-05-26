@@ -10,23 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.salus.internal.rest;
+package org.openhab.binding.salus.internal.aws.http;
 
-import java.io.Serial;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * @author Martin Grześlowski - Initial contribution
  */
-@SuppressWarnings("SerializableHasSerializationMethods")
-public class SalusApiException extends Exception {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    public SalusApiException(String msg, Exception e) {
-        super(msg, e);
-    }
-
-    public SalusApiException(String msg) {
-        super(msg);
+@NonNullByDefault
+public record CogitoCredentials(String accessKeyId, String secretKey, String sessionToken) {
+    @Override
+    public String toString() {
+        return "CogitoCredentials{" + hashCode() + "}";
     }
 }

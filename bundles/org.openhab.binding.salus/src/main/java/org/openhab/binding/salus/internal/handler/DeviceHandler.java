@@ -33,7 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.SalusBindingConstants;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
-import org.openhab.binding.salus.internal.rest.SalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -79,7 +79,7 @@ public class DeviceHandler extends BaseThingHandler {
             return;
         }
         var bridgeHandler = bridge.getHandler();
-        if (!(bridgeHandler instanceof CloudBridgeHandler cloudHandler)) {
+        if (!(bridgeHandler instanceof AbstractBridgeHandler<?> cloudHandler)) {
             updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/device-handler.initialize.errors.bridge-wrong-type");
             return;
         }
@@ -100,7 +100,7 @@ public class DeviceHandler extends BaseThingHandler {
                         "@text/device-handler.initialize.errors.dsn-not-found [\"" + dsn + "\"]");
                 return;
             }
-            if (!device.get().isConnected()) {
+            if (!device.get().connected()) {
                 updateStatus(OFFLINE, COMMUNICATION_ERROR,
                         "@text/device-handler.initialize.errors.dsn-not-connected [\"" + dsn + "\"]");
                 return;
@@ -207,6 +207,9 @@ public class DeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command != REFRESH && cloudApi.isReadOnly()) {
+            return;
+        }
         try {
             if (command instanceof RefreshType) {
                 handleRefreshCommand(channelUID);

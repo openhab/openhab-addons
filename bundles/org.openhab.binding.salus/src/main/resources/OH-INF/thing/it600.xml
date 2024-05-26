@@ -7,6 +7,7 @@
 	<thing-type id="salus-it600-device">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="salus-cloud-bridge"/>
+			<bridge-type-ref id="salus-aws-bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>IT600 Salus Thermostat</label>

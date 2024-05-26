@@ -28,17 +28,17 @@ import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
 import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.Set;
 import java.util.SortedSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
-import org.openhab.binding.salus.internal.rest.SalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -56,14 +56,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class It600Handler extends BaseThingHandler {
     private static final BigDecimal ONE_HUNDRED = new BigDecimal(100);
-    private static final Set<String> REQUIRED_CHANNELS = Set.of("ep_9:sIT600TH:LocalTemperature_x100",
-            "ep_9:sIT600TH:HeatingSetpoint_x100", "ep_9:sIT600TH:SetHeatingSetpoint_x100", "ep_9:sIT600TH:HoldType",
-            "ep_9:sIT600TH:SetHoldType");
     private final Logger logger;
     @NonNullByDefault({})
     private String dsn;
     @NonNullByDefault({})
     private CloudApi cloudApi;
+    private String channelPrefix = "";
 
     public It600Handler(Thing thing) {
         super(thing);
@@ -72,17 +70,20 @@ public class It600Handler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        AbstractBridgeHandler<?> abstractBridgeHandler;
         {
             var bridge = getBridge();
             if (bridge == null) {
                 updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/it600-handler.initialize.errors.no-bridge");
                 return;
             }
-            if (!(bridge.getHandler() instanceof CloudBridgeHandler cloudHandler)) {
+            if (!(bridge.getHandler() instanceof AbstractBridgeHandler<?> cloudHandler)) {
                 updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/it600-handler.initialize.errors.bridge-wrong-type");
                 return;
             }
             this.cloudApi = cloudHandler;
+            abstractBridgeHandler = cloudHandler;
+            channelPrefix = abstractBridgeHandler.channelPrefix();
         }
 
         dsn = (String) getConfig().get(DSN);
@@ -102,7 +103,7 @@ public class It600Handler extends BaseThingHandler {
                 return;
             }
             // device is not connected
-            if (!device.get().isConnected()) {
+            if (!device.get().connected()) {
                 updateStatus(OFFLINE, COMMUNICATION_ERROR,
                         "@text/it600-handler.initialize.errors.dsn-not-connected [\"" + dsn + "\"]");
                 return;
@@ -110,7 +111,7 @@ public class It600Handler extends BaseThingHandler {
             // device is missing properties
             try {
                 var deviceProperties = findDeviceProperties().stream().map(DeviceProperty::getName).toList();
-                var result = new ArrayList<>(REQUIRED_CHANNELS);
+                var result = new ArrayList<>(abstractBridgeHandler.it600RequiredChannels());
                 result.removeAll(deviceProperties);
                 if (!result.isEmpty()) {
                     updateStatus(OFFLINE, CONFIGURATION_ERROR,
@@ -133,6 +134,9 @@ public class It600Handler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command != REFRESH && cloudApi.isReadOnly()) {
+            return;
+        }
         try {
             var id = channelUID.getId();
             switch (id) {
@@ -160,7 +164,7 @@ public class It600Handler extends BaseThingHandler {
             return;
         }
 
-        findLongProperty("ep_9:sIT600TH:LocalTemperature_x100", "LocalTemperature_x100")
+        findLongProperty(channelPrefix + ":sIT600TH:LocalTemperature_x100", "LocalTemperature_x100")
                 .map(DeviceProperty.LongDeviceProperty::getValue).map(BigDecimal::new)
                 .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN))).map(DecimalType::new)
                 .ifPresent(state -> {
@@ -171,7 +175,7 @@ public class It600Handler extends BaseThingHandler {
 
     private void handleCommandForExpectedTemperature(ChannelUID channelUID, Command command) throws SalusApiException {
         if (command instanceof RefreshType) {
-            findLongProperty("ep_9:sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
+            findLongProperty(channelPrefix + ":sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
                     .map(DeviceProperty.LongDeviceProperty::getValue).map(BigDecimal::new)
                     .map(value -> value.divide(ONE_HUNDRED, new MathContext(5, HALF_EVEN))).map(DecimalType::new)
                     .ifPresent(state -> {
@@ -190,15 +194,17 @@ public class It600Handler extends BaseThingHandler {
 
         if (rawValue != null) {
             var value = rawValue.multiply(ONE_HUNDRED).longValue();
-            var property = findLongProperty("ep_9:sIT600TH:SetHeatingSetpoint_x100", "SetHeatingSetpoint_x100");
+            var property = findLongProperty(channelPrefix + ":sIT600TH:SetHeatingSetpoint_x100",
+                    "SetHeatingSetpoint_x100");
             if (property.isEmpty()) {
                 return;
             }
             var wasSet = cloudApi.setValueForProperty(dsn, property.get().getName(), value);
             if (wasSet) {
-                findLongProperty("ep_9:sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
+                findLongProperty(channelPrefix + ":sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
                         .ifPresent(prop -> prop.setValue(value));
-                findLongProperty("ep_9:sIT600TH:HoldType", "HoldType").ifPresent(prop -> prop.setValue((long) MANUAL));
+                findLongProperty(channelPrefix + ":sIT600TH:HoldType", "HoldType")
+                        .ifPresent(prop -> prop.setValue((long) MANUAL));
                 updateStatus(ONLINE);
             }
             return;
@@ -210,8 +216,8 @@ public class It600Handler extends BaseThingHandler {
 
     private void handleCommandForWorkType(ChannelUID channelUID, Command command) throws SalusApiException {
         if (command instanceof RefreshType) {
-            findLongProperty("ep_9:sIT600TH:HoldType", "HoldType").map(DeviceProperty.LongDeviceProperty::getValue)
-                    .map(value -> switch (value.intValue()) {
+            findLongProperty(channelPrefix + ":sIT600TH:HoldType", "HoldType")
+                    .map(DeviceProperty.LongDeviceProperty::getValue).map(value -> switch (value.intValue()) {
                         case AUTO -> "AUTO";
                         case MANUAL -> "MANUAL";
                         case TEMPORARY_MANUAL -> "TEMPORARY_MANUAL";
@@ -241,7 +247,7 @@ public class It600Handler extends BaseThingHandler {
                 logger.warn("Unknown value `{}` for property HoldType!", typedCommand);
                 return;
             }
-            var property = findLongProperty("ep_9:sIT600TH:SetHoldType", "SetHoldType");
+            var property = findLongProperty(channelPrefix + ":sIT600TH:SetHoldType", "SetHoldType");
             if (property.isEmpty()) {
                 return;
             }

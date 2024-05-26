@@ -26,10 +26,10 @@ import java.util.TreeSet;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.salus.internal.cloud.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.handler.CloudApi;
-import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.rest.Device;
-import org.openhab.binding.salus.internal.rest.SalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.thing.ThingUID;
 
@@ -95,6 +95,6 @@ public class CloudDiscoveryTest {
         if (connected) {
             map.put("connection_status", "online");
         }
-        return new Device("dsn-" + random.nextInt(), "name-" + random.nextInt(), map);
+        return new Device("dsn-" + random.nextInt(), "name-" + random.nextInt(), true, map);
     }
 }

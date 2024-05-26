@@ -22,12 +22,14 @@ import static org.openhab.core.types.RefreshType.REFRESH;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.salus.internal.SalusApi;
 import org.openhab.binding.salus.internal.SalusBindingConstants;
 import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
@@ -35,8 +37,7 @@ import org.openhab.binding.salus.internal.rest.GsonMapper;
 import org.openhab.binding.salus.internal.rest.HttpClient;
 import org.openhab.binding.salus.internal.rest.RestClient;
 import org.openhab.binding.salus.internal.rest.RetryHttpClient;
-import org.openhab.binding.salus.internal.rest.SalusApi;
-import org.openhab.binding.salus.internal.rest.SalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -55,9 +56,11 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public final class CloudBridgeHandler extends BaseBridgeHandler implements CloudApi {
-    private Logger logger = LoggerFactory.getLogger(CloudBridgeHandler.class.getName());
+public abstract class AbstractBridgeHandler<ConfigT extends AbstractBridgeConfig> extends BaseBridgeHandler
+        implements CloudApi {
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
     private final HttpClientFactory httpClientFactory;
+    private final Class<ConfigT> configClass;
     @NonNullByDefault({})
     private LoadingCache<String, SortedSet<DeviceProperty<?>>> devicePropertiesCache;
     @Nullable
@@ -65,14 +68,15 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     @Nullable
     private ScheduledFuture<?> scheduledFuture;
 
-    public CloudBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
+    public AbstractBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, Class<ConfigT> configClass) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
+        this.configClass = configClass;
     }
 
     @Override
     public void initialize() {
-        CloudBridgeConfig config = this.getConfigAs(CloudBridgeConfig.class);
+        var config = this.getConfigAs(configClass);
         if (!config.isValid()) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/cloud-bridge-handler.initialize.username-pass-not-valid");
             return;
@@ -81,11 +85,9 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         if (config.getMaxHttpRetries() > 0) {
             httpClient = new RetryHttpClient(httpClient, config.getMaxHttpRetries());
         }
-        @Nullable
-        SalusApi localSalusApi = salusApi = new SalusApi(config.getUsername(), config.getPassword().toCharArray(),
-                config.getUrl(), httpClient, GsonMapper.INSTANCE);
+        var localSalusApi = salusApi = newSalusApi(config, httpClient, GsonMapper.INSTANCE);
         logger = LoggerFactory
-                .getLogger(CloudBridgeHandler.class.getName() + "[" + config.getUsername().replace(".", "_") + "]");
+                .getLogger(this.getClass().getName() + "[" + config.getUsername().replace(".", "_") + "]");
 
         ScheduledExecutorService scheduledPool = ThreadPoolManager.getScheduledPool(SalusBindingConstants.BINDING_ID);
         scheduledPool.schedule(() -> tryConnectToCloud(localSalusApi), 1, MICROSECONDS);
@@ -101,12 +103,15 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
         // check *tryConnectToCloud(SalusApi)*
     }
 
+    protected abstract SalusApi newSalusApi(ConfigT config, RestClient httpClient, GsonMapper gsonMapper);
+
     private void tryConnectToCloud(SalusApi localSalusApi) {
         try {
             localSalusApi.findDevices();
             // there is a connection with the cloud
             updateStatus(ONLINE);
         } catch (SalusApiException ex) {
+            logger.debug("Cannot connect to Salus Cloud", ex);
             updateStatus(OFFLINE, COMMUNICATION_ERROR,
                     "@text/cloud-bridge-handler.initialize.cannot-connect-to-cloud [\"" + ex.getMessage() + "\"]");
         }
@@ -220,4 +225,8 @@ public final class CloudBridgeHandler extends BaseBridgeHandler implements Cloud
     public Optional<Device> findDevice(String dsn) throws SalusApiException {
         return findDevices().stream().filter(device -> device.dsn().equals(dsn)).findFirst();
     }
+
+    public abstract Set<String> it600RequiredChannels();
+
+    public abstract String channelPrefix();
 }
