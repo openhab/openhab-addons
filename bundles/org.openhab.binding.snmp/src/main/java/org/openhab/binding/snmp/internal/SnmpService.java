@@ -34,16 +34,41 @@ import org.snmp4j.smi.OctetString;
 @NonNullByDefault
 public interface SnmpService {
 
+    /**
+     * Add a listener for received PDUs to the service
+     *
+     * @param listener the listener
+     */
     void addCommandResponder(CommandResponder listener);
 
+    /**
+     * Remove a listener for received PDUs from the service
+     *
+     * @param listener the listener
+     */
     void removeCommandResponder(CommandResponder listener);
 
+    /**
+     * Send a PDU to the given target
+     *
+     * @param pdu the PDU
+     * @param target the target
+     * @param userHandle an optional user-handle to identify the request
+     * @param listener the listener for the response (always called, even in case of timeout)
+     * @throws IOException when an error occurs
+     */
     void send(PDU pdu, Target<?> target, @Nullable Object userHandle, ResponseListener listener) throws IOException;
 
+    /**
+     * Add a user to the service for a given engine id (v3 only)
+     *
+     * @param user the {@link UsmUser} that should be added
+     * @param engineId the engine id
+     */
     void addUser(UsmUser user, OctetString engineId);
 
     /**
-     * Remove a user from the service
+     * Remove a user from the service and clear the context engine id for this address (v3 only)
      *
      * @param address the remote address
      * @param user the user
@@ -51,5 +76,11 @@ public interface SnmpService {
      */
     void removeUser(Address address, UsmUser user, OctetString engineId);
 
+    /**
+     * Get the engine id of a remote system for a given address (v3 only)
+     *
+     * @param address the address of the remote system
+     * @return the engine id or {@code null} when engine id could not be determined
+     */
     byte @Nullable [] getEngineId(Address address);
 }

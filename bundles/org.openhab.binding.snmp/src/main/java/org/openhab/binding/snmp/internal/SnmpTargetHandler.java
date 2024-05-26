@@ -52,7 +52,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
-import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.AbstractTarget;
@@ -420,14 +419,6 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                 .collect(Collectors.toSet());
         this.trapChannelSet = channelConfigs.stream().filter(c -> c.mode == SnmpChannelMode.TRAP)
                 .collect(Collectors.toSet());
-    }
-
-    private byte @Nullable [] getEngineId(@Nullable String hexString) {
-        if (hexString == null || hexString.isEmpty() || !HEX_STRING_VALIDITY.matcher(hexString).matches()) {
-            return null;
-        } else {
-            return HexUtils.hexToBytes(HEX_STRING_EXTRACTOR.matcher(hexString).replaceAll(""));
-        }
     }
 
     private void updateChannels(OID oid, Variable value, Set<SnmpInternalChannelConfiguration> channelConfigs) {
