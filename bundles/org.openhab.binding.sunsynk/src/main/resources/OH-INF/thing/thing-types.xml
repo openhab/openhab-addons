@@ -173,31 +173,28 @@
 	</channel-type>
 
 	<channel-type id="control-pattern" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>System Energy Pattern</label>
-		<description>Set the system mode energy pattern to '0' priority battery or '1' priority load.</description>
-		<state min="0" max="1" readOnly="false" pattern="%d"/>
+		<description>Set the system mode energy pattern to '0' Priority Battery or '1' Priority Load.</description>
+		<command>
+			<options>
+				<option value="0">Priority Battery</option>
+				<option value="1">Priority Load</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="control-work-mode" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>System Work Mode</label>
-		<description>Set the work mode to '0' selling First; '1' izero-export + limted to load or '2' limited to home.</description>
-		<state min="0" max="2" readOnly="false" pattern="%d"/>
+		<description>Set the work mode to '0' Selling First; '1' Zero-Export + Limted to Load or '2' Limited to Home.</description>
+		<command>
+			<options>
+				<option value="0">Selling First</option>
+				<option value="1">"Zero-Export + Limted to Load"</option>
+				<option value="2">Limited to Home</option>
+			</options>
+		</command>
 	</channel-type>
 
-	<!-- plant-status Channel Type -->
-	<channel-type id="plant-status">
-		<item-type>String</item-type>
-		<label>Current State</label>
-		<description>State of plant</description>
-		<state readOnly="true" pattern="%s">
-			<options>
-				<option value="OFFLINE">Offline</option>
-				<option value="FAULT">Fault</option>
-				<option value="WARNING">Warning</option>
-				<option value="Normal">Pormal</option>
-			</options>
-		</state>
-	</channel-type>
 </thing:thing-descriptions>

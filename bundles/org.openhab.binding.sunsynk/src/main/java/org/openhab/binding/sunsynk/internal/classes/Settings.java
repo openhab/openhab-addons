@@ -427,12 +427,12 @@ public class Settings {
         return this.data.peakAndVallery;
     }
 
-    public Integer getEnergyMode() {
-        return this.data.energyMode;
+    public String getEnergyMode() {
+        return String.valueOf(this.data.energyMode);
     }
 
-    public Integer getSysWorkMode() {
-        return this.data.sysWorkMode;
+    public String getSysWorkMode() {
+        return String.valueOf(this.data.sysWorkMode);
     }
 
     public String toString() {
