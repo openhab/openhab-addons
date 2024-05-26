@@ -427,8 +427,8 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                 new DecimalType(inverterChargeSettings.getIntervalBatteryPowerLimit().get(5)));
 
         updateState(CHANNEL_INVERTER_CONTROL_TIMER, new DecimalType(inverterChargeSettings.getPeakAndValley()));
-        updateState(CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN, new DecimalType(inverterChargeSettings.getEnergyMode()));
-        updateState(CHANNEL_INVERTER_CONTROL_WORK_MODE, new DecimalType(inverterChargeSettings.getSysWorkMode()));
+        updateState(CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN, new StringType(inverterChargeSettings.getEnergyMode()));
+        updateState(CHANNEL_INVERTER_CONTROL_WORK_MODE, new StringType(inverterChargeSettings.getSysWorkMode()));
 
         Grid inverterGrid = inverter.getRealTimeGridStatus();
         if (inverterGrid == null) {
