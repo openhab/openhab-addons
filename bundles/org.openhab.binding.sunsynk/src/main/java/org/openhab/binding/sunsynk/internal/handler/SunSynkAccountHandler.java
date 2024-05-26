@@ -57,7 +57,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
     @Override
