@@ -49,14 +49,14 @@ class EmotivaXmlUtilsTest extends AbstractDTOTestBase {
 
     @Test
     void testUnmarshallInstanceObject() throws JAXBException {
-        Object object = xmlUtils.unmarshallToEmotivaDTO(emotivaNotifyV2_KeepAlive);
+        Object object = xmlUtils.unmarshallToEmotivaDTO(emotivaNotifyV2KeepAlive);
 
         assertThat(object).isInstanceOf(EmotivaNotifyWrapper.class);
     }
 
     @Test
     void testUnmarshallXml() throws JAXBException {
-        Object object = xmlUtils.unmarshallToEmotivaDTO(emotivaNotifyV2_KeepAlive);
+        Object object = xmlUtils.unmarshallToEmotivaDTO(emotivaNotifyV2KeepAlive);
 
         assertThat(object).isInstanceOf(EmotivaNotifyWrapper.class);
     }

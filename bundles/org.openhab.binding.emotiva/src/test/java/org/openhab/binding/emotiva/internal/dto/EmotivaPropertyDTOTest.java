@@ -37,7 +37,7 @@ class EmotivaPropertyDTOTest extends AbstractDTOTestBase {
     @Test
     void unmarshallFromEmotivaNotify() throws JAXBException {
         EmotivaPropertyDTO commandDTO = (EmotivaPropertyDTO) xmlUtils
-                .unmarshallToEmotivaDTO(emotivaNotify_emotivaProperty_Power);
+                .unmarshallToEmotivaDTO(emotivaNotifyEmotivaPropertyPower);
         assertThat(commandDTO).isNotNull();
         assertThat(commandDTO.getName()).isEqualTo(EmotivaSubscriptionTags.tuner_channel.name());
         assertThat(commandDTO.getValue()).isEqualTo("FM 106.50MHz");
@@ -48,7 +48,7 @@ class EmotivaPropertyDTOTest extends AbstractDTOTestBase {
     @Test
     void unmarshallFromEmotivaUpdate() throws JAXBException {
         EmotivaPropertyDTO commandDTO = (EmotivaPropertyDTO) xmlUtils
-                .unmarshallToEmotivaDTO(emotivaUpdate_emotivaProperty_Power);
+                .unmarshallToEmotivaDTO(emotivaUpdateEmotivaPropertyPower);
         assertThat(commandDTO).isNotNull();
         assertThat(commandDTO.getName()).isEqualTo(EmotivaControlCommands.power.name());
         assertThat(commandDTO.getValue()).isEqualTo("On");

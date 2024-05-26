@@ -36,14 +36,14 @@ class EmotivaAckDTOTest extends AbstractDTOTestBase {
 
     @Test
     void unmarshallValidCommand() throws JAXBException {
-        EmotivaAckDTO dto = (EmotivaAckDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaAck_PowerOff);
+        EmotivaAckDTO dto = (EmotivaAckDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaAckPowerOff);
         assertThat(dto).isNotNull();
         assertThat(dto.getCommands().size()).isEqualTo(1);
     }
 
     @Test
     void unmarshallOneValidCommand() throws JAXBException {
-        EmotivaAckDTO dto = (EmotivaAckDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaAck_PowerOffAndNotRealCommand);
+        EmotivaAckDTO dto = (EmotivaAckDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaAckPowerOffAndNotRealCommand);
         assertThat(dto).isNotNull();
         List<EmotivaCommandDTO> commands = xmlUtils.unmarshallXmlObjectsToControlCommands(dto.getCommands());
         assertThat(commands.size()).isEqualTo(2);

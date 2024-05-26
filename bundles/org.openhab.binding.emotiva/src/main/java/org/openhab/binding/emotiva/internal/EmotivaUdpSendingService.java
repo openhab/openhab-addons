@@ -205,7 +205,6 @@ public class EmotivaUdpSendingService {
                 if (localListener != null) {
                     handleReceivedData(answer, receivedData, localListener);
                 }
-
             } else {
                 throw new SocketException("Datagram Socket closed or not initialized");
             }

@@ -48,7 +48,7 @@ class EmotivaUpdateResponseTest extends AbstractDTOTestBase {
 
     @Test
     void unmarshallV2() throws JAXBException {
-        var dto = (EmotivaUpdateResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaUpdate_Response_V2);
+        var dto = (EmotivaUpdateResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaUpdateResponseV2);
         assertThat(dto).isNotNull();
         assertThat(dto.getProperties()).isNull();
         List<EmotivaNotifyDTO> notifications = xmlUtils.unmarshallToNotification(dto.getTags());
@@ -72,7 +72,7 @@ class EmotivaUpdateResponseTest extends AbstractDTOTestBase {
 
     @Test
     void unmarshallV3() throws JAXBException {
-        var dto = (EmotivaUpdateResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaUpdate_Response_V3);
+        var dto = (EmotivaUpdateResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaUpdateResponseV3);
         assertThat(dto).isNotNull();
         assertThat(dto.getTags()).isNull();
         assertThat(dto.getProperties().size()).isEqualTo(3);

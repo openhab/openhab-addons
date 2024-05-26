@@ -49,13 +49,13 @@ public class EmotivaBindingConstants {
     static final int DEFAULT_RETRY_INTERVAL_MINUTES = 2;
 
     /** Default Emotiva device keep alive in milliseconds. {@link ControlDTO} */
-    static int DEFAULT_KEEP_ALIVE_IN_MILLISECONDS = 7500;
+    static final int DEFAULT_KEEP_ALIVE_IN_MILLISECONDS = 7500;
 
     /** State name for storing keepAlive timestamp messages */
-    public static String LAST_SEEN_STATE_NAME = "no-channel#last-seen";
+    public static final String LAST_SEEN_STATE_NAME = "no-channel#last-seen";
 
     /** Default Emotiva device considered list in milliseconds. {@link ControlDTO} */
-    static int DEFAULT_KEEP_ALIVE_CONSIDERED_LOST_IN_MILLISECONDS = 30000;
+    static final int DEFAULT_KEEP_ALIVE_CONSIDERED_LOST_IN_MILLISECONDS = 30000;
 
     /** Default Emotiva control message value **/
     public static final String DEFAULT_CONTROL_MESSAGE_SET_DEFAULT_VALUE = "0";

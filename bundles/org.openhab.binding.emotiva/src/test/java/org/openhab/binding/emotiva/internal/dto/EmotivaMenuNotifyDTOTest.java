@@ -56,7 +56,7 @@ class EmotivaMenuNotifyDTOTest extends AbstractDTOTestBase {
 
     @Test
     void testUnmarshallProgress() throws JAXBException {
-        EmotivaMenuNotifyDTO dto = (EmotivaMenuNotifyDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaMenuNotify_Progress);
+        EmotivaMenuNotifyDTO dto = (EmotivaMenuNotifyDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaMenuNotifyProgress);
         assertThat(dto.getSequence()).isEqualTo("2405");
         assertThat(dto.getRow()).isEqualTo(null);
         assertThat(dto.getProgress().getTime()).isEqualTo("15");

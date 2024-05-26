@@ -17,6 +17,7 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.namespace.QName;
 
 /**
  * Defines elements used by common request DTO classes.
@@ -41,5 +42,9 @@ public class AbstractJAXBElementDTO {
 
     public void setJaxbElements(List<JAXBElement<String>> jaxbElements) {
         this.jaxbElements = jaxbElements;
+    }
+
+    public JAXBElement<String> createJAXBElement(QName name) {
+        return new JAXBElement<String>(name, String.class, null);
     }
 }

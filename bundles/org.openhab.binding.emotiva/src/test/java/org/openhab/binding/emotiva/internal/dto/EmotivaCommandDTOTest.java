@@ -36,7 +36,7 @@ class EmotivaCommandDTOTest extends AbstractDTOTestBase {
 
     @Test
     void unmarshallElements() {
-        List<EmotivaCommandDTO> commandDTO = xmlUtils.unmarshallToCommands(emotivaCommando_PowerOn);
+        List<EmotivaCommandDTO> commandDTO = xmlUtils.unmarshallToCommands(emotivaCommandoPowerOn);
         assertThat(commandDTO).isNotNull();
         assertThat(commandDTO.size()).isEqualTo(1);
         assertThat(commandDTO.get(0).getName()).isEqualTo(EmotivaControlCommands.power_on.name());
@@ -44,7 +44,7 @@ class EmotivaCommandDTOTest extends AbstractDTOTestBase {
 
     @Test
     void unmarshallFromEmotivaAckWithMissingEnumType() {
-        List<EmotivaCommandDTO> commandDTO = xmlUtils.unmarshallToCommands(emotivaAck_PowerOffAndNotRealCommand);
+        List<EmotivaCommandDTO> commandDTO = xmlUtils.unmarshallToCommands(emotivaAckPowerOffAndNotRealCommand);
         assertThat(commandDTO).isNotNull();
         assertThat(commandDTO.size()).isEqualTo(2);
         assertThat(commandDTO.get(0).getName()).isEqualTo(EmotivaControlCommands.power_off.name());
@@ -59,7 +59,7 @@ class EmotivaCommandDTOTest extends AbstractDTOTestBase {
 
     @Test
     void unmarshallFromEmotivaAck() {
-        List<EmotivaCommandDTO> commandDTO = xmlUtils.unmarshallToCommands(emotivaAck_PowerOffAndVolume);
+        List<EmotivaCommandDTO> commandDTO = xmlUtils.unmarshallToCommands(emotivaAckPowerOffAndVolume);
         assertThat(commandDTO).isNotNull();
         assertThat(commandDTO.size()).isEqualTo(2);
         assertThat(commandDTO.get(0).getName()).isEqualTo(EmotivaControlCommands.power_off.name());

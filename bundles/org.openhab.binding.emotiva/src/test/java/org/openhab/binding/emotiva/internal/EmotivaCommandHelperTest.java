@@ -17,7 +17,8 @@ import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANN
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MUTE;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_STANDBY;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_SURROUND;
-import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.*;
+import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.volumeDecibelToPercentage;
+import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.volumePercentageToDecibel;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.mute;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.mute_off;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.mute_on;
@@ -88,7 +89,6 @@ class EmotivaCommandHelperTest {
     void testChannelToControlRequest(String channel, String name, EmotivaDataType emotivaDataType,
             EmotivaControlCommands defaultCommand, EmotivaControlCommands onCommand, EmotivaControlCommands offCommand,
             EmotivaControlCommands setCommand, EmotivaProtocolVersion version, int min, int max) {
-
         final Map<String, Map<EmotivaControlCommands, String>> commandMaps = new ConcurrentHashMap<>();
 
         EmotivaControlRequest surround = EmotivaCommandHelper.channelToControlRequest(channel, commandMaps, version);

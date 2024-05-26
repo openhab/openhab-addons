@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.emotiva.internal.EmotivaBindingConstants;
 import org.openhab.binding.emotiva.internal.EmotivaCommandHelper;
 import org.openhab.binding.emotiva.internal.dto.EmotivaControlDTO;
 import org.openhab.core.library.types.DecimalType;
@@ -209,56 +210,55 @@ class EmotivaControlRequestTest {
                         "-2.0"));
     }
 
-    private static final EnumMap<EmotivaControlCommands, String> map_sources_main_zone = new EnumMap<>(
+    private static final EnumMap<EmotivaControlCommands, String> MAP_SOURCES_MAIN_ZONE = new EnumMap<>(
             EmotivaControlCommands.class);
-    private static final EnumMap<EmotivaControlCommands, String> map_sources_zone_2 = new EnumMap<>(
+    private static final EnumMap<EmotivaControlCommands, String> MAP_SOURCES_ZONE_2 = new EnumMap<>(
             EmotivaControlCommands.class);
-    private static final EnumMap<EmotivaControlCommands, String> channelMap = new EnumMap<>(
+    private static final EnumMap<EmotivaControlCommands, String> CHANNEL_MAP = new EnumMap<>(
             EmotivaControlCommands.class);
-    private static final EnumMap<EmotivaControlCommands, String> bandMap = new EnumMap<>(EmotivaControlCommands.class);
-
-    private static final Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
-    private static final Map<String, Map<EmotivaControlCommands, String>> commandMaps = new ConcurrentHashMap<>();
+    private static final EnumMap<EmotivaControlCommands, String> RADIO_BAND_MAP = new EnumMap<>(
+            EmotivaControlCommands.class);
+    private static final Map<String, State> STATE_MAP = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<String, Map<EmotivaControlCommands, String>> COMMAND_MAPS = new ConcurrentHashMap<>();
 
     @BeforeAll
     static void beforeAll() {
-        map_sources_main_zone.put(source_1, "HDMI 1");
-        map_sources_main_zone.put(source_2, "SHIELD");
-        map_sources_main_zone.put(hdmi1, "HDMI1");
-        map_sources_main_zone.put(coax1, "Coax 1");
-        commandMaps.put(MAP_SOURCES_MAIN_ZONE, map_sources_main_zone);
+        MAP_SOURCES_MAIN_ZONE.put(source_1, "HDMI 1");
+        MAP_SOURCES_MAIN_ZONE.put(source_2, "SHIELD");
+        MAP_SOURCES_MAIN_ZONE.put(hdmi1, "HDMI1");
+        MAP_SOURCES_MAIN_ZONE.put(coax1, "Coax 1");
+        COMMAND_MAPS.put(EmotivaBindingConstants.MAP_SOURCES_MAIN_ZONE, MAP_SOURCES_MAIN_ZONE);
 
-        map_sources_zone_2.put(source_1, "HDMI 1");
-        map_sources_zone_2.put(source_2, "SHIELD");
-        map_sources_zone_2.put(hdmi1, "HDMI1");
-        map_sources_zone_2.put(zone2_coax1, "Coax 1");
-        map_sources_zone_2.put(zone2_ARC, "Audio Return Channel");
-        map_sources_zone_2.put(zone2_follow_main, "Follow Main");
-        commandMaps.put(MAP_SOURCES_ZONE_2, map_sources_zone_2);
+        MAP_SOURCES_ZONE_2.put(source_1, "HDMI 1");
+        MAP_SOURCES_ZONE_2.put(source_2, "SHIELD");
+        MAP_SOURCES_ZONE_2.put(hdmi1, "HDMI1");
+        MAP_SOURCES_ZONE_2.put(zone2_coax1, "Coax 1");
+        MAP_SOURCES_ZONE_2.put(zone2_ARC, "Audio Return Channel");
+        MAP_SOURCES_ZONE_2.put(zone2_follow_main, "Follow Main");
+        COMMAND_MAPS.put(EmotivaBindingConstants.MAP_SOURCES_ZONE_2, MAP_SOURCES_ZONE_2);
 
-        channelMap.put(channel_1, "Channel 1");
-        channelMap.put(channel_2, "Channel 2");
-        channelMap.put(channel_3, "My Radio Channel");
-        commandMaps.put(tuner_channel.getEmotivaName(), channelMap);
+        CHANNEL_MAP.put(channel_1, "Channel 1");
+        CHANNEL_MAP.put(channel_2, "Channel 2");
+        CHANNEL_MAP.put(channel_3, "My Radio Channel");
+        COMMAND_MAPS.put(tuner_channel.getEmotivaName(), CHANNEL_MAP);
 
-        bandMap.put(band_am, "AM");
-        bandMap.put(band_fm, "FM");
-        commandMaps.put(tuner_band.getEmotivaName(), bandMap);
+        RADIO_BAND_MAP.put(band_am, "AM");
+        RADIO_BAND_MAP.put(band_fm, "FM");
+        COMMAND_MAPS.put(tuner_band.getEmotivaName(), RADIO_BAND_MAP);
 
-        stateMap.put(CHANNEL_TREBLE, new DecimalType(-3));
-        stateMap.put(CHANNEL_TUNER_CHANNEL, new StringType("FM    87.50MHz"));
-        stateMap.put(CHANNEL_FREQUENCY, QuantityType.valueOf(107.90, Units.HERTZ));
+        STATE_MAP.put(CHANNEL_TREBLE, new DecimalType(-3));
+        STATE_MAP.put(CHANNEL_TUNER_CHANNEL, new StringType("FM    87.50MHz"));
+        STATE_MAP.put(CHANNEL_FREQUENCY, QuantityType.valueOf(107.90, Units.HERTZ));
     }
 
     @ParameterizedTest
     @MethodSource("channelToDTOs")
     void createDTO(String channel, Command ohValue, EmotivaControlCommands controlCommand,
             EmotivaProtocolVersion protocolVersion, String requestValue) {
-
-        EmotivaControlRequest controlRequest = EmotivaCommandHelper.channelToControlRequest(channel, commandMaps,
+        EmotivaControlRequest controlRequest = EmotivaCommandHelper.channelToControlRequest(channel, COMMAND_MAPS,
                 protocolVersion);
 
-        EmotivaControlDTO dto = controlRequest.createDTO(ohValue, stateMap.get(channel));
+        EmotivaControlDTO dto = controlRequest.createDTO(ohValue, STATE_MAP.get(channel));
         assertThat(dto.getCommands().size()).isEqualTo(1);
         assertThat(dto.getCommands().get(0).getName()).isEqualTo(controlCommand.name());
         assertThat(dto.getCommands().get(0).getValue()).isEqualTo(requestValue);

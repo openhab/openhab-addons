@@ -96,7 +96,7 @@ public enum EmotivaSubscriptionTags {
     /* No match tag */
     unknown("unknown", UNKNOWN, "");
 
-    private static final Logger logger = LoggerFactory.getLogger(EmotivaSubscriptionTags.class);
+    private final Logger logger = LoggerFactory.getLogger(EmotivaSubscriptionTags.class);
 
     /* For error handling */
     public static final String UNKNOWN_TAG = "unknown";

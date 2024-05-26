@@ -34,6 +34,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.emotiva.internal.dto.AbstractJAXBElementDTO;
 import org.openhab.binding.emotiva.internal.dto.EmotivaAckDTO;
 import org.openhab.binding.emotiva.internal.dto.EmotivaBarNotifyDTO;
@@ -62,9 +63,10 @@ import org.xml.sax.SAXException;
  *
  * @author Espen Fossen - Initial contribution
  */
+@NonNullByDefault
 public class EmotivaXmlUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(EmotivaXmlUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmotivaXmlUtils.class);
     Marshaller marshaller;
 
     JAXBContext context;
@@ -85,7 +87,7 @@ public class EmotivaXmlUtils {
             marshaller.marshal(objectInstanceType, out);
             return out.toString();
         } catch (JAXBException e) {
-            logger.debug("Could not marshall class of type {}", objectInstanceType.getClass().getName(), e);
+            LOGGER.debug("Could not marshall class of type {}", objectInstanceType.getClass().getName(), e);
         }
         return "";
     }
@@ -97,7 +99,6 @@ public class EmotivaXmlUtils {
             List<JAXBElement<String>> commandsAsJAXBElement = new ArrayList<>();
 
             if (jaxbElementDTO.getCommands() != null) {
-
                 for (EmotivaCommandDTO command : jaxbElementDTO.getCommands()) {
                     if (command.getName() != null) {
                         StringBuilder sb = new StringBuilder();
@@ -114,8 +115,7 @@ public class EmotivaXmlUtils {
                             sb.append(" ack=\"").append(command.getAck()).append("\"");
                         }
                         QName name = new QName("%s%s".formatted(command.getName().trim(), sb));
-                        JAXBElement<String> jaxbElement = new JAXBElement<String>(name, String.class, null);
-                        commandsAsJAXBElement.add(jaxbElement);
+                        commandsAsJAXBElement.add(jaxbElementDTO.createJAXBElement(name));
                     }
                 }
             }
@@ -130,7 +130,7 @@ public class EmotivaXmlUtils {
             return out.toString().replaceAll("xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
                     "");
         } catch (JAXBException e) {
-            logger.debug("Could not marshall class of type {}", jaxbElementDTO.getClass().getName(), e);
+            LOGGER.debug("Could not marshall class of type {}", jaxbElementDTO.getClass().getName(), e);
         }
         return "";
     }
@@ -159,10 +159,10 @@ public class EmotivaXmlUtils {
                     EmotivaCommandDTO commandDTO = getEmotivaCommandDTO(xmlElement);
                     commands.add(commandDTO);
                 } catch (IllegalArgumentException e) {
-                    logger.debug("Notify tag {} is unknown or not defined, skipping.", xmlElement.getTagName(), e);
+                    LOGGER.debug("Notify tag {} is unknown or not defined, skipping.", xmlElement.getTagName(), e);
                 }
             } catch (ClassCastException e) {
-                logger.debug("Could not cast object to Element, object is of type {}", object.getClass());
+                LOGGER.debug("Could not cast object to Element, object is of type {}", object.getClass());
             }
         }
         return commands;
@@ -178,10 +178,10 @@ public class EmotivaXmlUtils {
                     EmotivaNotifyDTO tagDTO = getEmotivaNotifyTags(xmlElement);
                     commands.add(tagDTO);
                 } catch (IllegalArgumentException e) {
-                    logger.debug("Notify tag {} is unknown or not defined, skipping.", xmlElement.getTagName(), e);
+                    LOGGER.debug("Notify tag {} is unknown or not defined, skipping.", xmlElement.getTagName(), e);
                 }
             } catch (ClassCastException e) {
-                logger.debug("Could not cast object to Element, object is of type {}", object.getClass());
+                LOGGER.debug("Could not cast object to Element, object is of type {}", object.getClass());
             }
         }
         return commands;
@@ -197,10 +197,10 @@ public class EmotivaXmlUtils {
                     EmotivaBarNotifyDTO tagDTO = getEmotivaBarNotify(xmlElement);
                     commands.add(tagDTO);
                 } catch (IllegalArgumentException e) {
-                    logger.debug("Bar notify type {} is unknown or not defined, skipping.", xmlElement.getTagName(), e);
+                    LOGGER.debug("Bar notify type {} is unknown or not defined, skipping.", xmlElement.getTagName(), e);
                 }
             } catch (ClassCastException e) {
-                logger.debug("Could not cast object to Element, object is of type {}", object.getClass());
+                LOGGER.debug("Could not cast object to Element, object is of type {}", object.getClass());
             }
         }
         return commands;
@@ -223,7 +223,7 @@ public class EmotivaXmlUtils {
                 }
             }
         } catch (SAXException | IOException | ParserConfigurationException e) {
-            logger.debug("Error unmarshall elements to commands", e);
+            LOGGER.debug("Error unmarshall elements to commands", e);
         }
         return commands;
     }
@@ -233,7 +233,7 @@ public class EmotivaXmlUtils {
         try {
             commandType = EmotivaControlCommands.valueOf(xmlElement.getTagName().trim());
         } catch (IllegalArgumentException e) {
-            logger.debug("Could not create EmotivaCommand, unknown command {}", xmlElement.getTagName());
+            LOGGER.debug("Could not create EmotivaCommand, unknown command {}", xmlElement.getTagName());
             commandType = EmotivaControlCommands.none;
         }
         EmotivaCommandDTO commandDTO = new EmotivaCommandDTO(commandType);
@@ -277,7 +277,7 @@ public class EmotivaXmlUtils {
         try {
             notifyTagName = EmotivaSubscriptionTags.valueOf(xmlElement.getTagName().trim()).name();
         } catch (IllegalArgumentException e) {
-            logger.debug("Could not create EmotivaNotify, unknown subscription tag {}", xmlElement.getTagName());
+            LOGGER.debug("Could not create EmotivaNotify, unknown subscription tag {}", xmlElement.getTagName());
             notifyTagName = UNKNOWN_TAG;
         }
         EmotivaNotifyDTO commandDTO = new EmotivaNotifyDTO(notifyTagName);

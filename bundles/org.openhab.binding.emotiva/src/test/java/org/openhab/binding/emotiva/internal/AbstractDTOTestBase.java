@@ -27,63 +27,68 @@ public class AbstractDTOTestBase {
 
     protected EmotivaXmlUtils xmlUtils = new EmotivaXmlUtils();
 
-    protected String emotivaAck_PowerOff = """
+    protected String emotivaAckPowerOff = """
             <?xml version="1.0"?>
             <emotivaAck>
               <power_off status="ack"/>
             </emotivaAck>""";
 
-    protected String emotivaAck_PowerOffAndNotRealCommand = """
+    protected String emotivaAckPowerOffAndNotRealCommand = """
             <?xml version="1.0"?>
             <emotivaAck>
               <power_off status="ack"/>
               <not_a_real_command status="ack"/>
             </emotivaAck>""";
 
-    protected String emotivaAck_PowerOffAndVolume = """
+    protected String emotivaAckPowerOffAndVolume = """
             <?xml version="1.0"?>
             <emotivaAck>
               <power_off status="ack"/>
               <volume status="ack"/>
             </emotivaAck>""";
 
-    protected String emotivaCommando_PowerOn = """
+    protected String emotivaCommandoPowerOn = """
             <power_on status="ack"/>""";
-    protected String emotivaNotify_emotivaProperty_Power = """
+
+    protected String emotivaNotifyEmotivaPropertyPower = """
             <property name="tuner_channel" value="FM 106.50MHz" visible="true"/>""";
-    protected String emotivaUpdate_emotivaProperty_Power = """
+
+    protected String emotivaUpdateEmotivaPropertyPower = """
             <property name="power" value="On" visible="true" status="ack"/>""";
-    protected String emotivaControl_Volume = """
+
+    protected String emotivaControlVolume = """
             <emotivaControl>
               <volume value="-1" ack="no" />
             </emotivaControl>""";
 
-    protected String emotivaNotifyV2_KeepAlive = """
+    protected String emotivaNotifyV2KeepAlive = """
             <?xml version="1.0"?>
             <emotivaNotify sequence="54062">
               <keepAlive value="7500" visible="true"/>
             </emotivaNotify>""";
-    protected String emotivaNotifyV2_unknownTag = """
+
+    protected String emotivaNotifyV2UnknownTag = """
             <?xml version="1.0"?>
             <emotivaNotify sequence="54062">
               <unknownTag value="0" visible="false"/>
             </emotivaNotify>""";
-    protected String emotivaNotifyV2_KeepAlive_Sequence = "54062";
 
-    protected String emotivaNotifyV3_KeepAlive = """
+    protected String emotivaNotifyV2KeepAliveSequence = "54062";
+
+    protected String emotivaNotifyV3KeepAlive = """
             <?xml version="1.0"?>
             <emotivaNotify sequence="54062">
               <property name="keepAlive" value="7500" visible="true"/>
             </emotivaNotify>""";
 
-    protected String emotivaNotifyV3_EmptyMenuValue = """
+    protected String emotivaNotifyV3EmptyMenuValue = """
             <?xml version="1.0"?>
             <emotivaNotify sequence="23929">
               <property name="menu" value="" visible="true"/>
             </emotivaNotify>
             """;
 
-    protected String emotivaUpdate_Request = """
+    protected String emotivaUpdateRequest = """
             <?xml version="1.0" encoding="utf-8"?>
             <emotivaUpdate protocol="3.0">
               <power />
@@ -155,7 +160,8 @@ public class AbstractDTOTestBase {
                 <col number="2" value="100%" fixed="no" highlight="no" arrow="no"/>
               </row>
             </emotivaMenuNotify>""";
-    protected String emotivaMenuNotify_WithCheckBox = """
+
+    protected String emotivaMenuNotifyWithCheckBox = """
             <?xml version="1.0" encoding="UTF-8"?>
             <emotivaMenuNotify sequence="12129">
               <row number="0">
@@ -215,13 +221,13 @@ public class AbstractDTOTestBase {
               </row>
             </emotivaMenuNotify>""";
 
-    protected String emotivaMenuNotify_Progress = """
+    protected String emotivaMenuNotifyProgress = """
             <?xml version="1.0"?>
             <emotivaMenuNotify sequence="2405">
               <progress time="15"/>
             </emotivaMenuNotify>""";
 
-    protected String emotivaUpdate_Response_V2 = """
+    protected String emotivaUpdateResponseV2 = """
             <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
             <emotivaUpdate protocol="2.0">
               <power value="On" visible="true" status="ack"/>
@@ -229,7 +235,7 @@ public class AbstractDTOTestBase {
               <noKnownTag ack="nak"/>
             </emotivaUpdate>""";
 
-    protected String emotivaUpdate_Response_V3 = """
+    protected String emotivaUpdateResponseV3 = """
             <?xml version="1.0" encoding="utf-8"?>
             <emotivaUpdate protocol="3.0">
               <property name="power" value="On" visible="true" status="ack"/>
@@ -237,7 +243,7 @@ public class AbstractDTOTestBase {
               <property name="noKnownTag" ack="nak"/>
             </emotivaUpdate>""";
 
-    protected String emotivaBarNotify_bigText = """
+    protected String emotivaBarNotifyBigText = """
             <?xml version="1.0" encoding="UTF-8"?>
             <emotivaBarNotify sequence="98">
               <bar text="XBox One" type="bigText"/>
@@ -263,6 +269,7 @@ public class AbstractDTOTestBase {
     protected String emotivaPingV2 = """
             <?xml version="1.0" encoding="utf-8"?>
             <emotivaPing />""";
+
     protected String emotivaPingV3 = """
             <?xml version="1.0" encoding="utf-8" ?>
             <emotivaPing protocol="3.0"/>""";
@@ -282,6 +289,7 @@ public class AbstractDTOTestBase {
                 <keepAlive>10000</keepAlive>
               </control>
             </emotivaTransponder>""";
+
     protected String emotivaTransponderResponseV3 = """
             <?xml version="1.0"?>
             <emotivaTransponder>

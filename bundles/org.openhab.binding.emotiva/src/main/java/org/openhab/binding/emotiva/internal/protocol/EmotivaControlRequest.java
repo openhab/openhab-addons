@@ -245,7 +245,6 @@ public class EmotivaControlRequest {
                     } else {
                         return EmotivaControlDTO.create(getDownCommand(), -1);
                     }
-
                 } else {
                     logger.debug("Could not create EmotivaControlDTO for {}:{}:{}, ohCommand is {}", channel, name,
                             UP_DOWN_SINGLE, ohCommand.getClass().getSimpleName());
@@ -254,7 +253,6 @@ public class EmotivaControlRequest {
             }
             case UP_DOWN_HALF -> {
                 if (ohCommand instanceof Number value) {
-
                     if (value.intValue() <= maxValue || value.intValue() >= minValue) {
                         Number pre = (Number) previousState;
                         if (pre == null) {

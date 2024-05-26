@@ -114,7 +114,6 @@ public class EmotivaUdpBroadcastService {
         discoverSocket.setSoTimeout(DEFAULT_UDP_SENDING_TIMEOUT);
         final InetAddress broadcast = InetAddress.getByName(broadcastAddress);
 
-        // TODO: Verify what happens if we check with PROTOCOL_V2
         byte[] emotivaPingDTO = xmlUtils.marshallEmotivaDTO(new EmotivaPingDTO(PROTOCOL_V3.name()))
                 .getBytes(Charset.defaultCharset());
         final DatagramPacket discoverPacket = new DatagramPacket(emotivaPingDTO, emotivaPingDTO.length, broadcast,
