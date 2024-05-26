@@ -7,9 +7,13 @@ This binding is used to connect your openHAB system with Sun Synk Connect (where
 
 ## Introduction
 
-You will require to have installed a Sun Synk inverter with a WiFi Data logger [e-linter](https://www.e-linter.com/) connected to the Sun Synk App or Connect. See [Data Logger set up](https://www.sunsynk.org/_files/ugd/39fbfb_a325b6884e684c4ba1a3ad80afd5da20.pdf) or [Sun Synk Web](https://www.sunsynk.org/remote-monitoring). It is recommended, but not necessary that the "data interval" of your Gateway is set via Sun Synk Connect to 60s for best latency. If you do not have that setting avaailable you can request it set via Sun Synk or your installer or you can ask for an [User Level Access Change Request](https://www.sunsynk.org/remote-monitoring)
+You will require to have installed a Sun Synk inverter with a WiFi Data logger [e-linter](https://www.e-linter.com/) connected to the Sun Synk App or Connect.
+See [Data Logger set up](https://www.sunsynk.org/_files/ugd/39fbfb_a325b6884e684c4ba1a3ad80afd5da20.pdf) or [Sun Synk Web](https://www.sunsynk.org/remote-monitoring).
+It is recommended, but not necessary that the "data interval" of your Gateway is set via Sun Synk Connect to 60s for best latency.
+If you do not have that setting available you can request it set via Sun Synk, your installer or you can ask for an [User Level Access Change Request](https://www.sunsynk.org/remote-monitoring)
 
-This binding uses your Sun Synk Connect credentials to access Sun Synk's web services via an OpenHAB Bridge (SunSynk Account). The bridge manages the account authentication and the discovery of SunSynk Inverter Things. Only the Inverter Thing is currently supported.
+This binding uses your Sun Synk Connect credentials to access Sun Synk's web services via an openHAB Bridge (SunSynk Account).
+The bridge manages the account authentication and the discovery of SunSynk Inverter Things. Only the Inverter Thing is currently supported.
 
 Acknowledgements:
 - [Power Forum](https://powerforum.co.za/topic/12604-sunsynk-wifi-dongle-hacking/page/3/)

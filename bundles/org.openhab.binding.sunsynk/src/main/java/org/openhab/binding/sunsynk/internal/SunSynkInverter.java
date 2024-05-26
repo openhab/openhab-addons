@@ -35,7 +35,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link SunSynkInverter} class defines methods that contol
+ * The {@link SunSynkInverter} class defines methods that control
  * communication with the inverter.
  *
  * @author Lee Charlton - Initial contribution
