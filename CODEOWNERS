@@ -102,6 +102,7 @@
 /bundles/org.openhab.binding.enocean/ @fruggy83
 /bundles/org.openhab.binding.enphase/ @Hilbrand
 /bundles/org.openhab.binding.enturno/ @klocsson
+/bundles/org.openhab.binding.ephemeris/ @clinique
 /bundles/org.openhab.binding.epsonprojector/ @mlobstein
 /bundles/org.openhab.binding.etherrain/ @dfad1469
 /bundles/org.openhab.binding.evcc/ @florian-h05
