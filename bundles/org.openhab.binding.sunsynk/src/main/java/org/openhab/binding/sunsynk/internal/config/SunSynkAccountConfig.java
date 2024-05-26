@@ -13,16 +13,19 @@
 
 package org.openhab.binding.sunsynk.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Parameters used for bridge configuration.
  *
  * @author Lee Charlton - Initial contribution
  */
 
+@NonNullByDefault
 public class SunSynkAccountConfig {
 
-    private String email;
-    private String password;
+    private String email = "";
+    private String password = "";
 
     public String getEmail() {
         return email;

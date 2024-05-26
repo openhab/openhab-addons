@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sunsynk.internal.classes;
+package org.openhab.binding.sunsynk.internal.api.dto;
 
 import java.time.Instant;
 

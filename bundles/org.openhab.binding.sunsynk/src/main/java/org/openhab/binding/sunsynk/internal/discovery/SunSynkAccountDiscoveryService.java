@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.sunsynk.internal.SunSynkBindingConstants;
 import org.openhab.binding.sunsynk.internal.classes.Inverter;
 import org.openhab.binding.sunsynk.internal.handler.SunSynkAccountHandler;
@@ -36,15 +37,13 @@ import org.slf4j.LoggerFactory;
  * @author Lee Charlton - Initial contribution
  */
 
+// @NonNullByDefault
 public class SunSynkAccountDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SunSynkAccountDiscoveryService.class);
-
     private static final int TIMEOUT = 15;
-
     private final SunSynkAccountHandler handler;
     private final ThingUID bridgeUID;
-
     private ScheduledFuture<?> scanTask;
 
     public SunSynkAccountDiscoveryService(SunSynkAccountHandler handler) {
@@ -54,7 +53,7 @@ public class SunSynkAccountDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void findInverters() {
-        List<Inverter> inverters = handler.getInvertersFromSunSynk();
+        List<@NonNull Inverter> inverters = handler.getInvertersFromSunSynk();
         for (Inverter inverter : inverters) {
             addThing(inverter);
         }
@@ -76,9 +75,9 @@ public class SunSynkAccountDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopScan() {
         super.stopScan();
-
-        if (this.scanTask != null) {
-            this.scanTask.cancel(true);
+        ScheduledFuture<?> scanTask = this.scanTask;
+        if (scanTask != null) {
+            scanTask.cancel(true);
             this.scanTask = null;
         }
     }
@@ -87,17 +86,13 @@ public class SunSynkAccountDiscoveryService extends AbstractDiscoveryService {
         if (inverter == null || !inverter.discoveryInformationPresent()) {
             return;
         }
-
         logger.debug("addThing(): Adding new SunSynk Inverter unit ({}) to the inbox", inverter.getAlias());
-
         Map<String, Object> properties = new HashMap<>();
         ThingUID thingUID = new ThingUID(SunSynkBindingConstants.THING_TYPE_INVERTER, bridgeUID, inverter.getUID());
-        // properties.put(SunSynkBindingConstants.CONFIG_SECRET, inverter.getToken());
         properties.put(SunSynkBindingConstants.CONFIG_GATE_SERIAL, inverter.getGateSerialNo());
         properties.put(SunSynkBindingConstants.CONFIG_SERIAL, inverter.getSerialNo());
         properties.put(Thing.PROPERTY_MODEL_ID, inverter.getID());
         properties.put(SunSynkBindingConstants.CONFIG_NAME, inverter.getAlias());
-
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withLabel(inverter.getAlias()).withBridge(bridgeUID)
                 .withProperty("uniqueId", inverter.getSerialNo()).withRepresentationProperty("uniqueId")
                 .withProperties(properties).build());

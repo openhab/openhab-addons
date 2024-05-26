@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sunsynk.internal.discovery.SunSynkAccountDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -43,7 +43,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Lee Charlton - Initial contribution
  */
-// @NonNullByDefault
+
+@NonNullByDefault
+
 @Component(configurationPid = "binding.sunsynk", service = ThingHandlerFactory.class)
 public class SunSynkHandlerFactory extends BaseThingHandlerFactory {
 
@@ -57,12 +59,12 @@ public class SunSynkHandlerFactory extends BaseThingHandlerFactory {
     private Map<ThingUID, ServiceRegistration<DiscoveryService>> discoveryServiceRegistrations = new HashMap<>();
 
     @Override
-    public boolean supportsThingType(@NonNull ThingTypeUID thingTypeUID) {
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID);
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(@NonNull Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_INVERTER)) {
@@ -78,7 +80,7 @@ public class SunSynkHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected void removeHandler(@NonNull ThingHandler thingHandler) {
+    protected void removeHandler(ThingHandler thingHandler) {
         ServiceRegistration<DiscoveryService> serviceRegistration = discoveryServiceRegistrations
                 .get(thingHandler.getThing().getUID());
 
