@@ -66,9 +66,6 @@ public class SunSynkAccountDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        if (this.scanTask != null) {
-            scanTask.cancel(true);
-        }
         this.scanTask = scheduler.schedule(this::findInverters, 0, TimeUnit.SECONDS);
     }
 
