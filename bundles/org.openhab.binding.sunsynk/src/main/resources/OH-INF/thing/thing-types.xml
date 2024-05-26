@@ -97,9 +97,9 @@
 				<description>Name of inverter from Sun Synk Connect.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="true">
-				<label>Refresh Interval.</label>
+				<label>Refresh Interval</label>
 				<description>Time in seconds to retrieve status from Sun Synk Connect services. Greater than 60 seconds.</description>
-				<default> 60 </default>
+				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -132,7 +132,7 @@
 	<channel-type id="battery-target" advanced="true">
 		<item-type>Number</item-type>
 		<label>Target Charge Level</label>
-		<description>the desired charge level of the battery (%).</description>
+		<description>The desired charge level of the battery (%).</description>
 		<category>Battery</category>
 		<state min="0" max="100" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
