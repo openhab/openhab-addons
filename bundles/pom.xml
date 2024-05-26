@@ -134,6 +134,7 @@
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.enphase</module>
     <module>org.openhab.binding.enturno</module>
+    <module>org.openhab.binding.ephemeris</module>
     <module>org.openhab.binding.epsonprojector</module>
     <module>org.openhab.binding.etherrain</module>
     <module>org.openhab.binding.evcc</module>
