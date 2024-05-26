@@ -208,7 +208,7 @@ public class SnmpServiceImpl implements SnmpService {
     public byte @Nullable [] getEngineId(Address address) {
         Snmp snmp = this.snmp;
         if (snmp != null) {
-            return snmp.discoverAuthoritativeEngineID(address, 5000);
+            return snmp.discoverAuthoritativeEngineID(address, 15000);
         }
         return null;
     }
