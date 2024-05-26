@@ -88,7 +88,7 @@ public class SunSynkBindingConstants {
     public static final String CHANNEL_INVERTER_CONTROL_WORK_MODE = "inverter-control-work-mode";
 
     // Thing Discovery
-    public static final String CONFIG_SECRET = "access_token";
+    // public static final String CONFIG_SECRET = "access_token";
     public static final String CONFIG_GATE_SERIAL = "gsn";
     public static final String CONFIG_SERIAL = "sn";
     public static final String CONFIG_NAME = "alias";

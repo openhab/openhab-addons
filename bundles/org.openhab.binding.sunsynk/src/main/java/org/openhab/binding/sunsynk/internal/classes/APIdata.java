@@ -54,10 +54,16 @@ public class APIdata {
     }
 
     public Long getIssuedAt() {
-        return issued_at;
+        return this.issued_at;
     }
 
     public void setIssuedAt(Long issued_at) {
         this.issued_at = issued_at;
+    }
+
+    @Override
+    public String toString() {
+        return "[access token: " + this.access_token + ", refresh_token: " + this.refresh_token + ", expires_in: "
+                + this.expires_in + ", issued_at: " + this.issued_at + "]";
     }
 }

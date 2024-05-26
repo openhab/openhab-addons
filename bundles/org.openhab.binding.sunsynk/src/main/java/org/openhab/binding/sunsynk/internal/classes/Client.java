@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.sunsynk.internal.classes;
 
-import java.util.Optional;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link Client} is the internal class for Client information from the sunsynk Account.
@@ -20,7 +20,7 @@ import java.util.Optional;
  * @author Lee Charlton - Initial contribution
  */
 
-// @NonNullByDefault
+@NonNullByDefault
 public class Client {
     private int code;
     private String msg = "";
@@ -58,15 +58,8 @@ public class Client {
         data.setIssuedAt(issued_at);
     }
 
-    public Optional<APIdata> safeAPIData() {
-        if (this.data == null) {
-            return Optional.empty();
-        }
-        return Optional.of(this.data);
-    }
-
-    public APIdata getData() { // Not used
-        return data;
+    public APIdata getData() {
+        return this.data;
     }
 
     @Override

@@ -19,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -28,7 +27,6 @@ import org.openhab.binding.sunsynk.internal.classes.Client;
 import org.openhab.binding.sunsynk.internal.classes.Details;
 import org.openhab.binding.sunsynk.internal.classes.Inverter;
 import org.openhab.binding.sunsynk.internal.config.SunSynkAccountConfig;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -52,6 +50,7 @@ import com.google.gson.JsonSyntaxException;
 
 public class SunSynkAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SunSynkAccountHandler.class);
+    private Client sunAccount;
 
     public SunSynkAccountHandler(Bridge bridge) {
         super(bridge);
@@ -65,9 +64,6 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
         logger.debug("SunSynk Handler Intialised attempting to retrieve configuration");
-        // Map<String, String> props = getThing().getProperties();
-        // Map<String, String> editProps = editProperties();
-        // logger.debug("Account properties: " + props);
         configAccount();
     }
 
@@ -75,12 +71,10 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public /* @NonNull */ List<Inverter> getInvertersFromSunSynk() {
-        logger.debug("Attempting to find inverters tied to account"); // Discover Connected plants and inverters.
+    public List<Inverter> getInvertersFromSunSynk() {
+        logger.debug("Attempting to find inverters tied to account");
         Details sunAccountDetails = getDetails(APIdata.static_access_token);
-        ArrayList<Inverter> inverters = sunAccountDetails.getInverters(APIdata.static_access_token); // List<Inverterdata.InverterInfo>
-                                                                                                     // inverters =
-                                                                                                     // sunAccountDetails.getInverters();
+        ArrayList<Inverter> inverters = sunAccountDetails.getInverters(APIdata.static_access_token);
         if (!inverters.isEmpty() | inverters != null) {
             return inverters;
         }
@@ -110,65 +104,40 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
 
     public void configAccount() {
         SunSynkAccountConfig accountConfig = getConfigAs(SunSynkAccountConfig.class);
-        Client sunAccount = authenticate(accountConfig.getEmail(), accountConfig.getPassword());
-        Optional<APIdata> checkAPI = sunAccount.safeAPIData();
-        if (!checkAPI.isPresent()) { // API Data failed
+        this.sunAccount = authenticate(accountConfig.getEmail(), accountConfig.getPassword());
+        String newToken = this.sunAccount.getData().getAccessToken();
+        if (newToken.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE);
-            logger.debug("Account fialed to authenticate, likely a certificate path or maybe a password problem.");
-            if (sunAccount.getCode() == 102) {
+            logger.debug("Account fialed to authenticate, likely a certificate path or password problem.");
+            if (this.sunAccount.getCode() == 102) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Check e-mail and password!");
                 logger.debug("Looks like its your password or email.");
             }
             return;
         }
-        APIdata apiData = checkAPI.get();
-        String newToken = apiData.getAccessToken();
         APIdata.static_access_token = newToken;
-        Configuration configuration = editConfiguration();
-        configuration.put("access_token", newToken);
-        configuration.put("refresh_token", sunAccount.getRefreshTokenString());
-        configuration.put("expires_in", sunAccount.getExpiresIn());
-        configuration.put("issued_at", sunAccount.getIssuedAt());
-        updateConfiguration(configuration);
-        logger.debug("Account configuration updated : {}", configuration);
+        logger.debug("Account configuration updated : {}", this.sunAccount.getData().toString());
     }
 
     public void refreshAccount() {
-        Long expires_in;
-        Long issued_at;
-        Configuration configuration = editConfiguration();
-
-        try {
-            expires_in = ((Long) configuration.get("expires_in"));
-            issued_at = ((Long) configuration.get("issued_at"));
-        } catch (Exception e) {
-            expires_in = Long.parseLong(configuration.get("expires_in").toString());
-            issued_at = Long.parseLong(configuration.get("issued_at").toString());
-        }
-
+        Long expires_in = this.sunAccount.getExpiresIn();
+        Long issued_at = this.sunAccount.getIssuedAt();
         if ((issued_at + expires_in) - Instant.now().getEpochSecond() > 30) { // 30 seconds
             logger.debug("Account configuration token not expired.");
             return;
         }
-        logger.debug("Account configuration token expired : {}", configuration);
+        logger.debug("Account configuration token expired : {}", this.sunAccount.getData().toString());
         SunSynkAccountConfig accountConfig = getConfigAs(SunSynkAccountConfig.class);
-        String refreshtToken = configuration.get("refresh_token").toString();
-        Client sunAccount = refresh(accountConfig.getEmail(), refreshtToken);
-        Optional<APIdata> checkAPI = sunAccount.safeAPIData();
-        if (!checkAPI.isPresent()) { // API Data failed
+        String refreshtToken = this.sunAccount.getRefreshTokenString();
+        this.sunAccount = refresh(accountConfig.getEmail(), refreshtToken);
+        String newToken = this.sunAccount.getData().getAccessToken();
+        if (newToken.isEmpty()) {
             logger.debug("Account failed to refresh, likely a certificate path or password problem.");
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
-        APIdata apiData = checkAPI.get();
-        String newToken = apiData.getAccessToken();
         APIdata.static_access_token = newToken;
-        configuration.put("access_token", newToken);
-        configuration.put("refresh_token", sunAccount.getRefreshTokenString());
-        configuration.put("expires_in", sunAccount.getExpiresIn());
-        configuration.put("issued_at", sunAccount.getIssuedAt());
-        updateConfiguration(configuration);
-        logger.debug("Account configuration refreshed : {}", configuration);
+        logger.debug("Account configuration refreshed : {}", this.sunAccount.getData().toString());
     }
 
     private Client authenticate(String username, String password) {
@@ -179,7 +148,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         Properties headers = new Properties();
         try {
             headers.setProperty("Accept", "application/json");
-            headers.setProperty("Content-Type", "application/json"); // may not need this.
+            headers.setProperty("Requester", "www.openhab.org"); // optional
             InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
             response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
             Client API_Token = gson.fromJson(response, Client.class);
@@ -201,7 +170,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         Properties headers = new Properties();
         try {
             headers.setProperty("Accept", "application/json");
-            headers.setProperty("Content-Type", "application/json"); // may not need this.
+            headers.setProperty("Requester", "www.openhab.org"); // optional
             InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
             response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
             Client API_Token = gson.fromJson(response, Client.class);
