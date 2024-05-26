@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import javax.xml.bind.JAXBException;
 
@@ -34,31 +35,31 @@ class EmotivaMenuNotifyDTOTest extends AbstractDTOTestBase {
     @Test
     void testUnmarshallMenu() throws JAXBException {
         EmotivaMenuNotifyDTO dto = (EmotivaMenuNotifyDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaMenuNotify);
-        assertThat(dto.getProgress()).isEqualTo(null);
-        assertThat(dto.getSequence()).isEqualTo("2378");
-        assertThat(dto.getRow().size()).isEqualTo(11);
-        assertThat(dto.getRow().size()).isEqualTo(11);
-        assertThat(dto.getRow().get(0).getNumber()).isEqualTo("0");
-        assertThat(dto.getRow().get(0).getCol().size()).isEqualTo(3);
-        assertThat(dto.getRow().get(0).getCol().get(0).getNumber()).isEqualTo("0");
-        assertThat(dto.getRow().get(0).getCol().get(0).getValue()).isEqualTo("");
-        assertThat(dto.getRow().get(0).getCol().get(0).getHighlight()).isEqualTo("no");
-        assertThat(dto.getRow().get(0).getCol().get(0).getArrow()).isEqualTo("no");
-        assertThat(dto.getRow().get(0).getCol().get(1).getNumber()).isEqualTo("1");
-        assertThat(dto.getRow().get(0).getCol().get(1).getValue()).isEqualTo("Left Display");
-        assertThat(dto.getRow().get(0).getCol().get(1).getHighlight()).isEqualTo("no");
-        assertThat(dto.getRow().get(0).getCol().get(1).getArrow()).isEqualTo("up");
-        assertThat(dto.getRow().get(0).getCol().get(2).getNumber()).isEqualTo("2");
-        assertThat(dto.getRow().get(0).getCol().get(2).getValue()).isEqualTo("Full Status");
-        assertThat(dto.getRow().get(0).getCol().get(2).getHighlight()).isEqualTo("no");
-        assertThat(dto.getRow().get(0).getCol().get(2).getArrow()).isEqualTo("no");
+        assertThat(dto.getProgress(), is(nullValue()));
+        assertThat(dto.getSequence(), is("2378"));
+        assertThat(dto.getRow().size(), is(11));
+        assertThat(dto.getRow().size(), is(11));
+        assertThat(dto.getRow().get(0).getNumber(), is("0"));
+        assertThat(dto.getRow().get(0).getCol().size(), is(3));
+        assertThat(dto.getRow().get(0).getCol().get(0).getNumber(), is("0"));
+        assertThat(dto.getRow().get(0).getCol().get(0).getValue(), is(""));
+        assertThat(dto.getRow().get(0).getCol().get(0).getHighlight(), is("no"));
+        assertThat(dto.getRow().get(0).getCol().get(0).getArrow(), is("no"));
+        assertThat(dto.getRow().get(0).getCol().get(1).getNumber(), is("1"));
+        assertThat(dto.getRow().get(0).getCol().get(1).getValue(), is("Left Display"));
+        assertThat(dto.getRow().get(0).getCol().get(1).getHighlight(), is("no"));
+        assertThat(dto.getRow().get(0).getCol().get(1).getArrow(), is("up"));
+        assertThat(dto.getRow().get(0).getCol().get(2).getNumber(), is("2"));
+        assertThat(dto.getRow().get(0).getCol().get(2).getValue(), is("Full Status"));
+        assertThat(dto.getRow().get(0).getCol().get(2).getHighlight(), is("no"));
+        assertThat(dto.getRow().get(0).getCol().get(2).getArrow(), is("no"));
     }
 
     @Test
     void testUnmarshallProgress() throws JAXBException {
         EmotivaMenuNotifyDTO dto = (EmotivaMenuNotifyDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaMenuNotifyProgress);
-        assertThat(dto.getSequence()).isEqualTo("2405");
-        assertThat(dto.getRow()).isEqualTo(null);
-        assertThat(dto.getProgress().getTime()).isEqualTo("15");
+        assertThat(dto.getSequence(), is("2405"));
+        assertThat(dto.getRow(), is(nullValue()));
+        assertThat(dto.getProgress().getTime(), is("15"));
     }
 }

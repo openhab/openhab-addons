@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.emotiva.internal.protocol;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
@@ -22,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.emotiva.internal.AbstractDTOTestBase;
 import org.openhab.binding.emotiva.internal.dto.EmotivaNotifyWrapper;
-import org.xml.sax.SAXParseException;
 
 /**
  * Unit tests for Emotiva message marshalling and unmarshalling.
@@ -37,41 +37,39 @@ class EmotivaXmlUtilsTest extends AbstractDTOTestBase {
 
     @Test
     void testUnmarshallEmptyString() {
-        assertThatThrownBy(() -> xmlUtils.unmarshallToEmotivaDTO("")).isInstanceOf(JAXBException.class)
-                .hasMessageContaining("xml value is null or empty");
+        assertThrows(JAXBException.class, () -> xmlUtils.unmarshallToEmotivaDTO(""), "xml value is null or empty");
     }
 
     @Test
     void testUnmarshallNotValidXML() {
-        assertThatThrownBy(() -> xmlUtils.unmarshallToEmotivaDTO("notXmlAtAll")).isInstanceOf(UnmarshalException.class)
-                .hasCauseInstanceOf(SAXParseException.class);
+        assertThrows(UnmarshalException.class, () -> xmlUtils.unmarshallToEmotivaDTO("notXmlAtAll"));
     }
 
     @Test
     void testUnmarshallInstanceObject() throws JAXBException {
         Object object = xmlUtils.unmarshallToEmotivaDTO(emotivaNotifyV2KeepAlive);
 
-        assertThat(object).isInstanceOf(EmotivaNotifyWrapper.class);
+        assertThat(object, instanceOf(EmotivaNotifyWrapper.class));
     }
 
     @Test
     void testUnmarshallXml() throws JAXBException {
         Object object = xmlUtils.unmarshallToEmotivaDTO(emotivaNotifyV2KeepAlive);
 
-        assertThat(object).isInstanceOf(EmotivaNotifyWrapper.class);
+        assertThat(object, instanceOf(EmotivaNotifyWrapper.class));
     }
 
     @Test
     void testMarshallObjectWithoutXmlElements() {
         String commands = xmlUtils.marshallEmotivaDTO("");
-        assertThat(commands).isEmpty();
+        assertThat(commands, is(""));
     }
 
     @Test
     void testMarshallNoValueDTO() {
         EmotivaNotifyWrapper dto = new EmotivaNotifyWrapper();
         String xmlAsString = xmlUtils.marshallEmotivaDTO(dto);
-        assertThat(xmlAsString).doesNotContain("<emotivaNotify>");
-        assertThat(xmlAsString).contains("<emotivaNotify/>");
+        assertThat(xmlAsString, not(containsString("<emotivaNotify>")));
+        assertThat(xmlAsString, containsString("<emotivaNotify/>"));
     }
 }

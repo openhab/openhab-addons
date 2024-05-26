@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
 
@@ -37,38 +38,38 @@ class EmotivaCommandDTOTest extends AbstractDTOTestBase {
     @Test
     void unmarshallElements() {
         List<EmotivaCommandDTO> commandDTO = xmlUtils.unmarshallToCommands(emotivaCommandoPowerOn);
-        assertThat(commandDTO).isNotNull();
-        assertThat(commandDTO.size()).isEqualTo(1);
-        assertThat(commandDTO.get(0).getName()).isEqualTo(EmotivaControlCommands.power_on.name());
+        assertThat(commandDTO, is(notNullValue()));
+        assertThat(commandDTO.size(), is(1));
+        assertThat(commandDTO.get(0).getName(), is(EmotivaControlCommands.power_on.name()));
     }
 
     @Test
     void unmarshallFromEmotivaAckWithMissingEnumType() {
         List<EmotivaCommandDTO> commandDTO = xmlUtils.unmarshallToCommands(emotivaAckPowerOffAndNotRealCommand);
-        assertThat(commandDTO).isNotNull();
-        assertThat(commandDTO.size()).isEqualTo(2);
-        assertThat(commandDTO.get(0).getName()).isEqualTo(EmotivaControlCommands.power_off.name());
-        assertThat(commandDTO.get(0).getStatus()).isEqualTo("ack");
-        assertThat(commandDTO.get(0).getValue()).isNull();
-        assertThat(commandDTO.get(0).getVisible()).isNull();
-        assertThat(commandDTO.get(1).getName()).isEqualTo(EmotivaControlCommands.none.name());
-        assertThat(commandDTO.get(1).getStatus()).isEqualTo("ack");
-        assertThat(commandDTO.get(1).getValue()).isNull();
-        assertThat(commandDTO.get(1).getVisible()).isNull();
+        assertThat(commandDTO, is(notNullValue()));
+        assertThat(commandDTO.size(), is(2));
+        assertThat(commandDTO.get(0).getName(), is(EmotivaControlCommands.power_off.name()));
+        assertThat(commandDTO.get(0).getStatus(), is("ack"));
+        assertThat(commandDTO.get(0).getValue(), is(nullValue()));
+        assertThat(commandDTO.get(0).getVisible(), is(nullValue()));
+        assertThat(commandDTO.get(1).getName(), is(EmotivaControlCommands.none.name()));
+        assertThat(commandDTO.get(1).getStatus(), is("ack"));
+        assertThat(commandDTO.get(1).getValue(), is(nullValue()));
+        assertThat(commandDTO.get(1).getVisible(), is(nullValue()));
     }
 
     @Test
     void unmarshallFromEmotivaAck() {
         List<EmotivaCommandDTO> commandDTO = xmlUtils.unmarshallToCommands(emotivaAckPowerOffAndVolume);
-        assertThat(commandDTO).isNotNull();
-        assertThat(commandDTO.size()).isEqualTo(2);
-        assertThat(commandDTO.get(0).getName()).isEqualTo(EmotivaControlCommands.power_off.name());
-        assertThat(commandDTO.get(0).getStatus()).isEqualTo("ack");
-        assertThat(commandDTO.get(0).getValue()).isNull();
-        assertThat(commandDTO.get(0).getVisible()).isNull();
-        assertThat(commandDTO.get(1).getName()).isEqualTo(EmotivaControlCommands.volume.name());
-        assertThat(commandDTO.get(1).getStatus()).isEqualTo("ack");
-        assertThat(commandDTO.get(1).getValue()).isNull();
-        assertThat(commandDTO.get(1).getVisible()).isNull();
+        assertThat(commandDTO, is(notNullValue()));
+        assertThat(commandDTO.size(), is(2));
+        assertThat(commandDTO.get(0).getName(), is(EmotivaControlCommands.power_off.name()));
+        assertThat(commandDTO.get(0).getStatus(), is("ack"));
+        assertThat(commandDTO.get(0).getValue(), is(nullValue()));
+        assertThat(commandDTO.get(0).getVisible(), is(nullValue()));
+        assertThat(commandDTO.get(1).getName(), is(EmotivaControlCommands.volume.name()));
+        assertThat(commandDTO.get(1).getStatus(), is("ack"));
+        assertThat(commandDTO.get(1).getValue(), is(nullValue()));
+        assertThat(commandDTO.get(1).getVisible(), is(nullValue()));
     }
 }

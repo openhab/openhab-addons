@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaPropertyStatus.VALID;
 
 import javax.xml.bind.JAXBException;
@@ -38,21 +39,21 @@ class EmotivaPropertyDTOTest extends AbstractDTOTestBase {
     void unmarshallFromEmotivaNotify() throws JAXBException {
         EmotivaPropertyDTO commandDTO = (EmotivaPropertyDTO) xmlUtils
                 .unmarshallToEmotivaDTO(emotivaNotifyEmotivaPropertyPower);
-        assertThat(commandDTO).isNotNull();
-        assertThat(commandDTO.getName()).isEqualTo(EmotivaSubscriptionTags.tuner_channel.name());
-        assertThat(commandDTO.getValue()).isEqualTo("FM 106.50MHz");
-        assertThat(commandDTO.getVisible()).isEqualTo("true");
-        assertThat(commandDTO.getStatus()).isNotNull();
+        assertThat(commandDTO, is(notNullValue()));
+        assertThat(commandDTO.getName(), is(EmotivaSubscriptionTags.tuner_channel.name()));
+        assertThat(commandDTO.getValue(), is("FM 106.50MHz"));
+        assertThat(commandDTO.getVisible(), is("true"));
+        assertThat(commandDTO.getStatus(), is(notNullValue()));
     }
 
     @Test
     void unmarshallFromEmotivaUpdate() throws JAXBException {
         EmotivaPropertyDTO commandDTO = (EmotivaPropertyDTO) xmlUtils
                 .unmarshallToEmotivaDTO(emotivaUpdateEmotivaPropertyPower);
-        assertThat(commandDTO).isNotNull();
-        assertThat(commandDTO.getName()).isEqualTo(EmotivaControlCommands.power.name());
-        assertThat(commandDTO.getValue()).isEqualTo("On");
-        assertThat(commandDTO.getVisible()).isEqualTo("true");
-        assertThat(commandDTO.getStatus()).isEqualTo(VALID.getValue());
+        assertThat(commandDTO, is(notNullValue()));
+        assertThat(commandDTO.getName(), is(EmotivaControlCommands.power.name()));
+        assertThat(commandDTO.getValue(), is("On"));
+        assertThat(commandDTO.getVisible(), is("true"));
+        assertThat(commandDTO.getStatus(), is(VALID.getValue()));
     }
 }

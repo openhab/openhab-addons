@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,16 +40,16 @@ class EmotivaControlDTOTest extends AbstractDTOTestBase {
     void marshalWithNoCommand() {
         EmotivaControlDTO control = new EmotivaControlDTO(null);
         String xmlString = xmlUtils.marshallJAXBElementObjects(control);
-        assertThat(xmlString).contains("<emotivaControl/>");
-        assertThat(xmlString).doesNotContain("<property");
-        assertThat(xmlString).doesNotContain("</emotivaControl>");
+        assertThat(xmlString, containsString("<emotivaControl/>"));
+        assertThat(xmlString, not(containsString("<property")));
+        assertThat(xmlString, not(containsString("</emotivaControl>")));
     }
 
     @Test
     void marshalNoCommand() {
         EmotivaControlDTO control = new EmotivaControlDTO(Collections.emptyList());
         String xmlString = xmlUtils.marshallJAXBElementObjects(control);
-        assertThat(xmlString).contains("<emotivaControl/>");
+        assertThat(xmlString, containsString("<emotivaControl/>"));
     }
 
     @Test
@@ -56,9 +57,9 @@ class EmotivaControlDTOTest extends AbstractDTOTestBase {
         EmotivaCommandDTO command = EmotivaCommandDTO.fromTypeWithAck(EmotivaControlCommands.set_volume, "10");
         EmotivaControlDTO control = new EmotivaControlDTO(List.of(command));
         String xmlString = xmlUtils.marshallJAXBElementObjects(control);
-        assertThat(xmlString).contains("<emotivaControl>");
-        assertThat(xmlString).contains("<set_volume value=\"10\" ack=\"yes\" />");
-        assertThat(xmlString).endsWith("</emotivaControl>\n");
+        assertThat(xmlString, containsString("<emotivaControl>"));
+        assertThat(xmlString, containsString("<set_volume value=\"10\" ack=\"yes\" />"));
+        assertThat(xmlString, endsWith("</emotivaControl>\n"));
     }
 
     @Test
@@ -67,9 +68,9 @@ class EmotivaControlDTOTest extends AbstractDTOTestBase {
                 List.of(EmotivaCommandDTO.fromTypeWithAck(EmotivaControlCommands.power_on),
                         EmotivaCommandDTO.fromTypeWithAck(EmotivaControlCommands.hdmi1)));
         String xmlString = xmlUtils.marshallJAXBElementObjects(control);
-        assertThat(xmlString).contains("<emotivaControl>");
-        assertThat(xmlString).contains("<power_on ack=\"yes\" />");
-        assertThat(xmlString).contains("<hdmi1 ack=\"yes\" />");
-        assertThat(xmlString).endsWith("</emotivaControl>\n");
+        assertThat(xmlString, containsString("<emotivaControl>"));
+        assertThat(xmlString, containsString("<power_on ack=\"yes\" />"));
+        assertThat(xmlString, containsString("<hdmi1 ack=\"yes\" />"));
+        assertThat(xmlString, endsWith("</emotivaControl>\n"));
     }
 }

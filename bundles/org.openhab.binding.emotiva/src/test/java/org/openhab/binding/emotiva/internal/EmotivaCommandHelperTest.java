@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MAIN_VOLUME;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_MUTE;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_STANDBY;
@@ -56,28 +57,28 @@ class EmotivaCommandHelperTest {
 
     @Test
     void volumeToPercentage() {
-        assertThat(volumeDecibelToPercentage("-100 dB")).isEqualTo(PercentType.valueOf("0"));
-        assertThat(volumeDecibelToPercentage(" -96")).isEqualTo(PercentType.valueOf("0"));
-        assertThat(volumeDecibelToPercentage("-41 dB ")).isEqualTo(PercentType.valueOf("50"));
-        assertThat(volumeDecibelToPercentage("15")).isEqualTo(PercentType.valueOf("100"));
-        assertThat(volumeDecibelToPercentage("20")).isEqualTo(PercentType.valueOf("100"));
+        assertThat(volumeDecibelToPercentage("-100 dB"), is(PercentType.valueOf("0")));
+        assertThat(volumeDecibelToPercentage(" -96"), is(PercentType.valueOf("0")));
+        assertThat(volumeDecibelToPercentage("-41 dB "), is(PercentType.valueOf("50")));
+        assertThat(volumeDecibelToPercentage("15"), is(PercentType.valueOf("100")));
+        assertThat(volumeDecibelToPercentage("20"), is(PercentType.valueOf("100")));
     }
 
     @Test
     void volumeToDecibel() {
-        assertThat(volumePercentageToDecibel("-10")).isEqualTo(-96);
-        assertThat(volumePercentageToDecibel("0%")).isEqualTo(-96);
-        assertThat(volumePercentageToDecibel("50 %")).isEqualTo(-41);
-        assertThat(volumePercentageToDecibel("100 % ")).isEqualTo(15);
-        assertThat(volumePercentageToDecibel("110")).isEqualTo(15);
+        assertThat(volumePercentageToDecibel("-10"), is(-96));
+        assertThat(volumePercentageToDecibel("0%"), is(-96));
+        assertThat(volumePercentageToDecibel("50 %"), is(-41));
+        assertThat(volumePercentageToDecibel("100 % "), is(15));
+        assertThat(volumePercentageToDecibel("110"), is(15));
     }
 
     private static Stream<Arguments> channelToControlRequest() {
         return Stream.of(
                 Arguments.of(CHANNEL_SURROUND, "surround", DIMENSIONLESS_DECIBEL, surround, surround, surround,
-                        surround_trim_set, PROTOCOL_V2, -24, 24),
+                        surround_trim_set, PROTOCOL_V2, -24.0, 24.0),
                 Arguments.of(CHANNEL_SURROUND, "surround", DIMENSIONLESS_DECIBEL, surround, surround, surround,
-                        surround_trim_set, PROTOCOL_V3, -24, 24),
+                        surround_trim_set, PROTOCOL_V3, -24.0, 24.0),
                 Arguments.of(CHANNEL_MUTE, "mute", ON_OFF, mute, mute_on, mute_off, mute, PROTOCOL_V2, 0, 0),
                 Arguments.of(CHANNEL_STANDBY, "standby", ON_OFF, standby, standby, standby, standby, PROTOCOL_V2, 0, 0),
                 Arguments.of(CHANNEL_MAIN_VOLUME, "volume", DIMENSIONLESS_DECIBEL, volume, volume, volume, volume,
@@ -88,18 +89,18 @@ class EmotivaCommandHelperTest {
     @MethodSource("channelToControlRequest")
     void testChannelToControlRequest(String channel, String name, EmotivaDataType emotivaDataType,
             EmotivaControlCommands defaultCommand, EmotivaControlCommands onCommand, EmotivaControlCommands offCommand,
-            EmotivaControlCommands setCommand, EmotivaProtocolVersion version, int min, int max) {
+            EmotivaControlCommands setCommand, EmotivaProtocolVersion version, double min, double max) {
         final Map<String, Map<EmotivaControlCommands, String>> commandMaps = new ConcurrentHashMap<>();
 
         EmotivaControlRequest surround = EmotivaCommandHelper.channelToControlRequest(channel, commandMaps, version);
-        assertThat(surround.getName()).isEqualTo(name);
-        assertThat(surround.getChannel()).isEqualTo(channel);
-        assertThat(surround.getDataType()).isEqualTo(emotivaDataType);
-        assertThat(surround.getDefaultCommand()).isEqualTo(defaultCommand);
-        assertThat(surround.getOnCommand()).isEqualTo(onCommand);
-        assertThat(surround.getOffCommand()).isEqualTo(offCommand);
-        assertThat(surround.getSetCommand()).isEqualTo(setCommand);
-        assertThat(surround.getMinValue()).isEqualTo(min);
-        assertThat(surround.getMaxValue()).isEqualTo(max);
+        assertThat(surround.getName(), is(name));
+        assertThat(surround.getChannel(), is(channel));
+        assertThat(surround.getDataType(), is(emotivaDataType));
+        assertThat(surround.getDefaultCommand(), is(defaultCommand));
+        assertThat(surround.getOnCommand(), is(onCommand));
+        assertThat(surround.getOffCommand(), is(offCommand));
+        assertThat(surround.getSetCommand(), is(setCommand));
+        assertThat(surround.getMinValue(), is(min));
+        assertThat(surround.getMaxValue(), is(max));
     }
 }

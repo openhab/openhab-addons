@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaPropertyStatus.NOT_VALID;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaPropertyStatus.VALID;
 
@@ -41,56 +42,56 @@ class EmotivaUpdateResponseTest extends AbstractDTOTestBase {
     void marshallWithNoProperty() {
         EmotivaUpdateResponse dto = new EmotivaUpdateResponse(Collections.emptyList());
         String xmlAsString = xmlUtils.marshallEmotivaDTO(dto);
-        assertThat(xmlAsString).contains("<emotivaUpdate/>");
-        assertThat(xmlAsString).doesNotContain("<property");
-        assertThat(xmlAsString).doesNotContain("</emotivaUpdate>");
+        assertThat(xmlAsString, containsString("<emotivaUpdate/>"));
+        assertThat(xmlAsString, not(containsString("<property")));
+        assertThat(xmlAsString, not(containsString("</emotivaUpdate>")));
     }
 
     @Test
     void unmarshallV2() throws JAXBException {
         var dto = (EmotivaUpdateResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaUpdateResponseV2);
-        assertThat(dto).isNotNull();
-        assertThat(dto.getProperties()).isNull();
+        assertThat(dto, is(notNullValue()));
+        assertThat(dto.getProperties(), is(nullValue()));
         List<EmotivaNotifyDTO> notifications = xmlUtils.unmarshallToNotification(dto.getTags());
-        assertThat(notifications.size()).isEqualTo(3);
+        assertThat(notifications.size(), is(3));
 
-        assertThat(notifications.get(0).getName()).isEqualTo(EmotivaSubscriptionTags.power.name());
-        assertThat(notifications.get(0).getValue()).isEqualTo("On");
-        assertThat(notifications.get(0).getVisible()).isEqualTo("true");
-        assertThat(notifications.get(0).getStatus()).isEqualTo(VALID.getValue());
+        assertThat(notifications.get(0).getName(), is(EmotivaSubscriptionTags.power.name()));
+        assertThat(notifications.get(0).getValue(), is("On"));
+        assertThat(notifications.get(0).getVisible(), is("true"));
+        assertThat(notifications.get(0).getStatus(), is(VALID.getValue()));
 
-        assertThat(notifications.get(1).getName()).isEqualTo(EmotivaSubscriptionTags.source.name());
-        assertThat(notifications.get(1).getValue()).isEqualTo("HDMI 1");
-        assertThat(notifications.get(1).getVisible()).isEqualTo("true");
-        assertThat(notifications.get(1).getStatus()).isEqualTo(NOT_VALID.getValue());
+        assertThat(notifications.get(1).getName(), is(EmotivaSubscriptionTags.source.name()));
+        assertThat(notifications.get(1).getValue(), is("HDMI 1"));
+        assertThat(notifications.get(1).getVisible(), is("true"));
+        assertThat(notifications.get(1).getStatus(), is(NOT_VALID.getValue()));
 
-        assertThat(notifications.get(2).getName()).isEqualTo(EmotivaSubscriptionTags.unknown.name());
-        assertThat(notifications.get(2).getStatus()).isNull();
-        assertThat(notifications.get(2).getValue()).isNull();
-        assertThat(notifications.get(2).getVisible()).isNull();
+        assertThat(notifications.get(2).getName(), is(EmotivaSubscriptionTags.unknown.name()));
+        assertThat(notifications.get(2).getStatus(), is(nullValue()));
+        assertThat(notifications.get(2).getValue(), is(nullValue()));
+        assertThat(notifications.get(2).getVisible(), is(nullValue()));
     }
 
     @Test
     void unmarshallV3() throws JAXBException {
         var dto = (EmotivaUpdateResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaUpdateResponseV3);
-        assertThat(dto).isNotNull();
-        assertThat(dto.getTags()).isNull();
-        assertThat(dto.getProperties().size()).isEqualTo(3);
+        assertThat(dto, is(notNullValue()));
+        assertThat(dto.getTags(), is(nullValue()));
+        assertThat(dto.getProperties().size(), is(3));
 
-        assertThat(dto.getProperties().get(0)).isInstanceOf(EmotivaPropertyDTO.class);
-        assertThat(dto.getProperties().get(0).getName()).isEqualTo(EmotivaSubscriptionTags.power.name());
-        assertThat(dto.getProperties().get(0).getValue()).isEqualTo("On");
-        assertThat(dto.getProperties().get(0).getVisible()).isEqualTo("true");
-        assertThat(dto.getProperties().get(0).getStatus()).isEqualTo(VALID.getValue());
+        assertThat(dto.getProperties().get(0), instanceOf(EmotivaPropertyDTO.class));
+        assertThat(dto.getProperties().get(0).getName(), is(EmotivaSubscriptionTags.power.name()));
+        assertThat(dto.getProperties().get(0).getValue(), is("On"));
+        assertThat(dto.getProperties().get(0).getVisible(), is("true"));
+        assertThat(dto.getProperties().get(0).getStatus(), is(VALID.getValue()));
 
-        assertThat(dto.getProperties().get(1).getName()).isEqualTo(EmotivaSubscriptionTags.source.name());
-        assertThat(dto.getProperties().get(1).getValue()).isEqualTo("HDMI 1");
-        assertThat(dto.getProperties().get(1).getVisible()).isEqualTo("true");
-        assertThat(dto.getProperties().get(1).getStatus()).isEqualTo(NOT_VALID.getValue());
+        assertThat(dto.getProperties().get(1).getName(), is(EmotivaSubscriptionTags.source.name()));
+        assertThat(dto.getProperties().get(1).getValue(), is("HDMI 1"));
+        assertThat(dto.getProperties().get(1).getVisible(), is("true"));
+        assertThat(dto.getProperties().get(1).getStatus(), is(NOT_VALID.getValue()));
 
-        assertThat(dto.getProperties().get(2).getName()).isEqualTo("noKnownTag");
-        assertThat(dto.getProperties().get(2).getStatus()).isNotNull();
-        assertThat(dto.getProperties().get(2).getValue()).isNotNull();
-        assertThat(dto.getProperties().get(2).getVisible()).isNotNull();
+        assertThat(dto.getProperties().get(2).getName(), is("noKnownTag"));
+        assertThat(dto.getProperties().get(2).getStatus(), is(notNullValue()));
+        assertThat(dto.getProperties().get(2).getValue(), is(notNullValue()));
+        assertThat(dto.getProperties().get(2).getVisible(), is(notNullValue()));
     }
 }

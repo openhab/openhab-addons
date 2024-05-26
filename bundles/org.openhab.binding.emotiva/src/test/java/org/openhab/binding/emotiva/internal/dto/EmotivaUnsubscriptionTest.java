@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_TUNER_RDS;
 
 import java.util.List;
@@ -41,9 +42,9 @@ class EmotivaUnsubscriptionTest extends AbstractDTOTestBase {
         EmotivaSubscriptionTags subscriptionChannel = EmotivaSubscriptionTags.fromChannelUID(CHANNEL_TUNER_RDS);
         EmotivaUnsubscribeDTO emotivaSubscriptionRequest = new EmotivaUnsubscribeDTO(subscriptionChannel);
         String xmlString = xmlUtils.marshallJAXBElementObjects(emotivaSubscriptionRequest);
-        assertThat(xmlString).contains("<emotivaUnsubscribe>");
-        assertThat(xmlString).contains("<tuner_RDS />");
-        assertThat(xmlString).contains("</emotivaUnsubscribe>");
+        assertThat(xmlString, containsString("<emotivaUnsubscribe>"));
+        assertThat(xmlString, containsString("<tuner_RDS />"));
+        assertThat(xmlString, containsString("</emotivaUnsubscribe>"));
     }
 
     @Test
@@ -54,11 +55,11 @@ class EmotivaUnsubscriptionTest extends AbstractDTOTestBase {
         EmotivaUnsubscribeDTO dto = new EmotivaUnsubscribeDTO(List.of(command1, command2));
 
         String xmlString = xmlUtils.marshallJAXBElementObjects(dto);
-        assertThat(xmlString).contains("<emotivaUnsubscribe>");
-        assertThat(xmlString).contains("<volume />");
-        assertThat(xmlString).contains("<power_off />");
-        assertThat(xmlString).contains("</emotivaUnsubscribe>");
-        assertThat(xmlString).doesNotContain("<volume>");
-        assertThat(xmlString).doesNotContain("<command>");
+        assertThat(xmlString, containsString("<emotivaUnsubscribe>"));
+        assertThat(xmlString, containsString("<volume />"));
+        assertThat(xmlString, containsString("<power_off />"));
+        assertThat(xmlString, containsString("</emotivaUnsubscribe>"));
+        assertThat(xmlString, not(containsString("<volume>")));
+        assertThat(xmlString, not(containsString("<command>")));
     }
 }

@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import javax.xml.bind.JAXBException;
 
@@ -35,32 +36,32 @@ class EmotivaPingDTOTest extends AbstractDTOTestBase {
     void marshallPlain() {
         EmotivaPingDTO dto = new EmotivaPingDTO();
         String xmlAsString = xmlUtils.marshallEmotivaDTO(dto);
-        assertThat(xmlAsString).contains("<emotivaPing/>");
-        assertThat(xmlAsString).doesNotContain("<property");
-        assertThat(xmlAsString).doesNotContain("</emotivaPing>");
+        assertThat(xmlAsString, containsString("<emotivaPing/>"));
+        assertThat(xmlAsString, not(containsString("<property")));
+        assertThat(xmlAsString, not(containsString("</emotivaPing>")));
     }
 
     @Test
     void marshallWithProtocol() {
         EmotivaPingDTO dto = new EmotivaPingDTO("3.0");
         String xmlAsString = xmlUtils.marshallEmotivaDTO(dto);
-        assertThat(xmlAsString).contains("<emotivaPing protocol=\"3.0\"/>");
-        assertThat(xmlAsString).doesNotContain("<property");
-        assertThat(xmlAsString).doesNotContain("</emotivaPing>");
+        assertThat(xmlAsString, containsString("<emotivaPing protocol=\"3.0\"/>"));
+        assertThat(xmlAsString, not(containsString("<property")));
+        assertThat(xmlAsString, not(containsString("</emotivaPing>")));
     }
 
     @Test
     void unmarshallV2() throws JAXBException {
         EmotivaPingDTO dto = (EmotivaPingDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaPingV2);
-        assertThat(dto).isNotNull();
-        assertThat(dto.getProtocol()).isNull();
+        assertThat(dto, is(notNullValue()));
+        assertThat(dto.getProtocol(), is(nullValue()));
     }
 
     @Test
     void unmarshallV3() throws JAXBException {
         EmotivaPingDTO dto = (EmotivaPingDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaPingV3);
-        assertThat(dto).isNotNull();
-        assertThat(dto.getProtocol()).isNotNull();
-        assertThat(dto.getProtocol()).isEqualTo("3.0");
+        assertThat(dto, is(notNullValue()));
+        assertThat(dto.getProtocol(), is(notNullValue()));
+        assertThat(dto.getProtocol(), is("3.0"));
     }
 }

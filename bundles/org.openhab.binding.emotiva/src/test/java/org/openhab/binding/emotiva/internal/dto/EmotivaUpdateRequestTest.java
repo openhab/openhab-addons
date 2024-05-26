@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Collections;
 
@@ -39,9 +40,9 @@ class EmotivaUpdateRequestTest extends AbstractDTOTestBase {
     void marshallWithNoProperty() {
         EmotivaUpdateRequest dto = new EmotivaUpdateRequest(Collections.emptyList());
         String xmlAsString = xmlUtils.marshallJAXBElementObjects(dto);
-        assertThat(xmlAsString).contains("<emotivaUpdate/>");
-        assertThat(xmlAsString).doesNotContain("<property");
-        assertThat(xmlAsString).doesNotContain("</emotivaUpdate>");
+        assertThat(xmlAsString, containsString("<emotivaUpdate/>"));
+        assertThat(xmlAsString, not(containsString("<property")));
+        assertThat(xmlAsString, not(containsString("</emotivaUpdate>")));
     }
 
     @Test
@@ -50,8 +51,8 @@ class EmotivaUpdateRequestTest extends AbstractDTOTestBase {
                 .fromChannelUID(EmotivaBindingConstants.CHANNEL_TUNER_RDS);
         EmotivaUpdateRequest emotivaUpdateRequest = new EmotivaUpdateRequest(subscriptionChannel);
         String xmlString = xmlUtils.marshallJAXBElementObjects(emotivaUpdateRequest);
-        assertThat(xmlString).contains("<emotivaUpdate>");
-        assertThat(xmlString).contains("<tuner_RDS />");
-        assertThat(xmlString).contains("</emotivaUpdate>");
+        assertThat(xmlString, containsString("<emotivaUpdate>"));
+        assertThat(xmlString, containsString("<tuner_RDS />"));
+        assertThat(xmlString, containsString("</emotivaUpdate>"));
     }
 }

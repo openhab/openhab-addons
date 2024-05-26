@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.protocol;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.*;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.*;
@@ -259,11 +260,11 @@ class EmotivaControlRequestTest {
                 protocolVersion);
 
         EmotivaControlDTO dto = controlRequest.createDTO(ohValue, STATE_MAP.get(channel));
-        assertThat(dto.getCommands().size()).isEqualTo(1);
-        assertThat(dto.getCommands().get(0).getName()).isEqualTo(controlCommand.name());
-        assertThat(dto.getCommands().get(0).getValue()).isEqualTo(requestValue);
-        assertThat(dto.getCommands().get(0).getVisible()).isEqualTo(null);
-        assertThat(dto.getCommands().get(0).getStatus()).isEqualTo(null);
-        assertThat(dto.getCommands().get(0).getAck()).isEqualTo(DEFAULT_CONTROL_ACK_VALUE);
+        assertThat(dto.getCommands().size(), is(1));
+        assertThat(dto.getCommands().get(0).getName(), is(controlCommand.name()));
+        assertThat(dto.getCommands().get(0).getValue(), is(requestValue));
+        assertThat(dto.getCommands().get(0).getVisible(), is(nullValue()));
+        assertThat(dto.getCommands().get(0).getStatus(), is(nullValue()));
+        assertThat(dto.getCommands().get(0).getAck(), is(DEFAULT_CONTROL_ACK_VALUE));
     }
 }

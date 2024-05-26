@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import javax.xml.bind.JAXBException;
 
@@ -35,31 +36,31 @@ class EmotivaTransponderDTOTest extends AbstractDTOTestBase {
     void unmarshallV2() throws JAXBException {
         EmotivaTransponderDTO dto = (EmotivaTransponderDTO) xmlUtils
                 .unmarshallToEmotivaDTO(emotivaTransponderResponseV2);
-        assertThat(dto).isNotNull();
-        assertThat(dto.getModel()).isEqualTo("XMC-1");
-        assertThat(dto.getRevision()).isEqualTo("2.0");
-        assertThat(dto.getName()).isEqualTo("Living Room");
-        assertThat(dto.getControl().getVersion()).isEqualTo("2.0");
-        assertThat(dto.getControl().getControlPort()).isEqualTo(7002);
-        assertThat(dto.getControl().getNotifyPort()).isEqualTo(7003);
-        assertThat(dto.getControl().getInfoPort()).isEqualTo(7004);
-        assertThat(dto.getControl().getSetupPortTCP()).isEqualTo(7100);
-        assertThat(dto.getControl().getKeepAlive()).isEqualTo(10000);
+        assertThat(dto, is(notNullValue()));
+        assertThat(dto.getModel(), is("XMC-1"));
+        assertThat(dto.getRevision(), is("2.0"));
+        assertThat(dto.getName(), is("Living Room"));
+        assertThat(dto.getControl().getVersion(), is("2.0"));
+        assertThat(dto.getControl().getControlPort(), is(7002));
+        assertThat(dto.getControl().getNotifyPort(), is(7003));
+        assertThat(dto.getControl().getInfoPort(), is(7004));
+        assertThat(dto.getControl().getSetupPortTCP(), is(7100));
+        assertThat(dto.getControl().getKeepAlive(), is(10000));
     }
 
     @Test
     void unmarshallV3() throws JAXBException {
         EmotivaTransponderDTO dto = (EmotivaTransponderDTO) xmlUtils
                 .unmarshallToEmotivaDTO(emotivaTransponderResponseV3);
-        assertThat(dto).isNotNull();
-        assertThat(dto.getModel()).isEqualTo("XMC-2");
-        assertThat(dto.getRevision()).isEqualTo("3.0");
-        assertThat(dto.getName()).isEqualTo("Living Room");
-        assertThat(dto.getControl().getVersion()).isEqualTo("3.0");
-        assertThat(dto.getControl().getControlPort()).isEqualTo(7002);
-        assertThat(dto.getControl().getNotifyPort()).isEqualTo(7003);
-        assertThat(dto.getControl().getInfoPort()).isEqualTo(7004);
-        assertThat(dto.getControl().getSetupPortTCP()).isEqualTo(7100);
-        assertThat(dto.getControl().getKeepAlive()).isEqualTo(10000);
+        assertThat(dto, is(notNullValue()));
+        assertThat(dto.getModel(), is("XMC-2"));
+        assertThat(dto.getRevision(), is("3.0"));
+        assertThat(dto.getName(), is("Living Room"));
+        assertThat(dto.getControl().getVersion(), is("3.0"));
+        assertThat(dto.getControl().getControlPort(), is(7002));
+        assertThat(dto.getControl().getNotifyPort(), is(7003));
+        assertThat(dto.getControl().getInfoPort(), is(7004));
+        assertThat(dto.getControl().getSetupPortTCP(), is(7100));
+        assertThat(dto.getControl().getKeepAlive(), is(10000));
     }
 }

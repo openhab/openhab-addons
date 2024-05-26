@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.emotiva.internal.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_TUNER_RDS;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.PROTOCOL_V2;
 
@@ -42,9 +43,9 @@ class EmotivaSubscriptionRequestTest extends AbstractDTOTestBase {
         EmotivaSubscriptionTags subscriptionChannel = EmotivaSubscriptionTags.fromChannelUID(CHANNEL_TUNER_RDS);
         EmotivaSubscriptionRequest emotivaSubscriptionRequest = new EmotivaSubscriptionRequest(subscriptionChannel);
         String xmlString = xmlUtils.marshallJAXBElementObjects(emotivaSubscriptionRequest);
-        assertThat(xmlString).contains("<emotivaSubscription protocol=\"2.0\">");
-        assertThat(xmlString).contains("<tuner_RDS ack=\"yes\" />");
-        assertThat(xmlString).contains("</emotivaSubscription>");
+        assertThat(xmlString, containsString("<emotivaSubscription protocol=\"2.0\">"));
+        assertThat(xmlString, containsString("<tuner_RDS ack=\"yes\" />"));
+        assertThat(xmlString, containsString("</emotivaSubscription>"));
     }
 
     @Test
@@ -56,36 +57,36 @@ class EmotivaSubscriptionRequestTest extends AbstractDTOTestBase {
                 PROTOCOL_V2.value());
 
         String xmlString = xmlUtils.marshallJAXBElementObjects(dto);
-        assertThat(xmlString).contains("<emotivaSubscription protocol=\"2.0\">");
-        assertThat(xmlString).contains("<volume value=\"10\" ack=\"yes\" />");
-        assertThat(xmlString).contains("<power_off />");
-        assertThat(xmlString).contains("</emotivaSubscription>");
-        assertThat(xmlString).doesNotContain("<volume>");
-        assertThat(xmlString).doesNotContain("<command>");
+        assertThat(xmlString, containsString("<emotivaSubscription protocol=\"2.0\">"));
+        assertThat(xmlString, containsString("<volume value=\"10\" ack=\"yes\" />"));
+        assertThat(xmlString, containsString("<power_off />"));
+        assertThat(xmlString, containsString("</emotivaSubscription>"));
+        assertThat(xmlString, not(containsString("<volume>")));
+        assertThat(xmlString, not(containsString("<command>")));
     }
 
     @Test
     void unmarshall() throws JAXBException {
         var dto = (EmotivaSubscriptionResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaSubscriptionRequest);
-        assertThat(dto).isNotNull();
-        assertThat(dto.getTags().size()).isEqualTo(3);
-        assertThat(dto.getProperties()).isNull();
+        assertThat(dto, is(notNullValue()));
+        assertThat(dto.getTags().size(), is(3));
+        assertThat(dto.getProperties(), is(nullValue()));
 
         List<EmotivaNotifyDTO> commands = xmlUtils.unmarshallToNotification(dto.getTags());
 
-        assertThat(commands.get(0).getName()).isEqualTo(EmotivaSubscriptionTags.selected_mode.name());
-        assertThat(commands.get(0).getStatus()).isNull();
-        assertThat(commands.get(0).getValue()).isNull();
-        assertThat(commands.get(0).getVisible()).isNull();
+        assertThat(commands.get(0).getName(), is(EmotivaSubscriptionTags.selected_mode.name()));
+        assertThat(commands.get(0).getStatus(), is(nullValue()));
+        assertThat(commands.get(0).getValue(), is(nullValue()));
+        assertThat(commands.get(0).getVisible(), is(nullValue()));
 
-        assertThat(commands.get(1).getName()).isEqualTo(EmotivaSubscriptionTags.power.name());
-        assertThat(commands.get(1).getStatus()).isNull();
-        assertThat(commands.get(1).getValue()).isNull();
-        assertThat(commands.get(1).getVisible()).isNull();
+        assertThat(commands.get(1).getName(), is(EmotivaSubscriptionTags.power.name()));
+        assertThat(commands.get(1).getStatus(), is(nullValue()));
+        assertThat(commands.get(1).getValue(), is(nullValue()));
+        assertThat(commands.get(1).getVisible(), is(nullValue()));
 
-        assertThat(commands.get(2).getName()).isEqualTo("unknown");
-        assertThat(commands.get(2).getStatus()).isNull();
-        assertThat(commands.get(2).getValue()).isNull();
-        assertThat(commands.get(2).getVisible()).isNull();
+        assertThat(commands.get(2).getName(), is("unknown"));
+        assertThat(commands.get(2).getStatus(), is(nullValue()));
+        assertThat(commands.get(2).getValue(), is(nullValue()));
+        assertThat(commands.get(2).getVisible(), is(nullValue()));
     }
 }
