@@ -54,17 +54,10 @@ import org.slf4j.LoggerFactory;
 public class SunSynkInverterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SunSynkInverterHandler.class);
-
-    // private @Nullable InverterConfig config;
-    // private /* @Nullable */ Inverter config;
     ZonedDateTime lockoutTimer = null;
     private SunSynkInverter inverter;
     private int refreshTime = 60;
     private ScheduledFuture<?> refreshTask;
-    // batterySettingsUpdated:
-    // null first time through
-    // true = get settings from API
-    // flase = skip get from API
     private Boolean batterySettingsUpdated = null;
     private Settings tempInverterChargeSettings; // Holds modified battery settings.
 
@@ -379,7 +372,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                 OnOffType.from(inverterChargeSettings.getIntervalGridTimerOn().get(4)));
         updateState(CHANNEL_BATTERY_INTERVAL_6_GRID_CHARGE,
                 OnOffType.from(inverterChargeSettings.getIntervalGridTimerOn().get(5)));
-
         updateState(CHANNEL_BATTERY_INTERVAL_1_GEN_CHARGE,
                 OnOffType.from(inverterChargeSettings.getIntervalGenTimerOn().get(0)));
         updateState(CHANNEL_BATTERY_INTERVAL_2_GEN_CHARGE,
@@ -392,7 +384,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                 OnOffType.from(inverterChargeSettings.getIntervalGenTimerOn().get(4)));
         updateState(CHANNEL_BATTERY_INTERVAL_6_GEN_CHARGE,
                 OnOffType.from(inverterChargeSettings.getIntervalGenTimerOn().get(5)));
-
         updateState(CHANNEL_BATTERY_INTERVAL_1_CAPACITY,
                 new DecimalType(inverterChargeSettings.getIntervalBatteryCapacity().get(0)));
         updateState(CHANNEL_BATTERY_INTERVAL_2_CAPACITY,
@@ -405,14 +396,12 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                 new DecimalType(inverterChargeSettings.getIntervalBatteryCapacity().get(4)));
         updateState(CHANNEL_BATTERY_INTERVAL_6_CAPACITY,
                 new DecimalType(inverterChargeSettings.getIntervalBatteryCapacity().get(5)));
-
         updateState(CHANNEL_BATTERY_INTERVAL_1_TIME, new StringType(inverterChargeSettings.getIntervalTime().get(0)));
         updateState(CHANNEL_BATTERY_INTERVAL_2_TIME, new StringType(inverterChargeSettings.getIntervalTime().get(1)));
         updateState(CHANNEL_BATTERY_INTERVAL_3_TIME, new StringType(inverterChargeSettings.getIntervalTime().get(2)));
         updateState(CHANNEL_BATTERY_INTERVAL_4_TIME, new StringType(inverterChargeSettings.getIntervalTime().get(3)));
         updateState(CHANNEL_BATTERY_INTERVAL_5_TIME, new StringType(inverterChargeSettings.getIntervalTime().get(4)));
         updateState(CHANNEL_BATTERY_INTERVAL_6_TIME, new StringType(inverterChargeSettings.getIntervalTime().get(5)));
-
         updateState(CHANNEL_BATTERY_INTERVAL_1_POWER_LIMIT,
                 new DecimalType(inverterChargeSettings.getIntervalBatteryPowerLimit().get(0)));
         updateState(CHANNEL_BATTERY_INTERVAL_2_POWER_LIMIT,
@@ -425,7 +414,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                 new DecimalType(inverterChargeSettings.getIntervalBatteryPowerLimit().get(4)));
         updateState(CHANNEL_BATTERY_INTERVAL_6_POWER_LIMIT,
                 new DecimalType(inverterChargeSettings.getIntervalBatteryPowerLimit().get(5)));
-
         updateState(CHANNEL_INVERTER_CONTROL_TIMER, new DecimalType(inverterChargeSettings.getPeakAndValley()));
         updateState(CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN, new StringType(inverterChargeSettings.getEnergyMode()));
         updateState(CHANNEL_INVERTER_CONTROL_WORK_MODE, new StringType(inverterChargeSettings.getSysWorkMode()));
@@ -434,7 +422,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         if (inverterGrid == null) {
             return;
         }
-
         updateState(CHANNEL_INVERTER_GRID_POWER, new DecimalType(inverterGrid.getGridPower()));
         updateState(CHANNEL_INVERTER_GRID_VOLTAGE, new DecimalType(inverterGrid.getGridVoltage()));
         updateState(CHANNEL_INVERTER_GRID_CURRENT, new DecimalType(inverterGrid.getGridCurrent()));
@@ -443,7 +430,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         if (batteryState == null) {
             return;
         }
-
         updateState(CHANNEL_BATTERY_VOLTAGE, new DecimalType(batteryState.getBatteryVoltage()));
         updateState(CHANNEL_BATTERY_CURRENT, new DecimalType(batteryState.getBatteryCurrent()));
         updateState(CHANNEL_BATTERY_POWER, new DecimalType(batteryState.getBatteryPower()));
@@ -452,10 +438,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
         Daytemps batteryTempHist = inverter.getInverterTemperatureHistory();
         Daytempsreturn batteryTemps = batteryTempHist.inverterTemperatures();
-        if (batteryTemps == null) {
-            return;
-        }
-
         if (!"okay".equals(batteryTemps.getStatus())) {
             return;
         }
@@ -466,7 +448,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         if (solar == null) {
             return;
         }
-
         updateState(CHANNEL_INVERTER_SOLAR_ENERGY_TODAY, new DecimalType(solar.getetoday()));
         updateState(CHANNEL_INVERTER_SOLAR_ENERGY_TOTAL, new DecimalType(solar.getetotal()));
         updateState(CHANNEL_INVERTER_SOLAR_POWER_NOW, new DecimalType(solar.getPVIV()));
