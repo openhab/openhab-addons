@@ -13,16 +13,19 @@
 
 package org.openhab.binding.sunsynk.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SunSynkInverterConfig} Parameters used for Inverterconfiguration.
  *
  * @author Lee Charlton - Initial contribution
  */
 
+@NonNullByDefault
 public class SunSynkInverterConfig {
 
-    private String alias;
-    private String sn;
+    private String alias = "";
+    private String sn = "";
     private int refresh;
 
     public String getsn() {

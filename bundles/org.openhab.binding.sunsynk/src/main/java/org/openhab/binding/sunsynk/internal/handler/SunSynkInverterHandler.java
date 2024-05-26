@@ -21,12 +21,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.sunsynk.internal.SunSynkInverter;
-import org.openhab.binding.sunsynk.internal.classes.Battery;
-import org.openhab.binding.sunsynk.internal.classes.Daytemps;
-import org.openhab.binding.sunsynk.internal.classes.Daytempsreturn;
-import org.openhab.binding.sunsynk.internal.classes.Grid;
-import org.openhab.binding.sunsynk.internal.classes.RealTimeInData;
-import org.openhab.binding.sunsynk.internal.classes.Settings;
+import org.openhab.binding.sunsynk.internal.api.dto.Battery;
+import org.openhab.binding.sunsynk.internal.api.dto.Daytemps;
+import org.openhab.binding.sunsynk.internal.api.dto.Daytempsreturn;
+import org.openhab.binding.sunsynk.internal.api.dto.Grid;
+import org.openhab.binding.sunsynk.internal.api.dto.RealTimeInData;
+import org.openhab.binding.sunsynk.internal.api.dto.Settings;
 import org.openhab.binding.sunsynk.internal.config.SunSynkInverterConfig;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
