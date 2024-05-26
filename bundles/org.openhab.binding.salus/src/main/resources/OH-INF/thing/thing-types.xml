@@ -9,7 +9,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="salus-cloud-bridge"/>
 		</supported-bridge-type-refs>
-		<label>Salus Binding Thing</label>
+		<label>Salus Device</label>
 		<description>
 			This is a device type that represents a generic 'thing' for the Salus Binding, working in conjunction
 			with the Salus cloud bridge. Channels will be discovered and established at runtime.
@@ -34,7 +34,7 @@
 	<!-- Generic String -->
 	<channel-type id="generic-output-channel">
 		<item-type>String</item-type>
-		<label>Generic Output Channel</label>
+		<label>Generic Output</label>
 		<description>
 			This channel type represents a generic output.
 			The channel is read-only and its state is represented as a
@@ -44,7 +44,7 @@
 	</channel-type>
 	<channel-type id="generic-input-channel">
 		<item-type>String</item-type>
-		<label>Generic Input Channel</label>
+		<label>Generic Input</label>
 		<description>
 			This channel type represents a generic input.
 			The channel is write-only and its state is represented as a
@@ -54,7 +54,7 @@
 	<!-- Generic Bool -->
 	<channel-type id="generic-output-bool-channel">
 		<item-type>Switch</item-type>
-		<label>Generic Bool Output Channel</label>
+		<label>Generic Bool Output</label>
 		<description>
 			This channel type represents a generic output.
 			The channel is read-only and its state is represented as a
@@ -64,7 +64,7 @@
 	</channel-type>
 	<channel-type id="generic-input-bool-channel">
 		<item-type>Switch</item-type>
-		<label>Generic Bool Input Channel</label>
+		<label>Generic Bool Input</label>
 		<description>
 			This channel type represents a generic input.
 			The channel is write-only and its state is represented as a
@@ -73,8 +73,8 @@
 	</channel-type>
 	<!-- Generic Number -->
 	<channel-type id="generic-output-number-channel">
-		<item-type>Number</item-type>
-		<label>Generic Number Output Channel</label>
+		<item-type>Number:Dimensionless</item-type>
+		<label>Generic Number Output</label>
 		<description>
 			This channel type represents a generic output.
 			The channel is read-only and its state is represented as a
@@ -83,8 +83,8 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="generic-input-number-channel">
-		<item-type>Number</item-type>
-		<label>Generic Number Input Channel</label>
+		<item-type>Number:Dimensionsless</item-type>
+		<label>Generic Number Input</label>
 		<description>
 			This channel type represents a generic input.
 			The channel is write-only and its state is represented as a
@@ -93,8 +93,8 @@
 	</channel-type>
 	<!-- Temp channels -->
 	<channel-type id="temperature-output-channel">
-		<item-type>Number</item-type>
-		<label>Generic Output Temperature Channel</label>
+		<item-type>Number:Temperature</item-type>
+		<label>Generic Output Temperature</label>
 		<description>
 			This channel type represents a generic output.
 			The channel is read-only and its state is represented as a
@@ -104,8 +104,8 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="temperature-input-channel">
-		<item-type>Number</item-type>
-		<label>Generic Input Temperature Channel</label>
+		<item-type>Number:Temperature</item-type>
+		<label>Generic Input Temperature</label>
 		<description>
 			This channel type represents a generic input.
 			The channel is write-only and its state is represented as a
