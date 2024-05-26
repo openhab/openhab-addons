@@ -45,15 +45,23 @@ public class CustomHandler extends JollydayHandler {
 
     @Override
     public void initialize() {
-        FileConfiguration config = getConfigAs(FileConfiguration.class);
-        File file = new File(BINDING_DATA_PATH, config.fileName);
-        if (file.exists()) {
-            definitionFile = Optional.of(file);
-            super.initialize();
-        } else {
+        String fileName = getConfigAs(FileConfiguration.class).fileName;
+
+        if (fileName.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "'fileName' can not be blank or empty");
+            return;
+        }
+
+        File file = new File(BINDING_DATA_PATH, fileName);
+        if (!file.exists()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Missing file: %s".formatted(file.getAbsolutePath()));
+            return;
         }
+
+        definitionFile = Optional.of(file);
+        super.initialize();
     }
 
     @Override
