@@ -152,18 +152,7 @@
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.freeboxos</module>
     <module>org.openhab.binding.freecurrency</module>
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
-<<<<<<< Upstream, based on origin/main
     <module>org.openhab.binding.frenchgovtenergydata</module>
-=======
-        
->>>>>>> 427ce2c [ephemeris] Initial commit of the ephemeris binding
-=======
-
->>>>>>> f723b60 [ephemeris] Initial commit of the ephemeris binding Rebasing pom.xml
-=======
->>>>>>> d3e789a Restoring pom.xml + my binding
     <module>org.openhab.binding.fronius</module>
     <module>org.openhab.binding.fsinternetradio</module>
     <module>org.openhab.binding.ftpupload</module>
