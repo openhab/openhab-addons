@@ -58,9 +58,10 @@ public class MfFanHandler extends BaseThingHandler {
     @NonNullByDefault({} /* non-null if initialized */)
     private ScheduledFuture<?> pollingJob;
 
-    private final ExecutorService executor;
+    @NonNullByDefault({} /* non-null if initialized */)
+    private ExecutorService executor;
 
-    private final HttpClientFactory httpClientFactory;
+    private HttpClientFactory httpClientFactory;
 
     public MfFanHandler(Thing thing, HttpClientFactory httpClientFactory) {
         super(thing);
@@ -95,7 +96,10 @@ public class MfFanHandler extends BaseThingHandler {
         this.pollingJob = null;
 
         ExecutorService exec = this.executor;
-        exec.shutdown();
+        if (exec != null) {
+            exec.shutdown();
+        }
+        this.executor = null;
     }
 
     @Override
