@@ -91,7 +91,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Light Intensity</label>
 		<description>The light intensity.</description>
-		<state readOnly="false" min="1" max="100" step="1" pattern="%.0f %unit%"/>
+		<state readOnly="false" min="1" max="100" step="1" pattern="%d %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

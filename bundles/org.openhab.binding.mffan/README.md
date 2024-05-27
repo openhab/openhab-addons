@@ -2,21 +2,19 @@
 
 This binding is used to enable communications between openHAB and "Modern Forms" or "WAC Lighting" WIFI connected, smart, ceiling fans.  
 
-
 ## Supported Things
 
-The binding currently supports the following devices.
+The binding currently supports the following thing:
 
 | Thing         | ID          |                                                                |
 |---------------|-------------|----------------------------------------------------------------|
 | mffan         | mffan       | Smart fans consisting of fan and optional integrated LED light |
 
-
 ## Discovery
 
 Auto discovery is not supported at this time.  
 
-## Binding Configuration
+## Thing Configuration
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|

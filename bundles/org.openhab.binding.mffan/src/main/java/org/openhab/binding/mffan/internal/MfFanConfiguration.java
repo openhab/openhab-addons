@@ -32,7 +32,7 @@ public class MfFanConfiguration {
     }
 
     public String getIpAddress() {
-        return this.ipAddress;
+        return this.ipAddress.trim();
     }
 
     public void setIpAddress(String ipAddress) {
@@ -48,7 +48,7 @@ public class MfFanConfiguration {
     }
 
     public static boolean validateConfig(@Nullable MfFanConfiguration config) {
-        if ((config == null) || config.getIpAddress().isBlank()) {
+        if (config == null || config.getIpAddress().isBlank()) {
             return false;
         }
         return config.getPollingPeriod() >= 10;
