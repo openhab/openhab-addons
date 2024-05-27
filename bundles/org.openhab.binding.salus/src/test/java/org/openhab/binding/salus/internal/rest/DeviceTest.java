@@ -52,7 +52,7 @@ class DeviceTest {
         // Given
         var properties = new HashMap<String, @Nullable Object>();
         properties.put("connection_status", "offline");
-        var device = new Device("dsn", "name", true, properties);
+        var device = new Device("dsn", "name", false, properties);
 
         // When
         var result = device.connected();
@@ -67,7 +67,7 @@ class DeviceTest {
     public void testReturnsFalseIfConnectionStatusPropertyDoesNotExist() {
         // Given
         var properties = new HashMap<String, @Nullable Object>();
-        var device = new Device("dsn", "name", true, properties);
+        var device = new Device("dsn", "name", false, properties);
 
         // When
         var result = device.connected();
@@ -82,7 +82,7 @@ class DeviceTest {
     public void testReturnsFalseIfPropertiesParameterDoesNotContainConnectionStatusKey() {
         // Given
         var properties = new HashMap<String, @Nullable Object>();
-        var device = new Device("dsn", "name", true, properties);
+        var device = new Device("dsn", "name", false, properties);
 
         // When
         var result = device.connected();
@@ -98,7 +98,7 @@ class DeviceTest {
         // Given
         var properties = new HashMap<String, @Nullable Object>();
         properties.put("connection_status", null);
-        var device = new Device("dsn", "name", true, properties);
+        var device = new Device("dsn", "name", false, properties);
 
         // When
         var result = device.connected();
@@ -114,7 +114,7 @@ class DeviceTest {
         // Given
         var properties = new HashMap<String, @Nullable Object>();
         properties.put("connection_status", 123);
-        var device = new Device("dsn", "name", true, properties);
+        var device = new Device("dsn", "name", false, properties);
 
         // When
         var result = device.connected();
@@ -197,7 +197,7 @@ class DeviceTest {
         Map<String, @Nullable Object> properties2 = Map.of("connection_status", "offline");
 
         Device device1 = new Device(dsn, name, true, properties1);
-        Device device2 = new Device(dsn, name, true, properties2);
+        Device device2 = new Device(dsn, name, false, properties2);
 
         // When
         boolean connected1 = device1.connected();
