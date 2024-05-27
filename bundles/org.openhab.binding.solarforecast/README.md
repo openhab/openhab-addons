@@ -113,8 +113,8 @@ In case of empty the location configured in openHAB is obtained.
 | declination     | integer | Plane Declination: 0 for horizontal till 90 for vertical declination         | N/A     | yes      | false    |
 | azimuth         | integer | Plane Azimuth: -180 = north, -90 = east, 0 = south, 90 = west, 180 = north   | N/A     | yes      | false    |
 | kwp             | decimal | Installed Kilowatt Peak                                                      | N/A     | yes      | false    |
-| dampAM          | decimal | Damping factor of morning hours                                              | N/A     | no       | true     |
-| dampPM          | decimal | Damping factor of evening hours                                              | N/A     | no       | true     |
+| dampAM          | decimal | Damping factor of morning hours                                              | 0.25    | no       | true     |
+| dampPM          | decimal | Damping factor of evening hours                                              | 0.25    | no       | true     |
 | horizon         | text    | Horizon definition as comma separated integer values                         | N/A     | no       | true     |
 
 `refreshInterval` of forecast data needs to respect the throttling of the ForecastSolar service. 
