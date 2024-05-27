@@ -20,6 +20,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sunsynk.internal.api.dto.APIdata;
 import org.openhab.binding.sunsynk.internal.api.dto.Battery;
 import org.openhab.binding.sunsynk.internal.api.dto.Daytemps;
@@ -41,29 +43,31 @@ import com.google.gson.JsonSyntaxException;
  * @author Lee Charlton - Initial contribution
  */
 
+@NonNullByDefault
 public class SunSynkInverter {
 
     private final Logger logger = LoggerFactory.getLogger(SunSynkInverter.class);
-    private String sn;
-    private String alias;
-    private Settings batterySettings;
-    private Battery realTimeBattery;
-    private Grid grid;
-    private Daytemps inverter_day_temperatures;
-    private RealTimeInData realTimeDataIn;
+    private String sn = "";
+    private String alias = "";
+    private @Nullable Settings batterySettings = new Settings();
+    private @Nullable Battery realTimeBattery = new Battery();
+    private @Nullable Grid grid = new Grid();
+    private @Nullable Daytemps inverter_day_temperatures = new Daytemps();
+    private @Nullable RealTimeInData realTimeDataIn = new RealTimeInData();
+
+    public SunSynkInverter() {
+    }
 
     public SunSynkInverter(SunSynkInverterConfig config) {
         this.sn = config.getsn();
         this.alias = config.getAlias();
     }
 
-    public String sendGetState(Boolean batterySettingsUpdate) { // Class entry method to update internal inverter state
+    public String sendGetState(boolean batterySettingsUpdate) { // Class entry method to update internal
+                                                                // inverter state
         logger.debug("Will get STATE for Inverter {} serial {}", this.alias, this.sn);
         String response = null;
         try {
-            if (batterySettingsUpdate == null) {
-                batterySettingsUpdate = false;
-            }
             if (!batterySettingsUpdate) { // normally get settings to track changes made by other UIs
                 logger.debug("Trying Common Settings");
                 response = getCommonSettings(); // battery charge settings
@@ -88,23 +92,23 @@ public class SunSynkInverter {
         return response;
     }
 
-    public Settings getBatteryChargeSettings() {
+    public @Nullable Settings getBatteryChargeSettings() {
         return this.batterySettings;
     }
 
-    public Battery getRealTimeBatteryState() {
+    public @Nullable Battery getRealTimeBatteryState() {
         return this.realTimeBattery;
     }
 
-    public Grid getRealTimeGridStatus() {
+    public @Nullable Grid getRealTimeGridStatus() {
         return this.grid;
     }
 
-    public Daytemps getInverterTemperatureHistory() {
+    public @Nullable Daytemps getInverterTemperatureHistory() {
         return this.inverter_day_temperatures;
     }
 
-    public RealTimeInData getRealtimeSolarStatus() {
+    public @Nullable RealTimeInData getRealtimeSolarStatus() {
         return this.realTimeDataIn;
     }
 
@@ -173,8 +177,7 @@ public class SunSynkInverter {
     public String sendCommandToSunSynk(String body, String access_token) {
         String path = "api/v1/common/setting/" + this.sn + "/set";
         try {
-            String postResponse = apiPostMethod(makeURL(path), body, access_token);
-            return postResponse;
+            return apiPostMethod(makeURL(path), body, access_token);
         } catch (IOException e) {
             logger.debug("Failed to send to Inverter API: {} ", e.getMessage());
             int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
@@ -191,8 +194,7 @@ public class SunSynkInverter {
         headers.setProperty("Accept", "application/json");
         headers.setProperty("Authorization", "Bearer " + access_token);
         InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
-        response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
-        return response;
+        return HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
     }
 
     private String apiGetMethod(String httpsURL, String access_token) throws IOException {
@@ -201,8 +203,7 @@ public class SunSynkInverter {
         headers.setProperty("Accept", "application/json");
         headers.setProperty("Content-Type", "application/json"); // may not need this.
         headers.setProperty("Authorization", "Bearer " + access_token);
-        response = HttpUtil.executeUrl("GET", httpsURL, headers, null, "application/json", 2000);
-        return response;
+        return HttpUtil.executeUrl("GET", httpsURL, headers, null, "application/json", 2000);
     }
 
     private String makeURL(String path) {
@@ -212,7 +213,6 @@ public class SunSynkInverter {
     private String getAPIFormatDate() {
         LocalDate date = LocalDate.now();
         DateTimeFormatter APIformat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedDate = date.format(APIformat);
-        return formattedDate;
+        return date.format(APIformat);
     }
 }
