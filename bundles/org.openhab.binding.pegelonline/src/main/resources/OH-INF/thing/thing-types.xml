@@ -57,21 +57,21 @@
 	</thing-type>
 
 
-	<channel-type id="timestamp-channel">
+	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Timestamp of Last Measurement</label>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
-	<channel-type id="measure-channel">
+	<channel-type id="measure">
 		<item-type>Number:Length</item-type>
 		<label>Water Level</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="trend-channel">
+	<channel-type id="trend">
 		<item-type>String</item-type>
 		<label>Water Level Trend</label>
 	</channel-type>
-	<channel-type id="level-channel">
+	<channel-type id="level">
 		<item-type>String</item-type>
 		<label>Actual Level</label>
 		<state readOnly="true">
