@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.salus.internal.cloud.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.handler.CloudApi;
 import org.openhab.binding.salus.internal.rest.Device;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.thing.ThingUID;
 
@@ -79,7 +80,7 @@ public class SalusDiscoveryTest {
         var bridgeUid = mock(ThingUID.class);
         var discoveryService = new SalusDiscovery(bridgeHandler, cloudApi, bridgeUid);
 
-        given(cloudApi.findDevices()).willThrow(new Exception("API error"));
+        given(cloudApi.findDevices()).willThrow(new SalusApiException("API error"));
 
         // When
         discoveryService.startScan();
