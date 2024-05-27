@@ -66,20 +66,19 @@ public class SunSynkInverter {
     public String sendGetState(boolean batterySettingsUpdate) { // Class entry method to update internal
                                                                 // inverter state
         logger.debug("Will get STATE for Inverter {} serial {}", this.alias, this.sn);
-        String response = null;
         try {
             if (!batterySettingsUpdate) { // normally get settings to track changes made by other UIs
                 logger.debug("Trying Common Settings");
-                response = getCommonSettings(); // battery charge settings
+                getCommonSettings(); // battery charge settings
             }
             logger.debug("Trying Grid Real Time Settings");
-            response = getGridRealTime(); // grid status
+            getGridRealTime(); // grid status
             logger.debug("Trying Battery Real Time Settings");
-            response = getBatteryRealTime(); // battery status
+            getBatteryRealTime(); // battery status
             logger.debug("Trying Temperature History");
-            response = getInverterACDCTemperatures(); // get Inverter temperatures
+            getInverterACDCTemperatures(); // get Inverter temperatures
             logger.debug("Trying Real Time Solar");
-            response = getRealTimeIn(); // Used for solar power now
+            getRealTimeIn(); // Used for solar power now
         } catch (IOException | JsonSyntaxException e) {
             logger.debug("Failed to get Inverter API information: {} ", e.getMessage());
             int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
@@ -89,7 +88,7 @@ public class SunSynkInverter {
             return "Failed";
         }
         logger.debug("Successfully got and parsed new data for Inverter {} serial {}", this.alias, this.sn);
-        return response;
+        return "Sucess";
     }
 
     public @Nullable Settings getBatteryChargeSettings() {
@@ -112,66 +111,46 @@ public class SunSynkInverter {
         return this.realTimeDataIn;
     }
 
-    String getCommonSettings() throws IOException, JsonSyntaxException {
+    private void getCommonSettings() throws IOException, JsonSyntaxException {
         String response = apiGetMethod(makeURL("api/v1/common/setting/" + this.sn + "/read"),
                 APIdata.static_access_token);
-        if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
-            return response;
-        }
         Gson gson = new Gson();
         this.batterySettings = gson.fromJson(response, Settings.class);
         this.batterySettings.buildLists();
-        return response;
     }
 
-    String getGridRealTime() throws IOException, JsonSyntaxException {
+    private void getGridRealTime() throws IOException, JsonSyntaxException {
         String response = apiGetMethod(makeURL("api/v1/inverter/grid/" + this.sn + "/realtime?sn=") + this.sn,
                 APIdata.static_access_token);
-        if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
-            return response;
-        }
         Gson gson = new Gson();
         this.grid = gson.fromJson(response, Grid.class);
         this.grid.sumVIP();
-        return response;
     }
 
-    String getBatteryRealTime() throws IOException, JsonSyntaxException {
+    private void getBatteryRealTime() throws IOException, JsonSyntaxException {
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/battery/" + this.sn + "/realtime?sn=" + this.sn + "&lan"),
                 APIdata.static_access_token);
-        if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
-            return response;
-        }
         Gson gson = new Gson();
         this.realTimeBattery = gson.fromJson(response, Battery.class);
-        return response;
     }
 
-    String getInverterACDCTemperatures() throws IOException, JsonSyntaxException {
+    private void getInverterACDCTemperatures() throws IOException, JsonSyntaxException {
         String date = getAPIFormatDate();
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/" + this.sn + "/output/day?lan=en&date=" + date + "&column=dc_temp,igbt_temp"),
                 APIdata.static_access_token);
-        if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
-            return response;
-        }
         Gson gson = new Gson();
         this.inverter_day_temperatures = gson.fromJson(response, Daytemps.class);
         this.inverter_day_temperatures.getLastValue();
-        return response;
     }
 
-    String getRealTimeIn() throws IOException, JsonSyntaxException { // Get URL Respnse
+    private void getRealTimeIn() throws IOException, JsonSyntaxException { // Get URL Respnse
         String response = apiGetMethod(makeURL("api/v1/inverter/" + this.sn + "/realtime/input"),
                 APIdata.static_access_token);
-        if ("Failed".equals(response) | "Authentication Fail".equals(response)) {
-            return response;
-        }
         Gson gson = new Gson();
         this.realTimeDataIn = gson.fromJson(response, RealTimeInData.class);
         this.realTimeDataIn.sumPVIV();
-        return response;
     }
 
     public String sendCommandToSunSynk(String body, String access_token) {
@@ -189,7 +168,6 @@ public class SunSynkInverter {
     }
 
     private String apiPostMethod(String httpsURL, String body, String access_token) throws IOException {
-        String response = "";
         Properties headers = new Properties();
         headers.setProperty("Accept", "application/json");
         headers.setProperty("Authorization", "Bearer " + access_token);
@@ -198,7 +176,6 @@ public class SunSynkInverter {
     }
 
     private String apiGetMethod(String httpsURL, String access_token) throws IOException {
-        String response = "";
         Properties headers = new Properties();
         headers.setProperty("Accept", "application/json");
         headers.setProperty("Content-Type", "application/json"); // may not need this.
