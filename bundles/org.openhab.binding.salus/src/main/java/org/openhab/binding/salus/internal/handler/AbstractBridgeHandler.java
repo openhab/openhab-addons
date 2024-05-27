@@ -111,7 +111,6 @@ public abstract class AbstractBridgeHandler<ConfigT extends AbstractBridgeConfig
             // there is a connection with the cloud
             updateStatus(ONLINE);
         } catch (SalusApiException ex) {
-            logger.debug("Cannot connect to Salus Cloud", ex);
             updateStatus(OFFLINE, COMMUNICATION_ERROR,
                     "@text/cloud-bridge-handler.initialize.cannot-connect-to-cloud [\"" + ex.getMessage() + "\"]");
         }
