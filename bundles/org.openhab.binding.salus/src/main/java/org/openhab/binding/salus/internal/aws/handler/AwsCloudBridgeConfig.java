@@ -41,7 +41,7 @@ public class AwsCloudBridgeConfig extends AbstractBridgeConfig {
         this.region = region;
         this.companyCode = companyCode;
         this.awsService = awsService;
-        if (url.isEmpty()) {
+        if (url.isBlank()) {
             setUrl("https://service-api.eu.premium.salusconnect.io");
         }
     }
