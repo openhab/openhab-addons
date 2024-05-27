@@ -60,13 +60,14 @@ public abstract class AbstractSalusApi<AuthT> implements SalusApi {
         this(username, password, baseUrl, restClient, mapper, Clock.systemDefaultZone());
     }
 
-    protected @Nullable String get(String url, RestClient.Header... headers) throws SalusApiException {
+    protected @Nullable String get(String url, RestClient.Header... headers)
+            throws SalusApiException, AuthSalusApiException {
         refreshAccessToken();
         return restClient.get(url, headers);
     }
 
     protected @Nullable String post(String url, RestClient.Content content, RestClient.Header... headers)
-            throws SalusApiException {
+            throws SalusApiException, AuthSalusApiException {
         refreshAccessToken();
         return restClient.post(url, content, headers);
     }
@@ -78,7 +79,7 @@ public abstract class AbstractSalusApi<AuthT> implements SalusApi {
         return str;
     }
 
-    private void forceRefreshAccessToken() throws SalusApiException {
+    private void forceRefreshAccessToken() throws AuthSalusApiException {
         logger.debug("Force refresh access token");
         cleanAuth();
         refreshAccessToken();

@@ -17,6 +17,7 @@ import java.util.SortedSet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
+import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 
 /**
@@ -34,7 +35,7 @@ public interface SalusApi {
      * @return A sorted set of Device objects representing the discovered devices.
      * @throws SalusApiException if an error occurs during device discovery.
      */
-    SortedSet<Device> findDevices() throws SalusApiException;
+    SortedSet<Device> findDevices() throws SalusApiException, AuthSalusApiException;
 
     /**
      * Retrieves the properties of a specific device.
@@ -43,7 +44,7 @@ public interface SalusApi {
      * @return A sorted set of DeviceProperty objects representing the properties of the device.
      * @throws SalusApiException if an error occurs while retrieving device properties.
      */
-    SortedSet<DeviceProperty<?>> findDeviceProperties(String dsn) throws SalusApiException;
+    SortedSet<DeviceProperty<?>> findDeviceProperties(String dsn) throws SalusApiException, AuthSalusApiException;
 
     /**
      * Sets the value for a specific property of a device.
@@ -54,5 +55,6 @@ public interface SalusApi {
      * @return An Object representing the result of setting the property value.
      * @throws SalusApiException if an error occurs while setting the property value.
      */
-    Object setValueForProperty(String dsn, String propertyName, Object value) throws SalusApiException;
+    Object setValueForProperty(String dsn, String propertyName, Object value)
+            throws SalusApiException, AuthSalusApiException;
 }

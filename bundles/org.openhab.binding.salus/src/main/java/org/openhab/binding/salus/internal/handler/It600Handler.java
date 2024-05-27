@@ -38,6 +38,7 @@ import java.util.SortedSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
+import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -152,13 +153,14 @@ public class It600Handler extends BaseThingHandler {
                 default:
                     logger.warn("Unknown channel `{}` for command `{}`", id, command);
             }
-        } catch (SalusApiException e) {
+        } catch (SalusApiException | AuthSalusApiException e) {
             logger.debug("Error while handling command `{}` on channel `{}`", command, channelUID, e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
-    private void handleCommandForTemperature(ChannelUID channelUID, Command command) throws SalusApiException {
+    private void handleCommandForTemperature(ChannelUID channelUID, Command command)
+            throws SalusApiException, AuthSalusApiException {
         if (!(command instanceof RefreshType)) {
             // only refresh commands are supported for temp channel
             return;
@@ -173,7 +175,8 @@ public class It600Handler extends BaseThingHandler {
                 });
     }
 
-    private void handleCommandForExpectedTemperature(ChannelUID channelUID, Command command) throws SalusApiException {
+    private void handleCommandForExpectedTemperature(ChannelUID channelUID, Command command)
+            throws SalusApiException, AuthSalusApiException {
         if (command instanceof RefreshType) {
             findLongProperty(channelPrefix + ":sIT600TH:HeatingSetpoint_x100", "HeatingSetpoint_x100")
                     .map(DeviceProperty.LongDeviceProperty::getValue).map(BigDecimal::new)
@@ -214,7 +217,8 @@ public class It600Handler extends BaseThingHandler {
                 command.getClass().getSimpleName(), channelUID);
     }
 
-    private void handleCommandForWorkType(ChannelUID channelUID, Command command) throws SalusApiException {
+    private void handleCommandForWorkType(ChannelUID channelUID, Command command)
+            throws SalusApiException, AuthSalusApiException {
         if (command instanceof RefreshType) {
             findLongProperty(channelPrefix + ":sIT600TH:HoldType", "HoldType")
                     .map(DeviceProperty.LongDeviceProperty::getValue).map(value -> switch (value.intValue()) {
@@ -261,7 +265,7 @@ public class It600Handler extends BaseThingHandler {
     }
 
     private Optional<DeviceProperty.LongDeviceProperty> findLongProperty(String name, String shortName)
-            throws SalusApiException {
+            throws SalusApiException, AuthSalusApiException {
         var deviceProperties = findDeviceProperties();
         var property = deviceProperties.stream().filter(p -> p.getName().equals(name))
                 .filter(DeviceProperty.LongDeviceProperty.class::isInstance)
@@ -277,7 +281,7 @@ public class It600Handler extends BaseThingHandler {
         return property;
     }
 
-    private SortedSet<DeviceProperty<?>> findDeviceProperties() throws SalusApiException {
+    private SortedSet<DeviceProperty<?>> findDeviceProperties() throws SalusApiException, AuthSalusApiException {
         return this.cloudApi.findPropertiesForDevice(dsn);
     }
 }

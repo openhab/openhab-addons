@@ -37,6 +37,7 @@ import org.openhab.binding.salus.internal.rest.GsonMapper;
 import org.openhab.binding.salus.internal.rest.HttpClient;
 import org.openhab.binding.salus.internal.rest.RestClient;
 import org.openhab.binding.salus.internal.rest.RetryHttpClient;
+import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -113,6 +114,9 @@ public abstract class AbstractBridgeHandler<ConfigT extends AbstractBridgeConfig
         } catch (SalusApiException ex) {
             updateStatus(OFFLINE, COMMUNICATION_ERROR,
                     "@text/cloud-bridge-handler.initialize.cannot-connect-to-cloud [\"" + ex.getMessage() + "\"]");
+        } catch (AuthSalusApiException ex) {
+            updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                    "@text/cloud-bridge-handler.initialize.auth-exception [\"" + ex.getMessage() + "\"]");
         }
     }
 
@@ -162,13 +166,15 @@ public abstract class AbstractBridgeHandler<ConfigT extends AbstractBridgeConfig
     }
 
     @Override
-    public SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn) throws SalusApiException {
+    public SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn)
+            throws SalusApiException, AuthSalusApiException {
         logger.debug("Finding properties for device {} using salusClient", dsn);
         return requireNonNull(salusApi).findDeviceProperties(dsn);
     }
 
     @Override
-    public boolean setValueForProperty(String dsn, String propertyName, Object value) throws SalusApiException {
+    public boolean setValueForProperty(String dsn, String propertyName, Object value)
+            throws SalusApiException, AuthSalusApiException {
         try {
             @Nullable
             SalusApi api = requireNonNull(salusApi);
@@ -209,19 +215,19 @@ public abstract class AbstractBridgeHandler<ConfigT extends AbstractBridgeConfig
                     "Cannot set value {} ({}) for property {} ({}) on device {} because value class does not match property class",
                     setValue, setValue.getClass().getSimpleName(), propertyName, prop.getClass().getSimpleName(), dsn);
             return false;
-        } catch (SalusApiException ex) {
+        } catch (AuthSalusApiException | SalusApiException ex) {
             devicePropertiesCache.invalidateAll();
             throw ex;
         }
     }
 
     @Override
-    public SortedSet<Device> findDevices() throws SalusApiException {
+    public SortedSet<Device> findDevices() throws SalusApiException, AuthSalusApiException {
         return requireNonNull(this.salusApi).findDevices();
     }
 
     @Override
-    public Optional<Device> findDevice(String dsn) throws SalusApiException {
+    public Optional<Device> findDevice(String dsn) throws SalusApiException, AuthSalusApiException {
         return findDevices().stream().filter(device -> device.dsn().equals(dsn)).findFirst();
     }
 

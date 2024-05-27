@@ -17,7 +17,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -29,6 +28,7 @@ import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
 import org.openhab.binding.salus.internal.rest.GsonMapper;
 import org.openhab.binding.salus.internal.rest.RestClient;
+import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.HttpSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 
@@ -56,17 +56,19 @@ public class HttpSalusApi extends AbstractSalusApi<AuthToken> {
     }
 
     @Override
-    protected @Nullable String get(String url, RestClient.Header... headers) throws SalusApiException {
+    protected @Nullable String get(String url, RestClient.Header... headers)
+            throws SalusApiException, AuthSalusApiException {
         return this.get(url, 1, headers);
     }
 
     @Override
     protected @Nullable String post(String url, RestClient.Content content, RestClient.Header... headers)
-            throws SalusApiException {
+            throws SalusApiException, AuthSalusApiException {
         return this.post(url, content, 1, headers);
     }
 
-    private @Nullable String get(String url, int retryAttempt, RestClient.Header... headers) throws SalusApiException {
+    private @Nullable String get(String url, int retryAttempt, RestClient.Header... headers)
+            throws SalusApiException, AuthSalusApiException {
         refreshAccessToken();
         try {
             return restClient.get(url, headers);
@@ -83,7 +85,7 @@ public class HttpSalusApi extends AbstractSalusApi<AuthToken> {
     }
 
     private @Nullable String post(String url, RestClient.Content content, int retryAttempt,
-            RestClient.Header... headers) throws SalusApiException {
+            RestClient.Header... headers) throws SalusApiException, AuthSalusApiException {
         refreshAccessToken();
         try {
             return restClient.post(url, content, headers);
@@ -135,14 +137,14 @@ public class HttpSalusApi extends AbstractSalusApi<AuthToken> {
         }
     }
 
-    private void forceRefreshAccessToken() throws SalusApiException {
+    private void forceRefreshAccessToken() throws AuthSalusApiException {
         logger.debug("Force refresh access token");
         cleanAuth();
         refreshAccessToken();
     }
 
     @Override
-    public SortedSet<Device> findDevices() throws SalusApiException {
+    public SortedSet<Device> findDevices() throws SalusApiException, AuthSalusApiException {
         refreshAccessToken();
         var response = get(url("/apiv1/devices.json"), authHeader());
         return new TreeSet<>(mapper.parseDevices(requireNonNull(response)));
@@ -153,7 +155,8 @@ public class HttpSalusApi extends AbstractSalusApi<AuthToken> {
     }
 
     @Override
-    public SortedSet<DeviceProperty<?>> findDeviceProperties(String dsn) throws SalusApiException {
+    public SortedSet<DeviceProperty<?>> findDeviceProperties(String dsn)
+            throws SalusApiException, AuthSalusApiException {
         refreshAccessToken();
         var response = get(url("/apiv1/dsns/" + dsn + "/properties.json"), authHeader());
         if (response == null) {
@@ -163,7 +166,8 @@ public class HttpSalusApi extends AbstractSalusApi<AuthToken> {
     }
 
     @Override
-    public Object setValueForProperty(String dsn, String propertyName, Object value) throws SalusApiException {
+    public Object setValueForProperty(String dsn, String propertyName, Object value)
+            throws SalusApiException, AuthSalusApiException {
         refreshAccessToken();
         var finalUrl = url("/apiv1/dsns/" + dsn + "/properties/" + propertyName + "/datapoints.json");
         var json = mapper.datapointParam(value);

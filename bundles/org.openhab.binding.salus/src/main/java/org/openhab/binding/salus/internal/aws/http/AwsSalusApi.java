@@ -107,7 +107,7 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
     }
 
     @Override
-    public SortedSet<Device> findDevices() throws SalusApiException {
+    public SortedSet<Device> findDevices() throws AuthSalusApiException, SalusApiException {
         var result = new TreeSet<Device>();
         var gateways = findGateways();
         for (var gatewayId : gateways) {
@@ -121,7 +121,7 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
         return result;
     }
 
-    private List<String> findGateways() throws SalusApiException {
+    private List<String> findGateways() throws SalusApiException, AuthSalusApiException {
         var response = get(url("/api/v1/occupants/slider_list"), authHeaders());
         if (response == null) {
             return List.of();
@@ -138,7 +138,8 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
     }
 
     @Override
-    public SortedSet<DeviceProperty<?>> findDeviceProperties(String dsn) throws SalusApiException {
+    public SortedSet<DeviceProperty<?>> findDeviceProperties(String dsn)
+            throws SalusApiException, AuthSalusApiException {
         var path = "https://%s.iot.%s.amazonaws.com/things/%s/shadow".formatted(awsService, region, dsn);
         var time = ZonedDateTime.now(clock).withZoneSameInstant(ZoneId.of("UTC"));
         var signingResult = buildSigningResult(dsn, time);
@@ -156,7 +157,8 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
         return new TreeSet<>(mapper.parseAwsDeviceProperties(response));
     }
 
-    private AwsSigningResult buildSigningResult(String dsn, ZonedDateTime time) throws SalusApiException {
+    private AwsSigningResult buildSigningResult(String dsn, ZonedDateTime time)
+            throws SalusApiException, AuthSalusApiException {
         refreshAccessToken();
         HttpRequest httpRequest = new HttpRequest("GET", "/things/%s/shadow".formatted(dsn),
                 new HttpHeader[] { new HttpHeader("host", "") }, null);

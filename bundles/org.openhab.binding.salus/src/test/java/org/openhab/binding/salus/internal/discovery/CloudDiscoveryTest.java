@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.salus.internal.cloud.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.handler.CloudApi;
 import org.openhab.binding.salus.internal.rest.Device;
-import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.thing.ThingUID;
 
@@ -40,7 +39,7 @@ public class CloudDiscoveryTest {
 
     @Test
     @DisplayName("Method filters out disconnected devices and adds connected devices as things using addThing method")
-    void testFiltersOutDisconnectedDevicesAndAddsConnectedDevicesAsThings() throws SalusApiException {
+    void testFiltersOutDisconnectedDevicesAndAddsConnectedDevicesAsThings() throws Exception {
         // Given
         var cloudApi = mock(CloudApi.class);
         var bridgeHandler = mock(CloudBridgeHandler.class);
@@ -73,14 +72,14 @@ public class CloudDiscoveryTest {
 
     @Test
     @DisplayName("Cloud API throws an exception during device retrieval, method logs the error")
-    void testLogsErrorWhenCloudApiThrowsException() throws SalusApiException {
+    void testLogsErrorWhenCloudApiThrowsException() throws Exception {
         // Given
         var cloudApi = mock(CloudApi.class);
         var bridgeHandler = mock(CloudBridgeHandler.class);
         var bridgeUid = mock(ThingUID.class);
         var discoveryService = new CloudDiscovery(bridgeHandler, cloudApi, bridgeUid);
 
-        given(cloudApi.findDevices()).willThrow(new SalusApiException("API error"));
+        given(cloudApi.findDevices()).willThrow(new Exception("API error"));
 
         // When
         discoveryService.startScan();

@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @SuppressWarnings("SerializableHasSerializationMethods")
 @NonNullByDefault
-public class AuthSalusApiException extends SalusApiException {
+public class AuthSalusApiException extends Exception {
     @Serial
     private static final long serialVersionUID = 1L;
 
