@@ -273,10 +273,9 @@
 	</channel-type>
 
 	<channel-type id="frequency">
-		<item-type>Number:Frequency</item-type>
+		<item-type>Rollershutter</item-type>
 		<label>Radio Tuner Frequency</label>
-		<description>Radio tuner frequency</description>
-		<state min="535000" max="108000000" pattern="%d %unit%"/>
+		<description>Radio Tuner frequency</description>
 	</channel-type>
 
 	<channel-type id="seek">
@@ -305,10 +304,10 @@
 	</channel-type>
 
 	<channel-type id="tuner-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Frequency</item-type>
 		<label>Radio Tuner Channel Frequency</label>
 		<description>User select radio tuner channel frequency"</description>
-		<state readOnly="true"/>
+		<state readOnly="true" min="535000" max="108000000" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="tuner-channel-select">

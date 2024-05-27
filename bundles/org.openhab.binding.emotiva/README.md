@@ -35,80 +35,84 @@ There are more parameters which all have defaults set.
 
 The Emotiva Processor supports the following channels (some channels are model specific):
 
-| Channel Type ID                    | Item Type    | Description                                                |
-|------------------------------------|--------------|------------------------------------------------------------|
-| _Main zone_                        |              |                                                            |
-| main-zone#power                    | Switch (RW)  | Main zone power on/off                                     |      
-| main-zone#volume                   | Dimmer (RW)  | Main zone volume in percentage (0 to 100)                  |             
-| main-zone#volume-db                | Number (RW)  | Main zone volume in dB (-96 to 15)                         | 
-| main-zone#mute                     | Switch (RW)  | Main zone mute                                             | 
-| main-zone#source                   | String (RW)  | Main zone input (HDMI1, TUNER, ARC, ...)                   | 
-| _Zone 2_                           |              |                                                            |
-| zone2#power                        | Switch (RW)  | Zone 2 power on/off                                        | 
-| zone2#volume                       | Dimmer (RW)  | Zone 2 volume in percentage (0 to 100)                     | 
-| zone2#volume-db                    | Number (RW)  | Zone 2 volume in dB (-80 offset)                           | 
-| zone2#mute                         | Switch (RW)  | Zone 2 mute                                                |
-| zone2#input                        | String (RW)  | Zone 2 input                                               |
-| _General_                          |              |                                                            |
-| general#power                      | Switch (RW)  | Power on/off                                               |
-| general#standby                    | String (W)   | Set in standby mode                                        |
-| general#menu                       | String (RW)  | Enter or exit menu                                         |
-| general#menu-control               | String (RW)  | Control menu via string commands                           |
-| general#up                         | String (W)   | Menu up                                                    |
-| general#down                       | String (W)   | Menu down                                                  |
-| general#left                       | String (W)   | Menu left                                                  |
-| general#right                      | String (W)   | Menu right                                                 |
-| general#enter                      | String (W)   | Menu enter                                                 |
-| general#dim                        | Switch (RW)  | Cycle through FP dimness settings                          |
-| general#mode                       | String (RW)  | Select audio mode (auto, dts, ...)                         |
-| general#info                       | String (W)   | Show info screen                                           |
-| general#speaker-preset             | String (RW)  | Select speaker presets (preset1, preset2)                  |
-| general#center                     | Number (RW)  | Center Volume increment up/down (0.5 step)                 |
-| general#subwoofer                  | Number (RW)  | Subwoofer Volume increment up/down (0.5 step)              |
-| general#surround                   | Number (RW)  | Surround Volume increment up/down (0.5 step)               |
-| general#back                       | Number (RW)  | Back Volume increment up/down (0.5 step)                   |
-| general#loudness                   | Switch (RW)  | Loudness on/off                                            |
-| general#treble                     | Number (RW)  | Treble Volume increment up/down (0.5 step)                 |
-| general#bass                       | Number (RW)  | Bass Volume increment up/down (0.5 step)                   |
-| general#tuner-band                 | String (R)   | Tuner band, (AM, FM)                                       |
-| general#tuner-channel              | String (RW)  | User–assigned station name                                 |
-| general#tuner-signal               | String (R)   | Tuner signal quality                                       |
-| general#tuner-program              | String (R)   | Tuner program: "Country", "Rock", ...                      |
-| general#tuner-RDS                  | String (R)   | Tuner RDS string                                           |
-| general#audio-input                | String (R)   | Audio input source                                         |
-| general#audio-bitstream            | String (R)   | Audio input bitstream type: "PCM 2.0", "ATMOS", etc.       |
-| general#audio-bits                 | String (R)   | Audio input bits: "32kHZ 24bits", etc.                     |
-| general#video-input                | String (R)   | Video input source                                         |
-| general#video-format               | String (R)   | Video input format: "1920x1080i/60", "3840x2160p/60", etc. |
-| general#video-space                | String (R)   | Video input space: "YcbCr 8bits", etc.                     |
-| general#input-[1-8]                | String (R)   | User assigned input names                                  |
-| general#selected-mode              | String (R)   | User selected mode for the main zone                       |
-| general#selected-movie-music       | String (R)   | User selected movie or music mode for main zone            |
-| general#mode-ref-stereo            | String (R)   | Label for mode: Reference Stereo                           |
-| general#mode-stereo                | String (R)   | Label for mode: Stereo                                     |
-| general#mode-music                 | String (R)   | Label for mode: Music                                      |
-| general#mode-movie                 | String (R)   | Label for mode: Movie                                      |
-| general#mode-direct                | String (R)   | Label for mode: Direct                                     |
-| general#mode-dolby                 | String (R)   | Label for mode: Dolby                                      |
-| general#mode-dts                   | String (R)   | Label for mode: DTS                                        |
-| general#mode-all-stereo            | String (R)   | Label for mode: All Stereo                                 |
-| general#mode-auto                  | String (R)   | Label for mode: Auto                                       |
-| general#mode-surround              | String (RW)  | Select audio mode (Auto, Stereo, Dolby, ...)               |
-| general#width                      | Number (RW)  | Width Volume increment up/down (0.5 step)                  |
-| general#height                     | Number (RW)  | Height Volume increment up/down (0.5 step)                 |
-| general#bar                        | String (R)   | Text displayed on front panel bar of device                |
-| general#menu-display-highlight     | String (R)   | Menu Panel Display: Value in focus                         |
-| general#menu-display-top-start     | String (R)   | Menu Panel Display: Top bar, start cell                    |
-| general#menu-display-top-center    | String (R)   | Menu Panel Display: Top bar, center cell                   |
-| general#menu-display-top-end       | String (R)   | Menu Panel Display: Top bar, end cell                      |
-| general#menu-display-middle-start  | String (R)   | Menu Panel Display: Middle bar, start cell                 |
-| general#menu-display-middle-center | String (R)   | Menu Panel Display: Middle bar, center cell                |
-| general#menu-display-middle-end    | String (R)   | Menu Panel Display: Middle bar, end cell                   |
-| general#menu-display-bottom-start  | String (R)   | Menu Panel Display: Bottom bar, start cell                 |
-| general#menu-display-bottom-center | String (R)   | Menu Panel Display: Bottom bar, center cell                |
-| general#menu-display-bottom-end    | String (R)   | Menu Panel Display: Bottom bar, end cell                   |
+| Channel Type ID                    | Item Type          | Description                                                |
+|------------------------------------|--------------------|------------------------------------------------------------|
+| _Main zone_                        |                    |                                                            |
+| main-zone#power                    | Switch (RW)        | Main zone power on/off                                     |      
+| main-zone#volume                   | Dimmer (RW)        | Main zone volume in percentage (0 to 100)                  |             
+| main-zone#volume-db                | Number (RW)        | Main zone volume in dB (-96 to 15)                         | 
+| main-zone#mute                     | Switch (RW)        | Main zone mute                                             | 
+| main-zone#source                   | String (RW)        | Main zone input (HDMI1, TUNER, ARC, ...)                   | 
+| _Zone 2_                           |                    |                                                            |
+| zone2#power                        | Switch (RW)        | Zone 2 power on/off                                        | 
+| zone2#volume                       | Dimmer (RW)        | Zone 2 volume in percentage (0 to 100)                     | 
+| zone2#volume-db                    | Number (RW)        | Zone 2 volume in dB (-80 offset)                           | 
+| zone2#mute                         | Switch (RW)        | Zone 2 mute                                                |
+| zone2#input                        | String (RW)        | Zone 2 input                                               |
+| _General_                          |                    |                                                            |
+| general#power                      | Switch (RW)        | Power on/off                                               |
+| general#standby                    | String (W)         | Set in standby mode                                        |
+| general#menu                       | String (RW)        | Enter or exit menu                                         |
+| general#menu-control               | String (W)         | Control menu via string commands                           |
+| general#up                         | String (W)         | Menu up                                                    |
+| general#down                       | String (W)         | Menu down                                                  |
+| general#left                       | String (W)         | Menu left                                                  |
+| general#right                      | String (W)         | Menu right                                                 |
+| general#enter                      | String (W)         | Menu enter                                                 |
+| general#dim                        | Switch (RW)        | Cycle through FP dimness settings                          |
+| general#mode                       | String (RW)        | Select audio mode (auto, dts, ...)                         |
+| general#info                       | String (W)         | Show info screen                                           |
+| general#speaker-preset             | String (RW)        | Select speaker presets (preset1, preset2)                  |
+| general#center                     | Number (RW)        | Center Volume increment up/down (0.5 step)                 |
+| general#subwoofer                  | Number (RW)        | Subwoofer Volume increment up/down (0.5 step)              |
+| general#surround                   | Number (RW)        | Surround Volume increment up/down (0.5 step)               |
+| general#back                       | Number (RW)        | Back Volume increment up/down (0.5 step)                   |
+| general#loudness                   | Switch (RW)        | Loudness on/off                                            |
+| general#treble                     | Number (RW)        | Treble Volume increment up/down (0.5 step)                 |
+| general#bass                       | Number (RW)        | Bass Volume increment up/down (0.5 step)                   |
+| general#frequenncy                 | Rollershutter (W)  | Frequency up/down, (100 kHz step)                          |
+| general#seek                       | Rollershutter (W)  | Seek signal up/down                                        |
+| general#channel                    | Rollershutter (W)  | Channel up/down                                            |
+| general#tuner-band                 | String (R)         | Tuner band, (AM, FM)                                       |
+| general#tuner-channel              | String (RW)        | User–assigned station name                                 |
+| general#tuner-signal               | String (R)         | Tuner signal quality                                       |
+| general#tuner-program              | String (R)         | Tuner program: "Country", "Rock", ...                      |
+| general#tuner-RDS                  | String (R)         | Tuner RDS string                                           |
+| general#audio-input                | String (R)         | Audio input source                                         |
+| general#audio-bitstream            | String (R)         | Audio input bitstream type: "PCM 2.0", "ATMOS", etc.       |
+| general#audio-bits                 | String (R)         | Audio input bits: "32kHZ 24bits", etc.                     |
+| general#video-input                | String (R)         | Video input source                                         |
+| general#video-format               | String (R)         | Video input format: "1920x1080i/60", "3840x2160p/60", etc. |
+| general#video-space                | String (R)         | Video input space: "YcbCr 8bits", etc.                     |
+| general#input-[1-8]                | String (R)         | User assigned input names                                  |
+| general#selected-mode              | String (R)         | User selected mode for the main zone                       |
+| general#selected-movie-music       | String (R)         | User selected movie or music mode for main zone            |
+| general#mode-ref-stereo            | String (R)         | Label for mode: Reference Stereo                           |
+| general#mode-stereo                | String (R)         | Label for mode: Stereo                                     |
+| general#mode-music                 | String (R)         | Label for mode: Music                                      |
+| general#mode-movie                 | String (R)         | Label for mode: Movie                                      |
+| general#mode-direct                | String (R)         | Label for mode: Direct                                     |
+| general#mode-dolby                 | String (R)         | Label for mode: Dolby                                      |
+| general#mode-dts                   | String (R)         | Label for mode: DTS                                        |
+| general#mode-all-stereo            | String (R)         | Label for mode: All Stereo                                 |
+| general#mode-auto                  | String (R)         | Label for mode: Auto                                       |
+| general#mode-surround              | String (RW)        | Select audio mode (Auto, Stereo, Dolby, ...)               |
+| general#width                      | Number (RW)        | Width Volume increment up/down (0.5 step)                  |
+| general#height                     | Number (RW)        | Height Volume increment up/down (0.5 step)                 |
+| general#bar                        | String (R)         | Text displayed on front panel bar of device                |
+| general#menu-display-highlight     | String (R)         | Menu Panel Display: Value in focus                         |
+| general#menu-display-top-start     | String (R)         | Menu Panel Display: Top bar, start cell                    |
+| general#menu-display-top-center    | String (R)         | Menu Panel Display: Top bar, center cell                   |
+| general#menu-display-top-end       | String (R)         | Menu Panel Display: Top bar, end cell                      |
+| general#menu-display-middle-start  | String (R)         | Menu Panel Display: Middle bar, start cell                 |
+| general#menu-display-middle-center | String (R)         | Menu Panel Display: Middle bar, center cell                |
+| general#menu-display-middle-end    | String (R)         | Menu Panel Display: Middle bar, end cell                   |
+| general#menu-display-bottom-start  | String (R)         | Menu Panel Display: Bottom bar, start cell                 |
+| general#menu-display-bottom-center | String (R)         | Menu Panel Display: Bottom bar, center cell                |
+| general#menu-display-bottom-end    | String (R)         | Menu Panel Display: Bottom bar, end cell                   |
 
-(R) = read-only (no updates possible)
+(R)  = read-only (no updates possible)
+(W)  = write-only
 (RW) = read-write
 
 ## Full Example
