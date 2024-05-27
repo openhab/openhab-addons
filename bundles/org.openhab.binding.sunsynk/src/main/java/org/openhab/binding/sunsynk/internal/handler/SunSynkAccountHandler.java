@@ -20,6 +20,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,6 +54,7 @@ import com.google.gson.JsonSyntaxException;
 public class SunSynkAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SunSynkAccountHandler.class);
     private @Nullable Client sunAccount = new Client();
+    private @Nullable ScheduledFuture<?> discoverApiKeyJob;
 
     public SunSynkAccountHandler(Bridge bridge) {
         super(bridge);
@@ -65,7 +68,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         logger.debug("SunSynk Handler Intialised attempting to retrieve configuration");
-        configAccount();
+        startDiscoverApiKeyJob();
     }
 
     public void setBridgeOnline() {
@@ -80,6 +83,30 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             return inverters;
         }
         return new ArrayList<>();
+    }
+
+    private void startDiscoverApiKeyJob() {
+        if (discoverApiKeyJob == null || discoverApiKeyJob.isCancelled()) {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    logger.debug("Starting account discovery job");
+                    configAccount();
+                    logger.debug("Doneaccount discoveryjob");
+                }
+            };
+            discoverApiKeyJob = scheduler.schedule(runnable, 1, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Disposing sunsynk bridge handler.");
+
+        if (discoverApiKeyJob != null && !discoverApiKeyJob.isCancelled()) {
+            discoverApiKeyJob.cancel(true);
+            discoverApiKeyJob = null;
+        }
     }
 
     private @Nullable Details getDetails(String access_token) {
