@@ -86,7 +86,7 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
                 // this is to account that there is a delay between server setting `expires_in`
                 // and client (OpenHAB) receiving it
                 .minusSeconds(TOKEN_EXPIRE_TIME_ADJUSTMENT_SECONDS);
-        authTokenExpireTime = ZonedDateTime.of(local, ZoneId.systemDefault());
+        authTokenExpireTime = ZonedDateTime.of(local, UTC);
 
         var id = authenticationHelper.getId(result);
 

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.salus.internal.cloud.rest;
 
+import static java.time.ZoneOffset.UTC;
 import static java.util.Objects.requireNonNull;
 
 import java.time.Clock;
@@ -120,7 +121,7 @@ public class HttpSalusApi extends AbstractSalusApi<AuthToken> {
                     // this is to account that there is a delay between server setting `expires_in`
                     // and client (OpenHAB) receiving it
                     .minusSeconds(TOKEN_EXPIRE_TIME_ADJUSTMENT_SECONDS);
-            authTokenExpireTime = ZonedDateTime.of(local, ZoneId.systemDefault());
+            authTokenExpireTime = ZonedDateTime.of(local, UTC);
             logger.debug("Correctly logged in for user {}, role={}, expires at {} ({} secs)", username, token.role(),
                     authTokenExpireTime, token.expiresIn());
         } catch (HttpSalusApiException ex) {
