@@ -51,6 +51,7 @@
 			<channel id="percent_source_pump" typeId="percent_source_pump"/>
 			<channel id="percent_compressor" typeId="percent_compressor"/>
 			<channel id="hysteresis_heating" typeId="hysteresis_heating"/>
+			<channel id="hysteresis_warmwater" typeId="hysteresis_warmwater"/>
 			<channel id="temperature2_outside_1h" typeId="temperature2_outside_1h"/>
 			<channel id="nviNormAussen" typeId="nviNormAussen"/>
 			<channel id="nviHeizkreisNorm" typeId="nviHeizkreisNorm"/>
@@ -197,6 +198,7 @@
 			<channel id="percent_source_pump" typeId="percent_source_pump"/>
 			<channel id="percent_compressor" typeId="percent_compressor"/>
 			<channel id="hysteresis_heating" typeId="hysteresis_heating"/>
+			<channel id="hysteresis_warmwater" typeId="hysteresis_warmwater"/>
 			<channel id="temperature2_outside_1h" typeId="temperature2_outside_1h"/>
 			<channel id="nviNormAussen" typeId="nviNormAussen"/>
 			<channel id="nviHeizkreisNorm" typeId="nviHeizkreisNorm"/>
@@ -546,6 +548,12 @@
 	<channel-type id="hysteresis_heating" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Hysteresis Heating</label>
+		<category>Temperature</category>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="hysteresis_warmwater" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Hysteresis Warmwater</label>
 		<category>Temperature</category>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
