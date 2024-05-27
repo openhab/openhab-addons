@@ -88,8 +88,8 @@ public class AwsCloudBridgeConfig extends AbstractBridgeConfig {
 
     @Override
     public boolean isValid() {
-        return super.isValid() && !userPoolId.isEmpty() && !clientId.isEmpty() && !region.isEmpty()
-                && !companyCode.isEmpty() && !awsService.isEmpty();
+        return super.isValid() && !userPoolId.isBlank() && !clientId.isBlank() && !region.isBlank()
+                && !companyCode.isBlank() && !awsService.isBlank();
     }
 
     @Override
