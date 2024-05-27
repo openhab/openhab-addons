@@ -95,6 +95,6 @@ public class CloudDiscoveryTest {
         if (connected) {
             map.put("connection_status", "online");
         }
-        return new Device("dsn-" + random.nextInt(), "name-" + random.nextInt(), true, map);
+        return new Device("dsn-" + random.nextInt(), "name-" + random.nextInt(), connected, map);
     }
 }
