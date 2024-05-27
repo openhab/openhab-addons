@@ -122,6 +122,7 @@ public class WaterLeakageSensorHandler extends AbstractBatteryPoweredDeviceHandl
         WaterLeakageSensorTiltServiceState newState = cloneCurrentWaterLeakageSensorTiltServiceState();
         if (newState != null) {
             newState.pushNotificationState = EnabledDisabledState.from(onOffCommand);
+            this.currentWaterSensorTiltServiceState = newState;
             updateServiceState(waterLeakageSensorTiltService, newState);
         }
     }
@@ -130,6 +131,7 @@ public class WaterLeakageSensorHandler extends AbstractBatteryPoweredDeviceHandl
         WaterLeakageSensorTiltServiceState newState = cloneCurrentWaterLeakageSensorTiltServiceState();
         if (newState != null) {
             newState.acousticSignalState = EnabledDisabledState.from(onOffCommand);
+            this.currentWaterSensorTiltServiceState = newState;
             updateServiceState(waterLeakageSensorTiltService, newState);
         }
     }
