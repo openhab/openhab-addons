@@ -157,6 +157,7 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
     }
 
     private AwsSigningResult buildSigningResult(String dsn, ZonedDateTime time) throws SalusApiException {
+        refreshAccessToken();
         HttpRequest httpRequest = new HttpRequest("GET", "/things/%s/shadow".formatted(dsn),
                 new HttpHeader[] { new HttpHeader("host", "") }, null);
         var localCredentials = requireNonNull(cogitoCredentials);
