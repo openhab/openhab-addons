@@ -58,8 +58,9 @@ public class Daytemps {
             Infos ac_record = this.data.infos.get(1);
             this.dc_temperature = dc_record.records.get(dc_record.records.size() - 1).value;
             this.ac_temperature = ac_record.records.get(ac_record.records.size() - 1).value;
-        } catch (Exception e) {
-            this.response_status = "Failed to retrieve Inverter Temperature values";
+        } catch (NullPointerException e) {
+            this.response_status = "Inverter temperature array empty"; // sometimes after midnight Sun Synk respond with an empty array.
+            // do nothing leave dc_ and ac_ temperature values as they are.
         }
     }
 
