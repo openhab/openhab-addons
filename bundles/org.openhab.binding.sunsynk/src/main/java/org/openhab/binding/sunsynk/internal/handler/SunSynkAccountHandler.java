@@ -90,9 +90,9 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    logger.debug("Starting account discovery job");
+                    logger.debug("Starting account discovery job.");
                     configAccount();
-                    logger.debug("Doneaccount discoveryjob");
+                    logger.debug("Done account discovery job.");
                 }
             };
             discoverApiKeyJob = scheduler.schedule(runnable, 1, TimeUnit.SECONDS);
@@ -123,7 +123,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             Details output = gson.fromJson(response, Details.class);
             return output;
         } catch (IOException | JsonSyntaxException e) {
-            logger.debug("Error attempting to find inverters registered to account", e);
+            logger.debug("Error attempting to find inverters registered to account", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to find inverters registered to account");
             return new Details();
@@ -140,6 +140,8 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             if (this.sunAccount.getCode() == 102) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Check e-mail and password!");
                 logger.debug("Looks like its your password or email.");
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to get accesstoken");
             }
             return;
         }
@@ -184,7 +186,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             Client output = gson.fromJson(response, Client.class);
             return output;
         } catch (IOException | JsonSyntaxException e) {
-            logger.debug("Error attempting to autheticate account", e.getCause());
+            logger.debug("Error attempting to autheticate account", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate account");
             return new Client();
@@ -206,7 +208,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             Client output = gson.fromJson(response, Client.class);
             return output;
         } catch (IOException | JsonSyntaxException e) {
-            logger.debug("Error attempting to autheticate account", e.getCause());
+            logger.debug("Error attempting to autheticate account", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate account");
             return new Client();
