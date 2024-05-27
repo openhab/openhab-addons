@@ -10,9 +10,7 @@ extensive experience, we accurately identify user needs and introduce products t
 
 - **`salus-cloud-bridge`**: This bridge connects to Salus Cloud. Multiple bridges are supported for those with multiple
   accounts.
-- **`salus-aws-bridge`**: This bridge connects to AWS Salus Cloud. Multiple bridges are supported for those with
-  multiple
-  accounts.
+- **`salus-aws-bridge`**: This bridge connects to AWS Salus Cloud. Multiple bridges are supported for those with multiple accounts.
 - **`salus-device`**: A generic Salus device that exposes all properties (as channels) from the Cloud without any
   modifications.
 - **`salus-it600-device`**:  A temperature controller with extended capabilities.
