@@ -128,7 +128,7 @@ class AuthenticationHelper {
     }
 
     private byte[] getPasswordAuthenticationKey(String userId, byte[] userPassword, BigInteger B, BigInteger salt)
-            throws ShortBufferException, NoSuchAlgorithmException, InvalidKeyException {
+            throws ShortBufferException, NoSuchAlgorithmException, InvalidKeyException , SecurityException{
         // Authenticate the password
         // u = H(A, B)
         var messageDigest = THREAD_MESSAGE_DIGEST.get();
@@ -180,7 +180,7 @@ class AuthenticationHelper {
             var result = cognitoClient.respondToAuthChallenge(challengeRequest);
 
             return result.authenticationResult();
-        } catch (ShortBufferException | NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (ShortBufferException | NoSuchAlgorithmException | InvalidKeyException | SecurityException e) {
             throw new SalusApiException("Cannot perform SRP authentication!", e);
         }
     }
@@ -209,7 +209,7 @@ class AuthenticationHelper {
      * @return the Request created for the previous authentication challenge.
      */
     private RespondToAuthChallengeRequest userSrpAuthRequest(InitiateAuthResponse challenge, byte[] password)
-            throws ShortBufferException, NoSuchAlgorithmException, InvalidKeyException {
+            throws ShortBufferException, NoSuchAlgorithmException, InvalidKeyException , SecurityException {
         var userIdForSRP = requireNonNull(challenge.challengeParameters().get("USER_ID_FOR_SRP"));
         var usernameInternal = requireNonNull(challenge.challengeParameters().get("USERNAME"));
 
