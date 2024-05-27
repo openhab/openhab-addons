@@ -27,6 +27,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.pegelonline.internal.config.PegelOnlineConfiguration;
 import org.openhab.binding.pegelonline.internal.dto.Measure;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -40,8 +41,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link PegelOnlineHandler} is responsible for handling commands, which are
@@ -53,7 +52,6 @@ import org.slf4j.LoggerFactory;
 public class PegelOnlineHandler extends BaseThingHandler {
 
     private static final String STATIONS_URI = "https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations";
-    private final Logger logger = LoggerFactory.getLogger(PegelOnlineHandler.class);
     private Optional<PegelOnlineConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> schedule = Optional.empty();
     private HttpClient httpClient;
@@ -167,5 +165,10 @@ public class PegelOnlineHandler extends BaseThingHandler {
             schedule.get().cancel(true);
         }
         schedule = Optional.empty();
+    }
+
+    @Override
+    public void updateConfiguration(Configuration configuration) {
+        super.updateConfiguration(configuration);
     }
 }

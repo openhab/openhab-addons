@@ -57,7 +57,6 @@ public class PegelDiscovery extends AbstractDiscoveryService implements Discover
     @Activate
     public PegelDiscovery(final @Reference HttpClientFactory hcf, final @Reference LocationProvider lp) {
         super(SUPPORTED_THING_TYPES_UIDS, 10, false);
-        logger.info("PegelDiscovery created");
         httpClientFactory = hcf;
         PointType location = lp.getLocation();
         if (location != null) {
@@ -67,20 +66,24 @@ public class PegelDiscovery extends AbstractDiscoveryService implements Discover
 
     @Override
     protected void startScan() {
-        logger.info("PegelDiscovery startScan");
         double homeLat = homeLocation.getLatitude().doubleValue();
         double homeLon = homeLocation.getLongitude().doubleValue();
         try {
             ContentResponse cr = httpClientFactory.getCommonHttpClient().GET(STATIONS_URI);
             Station[] stationArray = GSON.fromJson(cr.getContentAsString(), Station[].class);
-            for (Station s : stationArray) {
-                double distance = Utils.getDistanceFromLatLonInKm(homeLat, homeLon, s.latitude, s.longitude);
-                if (distance < DISCOVERY_RADIUS) {
-                    logger.info("Station in range {},{}", s.longname, s.water.shortname);
-                    reportResult(s);
+            if (stationArray != null) {
+                for (Station s : stationArray) {
+                    double distance = Utils.getDistanceFromLatLonInKm(homeLat, homeLon, s.latitude, s.longitude);
+                    if (distance < DISCOVERY_RADIUS) {
+                        logger.trace("Station in range {},{}", s.longname, s.water.shortname);
+                        reportResult(s);
+                    }
                 }
+            } else {
+                logger.trace("No stations found in discovery");
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException | InterruptedException e) {
+            logger.trace("Excpetion during station discovery: {}", e.getMessage());
         }
     }
 
