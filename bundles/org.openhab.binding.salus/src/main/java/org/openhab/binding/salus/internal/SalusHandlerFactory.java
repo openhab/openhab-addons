@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.aws.handler.AwsCloudBridgeHandler;
 import org.openhab.binding.salus.internal.cloud.handler.CloudBridgeHandler;
-import org.openhab.binding.salus.internal.discovery.CloudDiscovery;
+import org.openhab.binding.salus.internal.discovery.SalusDiscovery;
 import org.openhab.binding.salus.internal.handler.AbstractBridgeHandler;
 import org.openhab.binding.salus.internal.handler.DeviceHandler;
 import org.openhab.binding.salus.internal.handler.It600Handler;
@@ -115,7 +115,7 @@ public class SalusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerThingDiscovery(AbstractBridgeHandler<?> handler) {
-        var discoveryService = new CloudDiscovery(handler, handler, handler.getThing().getUID());
+        var discoveryService = new SalusDiscovery(handler, handler, handler.getThing().getUID());
         var serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<>());
         discoveryServices.put(handler, serviceRegistration);

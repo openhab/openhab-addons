@@ -40,12 +40,12 @@ import org.slf4j.LoggerFactory;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class CloudDiscovery extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(CloudDiscovery.class);
+public class SalusDiscovery extends AbstractDiscoveryService {
+    private final Logger logger = LoggerFactory.getLogger(SalusDiscovery.class);
     private final CloudApi cloudApi;
     private final ThingUID bridgeUid;
 
-    public CloudDiscovery(AbstractBridgeHandler bridgeHandler, CloudApi cloudApi, ThingUID bridgeUid)
+    public SalusDiscovery(AbstractBridgeHandler bridgeHandler, CloudApi cloudApi, ThingUID bridgeUid)
             throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
         this.cloudApi = cloudApi;

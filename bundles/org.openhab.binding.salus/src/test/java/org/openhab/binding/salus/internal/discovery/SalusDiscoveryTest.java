@@ -35,7 +35,7 @@ import org.openhab.core.thing.ThingUID;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
-public class CloudDiscoveryTest {
+public class SalusDiscoveryTest {
 
     @Test
     @DisplayName("Method filters out disconnected devices and adds connected devices as things using addThing method")
@@ -44,7 +44,7 @@ public class CloudDiscoveryTest {
         var cloudApi = mock(CloudApi.class);
         var bridgeHandler = mock(CloudBridgeHandler.class);
         var bridgeUid = new ThingUID("salus", "salus-device", "boo");
-        var discoveryService = new CloudDiscovery(bridgeHandler, cloudApi, bridgeUid);
+        var discoveryService = new SalusDiscovery(bridgeHandler, cloudApi, bridgeUid);
         var discoveryListener = mock(DiscoveryListener.class);
         discoveryService.addDiscoveryListener(discoveryListener);
         var device1 = randomDevice(true);
@@ -77,7 +77,7 @@ public class CloudDiscoveryTest {
         var cloudApi = mock(CloudApi.class);
         var bridgeHandler = mock(CloudBridgeHandler.class);
         var bridgeUid = mock(ThingUID.class);
-        var discoveryService = new CloudDiscovery(bridgeHandler, cloudApi, bridgeUid);
+        var discoveryService = new SalusDiscovery(bridgeHandler, cloudApi, bridgeUid);
 
         given(cloudApi.findDevices()).willThrow(new Exception("API error"));
 
