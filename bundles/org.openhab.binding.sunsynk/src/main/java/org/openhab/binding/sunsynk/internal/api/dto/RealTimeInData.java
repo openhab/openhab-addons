@@ -54,6 +54,9 @@ public class RealTimeInData {
         private String time = "";
     }
 
+    public RealTimeInData() {
+    }
+
     class MPPTIV { // Empty; no solar panels
     }
 

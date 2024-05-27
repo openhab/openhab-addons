@@ -19,7 +19,8 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sunsynk.internal.SunSynkInverter;
 import org.openhab.binding.sunsynk.internal.api.dto.Battery;
 import org.openhab.binding.sunsynk.internal.api.dto.Daytemps;
@@ -50,30 +51,27 @@ import org.slf4j.LoggerFactory;
  * @author Lee Charlton - Initial contribution
  */
 
-// @NonNullByDefault
+@NonNullByDefault
 public class SunSynkInverterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SunSynkInverterHandler.class);
-    ZonedDateTime lockoutTimer = null;
-    private SunSynkInverter inverter;
+    private @Nullable ZonedDateTime lockoutTimer = null;
+    private SunSynkInverter inverter = new SunSynkInverter();
     private int refreshTime = 60;
-    private ScheduledFuture<?> refreshTask;
-    private Boolean batterySettingsUpdated = null;
-    private Settings tempInverterChargeSettings; // Holds modified battery settings.
+    private @Nullable ScheduledFuture<?> refreshTask;
+    private boolean batterySettingsUpdated = false;
+    private @Nullable Settings tempInverterChargeSettings = new Settings(); // Holds modified battery settings.
 
     public SunSynkInverterHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             refreshStateAndUpdate();
         } else {
             this.tempInverterChargeSettings = inverter.getBatteryChargeSettings();
-            if (this.tempInverterChargeSettings == null) {
-                return;
-            }
             switch (channelUID.getIdWithoutGroup()) {
                 // Grid charge
                 case CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE:
@@ -245,7 +243,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         }
     }
 
-    private void sendAPICommandToInverter(Settings inverterChargeSettings) {
+    private void sendAPICommandToInverter(@Nullable Settings inverterChargeSettings) {
         logger.debug("Ok - will handle command for CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE");
         SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
         String body = inverterChargeSettings.buildBody();
@@ -290,7 +288,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         } else {
             refreshTime = config.getRefresh();
         }
-        this.batterySettingsUpdated = null;
+        this.batterySettingsUpdated = false;
         inverter = new SunSynkInverter(config);
         startAutomaticRefresh();
     }
@@ -325,16 +323,12 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             }
             SunSynkAccountHandler bridgeHandler = checkBridge.get();
             bridgeHandler.refreshAccount(); // Check account token
-
-            if (batterySettingsUpdated != null) { // first time through
-                if (this.batterySettingsUpdated) { // have the settings been modified locally
-                    sendAPICommandToInverter(this.tempInverterChargeSettings); // update the battery settings
-                }
+            if (this.batterySettingsUpdated) { // have the settings been modified locally
+                sendAPICommandToInverter(this.tempInverterChargeSettings); // update the battery settings
             }
             String response = inverter.sendGetState(this.batterySettingsUpdated); // get inverter settings
             if ("Authentication Fail".equals(response)) {
                 logger.debug("Authentication Failure !");
-                // bridgehandler.refreshAccount();
                 return;
             }
             if ("Failed".equals(response)) { // unknown cause

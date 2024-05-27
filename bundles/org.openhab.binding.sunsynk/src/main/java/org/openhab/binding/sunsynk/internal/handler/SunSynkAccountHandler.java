@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sunsynk.internal.api.dto.APIdata;
 import org.openhab.binding.sunsynk.internal.api.dto.Client;
 import org.openhab.binding.sunsynk.internal.api.dto.Details;
@@ -47,22 +48,22 @@ import com.google.gson.JsonSyntaxException;
  * @author Lee Charlton - Initial contribution
  */
 
-// @NonNullByDefault
+@NonNullByDefault
 public class SunSynkAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SunSynkAccountHandler.class);
-    private Client sunAccount = new Client();
+    private @Nullable Client sunAccount = new Client();
 
     public SunSynkAccountHandler(Bridge bridge) {
         super(bridge);
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
         logger.debug("SunSynk Handler Intialised attempting to retrieve configuration");
         configAccount();
     }
@@ -71,17 +72,17 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public List<@NonNull Inverter> getInvertersFromSunSynk() {
+    public List<Inverter> getInvertersFromSunSynk() {
         logger.debug("Attempting to find inverters tied to account");
         Details sunAccountDetails = getDetails(APIdata.static_access_token);
-        ArrayList<@NonNull Inverter> inverters = sunAccountDetails.getInverters(APIdata.static_access_token);
+        ArrayList<Inverter> inverters = sunAccountDetails.getInverters(APIdata.static_access_token);
         if (!inverters.isEmpty() | inverters != null) {
             return inverters;
         }
         return new ArrayList<>();
     }
 
-    private Details getDetails(String access_token) {
+    private @Nullable Details getDetails(String access_token) {
         try {
             Gson gson = new Gson();
             Properties headers = new Properties();
@@ -91,7 +92,9 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             headers.setProperty("Accept", "application/json");
             headers.setProperty("Authorization", "Bearer " + access_token);
             response = HttpUtil.executeUrl("GET", httpsURL, headers, null, "application/json", 2000);
-            return gson.fromJson(response, Details.class);
+            @Nullable
+            Details output = gson.fromJson(response, Details.class);
+            return output;
         } catch (IOException | JsonSyntaxException e) {
             logger.debug("Error attempting to find inverters registered to account", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -114,6 +117,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             return;
         }
         APIdata.static_access_token = newToken;
+        updateStatus(ThingStatus.ONLINE);
         logger.debug("Account configuration updated : {}", this.sunAccount.getData().toString());
     }
 
@@ -138,7 +142,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         logger.debug("Account configuration refreshed : {}", this.sunAccount.getData().toString());
     }
 
-    private Client authenticate(String username, String password) {
+    private @Nullable Client authenticate(String username, String password) {
         Gson gson = new Gson();
         String response = "";
         String httpsURL = makeLoginURL("oauth/token");
@@ -149,7 +153,9 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             headers.setProperty("Requester", "www.openhab.org"); // optional
             InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
             response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
-            return gson.fromJson(response, Client.class);
+            @Nullable
+            Client output = gson.fromJson(response, Client.class);
+            return output;
         } catch (IOException | JsonSyntaxException e) {
             logger.debug("Error attempting to autheticate account", e.getCause());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -158,7 +164,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private Client refresh(String username, String refreshToken) {
+    private @Nullable Client refresh(String username, String refreshToken) {
         Gson gson = new Gson();
         String response = "";
         String httpsURL = makeLoginURL("oauth/token");
@@ -169,7 +175,9 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             headers.setProperty("Requester", "www.openhab.org"); // optional
             InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
             response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
-            return gson.fromJson(response, Client.class);
+            @Nullable
+            Client output = gson.fromJson(response, Client.class);
+            return output;
         } catch (IOException | JsonSyntaxException e) {
             logger.debug("Error attempting to autheticate account", e.getCause());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

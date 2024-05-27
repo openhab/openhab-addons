@@ -21,6 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Lee Charlton - Initial contribution
  */
+
 @NonNullByDefault
 public class SunSynkBindingConstants {
 

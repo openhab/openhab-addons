@@ -457,8 +457,7 @@ public class Settings {
         } else if ((minsLS > 5)) {
             minsLS = 5;
         }
-        workerString = workerString.substring(0, 4) + minsLS;
-        return workerString;
+        return workerString.substring(0, 4) + minsLS;
     }
 
     public void setIntervalGenTimerOn(Boolean state, int interval) {

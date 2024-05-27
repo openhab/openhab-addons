@@ -78,17 +78,14 @@ public class Grid {
     }
 
     public double getGridPower() {
-        // sumVIP();
         return this.power;
     }
 
     public double getGridVoltage() {
-        // sumVIP();
         return this.voltage;
     }
 
     public double getGridCurrent() {
-        // sumVIP();
         return this.current;
     }
 

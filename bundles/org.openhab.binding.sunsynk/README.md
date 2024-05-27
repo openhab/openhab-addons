@@ -16,6 +16,7 @@ This binding uses your Sun Synk Connect credentials to access Sun Synk's web ser
 The bridge manages the account authentication and the discovery of SunSynk Inverter Things. Only the Inverter Thing is currently supported.
 
 Acknowledgements:
+
 - [Power Forum](https://powerforum.co.za/topic/12604-sunsynk-wifi-dongle-hacking/page/3/)
 - [AsTheSeaRises](https://github.com/AsTheSeaRises/SunSynk_API)
 - [jamesridgway](https://github.com/jamesridgway/sunsynk-api-client/tree/main)
@@ -52,6 +53,7 @@ The SunSynk Account requires the user e-mail address and password used to login 
 where \<gateway  serial\> and \<inverter serial\> are discovered from Sun Synk Connect.
 
 ## Thing Configuration
+
 ### `sunsynk:account` Bridge Thing Configuration
 
 | Name            | Type    | Description                                     | Default | Required | Advanced |

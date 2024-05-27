@@ -18,7 +18,8 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sunsynk.internal.SunSynkBindingConstants;
 import org.openhab.binding.sunsynk.internal.classes.Inverter;
 import org.openhab.binding.sunsynk.internal.handler.SunSynkAccountHandler;
@@ -37,14 +38,14 @@ import org.slf4j.LoggerFactory;
  * @author Lee Charlton - Initial contribution
  */
 
-// @NonNullByDefault
+@NonNullByDefault
 public class SunSynkAccountDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(SunSynkAccountDiscoveryService.class);
     private static final int TIMEOUT = 15;
     private final SunSynkAccountHandler handler;
     private final ThingUID bridgeUID;
-    private ScheduledFuture<?> scanTask;
+    private @Nullable ScheduledFuture<?> scanTask;
 
     public SunSynkAccountDiscoveryService(SunSynkAccountHandler handler) {
         super(SunSynkHandlerFactory.DISCOVERABLE_THING_TYPE_UIDS, TIMEOUT);
@@ -53,7 +54,7 @@ public class SunSynkAccountDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void findInverters() {
-        List<@NonNull Inverter> inverters = handler.getInvertersFromSunSynk();
+        List<Inverter> inverters = handler.getInvertersFromSunSynk();
         for (Inverter inverter : inverters) {
             addThing(inverter);
         }
