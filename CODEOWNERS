@@ -102,6 +102,7 @@
 /bundles/org.openhab.binding.enocean/ @fruggy83
 /bundles/org.openhab.binding.enphase/ @Hilbrand
 /bundles/org.openhab.binding.enturno/ @klocsson
+/bundles/org.openhab.binding.ephemeris/ @clinique
 /bundles/org.openhab.binding.epsonprojector/ @mlobstein
 /bundles/org.openhab.binding.etherrain/ @dfad1469
 /bundles/org.openhab.binding.evcc/ @florian-h05
@@ -309,6 +310,7 @@
 /bundles/org.openhab.binding.russound/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.sagercaster/ @clinique
 /bundles/org.openhab.binding.saicismart/ @tisoft @dougculnane
+/bundles/org.openhab.binding.salus/ @magx2
 /bundles/org.openhab.binding.samsungtv/ @paulianttila
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.semsportal/ @itb3
