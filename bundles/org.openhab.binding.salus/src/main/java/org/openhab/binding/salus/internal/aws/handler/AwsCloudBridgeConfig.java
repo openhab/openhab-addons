@@ -94,8 +94,18 @@ public class AwsCloudBridgeConfig extends AbstractBridgeConfig {
 
     @Override
     public String toString() {
-        return "CloudBridgeConfig{" + "username='" + username + '\'' + ", password='<SECRET>'" + ", url='" + url + '\''
-                + ", refreshInterval=" + refreshInterval + ", propertiesRefreshInterval=" + propertiesRefreshInterval
-                + '}';
+        return "AwsCloudBridgeConfig{" + //
+                "userPoolId='" + userPoolId + '\'' + //
+                ", clientId='" + clientId + '\'' + //
+                ", region='" + region + '\'' + //
+                ", companyCode='" + companyCode + '\'' + //
+                ", awsService='" + awsService + '\'' + //
+                ", username='" + username + '\'' + //
+                ", password='<SECRET>'" + //
+                ", url='" + url + '\'' + //
+                ", refreshInterval=" + refreshInterval + //
+                ", propertiesRefreshInterval=" + propertiesRefreshInterval + //
+                ", maxHttpRetries=" + maxHttpRetries + //
+                '}';
     }
 }
