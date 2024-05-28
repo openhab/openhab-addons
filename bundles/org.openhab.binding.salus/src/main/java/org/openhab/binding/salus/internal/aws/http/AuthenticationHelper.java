@@ -78,7 +78,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.RespondToAu
  *   v    Password verifier
  * </pre>
  * 
- * @author Martin Grzeslowski
+ * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
 class AuthenticationHelper {
