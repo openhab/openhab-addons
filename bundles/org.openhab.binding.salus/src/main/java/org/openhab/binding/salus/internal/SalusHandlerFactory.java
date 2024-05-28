@@ -115,7 +115,7 @@ public class SalusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private synchronized void registerThingDiscovery(AbstractBridgeHandler<?> handler) {
-        var discoveryService = new SalusDiscovery(handler, handler, handler.getThing().getUID());
+        var discoveryService = new SalusDiscovery(handler, handler.getThing().getUID());
         var serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<>());
         discoveryServices.put(handler, serviceRegistration);

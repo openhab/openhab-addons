@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.salus.internal.handler.AbstractBridgeHandler;
 import org.openhab.binding.salus.internal.handler.CloudApi;
 import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
@@ -41,8 +40,7 @@ public class SalusDiscovery extends AbstractDiscoveryService {
     private final CloudApi cloudApi;
     private final ThingUID bridgeUid;
 
-    public SalusDiscovery(AbstractBridgeHandler bridgeHandler, CloudApi cloudApi, ThingUID bridgeUid)
-            throws IllegalArgumentException {
+    public SalusDiscovery(CloudApi cloudApi, ThingUID bridgeUid) throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
         this.cloudApi = cloudApi;
         this.bridgeUid = bridgeUid;

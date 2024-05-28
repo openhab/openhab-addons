@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
-@SuppressWarnings("SerializableHasSerializationMethods")
 @NonNullByDefault
 public class SalusApiException extends Exception {
     @Serial

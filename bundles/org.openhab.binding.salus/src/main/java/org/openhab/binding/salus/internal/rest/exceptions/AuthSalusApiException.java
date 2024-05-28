@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
-@SuppressWarnings("SerializableHasSerializationMethods")
 @NonNullByDefault
 public class AuthSalusApiException extends Exception {
     @Serial

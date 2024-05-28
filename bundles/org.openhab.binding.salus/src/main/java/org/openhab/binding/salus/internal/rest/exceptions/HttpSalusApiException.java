@@ -21,7 +21,6 @@ import org.eclipse.jetty.client.HttpResponseException;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("SerializableHasSerializationMethods")
 public class HttpSalusApiException extends SalusApiException {
     @Serial
     private static final long serialVersionUID = 1L;

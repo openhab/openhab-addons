@@ -86,7 +86,7 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
                 // this is to account that there is a delay between server setting `expires_in`
                 // and client (OpenHAB) receiving it
                 .minusSeconds(TOKEN_EXPIRE_TIME_ADJUSTMENT_SECONDS);
-        authTokenExpireTime = ZonedDateTime.of(local, UTC);
+        var localExpireTime = authTokenExpireTime = ZonedDateTime.of(local, UTC);
 
         var id = authenticationHelper.getId(result);
 
@@ -95,7 +95,7 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
                 cogito.credentials().sessionToken());
 
         var cogitoExpirationTime = cogito.credentials().expiration();
-        if (cogitoExpirationTime.isBefore(authTokenExpireTime.toInstant())) {
+        if (cogitoExpirationTime.isBefore(localExpireTime.toInstant())) {
             authTokenExpireTime = ZonedDateTime.ofInstant(cogitoExpirationTime, UTC);
         }
     }

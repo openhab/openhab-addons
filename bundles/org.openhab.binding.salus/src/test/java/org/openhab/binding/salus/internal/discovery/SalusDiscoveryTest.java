@@ -50,7 +50,7 @@ public class SalusDiscoveryTest {
         var cloudApi = mock(CloudApi.class);
         var bridgeHandler = mock(CloudBridgeHandler.class);
         var bridgeUid = new ThingUID("salus", "salus-device", "boo");
-        var discoveryService = new SalusDiscovery(bridgeHandler, cloudApi, bridgeUid);
+        var discoveryService = new SalusDiscovery(cloudApi, bridgeUid);
         var discoveryListener = mock(DiscoveryListener.class);
         discoveryService.addDiscoveryListener(discoveryListener);
         var device1 = randomDevice(true);
@@ -83,7 +83,7 @@ public class SalusDiscoveryTest {
         var cloudApi = mock(CloudApi.class);
         var bridgeHandler = mock(CloudBridgeHandler.class);
         var bridgeUid = mock(ThingUID.class);
-        var discoveryService = new SalusDiscovery(bridgeHandler, cloudApi, bridgeUid);
+        var discoveryService = new SalusDiscovery(cloudApi, bridgeUid);
 
         given(cloudApi.findDevices()).willThrow(new SalusApiException("API error"));
 
