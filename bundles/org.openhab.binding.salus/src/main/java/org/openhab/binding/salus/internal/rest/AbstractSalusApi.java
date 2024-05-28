@@ -78,7 +78,7 @@ public abstract class AbstractSalusApi<AuthT> implements SalusApi {
         return str;
     }
 
-    protected synchronized final void refreshAccessToken() throws AuthSalusApiException {
+    protected final synchronized void refreshAccessToken() throws AuthSalusApiException {
         if (this.authentication == null || isExpiredToken()) {
             cleanAuth();
             try {

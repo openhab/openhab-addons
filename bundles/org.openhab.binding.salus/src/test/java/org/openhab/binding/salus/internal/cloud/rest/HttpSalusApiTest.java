@@ -220,8 +220,6 @@ public class HttpSalusApiTest {
         var mapper = mock(GsonMapper.class);
         var clock = Clock.systemDefaultZone();
 
-        var authToken = new AuthToken("access_token", "refresh_token", 3600L, "role");
-
         var salusApi = new HttpSalusApi(username, password, baseUrl, restClient, mapper, clock);
 
         // When
