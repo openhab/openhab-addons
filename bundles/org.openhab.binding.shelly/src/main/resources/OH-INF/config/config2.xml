@@ -29,7 +29,7 @@
 		<parameter name="enableRangeExtender" type="boolean" required="false">
 			<label>@text/thing-type.config.shelly.enableRangeExtender.label</label>
 			<description>@text/thing-type.config.shelly.enableRangeExtender.description</description>
-			<default>true</default>
+			<default>false</default>
 		</parameter>
 	</config-description>
 
