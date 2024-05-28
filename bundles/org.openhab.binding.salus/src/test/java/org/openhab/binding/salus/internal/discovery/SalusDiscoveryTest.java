@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
+import javax.validation.constraints.NotNull;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.salus.internal.cloud.handler.CloudBridgeHandler;
@@ -93,7 +96,7 @@ public class SalusDiscoveryTest {
 
     private Device randomDevice(boolean connected) {
         var random = new Random();
-        var map = new HashMap<String, Object>();
+        var map = new HashMap<@NotNull String, @Nullable Object>();
         if (connected) {
             map.put("connection_status", "online");
         }
