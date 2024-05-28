@@ -98,9 +98,18 @@ class AuthenticationHelper {
             + "F12FFA06D98A0864D87602733EC86A64521F2B18177B200C"//
             + "BBE117577A615D6C770988C0BAD946E208E24FA074E5AB31"//
             + "43DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF";
-    private static final BigInteger N = new BigInteger(HEX_N, 16);
-    private static final BigInteger g = BigInteger.valueOf(2);
-    private static final BigInteger k;
+    /**
+     * N    A large safe prime (N = 2q+1, where q is prime) All arithmetic is done modulo N.
+     */
+    private static final BigInteger SRP_N = new BigInteger(HEX_N, 16);
+    /**
+     * g    A generator modulo N
+     */
+    private static final BigInteger SRP_G = BigInteger.valueOf(2);
+    /**
+     * k    Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
+     */
+    private static final BigInteger SRP_K;
     private static final int EPHEMERAL_KEY_LENGTH = 1024;
     private static final int DERIVED_KEY_SIZE = 16;
     private static final String DERIVED_KEY_INFO = "Caldera Derived Key";
@@ -120,25 +129,31 @@ class AuthenticationHelper {
 
             MessageDigest messageDigest = THREAD_MESSAGE_DIGEST.get();
             messageDigest.reset();
-            messageDigest.update(N.toByteArray());
-            byte[] digest = messageDigest.digest(g.toByteArray());
-            k = new BigInteger(1, digest);
+            messageDigest.update(SRP_N.toByteArray());
+            byte[] digest = messageDigest.digest(SRP_G.toByteArray());
+            SRP_K = new BigInteger(1, digest);
         } catch (NoSuchAlgorithmException e) {
             throw new SecurityException(e.getMessage(), e);
         }
     }
 
-    private BigInteger a;
-    private BigInteger A;
+    /**
+     * a  Secret ephemeral values
+     */
+    private BigInteger SRP_LOWER_CASE_A;
+    /**
+     * A  Public ephemeral values
+     */
+    private BigInteger SRP_UPPER_CASE_A;
     private final String userPoolID;
     private final String clientId;
     private final String region;
 
     AuthenticationHelper(String userPoolID, String clientid, String region) {
         do {
-            a = new BigInteger(EPHEMERAL_KEY_LENGTH, SECURE_RANDOM).mod(N);
-            A = g.modPow(a, N);
-        } while (A.mod(N).equals(BigInteger.ZERO));
+            SRP_LOWER_CASE_A = new BigInteger(EPHEMERAL_KEY_LENGTH, SECURE_RANDOM).mod(SRP_N);
+            SRP_UPPER_CASE_A = SRP_G.modPow(SRP_LOWER_CASE_A, SRP_N);
+        } while (SRP_UPPER_CASE_A.mod(SRP_N).equals(BigInteger.ZERO));
 
         this.userPoolID = userPoolID;
         this.clientId = clientid;
@@ -151,9 +166,10 @@ class AuthenticationHelper {
         // u = H(A, B)
         var messageDigest = THREAD_MESSAGE_DIGEST.get();
         messageDigest.reset();
-        messageDigest.update(A.toByteArray());
-        var u = new BigInteger(1, messageDigest.digest(B.toByteArray()));
-        if (u.equals(BigInteger.ZERO)) {
+        messageDigest.update(SRP_UPPER_CASE_A.toByteArray());
+        // u    Random scrambling parameter
+        var srpU = new BigInteger(1, messageDigest.digest(B.toByteArray()));
+        if (srpU.equals(BigInteger.ZERO)) {
             throw new SecurityException("Hash of A and B cannot be zero");
         }
 
@@ -166,11 +182,13 @@ class AuthenticationHelper {
 
         messageDigest.reset();
         messageDigest.update(salt.toByteArray());
-        BigInteger x = new BigInteger(1, messageDigest.digest(userIdHash));
-        BigInteger S = (B.subtract(k.multiply(g.modPow(x, N))).modPow(a.add(u.multiply(x)), N)).mod(N);
+        // x    Private key (derived from p and s)
+        BigInteger srpX = new BigInteger(1, messageDigest.digest(userIdHash));
+        // s    User's salt
+        BigInteger srpS = (B.subtract(SRP_K.multiply(SRP_G.modPow(srpX, SRP_N))).modPow(SRP_LOWER_CASE_A.add(srpU.multiply(srpX)), SRP_N)).mod(SRP_N);
 
         var hkdf = new Hkdf(ALGORITHM);
-        hkdf.init(S.toByteArray(), u.toByteArray());
+        hkdf.init(srpS.toByteArray(), srpU.toByteArray());
         return hkdf.deriveKey(DERIVED_KEY_INFO, DERIVED_KEY_SIZE);
     }
 
@@ -210,7 +228,7 @@ class AuthenticationHelper {
      * @return the Authentication request.
      */
     private InitiateAuthRequest initiateUserSrpAuthRequest(String username) {
-        var authParams = Map.of("USERNAME", username, "SRP_A", this.A.toString(16));
+        var authParams = Map.of("USERNAME", username, "SRP_A", this.SRP_UPPER_CASE_A.toString(16));
 
         return InitiateAuthRequest.builder() //
                 .authFlow(AuthFlowType.USER_SRP_AUTH) //
@@ -232,7 +250,7 @@ class AuthenticationHelper {
         var usernameInternal = requireNonNull(challenge.challengeParameters().get("USERNAME"));
 
         var srpB = new BigInteger(challenge.challengeParameters().get("SRP_B"), 16);
-        if (srpB.mod(N).equals(BigInteger.ZERO)) {
+        if (srpB.mod(SRP_N).equals(BigInteger.ZERO)) {
             throw new SecurityException("SRP error, B cannot be zero");
         }
 
