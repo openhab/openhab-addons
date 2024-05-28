@@ -32,6 +32,7 @@
     <module>org.openhab.io.neeo</module>
     <module>org.openhab.io.openhabcloud</module>
     <!-- transformations -->
+    <module>org.openhab.transform.basicprofiles</module>
     <module>org.openhab.transform.bin2json</module>
     <module>org.openhab.transform.exec</module>
     <module>org.openhab.transform.jinja</module>
