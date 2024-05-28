@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.SalusApi;
 import org.openhab.binding.salus.internal.aws.http.AwsSalusApi;
 import org.openhab.binding.salus.internal.handler.AbstractBridgeHandler;
-import org.openhab.binding.salus.internal.handler.CloudApi;
 import org.openhab.binding.salus.internal.rest.GsonMapper;
 import org.openhab.binding.salus.internal.rest.RestClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
