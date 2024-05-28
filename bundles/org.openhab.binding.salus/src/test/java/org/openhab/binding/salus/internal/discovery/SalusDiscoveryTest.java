@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.salus.internal.cloud.handler.CloudBridgeHandler;
@@ -36,6 +37,7 @@ import org.openhab.core.thing.ThingUID;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
+@NonNullByDefault
 public class SalusDiscoveryTest {
 
     @Test

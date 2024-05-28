@@ -80,9 +80,9 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
     protected void login() throws SalusApiException {
         logger.debug("Login with username '{}'", username);
         var result = authenticationHelper.performSRPAuthentication(username, password);
-        authentication = new Authentication(result.accessToken(), result.expiresIn(), result.tokenType(),
+        var localAuth = authentication = new Authentication(result.accessToken(), result.expiresIn(), result.tokenType(),
                 result.refreshToken(), result.idToken());
-        var local = LocalDateTime.now(clock).plusSeconds(authentication.expiresIn())
+        var local = LocalDateTime.now(clock).plusSeconds(localAuth.expiresIn())
                 // this is to account that there is a delay between server setting `expires_in`
                 // and client (OpenHAB) receiving it
                 .minusSeconds(TOKEN_EXPIRE_TIME_ADJUSTMENT_SECONDS);

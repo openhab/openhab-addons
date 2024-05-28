@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class AbstractSalusApi<AuthT> implements SalusApi {
-    private static final int MAX_RETRIES = 3;
     protected static final long TOKEN_EXPIRE_TIME_ADJUSTMENT_SECONDS = 3;
     protected final Logger logger;
     protected final String username;
@@ -77,12 +76,6 @@ public abstract class AbstractSalusApi<AuthT> implements SalusApi {
             return str.substring(0, str.length() - 1);
         }
         return str;
-    }
-
-    private void forceRefreshAccessToken() throws AuthSalusApiException {
-        logger.debug("Force refresh access token");
-        cleanAuth();
-        refreshAccessToken();
     }
 
     protected synchronized final void refreshAccessToken() throws AuthSalusApiException {

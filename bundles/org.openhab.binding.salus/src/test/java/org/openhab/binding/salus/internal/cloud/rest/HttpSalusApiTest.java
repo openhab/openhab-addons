@@ -221,8 +221,6 @@ public class HttpSalusApiTest {
         var clock = Clock.systemDefaultZone();
 
         var authToken = new AuthToken("access_token", "refresh_token", 3600L, "role");
-        when(restClient.post(anyString(), any(), any()))
-                .thenThrow(new HttpSalusApiException(401, "unauthorized_error_json"));
 
         var salusApi = new HttpSalusApi(username, password, baseUrl, restClient, mapper, clock);
 
