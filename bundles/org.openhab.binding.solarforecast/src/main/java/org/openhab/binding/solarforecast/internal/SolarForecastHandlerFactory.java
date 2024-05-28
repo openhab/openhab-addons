@@ -14,6 +14,7 @@ package org.openhab.binding.solarforecast.internal;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
+import java.time.Clock;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,6 +24,7 @@ import org.openhab.binding.solarforecast.internal.forecastsolar.handler.Forecast
 import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarPlaneHandler;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastBridgeHandler;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneHandler;
+import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -55,6 +57,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
             final @Reference TimeZoneProvider tzp) {
         timeZoneProvider = tzp;
         httpClient = hcf.getCommonHttpClient();
+        Utils.setClock(Clock.system(tzp.getTimeZone()));
         PointType pt = lp.getLocation();
         if (pt != null) {
             location = Optional.of(pt);

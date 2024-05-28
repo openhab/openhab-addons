@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solarforecast.internal.utils;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
@@ -34,6 +35,16 @@ import org.openhab.core.types.TimeSeries.Entry;
  */
 @NonNullByDefault
 public class Utils {
+    private static Clock clock = Clock.systemDefaultZone();
+
+    public static void setClock(Clock c) {
+        clock = c;
+    }
+
+    public static Clock getClock() {
+        return clock;
+    }
+
     public static QuantityType<Energy> getEnergyState(double d) {
         if (d < 0) {
             return QuantityType.valueOf(-1, Units.KILOWATT_HOUR);
