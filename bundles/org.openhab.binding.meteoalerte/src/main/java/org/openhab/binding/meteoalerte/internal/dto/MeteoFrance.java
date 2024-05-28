@@ -34,11 +34,8 @@ public class MeteoFrance {
             @Nullable Product product, //
             @Nullable Meta meta, //
             int code, // error code, 0 if all went well
-            @Nullable String message) { // error message when code != 0
-
-        public Optional<Product> getProduct() {
-            return Optional.ofNullable(product);
-        }
+            @Nullable String message, // error message when code != 0
+            @Nullable String detail) {
     }
 
     public record Meta(//

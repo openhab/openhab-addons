@@ -33,6 +33,7 @@ import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.DomainId;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.Meta;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.Period;
+import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.Product;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.TextBlocItem;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.VigilanceEnCours;
 import org.openhab.binding.meteoalerte.internal.dto.Term;
@@ -117,11 +118,15 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
             VigilanceEnCours vigilance = deserializer.deserialize(MeteoFrance.VigilanceEnCours.class, answer);
             if (vigilance.code() != 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, vigilance.message());
+            } else if (vigilance.detail() != null) {
+                // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, vigilance.detail());
             } else {
                 updateStatus(ThingStatus.ONLINE);
                 return vigilance;
             }
-        } catch (MeteoAlerteException e) {
+        } catch (
+
+        MeteoAlerteException e) {
             logger.warn("Exception deserializing API answer: {}", e.getMessage());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -131,7 +136,13 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
 
     public @Nullable TextBlocItem requestTextData(Domain domain) {
         VigilanceEnCours local = vigilanceText.getValue();
-        return local != null ? local.getProduct().map(p -> p.getBlocItem(domain)).get().orElse(null) : null;
+        if (local != null) {
+            Product product = local.product();
+            if (product != null) {
+                return product.getBlocItem(domain).get();
+            }
+        }
+        return null;
     }
 
     public @Nullable DomainId requestMapData(Domain domain, Term term) {
@@ -141,7 +152,13 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
 
     public @Nullable Period requestPeriod(Term term) {
         VigilanceEnCours local = vigilanceMap.getValue();
-        return local != null ? local.getProduct().map(p -> p.getPeriod(term)).get().orElse(null) : null;
+        if (local != null) {
+            Product product = local.product();
+            if (product != null) {
+                return product.getPeriod(term).get();
+            }
+        }
+        return null;
     }
 
     public Optional<Meta> getMeta() {

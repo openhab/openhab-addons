@@ -132,41 +132,35 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             if (period != null) {
                 updateDate(OBSERVATION_TIME, period.beginValidityTime());
                 updateDate(END_TIME, period.endValidityTime());
+            }
+            DomainId domainId = handler.requestMapData(domain, Term.TODAY);
+            ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(zoneId);
+            if (domainId != null) {
+                Map<Hazard, Risk> channels = new HashMap<>(Hazard.values().length);
+                Hazard.AS_SET.stream().filter(Hazard::isChannel).forEach(hazard -> channels.put(hazard, Risk.VERT));
 
-                DomainId domainId = handler.requestMapData(domain, Term.TODAY);
-                ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(zoneId);
-                if (domainId != null) {
-                    Map<Hazard, Risk> channels = new HashMap<>(Hazard.values().length);
-                    Hazard.AS_SET.stream().filter(Hazard::isChannel).forEach(hazard -> channels.put(hazard, Risk.VERT));
-
-                    domainId.phenomenonItems().forEach(phenomenon -> {
-                        Risk risk = phenomenon.phenomenonMaxColorId();
-                        for (TimelapsItem item : phenomenon.timelapsItems()) {
-                            if (item.contains(now)) {
-                                risk = item.colorId();
-                            }
+                domainId.phenomenonItems().forEach(phenomenon -> {
+                    Risk risk = phenomenon.phenomenonMaxColorId();
+                    for (TimelapsItem item : phenomenon.timelapsItems()) {
+                        if (item.contains(now)) {
+                            risk = item.colorId();
                         }
-                        channels.put(phenomenon.phenomenonId(), risk);
-                    });
-
-                    channels.forEach((k, v) -> updateAlert(k.channelName, v));
-
-                    TextBlocItem bloc = handler.requestTextData(domain);
-                    if (bloc != null) {
-                        String comment = bloc.blocItems().stream().filter(bi -> bi.type().equals(BlocType.SITUATION))
-                                .flatMap(bi -> bi.textItems().stream()).flatMap(ti -> ti.termItems().stream())
-                                .map(term -> term.getText(now)).collect(Collectors.joining("."));
-                        updateState(COMMENT, comment.isEmpty() ? UnDefType.NULL : StringType.valueOf(comment));
-                        updateStatus(ThingStatus.ONLINE);
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                "No data available for the department");
                     }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No data available for the department");
+                    channels.put(phenomenon.phenomenonId(), risk);
+                });
+
+                channels.forEach((k, v) -> updateAlert(k.channelName, v));
+
+                TextBlocItem bloc = handler.requestTextData(domain);
+                if (bloc != null) {
+                    String comment = bloc.blocItems().stream().filter(bi -> bi.type().equals(BlocType.SITUATION))
+                            .flatMap(bi -> bi.textItems().stream()).flatMap(ti -> ti.termItems().stream())
+                            .map(term -> term.getText(now)).collect(Collectors.joining("."));
+                    updateState(COMMENT, comment.isEmpty() ? UnDefType.NULL : StringType.valueOf(comment));
                 }
+                updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No data available ");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No data available for the department");
             }
         }, () -> logger.warn("No viable bridge"));
     }
