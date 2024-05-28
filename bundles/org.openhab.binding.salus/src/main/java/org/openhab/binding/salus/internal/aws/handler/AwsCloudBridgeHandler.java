@@ -38,8 +38,8 @@ public final class AwsCloudBridgeHandler extends AbstractBridgeHandler<AwsCloudB
     @Override
     protected SalusApi newSalusApi(AwsCloudBridgeConfig config, RestClient httpClient, GsonMapper gsonMapper) {
         return new AwsSalusApi(config.getUsername(), config.getPassword().getBytes(UTF_8), config.getUrl(), httpClient,
-                gsonMapper, config.getUserPoolId(), config.getClientId(), config.getRegion(), config.getCompanyCode(),
-                config.getAwsService());
+                gsonMapper, config.getUserPoolId(), config.getIdentityPoolId(), config.getClientId(),
+                config.getRegion(), config.getCompanyCode(), config.getAwsService());
     }
 
     @Override

@@ -71,9 +71,11 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
     }
 
     public AwsSalusApi(String username, byte[] password, String baseUrl, RestClient restClient, GsonMapper gsonMapper,
-            String userPoolId, String clientId, Region region, String companyCode, String awsService) {
+            String userPoolId, String identityPoolId, String clientId, Region region, String companyCode,
+            String awsService) {
         this(username, password, baseUrl, restClient, gsonMapper, Clock.systemDefaultZone(),
-                new AuthenticationHelper(userPoolId, clientId, region.id()), companyCode, awsService, region);
+                new AuthenticationHelper(userPoolId, clientId, region.id(), identityPoolId), companyCode, awsService,
+                region);
     }
 
     @Override

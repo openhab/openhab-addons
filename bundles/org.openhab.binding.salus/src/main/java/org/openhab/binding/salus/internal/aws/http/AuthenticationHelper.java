@@ -99,15 +99,15 @@ class AuthenticationHelper {
             + "BBE117577A615D6C770988C0BAD946E208E24FA074E5AB31"//
             + "43DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF";
     /**
-     * N    A large safe prime (N = 2q+1, where q is prime) All arithmetic is done modulo N.
+     * N A large safe prime (N = 2q+1, where q is prime) All arithmetic is done modulo N.
      */
     private static final BigInteger SRP_N = new BigInteger(HEX_N, 16);
     /**
-     * g    A generator modulo N
+     * g A generator modulo N
      */
     private static final BigInteger SRP_G = BigInteger.valueOf(2);
     /**
-     * k    Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
+     * k Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
      */
     private static final BigInteger SRP_K;
     private static final int EPHEMERAL_KEY_LENGTH = 1024;
@@ -138,18 +138,19 @@ class AuthenticationHelper {
     }
 
     /**
-     * a  Secret ephemeral values
+     * a Secret ephemeral values
      */
     private BigInteger SRP_LOWER_CASE_A;
     /**
-     * A  Public ephemeral values
+     * A Public ephemeral values
      */
     private BigInteger SRP_UPPER_CASE_A;
     private final String userPoolID;
     private final String clientId;
     private final String region;
+    private final String identityPoolId;
 
-    AuthenticationHelper(String userPoolID, String clientid, String region) {
+    AuthenticationHelper(String userPoolID, String clientid, String region, String identityPoolId) {
         do {
             SRP_LOWER_CASE_A = new BigInteger(EPHEMERAL_KEY_LENGTH, SECURE_RANDOM).mod(SRP_N);
             SRP_UPPER_CASE_A = SRP_G.modPow(SRP_LOWER_CASE_A, SRP_N);
@@ -158,6 +159,7 @@ class AuthenticationHelper {
         this.userPoolID = userPoolID;
         this.clientId = clientid;
         this.region = region;
+        this.identityPoolId = identityPoolId;
     }
 
     private byte[] getPasswordAuthenticationKey(String userId, byte[] userPassword, BigInteger B, BigInteger salt)
@@ -167,7 +169,7 @@ class AuthenticationHelper {
         var messageDigest = THREAD_MESSAGE_DIGEST.get();
         messageDigest.reset();
         messageDigest.update(SRP_UPPER_CASE_A.toByteArray());
-        // u    Random scrambling parameter
+        // u Random scrambling parameter
         var srpU = new BigInteger(1, messageDigest.digest(B.toByteArray()));
         if (srpU.equals(BigInteger.ZERO)) {
             throw new SecurityException("Hash of A and B cannot be zero");
@@ -182,10 +184,11 @@ class AuthenticationHelper {
 
         messageDigest.reset();
         messageDigest.update(salt.toByteArray());
-        // x    Private key (derived from p and s)
+        // x Private key (derived from p and s)
         BigInteger srpX = new BigInteger(1, messageDigest.digest(userIdHash));
-        // s    User's salt
-        BigInteger srpS = (B.subtract(SRP_K.multiply(SRP_G.modPow(srpX, SRP_N))).modPow(SRP_LOWER_CASE_A.add(srpU.multiply(srpX)), SRP_N)).mod(SRP_N);
+        // s User's salt
+        BigInteger srpS = (B.subtract(SRP_K.multiply(SRP_G.modPow(srpX, SRP_N)))
+                .modPow(SRP_LOWER_CASE_A.add(srpU.multiply(srpX)), SRP_N)).mod(SRP_N);
 
         var hkdf = new Hkdf(ALGORITHM);
         hkdf.init(srpS.toByteArray(), srpU.toByteArray());
@@ -290,9 +293,9 @@ class AuthenticationHelper {
     public GetIdResponse getId(AuthenticationResultType accessToken) {
         try (var client = CognitoIdentityClient.builder().region(Region.of(region)).build()) {
             GetIdRequest getIdRequest = GetIdRequest.builder()
-                    .logins(Map.of("cognito-idp.eu-central-1.amazonaws.com/eu-central-1_XGRz3CgoY",
+                    .logins(Map.of("cognito-idp.%s.amazonaws.com/%s_%s".formatted(region, region, userPoolID),
                             accessToken.idToken()))
-                    .identityPoolId("eu-central-1:60912c00-287d-413b-a2c9-ece3ccef9230").build();
+                    .identityPoolId("%s:%s".formatted(region, identityPoolId)).build();
             return client.getId(getIdRequest);
         }
     }
@@ -300,9 +303,9 @@ class AuthenticationHelper {
     public GetCredentialsForIdentityResponse getCredentialsForIdentity(AuthenticationResultType accessToken,
             String identityId) {
         try (var client = CognitoIdentityClient.builder().region(Region.of(region)).build()) {
-            return client.getCredentialsForIdentity(GetCredentialsForIdentityRequest
-                    .builder().identityId(identityId).logins(Map
-                            .of("cognito-idp.eu-central-1.amazonaws.com/eu-central-1_XGRz3CgoY", accessToken.idToken()))
+            return client.getCredentialsForIdentity(GetCredentialsForIdentityRequest.builder().identityId(identityId)
+                    .logins(Map.of("cognito-idp.%s.amazonaws.com/%s_%s".formatted(region, region, userPoolID),
+                            accessToken.idToken()))
                     .build());
         }
     }

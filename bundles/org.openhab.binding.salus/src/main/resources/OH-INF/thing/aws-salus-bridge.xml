@@ -64,6 +64,11 @@
 				<default>XGRz3CgoY</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="identityPoolId" type="text" groupName="aws">
+				<label>Identity Pool ID</label>
+				<default>60912c00-287d-413b-a2c9-ece3ccef9230</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="clientId" type="text" groupName="aws">
 				<label>Client ID</label>
 				<description>

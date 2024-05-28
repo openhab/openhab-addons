@@ -23,6 +23,7 @@ import software.amazon.awssdk.regions.Region;
 @NonNullByDefault
 public class AwsCloudBridgeConfig extends AbstractBridgeConfig {
     private String userPoolId = "XGRz3CgoY";
+    private String identityPoolId = "60912c00-287d-413b-a2c9-ece3ccef9230";
     private String clientId = "4pk5efh3v84g5dav43imsv4fbj";
     private String region = Region.EU_CENTRAL_1.id();
     private String companyCode = "salus-eu";
@@ -33,10 +34,11 @@ public class AwsCloudBridgeConfig extends AbstractBridgeConfig {
     }
 
     public AwsCloudBridgeConfig(String username, String password, String url, long refreshInterval,
-            long propertiesRefreshInterval, int maxHttpRetries, String userPoolId, String clientId, String region,
-            String companyCode, String awsService) {
+            long propertiesRefreshInterval, int maxHttpRetries, String userPoolId, String identityPoolId,
+            String clientId, String region, String companyCode, String awsService) {
         super(username, password, url, refreshInterval, propertiesRefreshInterval, maxHttpRetries);
         this.userPoolId = userPoolId;
+        this.identityPoolId = identityPoolId;
         this.clientId = clientId;
         this.region = region;
         this.companyCode = companyCode;
@@ -52,6 +54,14 @@ public class AwsCloudBridgeConfig extends AbstractBridgeConfig {
 
     public void setUserPoolId(String userPoolId) {
         this.userPoolId = userPoolId;
+    }
+
+    public String getIdentityPoolId() {
+        return identityPoolId;
+    }
+
+    public void setIdentityPoolId(String identityPoolId) {
+        this.identityPoolId = identityPoolId;
     }
 
     public String getClientId() {
@@ -88,14 +98,15 @@ public class AwsCloudBridgeConfig extends AbstractBridgeConfig {
 
     @Override
     public boolean isValid() {
-        return super.isValid() && !userPoolId.isBlank() && !clientId.isBlank() && !region.isBlank()
-                && !companyCode.isBlank() && !awsService.isBlank();
+        return super.isValid() && !userPoolId.isBlank() && !identityPoolId.isBlank() && !clientId.isBlank()
+                && !region.isBlank() && !companyCode.isBlank() && !awsService.isBlank();
     }
 
     @Override
     public String toString() {
         return "AwsCloudBridgeConfig{" + //
                 "userPoolId='" + userPoolId + '\'' + //
+                "identityPoolId='" + identityPoolId + '\'' + //
                 ", clientId='" + clientId + '\'' + //
                 ", region='" + region + '\'' + //
                 ", companyCode='" + companyCode + '\'' + //
