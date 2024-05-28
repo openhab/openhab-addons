@@ -335,6 +335,7 @@
 /bundles/org.openhab.binding.sncf/ @clinique
 /bundles/org.openhab.binding.snmp/ @J-N-K
 /bundles/org.openhab.binding.solaredge/ @alexf2015
+/bundles/org.openhab.binding.solarforecast/ @weymann
 /bundles/org.openhab.binding.solarlog/ @johannrichard
 /bundles/org.openhab.binding.solarmax/ @jamietownsend
 /bundles/org.openhab.binding.solarwatt/ @sven-carstens
