@@ -21,9 +21,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -77,20 +75,42 @@ public class EmotivaUdpBroadcastService {
         try {
             final DatagramPacket receivePacket = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
             // No need to call close first, because the caller of this method already has done it.
-            startDiscoverSocket();
-            // Runs until the socket call gets a timeout and throws an exception. When a timeout is triggered it means
-            // no data was present and nothing new to discover.
-            while (true) {
-                // Set packet length in case a previous call reduced the size.
-                receivePacket.setLength(MAX_PACKET_SIZE);
-                if (discoverSocket == null) {
-                    break;
-                } else {
-                    discoverSocket.receive(receivePacket);
+
+            discoverSocket = new DatagramSocket(
+                    new InetSocketAddress(EmotivaBindingConstants.DEFAULT_TRANSPONDER_PORT));
+            final InetAddress broadcast = InetAddress.getByName(broadcastAddress);
+
+            byte[] emotivaPingDTO = xmlUtils.marshallEmotivaDTO(new EmotivaPingDTO(PROTOCOL_V3.name()))
+                    .getBytes(Charset.defaultCharset());
+            final DatagramPacket discoverPacket = new DatagramPacket(emotivaPingDTO, emotivaPingDTO.length, broadcast,
+                    EmotivaBindingConstants.DEFAULT_PING_PORT);
+
+            DatagramSocket localDatagramSocket = discoverSocket;
+            while (localDatagramSocket != null && discoverSocket != null) {
+                localDatagramSocket.setBroadcast(true);
+                localDatagramSocket.setSoTimeout(DEFAULT_UDP_SENDING_TIMEOUT);
+                localDatagramSocket.send(discoverPacket);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Discovery package sent: {}",
+                            new String(discoverPacket.getData(), StandardCharsets.UTF_8));
                 }
-                logger.debug("Emotiva device discovery returned package with length '{}'", receivePacket.getLength());
-                if (receivePacket.getLength() > 0) {
-                    return thingDiscovered(receivePacket);
+
+                // Runs until the socket call gets a timeout and throws an exception. When a timeout is triggered it
+                // means
+                // no data was present and nothing new to discover.
+                while (true) {
+                    // Set packet length in case a previous call reduced the size.
+                    receivePacket.setLength(MAX_PACKET_SIZE);
+                    if (discoverSocket == null) {
+                        break;
+                    } else {
+                        localDatagramSocket.receive(receivePacket);
+                    }
+                    logger.debug("Emotiva device discovery returned package with length '{}'",
+                            receivePacket.getLength());
+                    if (receivePacket.getLength() > 0) {
+                        return thingDiscovered(receivePacket);
+                    }
                 }
             }
         } catch (SocketTimeoutException e) {
@@ -106,35 +126,16 @@ public class EmotivaUdpBroadcastService {
     }
 
     /**
-     * Opens a {@link DatagramSocket} and sends a packet for discovery of Emotiva devices.
-     *
-     * @throws SocketException Error creating UDP socket
-     * @throws UnknownHostException Could not send message on socket
-     */
-    private void startDiscoverSocket() throws IOException {
-        discoverSocket = new DatagramSocket(new InetSocketAddress(EmotivaBindingConstants.DEFAULT_TRANSPONDER_PORT));
-        discoverSocket.setBroadcast(true);
-        discoverSocket.setSoTimeout(DEFAULT_UDP_SENDING_TIMEOUT);
-        final InetAddress broadcast = InetAddress.getByName(broadcastAddress);
-
-        byte[] emotivaPingDTO = xmlUtils.marshallEmotivaDTO(new EmotivaPingDTO(PROTOCOL_V3.name()))
-                .getBytes(Charset.defaultCharset());
-        final DatagramPacket discoverPacket = new DatagramPacket(emotivaPingDTO, emotivaPingDTO.length, broadcast,
-                EmotivaBindingConstants.DEFAULT_PING_PORT);
-        discoverSocket.send(discoverPacket);
-        if (logger.isTraceEnabled()) {
-            logger.trace("Discovery package sent: {}", new String(discoverPacket.getData(), StandardCharsets.UTF_8));
-        }
-    }
-
-    /**
      * Closes the discovery socket and cleans the value. No need for synchronization as this method is called from a
      * synchronized context.
      */
     public void closeDiscoverSocket() {
-        if (discoverSocket != null) {
-            discoverSocket.close();
+        final DatagramSocket localDiscoverSocket = discoverSocket;
+        if (localDiscoverSocket != null) {
             discoverSocket = null;
+            if (!localDiscoverSocket.isClosed()) {
+                localDiscoverSocket.close(); // this interrupts and terminates the listening thread
+            }
         }
     }
 

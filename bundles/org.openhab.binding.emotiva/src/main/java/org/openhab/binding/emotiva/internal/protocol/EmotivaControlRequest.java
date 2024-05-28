@@ -275,6 +275,9 @@ public class EmotivaControlRequest {
                     return EmotivaControlDTO.create(EmotivaControlCommands.none);
                 }
             }
+            default -> {
+                return EmotivaControlDTO.create(EmotivaControlCommands.none);
+            }
         }
         return EmotivaControlDTO.create(EmotivaControlCommands.none);
     }
@@ -282,11 +285,14 @@ public class EmotivaControlRequest {
     private EmotivaControlDTO matchToCommandMap(Command ohCommand, String mapName) {
         if (ohCommand instanceof StringType value) {
             Map<EmotivaControlCommands, String> commandMap = commandMaps.get(mapName);
-            for (EmotivaControlCommands command : commandMap.keySet()) {
-                if (commandMap.get(command).equals(value.toString())) {
-                    return EmotivaControlDTO.create(EmotivaControlCommands.matchToInput(command.toString()));
-                } else if (command.name().equalsIgnoreCase(value.toString())) {
-                    return EmotivaControlDTO.create(command);
+            if (commandMap != null) {
+                for (EmotivaControlCommands command : commandMap.keySet()) {
+                    String map = commandMap.get(command);
+                    if (map != null && map.equals(value.toString())) {
+                        return EmotivaControlDTO.create(EmotivaControlCommands.matchToInput(command.toString()));
+                    } else if (command.name().equalsIgnoreCase(value.toString())) {
+                        return EmotivaControlDTO.create(command);
+                    }
                 }
             }
         }
@@ -327,10 +333,12 @@ public class EmotivaControlRequest {
             case FREQUENCY_HERTZ -> {
                 return EmotivaControlDTO.create(getDefaultCommand(), value.intValue());
             }
+            default -> {
+                logger.debug("Could not create EmotivaControlDTO for {}:{}:{}, ohCommand is {}", channel, name,
+                        setCommand.getDataType(), ohCommand.getClass().getSimpleName());
+                return EmotivaControlDTO.create(EmotivaControlCommands.none);
+            }
         }
-        logger.debug("Could not create EmotivaControlDTO for {}:{}:{}, ohCommand is {}", channel, name,
-                setCommand.getDataType(), ohCommand.getClass().getSimpleName());
-        return EmotivaControlDTO.create(EmotivaControlCommands.none);
     }
 
     private EmotivaControlDTO createForVolumeSetCommand(Command ohCommand, Number value,

@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.emotiva.internal.dto.ControlDTO;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -48,13 +47,18 @@ public class EmotivaBindingConstants {
     /** Connection retry interval in minutes */
     static final int DEFAULT_RETRY_INTERVAL_MINUTES = 2;
 
-    /** Default Emotiva device keep alive in milliseconds. {@link ControlDTO} */
+    /**
+     * Default Emotiva device keep alive in milliseconds. {@link org.openhab.binding.emotiva.internal.dto.ControlDTO}
+     */
     static final int DEFAULT_KEEP_ALIVE_IN_MILLISECONDS = 7500;
 
     /** State name for storing keepAlive timestamp messages */
     public static final String LAST_SEEN_STATE_NAME = "no-channel#last-seen";
 
-    /** Default Emotiva device considered list in milliseconds. {@link ControlDTO} */
+    /**
+     * Default Emotiva device considered list in milliseconds.
+     * {@link org.openhab.binding.emotiva.internal.dto.ControlDTO}
+     */
     static final int DEFAULT_KEEP_ALIVE_CONSIDERED_LOST_IN_MILLISECONDS = 30000;
 
     /** Default Emotiva control message value **/

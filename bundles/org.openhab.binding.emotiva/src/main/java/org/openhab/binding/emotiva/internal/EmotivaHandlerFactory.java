@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link EmotivaHandlerFactory} is responsible for creating things and thing
+ * The {@link org.openhab.core.thing.binding.ThingHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Espen Fossen - Initial contribution

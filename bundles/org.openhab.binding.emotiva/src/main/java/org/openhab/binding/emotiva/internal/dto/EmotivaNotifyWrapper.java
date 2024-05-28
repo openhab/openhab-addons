@@ -17,12 +17,11 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openhab.binding.emotiva.internal.protocol.EmotivaXmlUtils;
-
 /**
  * Emotiva Notify message type. 2.x version of protocol uses command type as prefix in each line in the body, while 3.x
  * users property as prefix with name="commandType". 2.x is handled as a element with a special handler unmarshall
- * handler in {@link EmotivaXmlUtils}, while 3.x qualifies as a proper xml element and can be properly unmarshalled by
+ * handler in {@link org.openhab.binding.emotiva.internal.protocol.EmotivaXmlUtils}, while 3.x qualifies as a proper xml
+ * element and can be properly unmarshalled by
  * JAXB.
  *
  * @author Espen Fossen - Initial contribution

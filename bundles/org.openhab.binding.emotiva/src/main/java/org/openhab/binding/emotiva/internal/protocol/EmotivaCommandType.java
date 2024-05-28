@@ -13,11 +13,10 @@
 package org.openhab.binding.emotiva.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.emotiva.internal.dto.EmotivaControlDTO;
 
 /**
  * Enum types for commands to send to Emotiva devices. Used by {@link EmotivaControlRequest} to create correct
- * {@link EmotivaControlDTO} command message.
+ * {@link org.openhab.binding.emotiva.internal.dto.EmotivaControlDTO} command message.
  *
  * @author Espen Fossen - Initial contribution
  */

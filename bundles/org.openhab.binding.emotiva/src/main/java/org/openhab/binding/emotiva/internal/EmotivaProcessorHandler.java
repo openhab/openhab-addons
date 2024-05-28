@@ -92,7 +92,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link EmotivaProcessorHandler} is responsible for handling OpenHAB commands, which are
+ * The EmotivaProcessorHandler is responsible for handling OpenHAB commands, which are
  * sent to one of the channels.
  *
  * @author Espen Fossen - Initial contribution
@@ -130,8 +130,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     /**
      * Thread factory for menu progress bar
      */
-    private final NamedThreadFactory listeningThreadFactory = new NamedThreadFactory(EmotivaBindingConstants.BINDING_ID,
-            true);
+    private final NamedThreadFactory listeningThreadFactory = new NamedThreadFactory(BINDING_ID, true);
 
     private final EmotivaXmlUtils xmlUtils = new EmotivaXmlUtils();
 
@@ -150,7 +149,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         commandMaps.put(MAP_SOURCES_ZONE_2, sourcesZone2);
 
         EnumMap<EmotivaControlCommands, String> channels = new EnumMap<>(
-                Map.ofEntries(Map.entry(EmotivaControlCommands.channel_1, channel_1.getLabel()),
+                Map.ofEntries(Map.entry(channel_1, channel_1.getLabel()),
                         Map.entry(EmotivaControlCommands.channel_2, EmotivaControlCommands.channel_2.getLabel()),
                         Map.entry(EmotivaControlCommands.channel_3, EmotivaControlCommands.channel_3.getLabel()),
                         Map.entry(EmotivaControlCommands.channel_4, EmotivaControlCommands.channel_4.getLabel()),
@@ -445,9 +444,10 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     }
 
     private void sendEmotivaUpdate(EmotivaControlCommands tags) {
-        if (sendingService != null) {
+        EmotivaUdpSendingService localSendingService = sendingService;
+        if (localSendingService != null) {
             try {
-                sendingService.sendUpdate(tags, config);
+                localSendingService.sendUpdate(tags, config);
             } catch (InterruptedIOException e) {
                 logger.error("Interrupted during sending of EmotivaUpdate message to device '{}'",
                         this.getThing().getThingTypeUID(), e);
@@ -626,6 +626,9 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             }
             case UNKNOWN -> // Do nothing, types not connect to channels
                 logger.debug("Channel '{}' with UNKNOWN type and value '{}' was not updated", channelName, value);
+            default -> {
+                // datatypes not connect to a channel, so do nothing
+            }
         }
     }
 
@@ -647,8 +650,9 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command ohCommand) {
         logger.debug("Handling ohCommand '{}:{}' for '{}'", channelUID.getId(), ohCommand, channelUID.getThingUID());
+        EmotivaUdpSendingService localSendingService = sendingService;
 
-        if (sendingService != null) {
+        if (localSendingService != null) {
             EmotivaControlRequest emotivaRequest = channelToControlRequest(channelUID.getId(), commandMaps,
                     protocolFromConfig(config.protocolVersion));
             if (ohCommand instanceof RefreshType) {
@@ -664,7 +668,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             } else {
                 try {
                     EmotivaControlDTO dto = emotivaRequest.createDTO(ohCommand, stateMap.get(channelUID.getId()));
-                    sendingService.send(dto);
+                    localSendingService.send(dto);
 
                     if (emotivaRequest.getName().equals(EmotivaControlCommands.volume.name())) {
                         if (ohCommand instanceof PercentType value) {
@@ -682,7 +686,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                         }
                     } else if (ohCommand instanceof OnOffType value) {
                         if (value.equals(OnOffType.ON) && emotivaRequest.getOnCommand().equals(power_on)) {
-                            sendingService.sendUpdate(EmotivaSubscriptionTags.speakerChannels(), config);
+                            localSendingService.sendUpdate(EmotivaSubscriptionTags.speakerChannels(), config);
                         }
                     }
                 } catch (InterruptedIOException e) {
@@ -705,14 +709,14 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     }
 
     private synchronized void disconnect() {
-        final EmotivaUdpSendingService connector = sendingService;
-        if (connector != null) {
+        final EmotivaUdpSendingService localSendingService = sendingService;
+        if (localSendingService != null) {
             logger.debug("Disposing active sender");
             if (udpSenderActive) {
                 try {
                     // Unsubscribe before disconnect
-                    sendingService.sendUnsubscribe(generalSubscription);
-                    sendingService.sendUnsubscribe(nonGeneralSubscriptions);
+                    localSendingService.sendUnsubscribe(generalSubscription);
+                    localSendingService.sendUnsubscribe(nonGeneralSubscriptions);
                 } catch (IOException e) {
                     logger.debug("Failed to unsubscribe for '{}'", config.ipAddress, e);
                 }
@@ -720,7 +724,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
             sendingService = null;
             try {
-                connector.disconnect();
+                localSendingService.disconnect();
                 logger.debug("Disconnected udp send connector");
             } catch (Exception e) {
                 logger.debug("Failed to close socket connection for '{}'", config.ipAddress, e);

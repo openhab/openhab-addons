@@ -18,11 +18,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
-
 /**
  * The EmotivaBarNotify message type. Received from a device if subscribed to the
- * {@link EmotivaSubscriptionTags#bar_update} type. Uses the {@link EmotivaBarNotifyWrapper} to handle unmarshalling.
+ * {@link org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags#bar_update} type. Uses the
+ * {@link EmotivaBarNotifyWrapper} to handle unmarshalling.
  *
  * @author Espen Fossen - Initial contribution
  */

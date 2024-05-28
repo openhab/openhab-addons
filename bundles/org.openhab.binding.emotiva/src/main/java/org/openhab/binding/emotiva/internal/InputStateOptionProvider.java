@@ -70,13 +70,14 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
         }
 
         List<StateOption> options = new ArrayList<>();
-        if (handler != null) {
+        EmotivaProcessorHandler localHandler = handler;
+        if (localHandler != null) {
             if (channel.getUID().getId().equals(CHANNEL_SOURCE)) {
-                setStateOptionsForSource(channel, options, handler.getSourcesMainZone());
+                setStateOptionsForSource(channel, options, localHandler.getSourcesMainZone());
             } else if (channel.getUID().getId().equals(CHANNEL_ZONE2_SOURCE)) {
-                setStateOptionsForSource(channel, options, handler.getSourcesZone2());
+                setStateOptionsForSource(channel, options, localHandler.getSourcesZone2());
             } else if (channel.getUID().getId().equals(CHANNEL_MODE)) {
-                EnumMap<EmotivaSubscriptionTags, String> modes = handler.getModes();
+                EnumMap<EmotivaSubscriptionTags, String> modes = localHandler.getModes();
                 Collection<EmotivaSubscriptionTags> modeKeys = modes.keySet();
                 for (EmotivaSubscriptionTags modeKey : modeKeys) {
                     options.add(new StateOption(modeKey.name(), modes.get(modeKey)));
