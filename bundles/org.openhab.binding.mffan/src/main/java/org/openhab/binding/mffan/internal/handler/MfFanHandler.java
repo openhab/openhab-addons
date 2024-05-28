@@ -86,8 +86,8 @@ public class MfFanHandler extends BaseThingHandler {
         ScheduledFuture<?> job = this.pollingJob;
         if (job != null) {
             job.cancel(true);
+            this.pollingJob = null;
         }
-        this.pollingJob = null;
     }
 
     @Override

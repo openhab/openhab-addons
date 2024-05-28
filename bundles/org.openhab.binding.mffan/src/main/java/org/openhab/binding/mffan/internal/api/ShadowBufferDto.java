@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link ShadowBufferDto} shadow buffer data transport object.
@@ -85,7 +86,8 @@ public class ShadowBufferDto {
     private String timezone;
 
     @Expose
-    private String FrCodes;
+    @SerializedName("FrCodes")
+    private String frCodes;
 
     @Expose
     private Boolean cdebug;
@@ -120,7 +122,7 @@ public class ShadowBufferDto {
         this.adaptiveLearning = false;
         this.userData = "";
         this.timezone = "";
-        this.FrCodes = "";
+        this.frCodes = "";
         this.cdebug = false;
         this.feedbackToneMute = false;
     }
@@ -210,7 +212,7 @@ public class ShadowBufferDto {
     }
 
     public String getFrCodes() {
-        return this.FrCodes;
+        return this.frCodes;
     }
 
     public Boolean getCdebug() {
