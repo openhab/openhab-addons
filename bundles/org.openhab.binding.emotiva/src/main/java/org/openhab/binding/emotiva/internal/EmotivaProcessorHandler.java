@@ -33,6 +33,7 @@ import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionT
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags.tuner_channel;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
@@ -326,12 +327,12 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         }
 
         if (object instanceof EmotivaAckDTO answerDto) {
-            logger.debug("Processing received '{}' with '{}'", EmotivaAckDTO.class.getSimpleName(),
+            logger.trace("Processing received '{}' with '{}'", EmotivaAckDTO.class.getSimpleName(),
                     emotivaUdpResponse.answer());
 
             // Currently not supported to revert a failed command update, just used for logging for now.
         } else if (object instanceof EmotivaBarNotifyWrapper answerDto) {
-            logger.debug("Processing received '{}' with '{}'", EmotivaBarNotifyWrapper.class.getSimpleName(),
+            logger.trace("Processing received '{}' with '{}'", EmotivaBarNotifyWrapper.class.getSimpleName(),
                     emotivaUdpResponse.answer());
 
             List<EmotivaBarNotifyDTO> emotivaBarNotifies = xmlUtils.unmarshallToBarNotify(answerDto.getTags());
@@ -343,27 +344,27 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 }
             }
         } else if (object instanceof EmotivaNotifyWrapper answerDto) {
-            logger.debug("Processing received '{}' with '{}'", EmotivaNotifyWrapper.class.getSimpleName(),
+            logger.trace("Processing received '{}' with '{}'", EmotivaNotifyWrapper.class.getSimpleName(),
                     emotivaUdpResponse.answer());
             handleNotificationUpdate(answerDto);
         } else if (object instanceof EmotivaUpdateResponse answerDto) {
-            logger.debug("Processing received '{}' with '{}'", EmotivaUpdateResponse.class.getSimpleName(),
+            logger.trace("Processing received '{}' with '{}'", EmotivaUpdateResponse.class.getSimpleName(),
                     emotivaUdpResponse.answer());
             handleNotificationUpdate(answerDto);
         } else if (object instanceof EmotivaMenuNotifyDTO answerDto) {
-            logger.debug("Processing received '{}' with '{}'", EmotivaMenuNotifyDTO.class.getSimpleName(),
+            logger.trace("Processing received '{}' with '{}'", EmotivaMenuNotifyDTO.class.getSimpleName(),
                     emotivaUdpResponse.answer());
 
             if (answerDto.getRow() != null) {
                 handleMenuNotify(answerDto);
             } else if (answerDto.getProgress() != null && answerDto.getProgress().getTime() != null) {
-                logger.debug("Processing received '{}' with '{}'", EmotivaMenuNotifyDTO.class.getSimpleName(),
+                logger.trace("Processing received '{}' with '{}'", EmotivaMenuNotifyDTO.class.getSimpleName(),
                         emotivaUdpResponse.answer());
                 listeningThreadFactory
                         .newThread(() -> handleMenuNotifyProgressMessage(answerDto.getProgress().getTime())).start();
             }
         } else if (object instanceof EmotivaSubscriptionResponse answerDto) {
-            logger.debug("Processing received '{}' with '{}'", EmotivaSubscriptionResponse.class.getSimpleName(),
+            logger.trace("Processing received '{}' with '{}'", EmotivaSubscriptionResponse.class.getSimpleName(),
                     emotivaUdpResponse.answer());
             // Populates static input sources, except input
             sourcesMainZone.putAll(EmotivaControlCommands.getCommandsFromType(EmotivaCommandType.SOURCE_MAIN_ZONE));
@@ -447,6 +448,9 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         if (sendingService != null) {
             try {
                 sendingService.sendUpdate(tags, config);
+            } catch (InterruptedIOException e) {
+                logger.error("Interrupted during sending of EmotivaUpdate message to device '{}'",
+                        this.getThing().getThingTypeUID(), e);
             } catch (IOException e) {
                 logger.error("Failed to send EmotivaUpdate message to device '{}'", this.getThing().getThingTypeUID(),
                         e);
@@ -627,7 +631,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
     private void updateChannelState(String channelID, State state) {
         stateMap.put(channelID, state);
-        logger.debug("Updating channel '{}' with '{}'", channelID, state);
+        logger.trace("Updating channel '{}' with '{}'", channelID, state);
         updateState(channelID, state);
     }
 
@@ -681,6 +685,9 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                             sendingService.sendUpdate(EmotivaSubscriptionTags.speakerChannels(), config);
                         }
                     }
+                } catch (InterruptedIOException e) {
+                    logger.debug("Interrupted during updating state for channel: '{}:{}:{}'", channelUID.getId(),
+                            emotivaRequest.getName(), emotivaRequest.getDataType(), e);
                 } catch (IOException e) {
                     logger.error("Failed updating state for channel '{}:{}:{}'", channelUID.getId(),
                             emotivaRequest.getName(), emotivaRequest.getDataType(), e);

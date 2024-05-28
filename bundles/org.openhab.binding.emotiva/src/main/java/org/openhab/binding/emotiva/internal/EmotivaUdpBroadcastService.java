@@ -16,6 +16,7 @@ import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.PROTOCOL_V3;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -94,6 +95,8 @@ public class EmotivaUdpBroadcastService {
             }
         } catch (SocketTimeoutException e) {
             logger.debug("Discovering poller timeout...");
+        } catch (InterruptedIOException e) {
+            logger.debug("Interrupted during discovery: {}", e.getMessage());
         } catch (IOException e) {
             logger.debug("Error during discovery: {}", e.getMessage());
         } finally {
@@ -153,7 +156,7 @@ public class EmotivaUdpBroadcastService {
         }
 
         if (object instanceof EmotivaTransponderDTO answerDto) {
-            logger.debug("Processing Received '{}' with '{}' ", EmotivaTransponderDTO.class.getSimpleName(),
+            logger.trace("Processing Received '{}' with '{}' ", EmotivaTransponderDTO.class.getSimpleName(),
                     udpResponse);
             final ThingUID thingUid = new ThingUID(
                     THING_PROCESSOR + AbstractUID.SEPARATOR + ipAddress.replace(".", ""));

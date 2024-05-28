@@ -176,7 +176,7 @@ public class EmotivaUdpSendingService {
     }
 
     public void send(String msg) throws IOException {
-        logger.debug("Sending message '{}' to {}:{}", msg, ipAddress, sendingControlPort);
+        logger.trace("Sending message '{}' to {}:{}", msg, ipAddress, sendingControlPort);
         if (msg.isEmpty()) {
             throw new IllegalArgumentException("Message must not be empty");
         }
