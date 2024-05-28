@@ -30,7 +30,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.salus.internal.cloud.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.handler.CloudApi;
 import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
@@ -48,7 +47,6 @@ public class SalusDiscoveryTest {
     void testFiltersOutDisconnectedDevicesAndAddsConnectedDevicesAsThings() throws Exception {
         // Given
         var cloudApi = mock(CloudApi.class);
-        var bridgeHandler = mock(CloudBridgeHandler.class);
         var bridgeUid = new ThingUID("salus", "salus-device", "boo");
         var discoveryService = new SalusDiscovery(cloudApi, bridgeUid);
         var discoveryListener = mock(DiscoveryListener.class);
@@ -81,7 +79,6 @@ public class SalusDiscoveryTest {
     void testLogsErrorWhenCloudApiThrowsException() throws Exception {
         // Given
         var cloudApi = mock(CloudApi.class);
-        var bridgeHandler = mock(CloudBridgeHandler.class);
         var bridgeUid = mock(ThingUID.class);
         var discoveryService = new SalusDiscovery(cloudApi, bridgeUid);
 

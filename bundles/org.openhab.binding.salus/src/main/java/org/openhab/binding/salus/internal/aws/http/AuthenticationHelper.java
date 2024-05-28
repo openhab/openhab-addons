@@ -140,11 +140,11 @@ class AuthenticationHelper {
     /**
      * a Secret ephemeral values
      */
-    private BigInteger SRP_LOWER_CASE_A;
+    private BigInteger srpLowerCaseA;
     /**
      * A Public ephemeral values
      */
-    private BigInteger SRP_UPPER_CASE_A;
+    private BigInteger srpUpperCaseA;
     private final String userPoolID;
     private final String clientId;
     private final String region;
@@ -152,9 +152,9 @@ class AuthenticationHelper {
 
     AuthenticationHelper(String userPoolID, String clientid, String region, String identityPoolId) {
         do {
-            SRP_LOWER_CASE_A = new BigInteger(EPHEMERAL_KEY_LENGTH, SECURE_RANDOM).mod(SRP_N);
-            SRP_UPPER_CASE_A = SRP_G.modPow(SRP_LOWER_CASE_A, SRP_N);
-        } while (SRP_UPPER_CASE_A.mod(SRP_N).equals(BigInteger.ZERO));
+            srpLowerCaseA = new BigInteger(EPHEMERAL_KEY_LENGTH, SECURE_RANDOM).mod(SRP_N);
+            srpUpperCaseA = SRP_G.modPow(srpLowerCaseA, SRP_N);
+        } while (srpUpperCaseA.mod(SRP_N).equals(BigInteger.ZERO));
 
         this.userPoolID = userPoolID;
         this.clientId = clientid;
@@ -168,7 +168,7 @@ class AuthenticationHelper {
         // u = H(A, B)
         var messageDigest = THREAD_MESSAGE_DIGEST.get();
         messageDigest.reset();
-        messageDigest.update(SRP_UPPER_CASE_A.toByteArray());
+        messageDigest.update(srpUpperCaseA.toByteArray());
         // u Random scrambling parameter
         var srpU = new BigInteger(1, messageDigest.digest(B.toByteArray()));
         if (srpU.equals(BigInteger.ZERO)) {
@@ -188,7 +188,7 @@ class AuthenticationHelper {
         BigInteger srpX = new BigInteger(1, messageDigest.digest(userIdHash));
         // s User's salt
         BigInteger srpS = (B.subtract(SRP_K.multiply(SRP_G.modPow(srpX, SRP_N)))
-                .modPow(SRP_LOWER_CASE_A.add(srpU.multiply(srpX)), SRP_N)).mod(SRP_N);
+                .modPow(srpLowerCaseA.add(srpU.multiply(srpX)), SRP_N)).mod(SRP_N);
 
         var hkdf = new Hkdf(ALGORITHM);
         hkdf.init(srpS.toByteArray(), srpU.toByteArray());
@@ -231,7 +231,7 @@ class AuthenticationHelper {
      * @return the Authentication request.
      */
     private InitiateAuthRequest initiateUserSrpAuthRequest(String username) {
-        var authParams = Map.of("USERNAME", username, "SRP_A", this.SRP_UPPER_CASE_A.toString(16));
+        var authParams = Map.of("USERNAME", username, "SRP_A", this.srpUpperCaseA.toString(16));
 
         return InitiateAuthRequest.builder() //
                 .authFlow(AuthFlowType.USER_SRP_AUTH) //
