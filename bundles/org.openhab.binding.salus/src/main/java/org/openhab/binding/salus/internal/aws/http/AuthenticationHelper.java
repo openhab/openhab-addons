@@ -313,7 +313,7 @@ class AuthenticationHelper {
      * Internal class for doing the Hkdf calculations.
      */
     @SuppressWarnings("SameParameterValue")
-    final static class Hkdf {
+    static final class Hkdf {
         private static final int MAX_KEY_SIZE = 255;
         private final byte[] EMPTY_ARRAY = new byte[0];
         private final String algorithm;
