@@ -197,6 +197,7 @@
     <module>org.openhab.binding.ipcamera</module>
     <module>org.openhab.binding.ipobserver</module>
     <module>org.openhab.binding.intesis</module>
+    <module>org.openhab.binding.iotawatt</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irobot</module>
     <module>org.openhab.binding.irtrans</module>
