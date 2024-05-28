@@ -315,7 +315,7 @@ class AuthenticationHelper {
     @SuppressWarnings("SameParameterValue")
     static final class Hkdf {
         private static final int MAX_KEY_SIZE = 255;
-        private final byte[] EMPTY_ARRAY = new byte[0];
+        private static final byte[] EMPTY_ARRAY = new byte[0];
         private final String algorithm;
         @Nullable
         private SecretKey prk = null;
