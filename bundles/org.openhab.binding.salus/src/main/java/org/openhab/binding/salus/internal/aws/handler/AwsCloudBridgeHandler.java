@@ -32,7 +32,7 @@ import org.openhab.core.thing.Bridge;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public final class AwsCloudBridgeHandler extends AbstractBridgeHandler<AwsCloudBridgeConfig> implements CloudApi {
+public final class AwsCloudBridgeHandler extends AbstractBridgeHandler<AwsCloudBridgeConfig> {
 
     public AwsCloudBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge, httpClientFactory, AwsCloudBridgeConfig.class);
