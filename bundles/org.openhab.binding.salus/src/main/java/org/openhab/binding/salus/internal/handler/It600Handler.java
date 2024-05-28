@@ -14,20 +14,13 @@ package org.openhab.binding.salus.internal.handler;
 
 import static java.math.RoundingMode.HALF_EVEN;
 import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.It600.EXPECTED_TEMPERATURE;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.It600.TEMPERATURE;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.It600.WORK_TYPE;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.AUTO;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.MANUAL;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.OFF;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.TEMPORARY_MANUAL;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.It600.*;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.*;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatusDetail.BRIDGE_UNINITIALIZED;
-import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.thing.ThingStatusDetail.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.math.BigDecimal;

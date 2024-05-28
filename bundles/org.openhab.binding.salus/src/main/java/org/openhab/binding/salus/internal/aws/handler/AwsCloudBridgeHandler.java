@@ -13,8 +13,6 @@
 package org.openhab.binding.salus.internal.aws.handler;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.concurrent.TimeUnit.*;
-import static org.openhab.core.thing.ThingStatusDetail.*;
 
 import java.util.Set;
 

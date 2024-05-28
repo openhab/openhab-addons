@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.salus.internal.discovery;
 
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_DEVICE_TYPE;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_IT600_DEVICE_TYPE;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.IT_600;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.OEM_MODEL;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.*;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.*;
 
 import java.util.Locale;
 import java.util.Map;
